@@ -107,7 +107,7 @@ namespace PrayerTimeEngine.Code.Domain.Fazilet.Services
                 @"
                 SELECT Imsak, Fajr, Shuruq, Dhuhr, Asr, Maghrib, Isha, Date
                 FROM FaziletPrayerTimes
-                WHERE CityId = $CityId AND $Date = $Date;";
+                WHERE CityId = $CityId AND Date = $Date;";
 
                 command.Parameters.AddWithValue("$CityId", cityId);
                 command.Parameters.AddWithValue("$Date", date.Date);
