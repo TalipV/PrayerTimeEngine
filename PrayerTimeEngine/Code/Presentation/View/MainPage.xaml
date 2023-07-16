@@ -1,0 +1,62 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="PrayerTimeEngine.MainPage">
+
+    <ScrollView>
+        <StackLayout Spacing="20">
+            <Label Text="Islamic Prayer Times"
+                VerticalOptions="Start"
+                HorizontalOptions="CenterAndExpand" />
+
+            <StackLayout HorizontalOptions="CenterAndExpand">
+                <Label Text="Fajr: "
+                    VerticalOptions="CenterAndExpand" />
+                <Label Text="{Binding FajrPrayerTime.Duration}"
+                    VerticalOptions="CenterAndExpand" />
+            </StackLayout>
+
+            <StackLayout HorizontalOptions="CenterAndExpand">
+                <Label Text="Duha: "
+                    VerticalOptions="CenterAndExpand" />
+                <Label Text="{Binding DuhaPrayerTime.Duration}"
+                    VerticalOptions="CenterAndExpand" />
+            </StackLayout>
+
+            <StackLayout HorizontalOptions="CenterAndExpand">
+                <Label Text="Dhuhr: "
+                    VerticalOptions="CenterAndExpand" />
+                <Label Text="{Binding DhuhrPrayerTime.Duration}"
+                    VerticalOptions="CenterAndExpand" />
+            </StackLayout>
+
+            <StackLayout HorizontalOptions="CenterAndExpand">
+                <Label Text="Asr: "
+                    VerticalOptions="CenterAndExpand" />
+                <Label Text="{Binding AsrPrayerTime.Duration}"
+                    VerticalOptions="CenterAndExpand" />
+            </StackLayout>
+
+            <StackLayout HorizontalOptions="CenterAndExpand">
+                <Label Text="Maghrib: "
+                    VerticalOptions="CenterAndExpand" />
+                <Label Text="{Binding MaghribPrayerTime.Duration}"
+                    VerticalOptions="CenterAndExpand" />
+            </StackLayout>
+
+            <StackLayout HorizontalOptions="CenterAndExpand">
+                <Label Text="Isha: "
+                    VerticalOptions="CenterAndExpand" />
+                <Label Text="{Binding IshaPrayerTime.Duration}"
+                    VerticalOptions="CenterAndExpand" />
+            </StackLayout>
+
+            <Button
+                Text="Laden"
+                WidthRequest="80"
+                Command="{Binding LoadPrayerTimesButton_ClickCommand}"
+                ></Button>
+            
+        </StackLayout>
+    </ScrollView>
+</ContentPage>
