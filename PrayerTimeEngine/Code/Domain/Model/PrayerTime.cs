@@ -1,44 +1,21 @@
-﻿using MvvmHelpers;
-using PrayerTimeEngine.Common.Enums;
+﻿using PrayerTimeEngine.Code.Common.Enums;
 
 namespace PrayerTimeEngine.Domain.Models
 {
-    public class PrayerTime : ObservableObject
+    public class PrayerTime
     {
-        public EPrayerTime PrayerTimeType { get; private set; }
+        public DateTime? Start { get; set; }
+        public DateTime? End { get; set; }
 
-        private DateTime _start;
-        private DateTime _end;
-
-        public PrayerTime(EPrayerTime prayerTimeType)
+        public string DurationDisplayText
         {
-            PrayerTimeType = prayerTimeType;
-        }
-
-        public DateTime Start
-        {
-            get { return _start; }
-            set
+            get
             {
-                if (SetProperty(ref _start, value))
-                {
-                    OnPropertyChanged(nameof(Duration));
-                }
+                string startTime = Start?.ToString("HH:mm:ss") ?? "xx:xx:xx";
+                string endTime = End?.ToString("HH:mm:ss") ?? "xx:xx:xx";
+
+                return $"{startTime} - {endTime}"; ;
             }
         }
-
-        public DateTime End
-        {
-            get { return _end; }
-            set
-            {
-                if (SetProperty(ref _end, value))
-                {
-                    OnPropertyChanged(nameof(Duration));
-                }
-            }
-        }
-
-        public string Duration => $"{Start:HH:mm tt} - {End:HH:mm tt}";
     }
 }

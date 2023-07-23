@@ -2,7 +2,6 @@
 using PrayerTimeEngine.Code.Domain.Fazilet.Services;
 using PrayerTimeEngine.Code.Domain.Muwaqqit.Services;
 using PrayerTimeEngine.Code.Interfaces;
-using PrayerTimeEngine.Code.Services;
 
 public class PrayerTimeCalculatorFactory : IPrayerTimeCalculatorFactory
 {

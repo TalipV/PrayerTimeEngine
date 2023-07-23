@@ -9,6 +9,6 @@ namespace PrayerTimeEngine.Code.Domain.Muwaqqit.Interfaces
 {
     public interface IMuwaqqitApiService
     {
-        MuwaqqitPrayerTimes GetTimes(DateTime date, decimal longitude, decimal latitude, decimal fajrDegree, decimal ishaDegree, string timezone);
+        Task<MuwaqqitPrayerTimes> GetTimesAsync(DateTime date, decimal longitude, decimal latitude, double fajrDegree, double ishaDegree, double ishtibaqDegree, double asrKarahaDegree, string timezone);
     }
 }

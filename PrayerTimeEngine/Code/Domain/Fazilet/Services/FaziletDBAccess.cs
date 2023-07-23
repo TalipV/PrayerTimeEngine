@@ -12,10 +12,10 @@ namespace PrayerTimeEngine.Code.Domain.Fazilet.Services
             _db = db;
         }
 
-        public Dictionary<string, int> GetCountries()
+        public async Task<Dictionary<string, int>> GetCountries()
         {
             var countries = new Dictionary<string, int>();
-            _db.ExecuteCommand(connection =>
+            await _db.ExecuteCommandAsync(async connection =>
             {
                 var command = connection.CreateCommand();
                 command.CommandText =
@@ -24,9 +24,9 @@ namespace PrayerTimeEngine.Code.Domain.Fazilet.Services
                 FROM FaziletCountries;
                 ";
 
-                using (var reader = command.ExecuteReader())
+                using (var reader = await command.ExecuteReaderAsync())
                 {
-                    while (reader.Read())
+                    while (await reader.ReadAsync())
                     {
                         countries.Add(reader.GetString(1), reader.GetInt32(0));
                     }
@@ -36,27 +36,28 @@ namespace PrayerTimeEngine.Code.Domain.Fazilet.Services
             return countries;
         }
 
-        public void InsertCountry(int id, string name)
+        public async Task InsertCountry(int id, string name)
         {
-            _db.ExecuteCommand(connection =>
+            await _db.ExecuteCommandAsync(async connection =>
             {
                 var command = connection.CreateCommand();
                 command.CommandText =
                 @"
-                INSERT INTO FaziletCountries (Id, Name) 
-                VALUES ($Id, $Name);";
+                INSERT INTO FaziletCountries (Id, Name, InsertDateTime) 
+                VALUES ($Id, $Name, $InsertDateTime);";
 
                 command.Parameters.AddWithValue("$Id", id);
                 command.Parameters.AddWithValue("$Name", name);
+                command.Parameters.AddWithValue("$InsertDateTime", DateTime.Now);
 
-                command.ExecuteNonQuery();
+                await command.ExecuteNonQueryAsync();
             });
         }
 
-        public Dictionary<string, int> GetCitiesByCountryID(int countryId)
+        public async Task<Dictionary<string, int>> GetCitiesByCountryID(int countryId)
         {
             var cities = new Dictionary<string, int>();
-            _db.ExecuteCommand(connection =>
+            await _db.ExecuteCommandAsync(async connection =>
             {
                 var command = connection.CreateCommand();
                 command.CommandText =
@@ -67,9 +68,9 @@ namespace PrayerTimeEngine.Code.Domain.Fazilet.Services
 
                 command.Parameters.AddWithValue("$CountryId", countryId);
 
-                using (var reader = command.ExecuteReader())
+                using (var reader = await command.ExecuteReaderAsync())
                 {
-                    while (reader.Read())
+                    while (await reader.ReadAsync())
                     {
                         cities.Add(reader.GetString(1), reader.GetInt32(0));
                     }
@@ -78,29 +79,30 @@ namespace PrayerTimeEngine.Code.Domain.Fazilet.Services
             return cities;
         }
 
-        public void InsertCity(int id, string name, int countryId)
+        public async Task InsertCity(int id, string name, int countryId)
         {
-            _db.ExecuteCommand(connection =>
+            await _db.ExecuteCommandAsync(async connection =>
             {
                 var command = connection.CreateCommand();
                 command.CommandText =
                 @"
-                INSERT INTO FaziletCities (Id, Name, CountryId) 
-                VALUES ($Id, $Name, $CountryId);";
+                INSERT INTO FaziletCities (Id, Name, CountryId, InsertDateTime) 
+                VALUES ($Id, $Name, $CountryId, $InsertDateTime);";
 
                 command.Parameters.AddWithValue("$Id", id);
                 command.Parameters.AddWithValue("$Name", name);
                 command.Parameters.AddWithValue("$CountryId", countryId);
+                command.Parameters.AddWithValue("$InsertDateTime", DateTime.Now);
 
-                command.ExecuteNonQuery();
+                await command.ExecuteNonQueryAsync();
             });
         }
 
-        public FaziletPrayerTimes GetTimesByDateAndCityID(DateTime date, int cityId)
+        public async Task<FaziletPrayerTimes> GetTimesByDateAndCityID(DateTime date, int cityId)
         {
             FaziletPrayerTimes time = null;
 
-            _db.ExecuteCommand(connection =>
+            await _db.ExecuteCommandAsync(async connection =>
             {
                 var command = connection.CreateCommand();
                 command.CommandText =
@@ -112,9 +114,9 @@ namespace PrayerTimeEngine.Code.Domain.Fazilet.Services
                 command.Parameters.AddWithValue("$CityId", cityId);
                 command.Parameters.AddWithValue("$Date", date.Date);
 
-                using (var reader = command.ExecuteReader())
+                using (var reader = await command.ExecuteReaderAsync())
                 {
-                    if (reader.Read())
+                    if (await reader.ReadAsync())
                     {
                         time = new FaziletPrayerTimes(
                             cityId,
@@ -134,56 +136,58 @@ namespace PrayerTimeEngine.Code.Domain.Fazilet.Services
             return time;
         }
 
-        public void InsertCountries(Dictionary<string, int> countries)
+        public async Task InsertCountries(Dictionary<string, int> countries)
         {
-            _db.ExecuteCommand(connection =>
+            await _db.ExecuteCommandAsync(async connection =>
             {
                 foreach (var country in countries)
                 {
                     var command = connection.CreateCommand();
                     command.CommandText =
                     @"
-            INSERT INTO FaziletCountries (Id, Name) 
-            VALUES ($Id, $Name);";
+                    INSERT INTO FaziletCountries (Id, Name, InsertDateTime) 
+                    VALUES ($Id, $Name, $InsertDateTime);";
 
                     command.Parameters.AddWithValue("$Id", country.Value);
                     command.Parameters.AddWithValue("$Name", country.Key);
+                    command.Parameters.AddWithValue("$InsertDateTime", DateTime.Now);
 
-                    command.ExecuteNonQuery();
+                    await command.ExecuteNonQueryAsync();
                 }
             });
         }
 
-        public void InsertCities(Dictionary<string, int> cities, int countryId)
+        public async Task InsertCities(Dictionary<string, int> cities, int countryId)
         {
-            _db.ExecuteCommand(connection =>
+            await _db.ExecuteCommandAsync(async connection =>
             {
                 foreach (var city in cities)
                 {
                     var command = connection.CreateCommand();
                     command.CommandText =
                     @"
-            INSERT INTO FaziletCities (Id, Name, CountryId) 
-            VALUES ($Id, $Name, $CountryId);";
+            INSERT INTO FaziletCities (Id, Name, CountryId, InsertDateTime) 
+            VALUES ($Id, $Name, $CountryId, $InsertDateTime);";
 
                     command.Parameters.AddWithValue("$Id", city.Value);
                     command.Parameters.AddWithValue("$Name", city.Key);
                     command.Parameters.AddWithValue("$CountryId", countryId);
+                    command.Parameters.AddWithValue("$InsertDateTime", DateTime.Now);
 
-                    command.ExecuteNonQuery();
+                    await command.ExecuteNonQueryAsync();
                 }
             });
         }
 
-        public void InsertFaziletPrayerTimes(DateTime date, int cityID, FaziletPrayerTimes faziletPrayerTimes)
+        public async Task InsertFaziletPrayerTimes(DateTime date, int cityID, FaziletPrayerTimes faziletPrayerTimes)
         {
-            _db.ExecuteCommand(connection =>
+            await _db.ExecuteCommandAsync(async connection =>
             {
                 var command = connection.CreateCommand();
                 command.CommandText =
                 @"
-                INSERT INTO FaziletPrayerTimes (Date, CityId, Imsak, Fajr, Shuruq, Dhuhr, Asr, Maghrib, Isha) 
-                VALUES ($Date, $CityId, $Imsak, $Fajr, $Shuruq, $Dhuhr, $Asr, $Maghrib, $Isha);";
+                INSERT INTO FaziletPrayerTimes (Date, CityId, Imsak, Fajr, Shuruq, Dhuhr, Asr, Maghrib, Isha, InsertDateTime) 
+                VALUES ($Date, $CityId, $Imsak, $Fajr, $Shuruq, $Dhuhr, $Asr, $Maghrib, $Isha, $InsertDateTime);";
 
                 command.Parameters.AddWithValue("$Date", date);
                 command.Parameters.AddWithValue("$CityId", cityID);
@@ -195,21 +199,22 @@ namespace PrayerTimeEngine.Code.Domain.Fazilet.Services
                 command.Parameters.AddWithValue("$Asr", faziletPrayerTimes.Asr);
                 command.Parameters.AddWithValue("$Maghrib", faziletPrayerTimes.Maghrib);
                 command.Parameters.AddWithValue("$Isha", faziletPrayerTimes.Isha);
+                command.Parameters.AddWithValue("$InsertDateTime", DateTime.Now);
 
-                command.ExecuteNonQuery();
+                await command.ExecuteNonQueryAsync();
             });
         }
 
-        public void DeleteAllPrayerTimes()
+        public async Task DeleteAllPrayerTimes()
         {
-            _db.ExecuteCommand(connection =>
+            await _db.ExecuteCommandAsync(async connection =>
             {
                 var command = connection.CreateCommand();
                 command.CommandText =
                 @"
                 DELETE FROM FaziletPrayerTimes;";
 
-                command.ExecuteNonQuery();
+                await command.ExecuteNonQueryAsync();
             });
         }
     }

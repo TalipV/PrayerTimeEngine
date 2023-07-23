@@ -1,5 +1,4 @@
-﻿using Microsoft.Maui.Controls;
-using PrayerTimeEngine.Presentation.ViewModels;
+﻿using PrayerTimeEngine.Code.Presentation.ViewModel;
 
 namespace PrayerTimeEngine
 {

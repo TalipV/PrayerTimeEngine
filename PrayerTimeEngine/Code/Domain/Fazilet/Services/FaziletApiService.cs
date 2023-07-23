@@ -16,7 +16,7 @@ namespace PrayerTimeEngine.Code.Domain.Fazilet.Services
 
         private const string GET_COUNTRIES_URL = "https://fazilettakvimi.com/api/cms/daily?districtId=232&lang=0";
 
-        public Dictionary<string, int> GetCountries()
+        public async Task<Dictionary<string, int>> GetCountries()
         {
             Dictionary<string, int> countries = new Dictionary<string, int>();
 
@@ -24,10 +24,10 @@ namespace PrayerTimeEngine.Code.Domain.Fazilet.Services
             {
                 client.Timeout = TimeSpan.FromSeconds(API_TIMEOUT_SECONDS);
 
-                HttpResponseMessage response = client.GetAsync(GET_COUNTRIES_URL).Result;
+                HttpResponseMessage response = await client.GetAsync(GET_COUNTRIES_URL);
                 if (response.IsSuccessStatusCode)
                 {
-                    string json = response.Content.ReadAsStringAsync().Result;
+                    string json = await response.Content.ReadAsStringAsync();
                     JObject jObject = JObject.Parse(json);
 
                     foreach (JObject country in (JArray)jObject["ulkeler"])
@@ -44,7 +44,7 @@ namespace PrayerTimeEngine.Code.Domain.Fazilet.Services
 
         private const string GET_CITIES_BY_COUNTRY_URL = "https://fazilettakvimi.com/api/cms/cities-by-country?districtId=";
 
-        public Dictionary<string, int> GetCitiesByCountryID(int countryID)
+        public async Task<Dictionary<string, int>> GetCitiesByCountryID(int countryID)
         {
             Dictionary<string, int> cities = new Dictionary<string, int>();
 
@@ -52,11 +52,11 @@ namespace PrayerTimeEngine.Code.Domain.Fazilet.Services
             {
                 client.Timeout = TimeSpan.FromSeconds(API_TIMEOUT_SECONDS);
 
-                HttpResponseMessage response = client.GetAsync(GET_CITIES_BY_COUNTRY_URL + countryID).Result;
+                HttpResponseMessage response = await client.GetAsync(GET_CITIES_BY_COUNTRY_URL + countryID);
 
                 if (response.IsSuccessStatusCode)
                 {
-                    string json = response.Content.ReadAsStringAsync().Result;
+                    string json = await response.Content.ReadAsStringAsync();
 
                     foreach (JObject city in JArray.Parse(json))
                     {
@@ -72,7 +72,7 @@ namespace PrayerTimeEngine.Code.Domain.Fazilet.Services
 
         private const string GET_TIMES_BY_CITY_URL = "https://fazilettakvimi.com/api/cms/daily?districtId={0}&lang=1";
 
-        public List<FaziletPrayerTimes> GetTimesByCityID(int cityID)
+        public async Task<List<FaziletPrayerTimes>> GetTimesByCityID(int cityID)
         {
             List<FaziletPrayerTimes> prayerTimesList = new List<FaziletPrayerTimes>();
 
@@ -82,11 +82,11 @@ namespace PrayerTimeEngine.Code.Domain.Fazilet.Services
             {
                 client.Timeout = TimeSpan.FromSeconds(API_TIMEOUT_SECONDS);
 
-                HttpResponseMessage response = client.GetAsync(url).Result;
+                HttpResponseMessage response = await client.GetAsync(url);
 
                 if (response.IsSuccessStatusCode)
                 {
-                    string json = response.Content.ReadAsStringAsync().Result;
+                    string json = await response.Content.ReadAsStringAsync();
                     JObject jObject = JObject.Parse(json);
                     JArray timesArray = (JArray)jObject["vakitler"];
 

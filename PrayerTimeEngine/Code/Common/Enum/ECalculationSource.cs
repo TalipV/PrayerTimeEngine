@@ -8,7 +8,7 @@ namespace PrayerTimeEngine.Code.Common.Enums
 {
     public enum ECalculationSource
     {
-        Unknown,
+        None,
         Muwaqqit,
         Fazilet,
         AlAdhan

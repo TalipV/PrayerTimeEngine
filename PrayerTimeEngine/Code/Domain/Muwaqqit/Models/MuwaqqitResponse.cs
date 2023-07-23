@@ -1,13 +1,17 @@
 ﻿namespace PrayerTimeEngine.Code.Domain.Muwaqqit.Models
 {
-    public class MuwaqqitResponse
+    public class MuwaqqitJSONResponse
     {
         public string fajr { get; set; }
+        public string fajr_t { get; set; }
         public string sunrise { get; set; }
+        public string ishraq { get; set; }
         public string zohr { get; set; }
         public string asr_shafi { get; set; }
         public string asr_hanafi { get; set; }
         public string sunset { get; set; }
+        public string ishtibak { get; set; }
+        public string asr_makrooh { get; set; }
         public string esha { get; set; }
         
         /// <summary>

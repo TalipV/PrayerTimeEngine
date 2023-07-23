@@ -1,4 +1,4 @@
-﻿namespace PrayerTimeEngine.Common.Enums
+﻿namespace PrayerTimeEngine.Code.Common.Enums
 {
     public enum EPrayerTime
     {

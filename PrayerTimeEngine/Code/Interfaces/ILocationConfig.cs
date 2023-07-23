@@ -4,10 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PrayerTimeEngine.Presentation.ViewModels
+namespace PrayerTimeEngine.Code.Interfaces
 {
-    public class SettingsPageViewModel
+    public interface ILocationConfig
     {
-
     }
 }

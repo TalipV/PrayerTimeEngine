@@ -9,13 +9,13 @@ namespace PrayerTimeEngine.Code.Domain.Fazilet.Interfaces
 {
     public interface IFaziletDBAccess
     {
-        public Dictionary<string, int> GetCountries();
-        public Dictionary<string, int> GetCitiesByCountryID(int countryID);
+        public Task<Dictionary<string, int>> GetCountries();
+        public Task<Dictionary<string, int>> GetCitiesByCountryID(int countryID);
 
-        public FaziletPrayerTimes GetTimesByDateAndCityID(DateTime date, int cityID);
+        public Task<FaziletPrayerTimes> GetTimesByDateAndCityID(DateTime date, int cityID);
 
-        public void InsertCountries(Dictionary<string, int> countries);
-        public void InsertCities(Dictionary<string, int> cities, int countryId);
-        public void InsertFaziletPrayerTimes(DateTime date, int cityID, FaziletPrayerTimes faziletPrayerTimes);
+        public Task InsertCountries(Dictionary<string, int> countries);
+        public Task InsertCities(Dictionary<string, int> cities, int countryId);
+        public Task InsertFaziletPrayerTimes(DateTime date, int cityID, FaziletPrayerTimes faziletPrayerTimes);
     }
 }

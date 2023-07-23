@@ -1,7 +1,6 @@
 ﻿using PrayerTimeEngine.Code.Common.Enums;
-using PrayerTimeEngine.Code.Interfaces;
 
-namespace PrayerTimeEngine.Code.Services
+namespace PrayerTimeEngine.Code.Interfaces
 {
     public interface IPrayerTimeCalculatorFactory
     {

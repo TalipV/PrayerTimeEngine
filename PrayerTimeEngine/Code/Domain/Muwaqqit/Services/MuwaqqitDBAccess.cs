@@ -17,56 +17,87 @@ namespace PrayerTimeEngine.Code.Domain.Muwaqqit.Services
             _db = db;
         }
 
-        public void InsertMuwaqqitPrayerTimes(DateTime date, decimal longitude, decimal latitude, decimal fajrDegree, decimal ishaDegree, MuwaqqitPrayerTimes prayerTimes)
+        public async Task InsertMuwaqqitPrayerTimesAsync(
+            DateTime date,
+            string timezone,
+            decimal longitude,
+            decimal latitude,
+            double fajrDegree,
+            double ishaDegree,
+            double ishtibaqDegree,
+            double asrKarahaDegree,
+            MuwaqqitPrayerTimes prayerTimes)
         {
-            _db.ExecuteCommand(connection =>
+            await _db.ExecuteCommandAsync(async connection =>
             {
                 var command = connection.CreateCommand();
                 command.CommandText =
                 @"
-        INSERT INTO MuwaqqitPrayerTimes (Date, Longitude, Latitude, Fajr_Degree, Isha_Degree, Fajr, Shuruq, Dhuhr, AsrMithl, AsrMithlayn, Maghrib, Isha) 
-        VALUES ($Date, $Longitude, $Latitude, $Fajr_Degree, $Isha_Degree, $Fajr, $Shuruq, $Dhuhr, $AsrMithl, $AsrMithlayn, $Maghrib, $Isha);";
+                INSERT INTO MuwaqqitPrayerTimes (Date, Timezone, Longitude, Latitude, Fajr_Degree, Isha_Degree, Ishtibaq_Degree, AsrKaraha_Degree, Fajr, NextFajr, Shuruq, Duha, Dhuhr, AsrMithl, AsrMithlayn, AsrKaraha, Maghrib, Isha, Ishtibaq, InsertDateTime) 
+                VALUES ($Date, $Timezone, $Longitude, $Latitude, $Fajr_Degree, $Isha_Degree, $Ishtibaq_Degree, $AsrKaraha_Degree, $Fajr, $NextFajr, $Shuruq, $Duha, $Dhuhr, $AsrMithl, $AsrMithlayn, $AsrKaraha, $Maghrib, $Isha, $Ishtibaq, $InsertDateTime);";
 
                 command.Parameters.AddWithValue("$Date", date);
+                command.Parameters.AddWithValue("$Timezone", timezone);
                 command.Parameters.AddWithValue("$Longitude", longitude);
                 command.Parameters.AddWithValue("$Latitude", latitude);
+
                 command.Parameters.AddWithValue("$Fajr_Degree", fajrDegree);
                 command.Parameters.AddWithValue("$Isha_Degree", ishaDegree);
+                command.Parameters.AddWithValue("$Ishtibaq_Degree", ishtibaqDegree);
+                command.Parameters.AddWithValue("$AsrKaraha_Degree", asrKarahaDegree);
 
                 command.Parameters.AddWithValue("$Fajr", prayerTimes.Fajr);
+                command.Parameters.AddWithValue("$NextFajr", prayerTimes.NextFajr);
                 command.Parameters.AddWithValue("$Shuruq", prayerTimes.Shuruq);
+                command.Parameters.AddWithValue("$Duha", prayerTimes.Duha);
                 command.Parameters.AddWithValue("$Dhuhr", prayerTimes.Dhuhr);
+
                 command.Parameters.AddWithValue("$AsrMithl", prayerTimes.AsrMithl);
                 command.Parameters.AddWithValue("$AsrMithlayn", prayerTimes.AsrMithlayn);
+                command.Parameters.AddWithValue("$AsrKaraha", prayerTimes.AsrKaraha);
+
                 command.Parameters.AddWithValue("$Maghrib", prayerTimes.Maghrib);
                 command.Parameters.AddWithValue("$Isha", prayerTimes.Isha);
+                command.Parameters.AddWithValue("$Ishtibaq", prayerTimes.Isha);
 
-                command.ExecuteNonQuery();
+                command.Parameters.AddWithValue("$InsertDateTime", DateTime.Now);
+
+                await command.ExecuteReaderAsync();
             });
         }
 
-        public MuwaqqitPrayerTimes GetTimes(DateTime date, decimal longitude, decimal latitude, decimal fajrDegree, decimal ishaDegree)
+        public async Task<MuwaqqitPrayerTimes> GetTimesAsync(
+            DateTime date,
+            decimal longitude,
+            decimal latitude,
+            double fajrDegree,
+            double ishaDegree,
+            double ishtibaqDegree,
+            double asrKarahaDegree)
         {
             MuwaqqitPrayerTimes time = null;
 
-            _db.ExecuteCommand(connection =>
+            await _db.ExecuteCommandAsync(async connection =>
             {
                 var command = connection.CreateCommand();
                 command.CommandText =
                 @"
-        SELECT Fajr, Shuruq, Dhuhr, AsrMithl, AsrMithlayn, Maghrib, Isha
-        FROM MuwaqqitPrayerTimes
-        WHERE Date = $Date AND Longitude = $Longitude AND Latitude = $Latitude AND Fajr_Degree = $Fajr_Degree AND Isha_Degree = $Isha_Degree;";
+                SELECT Fajr, NextFajr, Shuruq, Duha, Dhuhr, AsrMithl, AsrMithlayn, Maghrib, Isha, Ishtibaq, AsrKaraha
+                FROM MuwaqqitPrayerTimes
+                WHERE Date = $Date AND Longitude = $Longitude AND Latitude = $Latitude 
+                AND Fajr_Degree = $Fajr_Degree AND Isha_Degree = $Isha_Degree AND Ishtibaq_Degree = $Ishtibaq_Degree AND AsrKaraha_Degree = $AsrKaraha_Degree;";
 
                 command.Parameters.AddWithValue("$Date", date);
                 command.Parameters.AddWithValue("$Longitude", longitude);
                 command.Parameters.AddWithValue("$Latitude", latitude);
                 command.Parameters.AddWithValue("$Fajr_Degree", fajrDegree);
                 command.Parameters.AddWithValue("$Isha_Degree", ishaDegree);
+                command.Parameters.AddWithValue("$Ishtibaq_Degree", ishtibaqDegree);
+                command.Parameters.AddWithValue("$AsrKaraha_Degree", asrKarahaDegree);
 
-                using (var reader = command.ExecuteReader())
+                using (var reader = await command.ExecuteReaderAsync())
                 {
-                    if (reader.Read())
+                    if (await reader.ReadAsync())
                     {
                         time = new MuwaqqitPrayerTimes(
                             date,
@@ -78,7 +109,11 @@ namespace PrayerTimeEngine.Code.Domain.Muwaqqit.Services
                             reader.GetDateTime(3),
                             reader.GetDateTime(4),
                             reader.GetDateTime(5),
-                            reader.GetDateTime(6)
+                            reader.GetDateTime(6),
+                            reader.GetDateTime(7),
+                            reader.GetDateTime(8),
+                            reader.GetDateTime(9),
+                            reader.GetDateTime(10)
                         );
                     }
                 }

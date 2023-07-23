@@ -1,11 +1,17 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
+using PrayerTimeEngine.Code.Domain;
+using PrayerTimeEngine.Code.Domain.ConfigStore.Interfaces;
+using PrayerTimeEngine.Code.Domain.ConfigStore.Services;
 using PrayerTimeEngine.Code.Domain.Fazilet.Interfaces;
 using PrayerTimeEngine.Code.Domain.Fazilet.Services;
 using PrayerTimeEngine.Code.Domain.Muwaqqit.Interfaces;
 using PrayerTimeEngine.Code.Domain.Muwaqqit.Services;
-using PrayerTimeEngine.Code.Services;
-using PrayerTimeEngine.Presentation.ViewModels;
+using PrayerTimeEngine.Code.Interfaces;
+using PrayerTimeEngine.Code.Presentation.Service.Navigation;
+using PrayerTimeEngine.Code.Presentation.Service.SettingsContentPageFactory;
+using PrayerTimeEngine.Code.Presentation.View;
+using PrayerTimeEngine.Code.Presentation.ViewModel;
+using PrayerTimeEngine.Views;
 
 namespace PrayerTimeEngine;
 
@@ -45,7 +51,21 @@ public static class MauiProgram
         serviceCollection.AddSingleton<IMuwaqqitDBAccess, MuwaqqitDBAccess>();
         serviceCollection.AddSingleton<IMuwaqqitApiService, MuwaqqitApiService>();
 
-        serviceCollection.AddSingleton<MainPage>();
-        serviceCollection.AddSingleton<MainPageViewModel>();
+        serviceCollection.AddTransient<MainPage>();
+        serviceCollection.AddTransient<MainPageViewModel>();
+
+        serviceCollection.AddTransient<SettingsMainPage>();
+        serviceCollection.AddTransient<SettingsMainPageViewModel>();
+
+        serviceCollection.AddTransient<SettingsContentPage>();
+        serviceCollection.AddTransient<SettingsContentPageViewModel>();
+        serviceCollection.AddSingleton<ISettingsContentPageFactory, SettingsContentPageFactory>();
+
+        serviceCollection.AddTransient<IConfigStoreService, ConfigStoreService>();
+        serviceCollection.AddTransient<IConfigStoreDBAccess, ConfigStoreDBAccess>();
+
+        serviceCollection.AddSingleton<PrayerTimesConfigurationStorage>();
+        serviceCollection.AddTransient<INavigationService, NavigationService>();
+
     }
 }

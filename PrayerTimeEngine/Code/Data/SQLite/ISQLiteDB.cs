@@ -3,5 +3,5 @@
 public interface ISQLiteDB
 {
     public void InitializeDatabase();
-    public void ExecuteCommand(Action<SqliteConnection> commandAction);
+    public Task ExecuteCommandAsync(Func<SqliteConnection, Task> commandAction);
 }

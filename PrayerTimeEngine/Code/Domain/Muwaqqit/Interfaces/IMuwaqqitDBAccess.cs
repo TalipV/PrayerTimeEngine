@@ -9,7 +9,7 @@ namespace PrayerTimeEngine.Code.Domain.Muwaqqit.Interfaces
 {
     public interface IMuwaqqitDBAccess
     {
-        MuwaqqitPrayerTimes GetTimes(DateTime date, decimal longitude, decimal latitude, decimal fajrDegree, decimal ishaDegree);
-        void InsertMuwaqqitPrayerTimes(DateTime date, decimal longitude, decimal latitude, decimal fajrDegree, decimal ishaDegree, MuwaqqitPrayerTimes prayerTimes);
+        Task<MuwaqqitPrayerTimes> GetTimesAsync(DateTime date, decimal longitude, decimal latitude, double fajrDegree, double ishaDegree, double ishtibaqDegree, double asrKarahaDegree);
+        Task InsertMuwaqqitPrayerTimesAsync(DateTime date, string timezone, decimal longitude, decimal latitude, double fajrDegree, double ishaDegree, double ishtibaqDegree, double asrKarahaDegree, MuwaqqitPrayerTimes prayerTimes);
     }
 }
