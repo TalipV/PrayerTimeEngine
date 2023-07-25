@@ -4,7 +4,7 @@ using PrayerTimeEngine.Code.Domain.Muwaqqit.Models;
 using PrayerTimeEngine.Code.Domain.ConfigStore.Models;
 using PrayerTimeEngine.Code.Domain.ConfigStore.Interfaces;
 using PrayerTimeEngine.Code.Common;
-using PrayerTimeEngine.Code.Domain.Model;
+using PrayerTimeEngine.Code.Common.Enum;
 
 namespace PrayerTimeEngine.Code.Domain.ConfigStore
 {

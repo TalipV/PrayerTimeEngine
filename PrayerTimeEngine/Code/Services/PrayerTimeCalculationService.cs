@@ -1,7 +1,7 @@
 ﻿using PrayerTimeEngine.Code.Common;
+using PrayerTimeEngine.Code.Common.Enum;
 using PrayerTimeEngine.Code.Domain;
 using PrayerTimeEngine.Code.Domain.ConfigStore.Models;
-using PrayerTimeEngine.Code.Domain.Model;
 using PrayerTimeEngine.Code.Interfaces;
 using PrayerTimeEngine.Domain.Models;
 
@@ -36,7 +36,7 @@ public class PrayerTimeCalculationService : IPrayerTimeCalculationService
                 if (!profile.Configurations.TryGetValue((prayerTime, timeEvent), out BaseCalculationConfiguration config)
                     || config == null
                     || config.Source == ECalculationSource.None
-                    || config.IsTimeShown)
+                    || !config.IsTimeShown)
                 {
                     prayerTimeEntity.SetSpecificPrayerTimeDateTime(prayerTime, timeEvent, null);
                     continue;

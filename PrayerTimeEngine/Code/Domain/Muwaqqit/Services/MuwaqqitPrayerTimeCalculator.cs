@@ -8,8 +8,8 @@ using Microsoft.Maui.Controls;
 using PrayerTimeEngine.Code.Common.Extension;
 using PrayerTimeEngine.Code.Domain.Fazilet.Models;
 using PrayerTimeEngine.Code.Domain.ConfigStore;
-using PrayerTimeEngine.Code.Domain.Model;
 using PrayerTimeEngine.Code.Domain.ConfigStore.Models;
+using PrayerTimeEngine.Code.Common.Enum;
 
 namespace PrayerTimeEngine.Code.Domain.Muwaqqit.Services
 {

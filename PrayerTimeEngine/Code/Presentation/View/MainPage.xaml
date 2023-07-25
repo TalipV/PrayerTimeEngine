@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:common="clr-namespace:PrayerTimeEngine.Code.Common.Enums;assembly=PrayerTimeEngine"
+             xmlns:enum="clr-namespace:PrayerTimeEngine.Code.Common.Enum;assembly=PrayerTimeEngine"
              x:Class="PrayerTimeEngine.MainPage"
              BackgroundColor="#2e3548">
 
@@ -45,7 +45,7 @@
             <Label.GestureRecognizers>
                 <TapGestureRecognizer 
                     Command="{Binding GoToSettingsPageCommand}" 
-                    CommandParameter="{x:Static common:EPrayerTime.Fajr}"/>
+                    CommandParameter="{x:Static enum:EPrayerTime.Fajr}"/>
             </Label.GestureRecognizers>
         </Label>
         <Label 
@@ -100,7 +100,7 @@
             <Label.GestureRecognizers>
                 <TapGestureRecognizer 
                     Command="{Binding GoToSettingsPageCommand}" 
-                    CommandParameter="{x:Static common:EPrayerTime.Duha}"/>
+                    CommandParameter="{x:Static enum:EPrayerTime.Duha}"/>
             </Label.GestureRecognizers>
         </Label>
         <Label 
@@ -140,7 +140,7 @@
             <Label.GestureRecognizers>
                 <TapGestureRecognizer 
                     Command="{Binding GoToSettingsPageCommand}" 
-                    CommandParameter="{x:Static common:EPrayerTime.Dhuhr}"/>
+                    CommandParameter="{x:Static enum:EPrayerTime.Dhuhr}"/>
             </Label.GestureRecognizers>
         </Label>
         <Label 
@@ -163,7 +163,7 @@
             <Label.GestureRecognizers>
                 <TapGestureRecognizer 
                     Command="{Binding GoToSettingsPageCommand}" 
-                    CommandParameter="{x:Static common:EPrayerTime.Asr}"/>
+                    CommandParameter="{x:Static enum:EPrayerTime.Asr}"/>
             </Label.GestureRecognizers>
         </Label>
         <Label 
@@ -218,7 +218,7 @@
             <Label.GestureRecognizers>
                 <TapGestureRecognizer 
                     Command="{Binding GoToSettingsPageCommand}" 
-                    CommandParameter="{x:Static common:EPrayerTime.Maghrib}"/>
+                    CommandParameter="{x:Static enum:EPrayerTime.Maghrib}"/>
             </Label.GestureRecognizers>
         </Label>
         <Label 
@@ -257,7 +257,7 @@
             <Label.GestureRecognizers>
                 <TapGestureRecognizer 
                     Command="{Binding GoToSettingsPageCommand}" 
-                    CommandParameter="{x:Static common:EPrayerTime.Isha}"/>
+                    CommandParameter="{x:Static enum:EPrayerTime.Isha}"/>
             </Label.GestureRecognizers>
         </Label>
         <Label 

@@ -7,7 +7,7 @@ using PrayerTimeEngine.Code.Domain.ConfigStore.Models;
 using PropertyChanged;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using PrayerTimeEngine.Code.Domain.ConfigStore;
-using PrayerTimeEngine.Code.Domain.Model;
+using PrayerTimeEngine.Code.Common.Enum;
 
 namespace PrayerTimeEngine.Code.Presentation.ViewModel
 {

@@ -1,4 +1,4 @@
-﻿namespace PrayerTimeEngine.Code.Domain.Model
+﻿namespace PrayerTimeEngine.Code.Common.Enum
 {
     public enum EPrayerTimeEvent
     {

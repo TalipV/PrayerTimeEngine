@@ -1,5 +1,5 @@
 ﻿using MvvmHelpers;
-using PrayerTimeEngine.Code.Domain.Model;
+using PrayerTimeEngine.Code.Common.Enum;
 using PrayerTimeEngine.Code.Presentation.Service.Navigation;
 using PrayerTimeEngine.Code.Presentation.Service.SettingsContentPageFactory;
 using PrayerTimeEngine.Code.Presentation.View;

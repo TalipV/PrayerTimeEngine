@@ -1,4 +1,4 @@
-﻿using PrayerTimeEngine.Code.Domain.Model;
+﻿using PrayerTimeEngine.Code.Common.Enum;
 using System;
 using System.Collections.Generic;
 using System.Linq;

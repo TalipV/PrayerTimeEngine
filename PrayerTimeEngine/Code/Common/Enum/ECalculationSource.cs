@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PrayerTimeEngine.Code.Domain.Model
+namespace PrayerTimeEngine.Code.Common.Enum
 {
     public enum ECalculationSource
     {

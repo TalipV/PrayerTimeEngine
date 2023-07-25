@@ -1,5 +1,5 @@
-﻿using PrayerTimeEngine.Code.Domain.Fazilet.Services;
-using PrayerTimeEngine.Code.Domain.Model;
+﻿using PrayerTimeEngine.Code.Common.Enum;
+using PrayerTimeEngine.Code.Domain.Fazilet.Services;
 using PrayerTimeEngine.Code.Domain.Muwaqqit.Services;
 using PrayerTimeEngine.Code.Interfaces;
 

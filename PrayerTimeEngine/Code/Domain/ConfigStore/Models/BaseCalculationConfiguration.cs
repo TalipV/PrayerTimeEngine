@@ -1,6 +1,5 @@
-﻿using PrayerTimeEngine.Code.Common.Extension;
-using PrayerTimeEngine.Code.Domain.Fazilet.Models;
-using PrayerTimeEngine.Code.Domain.Model;
+﻿using PrayerTimeEngine.Code.Common.Enum;
+using PrayerTimeEngine.Code.Common.Extension;
 using PrayerTimeEngine.Code.Domain.Muwaqqit.Models;
 using System.Text.Json;
 

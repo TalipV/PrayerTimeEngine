@@ -77,8 +77,4 @@
 	  </Compile>
 	</ItemGroup>
 
-	<ItemGroup>
-	  <Folder Include="Code\Common\Enum\" />
-	</ItemGroup>
-
 </Project>

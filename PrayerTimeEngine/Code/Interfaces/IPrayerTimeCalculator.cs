@@ -1,5 +1,5 @@
-﻿using PrayerTimeEngine.Code.Domain.ConfigStore.Models;
-using PrayerTimeEngine.Code.Domain.Model;
+﻿using PrayerTimeEngine.Code.Common.Enum;
+using PrayerTimeEngine.Code.Domain.ConfigStore.Models;
 
 namespace PrayerTimeEngine.Code.Interfaces
 {

@@ -1,8 +1,8 @@
 ﻿using PrayerTimeEngine.Code.Common;
+using PrayerTimeEngine.Code.Common.Enum;
 using PrayerTimeEngine.Code.Domain.ConfigStore;
 using PrayerTimeEngine.Code.Domain.ConfigStore.Interfaces;
 using PrayerTimeEngine.Code.Domain.ConfigStore.Models;
-using PrayerTimeEngine.Code.Domain.Model;
 using PrayerTimeEngine.Code.Domain.Muwaqqit.Models;
 using PrayerTimeEngine.Code.Presentation.ViewModel.Custom;
 using PropertyChanged;
