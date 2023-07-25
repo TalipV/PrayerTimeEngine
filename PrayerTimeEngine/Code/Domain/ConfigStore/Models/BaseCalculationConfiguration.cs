@@ -1,19 +1,19 @@
-﻿using PrayerTimeEngine.Code.Common;
-using PrayerTimeEngine.Code.Common.Enums;
-using PrayerTimeEngine.Code.Common.Extension;
+﻿using PrayerTimeEngine.Code.Common.Extension;
 using PrayerTimeEngine.Code.Domain.Fazilet.Models;
+using PrayerTimeEngine.Code.Domain.Model;
 using PrayerTimeEngine.Code.Domain.Muwaqqit.Models;
 using System.Text.Json;
 
-namespace PrayerTimeEngine.Code.Interfaces
+namespace PrayerTimeEngine.Code.Domain.ConfigStore.Models
 {
     public abstract class BaseCalculationConfiguration
     {
+        #region static
+
         public static Dictionary<Type, string> CalculationConfigurationTypeToDiscriminator =
             new Dictionary<Type, string>
             {
-                [typeof(GeneralMinuteAdjustmentConfguration)] = "GeneralMinuteAdjustmentConfguration",
-                [typeof(FaziletCalculationConfiguration)] = "FaziletCalculationConfiguration",
+                [typeof(GenericSettingConfiguration)] = "GenericSettingConfiguration",
                 [typeof(MuwaqqitCalculationConfiguration)] = "MuwaqqitCalculationConfiguration",
                 [typeof(MuwaqqitDegreeCalculationConfiguration)] = "MuwaqqitDegreeCalculationConfiguration",
             };
@@ -25,7 +25,7 @@ namespace PrayerTimeEngine.Code.Interfaces
         {
             if (DiscriminatorToCalculationConfigurationType.TryGetValue(discriminator, out Type targetType))
             {
-                return (BaseCalculationConfiguration) JsonSerializer.Deserialize(jsonString, targetType);
+                return (BaseCalculationConfiguration)JsonSerializer.Deserialize(jsonString, targetType);
             }
             else
             {
@@ -48,12 +48,16 @@ namespace PrayerTimeEngine.Code.Interfaces
             }
         }
 
-        public BaseCalculationConfiguration(int minuteAdjustment) 
-        { 
+        #endregion static
+
+        public BaseCalculationConfiguration(int minuteAdjustment, bool isTimeShown)
+        {
             MinuteAdjustment = minuteAdjustment;
+            IsTimeShown = isTimeShown;
         }
 
         public abstract ECalculationSource Source { get; }
-        public int MinuteAdjustment { get; set; }
+        public int MinuteAdjustment { get; set; } = 0;
+        public bool IsTimeShown { get; set; } = false;
     }
 }

@@ -1,10 +1,6 @@
 ﻿using MvvmHelpers;
-using PrayerTimeEngine.Code.Common.Enums;
-using PrayerTimeEngine.Code.Domain.Fazilet.Models;
-using PrayerTimeEngine.Code.Domain.Muwaqqit.Models;
-using PrayerTimeEngine.Code.Interfaces;
+using PrayerTimeEngine.Code.Domain.Model;
 using PrayerTimeEngine.Code.Presentation.Service.Navigation;
-using PrayerTimeEngine.Code.Presentation.Service.SettingConfiguration;
 using PrayerTimeEngine.Code.Presentation.Service.SettingsContentPageFactory;
 using PrayerTimeEngine.Code.Presentation.View;
 using PropertyChanged;
@@ -20,9 +16,9 @@ namespace PrayerTimeEngine.Code.Presentation.ViewModel
     }
 
     [AddINotifyPropertyChangedInterface]
-    public class SettingsMainPageViewModel : CustomBaseViewModel
+    public class SettingsHandlerPageViewModel : CustomBaseViewModel
     {
-        public SettingsMainPageViewModel(ISettingsContentPageFactory settingsContentPageFactory)
+        public SettingsHandlerPageViewModel(ISettingsContentPageFactory settingsContentPageFactory)
         {
             _settingsContentPageFactory = settingsContentPageFactory;
         }
@@ -72,17 +68,17 @@ namespace PrayerTimeEngine.Code.Presentation.ViewModel
             switch (prayerTime)
             {
                 case EPrayerTime.Fajr:
-                    prayerTimeEvents.Add(EPrayerTimeEvent.FajrGhalasEnd);
-                    prayerTimeEvents.Add(EPrayerTimeEvent.FajrSunriseRedness);
+                    prayerTimeEvents.Add(EPrayerTimeEvent.Fajr_Fadilah);
+                    prayerTimeEvents.Add(EPrayerTimeEvent.Fajr_Karaha);
                     break;
 
                 case EPrayerTime.Asr:
                     prayerTimeEvents.Add(EPrayerTimeEvent.AsrMithlayn);
-                    prayerTimeEvents.Add(EPrayerTimeEvent.AsrKaraha);
+                    prayerTimeEvents.Add(EPrayerTimeEvent.Asr_Karaha);
                     break;
 
                 case EPrayerTime.Maghrib:
-                    prayerTimeEvents.Add(EPrayerTimeEvent.MaghribIshtibaq);
+                    prayerTimeEvents.Add(EPrayerTimeEvent.IshtibaqAnNujum);
                     break;
 
                 default:

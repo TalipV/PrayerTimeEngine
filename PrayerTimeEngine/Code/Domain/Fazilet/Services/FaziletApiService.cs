@@ -1,76 +1,66 @@
 ﻿using Newtonsoft.Json.Linq;
 using PrayerTimeEngine.Code.Domain.Fazilet.Interfaces;
 using PrayerTimeEngine.Code.Domain.Fazilet.Models;
-using SQLitePCL;
 using System.Globalization;
 
 namespace PrayerTimeEngine.Code.Domain.Fazilet.Services
 {
     public class FaziletApiService : IFaziletApiService
     {
-        private const int API_TIMEOUT_SECONDS = 10;
+        private readonly HttpClient _httpClient;
 
-        public FaziletApiService()
+        public FaziletApiService(HttpClient httpClient)
         {
+            _httpClient = httpClient;
         }
 
-        private const string GET_COUNTRIES_URL = "https://fazilettakvimi.com/api/cms/daily?districtId=232&lang=0";
+        private const string GET_COUNTRIES_URL = "daily?districtId=232&lang=0";
 
         public async Task<Dictionary<string, int>> GetCountries()
         {
             Dictionary<string, int> countries = new Dictionary<string, int>();
 
-            using (HttpClient client = new HttpClient())
+            HttpResponseMessage response = await _httpClient.GetAsync(GET_COUNTRIES_URL);
+            if (response.IsSuccessStatusCode)
             {
-                client.Timeout = TimeSpan.FromSeconds(API_TIMEOUT_SECONDS);
+                string json = await response.Content.ReadAsStringAsync();
+                JObject jObject = JObject.Parse(json);
 
-                HttpResponseMessage response = await client.GetAsync(GET_COUNTRIES_URL);
-                if (response.IsSuccessStatusCode)
+                foreach (JObject country in (JArray)jObject["ulkeler"])
                 {
-                    string json = await response.Content.ReadAsStringAsync();
-                    JObject jObject = JObject.Parse(json);
-
-                    foreach (JObject country in (JArray)jObject["ulkeler"])
-                    {
-                        string countryName = (string)country["adi"];
-                        int countryId = (int)country["id"];
-                        countries.Add(countryName, countryId);
-                    }
+                    string countryName = (string)country["adi"];
+                    int countryId = (int)country["id"];
+                    countries.Add(countryName, countryId);
                 }
             }
 
             return countries;
         }
 
-        private const string GET_CITIES_BY_COUNTRY_URL = "https://fazilettakvimi.com/api/cms/cities-by-country?districtId=";
+        private const string GET_CITIES_BY_COUNTRY_URL = "cities-by-country?districtId=";
 
         public async Task<Dictionary<string, int>> GetCitiesByCountryID(int countryID)
         {
             Dictionary<string, int> cities = new Dictionary<string, int>();
 
-            using (HttpClient client = new HttpClient())
+            HttpResponseMessage response = await _httpClient.GetAsync(GET_CITIES_BY_COUNTRY_URL + countryID);
+
+            if (response.IsSuccessStatusCode)
             {
-                client.Timeout = TimeSpan.FromSeconds(API_TIMEOUT_SECONDS);
+                string json = await response.Content.ReadAsStringAsync();
 
-                HttpResponseMessage response = await client.GetAsync(GET_CITIES_BY_COUNTRY_URL + countryID);
-
-                if (response.IsSuccessStatusCode)
+                foreach (JObject city in JArray.Parse(json))
                 {
-                    string json = await response.Content.ReadAsStringAsync();
-
-                    foreach (JObject city in JArray.Parse(json))
-                    {
-                        string cityName = (string)city["adi"];
-                        int cityId = (int)city["id"];
-                        cities.Add(cityName, cityId);
-                    }
+                    string cityName = (string)city["adi"];
+                    int cityId = (int)city["id"];
+                    cities.Add(cityName, cityId);
                 }
             }
 
             return cities;
         }
 
-        private const string GET_TIMES_BY_CITY_URL = "https://fazilettakvimi.com/api/cms/daily?districtId={0}&lang=1";
+        private const string GET_TIMES_BY_CITY_URL = "daily?districtId={0}&lang=1";
 
         public async Task<List<FaziletPrayerTimes>> GetTimesByCityID(int cityID)
         {
@@ -78,34 +68,29 @@ namespace PrayerTimeEngine.Code.Domain.Fazilet.Services
 
             string url = string.Format(GET_TIMES_BY_CITY_URL, cityID);
 
-            using (HttpClient client = new HttpClient())
+            HttpResponseMessage response = await _httpClient.GetAsync(url);
+
+            if (response.IsSuccessStatusCode)
             {
-                client.Timeout = TimeSpan.FromSeconds(API_TIMEOUT_SECONDS);
+                string json = await response.Content.ReadAsStringAsync();
+                JObject jObject = JObject.Parse(json);
+                JArray timesArray = (JArray)jObject["vakitler"];
 
-                HttpResponseMessage response = await client.GetAsync(url);
+                string timeZoneName = jObject.GetValue("bolge_saatdilimi").Value<string>();
+                TimeZoneInfo timeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(timeZoneName);
 
-                if (response.IsSuccessStatusCode)
+                foreach (JObject times in timesArray)
                 {
-                    string json = await response.Content.ReadAsStringAsync();
-                    JObject jObject = JObject.Parse(json);
-                    JArray timesArray = (JArray)jObject["vakitler"];
+                    DateTime imsak = getTimeJSONAsDateTime(times, "imsak", timeZoneInfo);
+                    DateTime fajr = getTimeJSONAsDateTime(times, "sabah", timeZoneInfo);
+                    DateTime shuruq = getTimeJSONAsDateTime(times, "gunes", timeZoneInfo);
+                    DateTime dhuhr = getTimeJSONAsDateTime(times, "ogle", timeZoneInfo);
+                    DateTime asr = getTimeJSONAsDateTime(times, "ikindi", timeZoneInfo);
+                    DateTime maghrib = getTimeJSONAsDateTime(times, "aksam", timeZoneInfo);
+                    DateTime isha = getTimeJSONAsDateTime(times, "yatsi", timeZoneInfo);
 
-                    string timeZoneName = jObject.GetValue("bolge_saatdilimi").Value<string>();
-                    TimeZoneInfo timeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(timeZoneName);
-
-                    foreach (JObject times in timesArray)
-                    {
-                        DateTime imsak = getTimeJSONAsDateTime(times, "imsak", timeZoneInfo);
-                        DateTime fajr = getTimeJSONAsDateTime(times, "sabah", timeZoneInfo);
-                        DateTime shuruq = getTimeJSONAsDateTime(times, "gunes", timeZoneInfo);
-                        DateTime dhuhr = getTimeJSONAsDateTime(times, "ogle", timeZoneInfo);
-                        DateTime asr = getTimeJSONAsDateTime(times, "ikindi", timeZoneInfo);
-                        DateTime maghrib = getTimeJSONAsDateTime(times, "aksam", timeZoneInfo);
-                        DateTime isha = getTimeJSONAsDateTime(times, "yatsi", timeZoneInfo);
-
-                        FaziletPrayerTimes prayerTimes = new FaziletPrayerTimes(cityID, imsak, fajr, shuruq, dhuhr, asr, maghrib, isha);
-                        prayerTimesList.Add(prayerTimes);
-                    }
+                    FaziletPrayerTimes prayerTimes = new FaziletPrayerTimes(cityID, imsak, fajr, shuruq, dhuhr, asr, maghrib, isha);
+                    prayerTimesList.Add(prayerTimes);
                 }
             }
 

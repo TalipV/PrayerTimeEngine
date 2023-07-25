@@ -4,21 +4,17 @@ using System.ComponentModel.Design;
 
 namespace PrayerTimeEngine.Views;
 
-public partial class SettingsMainPage : TabbedPage
+public partial class SettingsHandlerPage : TabbedPage
 {
-    private IServiceProvider _serviceProvider;
-
-    public SettingsMainPage(IServiceProvider serviceProvider, SettingsMainPageViewModel viewModel)
+    public SettingsHandlerPage(SettingsHandlerPageViewModel viewModel)
     {
-        _serviceProvider = serviceProvider;
-
         InitializeComponent();
         BindingContext = viewModel;
 
         viewModel.Initialized += () => setUpTabPages(viewModel);
     }
 
-    private void setUpTabPages(SettingsMainPageViewModel viewModel)
+    private void setUpTabPages(SettingsHandlerPageViewModel viewModel)
     {
         foreach (SettingsContentPage settingContentPages in viewModel.SettingsContentPages)
         {

@@ -7,7 +7,8 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="auto" />
             <RowDefinition Height="auto" />
-            <RowDefinition Height="*" />
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
             <RowDefinition Height="4*" />
             <RowDefinition Height="4*" />
             <RowDefinition Height="4*" />
@@ -22,32 +23,39 @@
 
         <Label 
             Grid.Row="0"
-            Text="Calculation Source"/>
+            Text="Calculation Source"
+            IsVisible="{Binding ShowCalculationSourcePicker}"/>
         <Picker 
             Grid.Row="1"
             x:Name="CalculationSourcePicker"
-            SelectedItem="{Binding SelectedCalculationSource}"
+            SelectedItem="{Binding SelectedCalculationSource, Mode=TwoWay}"
             ItemsSource="{Binding CalculationSources}" 
-            SelectedIndex="0"
-            SelectedIndexChanged="Picker_SelectedIndexChanged"/>
+            IsVisible="{Binding ShowCalculationSourcePicker}"
+            SelectedIndex="0"/>
 
         <Label 
             Grid.Row="0"
             Grid.Column="2"
             Grid.ColumnSpan="3"
-            IsVisible="{Binding ShowMinuteAdjustmentPicker}"
             Text="Minute Adjustment"/>
         <Picker 
             Grid.Row="1"
             Grid.Column="2"
-            x:Name="MinuteAdjustmentPicker"
-            SelectedItem="{Binding SelectedMinuteAdjustment}"
+            SelectedItem="{Binding SelectedMinuteAdjustment, Mode=TwoWay}"
             ItemsSource="{Binding MinuteAdjustments}" 
-            IsVisible="{Binding ShowMinuteAdjustmentPicker}"
             SelectedIndex="0"/>
+        
+        <Label 
+            Grid.Row="2"
+            Grid.ColumnSpan="3"
+            Text="Shown:"/>
+        <CheckBox 
+            Grid.Row="3"
+            IsChecked="{Binding IsTimeShown}"
+            IsEnabled="{Binding IsTimeShownCheckBoxEnabled}"/>
 
         <Line 
-            Grid.Row="2"
+            Grid.Row="4"
             Grid.ColumnSpan="4"
             X1="0"
             Y1="10"
@@ -56,7 +64,7 @@
             Stroke="White" />
 
         <StackLayout 
-            Grid.Row="3"
+            Grid.Row="5"
             Grid.ColumnSpan="2"
             x:Name="ConfigurableUIContainer" />
 

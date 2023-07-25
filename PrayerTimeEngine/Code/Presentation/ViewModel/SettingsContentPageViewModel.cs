@@ -1,11 +1,10 @@
 ﻿using PrayerTimeEngine.Code.Common;
-using PrayerTimeEngine.Code.Common.Enums;
-using PrayerTimeEngine.Code.Domain;
+using PrayerTimeEngine.Code.Domain.ConfigStore;
 using PrayerTimeEngine.Code.Domain.ConfigStore.Interfaces;
-using PrayerTimeEngine.Code.Domain.Fazilet.Models;
+using PrayerTimeEngine.Code.Domain.ConfigStore.Models;
+using PrayerTimeEngine.Code.Domain.Model;
 using PrayerTimeEngine.Code.Domain.Muwaqqit.Models;
-using PrayerTimeEngine.Code.Interfaces;
-using PrayerTimeEngine.Code.Presentation.Service.SettingConfiguration;
+using PrayerTimeEngine.Code.Presentation.ViewModel.Custom;
 using PropertyChanged;
 
 namespace PrayerTimeEngine.Code.Presentation.ViewModel
@@ -44,8 +43,6 @@ namespace PrayerTimeEngine.Code.Presentation.ViewModel
 
         #region fields
 
-        private bool _isInitializing = false;
-
         private readonly IConfigStoreService _configStoreService;
         private readonly PrayerTimesConfigurationStorage _prayerTimesConfigurationStorage;
 
@@ -53,15 +50,22 @@ namespace PrayerTimeEngine.Code.Presentation.ViewModel
 
         #region properties
 
-        public List<ECalculationSource> CalculationSources { get; set; } = new List<ECalculationSource>();
-        public List<int> MinuteAdjustments { get; } = Enumerable.Range(-15, 30).ToList();
         public string TabTitle { get; set; }
-        public ECalculationSource SelectedCalculationSource { get; set; } = ECalculationSource.None;
-        public int SelectedMinuteAdjustment { get; set; }
-        public bool ShowMinuteAdjustmentPicker { get; set; }
-        public ISettingConfigurationUI CustomSettingConfigurationUI { get; private set; }
-
         public (EPrayerTime prayerTime, EPrayerTimeEvent prayerTimeEvent) PrayerTimeWithEvent { get; private set; }
+
+        public List<ECalculationSource> CalculationSources { get; set; } = new List<ECalculationSource>();
+        public ECalculationSource SelectedCalculationSource { get; set; } = ECalculationSource.None;
+
+        public List<int> MinuteAdjustments { get; set; }
+        public int SelectedMinuteAdjustment { get; set; } = -99; // intentionally outside of range because of weird PropertyChanged trigger
+
+        public bool IsTimeShown { get; set; } = true;
+        public bool IsTimeShownCheckBoxEnabled { get; set; } = true;
+
+        public bool ShowMinuteAdjustmentPicker { get; set; } = true;
+        public bool ShowCalculationSourcePicker { get; set; } = true;
+
+        public ISettingConfigurationViewModel CustomSettingConfigurationViewModel { get; set; }
 
         #endregion properties
 
@@ -69,71 +73,71 @@ namespace PrayerTimeEngine.Code.Presentation.ViewModel
 
         public void Initialize(EPrayerTime prayerTime, EPrayerTimeEvent prayerTimeEvent)
         {
-            try
+            TabTitle = $"{prayerTime}-{prayerTimeEvent}";
+            PrayerTimeWithEvent = (prayerTime, prayerTimeEvent);
+            ShowCalculationSourcePicker = (PrayerTimeWithEvent != (EPrayerTime.Duha, EPrayerTimeEvent.End));
+
+            loadCalculationSource();
+            loadMinuteAdjustmentSource();
+
+            // only allow option for other than start and end times
+            IsTimeShownCheckBoxEnabled = prayerTimeEvent != EPrayerTimeEvent.Start && prayerTimeEvent == EPrayerTimeEvent.End;
+
+            if (!_prayerTimesConfigurationStorage.GetProfiles().GetAwaiter().GetResult().First().Configurations
+                    .TryGetValue(PrayerTimeWithEvent, out BaseCalculationConfiguration calculationConfiguration)
+                    || calculationConfiguration == null)
             {
-                _isInitializing = true;
-                TabTitle = $"{prayerTime}-{prayerTimeEvent}";
-                PrayerTimeWithEvent = (prayerTime, prayerTimeEvent);
-                ShowMinuteAdjustmentPicker = prayerTime != EPrayerTime.Duha || prayerTimeEvent != EPrayerTimeEvent.End;
-                fixDataBindingProblem();
-
-                loadCalculationSource();
-
-                if (!_prayerTimesConfigurationStorage.GetProfiles().GetAwaiter().GetResult().First().Configurations
-                        .TryGetValue(PrayerTimeWithEvent, out BaseCalculationConfiguration calculationConfiguration)
-                        || calculationConfiguration == null)
-                {
-                    SelectedCalculationSource = ECalculationSource.None;
-                    SelectedMinuteAdjustment = 0;
-                    return;
-                }
-
-                SelectedCalculationSource = calculationConfiguration.Source;
-                SelectedMinuteAdjustment = calculationConfiguration.MinuteAdjustment;
-                loadCustomSettingsUI(calculationConfiguration);
-            }
-            finally
-            {
-                _isInitializing = false;
-            }
-        }
-
-        public void OnCalculationSourceChanged(ECalculationSource calculationSource)
-        {
-            if (_isInitializing)
-            {
+                SelectedCalculationSource = ECalculationSource.None;
+                SelectedMinuteAdjustment = 0;
                 return;
             }
 
-            // get new settings with default values
-            BaseCalculationConfiguration settings =
-                SettingConfigurationFactory.CreateSettings(
-                    calculationSource,
-                    PrayerTimeWithEvent);
+            IsTimeShown = !IsTimeShownCheckBoxEnabled || calculationConfiguration.IsTimeShown;
+            SelectedCalculationSource = calculationConfiguration.Source;
+            if (SelectedCalculationSource == ECalculationSource.None)   // PropertyChanged logic does not automatically trigger in this case
+                OnSelectedCalculationSourceChanged();
 
-            loadCustomSettingsUI(settings);
+            SelectedMinuteAdjustment = calculationConfiguration.MinuteAdjustment;
+            CustomSettingConfigurationViewModel?.AssignSettingValues(calculationConfiguration);
+        }
+
+        public void OnSelectedCalculationSourceChanged()
+        {
+            if (SelectedCalculationSource == ECalculationSource.Muwaqqit
+                && MuwaqqitDegreeCalculationConfiguration.DegreePrayerTimeEvents.ContainsKey(PrayerTimeWithEvent))
+            {
+                CustomSettingConfigurationViewModel =
+                        new MuwaqqitDegreeSettingConfigurationViewModel(
+                            PrayerTimeWithEvent,
+                            MuwaqqitDegreeCalculationConfiguration.DegreePrayerTimeEvents[PrayerTimeWithEvent]);
+            }
+
+            CustomSettingConfigurationViewModel = null;
+
+            OnCustomSettingUIReady.Invoke();
         }
 
         public void OnDisappearing()
         {
-            BaseCalculationConfiguration settings = 
-                CustomSettingConfigurationUI?.GetSettings(SelectedMinuteAdjustment);
-            
-            _prayerTimesConfigurationStorage.GetProfiles().GetAwaiter().GetResult().First().Configurations[PrayerTimeWithEvent] = settings;
-            _configStoreService.SaveProfiles(_prayerTimesConfigurationStorage.GetProfiles().GetAwaiter().GetResult()).GetAwaiter().GetResult();
+            BaseCalculationConfiguration settings = getCurrentCalculationConfiguration();
+            saveSettingsToProfile(settings);
         }
 
         #endregion public methods
 
         #region private methods
 
-        private void fixDataBindingProblem()
+        private BaseCalculationConfiguration getCurrentCalculationConfiguration()
         {
-            // without initial property change trigger the intended initial selection won't properly bind
-            SelectedCalculationSource = ECalculationSource.Muwaqqit;
-            SelectedCalculationSource = ECalculationSource.None;
-            SelectedMinuteAdjustment = -5;
-            SelectedMinuteAdjustment = 5;
+            return
+                this.CustomSettingConfigurationViewModel?
+                    .BuildSetting(SelectedMinuteAdjustment, IsTimeShown)
+                        ?? this.getGeneralCalculationConfiguration();
+        }
+
+        private BaseCalculationConfiguration getGeneralCalculationConfiguration()
+        {
+            return new GenericSettingConfiguration(SelectedMinuteAdjustment, IsTimeShown, SelectedCalculationSource);
         }
 
         private void loadCalculationSource()
@@ -141,8 +145,12 @@ namespace PrayerTimeEngine.Code.Presentation.ViewModel
             List<ECalculationSource> calculationSources = Enum.GetValues(typeof(ECalculationSource)).Cast<ECalculationSource>().ToList();
 
             if (PrayerTimeWithEvent.prayerTime == EPrayerTime.Duha
-                || (PrayerTimeWithEvent.prayerTimeEvent != EPrayerTimeEvent.Start
-                && PrayerTimeWithEvent.prayerTimeEvent != EPrayerTimeEvent.End))
+                || 
+                (
+                    PrayerTimeWithEvent.prayerTimeEvent != EPrayerTimeEvent.Start
+                    && PrayerTimeWithEvent.prayerTimeEvent != EPrayerTimeEvent.End
+                    && PrayerTimeWithEvent.prayerTimeEvent != EPrayerTimeEvent.AsrMithlayn
+                ))
             {
                 calculationSources.Remove(ECalculationSource.Fazilet);
             }
@@ -150,14 +158,23 @@ namespace PrayerTimeEngine.Code.Presentation.ViewModel
             this.CalculationSources = calculationSources;
         }
 
-        private void loadCustomSettingsUI(BaseCalculationConfiguration settings)
+        private void loadMinuteAdjustmentSource()
         {
-            // get UI for new settings
-            CustomSettingConfigurationUI = SettingConfigurationUIFactory.CreateUI(settings, PrayerTimeWithEvent);
+            if (PrayerTimeWithEvent == (EPrayerTime.Duha, EPrayerTimeEvent.End))
+            {
+                this.MinuteAdjustments = Enumerable.Range(-40, 35).ToList();
+            }
+            else
+            {
+                this.MinuteAdjustments = Enumerable.Range(-15, 30).ToList();
+            }
+        }
 
-            // apply values to UI
-            CustomSettingConfigurationUI?.AssignConfigurationValues(settings);
-            OnCustomSettingUIReady.Invoke();
+        private void saveSettingsToProfile(BaseCalculationConfiguration settings)
+        {
+            List<Profile> profiles = _prayerTimesConfigurationStorage.GetProfiles().GetAwaiter().GetResult();
+            profiles.First().Configurations[PrayerTimeWithEvent] = settings;
+            _configStoreService.SaveProfiles(profiles).GetAwaiter().GetResult();
         }
 
         #endregion private methods

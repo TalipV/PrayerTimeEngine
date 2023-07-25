@@ -1,12 +1,13 @@
 ﻿using MvvmHelpers;
-using PrayerTimeEngine.Code.Domain;
 using PrayerTimeEngine.Code.Interfaces;
-using PrayerTimeEngine.Code.Common.Enums;
 using PrayerTimeEngine.Domain.Models;
 using System.Windows.Input;
 using PrayerTimeEngine.Code.Presentation.Service.Navigation;
 using PrayerTimeEngine.Code.Domain.ConfigStore.Models;
 using PropertyChanged;
+using static System.Runtime.InteropServices.JavaScript.JSType;
+using PrayerTimeEngine.Code.Domain.ConfigStore;
+using PrayerTimeEngine.Code.Domain.Model;
 
 namespace PrayerTimeEngine.Code.Presentation.ViewModel
 {
@@ -37,6 +38,24 @@ namespace PrayerTimeEngine.Code.Presentation.ViewModel
         public bool IsLoading { get; private set; }
         public bool IsNotLoading => !IsLoading;
 
+        public Profile CurrentProfile
+        {
+            get
+            {
+                return _prayerTimesConfigurationStorage.GetProfiles().GetAwaiter().GetResult().First();
+            }
+        }
+
+        public bool ShowFajrGhalas { get; set; }
+        public bool ShowFajrRedness { get; set; }
+        public bool ShowDuhaQuarter { get; set; }
+        public bool ShowMithlayn { get; set; }
+        public bool ShowKaraha { get; set; }
+        public bool ShowIshtibaq { get; set; }
+        public bool ShowOneThird { get; set; }
+        public bool ShowTwoThird { get; set; }
+        public bool ShowMidnight { get; set; }
+
         #endregion properties
 
         #region ICommand
@@ -45,7 +64,7 @@ namespace PrayerTimeEngine.Code.Presentation.ViewModel
             => new Command<EPrayerTime>(
                 async (EPrayerTime prayerTime) => 
                 {
-                    await _navigationService.NavigateTo<SettingsMainPageViewModel>(prayerTime);
+                    await _navigationService.NavigateTo<SettingsHandlerPageViewModel>(prayerTime);
                 });
 
         public ICommand LoadPrayerTimesButton_ClickCommand
@@ -55,8 +74,7 @@ namespace PrayerTimeEngine.Code.Presentation.ViewModel
                     try
                     {
                         IsLoading = true;
-                        Profile profile = (await _prayerTimesConfigurationStorage.GetProfiles()).First();
-                        Prayers = await _prayerTimeCalculationService.ExecuteAsync(profile, DateTime.Today);
+                        Prayers = await _prayerTimeCalculationService.ExecuteAsync(CurrentProfile, DateTime.Today);
                     }
                     finally
                     {
@@ -65,5 +83,43 @@ namespace PrayerTimeEngine.Code.Presentation.ViewModel
                 });
 
         #endregion ICommand
+
+        #region public methods
+        
+        public void OnAppearing()
+        {
+            setValuesYo();
+        }
+        
+        #endregion public methods
+
+        #region private methods 
+
+        private void setValuesYo()
+        {
+            ShowFajrGhalas =  IsCalculationShown((EPrayerTime.Fajr, EPrayerTimeEvent.Fajr_Fadilah));
+            ShowFajrRedness = IsCalculationShown((EPrayerTime.Fajr, EPrayerTimeEvent.Fajr_Karaha));
+            ShowDuhaQuarter = IsCalculationShown((EPrayerTime.Duha, EPrayerTimeEvent.DuhaQuarterOfDay));
+            ShowMithlayn =    IsCalculationShown((EPrayerTime.Asr, EPrayerTimeEvent.AsrMithlayn));
+            ShowKaraha =      IsCalculationShown((EPrayerTime.Asr, EPrayerTimeEvent.Asr_Karaha));
+            ShowIshtibaq =    IsCalculationShown((EPrayerTime.Maghrib, EPrayerTimeEvent.IshtibaqAnNujum));
+            ShowOneThird =    IsCalculationShown((EPrayerTime.Isha, EPrayerTimeEvent.IshaFirstThirdOfNight));
+            ShowTwoThird =    IsCalculationShown((EPrayerTime.Isha, EPrayerTimeEvent.IshaSecondThirdOfNight));
+            ShowMidnight =    IsCalculationShown((EPrayerTime.Isha, EPrayerTimeEvent.IshaMidnight));
+
+            OnPropertyChanged();
+        }
+
+        private bool IsCalculationShown((EPrayerTime, EPrayerTimeEvent) timeData)
+        {
+            if (!CurrentProfile.Configurations.TryGetValue(timeData, out BaseCalculationConfiguration config) || config == null)
+            {
+                return true;
+            }
+
+            return config.IsTimeShown;
+        }
+
+        #endregion private methods
     }
 }

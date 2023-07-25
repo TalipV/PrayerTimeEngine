@@ -34,7 +34,7 @@ namespace PrayerTimeEngine.Code.Domain.Muwaqqit.Services
                 command.CommandText =
                 @"
                 INSERT INTO MuwaqqitPrayerTimes (Date, Timezone, Longitude, Latitude, Fajr_Degree, Isha_Degree, Ishtibaq_Degree, AsrKaraha_Degree, Fajr, NextFajr, Shuruq, Duha, Dhuhr, AsrMithl, AsrMithlayn, AsrKaraha, Maghrib, Isha, Ishtibaq, InsertDateTime) 
-                VALUES ($Date, $Timezone, $Longitude, $Latitude, $Fajr_Degree, $Isha_Degree, $Ishtibaq_Degree, $AsrKaraha_Degree, $Fajr, $NextFajr, $Shuruq, $Duha, $Dhuhr, $AsrMithl, $AsrMithlayn, $AsrKaraha, $Maghrib, $Isha, $Ishtibaq, $InsertDateTime);";
+                VALUES                          ($Date, $Timezone, $Longitude, $Latitude, $Fajr_Degree, $Isha_Degree, $Ishtibaq_Degree, $AsrKaraha_Degree, $Fajr, $NextFajr, $Shuruq, $Duha, $Dhuhr, $AsrMithl, $AsrMithlayn, $AsrKaraha, $Maghrib, $Isha, $Ishtibaq, $InsertDateTime);";
 
                 command.Parameters.AddWithValue("$Date", date);
                 command.Parameters.AddWithValue("$Timezone", timezone);
@@ -58,7 +58,7 @@ namespace PrayerTimeEngine.Code.Domain.Muwaqqit.Services
 
                 command.Parameters.AddWithValue("$Maghrib", prayerTimes.Maghrib);
                 command.Parameters.AddWithValue("$Isha", prayerTimes.Isha);
-                command.Parameters.AddWithValue("$Ishtibaq", prayerTimes.Isha);
+                command.Parameters.AddWithValue("$Ishtibaq", prayerTimes.Ishtibaq);
 
                 command.Parameters.AddWithValue("$InsertDateTime", DateTime.Now);
 

@@ -48,7 +48,7 @@ namespace PrayerTimeEngine.Code.Presentation.Service.Navigation
         private void CreatePageViewModelMappings()
         {
             _mapping.Add(typeof(MainPageViewModel), typeof(MainPage));
-            _mapping.Add(typeof(SettingsMainPageViewModel), typeof(SettingsMainPage));
+            _mapping.Add(typeof(SettingsHandlerPageViewModel), typeof(SettingsHandlerPage));
         }
 
 

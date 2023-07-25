@@ -1,12 +1,15 @@
 ﻿using PrayerTimeEngine.Code.Domain.Muwaqqit.Interfaces;
 using PrayerTimeEngine.Code.Domain.Muwaqqit.Models;
 using PrayerTimeEngine.Code.Interfaces;
-using PrayerTimeEngine.Code.Common.Enums;
 using System.Collections.Specialized;
 using System.Text.Json;
 using System.Web;
 using Microsoft.Maui.Controls;
 using PrayerTimeEngine.Code.Common.Extension;
+using PrayerTimeEngine.Code.Domain.Fazilet.Models;
+using PrayerTimeEngine.Code.Domain.ConfigStore;
+using PrayerTimeEngine.Code.Domain.Model;
+using PrayerTimeEngine.Code.Domain.ConfigStore.Models;
 
 namespace PrayerTimeEngine.Code.Domain.Muwaqqit.Services
 {
@@ -30,9 +33,10 @@ namespace PrayerTimeEngine.Code.Domain.Muwaqqit.Services
             if (configuration is not MuwaqqitCalculationConfiguration muwaqqitConfig)
                 throw new ArgumentException($"{nameof(configuration)} is not an instance of {nameof(MuwaqqitCalculationConfiguration)}");
 
-            string timezone = muwaqqitConfig.Timezone;
-            decimal longitude = muwaqqitConfig.Longitude;
-            decimal latitude = muwaqqitConfig.Latitude;
+            // location selection has not been implemented yet
+            string timezone = PrayerTimesConfigurationStorage.TIMEZONE;
+            decimal longitude = PrayerTimesConfigurationStorage.INNSBRUCK_LONGITUDE;
+            decimal latitude = PrayerTimesConfigurationStorage.INNSBRUCK_LATITUDE;
 
             double fajrDegree, ishaDegree, ishtibaqDegree, asrKarahaDegree;
             getDegreeValue(
@@ -52,7 +56,7 @@ namespace PrayerTimeEngine.Code.Domain.Muwaqqit.Services
 
         private static void getDegreeValue(
             EPrayerTime prayerTime, 
-            EPrayerTimeEvent timeEvent, 
+            EPrayerTimeEvent timeEvent,
             MuwaqqitCalculationConfiguration muwaqqitConfig, 
             out double fajrDegree, 
             out double ishaDegree, 
@@ -76,17 +80,17 @@ namespace PrayerTimeEngine.Code.Domain.Muwaqqit.Services
                 return;
             }
 
-            if (prayerTime == EPrayerTime.Fajr && (timeEvent == EPrayerTimeEvent.Start || timeEvent == EPrayerTimeEvent.FajrGhalasEnd || timeEvent == EPrayerTimeEvent.FajrSunriseRedness))
+            if (prayerTime == EPrayerTime.Fajr && (timeEvent == EPrayerTimeEvent.Start || timeEvent == EPrayerTimeEvent.Fajr_Fadilah || timeEvent == EPrayerTimeEvent.Fajr_Karaha))
                 fajrDegree = muwaqqitDegreeConfig.Degree;
             else if (prayerTime == EPrayerTime.Isha && timeEvent == EPrayerTimeEvent.Start)
                 ishaDegree = muwaqqitDegreeConfig.Degree;
             else if (prayerTime == EPrayerTime.Isha && timeEvent == EPrayerTimeEvent.End)
-                ishaDegree = muwaqqitDegreeConfig.Degree;
+                fajrDegree = muwaqqitDegreeConfig.Degree;
             else if (prayerTime == EPrayerTime.Maghrib && timeEvent == EPrayerTimeEvent.End)
                 ishaDegree = muwaqqitDegreeConfig.Degree;
-            else if (prayerTime == EPrayerTime.Maghrib && timeEvent == EPrayerTimeEvent.MaghribIshtibaq)
+            else if (prayerTime == EPrayerTime.Maghrib && timeEvent == EPrayerTimeEvent.IshtibaqAnNujum)
                 ishtibaqDegree = muwaqqitDegreeConfig.Degree;
-            else if (prayerTime == EPrayerTime.Asr && timeEvent == EPrayerTimeEvent.AsrKaraha)
+            else if (prayerTime == EPrayerTime.Asr && timeEvent == EPrayerTimeEvent.Asr_Karaha)
                 asrKarahaDegree = muwaqqitDegreeConfig.Degree;
             else if (prayerTime == EPrayerTime.Duha && timeEvent == EPrayerTimeEvent.Start)
                 asrKarahaDegree = muwaqqitDegreeConfig.Degree;
@@ -130,7 +134,7 @@ namespace PrayerTimeEngine.Code.Domain.Muwaqqit.Services
             switch (prayerTime)
             {
                 case EPrayerTime.Fajr:
-                    if (timeEvent == EPrayerTimeEvent.Start || timeEvent == EPrayerTimeEvent.FajrGhalasEnd || timeEvent == EPrayerTimeEvent.FajrSunriseRedness)
+                    if (timeEvent == EPrayerTimeEvent.Start || timeEvent == EPrayerTimeEvent.Fajr_Fadilah || timeEvent == EPrayerTimeEvent.Fajr_Karaha)
                     {
                         return prayerTimes.Fajr;
                     }
@@ -172,7 +176,7 @@ namespace PrayerTimeEngine.Code.Domain.Muwaqqit.Services
                     {
                         return prayerTimes.AsrMithlayn;
                     }
-                    else if (timeEvent == EPrayerTimeEvent.AsrKaraha)
+                    else if (timeEvent == EPrayerTimeEvent.Asr_Karaha)
                     {
                         return prayerTimes.AsrKaraha;
                     }
@@ -186,7 +190,7 @@ namespace PrayerTimeEngine.Code.Domain.Muwaqqit.Services
                     {
                         return prayerTimes.Isha;
                     }
-                    else if (timeEvent == EPrayerTimeEvent.MaghribIshtibaq)
+                    else if (timeEvent == EPrayerTimeEvent.IshtibaqAnNujum)
                     {
                         return prayerTimes.Ishtibaq;
                     }

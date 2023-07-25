@@ -51,15 +51,16 @@
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="7.0.9" />
+		<PackageReference Include="Microsoft.Extensions.Http" Version="7.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="7.0.0" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-		<PackageReference Include="PropertyChanged.Fody" Version="4.1.0" />
-		<PackageReference Include="Refractored.MvvmHelpers" Version="1.6.2" />
+    <PackageReference Include="PropertyChanged.Fody" Version="4.1.0" PrivateAssets="All" />
+    <PackageReference Include="Refractored.MvvmHelpers" Version="1.6.2" />
 		<PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" Version="2.1.5" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <MauiXaml Update="Code\Presentation\View\SettingsMainPage.xaml">
+	  <MauiXaml Update="Code\Presentation\View\SettingsHandlerPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Code\Presentation\View\SettingsContentPage.xaml">
@@ -68,12 +69,16 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Compile Update="Code\Presentation\View\SettingsMainPage.xaml.cs">
-	    <DependentUpon>SettingsMainPage.xaml</DependentUpon>
+	  <Compile Update="Code\Presentation\View\SettingsHandlerPage.xaml.cs">
+	    <DependentUpon>SettingsHandlerPage.xaml</DependentUpon>
 	  </Compile>
 	  <Compile Update="Code\Presentation\View\SettingsContentPage.xaml.cs">
 	    <DependentUpon>SettingsContentPage.xaml</DependentUpon>
 	  </Compile>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Code\Common\Enum\" />
 	</ItemGroup>
 
 </Project>

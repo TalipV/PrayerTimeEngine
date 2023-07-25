@@ -1,4 +1,4 @@
-﻿using PrayerTimeEngine.Code.Common.Enums;
+﻿using PrayerTimeEngine.Code.Domain.Model;
 
 namespace PrayerTimeEngine.Domain.Models
 {
@@ -110,9 +110,9 @@ namespace PrayerTimeEngine.Domain.Models
                         Fajr.Start = dateTime;
                     else if (prayerTimeEvent == EPrayerTimeEvent.End)
                         Fajr.End = dateTime;
-                    else if (prayerTimeEvent == EPrayerTimeEvent.FajrGhalasEnd)
+                    else if (prayerTimeEvent == EPrayerTimeEvent.Fajr_Fadilah)
                         FajrGhalasDateTime = dateTime;
-                    else if (prayerTimeEvent == EPrayerTimeEvent.FajrSunriseRedness)
+                    else if (prayerTimeEvent == EPrayerTimeEvent.Fajr_Karaha)
                         FajrSunriseRednessDateTime = dateTime;
                     break;
                 case EPrayerTime.Duha:
@@ -134,7 +134,7 @@ namespace PrayerTimeEngine.Domain.Models
                         Asr.End = dateTime;
                     else if (prayerTimeEvent == EPrayerTimeEvent.AsrMithlayn)
                         AsrMithlaynDateTime = dateTime;
-                    else if (prayerTimeEvent == EPrayerTimeEvent.AsrKaraha)
+                    else if (prayerTimeEvent == EPrayerTimeEvent.Asr_Karaha)
                         AsrKarahaDateTime = dateTime;
                     break;
                 case EPrayerTime.Maghrib:
@@ -142,7 +142,7 @@ namespace PrayerTimeEngine.Domain.Models
                         Maghrib.Start = dateTime;
                     else if (prayerTimeEvent == EPrayerTimeEvent.End)
                         Maghrib.End = dateTime;
-                    else if (prayerTimeEvent == EPrayerTimeEvent.MaghribIshtibaq)
+                    else if (prayerTimeEvent == EPrayerTimeEvent.IshtibaqAnNujum)
                         IshtibaqDateTime = dateTime;
                     break;
                 case EPrayerTime.Isha:

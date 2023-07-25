@@ -1,7 +1,7 @@
 ﻿using PrayerTimeEngine.Code.Common;
-using PrayerTimeEngine.Code.Common.Enums;
 using PrayerTimeEngine.Code.Domain;
 using PrayerTimeEngine.Code.Domain.ConfigStore.Models;
+using PrayerTimeEngine.Code.Domain.Model;
 using PrayerTimeEngine.Code.Interfaces;
 using PrayerTimeEngine.Domain.Models;
 
@@ -12,11 +12,11 @@ public class PrayerTimeCalculationService : IPrayerTimeCalculationService
     private readonly Dictionary<EPrayerTime, List<EPrayerTimeEvent>> CalculatorPrayerTimeEventsByPrayerTime =
         new Dictionary<EPrayerTime, List<EPrayerTimeEvent>>
         {
-            [EPrayerTime.Fajr]      = new List<EPrayerTimeEvent> { EPrayerTimeEvent.Start, EPrayerTimeEvent.End, EPrayerTimeEvent.FajrGhalasEnd, EPrayerTimeEvent.FajrSunriseRedness },
-            [EPrayerTime.Duha]      = new List<EPrayerTimeEvent> { EPrayerTimeEvent.Start, EPrayerTimeEvent.End },
+            [EPrayerTime.Fajr]      = new List<EPrayerTimeEvent> { EPrayerTimeEvent.Start, EPrayerTimeEvent.End, EPrayerTimeEvent.Fajr_Fadilah, EPrayerTimeEvent.Fajr_Karaha },
+            [EPrayerTime.Duha]      = new List<EPrayerTimeEvent> { EPrayerTimeEvent.Start },
             [EPrayerTime.Dhuhr]     = new List<EPrayerTimeEvent> { EPrayerTimeEvent.Start, EPrayerTimeEvent.End },
-            [EPrayerTime.Asr]       = new List<EPrayerTimeEvent> { EPrayerTimeEvent.Start, EPrayerTimeEvent.End, EPrayerTimeEvent.AsrMithlayn, EPrayerTimeEvent.AsrKaraha},
-            [EPrayerTime.Maghrib]   = new List<EPrayerTimeEvent> { EPrayerTimeEvent.Start, EPrayerTimeEvent.End, EPrayerTimeEvent.MaghribIshtibaq },
+            [EPrayerTime.Asr]       = new List<EPrayerTimeEvent> { EPrayerTimeEvent.Start, EPrayerTimeEvent.End, EPrayerTimeEvent.AsrMithlayn, EPrayerTimeEvent.Asr_Karaha},
+            [EPrayerTime.Maghrib]   = new List<EPrayerTimeEvent> { EPrayerTimeEvent.Start, EPrayerTimeEvent.End, EPrayerTimeEvent.IshtibaqAnNujum },
             [EPrayerTime.Isha]      = new List<EPrayerTimeEvent> { EPrayerTimeEvent.Start, EPrayerTimeEvent.End },
         };
 
@@ -29,23 +29,16 @@ public class PrayerTimeCalculationService : IPrayerTimeCalculationService
     {
         PrayerTimesBundle prayerTimeEntity = new();
 
-        List<(EPrayerTime, EPrayerTimeEvent, GeneralMinuteAdjustmentConfguration)> generalConfigForAfter =
-            new List<(EPrayerTime, EPrayerTimeEvent, GeneralMinuteAdjustmentConfguration)>();
-
         foreach (EPrayerTime prayerTime in CalculatorPrayerTimeEventsByPrayerTime.Keys)
         {
             foreach (EPrayerTimeEvent timeEvent in CalculatorPrayerTimeEventsByPrayerTime[prayerTime])
             {
                 if (!profile.Configurations.TryGetValue((prayerTime, timeEvent), out BaseCalculationConfiguration config)
-                    || config == null)
+                    || config == null
+                    || config.Source == ECalculationSource.None
+                    || config.IsTimeShown)
                 {
                     prayerTimeEntity.SetSpecificPrayerTimeDateTime(prayerTime, timeEvent, null);
-                    continue;
-                }
-
-                if (config is GeneralMinuteAdjustmentConfguration generalConfig)
-                {
-                    generalConfigForAfter.Add((prayerTime, timeEvent, generalConfig));
                     continue;
                 }
 
@@ -63,28 +56,14 @@ public class PrayerTimeCalculationService : IPrayerTimeCalculationService
             }
         }
 
-        foreach (var item in generalConfigForAfter)
+        if (prayerTimeEntity.Dhuhr?.Start != null 
+            && profile.Configurations.TryGetValue((EPrayerTime.Duha, EPrayerTimeEvent.End), out BaseCalculationConfiguration duhaConfig)
+            && duhaConfig != null)
         {
-            EPrayerTime prayerTime = item.Item1;
-            EPrayerTimeEvent timeEvent = item.Item2;
-            GeneralMinuteAdjustmentConfguration generalConfig = item.Item3;
-
-            if (prayerTime == EPrayerTime.Duha && timeEvent == EPrayerTimeEvent.End)
-            {
-                if (prayerTimeEntity.Dhuhr?.Start == null)
-                {
-                    continue;
-                }
-
-                prayerTimeEntity.SetSpecificPrayerTimeDateTime(
-                    prayerTime, 
-                    timeEvent, 
-                    prayerTimeEntity.Dhuhr.Start.Value.AddMinutes(generalConfig.MinuteAdjustment));
-            }
-            else
-            {
-                throw new NotImplementedException();
-            }
+            prayerTimeEntity.SetSpecificPrayerTimeDateTime(
+                EPrayerTime.Duha,
+                EPrayerTimeEvent.End,
+                prayerTimeEntity.Dhuhr.Start.Value.AddMinutes(duhaConfig.MinuteAdjustment));
         }
 
         return prayerTimeEntity;

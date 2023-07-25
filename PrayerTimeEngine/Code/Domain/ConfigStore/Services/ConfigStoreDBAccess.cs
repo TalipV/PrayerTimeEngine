@@ -6,10 +6,9 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using Newtonsoft.Json;
-using PrayerTimeEngine.Code.Common.Enums;
 using PrayerTimeEngine.Code.Domain.ConfigStore.Interfaces;
 using PrayerTimeEngine.Code.Domain.ConfigStore.Models;
-using PrayerTimeEngine.Code.Interfaces;
+using PrayerTimeEngine.Code.Domain.Model;
 
 namespace PrayerTimeEngine.Code.Domain.ConfigStore.Services
 {

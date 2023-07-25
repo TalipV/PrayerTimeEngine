@@ -1,21 +1,16 @@
-﻿using PrayerTimeEngine.Code.Common.Enums;
-using PrayerTimeEngine.Code.Interfaces;
+﻿using PrayerTimeEngine.Code.Domain.ConfigStore;
+using PrayerTimeEngine.Code.Domain.ConfigStore.Models;
+using PrayerTimeEngine.Code.Domain.Model;
 
 namespace PrayerTimeEngine.Code.Domain.Muwaqqit.Models
 {
     public class MuwaqqitCalculationConfiguration : BaseCalculationConfiguration
     {
-        public MuwaqqitCalculationConfiguration(int minuteAdjustment, decimal longitude, decimal latitude, string timezone) 
-            : base(minuteAdjustment)
+        public MuwaqqitCalculationConfiguration(int minuteAdjustment, bool isTimeShown = true) 
+            : base(minuteAdjustment, isTimeShown)
         {
-            Longitude = PrayerTimesConfigurationStorage.INNSBRUCK_LONGITUDE;
-            Latitude = PrayerTimesConfigurationStorage.INNSBRUCK_LATITUDE;
-            Timezone = PrayerTimesConfigurationStorage.TIMEZONE;
         }
-        public override ECalculationSource Source => ECalculationSource.Muwaqqit;
 
-        public string Timezone { get; set; }
-        public decimal Longitude { get; set; }
-        public decimal Latitude { get; set; }
+        public override ECalculationSource Source => ECalculationSource.Muwaqqit;
     }
 }

@@ -16,28 +16,19 @@ public partial class SettingsContentPage : ContentPage
         ViewModel.OnCustomSettingUIReady += () => updateConfigurationSettingUI();
     }
 
-    private void Picker_SelectedIndexChanged(object sender, EventArgs e)
-    {
-        if (sender is not Picker picker 
-            || picker.SelectedItem is not ECalculationSource calculationSource)
-        {
-            return;
-        }
-
-        ViewModel.OnCalculationSourceChanged(calculationSource);
-    }
-
     private void updateConfigurationSettingUI()
     {
         ConfigurableUIContainer.Children.Clear();
 
-        if (ViewModel.CustomSettingConfigurationUI == null)
+        if (ViewModel.CustomSettingConfigurationViewModel == null)
         {
             return;
         }
 
-        StackLayout newUI = ViewModel.CustomSettingConfigurationUI.GetUI();
-        ConfigurableUIContainer.Children.Add(newUI);
+        if (ViewModel.CustomSettingConfigurationViewModel.GetUI() is IView customSettingConfiguration)
+        {
+            ConfigurableUIContainer.Children.Add(customSettingConfiguration);
+        }
     }
 
     protected override void OnDisappearing()

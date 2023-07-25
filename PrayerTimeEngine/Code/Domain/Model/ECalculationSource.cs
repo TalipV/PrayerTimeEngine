@@ -4,13 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PrayerTimeEngine.Code.Common.Enums
+namespace PrayerTimeEngine.Code.Domain.Model
 {
     public enum ECalculationSource
     {
         None,
         Muwaqqit,
         Fazilet,
-        AlAdhan
+        //AlAdhan
     }
 }

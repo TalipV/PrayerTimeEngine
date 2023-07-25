@@ -1,4 +1,4 @@
-﻿namespace PrayerTimeEngine.Code.Common.Enums
+﻿namespace PrayerTimeEngine.Code.Domain.Model
 {
     public enum EPrayerTimeEvent
     {
@@ -6,16 +6,16 @@
         End,
 
         // ### ADDITIONAL TIMES
-        FajrGhalasEnd,
-        FajrSunriseRedness,
+        Fajr_Fadilah,
+        Fajr_Karaha,
         AsrMithlayn,
-        AsrKaraha,
-        MaghribIshtibaq,
+        Asr_Karaha,
+        IshtibaqAnNujum,
 
         // ### IMPLICIT TIMES
         DuhaQuarterOfDay,
-        IshaMidnight,          
-        IshaFirstThirdOfNight,   
+        IshaMidnight,
+        IshaFirstThirdOfNight,
         IshaSecondThirdOfNight,
     }
 }

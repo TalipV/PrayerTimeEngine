@@ -9,5 +9,10 @@ namespace PrayerTimeEngine
             InitializeComponent();
             BindingContext = viewModel;
         }
+
+        protected override void OnAppearing()
+        {
+            (BindingContext as MainPageViewModel).OnAppearing();
+        }
     }
 }

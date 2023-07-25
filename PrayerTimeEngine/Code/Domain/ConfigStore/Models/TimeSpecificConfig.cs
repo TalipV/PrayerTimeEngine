@@ -1,5 +1,4 @@
-﻿using PrayerTimeEngine.Code.Common.Enums;
-using PrayerTimeEngine.Code.Interfaces;
+﻿using PrayerTimeEngine.Code.Domain.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;

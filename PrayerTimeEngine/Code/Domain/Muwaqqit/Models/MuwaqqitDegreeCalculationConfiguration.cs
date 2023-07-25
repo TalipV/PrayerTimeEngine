@@ -1,4 +1,4 @@
-﻿using PrayerTimeEngine.Code.Common.Enums;
+﻿using PrayerTimeEngine.Code.Domain.Model;
 using PrayerTimeEngine.Code.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -8,19 +8,19 @@ using System.Threading.Tasks;
 
 namespace PrayerTimeEngine.Code.Domain.Muwaqqit.Models
 {
-    public class MuwaqqitDegreeCalculationConfiguration : MuwaqqitCalculationConfiguration, IDegreeCalculationConfiguration
+    public class MuwaqqitDegreeCalculationConfiguration : MuwaqqitCalculationConfiguration
     {
         public static readonly Dictionary<(EPrayerTime, EPrayerTimeEvent), double> DegreePrayerTimeEvents =
             new Dictionary<(EPrayerTime, EPrayerTimeEvent), double>
             {
                 [(EPrayerTime.Fajr, EPrayerTimeEvent.Start)] = -12.0,
-                [(EPrayerTime.Fajr, EPrayerTimeEvent.FajrGhalasEnd)] = -7.0,
-                [(EPrayerTime.Fajr, EPrayerTimeEvent.FajrSunriseRedness)] = -3.0,
+                [(EPrayerTime.Fajr, EPrayerTimeEvent.Fajr_Fadilah)] = -7.0,
+                [(EPrayerTime.Fajr, EPrayerTimeEvent.Fajr_Karaha)] = -3.0,
 
                 [(EPrayerTime.Duha, EPrayerTimeEvent.Start)] = 5.0,
-                [(EPrayerTime.Asr, EPrayerTimeEvent.AsrKaraha)] = 5.0,
+                [(EPrayerTime.Asr, EPrayerTimeEvent.Asr_Karaha)] = 5.0,
 
-                [(EPrayerTime.Maghrib, EPrayerTimeEvent.MaghribIshtibaq)] = -10.0,
+                [(EPrayerTime.Maghrib, EPrayerTimeEvent.IshtibaqAnNujum)] = -10.0,
                 [(EPrayerTime.Maghrib, EPrayerTimeEvent.End)] = -12.0,
 
                 [(EPrayerTime.Isha, EPrayerTimeEvent.Start)] = -15.0,
@@ -28,14 +28,11 @@ namespace PrayerTimeEngine.Code.Domain.Muwaqqit.Models
             };
 
         public MuwaqqitDegreeCalculationConfiguration(
-            int minuteAdjustment, 
-            decimal longitude, decimal latitude, 
-            string timezone,
-            double degree) : base(minuteAdjustment, longitude, latitude, timezone)
+            int minuteAdjustment, double degree, bool isTimeShown = true) : base(minuteAdjustment, isTimeShown)
         {
             Degree = degree;
         }
 
-        public double Degree { get; set; }
+        public double Degree { get; }
     }
 }

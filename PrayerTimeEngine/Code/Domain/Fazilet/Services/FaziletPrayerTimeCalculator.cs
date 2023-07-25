@@ -6,8 +6,10 @@ using System.Threading.Tasks;
 using PrayerTimeEngine.Code.Domain.Fazilet.Interfaces;
 using PrayerTimeEngine.Code.Domain.Fazilet.Models;
 using PrayerTimeEngine.Code.Interfaces;
-using PrayerTimeEngine.Code.Common.Enums;
 using PrayerTimeEngine.Code.Common.Extension;
+using PrayerTimeEngine.Code.Domain.ConfigStore;
+using PrayerTimeEngine.Code.Domain.Model;
+using PrayerTimeEngine.Code.Domain.ConfigStore.Models;
 
 namespace PrayerTimeEngine.Code.Domain.Fazilet.Services
 {
@@ -26,13 +28,13 @@ namespace PrayerTimeEngine.Code.Domain.Fazilet.Services
         {
             return new List<(EPrayerTime PrayerTime, EPrayerTimeEvent PrayerTimeEvent)>
             {
-                (EPrayerTime.Fajr, EPrayerTimeEvent.FajrGhalasEnd),
-                (EPrayerTime.Fajr, EPrayerTimeEvent.FajrSunriseRedness),
+                (EPrayerTime.Fajr, EPrayerTimeEvent.Fajr_Fadilah),
+                (EPrayerTime.Fajr, EPrayerTimeEvent.Fajr_Karaha),
                 (EPrayerTime.Duha, EPrayerTimeEvent.Start),
                 (EPrayerTime.Duha, EPrayerTimeEvent.End),
                 (EPrayerTime.Asr, EPrayerTimeEvent.AsrMithlayn),
-                (EPrayerTime.Asr, EPrayerTimeEvent.AsrKaraha),
-                (EPrayerTime.Maghrib, EPrayerTimeEvent.MaghribIshtibaq),
+                (EPrayerTime.Asr, EPrayerTimeEvent.Asr_Karaha),
+                (EPrayerTime.Maghrib, EPrayerTimeEvent.IshtibaqAnNujum),
             };
         }
 
@@ -41,11 +43,9 @@ namespace PrayerTimeEngine.Code.Domain.Fazilet.Services
             EPrayerTime prayerTime, EPrayerTimeEvent timeEvent, 
             BaseCalculationConfiguration configuration)
         {
-            if (configuration is not FaziletCalculationConfiguration faziletConfig)
-                throw new ArgumentException($"{nameof(configuration)} is not an instance of {nameof(FaziletCalculationConfiguration)}");
-
-            string countryName = faziletConfig.CountryName;
-            string cityName = faziletConfig.CityName;
+            // because currently there is no location selection
+            string countryName = PrayerTimesConfigurationStorage.COUNTRY_NAME;
+            string cityName = PrayerTimesConfigurationStorage.CITY_NAME;
 
             FaziletPrayerTimes prayerTimes = await getPrayerTimesInternal(date, countryName, cityName);
             DateTime dateTime = getDateTimeFromFaziletPrayerTimes(prayerTime, timeEvent, prayerTimes);
