@@ -1,12 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using PrayerTimeEngine.Code.Common.Enums;
-using PrayerTimeEngine.Code.Domain.ConfigStore.Interfaces;
+﻿using PrayerTimeEngine.Code.Domain.ConfigStore.Interfaces;
 using PrayerTimeEngine.Code.Domain.ConfigStore.Models;
-using PrayerTimeEngine.Code.Interfaces;
 
 namespace PrayerTimeEngine.Code.Domain.ConfigStore.Services
 {

@@ -1,4 +1,3 @@
-using PrayerTimeEngine.Code.Common.Enums;
 using PrayerTimeEngine.Code.Presentation.ViewModel;
 
 namespace PrayerTimeEngine.Code.Presentation.View;

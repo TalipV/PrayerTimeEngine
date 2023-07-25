@@ -1,6 +1,4 @@
-﻿using PrayerTimeEngine.Code.Common.Enums;
-
-namespace PrayerTimeEngine.Domain.Models
+﻿namespace PrayerTimeEngine.Domain.Models
 {
     public class PrayerTime
     {
