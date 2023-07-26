@@ -81,7 +81,7 @@ namespace PrayerTimeEngine.Code.Presentation.ViewModel
             loadMinuteAdjustmentSource();
 
             // only allow option for other than start and end times
-            IsTimeShownCheckBoxEnabled = prayerTimeEvent != EPrayerTimeEvent.Start && prayerTimeEvent == EPrayerTimeEvent.End;
+            IsTimeShownCheckBoxEnabled = prayerTimeEvent != EPrayerTimeEvent.Start && prayerTimeEvent != EPrayerTimeEvent.End;
 
             if (!_prayerTimesConfigurationStorage.GetProfiles().GetAwaiter().GetResult().First().Configurations
                     .TryGetValue(PrayerTimeWithEvent, out BaseCalculationConfiguration calculationConfiguration)
@@ -111,8 +111,11 @@ namespace PrayerTimeEngine.Code.Presentation.ViewModel
                             PrayerTimeWithEvent,
                             MuwaqqitDegreeCalculationConfiguration.DegreePrayerTimeEvents[PrayerTimeWithEvent]);
             }
+            else
+            {
+                CustomSettingConfigurationViewModel = null;
+            }
 
-            CustomSettingConfigurationViewModel = null;
 
             OnCustomSettingUIReady.Invoke();
         }
