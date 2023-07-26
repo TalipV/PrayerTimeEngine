@@ -1,6 +1,6 @@
 ﻿using PrayerTimeEngine.Code.Common.Enum;
 using PrayerTimeEngine.Code.Common.Extension;
-using PrayerTimeEngine.Code.Domain.Muwaqqit.Models;
+using PrayerTimeEngine.Code.Domain.Calculator.Muwaqqit.Models;
 using System.Text.Json;
 
 namespace PrayerTimeEngine.Code.Domain.ConfigStore.Models

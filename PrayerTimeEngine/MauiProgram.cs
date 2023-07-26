@@ -1,12 +1,12 @@
 ﻿using Microsoft.Extensions.Logging;
-using PrayerTimeEngine.Code.Domain.ConfigStore;
+using PrayerTimeEngine.Code.Domain.CalculationService;
+using PrayerTimeEngine.Code.Domain.Calculator.Fazilet.Interfaces;
+using PrayerTimeEngine.Code.Domain.Calculator.Fazilet.Services;
+using PrayerTimeEngine.Code.Domain.Calculator.Muwaqqit.Interfaces;
+using PrayerTimeEngine.Code.Domain.Calculator.Muwaqqit.Services;
 using PrayerTimeEngine.Code.Domain.ConfigStore.Interfaces;
+using PrayerTimeEngine.Code.Domain.ConfigStore.Models;
 using PrayerTimeEngine.Code.Domain.ConfigStore.Services;
-using PrayerTimeEngine.Code.Domain.Fazilet.Interfaces;
-using PrayerTimeEngine.Code.Domain.Fazilet.Services;
-using PrayerTimeEngine.Code.Domain.Muwaqqit.Interfaces;
-using PrayerTimeEngine.Code.Domain.Muwaqqit.Services;
-using PrayerTimeEngine.Code.Interfaces;
 using PrayerTimeEngine.Code.Presentation.Service.Navigation;
 using PrayerTimeEngine.Code.Presentation.Service.SettingsContentPageFactory;
 using PrayerTimeEngine.Code.Presentation.View;
@@ -42,7 +42,6 @@ public static class MauiProgram
     {
         serviceCollection.AddSingleton<ISQLiteDB, SQLiteDB>();
         serviceCollection.AddSingleton<IPrayerTimeCalculationService, PrayerTimeCalculationService>();
-        serviceCollection.AddSingleton<IPrayerTimeCalculatorFactory, PrayerTimeCalculatorFactory>();
 
         serviceCollection.AddTransient<FaziletPrayerTimeCalculator>();
         serviceCollection.AddSingleton<IFaziletDBAccess, FaziletDBAccess>();

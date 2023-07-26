@@ -1,13 +1,12 @@
 ﻿using MvvmHelpers;
-using PrayerTimeEngine.Code.Interfaces;
 using PrayerTimeEngine.Domain.Models;
 using System.Windows.Input;
 using PrayerTimeEngine.Code.Presentation.Service.Navigation;
 using PrayerTimeEngine.Code.Domain.ConfigStore.Models;
 using PropertyChanged;
 using static System.Runtime.InteropServices.JavaScript.JSType;
-using PrayerTimeEngine.Code.Domain.ConfigStore;
 using PrayerTimeEngine.Code.Common.Enum;
+using PrayerTimeEngine.Code.Domain.CalculationService;
 
 namespace PrayerTimeEngine.Code.Presentation.ViewModel
 {
