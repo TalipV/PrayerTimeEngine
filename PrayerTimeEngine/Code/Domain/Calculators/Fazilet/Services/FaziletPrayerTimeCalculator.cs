@@ -133,7 +133,7 @@ namespace PrayerTimeEngine.Code.Domain.Calculator.Fazilet.Services
                     result = timeEvent == EPrayerTimeEvent.Start ? prayerTimes.Maghrib : prayerTimes.Isha;
                     break;
                 case EPrayerTime.Isha:
-                    result = timeEvent == EPrayerTimeEvent.Start ? prayerTimes.Isha : prayerTimes.Isha.AddDays(1);
+                    result = timeEvent == EPrayerTimeEvent.Start ? prayerTimes.Isha : (prayerTimes.NextFajr ?? prayerTimes.Isha);
                     break;
                 default:
                     throw new ArgumentException($"Invalid {nameof(prayerTime)} value: {prayerTime}.");

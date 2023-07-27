@@ -23,15 +23,12 @@
 
         <Label 
             Grid.Row="0"
-            Text="Calculation Source"
-            IsVisible="{Binding ShowCalculationSourcePicker}"/>
+            Grid.Column="0"
+            x:Name="CalculationSourcePickerLabelView"
+            Text="Calculation Source"/>
         <Picker 
             Grid.Row="1"
-            x:Name="CalculationSourcePicker"
-            SelectedItem="{Binding SelectedCalculationSource, Mode=TwoWay}"
-            ItemsSource="{Binding CalculationSources}" 
-            IsVisible="{Binding ShowCalculationSourcePicker}"
-            SelectedIndex="0"/>
+            x:Name="CalculationSourcePickerView"/>
 
         <Label 
             Grid.Row="0"
@@ -41,21 +38,21 @@
         <Picker 
             Grid.Row="1"
             Grid.Column="2"
-            SelectedItem="{Binding SelectedMinuteAdjustment, Mode=TwoWay}"
-            ItemsSource="{Binding MinuteAdjustments}" 
-            SelectedIndex="0"/>
+            x:Name="MinuteAdjustmentPickerView"/>
         
         <Label 
             Grid.Row="2"
+            Grid.Column="0"
             Grid.ColumnSpan="3"
             Text="Shown:"/>
         <CheckBox 
             Grid.Row="3"
-            IsChecked="{Binding IsTimeShown}"
-            IsEnabled="{Binding IsTimeShownCheckBoxEnabled}"/>
+            Grid.Column="0"
+            x:Name="IsTimeShownCheckBox"/>
 
         <Line 
             Grid.Row="4"
+            Grid.Column="0"
             Grid.ColumnSpan="4"
             X1="0"
             Y1="10"
@@ -65,6 +62,7 @@
 
         <StackLayout 
             Grid.Row="5"
+            Grid.Column="0"
             Grid.ColumnSpan="2"
             x:Name="ConfigurableUIContainer" />
 

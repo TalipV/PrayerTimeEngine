@@ -4,6 +4,8 @@ using PrayerTimeEngine.Code.Domain.Calculator.Fazilet.Interfaces;
 using PrayerTimeEngine.Code.Domain.Calculator.Fazilet.Services;
 using PrayerTimeEngine.Code.Domain.Calculator.Muwaqqit.Interfaces;
 using PrayerTimeEngine.Code.Domain.Calculator.Muwaqqit.Services;
+using PrayerTimeEngine.Code.Domain.Calculators.Semerkand.Interfaces;
+using PrayerTimeEngine.Code.Domain.Calculators.Semerkand.Services;
 using PrayerTimeEngine.Code.Domain.ConfigStore.Interfaces;
 using PrayerTimeEngine.Code.Domain.ConfigStore.Models;
 using PrayerTimeEngine.Code.Domain.ConfigStore.Services;
@@ -49,6 +51,13 @@ public static class MauiProgram
         {
             client.Timeout = TimeSpan.FromSeconds(20);
             client.BaseAddress = new Uri("https://fazilettakvimi.com/api/cms/");
+        });
+
+        serviceCollection.AddTransient<SemerkandPrayerTimeCalculator>();
+        serviceCollection.AddSingleton<ISemerkandDBAccess, SemerkandDBAccess>();
+        serviceCollection.AddHttpClient<ISemerkandApiService, SemerkandApiService>(client =>
+        {
+            client.Timeout = TimeSpan.FromSeconds(20);
         });
 
         serviceCollection.AddTransient<MuwaqqitPrayerTimeCalculator>();

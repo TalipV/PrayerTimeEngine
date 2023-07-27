@@ -34,6 +34,7 @@ public class SQLiteDB : ISQLiteDB
                 connection.Open();
                 createProfileTablesIfNotExists(connection);
                 createFaziletTablesIfNotExists(connection);
+                createSemerkandTablesIfNotExists(connection);
                 createMuwaqqitTablesIfNotExists(connection);
             }
         }
@@ -128,6 +129,49 @@ public class SQLiteDB : ISQLiteDB
                     FOREIGN KEY(CityId) REFERENCES FaziletCities(Id),
                     UNIQUE(Date, CityId))";
         createTable(connection, tableFaziletPrayerTimes);
+    }
+
+    private void createSemerkandTablesIfNotExists(SqliteConnection connection)
+    {
+        string tableSemerkandCountries =
+            @"CREATE TABLE IF NOT EXISTS 
+                SemerkandCountries (
+                    Id INTEGER PRIMARY KEY, 
+                    Name NVARCHAR(200) NOT NULL,
+                    InsertDateTime DATETIME NOT NULL,
+                    UNIQUE(Name))";
+        createTable(connection, tableSemerkandCountries);
+
+        string tableSemerkandCities =
+            @"CREATE TABLE IF NOT EXISTS 
+                SemerkandCities (
+                    Id INTEGER PRIMARY KEY, 
+                    CountryId INTEGER NOT NULL, 
+                    Name NVARCHAR(200) NOT NULL, 
+                    InsertDateTime DATETIME NOT NULL,
+                    FOREIGN KEY(CountryId) REFERENCES SemerkandCountries(Id),
+                    UNIQUE(CountryId, Name))";
+        createTable(connection, tableSemerkandCities);
+
+        string tableSemerkandPrayerTimes =
+            @"CREATE TABLE IF NOT EXISTS 
+                SemerkandPrayerTimes (
+                    Id INTEGER PRIMARY KEY AUTOINCREMENT, 
+
+                    Date DATETIME NOT NULL, 
+                    CityId INTEGER NOT NULL, 
+
+                    Fajr DATETIME NOT NULL, 
+                    Shuruq DATETIME NOT NULL, 
+                    Dhuhr DATETIME NOT NULL, 
+                    Asr DATETIME NOT NULL, 
+                    Maghrib DATETIME NOT NULL, 
+                    Isha DATETIME NOT NULL, 
+                    InsertDateTime DATETIME NOT NULL,
+
+                    FOREIGN KEY(CityId) REFERENCES SemerkandCities(Id),
+                    UNIQUE(Date, CityId))";
+        createTable(connection, tableSemerkandPrayerTimes);
     }
     
     private void createMuwaqqitTablesIfNotExists(SqliteConnection connection)

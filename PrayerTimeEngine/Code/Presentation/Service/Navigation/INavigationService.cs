@@ -1,27 +1,6 @@
 ﻿
-/* Unmerged change from project 'PrayerTimeEngine (net7.0-android)'
-Before:
-using PrayerTimeEngine.Code.Presentation.ViewModel;
-After:
-using PrayerTimeEngine;
-using PrayerTimeEngine.Code;
-using PrayerTimeEngine.Code.Presentation.Presentation;
-using PrayerTimeEngine.Code.Presentation.Service;
-using PrayerTimeEngine.Code.Presentation.ViewModel;
-*/
 using PrayerTimeEngine.Code.Presentation.ViewModel;
 using PrayerTimeEngine.Views;
-
-/* Unmerged change from project 'PrayerTimeEngine (net7.0-android)'
-Before:
-using System.Threading.Tasks;
-After:
-using System.Threading.Tasks;
-using PrayerTimeEngine;
-using PrayerTimeEngine.Code;
-using PrayerTimeEngine.Code.Presentation;
-using PrayerTimeEngine.Code.Presentation.Service.Navigation;
-*/
 
 namespace PrayerTimeEngine.Code.Presentation.Service.Navigation
 {
@@ -30,7 +9,6 @@ namespace PrayerTimeEngine.Code.Presentation.Service.Navigation
         Task NavigateTo<TViewModel>(object parameter = null) where TViewModel : CustomBaseViewModel;
         Task NavigateBack();
     }
-
 
     public class NavigationService : INavigationService
     {
@@ -50,7 +28,6 @@ namespace PrayerTimeEngine.Code.Presentation.Service.Navigation
             _mapping.Add(typeof(MainPageViewModel), typeof(MainPage));
             _mapping.Add(typeof(SettingsHandlerPageViewModel), typeof(SettingsHandlerPage));
         }
-
 
         public async Task NavigateTo<TViewModel>(object parameter = null) where TViewModel : CustomBaseViewModel
         {

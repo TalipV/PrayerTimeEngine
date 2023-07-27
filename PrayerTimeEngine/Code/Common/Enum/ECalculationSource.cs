@@ -11,6 +11,7 @@ namespace PrayerTimeEngine.Code.Common.Enum
         None,
         Muwaqqit,
         Fazilet,
+        Semerkand,
         //AlAdhan
     }
 }

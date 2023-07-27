@@ -4,9 +4,9 @@ namespace PrayerTimeEngine.Code.Common.Enum
 {
     public enum EPrayerTimeEvent
     {
-        [SupportedBy(ECalculationSource.None, ECalculationSource.Muwaqqit, ECalculationSource.Fazilet)]
+        [SupportedBy(ECalculationSource.None, ECalculationSource.Muwaqqit, ECalculationSource.Fazilet, ECalculationSource.Semerkand)]
         Start,
-        [SupportedBy(ECalculationSource.None, ECalculationSource.Muwaqqit, ECalculationSource.Fazilet)]
+        [SupportedBy(ECalculationSource.None, ECalculationSource.Muwaqqit, ECalculationSource.Fazilet, ECalculationSource.Semerkand)]
         End,
 
         // ### ADDITIONAL TIMES
@@ -22,13 +22,13 @@ namespace PrayerTimeEngine.Code.Common.Enum
         IshtibaqAnNujum,
 
         // ### IMPLICIT TIMES
-        [SupportedBy(ECalculationSource.None, ECalculationSource.Muwaqqit, ECalculationSource.Fazilet)]
+        [SupportedBy(ECalculationSource.None, ECalculationSource.Muwaqqit, ECalculationSource.Fazilet, ECalculationSource.Semerkand)]
         DuhaQuarterOfDay,
-        [SupportedBy(ECalculationSource.None, ECalculationSource.Muwaqqit, ECalculationSource.Fazilet)]
+        [SupportedBy(ECalculationSource.None, ECalculationSource.Muwaqqit, ECalculationSource.Fazilet, ECalculationSource.Semerkand)]
         IshaMidnight,
-        [SupportedBy(ECalculationSource.None, ECalculationSource.Muwaqqit, ECalculationSource.Fazilet)]
+        [SupportedBy(ECalculationSource.None, ECalculationSource.Muwaqqit, ECalculationSource.Fazilet, ECalculationSource.Semerkand)]
         IshaFirstThirdOfNight,
-        [SupportedBy(ECalculationSource.None, ECalculationSource.Muwaqqit, ECalculationSource.Fazilet)]
+        [SupportedBy(ECalculationSource.None, ECalculationSource.Muwaqqit, ECalculationSource.Fazilet, ECalculationSource.Semerkand)]
         IshaSecondThirdOfNight,
     }
 }

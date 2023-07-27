@@ -5,6 +5,7 @@ using PrayerTimeEngine.Code.Domain.CalculationService;
 using PrayerTimeEngine.Code.Domain.Calculator.Fazilet.Services;
 using PrayerTimeEngine.Code.Domain.Calculator.Muwaqqit.Services;
 using PrayerTimeEngine.Code.Domain.Calculators;
+using PrayerTimeEngine.Code.Domain.Calculators.Semerkand.Services;
 using PrayerTimeEngine.Code.Domain.ConfigStore.Models;
 using PrayerTimeEngine.Domain.Models;
 
@@ -78,6 +79,8 @@ public class PrayerTimeCalculationService : IPrayerTimeCalculationService
         {
             case ECalculationSource.Fazilet:
                 return _serviceProvider.GetRequiredService<FaziletPrayerTimeCalculator>();
+            case ECalculationSource.Semerkand:
+                return _serviceProvider.GetRequiredService<SemerkandPrayerTimeCalculator>();
             case ECalculationSource.Muwaqqit:
                 return _serviceProvider.GetRequiredService<MuwaqqitPrayerTimeCalculator>();
             default:

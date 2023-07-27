@@ -12,10 +12,27 @@ public partial class SettingsContentPage : ContentPage
         ViewModel = viewModel;
         BindingContext = ViewModel;
 
-        ViewModel.OnCustomSettingUIReady += () => updateConfigurationSettingUI();
+        ViewModel.OnInitializeCustomUI_EventTrigger += () => onInitializeCustomUI_EventTrigger();
+        ViewModel.OnViewModelInitialize_EventTrigger += onViewModelInitialize_EventTrigger;
     }
 
-    private void updateConfigurationSettingUI()
+    private void onViewModelInitialize_EventTrigger()
+    {
+        addDataBindings();
+    }
+
+    private void onInitializeCustomUI_EventTrigger()
+    {
+        configureCustomUISection();
+    }
+
+    protected override void OnDisappearing()
+    {
+        // for ViewModel to handle setting saving
+        ViewModel.OnDisappearing();
+    }
+
+    private void configureCustomUISection()
     {
         ConfigurableUIContainer.Children.Clear();
 
@@ -30,8 +47,49 @@ public partial class SettingsContentPage : ContentPage
         }
     }
 
-    protected override void OnDisappearing()
+    private void addDataBindings()
     {
-        ViewModel.OnDisappearing();
+        this.CalculationSourcePickerLabelView
+            .SetBinding(
+                Label.IsVisibleProperty,
+                nameof(SettingsContentPageViewModel.ShowCalculationSourcePicker),
+                BindingMode.Default);
+        this.CalculationSourcePickerView
+            .SetBinding(
+                Picker.SelectedItemProperty,
+                nameof(SettingsContentPageViewModel.SelectedCalculationSource),
+                BindingMode.TwoWay);
+        this.CalculationSourcePickerView
+            .SetBinding(
+                Picker.ItemsSourceProperty,
+                nameof(SettingsContentPageViewModel.CalculationSources),
+                BindingMode.Default);
+        this.CalculationSourcePickerView
+            .SetBinding(
+                Picker.IsVisibleProperty,
+                nameof(SettingsContentPageViewModel.ShowCalculationSourcePicker),
+                BindingMode.Default);
+
+        this.MinuteAdjustmentPickerView
+            .SetBinding(
+                Picker.SelectedItemProperty,
+                nameof(SettingsContentPageViewModel.SelectedMinuteAdjustment),
+                BindingMode.TwoWay);
+        this.MinuteAdjustmentPickerView
+            .SetBinding(
+                Picker.ItemsSourceProperty,
+                nameof(SettingsContentPageViewModel.MinuteAdjustments),
+                BindingMode.Default);
+
+        this.IsTimeShownCheckBox
+            .SetBinding(
+                CheckBox.IsCheckedProperty,
+                nameof(SettingsContentPageViewModel.IsTimeShown),
+                BindingMode.TwoWay);
+        this.IsTimeShownCheckBox
+            .SetBinding(
+                CheckBox.IsVisibleProperty,
+                nameof(SettingsContentPageViewModel.IsTimeShownCheckBoxVisible),
+                BindingMode.Default);
     }
 }
