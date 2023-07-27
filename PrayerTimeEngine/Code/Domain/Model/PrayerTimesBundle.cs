@@ -101,60 +101,69 @@ namespace PrayerTimeEngine.Domain.Models
         public string Ishtibaq => IshtibaqDateTime?.ToString("HH:mm:ss") ?? "xx:xx:xx";
 
 
-        public void SetSpecificPrayerTimeDateTime(EPrayerTime prayerTime, EPrayerTimeEvent prayerTimeEvent, DateTime? dateTime)
+        public void SetSpecificPrayerTimeDateTime(ETimeType timeType, DateTime? dateTime)
         {
-            switch (prayerTime)
+            switch (timeType)
             {
-                case EPrayerTime.Fajr:
-                    if (prayerTimeEvent == EPrayerTimeEvent.Start)
-                        Fajr.Start = dateTime;
-                    else if (prayerTimeEvent == EPrayerTimeEvent.End)
-                        Fajr.End = dateTime;
-                    else if (prayerTimeEvent == EPrayerTimeEvent.Fajr_Fadilah)
-                        FajrGhalasDateTime = dateTime;
-                    else if (prayerTimeEvent == EPrayerTimeEvent.Fajr_Karaha)
-                        FajrSunriseRednessDateTime = dateTime;
+                case ETimeType.FajrStart:
+                    Fajr.Start = dateTime;
                     break;
-                case EPrayerTime.Duha:
-                    if (prayerTimeEvent == EPrayerTimeEvent.Start)
-                        Duha.Start = dateTime;
-                    else if (prayerTimeEvent == EPrayerTimeEvent.End)
-                        Duha.End = dateTime;
+                case ETimeType.FajrEnd:
+                    Fajr.End = dateTime;
                     break;
-                case EPrayerTime.Dhuhr:
-                    if (prayerTimeEvent == EPrayerTimeEvent.Start)
-                        Dhuhr.Start = dateTime;
-                    else if (prayerTimeEvent == EPrayerTimeEvent.End)
-                        Dhuhr.End = dateTime;
+                case ETimeType.FajrGhalas:
+                    FajrGhalasDateTime = dateTime;
                     break;
-                case EPrayerTime.Asr:
-                    if (prayerTimeEvent == EPrayerTimeEvent.Start)
-                        Asr.Start = dateTime;
-                    else if (prayerTimeEvent == EPrayerTimeEvent.End)
-                        Asr.End = dateTime;
-                    else if (prayerTimeEvent == EPrayerTimeEvent.AsrMithlayn)
-                        AsrMithlaynDateTime = dateTime;
-                    else if (prayerTimeEvent == EPrayerTimeEvent.Asr_Karaha)
-                        AsrKarahaDateTime = dateTime;
+                case ETimeType.FajrKaraha:
+                    FajrSunriseRednessDateTime = dateTime;
                     break;
-                case EPrayerTime.Maghrib:
-                    if (prayerTimeEvent == EPrayerTimeEvent.Start)
-                        Maghrib.Start = dateTime;
-                    else if (prayerTimeEvent == EPrayerTimeEvent.End)
-                        Maghrib.End = dateTime;
-                    else if (prayerTimeEvent == EPrayerTimeEvent.IshtibaqAnNujum)
-                        IshtibaqDateTime = dateTime;
+
+                case ETimeType.DuhaStart:
+                    Duha.Start = dateTime;
                     break;
-                case EPrayerTime.Isha:
-                    if (prayerTimeEvent == EPrayerTimeEvent.Start)
-                        Isha.Start = dateTime;
-                    else if (prayerTimeEvent == EPrayerTimeEvent.End)
-                        Isha.End = dateTime;
+                case ETimeType.DuhaEnd:
+                    Duha.End = dateTime;
+                    break;
+
+                case ETimeType.DhuhrStart:
+                    Dhuhr.Start = dateTime;
+                    break;
+                case ETimeType.DhuhrEnd:
+                    Dhuhr.End = dateTime;
+                    break;
+
+                case ETimeType.AsrStart:
+                    Asr.Start = dateTime;
+                    break;
+                case ETimeType.AsrEnd:
+                    Asr.End = dateTime;
+                    break;
+                case ETimeType.AsrMithlayn:
+                    AsrMithlaynDateTime = dateTime;
+                    break;
+                case ETimeType.AsrKaraha:
+                    AsrKarahaDateTime = dateTime;
+                    break;
+
+                case ETimeType.MaghribStart:
+                    Maghrib.Start = dateTime;
+                    break;
+                case ETimeType.MaghribEnd:
+                    Maghrib.End = dateTime;
+                    break;
+                case ETimeType.MaghribIshtibaq:
+                    IshtibaqDateTime = dateTime;
+                    break;
+
+                case ETimeType.IshaStart:
+                    Isha.Start = dateTime;
+                    break;
+                case ETimeType.IshaEnd:
+                    Isha.End = dateTime;
                     break;
                 default:
                     throw new NotImplementedException();
             }
-
         }
     }
 }

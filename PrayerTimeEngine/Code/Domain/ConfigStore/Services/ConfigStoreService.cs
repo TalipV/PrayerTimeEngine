@@ -20,7 +20,7 @@ namespace PrayerTimeEngine.Code.Domain.ConfigStore.Services
             {
                 profile.Configurations = 
                     (await _configStoreDBAccess.GetTimeSpecificConfigsByProfile(profile.ID))
-                        .ToDictionary(x => (x.PrayerTime, x.PrayerTimeEvent), x => x.CalculationConfiguration);
+                        .ToDictionary(x => x.TimeType, x => x.CalculationConfiguration);
             }
 
             return profiles;

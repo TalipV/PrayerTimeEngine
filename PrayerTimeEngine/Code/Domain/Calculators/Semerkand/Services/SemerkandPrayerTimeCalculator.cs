@@ -23,7 +23,7 @@ namespace PrayerTimeEngine.Code.Domain.Calculators.Semerkand.Services
 
         public async Task<DateTime> GetPrayerTimesAsync(
             DateTime date,
-            EPrayerTime prayerTime, EPrayerTimeEvent timeEvent,
+            ETimeType timeType,
             BaseCalculationConfiguration configuration)
         {
             // because currently there is no location selection
@@ -31,7 +31,7 @@ namespace PrayerTimeEngine.Code.Domain.Calculators.Semerkand.Services
             string cityName = PrayerTimesConfigurationStorage.CITY_NAME;
 
             SemerkandPrayerTimes prayerTimes = await getPrayerTimesInternal(date, countryName, cityName);
-            DateTime dateTime = getDateTimeFromSemerkandPrayerTimes(prayerTime, timeEvent, prayerTimes);
+            DateTime dateTime = getDateTimeFromSemerkandPrayerTimes(timeType, prayerTimes);
 
             return dateTime;
         }
@@ -95,48 +95,62 @@ namespace PrayerTimeEngine.Code.Domain.Calculators.Semerkand.Services
         }
 
         // TODO: MASSIV HINTERFRAGEN (Generischer und Isha-Ende als Fajr-Beginn??)
-        private DateTime getDateTimeFromSemerkandPrayerTimes(EPrayerTime prayerTime, EPrayerTimeEvent timeEvent, SemerkandPrayerTimes prayerTimes)
+        private DateTime getDateTimeFromSemerkandPrayerTimes(ETimeType timeType, SemerkandPrayerTimes prayerTimes)
         {
             DateTime result;
 
-            switch (prayerTime)
+            switch (timeType)
             {
-                case EPrayerTime.Fajr:
-                    result = timeEvent == EPrayerTimeEvent.Start ? prayerTimes.Fajr : prayerTimes.Tulu;
+                case ETimeType.FajrStart:
+                    result = prayerTimes.Fajr;
                     break;
-                case EPrayerTime.Duha:
-                    result = timeEvent == EPrayerTimeEvent.Start ? prayerTimes.Tulu : prayerTimes.Zuhr;
+                case ETimeType.FajrEnd:
+                    result = prayerTimes.Tulu;
                     break;
-                case EPrayerTime.Dhuhr:
-                    result = timeEvent == EPrayerTimeEvent.Start ? prayerTimes.Zuhr : prayerTimes.Asr;
+                case ETimeType.DuhaStart:
+                    result = prayerTimes.Tulu;
                     break;
-                case EPrayerTime.Asr:
-                    result = timeEvent == EPrayerTimeEvent.Start ? prayerTimes.Asr : prayerTimes.Maghrib;
+                case ETimeType.DhuhrStart:
+                    result = prayerTimes.Zuhr;
                     break;
-                case EPrayerTime.Maghrib:
-                    result = timeEvent == EPrayerTimeEvent.Start ? prayerTimes.Maghrib : prayerTimes.Isha;
+                case ETimeType.DhuhrEnd:
+                    result = prayerTimes.Asr;
                     break;
-                case EPrayerTime.Isha:
-                    result = timeEvent == EPrayerTimeEvent.Start ? prayerTimes.Isha : (prayerTimes.NextFajr ?? prayerTimes.Isha);
+                case ETimeType.AsrStart:
+                    result = prayerTimes.Asr;
+                    break;
+                case ETimeType.AsrEnd:
+                    result = prayerTimes.Maghrib;
+                    break;
+                case ETimeType.MaghribStart:
+                    result = prayerTimes.Maghrib;
+                    break;
+                case ETimeType.MaghribEnd:
+                    result = prayerTimes.Isha;
+                    break;
+                case ETimeType.IshaStart:
+                    result = prayerTimes.Isha;
+                    break;
+                case ETimeType.IshaEnd:
+                    result = prayerTimes.NextFajr ?? prayerTimes.Isha;
                     break;
                 default:
-                    throw new ArgumentException($"Invalid {nameof(prayerTime)} value: {prayerTime}.");
+                    throw new ArgumentException($"Invalid {nameof(timeType)} value: {timeType}.");
             }
 
             return result;
         }
 
-        public List<(EPrayerTime PrayerTime, EPrayerTimeEvent PrayerTimeEvent)> GetUnsupportedPrayerTimeEvents()
+        public HashSet<ETimeType> GetUnsupportedCalculationTimeTypes()
         {
-            return new List<(EPrayerTime PrayerTime, EPrayerTimeEvent PrayerTimeEvent)>
+            return new HashSet<ETimeType>
             {
-                (EPrayerTime.Fajr, EPrayerTimeEvent.Fajr_Fadilah),
-                (EPrayerTime.Fajr, EPrayerTimeEvent.Fajr_Karaha),
-                (EPrayerTime.Duha, EPrayerTimeEvent.Start),
-                (EPrayerTime.Duha, EPrayerTimeEvent.End),
-                (EPrayerTime.Asr, EPrayerTimeEvent.AsrMithlayn),
-                (EPrayerTime.Asr, EPrayerTimeEvent.Asr_Karaha),
-                (EPrayerTime.Maghrib, EPrayerTimeEvent.IshtibaqAnNujum),
+                ETimeType.FajrGhalas,
+                ETimeType.FajrKaraha,
+                ETimeType.DuhaStart,
+                ETimeType.AsrMithlayn,
+                ETimeType.AsrKaraha,
+                ETimeType.MaghribIshtibaq,
             };
         }
     }

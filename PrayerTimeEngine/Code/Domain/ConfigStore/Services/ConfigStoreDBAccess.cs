@@ -60,7 +60,7 @@ namespace PrayerTimeEngine.Code.Domain.ConfigStore.Services
                 var command = connection.CreateCommand();
                 command.CommandText =
                 @"
-                SELECT Id, ProfileID, PrayerTime, PrayerTimeEvent, ConfigurationTypeName, JsonConfigurationString
+                SELECT Id, ProfileID, TimeType, ConfigurationTypeName, JsonConfigurationString
                 FROM TimeSpecificConfig
                 WHERE ProfileID = $ProfileId;";
 
@@ -74,8 +74,7 @@ namespace PrayerTimeEngine.Code.Domain.ConfigStore.Services
                         {
                             ID = reader.GetInt32(0),
                             ProfileID = reader.GetInt32(1),
-                            PrayerTime = (EPrayerTime)reader.GetInt32(2),
-                            PrayerTimeEvent = (EPrayerTimeEvent)reader.GetInt32(3),
+                            TimeType = (ETimeType)reader.GetInt32(2)
                         };
 
                         string configurationTypeName = reader.GetString(4);
@@ -160,12 +159,11 @@ namespace PrayerTimeEngine.Code.Domain.ConfigStore.Services
                         var configCommand = connection.CreateCommand();
                         configCommand.CommandText =
                         @"
-                        INSERT INTO TimeSpecificConfig (ProfileID, PrayerTime, PrayerTimeEvent, ConfigurationTypeName, JsonConfigurationString, InsertDateTime) 
-                        VALUES ($ProfileID, $PrayerTime, $PrayerTimeEvent, $ConfigurationTypeName, $JsonConfigurationString, $InsertDateTime);";
+                        INSERT INTO TimeSpecificConfig (ProfileID, TimeType, ConfigurationTypeName, JsonConfigurationString, InsertDateTime) 
+                        VALUES ($ProfileID, $TimeType, $ConfigurationTypeName, $JsonConfigurationString, $InsertDateTime);";
 
                         configCommand.Parameters.AddWithValue("$ProfileID", profile.ID);
-                        configCommand.Parameters.AddWithValue("$PrayerTime", (int)config.Key.Item1);
-                        configCommand.Parameters.AddWithValue("$PrayerTimeEvent", (int)config.Key.Item2);
+                        configCommand.Parameters.AddWithValue("$PrayerTime", (int)config.Key);
                         configCommand.Parameters.AddWithValue("$ConfigurationTypeName", BaseCalculationConfiguration.GetDiscriminatorForConfigurationType(config.Value.GetType()));
                         configCommand.Parameters.AddWithValue("$JsonConfigurationString", JsonConvert.SerializeObject(config.Value));
                         configCommand.Parameters.AddWithValue("$InsertDateTime", DateTime.Now);

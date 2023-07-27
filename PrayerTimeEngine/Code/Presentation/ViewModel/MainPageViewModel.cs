@@ -60,8 +60,8 @@ namespace PrayerTimeEngine.Code.Presentation.ViewModel
         #region ICommand
 
         public ICommand GoToSettingsPageCommand 
-            => new Command<EPrayerTime>(
-                async (EPrayerTime prayerTime) => 
+            => new Command<EPrayerType>(
+                async (EPrayerType prayerTime) => 
                 {
                     await _navigationService.NavigateTo<SettingsHandlerPageViewModel>(prayerTime);
                 });
@@ -96,20 +96,20 @@ namespace PrayerTimeEngine.Code.Presentation.ViewModel
 
         private void setValuesYo()
         {
-            ShowFajrGhalas =  IsCalculationShown((EPrayerTime.Fajr, EPrayerTimeEvent.Fajr_Fadilah));
-            ShowFajrRedness = IsCalculationShown((EPrayerTime.Fajr, EPrayerTimeEvent.Fajr_Karaha));
-            ShowDuhaQuarter = IsCalculationShown((EPrayerTime.Duha, EPrayerTimeEvent.DuhaQuarterOfDay));
-            ShowMithlayn =    IsCalculationShown((EPrayerTime.Asr, EPrayerTimeEvent.AsrMithlayn));
-            ShowKaraha =      IsCalculationShown((EPrayerTime.Asr, EPrayerTimeEvent.Asr_Karaha));
-            ShowIshtibaq =    IsCalculationShown((EPrayerTime.Maghrib, EPrayerTimeEvent.IshtibaqAnNujum));
-            ShowOneThird =    IsCalculationShown((EPrayerTime.Isha, EPrayerTimeEvent.IshaFirstThirdOfNight));
-            ShowTwoThird =    IsCalculationShown((EPrayerTime.Isha, EPrayerTimeEvent.IshaSecondThirdOfNight));
-            ShowMidnight =    IsCalculationShown((EPrayerTime.Isha, EPrayerTimeEvent.IshaMidnight));
+            ShowFajrGhalas =  IsCalculationShown(ETimeType.FajrGhalas);
+            ShowFajrRedness = IsCalculationShown(ETimeType.FajrKaraha);
+            ShowDuhaQuarter = IsCalculationShown(ETimeType.DuhaQuarterOfDay);
+            ShowMithlayn =    IsCalculationShown(ETimeType.AsrMithlayn);
+            ShowKaraha =      IsCalculationShown(ETimeType.AsrKaraha);
+            ShowIshtibaq =    IsCalculationShown(ETimeType.MaghribIshtibaq);
+            ShowOneThird =    IsCalculationShown(ETimeType.IshaFirstThird);
+            ShowTwoThird =    IsCalculationShown(ETimeType.IshaSecondThird);
+            ShowMidnight =    IsCalculationShown(ETimeType.IshaMidnight);
 
             OnPropertyChanged();
         }
 
-        private bool IsCalculationShown((EPrayerTime, EPrayerTimeEvent) timeData)
+        private bool IsCalculationShown(ETimeType timeData)
         {
             if (!CurrentProfile.Configurations.TryGetValue(timeData, out BaseCalculationConfiguration config) || config == null)
             {

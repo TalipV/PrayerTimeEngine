@@ -40,17 +40,10 @@ namespace PrayerTimeEngine.Code.Domain.ConfigStore.Models
             return _profiles;
         }
 
-        public BaseCalculationConfiguration GetConfiguration((EPrayerTime PrayerTime, EPrayerTimeEvent PrayerTimeEvent) prayerTimeWithEvent)
+        public BaseCalculationConfiguration GetConfiguration(ETimeType timeType)
         {
             Profile profile = this.GetProfiles().GetAwaiter().GetResult().First();
-
-            if (!profile.Configurations.TryGetValue(prayerTimeWithEvent, out BaseCalculationConfiguration calculationConfiguration) 
-                || calculationConfiguration == null)
-            {
-                profile.Configurations[prayerTimeWithEvent] = calculationConfiguration = new GenericSettingConfiguration();
-            }
-
-            return calculationConfiguration;
+            return profile.GetConfiguration(timeType);
         }
 
         private Profile getDummyProfile()

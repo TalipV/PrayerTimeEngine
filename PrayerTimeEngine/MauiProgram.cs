@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using PrayerTimeEngine.Code.Domain;
 using PrayerTimeEngine.Code.Domain.CalculationService;
 using PrayerTimeEngine.Code.Domain.Calculator.Fazilet.Interfaces;
 using PrayerTimeEngine.Code.Domain.Calculator.Fazilet.Services;
@@ -44,6 +45,7 @@ public static class MauiProgram
     {
         serviceCollection.AddSingleton<ISQLiteDB, SQLiteDB>();
         serviceCollection.AddSingleton<IPrayerTimeCalculationService, PrayerTimeCalculationService>();
+        serviceCollection.AddSingleton<TimeTypeAttributeService>();
 
         serviceCollection.AddTransient<FaziletPrayerTimeCalculator>();
         serviceCollection.AddSingleton<IFaziletDBAccess, FaziletDBAccess>();

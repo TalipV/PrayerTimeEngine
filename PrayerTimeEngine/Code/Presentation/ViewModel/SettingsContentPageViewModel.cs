@@ -1,6 +1,6 @@
-﻿using PrayerTimeEngine.Code.Common;
-using PrayerTimeEngine.Code.Common.Enum;
+﻿using PrayerTimeEngine.Code.Common.Enum;
 using PrayerTimeEngine.Code.Common.Extension;
+using PrayerTimeEngine.Code.Domain;
 using PrayerTimeEngine.Code.Domain.Calculator.Muwaqqit.Models;
 using PrayerTimeEngine.Code.Domain.ConfigStore.Interfaces;
 using PrayerTimeEngine.Code.Domain.ConfigStore.Models;
@@ -33,10 +33,12 @@ namespace PrayerTimeEngine.Code.Presentation.ViewModel
 
         public SettingsContentPageViewModel(
             PrayerTimesConfigurationStorage prayerTimesConfigurationStorage,
-            IConfigStoreService configStoreService)
+            IConfigStoreService configStoreService,
+            TimeTypeAttributeService timeTypeAttributeService)
         {
             _configStoreService = configStoreService;
             _prayerTimesConfigurationStorage = prayerTimesConfigurationStorage;
+            _timeTypeAttributeService = timeTypeAttributeService;
         }
 
         public event Action OnInitializeCustomUI_EventTrigger = delegate { };
@@ -45,50 +47,52 @@ namespace PrayerTimeEngine.Code.Presentation.ViewModel
 
         #region fields
 
-        private readonly IConfigStoreService _configStoreService;
         private readonly PrayerTimesConfigurationStorage _prayerTimesConfigurationStorage;
+        private readonly IConfigStoreService _configStoreService;
+        private readonly TimeTypeAttributeService _timeTypeAttributeService;
+        
+        private bool _isInitialized = false;
 
         #endregion fields
 
         #region properties
 
-        public string TabTitle { get; private set; }
-        public (EPrayerTime PrayerTime, EPrayerTimeEvent PrayerTimeEvent) PrayerTimeWithEvent { get; private set; }
+        public string TabTitle { get; set; }
+        public ETimeType TimeType { get; set; }
 
-        public List<ECalculationSource> CalculationSources { get; private set; }
-        public ECalculationSource SelectedCalculationSource { get; private set; }
+        public List<ECalculationSource> CalculationSources { get; set; }
+        public ECalculationSource SelectedCalculationSource { get; set; }
 
-        public List<int> MinuteAdjustments { get; private set; }
-        public int SelectedMinuteAdjustment { get; private set; }
+        public List<int> MinuteAdjustments { get; set; }
+        public int SelectedMinuteAdjustment { get; set; }
 
-        public bool IsTimeShown { get; private set; }
-        public bool IsTimeShownCheckBoxVisible { get; private set; }
+        public bool IsTimeShown { get; set; }
+        public bool IsTimeShownCheckBoxVisible { get; set; }
 
-        public bool ShowMinuteAdjustmentPicker { get; private set; }
-        public bool ShowCalculationSourcePicker { get; private set; }
+        public bool ShowMinuteAdjustmentPicker { get; set; }
+        public bool ShowCalculationSourcePicker { get; set; }
 
-        public ISettingConfigurationViewModel CustomSettingConfigurationViewModel { get; private set; }
+        public ISettingConfigurationViewModel CustomSettingConfigurationViewModel { get; set; }
 
         #endregion properties
 
         #region public methods
 
-        public void Initialize(EPrayerTime PrayerTime, EPrayerTimeEvent PrayerTimeEvent)
+        public void Initialize(ETimeType timeType)
         {
-            TabTitle = $"{PrayerTime}-{PrayerTimeEvent}";
-            PrayerTimeWithEvent = (PrayerTime, PrayerTimeEvent);
-            ShowCalculationSourcePicker = (PrayerTimeWithEvent != (EPrayerTime.Duha, EPrayerTimeEvent.End));
-            IsTimeShownCheckBoxVisible = PrayerTimeEvent != EPrayerTimeEvent.Start && PrayerTimeEvent != EPrayerTimeEvent.End;
+            TabTitle = $"{timeType}";
+            TimeType = timeType;
+            ShowCalculationSourcePicker = TimeType != ETimeType.DuhaEnd;
+            IsTimeShownCheckBoxVisible = !_timeTypeAttributeService.StartEndTypes.Contains(timeType);
 
             loadCalculationSource();
             loadMinuteAdjustmentSource();
 
-            BaseCalculationConfiguration calculationConfiguration = _prayerTimesConfigurationStorage.GetConfiguration(PrayerTimeWithEvent);
+            BaseCalculationConfiguration calculationConfiguration = _prayerTimesConfigurationStorage.GetConfiguration(TimeType);
             IsTimeShown = !IsTimeShownCheckBoxVisible || calculationConfiguration.IsTimeShown;
 
             SelectedCalculationSource = calculationConfiguration.Source;
-            if (SelectedCalculationSource == ECalculationSource.None)
-                OnSelectedCalculationSourceChanged();
+            OnSelectedCalculationSourceChanged();
 
             SelectedMinuteAdjustment = calculationConfiguration.MinuteAdjustment;
             CustomSettingConfigurationViewModel?.AssignSettingValues(calculationConfiguration);
@@ -98,13 +102,16 @@ namespace PrayerTimeEngine.Code.Presentation.ViewModel
 
         public void OnSelectedCalculationSourceChanged()
         {
+            if (!_isInitialized)
+                return;
+
             if (SelectedCalculationSource == ECalculationSource.Muwaqqit
-                && MuwaqqitDegreeCalculationConfiguration.DegreePrayerTimeEvents.ContainsKey(PrayerTimeWithEvent))
+                && MuwaqqitDegreeCalculationConfiguration.DegreePrayerTimeEvents.ContainsKey(TimeType))
             {
                 CustomSettingConfigurationViewModel =
                         new MuwaqqitDegreeSettingConfigurationViewModel(
-                            PrayerTimeWithEvent,
-                            MuwaqqitDegreeCalculationConfiguration.DegreePrayerTimeEvents[PrayerTimeWithEvent]);
+                            TimeType,
+                            MuwaqqitDegreeCalculationConfiguration.DegreePrayerTimeEvents[TimeType]);
             }
             else
             {
@@ -142,21 +149,15 @@ namespace PrayerTimeEngine.Code.Presentation.ViewModel
             List<ECalculationSource> calculationSources = 
                 Enum.GetValues(typeof(ECalculationSource))
                     .Cast<ECalculationSource>()
-                    .Where(x => PrayerTimeWithEvent.PrayerTimeEvent.IsSupportedBy(x))
+                    .Where(x => TimeType.IsSupportedBy(x))
                     .ToList();
-
-            if (PrayerTimeWithEvent.PrayerTime == EPrayerTime.Duha)
-            {
-                calculationSources.Remove(ECalculationSource.Fazilet);
-                calculationSources.Remove(ECalculationSource.Semerkand);
-            }
 
             this.CalculationSources = calculationSources;
         }
 
         private void loadMinuteAdjustmentSource()
         {
-            if (PrayerTimeWithEvent == (EPrayerTime.Duha, EPrayerTimeEvent.End))
+            if (TimeType == ETimeType.DuhaEnd)
             {
                 this.MinuteAdjustments = Enumerable.Range(-40, 35).ToList();
             }
@@ -169,7 +170,7 @@ namespace PrayerTimeEngine.Code.Presentation.ViewModel
         private void saveSettingsToProfile(BaseCalculationConfiguration settings)
         {
             List<Profile> profiles = _prayerTimesConfigurationStorage.GetProfiles().GetAwaiter().GetResult();
-            profiles.First().Configurations[PrayerTimeWithEvent] = settings;
+            profiles.First().Configurations[TimeType] = settings;
             _configStoreService.SaveProfiles(profiles).GetAwaiter().GetResult();
         }
 

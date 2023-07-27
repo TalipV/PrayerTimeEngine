@@ -4,21 +4,21 @@ namespace PrayerTimeEngine.Code.Domain.Calculator.Muwaqqit.Models
 {
     public class MuwaqqitDegreeCalculationConfiguration : MuwaqqitCalculationConfiguration
     {
-        public static readonly Dictionary<(EPrayerTime, EPrayerTimeEvent), double> DegreePrayerTimeEvents =
-            new Dictionary<(EPrayerTime, EPrayerTimeEvent), double>
+        public static readonly Dictionary<ETimeType, double> DegreePrayerTimeEvents =
+            new Dictionary<ETimeType, double>
             {
-                [(EPrayerTime.Fajr, EPrayerTimeEvent.Start)] = -12.0,
-                [(EPrayerTime.Fajr, EPrayerTimeEvent.Fajr_Fadilah)] = -7.0,
-                [(EPrayerTime.Fajr, EPrayerTimeEvent.Fajr_Karaha)] = -3.0,
-
-                [(EPrayerTime.Duha, EPrayerTimeEvent.Start)] = 5.0,
-                [(EPrayerTime.Asr, EPrayerTimeEvent.Asr_Karaha)] = 5.0,
-
-                [(EPrayerTime.Maghrib, EPrayerTimeEvent.IshtibaqAnNujum)] = -10.0,
-                [(EPrayerTime.Maghrib, EPrayerTimeEvent.End)] = -12.0,
-
-                [(EPrayerTime.Isha, EPrayerTimeEvent.Start)] = -15.0,
-                [(EPrayerTime.Isha, EPrayerTimeEvent.End)] = -15.0,
+                [ETimeType.FajrStart] = -12.0,
+                [ETimeType.FajrGhalas] = -7.0,
+                [ETimeType.FajrKaraha] = -3.0,
+                  
+                [ETimeType.DuhaStart] = 5.0,
+                [ETimeType.AsrKaraha] = 5.0,
+                  
+                [ETimeType.MaghribIshtibaq] = -10.0,
+                [ETimeType.MaghribEnd] = -12.0,
+                  
+                [ETimeType.IshaStart] = -15.0,
+                [ETimeType.IshaEnd] = -15.0,
             };
 
         public MuwaqqitDegreeCalculationConfiguration(

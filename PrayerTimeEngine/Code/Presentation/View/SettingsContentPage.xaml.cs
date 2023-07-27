@@ -49,47 +49,16 @@ public partial class SettingsContentPage : ContentPage
 
     private void addDataBindings()
     {
-        this.CalculationSourcePickerLabelView
-            .SetBinding(
-                Label.IsVisibleProperty,
-                nameof(SettingsContentPageViewModel.ShowCalculationSourcePicker),
-                BindingMode.Default);
-        this.CalculationSourcePickerView
-            .SetBinding(
-                Picker.SelectedItemProperty,
-                nameof(SettingsContentPageViewModel.SelectedCalculationSource),
-                BindingMode.TwoWay);
-        this.CalculationSourcePickerView
-            .SetBinding(
-                Picker.ItemsSourceProperty,
-                nameof(SettingsContentPageViewModel.CalculationSources),
-                BindingMode.Default);
-        this.CalculationSourcePickerView
-            .SetBinding(
-                Picker.IsVisibleProperty,
-                nameof(SettingsContentPageViewModel.ShowCalculationSourcePicker),
-                BindingMode.Default);
+        this.CalculationSourcePickerView.SetBinding(Picker.ItemsSourceProperty, nameof(SettingsContentPageViewModel.CalculationSources), BindingMode.Default);
+        this.CalculationSourcePickerLabelView.SetBinding(Label.IsVisibleProperty, nameof(SettingsContentPageViewModel.ShowCalculationSourcePicker), BindingMode.Default);
+        this.CalculationSourcePickerView.SetBinding(Picker.SelectedItemProperty, nameof(SettingsContentPageViewModel.SelectedCalculationSource), BindingMode.TwoWay);
+        this.CalculationSourcePickerView.SetBinding(Picker.IsVisibleProperty, nameof(SettingsContentPageViewModel.ShowCalculationSourcePicker), BindingMode.Default);
 
-        this.MinuteAdjustmentPickerView
-            .SetBinding(
-                Picker.SelectedItemProperty,
-                nameof(SettingsContentPageViewModel.SelectedMinuteAdjustment),
-                BindingMode.TwoWay);
-        this.MinuteAdjustmentPickerView
-            .SetBinding(
-                Picker.ItemsSourceProperty,
-                nameof(SettingsContentPageViewModel.MinuteAdjustments),
-                BindingMode.Default);
+        this.MinuteAdjustmentPickerView.SetBinding(Picker.ItemsSourceProperty, nameof(SettingsContentPageViewModel.MinuteAdjustments), BindingMode.Default);
+        this.MinuteAdjustmentPickerView.SetBinding(Picker.SelectedItemProperty, nameof(SettingsContentPageViewModel.SelectedMinuteAdjustment), BindingMode.TwoWay);
 
-        this.IsTimeShownCheckBox
-            .SetBinding(
-                CheckBox.IsCheckedProperty,
-                nameof(SettingsContentPageViewModel.IsTimeShown),
-                BindingMode.TwoWay);
-        this.IsTimeShownCheckBox
-            .SetBinding(
-                CheckBox.IsVisibleProperty,
-                nameof(SettingsContentPageViewModel.IsTimeShownCheckBoxVisible),
-                BindingMode.Default);
+        this.IsTimeShownCheckBoxLabel.SetBinding(Label.IsVisibleProperty, nameof(SettingsContentPageViewModel.IsTimeShownCheckBoxVisible), BindingMode.Default);
+        this.IsTimeShownCheckBox.SetBinding(CheckBox.IsCheckedProperty, nameof(SettingsContentPageViewModel.IsTimeShown), BindingMode.TwoWay);
+        this.IsTimeShownCheckBox.SetBinding(CheckBox.IsVisibleProperty, nameof(SettingsContentPageViewModel.IsTimeShownCheckBoxVisible), BindingMode.Default);
     }
 }

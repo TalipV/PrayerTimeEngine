@@ -1,5 +1,6 @@
 ﻿using MvvmHelpers;
 using PrayerTimeEngine.Code.Common.Enum;
+using PrayerTimeEngine.Code.Domain;
 using PrayerTimeEngine.Code.Presentation.Service.Navigation;
 using PrayerTimeEngine.Code.Presentation.Service.SettingsContentPageFactory;
 using PrayerTimeEngine.Code.Presentation.View;
@@ -18,9 +19,12 @@ namespace PrayerTimeEngine.Code.Presentation.ViewModel
     [AddINotifyPropertyChangedInterface]
     public class SettingsHandlerPageViewModel : CustomBaseViewModel
     {
-        public SettingsHandlerPageViewModel(ISettingsContentPageFactory settingsContentPageFactory)
+        public SettingsHandlerPageViewModel(
+            ISettingsContentPageFactory settingsContentPageFactory,
+            TimeTypeAttributeService timeTypeAttributeService)
         {
             _settingsContentPageFactory = settingsContentPageFactory;
+            _timeTypeAttributeService = timeTypeAttributeService;
         }
 
         public event Action Initialized = delegate { };
@@ -28,6 +32,7 @@ namespace PrayerTimeEngine.Code.Presentation.ViewModel
         #region fields
 
         private readonly ISettingsContentPageFactory _settingsContentPageFactory;
+        private readonly TimeTypeAttributeService _timeTypeAttributeService;
 
         #endregion fields
 
@@ -41,16 +46,16 @@ namespace PrayerTimeEngine.Code.Presentation.ViewModel
 
         public override void Initialize(object parameter)
         {
-            if (parameter is not EPrayerTime prayerTime)
+            if (parameter is not EPrayerType prayerTime)
             {
-                throw new ArgumentException($"{nameof(parameter)} is not an {nameof(EPrayerTime)}");
+                throw new ArgumentException($"{nameof(parameter)} is not an {nameof(EPrayerType)}");
             }
 
-            foreach (EPrayerTimeEvent prayerTimeEvent in getPrayerTimeEvents(prayerTime))
+            foreach (ETimeType timeType in _timeTypeAttributeService.PrayerTypeToTimeTypes[prayerTime])
             {
                 SettingsContentPage settingsContentPage = _settingsContentPageFactory.Create();
                 SettingsContentPageViewModel tabViewModel = settingsContentPage.BindingContext as SettingsContentPageViewModel;
-                tabViewModel.Initialize(prayerTime, prayerTimeEvent);
+                tabViewModel.Initialize(timeType);
                 SettingsContentPages.Add(settingsContentPage);
             }
 
@@ -59,35 +64,5 @@ namespace PrayerTimeEngine.Code.Presentation.ViewModel
 
         #endregion public methods
 
-        #region private methods
-
-        private List<EPrayerTimeEvent> getPrayerTimeEvents(EPrayerTime prayerTime)
-        {
-            List<EPrayerTimeEvent> prayerTimeEvents = new List<EPrayerTimeEvent> { EPrayerTimeEvent.Start, EPrayerTimeEvent.End};
-
-            switch (prayerTime)
-            {
-                case EPrayerTime.Fajr:
-                    prayerTimeEvents.Add(EPrayerTimeEvent.Fajr_Fadilah);
-                    prayerTimeEvents.Add(EPrayerTimeEvent.Fajr_Karaha);
-                    break;
-
-                case EPrayerTime.Asr:
-                    prayerTimeEvents.Add(EPrayerTimeEvent.AsrMithlayn);
-                    prayerTimeEvents.Add(EPrayerTimeEvent.Asr_Karaha);
-                    break;
-
-                case EPrayerTime.Maghrib:
-                    prayerTimeEvents.Add(EPrayerTimeEvent.IshtibaqAnNujum);
-                    break;
-
-                default:
-                    break;
-            }
-
-            return prayerTimeEvents;
-        }
-        
-        #endregion private methods
     }
 }

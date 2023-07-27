@@ -1,6 +1,6 @@
 ﻿namespace PrayerTimeEngine.Code.Common.Enum
 {
-    public enum EPrayerTime
+    public enum EPrayerType
     {
         Fajr,
         Duha,

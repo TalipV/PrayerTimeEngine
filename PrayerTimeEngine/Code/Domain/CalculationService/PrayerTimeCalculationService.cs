@@ -1,5 +1,4 @@
-﻿using PrayerTimeEngine.Code.Common;
-using PrayerTimeEngine.Code.Common.Enum;
+﻿using PrayerTimeEngine.Code.Common.Enum;
 using PrayerTimeEngine.Code.Domain;
 using PrayerTimeEngine.Code.Domain.CalculationService;
 using PrayerTimeEngine.Code.Domain.Calculator.Fazilet.Services;
@@ -12,65 +11,72 @@ using PrayerTimeEngine.Domain.Models;
 public class PrayerTimeCalculationService : IPrayerTimeCalculationService
 {
     private readonly IServiceProvider _serviceProvider;
+    private readonly TimeTypeAttributeService _timeTypeAttributeService;
 
-    private readonly Dictionary<EPrayerTime, List<EPrayerTimeEvent>> CalculatorPrayerTimeEventsByPrayerTime =
-        new Dictionary<EPrayerTime, List<EPrayerTimeEvent>>
-        {
-            [EPrayerTime.Fajr]      = new List<EPrayerTimeEvent> { EPrayerTimeEvent.Start, EPrayerTimeEvent.End, EPrayerTimeEvent.Fajr_Fadilah, EPrayerTimeEvent.Fajr_Karaha },
-            [EPrayerTime.Duha]      = new List<EPrayerTimeEvent> { EPrayerTimeEvent.Start },
-            [EPrayerTime.Dhuhr]     = new List<EPrayerTimeEvent> { EPrayerTimeEvent.Start, EPrayerTimeEvent.End },
-            [EPrayerTime.Asr]       = new List<EPrayerTimeEvent> { EPrayerTimeEvent.Start, EPrayerTimeEvent.End, EPrayerTimeEvent.AsrMithlayn, EPrayerTimeEvent.Asr_Karaha},
-            [EPrayerTime.Maghrib]   = new List<EPrayerTimeEvent> { EPrayerTimeEvent.Start, EPrayerTimeEvent.End, EPrayerTimeEvent.IshtibaqAnNujum },
-            [EPrayerTime.Isha]      = new List<EPrayerTimeEvent> { EPrayerTimeEvent.Start, EPrayerTimeEvent.End },
-        };
-
-    public PrayerTimeCalculationService(IServiceProvider serviceProvider)
+    public PrayerTimeCalculationService(
+        IServiceProvider serviceProvider, 
+        TimeTypeAttributeService timeTypeAttributeService)
     {
         _serviceProvider = serviceProvider;
+        _timeTypeAttributeService = timeTypeAttributeService;
     }
 
     public async Task<PrayerTimesBundle> ExecuteAsync(Profile profile, DateTime dateTime)
     {
         PrayerTimesBundle prayerTimeEntity = new();
 
-        foreach (EPrayerTime prayerTime in CalculatorPrayerTimeEventsByPrayerTime.Keys)
-        {
-            foreach (EPrayerTimeEvent timeEvent in CalculatorPrayerTimeEventsByPrayerTime[prayerTime])
-            {
-                if (!profile.Configurations.TryGetValue((prayerTime, timeEvent), out BaseCalculationConfiguration config)
-                    || config == null
-                    || config.Source == ECalculationSource.None
-                    || !config.IsTimeShown)
-                {
-                    prayerTimeEntity.SetSpecificPrayerTimeDateTime(prayerTime, timeEvent, null);
-                    continue;
-                }
-
-                IPrayerTimeCalculator timeCalculator = getPrayerTimeCalculatorByCalculationSource(config.Source);
-
-                if (timeCalculator.GetUnsupportedPrayerTimeEvents().Any(x => x.PrayerTime == prayerTime && x.PrayerTimeEvent == timeEvent))
-                {
-                    throw new ArgumentException($"{timeCalculator.GetType().Name}[{config.Source}] does not support {prayerTime}-{timeEvent}!");
-                }
-
-                DateTime calculatedTime = await timeCalculator.GetPrayerTimesAsync(dateTime, prayerTime, timeEvent, config);
-                calculatedTime = calculatedTime.AddMinutes(config.MinuteAdjustment);
-
-                prayerTimeEntity.SetSpecificPrayerTimeDateTime(prayerTime, timeEvent, calculatedTime);
-            }
-        }
-
-        if (prayerTimeEntity.Dhuhr?.Start != null 
-            && profile.Configurations.TryGetValue((EPrayerTime.Duha, EPrayerTimeEvent.End), out BaseCalculationConfiguration duhaConfig)
-            && duhaConfig != null)
-        {
-            prayerTimeEntity.SetSpecificPrayerTimeDateTime(
-                EPrayerTime.Duha,
-                EPrayerTimeEvent.End,
-                prayerTimeEntity.Dhuhr.Start.Value.AddMinutes(duhaConfig.MinuteAdjustment));
-        }
+        await handleComplexTypes(profile, dateTime, prayerTimeEntity);
+        handleSimpleTypes(profile, prayerTimeEntity);
 
         return prayerTimeEntity;
+    }
+
+    private async Task handleComplexTypes(Profile profile, DateTime dateTime, PrayerTimesBundle prayerTimeEntity)
+    {
+        foreach (ETimeType timeType in _timeTypeAttributeService.NonSimpleTypes)
+        {
+            if (profile.GetConfiguration(timeType) is not BaseCalculationConfiguration config
+                || config.Source == ECalculationSource.None
+                || !config.IsTimeShown)
+            {
+                prayerTimeEntity.SetSpecificPrayerTimeDateTime(timeType, null);
+                continue;
+            }
+
+            IPrayerTimeCalculator timeCalculator = getPrayerTimeCalculatorByCalculationSource(config.Source);
+
+            if (timeCalculator.GetUnsupportedCalculationTimeTypes().Contains(timeType))
+            {
+                throw new ArgumentException($"{timeCalculator.GetType().Name}[{config.Source}] does not support {timeType}!");
+            }
+
+            DateTime calculatedTime = await timeCalculator.GetPrayerTimesAsync(dateTime, timeType, config);
+            calculatedTime = calculatedTime.AddMinutes(config.MinuteAdjustment);
+
+            prayerTimeEntity.SetSpecificPrayerTimeDateTime(timeType, calculatedTime);
+        }
+    }
+
+    private void handleSimpleTypes(Profile profile, PrayerTimesBundle prayerTimeEntity)
+    {
+        foreach (ETimeType timeType in _timeTypeAttributeService.SimpleTypes)
+        {
+            switch (timeType)
+            {
+                case ETimeType.DuhaEnd:
+                    if (prayerTimeEntity.Dhuhr?.Start != null
+                        && profile.Configurations.TryGetValue(ETimeType.DuhaEnd, out BaseCalculationConfiguration duhaConfig)
+                        && duhaConfig != null)
+                    {
+                        prayerTimeEntity.SetSpecificPrayerTimeDateTime(
+                            ETimeType.DuhaEnd,
+                            prayerTimeEntity.Dhuhr.Start.Value.AddMinutes(duhaConfig.MinuteAdjustment));
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
     }
 
     private IPrayerTimeCalculator getPrayerTimeCalculatorByCalculationSource(ECalculationSource source)

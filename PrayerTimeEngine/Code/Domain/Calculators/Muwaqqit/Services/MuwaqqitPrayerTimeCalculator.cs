@@ -10,17 +10,21 @@ namespace PrayerTimeEngine.Code.Domain.Calculator.Muwaqqit.Services
     {
         private readonly IMuwaqqitDBAccess _muwaqqitDBAccess;
         private readonly IMuwaqqitApiService _muwaqqitApiService;
+        private readonly TimeTypeAttributeService _timeTypeAttributeService;
 
-        public MuwaqqitPrayerTimeCalculator(IMuwaqqitDBAccess muwaqqitDBAccess, IMuwaqqitApiService muwaqqitApiService)
+        public MuwaqqitPrayerTimeCalculator(
+            IMuwaqqitDBAccess muwaqqitDBAccess, 
+            IMuwaqqitApiService muwaqqitApiService,
+            TimeTypeAttributeService timeTypeAttributeService)
         {
             _muwaqqitDBAccess = muwaqqitDBAccess;
             _muwaqqitApiService = muwaqqitApiService;
+            _timeTypeAttributeService = timeTypeAttributeService;
         }
 
         public async Task<DateTime> GetPrayerTimesAsync(
             DateTime date,
-            EPrayerTime prayerTime,
-            EPrayerTimeEvent timeEvent,
+            ETimeType timeType,
             BaseCalculationConfiguration configuration)
         {
             // location selection has not been implemented yet
@@ -30,8 +34,7 @@ namespace PrayerTimeEngine.Code.Domain.Calculator.Muwaqqit.Services
 
             double fajrDegree, ishaDegree, ishtibaqDegree, asrKarahaDegree;
             getDegreeValue(
-                prayerTime,
-                timeEvent,
+                timeType,
                 configuration,
                 out fajrDegree,
                 out ishaDegree,
@@ -39,14 +42,13 @@ namespace PrayerTimeEngine.Code.Domain.Calculator.Muwaqqit.Services
                 out asrKarahaDegree);
 
             MuwaqqitPrayerTimes prayerTimes = await getPrayerTimesInternal(date, longitude, latitude, fajrDegree, ishaDegree, ishtibaqDegree, asrKarahaDegree, timezone);
-            DateTime dateTime = getDateTimeFromMuwaqqitPrayerTimes(prayerTime, timeEvent, prayerTimes);
+            DateTime dateTime = getDateTimeFromMuwaqqitPrayerTimes(timeType, prayerTimes);
 
             return dateTime;
         }
 
-        private static void getDegreeValue(
-            EPrayerTime prayerTime,
-            EPrayerTimeEvent timeEvent,
+        private void getDegreeValue(
+            ETimeType timeType,
             BaseCalculationConfiguration muwaqqitConfig,
             out double fajrDegree,
             out double ishaDegree,
@@ -60,29 +62,27 @@ namespace PrayerTimeEngine.Code.Domain.Calculator.Muwaqqit.Services
 
             if (muwaqqitConfig is not MuwaqqitDegreeCalculationConfiguration muwaqqitDegreeConfig)
             {
-                // should have been degree calculation
-                if ((prayerTime == EPrayerTime.Fajr || prayerTime == EPrayerTime.Isha) && timeEvent == EPrayerTimeEvent.Start)
+                if (_timeTypeAttributeService.DegreeTypes.Contains(timeType))
                 {
-                    throw new ArgumentException(
-                        $"When {nameof(muwaqqitConfig)} is an instance of {nameof(MuwaqqitDegreeCalculationConfiguration)} it " +
-                        $"has to be a calculation of {nameof(EPrayerTime.Fajr)} or {nameof(EPrayerTime.Isha)}-{EPrayerTimeEvent.Start}");
+                    throw new ArgumentException( $"Time {timeType} requires a {nameof(MuwaqqitDegreeCalculationConfiguration)} for its degree information.");
                 }
+
                 return;
             }
 
-            if (prayerTime == EPrayerTime.Fajr && (timeEvent == EPrayerTimeEvent.Start || timeEvent == EPrayerTimeEvent.Fajr_Fadilah || timeEvent == EPrayerTimeEvent.Fajr_Karaha))
+            if (timeType == ETimeType.FajrStart || timeType == ETimeType.FajrGhalas || timeType == ETimeType.FajrKaraha)
                 fajrDegree = muwaqqitDegreeConfig.Degree;
-            else if (prayerTime == EPrayerTime.Isha && timeEvent == EPrayerTimeEvent.Start)
+            else if (timeType == ETimeType.IshaStart)
                 ishaDegree = muwaqqitDegreeConfig.Degree;
-            else if (prayerTime == EPrayerTime.Isha && timeEvent == EPrayerTimeEvent.End)
+            else if (timeType == ETimeType.IshaEnd)
                 fajrDegree = muwaqqitDegreeConfig.Degree;
-            else if (prayerTime == EPrayerTime.Maghrib && timeEvent == EPrayerTimeEvent.End)
+            else if (timeType == ETimeType.MaghribEnd)
                 ishaDegree = muwaqqitDegreeConfig.Degree;
-            else if (prayerTime == EPrayerTime.Maghrib && timeEvent == EPrayerTimeEvent.IshtibaqAnNujum)
+            else if (timeType == ETimeType.MaghribIshtibaq)
                 ishtibaqDegree = muwaqqitDegreeConfig.Degree;
-            else if (prayerTime == EPrayerTime.Asr && timeEvent == EPrayerTimeEvent.Asr_Karaha)
+            else if (timeType == ETimeType.AsrKaraha)
                 asrKarahaDegree = muwaqqitDegreeConfig.Degree;
-            else if (prayerTime == EPrayerTime.Duha && timeEvent == EPrayerTimeEvent.Start)
+            else if (timeType == ETimeType.DuhaStart)
                 asrKarahaDegree = muwaqqitDegreeConfig.Degree;
             else
                 throw new ArgumentException(
@@ -90,11 +90,9 @@ namespace PrayerTimeEngine.Code.Domain.Calculator.Muwaqqit.Services
                     $"has to be a calculation of a time with a degree.");
         }
 
-        public List<(EPrayerTime PrayerTime, EPrayerTimeEvent PrayerTimeEvent)> GetUnsupportedPrayerTimeEvents()
+        public HashSet<ETimeType> GetUnsupportedCalculationTimeTypes()
         {
-            return new List<(EPrayerTime PrayerTime, EPrayerTimeEvent PrayerTimeEvent)>
-            {
-            };
+            return new HashSet<ETimeType>();
         }
 
         private async Task<MuwaqqitPrayerTimes> getPrayerTimesInternal(
@@ -119,87 +117,41 @@ namespace PrayerTimeEngine.Code.Domain.Calculator.Muwaqqit.Services
         }
 
         // TODO: MASSIV HINTERFRAGEN (Generischer und Isha-Ende als Fajr-Beginn??)
-        private DateTime getDateTimeFromMuwaqqitPrayerTimes(EPrayerTime prayerTime, EPrayerTimeEvent timeEvent, MuwaqqitPrayerTimes prayerTimes)
+        private DateTime getDateTimeFromMuwaqqitPrayerTimes(ETimeType timeType, MuwaqqitPrayerTimes prayerTimes)
         {
-            switch (prayerTime)
+            switch (timeType)
             {
-                case EPrayerTime.Fajr:
-                    if (timeEvent == EPrayerTimeEvent.Start || timeEvent == EPrayerTimeEvent.Fajr_Fadilah || timeEvent == EPrayerTimeEvent.Fajr_Karaha)
-                    {
-                        return prayerTimes.Fajr;
-                    }
-                    else if (timeEvent == EPrayerTimeEvent.End)
-                    {
-                        return prayerTimes.Shuruq;
-                    }
-                    break;
-                case EPrayerTime.Duha:
-                    if (timeEvent == EPrayerTimeEvent.Start)
-                    {
-                        return prayerTimes.Duha;
-                    }
-                    else if (timeEvent == EPrayerTimeEvent.End)
-                    {
-                        return prayerTimes.Dhuhr;
-                    }
-                    break;
-                case EPrayerTime.Dhuhr:
-                    if (timeEvent == EPrayerTimeEvent.Start)
-                    {
-                        return prayerTimes.Dhuhr;
-                    }
-                    else if (timeEvent == EPrayerTimeEvent.End)
-                    {
-                        return prayerTimes.AsrMithl;
-                    }
-                    break;
-                case EPrayerTime.Asr:
-                    if (timeEvent == EPrayerTimeEvent.Start)
-                    {
-                        return prayerTimes.AsrMithl;
-                    }
-                    else if (timeEvent == EPrayerTimeEvent.End)
-                    {
-                        return prayerTimes.Maghrib;
-                    }
-                    else if (timeEvent == EPrayerTimeEvent.AsrMithlayn)
-                    {
-                        return prayerTimes.AsrMithlayn;
-                    }
-                    else if (timeEvent == EPrayerTimeEvent.Asr_Karaha)
-                    {
-                        return prayerTimes.AsrKaraha;
-                    }
-                    break;
-                case EPrayerTime.Maghrib:
-                    if (timeEvent == EPrayerTimeEvent.Start)
-                    {
-                        return prayerTimes.Maghrib;
-                    }
-                    else if (timeEvent == EPrayerTimeEvent.End)
-                    {
-                        return prayerTimes.Isha;
-                    }
-                    else if (timeEvent == EPrayerTimeEvent.IshtibaqAnNujum)
-                    {
-                        return prayerTimes.Ishtibaq;
-                    }
-                    break;
-                case EPrayerTime.Isha:
-                    if (timeEvent == EPrayerTimeEvent.Start)
-                    {
-                        return prayerTimes.Isha;
-                    }
-                    else if (timeEvent == EPrayerTimeEvent.End)
-                    {
-                        return prayerTimes.NextFajr;
-                    }
-                    break;
+                case ETimeType.FajrStart:
+                case ETimeType.FajrGhalas:
+                case ETimeType.FajrKaraha:
+                    return prayerTimes.Fajr;
+                case ETimeType.FajrEnd:
+                    return prayerTimes.Shuruq;
+                case ETimeType.DuhaStart:
+                    return prayerTimes.Duha;
+                case ETimeType.DhuhrStart:
+                case ETimeType.DuhaEnd:
+                    return prayerTimes.Dhuhr;
+                case ETimeType.DhuhrEnd:
+                    return prayerTimes.AsrMithl;
+                case ETimeType.AsrStart:
+                    return prayerTimes.AsrMithl;
+                case ETimeType.AsrEnd:
+                    return prayerTimes.Maghrib;
+                case ETimeType.AsrMithlayn:
+                    return prayerTimes.AsrMithlayn;
+                case ETimeType.AsrKaraha:
+                    return prayerTimes.AsrKaraha;
+                case ETimeType.MaghribStart:
+                    return prayerTimes.Maghrib;
+                case ETimeType.MaghribEnd:
+                case ETimeType.IshaStart:
+                    return prayerTimes.Isha;
+                case ETimeType.IshaEnd:
+                    return prayerTimes.NextFajr;
                 default:
-                    break;
+                    throw new ArgumentException($"Invalid {nameof(timeType)} value: {timeType}.");
             }
-
-            throw new ArgumentException($"Invalid {nameof(prayerTime)} value: {prayerTime}.");
         }
     }
 }

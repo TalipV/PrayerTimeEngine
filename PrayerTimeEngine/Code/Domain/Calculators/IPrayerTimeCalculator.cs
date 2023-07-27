@@ -7,9 +7,9 @@ namespace PrayerTimeEngine.Code.Domain.Calculators
     {
         public Task<DateTime> GetPrayerTimesAsync(
             DateTime date,
-            EPrayerTime prayerTime, EPrayerTimeEvent timeEvent,
+            ETimeType timeType,
             BaseCalculationConfiguration configuration);
 
-        public List<(EPrayerTime PrayerTime, EPrayerTimeEvent PrayerTimeEvent)> GetUnsupportedPrayerTimeEvents();
+        public HashSet<ETimeType> GetUnsupportedCalculationTimeTypes();
     }
 }

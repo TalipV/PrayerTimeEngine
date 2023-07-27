@@ -58,16 +58,14 @@ public class SQLiteDB : ISQLiteDB
                 TimeSpecificConfig (
                     Id INTEGER PRIMARY KEY,
                     ProfileID INTEGER NOT NULL,
-
-                    PrayerTime INTEGER NOT NULL,
-                    PrayerTimeEvent INTEGER NOT NULL,
+                    TimeType INTEGER NOT NULL,
 
                     ConfigurationTypeName NVARCHAR(100) NOT NULL,
                     JsonConfigurationString TEXT NOT NULL,
 
                     InsertDateTime DATETIME NOT NULL,
 
-                    UNIQUE(ProfileID, PrayerTime, PrayerTimeEvent),
+                    UNIQUE(ProfileID, TimeType),
                     FOREIGN KEY(ProfileID) REFERENCES Profile(Id))";
         createTable(connection, tableTimeSpecificConfig);
 

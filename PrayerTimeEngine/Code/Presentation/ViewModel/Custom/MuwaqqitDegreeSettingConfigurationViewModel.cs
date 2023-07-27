@@ -9,19 +9,19 @@ namespace PrayerTimeEngine.Code.Presentation.ViewModel.Custom
     [AddINotifyPropertyChangedInterface]
     public class MuwaqqitDegreeSettingConfigurationViewModel : ISettingConfigurationViewModel
     {
-        (EPrayerTime prayerTime, EPrayerTimeEvent prayerTimeEvent) PrayerTimeWithEvent;
-
         public MuwaqqitDegreeSettingConfigurationViewModel(
-            (EPrayerTime prayerTime, EPrayerTimeEvent prayerTimeEvent) prayerTimeWithEvent,
+            ETimeType timeType,
             double selectedDegree)
         {
             SelectedDegree = selectedDegree;
-            PrayerTimeWithEvent = prayerTimeWithEvent;
-            DegreeItemsSource = getItemSource(PrayerTimeWithEvent);
+            TimeType = timeType;
+            DegreeItemsSource = getItemSource(TimeType);
         }
 
         public double SelectedDegree { get; set; }
         public List<double> DegreeItemsSource { get; set; }
+
+        public ETimeType TimeType { get; init; }
 
         public BaseCalculationConfiguration BuildSetting(int minuteAdjustment, bool isTimeShown)
         {
@@ -57,18 +57,21 @@ namespace PrayerTimeEngine.Code.Presentation.ViewModel.Custom
                 throw new ArgumentException($"{nameof(configuration)} is not of type {nameof(MuwaqqitDegreeCalculationConfiguration)}");
             }
 
-            DegreeItemsSource = getItemSource(PrayerTimeWithEvent);
+            DegreeItemsSource = getItemSource(TimeType);
             SelectedDegree = muwaqqitConfig.Degree;
         }
 
-        private List<double> getItemSource((EPrayerTime prayerTime, EPrayerTimeEvent prayerTimeEvent) prayerTimeWithEvent)
+        private List<double> getItemSource(ETimeType timeType)
         {
-            if ((prayerTimeWithEvent.prayerTime == EPrayerTime.Duha && prayerTimeWithEvent.prayerTimeEvent == EPrayerTimeEvent.Start)
-                || prayerTimeWithEvent.prayerTimeEvent == EPrayerTimeEvent.Asr_Karaha)
+            if (timeType == ETimeType.DuhaStart || timeType == ETimeType.AsrKaraha)
             {
                 return SettingsContentPageViewModel.MODERATE_SELECTABLE_DEGREES.Select(Math.Abs).ToList();
             }
-            else if(prayerTimeWithEvent.prayerTimeEvent == EPrayerTimeEvent.Start || prayerTimeWithEvent.prayerTimeEvent == EPrayerTimeEvent.End)
+            else if(timeType == ETimeType.MaghribEnd
+                || timeType == ETimeType.IshaStart
+                || timeType == ETimeType.FajrStart
+                || timeType == ETimeType.FajrGhalas
+                || timeType == ETimeType.FajrKaraha)
             {
                 return SettingsContentPageViewModel.FAJR_ISHA_SELECTABLE_DEGREES;
             }

@@ -7,24 +7,24 @@ namespace PrayerTimeEngine.Code.Common.Extension
 {
     public static class CustomEnumExtension
     {
-        private static readonly ConcurrentDictionary<(EPrayerTimeEvent, ECalculationSource), bool> _isSupportedByResultCache = new();
+        private static readonly ConcurrentDictionary<(ETimeType, ECalculationSource), bool> _isSupportedByResultCache = new();
 
-        public static bool IsSupportedBy(this EPrayerTimeEvent timeEvent, ECalculationSource source)
+        public static bool IsSupportedBy(this ETimeType timeType, ECalculationSource source)
         {
-            return 
-                _isSupportedByResultCache.GetOrAdd(
-                    key: (timeEvent, source), 
+            return _isSupportedByResultCache
+                .GetOrAdd(
+                    key: (timeType, source), 
                     valueFactory: 
                         (keyValue) =>
                         {
                             // Get the enum field.
-                            System.Reflection.FieldInfo field = typeof(EPrayerTimeEvent).GetField(keyValue.Item1.ToString());
+                            System.Reflection.FieldInfo field = typeof(ETimeType).GetField(keyValue.Item1.ToString());
 
                             // Get all SupportedBy attributes on the field.
-                            object[] attributes = field.GetCustomAttributes(typeof(SupportedByAttribute), false);
+                            object[] attributes = field.GetCustomAttributes(typeof(TimeTypeSupportedByAttribute), false);
 
                             // Check if any of the attributes match the provided calculation source.
-                            foreach (SupportedByAttribute attribute in attributes)
+                            foreach (TimeTypeSupportedByAttribute attribute in attributes)
                             {
                                 if (attribute.CalculationSources.Contains(keyValue.Item2))
                                 {

@@ -11,8 +11,7 @@ namespace PrayerTimeEngine.Code.Domain.ConfigStore.Models
     {
         public int ID { get; set; }
         public int ProfileID { get; set; }
-        public EPrayerTime PrayerTime { get; set; }
-        public EPrayerTimeEvent PrayerTimeEvent { get; set; }
+        public ETimeType TimeType { get; set; }
         public BaseCalculationConfiguration CalculationConfiguration { get; set; }
     }
 }

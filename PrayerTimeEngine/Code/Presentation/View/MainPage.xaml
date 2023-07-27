@@ -45,7 +45,7 @@
             <Label.GestureRecognizers>
                 <TapGestureRecognizer 
                     Command="{Binding GoToSettingsPageCommand}" 
-                    CommandParameter="{x:Static enum:EPrayerTime.Fajr}"/>
+                    CommandParameter="{x:Static enum:EPrayerType.Fajr}"/>
             </Label.GestureRecognizers>
         </Label>
         <Label 
@@ -100,7 +100,7 @@
             <Label.GestureRecognizers>
                 <TapGestureRecognizer 
                     Command="{Binding GoToSettingsPageCommand}" 
-                    CommandParameter="{x:Static enum:EPrayerTime.Duha}"/>
+                    CommandParameter="{x:Static enum:EPrayerType.Duha}"/>
             </Label.GestureRecognizers>
         </Label>
         <Label 
@@ -140,7 +140,7 @@
             <Label.GestureRecognizers>
                 <TapGestureRecognizer 
                     Command="{Binding GoToSettingsPageCommand}" 
-                    CommandParameter="{x:Static enum:EPrayerTime.Dhuhr}"/>
+                    CommandParameter="{x:Static enum:EPrayerType.Dhuhr}"/>
             </Label.GestureRecognizers>
         </Label>
         <Label 
@@ -163,7 +163,7 @@
             <Label.GestureRecognizers>
                 <TapGestureRecognizer 
                     Command="{Binding GoToSettingsPageCommand}" 
-                    CommandParameter="{x:Static enum:EPrayerTime.Asr}"/>
+                    CommandParameter="{x:Static enum:EPrayerType.Asr}"/>
             </Label.GestureRecognizers>
         </Label>
         <Label 
@@ -218,7 +218,7 @@
             <Label.GestureRecognizers>
                 <TapGestureRecognizer 
                     Command="{Binding GoToSettingsPageCommand}" 
-                    CommandParameter="{x:Static enum:EPrayerTime.Maghrib}"/>
+                    CommandParameter="{x:Static enum:EPrayerType.Maghrib}"/>
             </Label.GestureRecognizers>
         </Label>
         <Label 
@@ -257,7 +257,7 @@
             <Label.GestureRecognizers>
                 <TapGestureRecognizer 
                     Command="{Binding GoToSettingsPageCommand}" 
-                    CommandParameter="{x:Static enum:EPrayerTime.Isha}"/>
+                    CommandParameter="{x:Static enum:EPrayerType.Isha}"/>
             </Label.GestureRecognizers>
         </Label>
         <Label 
