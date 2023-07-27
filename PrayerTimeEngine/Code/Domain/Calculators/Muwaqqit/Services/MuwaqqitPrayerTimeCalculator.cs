@@ -144,6 +144,8 @@ namespace PrayerTimeEngine.Code.Domain.Calculator.Muwaqqit.Services
                     return prayerTimes.AsrKaraha;
                 case ETimeType.MaghribStart:
                     return prayerTimes.Maghrib;
+                case ETimeType.MaghribIshtibaq:
+                    return prayerTimes.Ishtibaq;
                 case ETimeType.MaghribEnd:
                 case ETimeType.IshaStart:
                     return prayerTimes.Isha;
