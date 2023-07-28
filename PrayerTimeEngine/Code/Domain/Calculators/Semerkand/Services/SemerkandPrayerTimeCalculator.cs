@@ -1,4 +1,5 @@
 ﻿using PrayerTimeEngine.Code.Common.Enum;
+using PrayerTimeEngine.Code.Domain.CalculationService.Interfaces;
 using PrayerTimeEngine.Code.Domain.Calculator.Semerkand.Models;
 using PrayerTimeEngine.Code.Domain.Calculators.Semerkand.Interfaces;
 using PrayerTimeEngine.Code.Domain.ConfigStore.Models;
@@ -21,7 +22,23 @@ namespace PrayerTimeEngine.Code.Domain.Calculators.Semerkand.Services
             _semerkandApiService = semerkandApiService;
         }
 
-        public async Task<DateTime> GetPrayerTimesAsync(
+        public HashSet<ETimeType> GetUnsupportedCalculationTimeTypes()
+        {
+            return _unsupportedCalculationTimeTypes;
+        }
+
+        private HashSet<ETimeType> _unsupportedCalculationTimeTypes =
+            new HashSet<ETimeType>
+            {
+                ETimeType.FajrGhalas,
+                ETimeType.FajrKaraha,
+                ETimeType.DuhaEnd,
+                ETimeType.AsrMithlayn,
+                ETimeType.AsrKaraha,
+                ETimeType.MaghribIshtibaq,
+            };
+
+        public async Task<ICalculationPrayerTimes> GetPrayerTimesAsync(
             DateTime date,
             ETimeType timeType,
             BaseCalculationConfiguration configuration)
@@ -30,10 +47,7 @@ namespace PrayerTimeEngine.Code.Domain.Calculators.Semerkand.Services
             string countryName = PrayerTimesConfigurationStorage.COUNTRY_NAME;
             string cityName = PrayerTimesConfigurationStorage.CITY_NAME;
 
-            SemerkandPrayerTimes prayerTimes = await getPrayerTimesInternal(date, countryName, cityName);
-            DateTime dateTime = getDateTimeFromSemerkandPrayerTimes(timeType, prayerTimes);
-
-            return dateTime;
+            return await getPrayerTimesInternal(date, countryName, cityName);
         }
 
         private async Task<SemerkandPrayerTimes> getPrayerTimesInternal(DateTime date, string countryName, string cityName)
@@ -92,66 +106,6 @@ namespace PrayerTimeEngine.Code.Domain.Calculators.Semerkand.Services
             if (!(await _semerkandDBAccess.GetCountries()).TryGetValue(countryName, out int countryID))
                 throw new ArgumentException($"{nameof(countryName)} could not be found!");
             return countryID;
-        }
-
-        // TODO: MASSIV HINTERFRAGEN (Generischer und Isha-Ende als Fajr-Beginn??)
-        private DateTime getDateTimeFromSemerkandPrayerTimes(ETimeType timeType, SemerkandPrayerTimes prayerTimes)
-        {
-            DateTime result;
-
-            switch (timeType)
-            {
-                case ETimeType.FajrStart:
-                    result = prayerTimes.Fajr;
-                    break;
-                case ETimeType.FajrEnd:
-                    result = prayerTimes.Tulu;
-                    break;
-                case ETimeType.DuhaStart:
-                    result = prayerTimes.Tulu;
-                    break;
-                case ETimeType.DhuhrStart:
-                    result = prayerTimes.Zuhr;
-                    break;
-                case ETimeType.DhuhrEnd:
-                    result = prayerTimes.Asr;
-                    break;
-                case ETimeType.AsrStart:
-                    result = prayerTimes.Asr;
-                    break;
-                case ETimeType.AsrEnd:
-                    result = prayerTimes.Maghrib;
-                    break;
-                case ETimeType.MaghribStart:
-                    result = prayerTimes.Maghrib;
-                    break;
-                case ETimeType.MaghribEnd:
-                    result = prayerTimes.Isha;
-                    break;
-                case ETimeType.IshaStart:
-                    result = prayerTimes.Isha;
-                    break;
-                case ETimeType.IshaEnd:
-                    result = prayerTimes.NextFajr ?? prayerTimes.Isha;
-                    break;
-                default:
-                    throw new ArgumentException($"Invalid {nameof(timeType)} value: {timeType}.");
-            }
-
-            return result;
-        }
-
-        public HashSet<ETimeType> GetUnsupportedCalculationTimeTypes()
-        {
-            return new HashSet<ETimeType>
-            {
-                ETimeType.FajrGhalas,
-                ETimeType.FajrKaraha,
-                ETimeType.DuhaStart,
-                ETimeType.AsrMithlayn,
-                ETimeType.AsrKaraha,
-                ETimeType.MaghribIshtibaq,
-            };
         }
     }
 }

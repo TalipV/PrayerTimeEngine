@@ -2,6 +2,7 @@
 using PrayerTimeEngine.Code.Domain.Calculator.Fazilet.Interfaces;
 using PrayerTimeEngine.Code.Domain.Calculator.Fazilet.Models;
 using System.Globalization;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace PrayerTimeEngine.Code.Domain.Calculator.Fazilet.Services
 {
@@ -81,23 +82,27 @@ namespace PrayerTimeEngine.Code.Domain.Calculator.Fazilet.Services
 
                 foreach (JObject times in timesArray)
                 {
-                    DateTime imsak = getTimeJSONAsDateTime(times, "imsak", timeZoneInfo);
-                    DateTime fajr = getTimeJSONAsDateTime(times, "sabah", timeZoneInfo);
-                    DateTime shuruq = getTimeJSONAsDateTime(times, "gunes", timeZoneInfo);
-                    DateTime dhuhr = getTimeJSONAsDateTime(times, "ogle", timeZoneInfo);
-                    DateTime asr = getTimeJSONAsDateTime(times, "ikindi", timeZoneInfo);
-                    DateTime maghrib = getTimeJSONAsDateTime(times, "aksam", timeZoneInfo);
-                    DateTime isha = getTimeJSONAsDateTime(times, "yatsi", timeZoneInfo);
-
-                    FaziletPrayerTimes prayerTimes = new FaziletPrayerTimes(cityID, imsak, fajr, shuruq, dhuhr, asr, maghrib, isha);
-                    prayerTimesList.Add(prayerTimes);
+                    prayerTimesList.Add(
+                        new FaziletPrayerTimes
+                        {
+                            CityID = cityID,
+                            Imsak = getParsedDateTime(times, "imsak", timeZoneInfo),
+                            Fajr = getParsedDateTime(times, "sabah", timeZoneInfo),
+                            Shuruq = getParsedDateTime(times, "gunes", timeZoneInfo),
+                            Dhuhr = getParsedDateTime(times, "ogle", timeZoneInfo),
+                            Asr = getParsedDateTime(times, "ikindi", timeZoneInfo),
+                            Maghrib = getParsedDateTime(times, "aksam", timeZoneInfo),
+                            Isha = getParsedDateTime(times, "yatsi", timeZoneInfo),
+                            Date = getParsedDateTime(times, "ogle", timeZoneInfo).Date
+                        }
+                    );
                 }
             }
 
             return prayerTimesList;
         }
 
-        private static DateTime getTimeJSONAsDateTime(JObject times, string timeName, TimeZoneInfo timeZoneInfo)
+        private static DateTime getParsedDateTime(JObject times, string timeName, TimeZoneInfo timeZoneInfo)
         {
             DateTime dateTime =
                 DateTime.ParseExact(

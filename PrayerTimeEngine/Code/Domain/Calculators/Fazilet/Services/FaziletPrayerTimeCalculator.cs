@@ -3,6 +3,7 @@ using PrayerTimeEngine.Code.Common.Enum;
 using PrayerTimeEngine.Code.Domain.Calculator.Fazilet.Interfaces;
 using PrayerTimeEngine.Code.Domain.Calculator.Fazilet.Models;
 using PrayerTimeEngine.Code.Domain.Calculators;
+using PrayerTimeEngine.Code.Domain.CalculationService.Interfaces;
 
 namespace PrayerTimeEngine.Code.Domain.Calculator.Fazilet.Services
 {
@@ -19,7 +20,11 @@ namespace PrayerTimeEngine.Code.Domain.Calculator.Fazilet.Services
 
         public HashSet<ETimeType> GetUnsupportedCalculationTimeTypes()
         {
-            return new HashSet<ETimeType>
+            return _unsupportedCalculationTimeTypes;
+        }
+
+        private HashSet<ETimeType> _unsupportedCalculationTimeTypes =
+            new HashSet<ETimeType>
             {
                 ETimeType.FajrGhalas,
                 ETimeType.FajrKaraha,
@@ -28,9 +33,8 @@ namespace PrayerTimeEngine.Code.Domain.Calculator.Fazilet.Services
                 ETimeType.AsrKaraha,
                 ETimeType.MaghribIshtibaq,
             };
-        }
 
-        public async Task<DateTime> GetPrayerTimesAsync(
+        public async Task<ICalculationPrayerTimes> GetPrayerTimesAsync(
             DateTime date,
             ETimeType timeType,
             BaseCalculationConfiguration configuration)
@@ -39,10 +43,7 @@ namespace PrayerTimeEngine.Code.Domain.Calculator.Fazilet.Services
             string countryName = PrayerTimesConfigurationStorage.COUNTRY_NAME;
             string cityName = PrayerTimesConfigurationStorage.CITY_NAME;
 
-            FaziletPrayerTimes prayerTimes = await getPrayerTimesInternal(date, countryName, cityName);
-            DateTime dateTime = getDateTimeFromFaziletPrayerTimes(timeType, prayerTimes);
-
-            return dateTime;
+            return await getPrayerTimesInternal(date, countryName, cityName);
         }
 
         private async Task<FaziletPrayerTimes> getPrayerTimesInternal(DateTime date, string countryName, string cityName)
@@ -101,53 +102,6 @@ namespace PrayerTimeEngine.Code.Domain.Calculator.Fazilet.Services
             if (!(await _faziletDBAccess.GetCountries()).TryGetValue(countryName, out int countryID))
                 throw new ArgumentException($"{nameof(countryName)} could not be found!");
             return countryID;
-        }
-
-        // TODO: MASSIV HINTERFRAGEN (Generischer und Isha-Ende als Fajr-Beginn??)
-        private DateTime getDateTimeFromFaziletPrayerTimes(ETimeType timeType, FaziletPrayerTimes prayerTimes)
-        {
-            DateTime result;
-
-            switch (timeType)
-            {
-                case ETimeType.FajrStart:
-                    result = prayerTimes.Fajr;
-                    break;
-                case ETimeType.FajrEnd:
-                    result = prayerTimes.Shuruq;
-                    break;
-                case ETimeType.DuhaStart:
-                    result = prayerTimes.Shuruq;
-                    break;
-                case ETimeType.DhuhrStart:
-                    result = prayerTimes.Dhuhr;
-                    break;
-                case ETimeType.DhuhrEnd:
-                    result = prayerTimes.Asr;
-                    break;
-                case ETimeType.AsrStart:
-                    result = prayerTimes.Asr;
-                    break;
-                case ETimeType.AsrEnd:
-                    result = prayerTimes.Maghrib;
-                    break;
-                case ETimeType.MaghribStart:
-                    result = prayerTimes.Maghrib;
-                    break;
-                case ETimeType.MaghribEnd:
-                    result = prayerTimes.Isha;
-                    break;
-                case ETimeType.IshaStart:
-                    result = prayerTimes.Isha;
-                    break;
-                case ETimeType.IshaEnd:
-                    result = prayerTimes.NextFajr ?? prayerTimes.Isha;
-                    break;
-                default:
-                    throw new ArgumentException($"Invalid {nameof(timeType)} value: {timeType}.");
-            }
-
-            return result;
         }
     }
 }

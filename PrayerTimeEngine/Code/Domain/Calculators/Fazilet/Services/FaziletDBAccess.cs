@@ -1,5 +1,6 @@
 ﻿using PrayerTimeEngine.Code.Domain.Calculator.Fazilet.Interfaces;
 using PrayerTimeEngine.Code.Domain.Calculator.Fazilet.Models;
+using System;
 
 namespace PrayerTimeEngine.Code.Domain.Calculator.Fazilet.Services
 {
@@ -118,17 +119,18 @@ namespace PrayerTimeEngine.Code.Domain.Calculator.Fazilet.Services
                 {
                     if (await reader.ReadAsync())
                     {
-                        time = new FaziletPrayerTimes(
-                            cityId,
-                            reader.GetDateTime(0),
-                            reader.GetDateTime(1),
-                            reader.GetDateTime(2),
-                            reader.GetDateTime(3),
-                            reader.GetDateTime(4),
-                            reader.GetDateTime(5),
-                            reader.GetDateTime(6),
-                            reader.GetDateTime(7)
-                        );
+                        time = new FaziletPrayerTimes
+                        {
+                            CityID = cityId,
+                            Imsak = reader.GetDateTime(0),
+                            Fajr = reader.GetDateTime(1),
+                            Shuruq = reader.GetDateTime(2),
+                            Dhuhr = reader.GetDateTime(3),
+                            Asr = reader.GetDateTime(4),
+                            Maghrib = reader.GetDateTime(5),
+                            Isha = reader.GetDateTime(6),
+                            Date = reader.GetDateTime(7)
+                        };
                     }
                 }
             });

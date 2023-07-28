@@ -19,7 +19,7 @@ namespace PrayerTimeEngine.Code.Presentation.ViewModel.Custom
         }
 
         public double SelectedDegree { get; set; }
-        public List<double> DegreeItemsSource { get; set; }
+        public IReadOnlyCollection<double> DegreeItemsSource { get; set; }
 
         public ETimeType TimeType { get; init; }
 
@@ -42,7 +42,7 @@ namespace PrayerTimeEngine.Code.Presentation.ViewModel.Custom
                 stackLayout.Children.Add(new Label { Text = "Degree" });
 
                 Picker picker = new Picker();
-                picker.ItemsSource = DegreeItemsSource;
+                picker.ItemsSource = DegreeItemsSource.ToList();
                 picker.SetBinding(Picker.SelectedItemProperty, new Binding("SelectedDegree"));
                 stackLayout.Children.Add(picker);
             }
@@ -61,11 +61,11 @@ namespace PrayerTimeEngine.Code.Presentation.ViewModel.Custom
             SelectedDegree = muwaqqitConfig.Degree;
         }
 
-        private List<double> getItemSource(ETimeType timeType)
+        private IReadOnlyCollection<double> getItemSource(ETimeType timeType)
         {
             if (timeType == ETimeType.DuhaStart || timeType == ETimeType.AsrKaraha)
             {
-                return SettingsContentPageViewModel.MODERATE_SELECTABLE_DEGREES.Select(Math.Abs).ToList();
+                return SettingsContentPageViewModel.MODERATE_SELECTABLE_DEGREES_POSITIVE;
             }
             else if(timeType == ETimeType.MaghribEnd
                 || timeType == ETimeType.IshaStart

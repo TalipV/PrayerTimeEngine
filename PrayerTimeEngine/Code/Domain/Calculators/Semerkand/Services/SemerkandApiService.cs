@@ -79,6 +79,8 @@ namespace PrayerTimeEngine.Code.Domain.Calculators.Semerkand.Services
                 Culture = CultureInfo.InvariantCulture
             };
 
+        private const int EXTEND_OF_DAYS_RETRIEVED = 5;
+
         public async Task<List<SemerkandPrayerTimes>> GetTimesByCityID(DateTime date, int cityID)
         {
             string prayerTimesURL = string.Format(GET_TIMES_BY_CITY, cityID, date.Year);
@@ -97,18 +99,21 @@ namespace PrayerTimeEngine.Code.Domain.Calculators.Semerkand.Services
 
                 prayerTime.CityID = cityID;
                 prayerTime.Date = currentPrayerTimeDate;
-                prayerTime.Fajr = getCorrectDateTime(currentPrayerTimeDate, prayerTime.Fajr);
-                prayerTime.Tulu = getCorrectDateTime(currentPrayerTimeDate, prayerTime.Tulu);
-                prayerTime.Zuhr = getCorrectDateTime(currentPrayerTimeDate, prayerTime.Zuhr);
-                prayerTime.Asr = getCorrectDateTime(currentPrayerTimeDate, prayerTime.Asr);
-                prayerTime.Maghrib = getCorrectDateTime(currentPrayerTimeDate, prayerTime.Maghrib);
-                prayerTime.Isha = getCorrectDateTime(currentPrayerTimeDate, prayerTime.Isha);
+                prayerTime.Fajr = getFullDateTime(currentPrayerTimeDate, prayerTime.Fajr);
+                prayerTime.Shuruq = getFullDateTime(currentPrayerTimeDate, prayerTime.Shuruq);
+                prayerTime.Dhuhr = getFullDateTime(currentPrayerTimeDate, prayerTime.Dhuhr);
+                prayerTime.Asr = getFullDateTime(currentPrayerTimeDate, prayerTime.Asr);
+                prayerTime.Maghrib = getFullDateTime(currentPrayerTimeDate, prayerTime.Maghrib);
+                prayerTime.Isha = getFullDateTime(currentPrayerTimeDate, prayerTime.Isha);
             }
 
-            return allPrayerTimes.Where(pt => pt.Date == date.Date).ToList();
+            DateTime minDateTime = date.Date;
+            DateTime maxDateTime = date.Date.AddDays(EXTEND_OF_DAYS_RETRIEVED);
+
+            return allPrayerTimes.Where(pt => minDateTime <= pt.Date && pt.Date < maxDateTime).ToList();
         }
 
-        private DateTime getCorrectDateTime(DateTime actualDate, DateTime onlyDayTime)
+        private DateTime getFullDateTime(DateTime actualDate, DateTime onlyDayTime)
         {
             return new DateTime(
                 actualDate.Year,

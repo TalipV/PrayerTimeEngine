@@ -1,38 +1,70 @@
 ﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using PrayerTimeEngine.Code.Common.Enum;
+using PrayerTimeEngine.Code.Domain.CalculationService.Interfaces;
 
 namespace PrayerTimeEngine.Code.Domain.Calculator.Semerkand.Models
 {
-    public class SemerkandPrayerTimes
+    public class SemerkandPrayerTimes : ICalculationPrayerTimes
     {
-        public int CityID { get; set; } = -1;
+        public required int CityID { get; set; }
 
         [JsonProperty("DayOfYear")]
         public int DayOfYear { get; set; }
-
-        public DateTime Date { get; set; }
+        public required DateTime Date { get; set; }
 
         [JsonProperty("Fajr")]
-        public DateTime Fajr { get; set; }
+        public required DateTime Fajr { get; set; }
         public DateTime? NextFajr { get; set; }
 
         [JsonProperty("Tulu")]
-        public DateTime Tulu { get; set; }
+        public required DateTime Shuruq { get; set; }
 
         [JsonProperty("Zuhr")]
-        public DateTime Zuhr { get; set; }
+        public required DateTime Dhuhr { get; set; }
 
         [JsonProperty("Asr")]
-        public DateTime Asr { get; set; }
+        public required DateTime Asr { get; set; }
 
         [JsonProperty("Maghrib")]
-        public DateTime Maghrib { get; set; }
+        public required DateTime Maghrib { get; set; }
 
         [JsonProperty("Isha")]
-        public DateTime Isha { get; set; }
+        public required DateTime Isha { get; set; }
+
+        public DateTime GetDateTimeForTimeType(ETimeType timeType)
+        {
+            switch (timeType)
+            {
+                case ETimeType.FajrStart:
+                    return this.Fajr;
+                case ETimeType.FajrEnd:
+                    return this.Shuruq;
+
+                case ETimeType.DuhaStart:
+                    return this.Shuruq;
+
+                case ETimeType.DhuhrStart:
+                    return this.Dhuhr;
+                case ETimeType.DhuhrEnd:
+                    return this.Asr;
+
+                case ETimeType.AsrStart:
+                    return this.Asr;
+                case ETimeType.AsrEnd:
+                    return this.Maghrib;
+
+                case ETimeType.MaghribStart:
+                    return this.Maghrib;
+                case ETimeType.MaghribEnd:
+                    return this.Isha;
+
+                case ETimeType.IshaStart:
+                    return this.Isha;
+                case ETimeType.IshaEnd:
+                    return this.NextFajr ?? DateTime.MinValue;
+                default:
+                    throw new ArgumentException($"Invalid {nameof(timeType)} value: {timeType}.");
+            }
+        }
     }
 }

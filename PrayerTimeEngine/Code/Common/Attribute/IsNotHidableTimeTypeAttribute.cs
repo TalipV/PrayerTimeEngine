@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace PrayerTimeEngine.Code.Common.Attribute
 {
-    public class StartEndTimeTypeAttribute : System.Attribute
+    public class IsNotHidableTimeTypeAttribute : System.Attribute
     {
     }
 }

@@ -59,21 +59,23 @@ namespace PrayerTimeEngine.Code.Domain.Calculator.Muwaqqit.Services
                 // Parse the JSON response to the MuwaqqitJSONResponse object
                 MuwaqqitJSONResponse muwaqqitResponse = JsonSerializer.Deserialize<MuwaqqitJSONResponse>(jsonResponse);
 
-                prayerTimes = new MuwaqqitPrayerTimes(
-                    DateTimeOffset.Parse(muwaqqitResponse.d).DateTime,
-                    muwaqqitResponse.ln,
-                    muwaqqitResponse.lt,
-                    DateTimeOffset.Parse(muwaqqitResponse.fajr).DateTime,
-                    DateTimeOffset.Parse(muwaqqitResponse.fajr_t).DateTime,
-                    DateTimeOffset.Parse(muwaqqitResponse.sunrise).DateTime,
-                    DateTimeOffset.Parse(muwaqqitResponse.ishraq).DateTime,
-                    DateTimeOffset.Parse(muwaqqitResponse.zohr).DateTime,
-                    DateTimeOffset.Parse(muwaqqitResponse.asr_shafi).DateTime,
-                    DateTimeOffset.Parse(muwaqqitResponse.asr_hanafi).DateTime,
-                    DateTimeOffset.Parse(muwaqqitResponse.sunset).DateTime,
-                    DateTimeOffset.Parse(muwaqqitResponse.esha).DateTime,
-                    DateTimeOffset.Parse(muwaqqitResponse.ishtibak).DateTime,
-                    DateTimeOffset.Parse(muwaqqitResponse.asr_makrooh).DateTime);
+                prayerTimes = new MuwaqqitPrayerTimes
+                {
+                    Date = DateTimeOffset.Parse(muwaqqitResponse.d).DateTime,
+                    Longitude = muwaqqitResponse.ln,
+                    Latitude = muwaqqitResponse.lt,
+                    Fajr = DateTimeOffset.Parse(muwaqqitResponse.fajr).DateTime,
+                    NextFajr = DateTimeOffset.Parse(muwaqqitResponse.fajr_t).DateTime,
+                    Shuruq = DateTimeOffset.Parse(muwaqqitResponse.sunrise).DateTime,
+                    Duha = DateTimeOffset.Parse(muwaqqitResponse.ishraq).DateTime,
+                    Dhuhr = DateTimeOffset.Parse(muwaqqitResponse.zohr).DateTime,
+                    AsrMithl = DateTimeOffset.Parse(muwaqqitResponse.asr_shafi).DateTime,
+                    AsrMithlayn = DateTimeOffset.Parse(muwaqqitResponse.asr_hanafi).DateTime,
+                    Maghrib = DateTimeOffset.Parse(muwaqqitResponse.sunset).DateTime,
+                    Isha = DateTimeOffset.Parse(muwaqqitResponse.esha).DateTime,
+                    Ishtibaq = DateTimeOffset.Parse(muwaqqitResponse.ishtibak).DateTime,
+                    AsrKaraha = DateTimeOffset.Parse(muwaqqitResponse.asr_makrooh).DateTime,
+                };
             }
 
             return prayerTimes;

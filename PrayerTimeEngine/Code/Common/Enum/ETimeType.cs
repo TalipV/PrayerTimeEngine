@@ -4,78 +4,137 @@ namespace PrayerTimeEngine.Code.Common.Enum
 {
     public enum ETimeType
     {
+        #region Fajr
+
         [TimeTypeSupportedBy(ECalculationSource.None, ECalculationSource.Muwaqqit, ECalculationSource.Fazilet, ECalculationSource.Semerkand)]
-        [DegreeTimeTypeAttribute]
-        [StartEndTimeTypeAttribute]
+        [TimeTypeForPrayerType(EPrayerType.Fajr)]
+        [DegreeTimeType]
+        [IsNotHidableTimeType]
         FajrStart,
+
         [TimeTypeSupportedBy(ECalculationSource.None, ECalculationSource.Muwaqqit, ECalculationSource.Fazilet, ECalculationSource.Semerkand)]
-        [StartEndTimeTypeAttribute]
+        [TimeTypeForPrayerType(EPrayerType.Fajr)]
+        [IsNotHidableTimeType]
         FajrEnd,
+
         [TimeTypeSupportedBy(ECalculationSource.None, ECalculationSource.Muwaqqit)]
-        [DegreeTimeTypeAttribute]
+        [TimeTypeForPrayerType(EPrayerType.Fajr)]
+        [DegreeTimeType]
         FajrGhalas,
+
         [TimeTypeSupportedBy(ECalculationSource.None, ECalculationSource.Muwaqqit)]
-        [DegreeTimeTypeAttribute]
+        [TimeTypeForPrayerType(EPrayerType.Fajr)]
+        [DegreeTimeType]
         FajrKaraha,
 
+        #endregion Fajr
+
+        #region Duha
+
         [TimeTypeSupportedBy(ECalculationSource.None, ECalculationSource.Muwaqqit)]
-        [DegreeTimeTypeAttribute]
-        [StartEndTimeTypeAttribute]
+        [TimeTypeForPrayerType(EPrayerType.Duha)]
+        [DegreeTimeType]
+        [IsNotHidableTimeType]
         DuhaStart,
 
+        [TimeTypeForPrayerType(EPrayerType.Duha)]
+        [SimpleTimeType]
+        DuhaQuarterOfDay,
+
+        [TimeTypeForPrayerType(EPrayerType.Duha)]
+        [SimpleTimeType]
+        [IsNotHidableTimeType]
+        DuhaEnd,
+
+        #endregion Duha
+
+        #region Dhuhr
+
         [TimeTypeSupportedBy(ECalculationSource.None, ECalculationSource.Muwaqqit, ECalculationSource.Fazilet, ECalculationSource.Semerkand)]
-        [StartEndTimeTypeAttribute]
+        [TimeTypeForPrayerType(EPrayerType.Dhuhr)]
+        [IsNotHidableTimeType]
         DhuhrStart,
+
         [TimeTypeSupportedBy(ECalculationSource.None, ECalculationSource.Muwaqqit, ECalculationSource.Fazilet, ECalculationSource.Semerkand)]
-        [StartEndTimeTypeAttribute]
+        [TimeTypeForPrayerType(EPrayerType.Dhuhr)]
+        [IsNotHidableTimeType]
         DhuhrEnd,
 
+        #endregion Dhuhr
+
+        #region Asr
+
         [TimeTypeSupportedBy(ECalculationSource.None, ECalculationSource.Muwaqqit, ECalculationSource.Fazilet, ECalculationSource.Semerkand)]
-        [StartEndTimeTypeAttribute]
+        [TimeTypeForPrayerType(EPrayerType.Asr)]
+        [IsNotHidableTimeType]
         AsrStart,
+
         [TimeTypeSupportedBy(ECalculationSource.None, ECalculationSource.Muwaqqit, ECalculationSource.Fazilet, ECalculationSource.Semerkand)]
-        [StartEndTimeTypeAttribute]
+        [TimeTypeForPrayerType(EPrayerType.Asr)]
+        [IsNotHidableTimeType]
         AsrEnd,
+
         [TimeTypeSupportedBy(ECalculationSource.None, ECalculationSource.Muwaqqit)]
+        [TimeTypeForPrayerType(EPrayerType.Asr)] 
         AsrMithlayn,
+
         [TimeTypeSupportedBy(ECalculationSource.None, ECalculationSource.Muwaqqit)]
-        [DegreeTimeTypeAttribute]
+        [TimeTypeForPrayerType(EPrayerType.Asr)]
+        [DegreeTimeType]
         AsrKaraha,
 
+        #endregion Asr
+
+        #region Maghrib
+
         [TimeTypeSupportedBy(ECalculationSource.None, ECalculationSource.Muwaqqit, ECalculationSource.Fazilet, ECalculationSource.Semerkand)]
-        [StartEndTimeTypeAttribute]
+        [TimeTypeForPrayerType(EPrayerType.Maghrib)]
+        [IsNotHidableTimeType]
         MaghribStart,
+
         [TimeTypeSupportedBy(ECalculationSource.None, ECalculationSource.Muwaqqit, ECalculationSource.Fazilet, ECalculationSource.Semerkand)]
-        [DegreeTimeTypeAttribute]
-        [StartEndTimeTypeAttribute]
+        [TimeTypeForPrayerType(EPrayerType.Maghrib)]
+        [DegreeTimeType]
+        [IsNotHidableTimeType]
         MaghribEnd,
+
+        [TimeTypeForPrayerType(EPrayerType.Maghrib)]
+        [SimpleTimeType]
+        MaghribSufficientTime,
+
         [TimeTypeSupportedBy(ECalculationSource.None, ECalculationSource.Muwaqqit)]
-        [DegreeTimeTypeAttribute]
+        [TimeTypeForPrayerType(EPrayerType.Maghrib)]
+        [DegreeTimeType]
         MaghribIshtibaq,
 
+        #endregion Maghrib
+
+        #region Isha
+
         [TimeTypeSupportedBy(ECalculationSource.None, ECalculationSource.Muwaqqit, ECalculationSource.Fazilet, ECalculationSource.Semerkand)]
-        [DegreeTimeTypeAttribute]
-        [StartEndTimeTypeAttribute]
+        [TimeTypeForPrayerType(EPrayerType.Isha)]
+        [DegreeTimeType]
+        [IsNotHidableTimeType]
         IshaStart,
+
         [TimeTypeSupportedBy(ECalculationSource.None, ECalculationSource.Muwaqqit, ECalculationSource.Fazilet, ECalculationSource.Semerkand)]
-        [DegreeTimeTypeAttribute]
-        [StartEndTimeTypeAttribute]
+        [TimeTypeForPrayerType(EPrayerType.Isha)]
+        [DegreeTimeType]
+        [IsNotHidableTimeType]
         IshaEnd,
 
-        // NO NEED FOR CALCULATIONS BY CALCULATION SOURCES
-        [SimpleTimeTypeAttribute]
-        DuhaQuarterOfDay,
-        [SimpleTimeTypeAttribute]
+        [TimeTypeForPrayerType(EPrayerType.Isha)]
+        [SimpleTimeType]
         IshaFirstThird,
-        [SimpleTimeTypeAttribute]
+
+        [TimeTypeForPrayerType(EPrayerType.Isha)]
+        [SimpleTimeType]
         IshaMidnight,
-        [SimpleTimeTypeAttribute]
+
+        [TimeTypeForPrayerType(EPrayerType.Isha)]
+        [SimpleTimeType]
         IshaSecondThird,
 
-        [SimpleTimeTypeAttribute]
-        MaghribSufficientTime,
-        [SimpleTimeTypeAttribute]
-        [StartEndTimeTypeAttribute]
-        DuhaEnd,
+        #endregion Isha
     }
 }

@@ -6,7 +6,7 @@ using PrayerTimeEngine.Code.Domain.ConfigStore.Models;
 using PropertyChanged;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using PrayerTimeEngine.Code.Common.Enum;
-using PrayerTimeEngine.Code.Domain.CalculationService;
+using PrayerTimeEngine.Code.Domain.CalculationService.Interfaces;
 
 namespace PrayerTimeEngine.Code.Presentation.ViewModel
 {

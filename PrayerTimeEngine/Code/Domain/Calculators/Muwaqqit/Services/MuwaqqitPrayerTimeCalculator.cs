@@ -3,6 +3,7 @@ using PrayerTimeEngine.Code.Common.Enum;
 using PrayerTimeEngine.Code.Domain.Calculator.Muwaqqit.Interfaces;
 using PrayerTimeEngine.Code.Domain.Calculator.Muwaqqit.Models;
 using PrayerTimeEngine.Code.Domain.Calculators;
+using PrayerTimeEngine.Code.Domain.CalculationService.Interfaces;
 
 namespace PrayerTimeEngine.Code.Domain.Calculator.Muwaqqit.Services
 {
@@ -22,7 +23,7 @@ namespace PrayerTimeEngine.Code.Domain.Calculator.Muwaqqit.Services
             _timeTypeAttributeService = timeTypeAttributeService;
         }
 
-        public async Task<DateTime> GetPrayerTimesAsync(
+        public async Task<ICalculationPrayerTimes> GetPrayerTimesAsync(
             DateTime date,
             ETimeType timeType,
             BaseCalculationConfiguration configuration)
@@ -41,10 +42,7 @@ namespace PrayerTimeEngine.Code.Domain.Calculator.Muwaqqit.Services
                 out ishtibaqDegree,
                 out asrKarahaDegree);
 
-            MuwaqqitPrayerTimes prayerTimes = await getPrayerTimesInternal(date, longitude, latitude, fajrDegree, ishaDegree, ishtibaqDegree, asrKarahaDegree, timezone);
-            DateTime dateTime = getDateTimeFromMuwaqqitPrayerTimes(timeType, prayerTimes);
-
-            return dateTime;
+            return await getPrayerTimesInternal(date, longitude, latitude, fajrDegree, ishaDegree, ishtibaqDegree, asrKarahaDegree, timezone);
         }
 
         private void getDegreeValue(
@@ -114,46 +112,6 @@ namespace PrayerTimeEngine.Code.Domain.Calculator.Muwaqqit.Services
             }
 
             return prayerTimes;
-        }
-
-        // TODO: MASSIV HINTERFRAGEN (Generischer und Isha-Ende als Fajr-Beginn??)
-        private DateTime getDateTimeFromMuwaqqitPrayerTimes(ETimeType timeType, MuwaqqitPrayerTimes prayerTimes)
-        {
-            switch (timeType)
-            {
-                case ETimeType.FajrStart:
-                case ETimeType.FajrGhalas:
-                case ETimeType.FajrKaraha:
-                    return prayerTimes.Fajr;
-                case ETimeType.FajrEnd:
-                    return prayerTimes.Shuruq;
-                case ETimeType.DuhaStart:
-                    return prayerTimes.Duha;
-                case ETimeType.DhuhrStart:
-                case ETimeType.DuhaEnd:
-                    return prayerTimes.Dhuhr;
-                case ETimeType.DhuhrEnd:
-                    return prayerTimes.AsrMithl;
-                case ETimeType.AsrStart:
-                    return prayerTimes.AsrMithl;
-                case ETimeType.AsrEnd:
-                    return prayerTimes.Maghrib;
-                case ETimeType.AsrMithlayn:
-                    return prayerTimes.AsrMithlayn;
-                case ETimeType.AsrKaraha:
-                    return prayerTimes.AsrKaraha;
-                case ETimeType.MaghribStart:
-                    return prayerTimes.Maghrib;
-                case ETimeType.MaghribIshtibaq:
-                    return prayerTimes.Ishtibaq;
-                case ETimeType.MaghribEnd:
-                case ETimeType.IshaStart:
-                    return prayerTimes.Isha;
-                case ETimeType.IshaEnd:
-                    return prayerTimes.NextFajr;
-                default:
-                    throw new ArgumentException($"Invalid {nameof(timeType)} value: {timeType}.");
-            }
         }
     }
 }

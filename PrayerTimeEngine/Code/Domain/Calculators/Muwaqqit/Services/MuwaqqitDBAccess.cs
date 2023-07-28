@@ -99,22 +99,23 @@ namespace PrayerTimeEngine.Code.Domain.Calculator.Muwaqqit.Services
                 {
                     if (await reader.ReadAsync())
                     {
-                        time = new MuwaqqitPrayerTimes(
-                            date,
-                            longitude,
-                            latitude,
-                            reader.GetDateTime(0),
-                            reader.GetDateTime(1),
-                            reader.GetDateTime(2),
-                            reader.GetDateTime(3),
-                            reader.GetDateTime(4),
-                            reader.GetDateTime(5),
-                            reader.GetDateTime(6),
-                            reader.GetDateTime(7),
-                            reader.GetDateTime(8),
-                            reader.GetDateTime(9),
-                            reader.GetDateTime(10)
-                        );
+                        time = new MuwaqqitPrayerTimes
+                        {
+                            Date = date,
+                            Longitude = longitude,
+                            Latitude = latitude,
+                            Fajr = reader.GetDateTime(0),
+                            NextFajr = reader.GetDateTime(1),
+                            Shuruq = reader.GetDateTime(2),
+                            Duha = reader.GetDateTime(3),
+                            Dhuhr = reader.GetDateTime(4),
+                            AsrMithl = reader.GetDateTime(5),
+                            AsrMithlayn = reader.GetDateTime(6),
+                            Maghrib = reader.GetDateTime(7),
+                            Isha = reader.GetDateTime(8),
+                            Ishtibaq = reader.GetDateTime(9),
+                            AsrKaraha = reader.GetDateTime(10),
+                        };
                     }
                 }
             });

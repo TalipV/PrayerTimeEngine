@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using PrayerTimeEngine.Code.Domain;
-using PrayerTimeEngine.Code.Domain.CalculationService;
+using PrayerTimeEngine.Code.Domain.CalculationService.Interfaces;
 using PrayerTimeEngine.Code.Domain.Calculator.Fazilet.Interfaces;
 using PrayerTimeEngine.Code.Domain.Calculator.Fazilet.Services;
 using PrayerTimeEngine.Code.Domain.Calculator.Muwaqqit.Interfaces;

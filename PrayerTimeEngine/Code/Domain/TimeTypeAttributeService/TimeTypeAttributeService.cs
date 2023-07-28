@@ -13,7 +13,7 @@ namespace PrayerTimeEngine.Code.Domain
         public List<ETimeType> DegreeTypes { get; }
         public List<ETimeType> SimpleTypes { get; }
         public List<ETimeType> NonSimpleTypes { get; }
-        public List<ETimeType> StartEndTypes { get; }
+        public List<ETimeType> NotHideableTypes { get; }
         public IDictionary<EPrayerType, List<ETimeType>> PrayerTypeToTimeTypes { get; }
 
         public TimeTypeAttributeService()
@@ -22,7 +22,7 @@ namespace PrayerTimeEngine.Code.Domain
             DegreeTypes = new List<ETimeType>();
             SimpleTypes = new List<ETimeType>();
             NonSimpleTypes = new List<ETimeType>();
-            StartEndTypes = new List<ETimeType>();
+            NotHideableTypes = new List<ETimeType>();
             PrayerTypeToTimeTypes = new Dictionary<EPrayerType, List<ETimeType>>();
             Initialize();
         }
@@ -37,7 +37,7 @@ namespace PrayerTimeEngine.Code.Domain
                 var timeTypeSupportedByAttrs = enumValueMemberInfo.GetCustomAttributes<TimeTypeSupportedByAttribute>(false);
                 var degreeTimeTypeAttrs = enumValueMemberInfo.GetCustomAttributes<DegreeTimeTypeAttribute>(false);
                 var simpleTimeTypeAttrs = enumValueMemberInfo.GetCustomAttributes<SimpleTimeTypeAttribute>(false);
-                var startEndTypeAttrs = enumValueMemberInfo.GetCustomAttributes<StartEndTimeTypeAttribute>(false);
+                var notHideableTypeAttrs = enumValueMemberInfo.GetCustomAttributes<IsNotHidableTimeTypeAttribute>(false);
                 var timeTypeForPrayerTypeAttrs = enumValueMemberInfo.GetCustomAttributes<TimeTypeForPrayerTypeAttribute>(false);
 
                 // Populate CalculationSource compatible types
@@ -63,9 +63,9 @@ namespace PrayerTimeEngine.Code.Domain
                 }
 
                 // Populate Start and End types
-                if (startEndTypeAttrs.Any())
+                if (notHideableTypeAttrs.Any())
                 {
-                    StartEndTypes.Add(type);
+                    NotHideableTypes.Add(type);
                 }
 
                 // Populate PrayerType to TimeTypes mapping

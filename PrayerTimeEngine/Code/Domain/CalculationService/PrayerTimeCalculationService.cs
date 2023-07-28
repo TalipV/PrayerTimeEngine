@@ -1,6 +1,6 @@
 ﻿using PrayerTimeEngine.Code.Common.Enum;
 using PrayerTimeEngine.Code.Domain;
-using PrayerTimeEngine.Code.Domain.CalculationService;
+using PrayerTimeEngine.Code.Domain.CalculationService.Interfaces;
 using PrayerTimeEngine.Code.Domain.Calculator.Fazilet.Services;
 using PrayerTimeEngine.Code.Domain.Calculator.Muwaqqit.Services;
 using PrayerTimeEngine.Code.Domain.Calculators;
@@ -50,8 +50,10 @@ public class PrayerTimeCalculationService : IPrayerTimeCalculationService
                 throw new ArgumentException($"{timeCalculator.GetType().Name}[{config.Source}] does not support {timeType}!");
             }
 
-            DateTime calculatedTime = await timeCalculator.GetPrayerTimesAsync(dateTime, timeType, config);
-            calculatedTime = calculatedTime.AddMinutes(config.MinuteAdjustment);
+            ICalculationPrayerTimes calculationPrayerTimes = await timeCalculator.GetPrayerTimesAsync(dateTime, timeType, config);
+            DateTime calculatedTime = 
+                calculationPrayerTimes.GetDateTimeForTimeType(timeType)
+                .AddMinutes(config.MinuteAdjustment);
 
             prayerTimeEntity.SetSpecificPrayerTimeDateTime(timeType, calculatedTime);
         }

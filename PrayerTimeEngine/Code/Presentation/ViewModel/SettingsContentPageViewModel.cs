@@ -6,6 +6,7 @@ using PrayerTimeEngine.Code.Domain.ConfigStore.Interfaces;
 using PrayerTimeEngine.Code.Domain.ConfigStore.Models;
 using PrayerTimeEngine.Code.Presentation.ViewModel.Custom;
 using PropertyChanged;
+using System.Collections.Generic;
 
 namespace PrayerTimeEngine.Code.Presentation.ViewModel
 {
@@ -14,20 +15,23 @@ namespace PrayerTimeEngine.Code.Presentation.ViewModel
     {
         #region static fields
 
-        public static readonly List<double> FAJR_ISHA_SELECTABLE_DEGREES = new List<double>
+        public static readonly IReadOnlyCollection<double> FAJR_ISHA_SELECTABLE_DEGREES = new List<double>
         {
             -12.0, -12.5, -13.0, -13.5, -14.0,
             -14.5, -15.0, -15.5, -16.0, -16.5,
             -17.0, -17.5, -18.0, -18.5, -19.0,
             -19.5, -20.0
-        };
+        }.AsReadOnly();
 
-        public static readonly List<double> MODERATE_SELECTABLE_DEGREES = new List<double>
+        public static readonly IReadOnlyCollection<double> MODERATE_SELECTABLE_DEGREES = new List<double>
         {
             -2.0, -2.5, -3.0, -3.5, -4.0, -4.5,
             -5.0, -5.5, -6.0, -6.5, -7.0, -7.5,
             -8.0, -8.5, -9.0
-        };
+        }.AsReadOnly();
+
+        public static readonly IReadOnlyCollection<double> MODERATE_SELECTABLE_DEGREES_POSITIVE =
+            MODERATE_SELECTABLE_DEGREES.Select(Math.Abs).ToList().AsReadOnly();
 
         #endregion static fields
 
@@ -83,7 +87,7 @@ namespace PrayerTimeEngine.Code.Presentation.ViewModel
             TabTitle = $"{timeType}";
             TimeType = timeType;
             ShowCalculationSourcePicker = TimeType != ETimeType.DuhaEnd;
-            IsTimeShownCheckBoxVisible = !_timeTypeAttributeService.StartEndTypes.Contains(timeType);
+            IsTimeShownCheckBoxVisible = !_timeTypeAttributeService.NotHideableTypes.Contains(timeType);
 
             loadCalculationSource();
             loadMinuteAdjustmentSource();

@@ -128,8 +128,8 @@ namespace PrayerTimeEngine.Code.Domain.Calculators.Semerkand.Services
                         {
                             CityID = cityId,
                             Fajr = reader.GetDateTime(0),
-                            Tulu = reader.GetDateTime(1),
-                            Zuhr = reader.GetDateTime(2),
+                            Shuruq = reader.GetDateTime(1),
+                            Dhuhr = reader.GetDateTime(2),
                             Asr = reader.GetDateTime(3),
                             Maghrib = reader.GetDateTime(4),
                             Isha = reader.GetDateTime(5),
@@ -199,8 +199,8 @@ namespace PrayerTimeEngine.Code.Domain.Calculators.Semerkand.Services
                 command.Parameters.AddWithValue("$CityId", cityID);
 
                 command.Parameters.AddWithValue("$Fajr", semerkandPrayerTimes.Fajr);
-                command.Parameters.AddWithValue("$Shuruq", semerkandPrayerTimes.Tulu);
-                command.Parameters.AddWithValue("$Dhuhr", semerkandPrayerTimes.Zuhr);
+                command.Parameters.AddWithValue("$Shuruq", semerkandPrayerTimes.Shuruq);
+                command.Parameters.AddWithValue("$Dhuhr", semerkandPrayerTimes.Dhuhr);
                 command.Parameters.AddWithValue("$Asr", semerkandPrayerTimes.Asr);
                 command.Parameters.AddWithValue("$Maghrib", semerkandPrayerTimes.Maghrib);
                 command.Parameters.AddWithValue("$Isha", semerkandPrayerTimes.Isha);
