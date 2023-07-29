@@ -17,7 +17,7 @@ namespace PrayerTimeEngine.Domain.ConfigStore.Models
             if (!Configurations.TryGetValue(timeType, out BaseCalculationConfiguration calculationConfiguration)
                 || calculationConfiguration == null)
             {
-                Configurations[timeType] = calculationConfiguration = new GenericSettingConfiguration();
+                Configurations[timeType] = calculationConfiguration = new GenericSettingConfiguration(timeType);
             }
 
             return calculationConfiguration;
