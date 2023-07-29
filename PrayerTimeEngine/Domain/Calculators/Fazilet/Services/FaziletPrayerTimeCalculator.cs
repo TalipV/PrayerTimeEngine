@@ -36,7 +36,7 @@ namespace PrayerTimeEngine.Domain.Calculators.Fazilet.Services
 
         public async Task<ICalculationPrayerTimes> GetPrayerTimesAsync(
             DateTime date,
-            ETimeType timeType,
+            ETimeType timeType,     // irrelevant
             BaseCalculationConfiguration configuration)
         {
             // because currently there is no location selection

@@ -15,7 +15,7 @@ namespace PrayerTimeEngine.Domain.Calculators.Semerkand.Services
             _httpClient = httpClient;
         }
 
-        private const string GET_COUNTRIES_URL = "http://semerkandtakvimi.semerkandmobile.com/countries?language=tr";
+        internal const string GET_COUNTRIES_URL = "http://semerkandtakvimi.semerkandmobile.com/countries?language=tr";
 
         public async Task<Dictionary<string, int>> GetCountries()
         {
@@ -39,7 +39,7 @@ namespace PrayerTimeEngine.Domain.Calculators.Semerkand.Services
             return countriesByCountryID;
         }
 
-        private const string GET_CITIES_BY_COUNTRY_URL = "https://www.semerkandtakvimi.com/Home/CityList";
+        internal const string GET_CITIES_BY_COUNTRY_URL = "https://www.semerkandtakvimi.com/Home/CityList";
 
         public async Task<Dictionary<string, int>> GetCitiesByCountryID(int countryID)
         {
@@ -67,7 +67,7 @@ namespace PrayerTimeEngine.Domain.Calculators.Semerkand.Services
             return citiesByCountryID;
         }
 
-        private const string GET_TIMES_BY_CITY = @"http://semerkandtakvimi.semerkandmobile.com/salaattimes?cityId={0}&year={1}";
+        internal const string GET_TIMES_BY_CITY = @"http://semerkandtakvimi.semerkandmobile.com/salaattimes?cityId={0}&year={1}";
 
         private static readonly JsonSerializerSettings settings =
             new JsonSerializerSettings
