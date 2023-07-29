@@ -6,11 +6,7 @@ namespace PrayerTimeEngine.Domain.Calculators
 {
     public interface IPrayerTimeCalculator
     {
-        public Task<ICalculationPrayerTimes> GetPrayerTimesAsync(
-            DateTime date,
-            ETimeType timeType,
-            BaseCalculationConfiguration configuration);
-
+        public Task<ICalculationPrayerTimes> GetPrayerTimesAsync(DateTime date, BaseCalculationConfiguration configuration);
         public HashSet<ETimeType> GetUnsupportedCalculationTimeTypes();
     }
 }

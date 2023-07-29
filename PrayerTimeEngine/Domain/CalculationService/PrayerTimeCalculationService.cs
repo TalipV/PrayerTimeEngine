@@ -51,7 +51,7 @@ public class PrayerTimeCalculationService : IPrayerTimeCalculationService
                 throw new ArgumentException($"{timeCalculator.GetType().Name}[{config.Source}] does not support {timeType}!");
             }
 
-            ICalculationPrayerTimes calculationPrayerTimes = await timeCalculator.GetPrayerTimesAsync(dateTime, timeType, config);
+            ICalculationPrayerTimes calculationPrayerTimes = await timeCalculator.GetPrayerTimesAsync(dateTime, config);
             DateTime calculatedTime = 
                 calculationPrayerTimes.GetDateTimeForTimeType(timeType)
                 .AddMinutes(config.MinuteAdjustment);

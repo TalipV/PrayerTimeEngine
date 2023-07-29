@@ -22,7 +22,7 @@ namespace PrayerTimeEngine.Domain.Calculators.Muwaqqit.Models
             };
 
         public MuwaqqitDegreeCalculationConfiguration(
-            int minuteAdjustment, double degree, bool isTimeShown = true) : base(minuteAdjustment, isTimeShown)
+            ETimeType timeType, int minuteAdjustment, double degree, bool isTimeShown = true) : base(timeType, minuteAdjustment, isTimeShown)
         {
             Degree = degree;
         }

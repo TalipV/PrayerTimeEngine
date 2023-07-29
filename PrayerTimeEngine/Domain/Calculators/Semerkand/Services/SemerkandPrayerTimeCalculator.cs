@@ -41,7 +41,6 @@ namespace PrayerTimeEngine.Domain.Calculators.Semerkand.Services
 
         public async Task<ICalculationPrayerTimes> GetPrayerTimesAsync(
             DateTime date,
-            ETimeType timeType,
             BaseCalculationConfiguration configuration)
         {
             // because currently there is no location selection

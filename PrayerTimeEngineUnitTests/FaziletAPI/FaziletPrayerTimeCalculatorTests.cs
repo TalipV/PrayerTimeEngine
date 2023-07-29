@@ -34,7 +34,7 @@ namespace PrayerTimeEngineUnitTests.FaziletAPI
         {
             // ARRANGE
             DateTime testDate = new DateTime(2023, 7, 29);
-            var config = new GenericSettingConfiguration(calculationSource: ECalculationSource.Fazilet);
+            var config = new GenericSettingConfiguration(ETimeType.DhuhrStart, calculationSource: ECalculationSource.Fazilet);
 
             var faziletDBAccess = new FaziletDBAccess(new SQLiteDB());
             var faziletApiService = getMockedFaziletApiService();
@@ -49,7 +49,6 @@ namespace PrayerTimeEngineUnitTests.FaziletAPI
             ICalculationPrayerTimes result =
                 faziletPrayerTimeCalculator.GetPrayerTimesAsync(
                     testDate,
-                    ETimeType.FajrEnd,
                     config
                 ).GetAwaiter().GetResult();
 

@@ -9,9 +9,10 @@ namespace PrayerTimeEngine.Domain.ConfigStore.Models
 {
     public class GenericSettingConfiguration : BaseCalculationConfiguration
     {
-        public GenericSettingConfiguration(int minuteAdjustment = 0, ECalculationSource calculationSource = ECalculationSource.None, bool isTimeShown = true)
+        public GenericSettingConfiguration(ETimeType timeType, int minuteAdjustment = 0, ECalculationSource calculationSource = ECalculationSource.None, bool isTimeShown = true)
             : base(minuteAdjustment, isTimeShown)
         {
+            TimeType = timeType;
             Source = calculationSource;
         }
 

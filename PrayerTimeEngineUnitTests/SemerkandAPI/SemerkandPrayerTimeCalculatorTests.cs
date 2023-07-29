@@ -34,7 +34,7 @@ namespace PrayerTimeEngineUnitTests.SemerkandAPI
         {
             // ARRANGE
             DateTime testDate = new DateTime(2023, 7, 29);
-            var config = new GenericSettingConfiguration(calculationSource: ECalculationSource.Semerkand);
+            var config = new GenericSettingConfiguration(ETimeType.DhuhrStart, calculationSource: ECalculationSource.Semerkand);
 
             var semerkandDBAccess = new SemerkandDBAccess(new SQLiteDB());
             var semerkandApiService = getMockedSemerkandApiService();
@@ -49,7 +49,6 @@ namespace PrayerTimeEngineUnitTests.SemerkandAPI
             ICalculationPrayerTimes result =
                 semerkandPrayerTimeCalculator.GetPrayerTimesAsync(
                     testDate,
-                    ETimeType.FajrEnd,
                     config
                 ).GetAwaiter().GetResult();
 

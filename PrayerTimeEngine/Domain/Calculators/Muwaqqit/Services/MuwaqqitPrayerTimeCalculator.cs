@@ -24,9 +24,10 @@ namespace PrayerTimeEngine.Domain.Calculators.Muwaqqit.Services
 
         public async Task<ICalculationPrayerTimes> GetPrayerTimesAsync(
             DateTime date,
-            ETimeType timeType,
             BaseCalculationConfiguration configuration)
         {
+            ETimeType timeType = configuration.TimeType;
+
             // location selection has not been implemented yet
             string timezone = PrayerTimesConfigurationStorage.TIMEZONE;
             decimal longitude = PrayerTimesConfigurationStorage.INNSBRUCK_LONGITUDE;

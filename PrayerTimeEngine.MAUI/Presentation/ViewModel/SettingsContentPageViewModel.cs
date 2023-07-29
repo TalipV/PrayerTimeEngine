@@ -143,7 +143,7 @@ namespace PrayerTimeEngine.Code.Presentation.ViewModel
 
         private BaseCalculationConfiguration getGeneralCalculationConfiguration()
         {
-            return new GenericSettingConfiguration(SelectedMinuteAdjustment, SelectedCalculationSource, IsTimeShown);
+            return new GenericSettingConfiguration(TimeType, SelectedMinuteAdjustment, SelectedCalculationSource, IsTimeShown);
         }
 
         private void loadCalculationSource()

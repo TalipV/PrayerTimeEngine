@@ -56,28 +56,28 @@ namespace PrayerTimeEngine.Domain.ConfigStore.Models
                 Configurations =
                     new Dictionary<ETimeType, BaseCalculationConfiguration>()
                     {
-                        [ETimeType.FajrStart] = new MuwaqqitDegreeCalculationConfiguration(0, -12.0),
-                        [ETimeType.FajrEnd] = new GenericSettingConfiguration(0, ECalculationSource.Muwaqqit),
-                        [ETimeType.FajrGhalas] = new MuwaqqitDegreeCalculationConfiguration(0, -8),
-                        [ETimeType.FajrKaraha] = new MuwaqqitDegreeCalculationConfiguration(0, -4.5),
+                        [ETimeType.FajrStart] = new MuwaqqitDegreeCalculationConfiguration(ETimeType.FajrStart, 0, -12.0),
+                        [ETimeType.FajrEnd] = new GenericSettingConfiguration(ETimeType.FajrEnd, 0, ECalculationSource.Muwaqqit),
+                        [ETimeType.FajrGhalas] = new MuwaqqitDegreeCalculationConfiguration(ETimeType.FajrGhalas, 0, -8),
+                        [ETimeType.FajrKaraha] = new MuwaqqitDegreeCalculationConfiguration(ETimeType.FajrKaraha, 0, -4.5),
 
-                        [ETimeType.DuhaStart] = new MuwaqqitDegreeCalculationConfiguration(0, 4.5),
-                        [ETimeType.DuhaEnd] = new GenericSettingConfiguration(-20),
+                        [ETimeType.DuhaStart] = new MuwaqqitDegreeCalculationConfiguration(ETimeType.DuhaStart, 0, 4.5),
+                        [ETimeType.DuhaEnd] = new GenericSettingConfiguration(ETimeType.DuhaEnd, -20),
 
-                        [ETimeType.DhuhrStart] = new GenericSettingConfiguration(0, ECalculationSource.Muwaqqit),
-                        [ETimeType.DhuhrEnd] = new GenericSettingConfiguration(0, ECalculationSource.Muwaqqit),
+                        [ETimeType.DhuhrStart] = new GenericSettingConfiguration(ETimeType.DhuhrStart, 0, ECalculationSource.Muwaqqit),
+                        [ETimeType.DhuhrEnd] = new GenericSettingConfiguration(ETimeType.DhuhrEnd, 0, ECalculationSource.Muwaqqit),
 
-                        [ETimeType.AsrStart] = new GenericSettingConfiguration(0, ECalculationSource.Muwaqqit),
-                        [ETimeType.AsrEnd] = new GenericSettingConfiguration(0, ECalculationSource.Muwaqqit),
-                        [ETimeType.AsrMithlayn] = new GenericSettingConfiguration(0, ECalculationSource.Muwaqqit),
-                        [ETimeType.AsrKaraha] = new MuwaqqitDegreeCalculationConfiguration(0, 4.5),
+                        [ETimeType.AsrStart] = new GenericSettingConfiguration(ETimeType.AsrStart, 0, ECalculationSource.Muwaqqit),
+                        [ETimeType.AsrEnd] = new GenericSettingConfiguration(ETimeType.AsrEnd, 0, ECalculationSource.Muwaqqit),
+                        [ETimeType.AsrMithlayn] = new GenericSettingConfiguration(ETimeType.AsrMithlayn, 0, ECalculationSource.Muwaqqit),
+                        [ETimeType.AsrKaraha] = new MuwaqqitDegreeCalculationConfiguration(ETimeType.AsrKaraha, 0, 4.5),
 
-                        [ETimeType.MaghribStart] = new GenericSettingConfiguration(0, ECalculationSource.Muwaqqit),
-                        [ETimeType.MaghribEnd] = new MuwaqqitDegreeCalculationConfiguration(0, -12.0),
-                        [ETimeType.MaghribIshtibaq] = new MuwaqqitDegreeCalculationConfiguration(0, -8),
+                        [ETimeType.MaghribStart] = new GenericSettingConfiguration(ETimeType.MaghribStart, 0, ECalculationSource.Muwaqqit),
+                        [ETimeType.MaghribEnd] = new MuwaqqitDegreeCalculationConfiguration(ETimeType.MaghribEnd, 0, -12.0),
+                        [ETimeType.MaghribIshtibaq] = new MuwaqqitDegreeCalculationConfiguration(ETimeType.MaghribIshtibaq, 0, -8),
 
-                        [ETimeType.IshaStart] = new MuwaqqitDegreeCalculationConfiguration(0, -15.5),
-                        [ETimeType.IshaEnd] = new MuwaqqitDegreeCalculationConfiguration(0, -15.0),
+                        [ETimeType.IshaStart] = new MuwaqqitDegreeCalculationConfiguration(ETimeType.IshaStart, 0, -15.5),
+                        [ETimeType.IshaEnd] = new MuwaqqitDegreeCalculationConfiguration(ETimeType.IshaEnd, 0, -15.0),
                     },
             };
         }

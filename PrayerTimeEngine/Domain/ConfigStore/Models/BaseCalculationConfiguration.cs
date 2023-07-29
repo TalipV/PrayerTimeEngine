@@ -56,6 +56,7 @@ namespace PrayerTimeEngine.Domain.ConfigStore.Models
         }
 
         public abstract ECalculationSource Source { get; }
+        public ETimeType TimeType { get; init; }
         public int MinuteAdjustment { get; set; } = 0;
         public bool IsTimeShown { get; set; } = false;
     }
