@@ -93,13 +93,12 @@ namespace PrayerTimeEngine.Code.Presentation.ViewModel
 
             BaseCalculationConfiguration calculationConfiguration = _prayerTimesConfigurationStorage.GetConfiguration(TimeType);
             IsTimeShown = !IsTimeShownCheckBoxVisible || calculationConfiguration.IsTimeShown;
-
             SelectedCalculationSource = calculationConfiguration.Source;
-            OnSelectedCalculationSourceChanged();
-
             SelectedMinuteAdjustment = calculationConfiguration.MinuteAdjustment;
+            _isInitialized = true;
+            
+            OnSelectedCalculationSourceChanged();
             CustomSettingConfigurationViewModel?.AssignSettingValues(calculationConfiguration);
-
             OnViewModelInitialize_EventTrigger();
         }
 
