@@ -4,12 +4,12 @@ namespace PrayerTimeEngine.Domain.Model
 {
     public class PrayerTimesBundle
     {
-        public PrayerTime Fajr { get; private set; } = new PrayerTime();
-        public PrayerTime Duha { get; private set; } = new PrayerTime();
-        public PrayerTime Dhuhr { get; private set; } = new PrayerTime();
-        public PrayerTime Asr { get; private set; } = new PrayerTime();
-        public PrayerTime Maghrib { get; private set; } = new PrayerTime();
-        public PrayerTime Isha { get; private set; } = new PrayerTime();
+        public PrayerTime Fajr { get; private set; } = new PrayerTime { Name = "Fajr" };
+        public PrayerTime Duha { get; private set; } = new PrayerTime { Name = "Duha" };
+        public PrayerTime Dhuhr { get; private set; } = new PrayerTime { Name = "Dhuhr" };
+        public PrayerTime Asr { get; private set; } = new PrayerTime { Name = "Asr" };
+        public PrayerTime Maghrib { get; private set; } = new PrayerTime { Name = "Maghrib" };
+        public PrayerTime Isha { get; private set; } = new PrayerTime { Name = "Isha" };
 
         public TimeSpan? DayDuratiion
         {

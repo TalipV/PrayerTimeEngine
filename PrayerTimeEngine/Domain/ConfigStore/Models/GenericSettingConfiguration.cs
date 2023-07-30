@@ -15,7 +15,5 @@ namespace PrayerTimeEngine.Domain.ConfigStore.Models
             TimeType = timeType;
             Source = calculationSource;
         }
-
-        public override ECalculationSource Source { get; }
     }
 }

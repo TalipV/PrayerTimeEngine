@@ -1,4 +1,5 @@
-﻿using PrayerTimeEngine.Common.Enum;
+﻿using Newtonsoft.Json;
+using PrayerTimeEngine.Common.Enum;
 using PrayerTimeEngine.Common.Extension;
 using PrayerTimeEngine.Domain.Calculators.Muwaqqit.Models;
 using System.Text.Json;
@@ -24,7 +25,7 @@ namespace PrayerTimeEngine.Domain.ConfigStore.Models
         {
             if (DiscriminatorToCalculationConfigurationType.TryGetValue(discriminator, out Type targetType))
             {
-                return (BaseCalculationConfiguration)JsonSerializer.Deserialize(jsonString, targetType);
+                return (BaseCalculationConfiguration)JsonConvert.DeserializeObject(jsonString, targetType);
             }
             else
             {
@@ -55,7 +56,7 @@ namespace PrayerTimeEngine.Domain.ConfigStore.Models
             IsTimeShown = isTimeShown;
         }
 
-        public abstract ECalculationSource Source { get; }
+        public virtual ECalculationSource Source { get; init; }
         public ETimeType TimeType { get; init; }
         public int MinuteAdjustment { get; set; } = 0;
         public bool IsTimeShown { get; set; } = false;

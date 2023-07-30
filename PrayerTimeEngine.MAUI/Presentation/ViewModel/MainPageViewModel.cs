@@ -33,7 +33,66 @@ namespace PrayerTimeEngine.Presentation.ViewModel
 
         #region properties
 
+        public PrayerTime DisplayPrayerTime
+        {
+            get
+            {
+                if (Prayers == null)
+                {
+                    return null;
+                }
+
+                DateTime dateTime = DateTime.Now;
+
+                if (Prayers.Fajr.Start != null && Prayers.Fajr.End != null)
+                {
+                    if (Prayers.Fajr.Start < dateTime && dateTime < Prayers.Fajr.End)
+                    {
+                        return Prayers.Fajr;
+                    }
+                }
+                if (Prayers.Duha.Start != null && Prayers.Duha.End != null)
+                {
+                    if (Prayers.Duha.Start < dateTime && dateTime < Prayers.Duha.End)
+                    {
+                        return Prayers.Duha;
+                    }
+                }
+                if (Prayers.Dhuhr.Start != null && Prayers.Dhuhr.End != null)
+                {
+                    if (Prayers.Dhuhr.Start < dateTime && dateTime < Prayers.Dhuhr.End)
+                    {
+                        return Prayers.Dhuhr;
+                    }
+                }
+                if (Prayers.Asr.Start != null && Prayers.Asr.End != null)
+                {
+                    if (Prayers.Asr.Start < dateTime && dateTime < Prayers.Asr.End)
+                    {
+                        return Prayers.Asr;
+                    }
+                }
+                if (Prayers.Maghrib.Start != null && Prayers.Maghrib.End != null)
+                {
+                    if (Prayers.Maghrib.Start < dateTime && dateTime < Prayers.Maghrib.End)
+                    {
+                        return Prayers.Maghrib;
+                    }
+                }
+                if (Prayers.Isha.Start != null && Prayers.Isha.End != null)
+                {
+                    if (Prayers.Isha.Start < dateTime && dateTime < Prayers.Isha.End)
+                    {
+                        return Prayers.Isha;
+                    }
+                }
+
+                return null;
+            }
+        }
+
         public PrayerTimesBundle Prayers { get; private set; }
+
         public bool IsLoading { get; private set; }
         public bool IsNotLoading => !IsLoading;
 

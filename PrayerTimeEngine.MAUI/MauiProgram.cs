@@ -19,6 +19,8 @@ using PrayerTimeEngine.Views;
 
 namespace PrayerTimeEngine;
 
+// dotnet publish -c release -f net7.0-android -p:false
+
 public static class MauiProgram
 {
     public static MauiApp CreateMauiApp()

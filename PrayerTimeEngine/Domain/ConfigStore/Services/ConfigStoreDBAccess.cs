@@ -77,8 +77,8 @@ namespace PrayerTimeEngine.Domain.ConfigStore.Services
                             TimeType = (ETimeType)reader.GetInt32(2)
                         };
 
-                        string configurationTypeName = reader.GetString(4);
-                        string jsonConfigurationString = reader.GetString(5);
+                        string configurationTypeName = reader.GetString(3);
+                        string jsonConfigurationString = reader.GetString(4);
 
                         timeSpecificConfig.CalculationConfiguration =
                             BaseCalculationConfiguration.GetCalculationConfigurationFromJsonString(jsonConfigurationString, configurationTypeName);

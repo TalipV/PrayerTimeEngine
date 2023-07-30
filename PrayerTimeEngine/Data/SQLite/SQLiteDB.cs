@@ -23,8 +23,8 @@ public class SQLiteDB : ISQLiteDB
     public void InitializeDatabase()
     {
 #if DEBUG
-        if (File.Exists(DatabasePath))
-            File.Delete(DatabasePath);
+        //if (File.Exists(DatabasePath))
+        //    File.Delete(DatabasePath);
 #endif
 
         if (!File.Exists(DatabasePath))

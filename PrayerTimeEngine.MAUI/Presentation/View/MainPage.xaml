@@ -2,6 +2,7 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:enum="clr-namespace:PrayerTimeEngine.Common.Enum;assembly=PrayerTimeEngine"
+             xmlns:drawable="clr-namespace:PrayerTimeEngine.Presentation.GraphicsView"
              x:Class="PrayerTimeEngine.MainPage"
              BackgroundColor="#2e3548">
 
@@ -25,7 +26,8 @@
             <RowDefinition Height="20" />
             <RowDefinition Height="20" />
             <RowDefinition Height="40" />
-            <RowDefinition Height="40" />
+            <RowDefinition Height="20" />
+            <RowDefinition Height="180" />
         </Grid.RowDefinitions>
         
         <Grid.ColumnDefinitions>
@@ -54,7 +56,7 @@
             Grid.Column="2"
             Grid.ColumnSpan="2"
             Text="{Binding Prayers.Fajr.DurationDisplayText}"
-            FontSize="18"
+            FontSize="15"
             HorizontalOptions="Center"
             VerticalOptions="Center" />
         <Label 
@@ -109,7 +111,7 @@
             Grid.Column="2"
             Grid.ColumnSpan="2"
             Text="{Binding Prayers.Duha.DurationDisplayText}"
-            FontSize="18"
+            FontSize="15"
             HorizontalOptions="Center"
             VerticalOptions="Center"/>
 
@@ -149,7 +151,7 @@
             Grid.Column="2"
             Grid.ColumnSpan="2"
             Text="{Binding Prayers.Dhuhr.DurationDisplayText}"
-            FontSize="18"
+            FontSize="15"
             HorizontalOptions="Center"
             VerticalOptions="Center"/>
 
@@ -172,7 +174,7 @@
             Grid.Column="2"
             Grid.ColumnSpan="2"
             Text="{Binding Prayers.Asr.DurationDisplayText}"
-            FontSize="18"
+            FontSize="15"
             HorizontalOptions="Center"
             VerticalOptions="Center"/>
         <Label 
@@ -227,7 +229,7 @@
             Grid.Column="2"
             Grid.ColumnSpan="2"
             Text="{Binding Prayers.Maghrib.DurationDisplayText}"
-            FontSize="18"
+            FontSize="15"
             HorizontalOptions="Center"
             VerticalOptions="Center"/>
         <Label 
@@ -280,9 +282,9 @@
         <Label 
             Grid.Row="13"
             Grid.Column="2"
-            Grid.ColumnSpan="2"
+            Grid.ColumnSpan="3"
             Text="{Binding Prayers.Isha.DurationDisplayText}"
-            FontSize="18"
+            FontSize="15"
             HorizontalOptions="Center"
             VerticalOptions="Center"/>
 
@@ -348,6 +350,15 @@
             Grid.Column="0"
             IsRunning="{Binding IsLoading}"
             />
+
+        <GraphicsView
+            Grid.Row="18"
+            Grid.ColumnSpan="10" >
+            <GraphicsView.Drawable>
+                <drawable:PrayerTimeGraphicView 
+                    x:Name="PrayerTimeGraphic"/>
+            </GraphicsView.Drawable>
+        </GraphicsView>
     </Grid>
     
 </ContentPage>
