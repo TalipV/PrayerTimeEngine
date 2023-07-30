@@ -80,6 +80,7 @@ namespace PrayerTimeEngine.Domain.Model
         }
         public DateTime? AsrMithlaynDateTime { get; set; }
         public DateTime? IshtibaqDateTime { get; set; }
+        public DateTime? MaghribSufficientTimeDateTime { get; set; }
 
         public string OneThird => OneThirdDateTime?.ToString("HH:mm:ss") ?? "xx:xx:xx";
         public string Midnight => MidnightDateTime?.ToString("HH:mm:ss") ?? "xx:xx:xx";
@@ -98,6 +99,7 @@ namespace PrayerTimeEngine.Domain.Model
 
         public string DuhaQuarter => DuhaQuarterDateTime?.ToString("HH:mm:ss") ?? "xx:xx:xx";
         public string AsrMithlayn => AsrMithlaynDateTime?.ToString("HH:mm:ss") ?? "xx:xx:xx";
+        public string MaghribSufficientTime => MaghribSufficientTimeDateTime?.ToString("HH:mm:ss") ?? "xx:xx:xx";
         public string Ishtibaq => IshtibaqDateTime?.ToString("HH:mm:ss") ?? "xx:xx:xx";
 
 
@@ -153,6 +155,9 @@ namespace PrayerTimeEngine.Domain.Model
                     break;
                 case ETimeType.MaghribIshtibaq:
                     IshtibaqDateTime = dateTime;
+                    break;
+                case ETimeType.MaghribSufficientTime:
+                    MaghribSufficientTimeDateTime = dateTime;
                     break;
 
                 case ETimeType.IshaStart:

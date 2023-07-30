@@ -85,11 +85,11 @@ namespace PrayerTimeEngine.Presentation.ViewModel
         {
             TabTitle = $"{timeType}";
             TimeType = timeType;
-            ShowCalculationSourcePicker = TimeType != ETimeType.DuhaEnd;
+            ShowCalculationSourcePicker = !_timeTypeAttributeService.ConfigurableSimpleTypes.Contains(timeType);
             IsTimeShownCheckBoxVisible = !_timeTypeAttributeService.NotHideableTypes.Contains(timeType);
 
-            loadCalculationSource();
-            loadMinuteAdjustmentSource();
+            CalculationSources = getCalculationSource();
+            MinuteAdjustments = getMinuteAdjustmentSource();
 
             BaseCalculationConfiguration calculationConfiguration = _prayerTimesConfigurationStorage.GetConfiguration(TimeType);
             IsTimeShown = !IsTimeShownCheckBoxVisible || calculationConfiguration.IsTimeShown;
@@ -146,26 +146,29 @@ namespace PrayerTimeEngine.Presentation.ViewModel
             return new GenericSettingConfiguration(TimeType, SelectedMinuteAdjustment, SelectedCalculationSource, IsTimeShown);
         }
 
-        private void loadCalculationSource()
+        private List<ECalculationSource> getCalculationSource()
         {
             if (!_timeTypeAttributeService.TimeTypeCompatibleSources.TryGetValue(TimeType, out IReadOnlyList<ECalculationSource> calculationSources))
             {
-                CalculationSources = new List<ECalculationSource>();
-                return;
+                return new List<ECalculationSource>();
             }
 
-            CalculationSources = calculationSources.ToList();
+            return calculationSources.ToList();
         }
 
-        private void loadMinuteAdjustmentSource()
+        private List<int> getMinuteAdjustmentSource()
         {
             if (TimeType == ETimeType.DuhaEnd)
             {
-                MinuteAdjustments = Enumerable.Range(-40, 35).ToList();
+                return Enumerable.Range(-40, 35).ToList();
+            }
+            else if(TimeType == ETimeType.MaghribSufficientTime)
+            {
+                return new List<int>() { 15, 20, 25, 30, 35};
             }
             else
             {
-                MinuteAdjustments = Enumerable.Range(-15, 30).ToList();
+                return Enumerable.Range(-15, 30).ToList();
             }
         }
 

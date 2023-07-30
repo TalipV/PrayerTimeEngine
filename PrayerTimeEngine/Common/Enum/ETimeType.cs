@@ -42,7 +42,7 @@ namespace PrayerTimeEngine.Common.Enum
         DuhaQuarterOfDay,
 
         [TimeTypeForPrayerType(EPrayerType.Duha)]
-        [SimpleTimeType]
+        [ConfigurableSimpleType]
         [IsNotHidableTimeType]
         DuhaEnd,
 
@@ -99,7 +99,7 @@ namespace PrayerTimeEngine.Common.Enum
         MaghribEnd,
 
         [TimeTypeForPrayerType(EPrayerType.Maghrib)]
-        [SimpleTimeType]
+        [ConfigurableSimpleType]
         MaghribSufficientTime,
 
         [TimeTypeSupportedBy(ECalculationSource.None, ECalculationSource.Muwaqqit)]

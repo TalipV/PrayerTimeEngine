@@ -74,6 +74,7 @@ namespace PrayerTimeEngine.Domain.ConfigStore.Models
 
                         [ETimeType.MaghribStart] = new GenericSettingConfiguration(ETimeType.MaghribStart, 0, ECalculationSource.Muwaqqit),
                         [ETimeType.MaghribEnd] = new MuwaqqitDegreeCalculationConfiguration(ETimeType.MaghribEnd, 0, -12.0),
+                        [ETimeType.MaghribSufficientTime] = new GenericSettingConfiguration(ETimeType.MaghribSufficientTime, 20),
                         [ETimeType.MaghribIshtibaq] = new MuwaqqitDegreeCalculationConfiguration(ETimeType.MaghribIshtibaq, 0, -8),
 
                         [ETimeType.IshaStart] = new MuwaqqitDegreeCalculationConfiguration(ETimeType.IshaStart, 0, -15.5),

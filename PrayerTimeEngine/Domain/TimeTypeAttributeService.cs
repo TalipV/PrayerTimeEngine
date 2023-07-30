@@ -14,6 +14,8 @@ namespace PrayerTimeEngine.Domain
         public List<ETimeType> SimpleTypes { get; }
         public List<ETimeType> NonSimpleTypes { get; }
         public List<ETimeType> NotHideableTypes { get; }
+        public List<ETimeType> ConfigurableSimpleTypes { get; }
+        public List<ETimeType> ConfigurableTypes { get; }
         public IDictionary<EPrayerType, List<ETimeType>> PrayerTypeToTimeTypes { get; }
 
         public TimeTypeAttributeService()
@@ -23,52 +25,59 @@ namespace PrayerTimeEngine.Domain
             SimpleTypes = new List<ETimeType>();
             NonSimpleTypes = new List<ETimeType>();
             NotHideableTypes = new List<ETimeType>();
+            ConfigurableSimpleTypes = new List<ETimeType>();
+            ConfigurableTypes = new List<ETimeType>();
             PrayerTypeToTimeTypes = new Dictionary<EPrayerType, List<ETimeType>>();
             Initialize();
         }
 
         private void Initialize()
         {
-            foreach (ETimeType type in Enum.GetValues(typeof(ETimeType)))
+            Type enumType = typeof(ETimeType);
+
+            foreach (ETimeType timeType in Enum.GetValues(typeof(ETimeType)))
             {
-                var enumType = type.GetType();
-                var memberInfos = enumType.GetMember(type.ToString());
-                var enumValueMemberInfo = memberInfos.FirstOrDefault(m => m.DeclaringType == enumType);
-                var timeTypeSupportedByAttrs = enumValueMemberInfo.GetCustomAttributes<TimeTypeSupportedByAttribute>(false);
-                var degreeTimeTypeAttrs = enumValueMemberInfo.GetCustomAttributes<DegreeTimeTypeAttribute>(false);
-                var simpleTimeTypeAttrs = enumValueMemberInfo.GetCustomAttributes<SimpleTimeTypeAttribute>(false);
-                var notHideableTypeAttrs = enumValueMemberInfo.GetCustomAttributes<IsNotHidableTimeTypeAttribute>(false);
-                var timeTypeForPrayerTypeAttrs = enumValueMemberInfo.GetCustomAttributes<TimeTypeForPrayerTypeAttribute>(false);
+                MemberInfo[] memberInfos = enumType.GetMember(timeType.ToString());
+                MemberInfo enumValueMemberInfo = memberInfos.FirstOrDefault(m => m.DeclaringType == enumType);
 
-                // Populate CalculationSource compatible types
-                foreach (var attr in timeTypeSupportedByAttrs)
+                List<TimeTypeSupportedByAttribute> timeTypeSupportedByAttrs = enumValueMemberInfo.GetCustomAttributes<TimeTypeSupportedByAttribute>(false).ToList();
+                List<DegreeTimeTypeAttribute> degreeTimeTypeAttrs = enumValueMemberInfo.GetCustomAttributes<DegreeTimeTypeAttribute>(false).ToList();
+                List<ConfigurableSimpleTypeAttribute> configurableSimpleTimeTypeAttrs = enumValueMemberInfo.GetCustomAttributes<ConfigurableSimpleTypeAttribute>(false).ToList();
+                List<SimpleTimeTypeAttribute> simpleTimeTypeAttrs = enumValueMemberInfo.GetCustomAttributes<SimpleTimeTypeAttribute>(false).ToList();
+                List<IsNotHidableTimeTypeAttribute> notHideableTypeAttrs = enumValueMemberInfo.GetCustomAttributes<IsNotHidableTimeTypeAttribute>(false).ToList();
+                List<TimeTypeForPrayerTypeAttribute> timeTypeForPrayerTypeAttrs = enumValueMemberInfo.GetCustomAttributes<TimeTypeForPrayerTypeAttribute>(false).ToList();
+
+                foreach (TimeTypeSupportedByAttribute attr in timeTypeSupportedByAttrs)
                 {
-                    TimeTypeCompatibleSources[type] = attr.CalculationSources;
+                    TimeTypeCompatibleSources[timeType] = attr.CalculationSources;
                 }
 
-                // Populate Degree types
-                if (degreeTimeTypeAttrs.Any())
+                if (degreeTimeTypeAttrs.Count != 0)
                 {
-                    DegreeTypes.Add(type);
+                    DegreeTypes.Add(timeType);
                 }
 
-                // Populate Simple types and non-simple types
-                if (simpleTimeTypeAttrs.Any())
+                if (simpleTimeTypeAttrs.Count != 0 || configurableSimpleTimeTypeAttrs.Count != 0)
                 {
-                    SimpleTypes.Add(type);
+                    SimpleTypes.Add(timeType);
+
+                    if (configurableSimpleTimeTypeAttrs.Count != 0)
+                    {
+                        ConfigurableTypes.Add(timeType);
+                        ConfigurableSimpleTypes.Add(timeType);
+                    }
                 }
                 else
                 {
-                    NonSimpleTypes.Add(type);
+                    NonSimpleTypes.Add(timeType);
+                    ConfigurableTypes.Add(timeType);
                 }
 
-                // Populate Start and End types
-                if (notHideableTypeAttrs.Any())
+                if (notHideableTypeAttrs.Count != 0)
                 {
-                    NotHideableTypes.Add(type);
+                    NotHideableTypes.Add(timeType);
                 }
 
-                // Populate PrayerType to TimeTypes mapping
                 foreach (var attr in timeTypeForPrayerTypeAttrs)
                 {
                     if (!PrayerTypeToTimeTypes.ContainsKey(attr.PrayerTime))
@@ -76,7 +85,7 @@ namespace PrayerTimeEngine.Domain
                         PrayerTypeToTimeTypes[attr.PrayerTime] = new List<ETimeType>();
                     }
 
-                    PrayerTypeToTimeTypes[attr.PrayerTime].Add(type);
+                    PrayerTypeToTimeTypes[attr.PrayerTime].Add(timeType);
                 }
             }
         }

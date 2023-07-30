@@ -51,6 +51,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
         public bool ShowMithlayn { get; set; }
         public bool ShowKaraha { get; set; }
         public bool ShowIshtibaq { get; set; }
+        public bool ShowMaghribSufficientTime { get; set; }
         public bool ShowOneThird { get; set; }
         public bool ShowTwoThird { get; set; }
         public bool ShowMidnight { get; set; }
@@ -101,6 +102,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
             ShowDuhaQuarter = IsCalculationShown(ETimeType.DuhaQuarterOfDay);
             ShowMithlayn = IsCalculationShown(ETimeType.AsrMithlayn);
             ShowKaraha = IsCalculationShown(ETimeType.AsrKaraha);
+            ShowMaghribSufficientTime = IsCalculationShown(ETimeType.MaghribSufficientTime);
             ShowIshtibaq = IsCalculationShown(ETimeType.MaghribIshtibaq);
             ShowOneThird = IsCalculationShown(ETimeType.IshaFirstThird);
             ShowTwoThird = IsCalculationShown(ETimeType.IshaSecondThird);

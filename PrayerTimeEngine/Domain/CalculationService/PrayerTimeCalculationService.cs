@@ -96,8 +96,8 @@ public class PrayerTimeCalculationService : IPrayerTimeCalculationService
             .Select(x => profile.GetConfiguration(x))
             .Where(config =>
             {
-                if (config == null
-                    || config.Source == ECalculationSource.None
+                if (config == null 
+                    || config.Source == ECalculationSource.None 
                     || !config.IsTimeShown)
                 {
                     return false;
@@ -109,18 +109,28 @@ public class PrayerTimeCalculationService : IPrayerTimeCalculationService
 
     private void handleSimpleTypes(Profile profile, PrayerTimesBundle prayerTimeEntity)
     {
-        foreach (ETimeType timeType in _timeTypeAttributeService.SimpleTypes)
+        foreach (ETimeType timeType in _timeTypeAttributeService.ConfigurableSimpleTypes)
         {
             switch (timeType)
             {
                 case ETimeType.DuhaEnd:
                     if (prayerTimeEntity.Dhuhr?.Start != null
-                        && profile.Configurations.TryGetValue(ETimeType.DuhaEnd, out BaseCalculationConfiguration duhaConfig)
-                        && duhaConfig != null)
+                        && profile.GetConfiguration(ETimeType.DuhaEnd) is BaseCalculationConfiguration duhaConfig
+                        && duhaConfig.IsTimeShown)
                     {
                         prayerTimeEntity.SetSpecificPrayerTimeDateTime(
                             ETimeType.DuhaEnd,
                             prayerTimeEntity.Dhuhr.Start.Value.AddMinutes(duhaConfig.MinuteAdjustment));
+                    }
+                    break;
+                case ETimeType.MaghribSufficientTime:
+                    if (prayerTimeEntity.Maghrib?.Start != null
+                        && profile.GetConfiguration(ETimeType.MaghribSufficientTime) is BaseCalculationConfiguration maghribSufficientTimeConfig
+                        && maghribSufficientTimeConfig.IsTimeShown)
+                    {
+                        prayerTimeEntity.SetSpecificPrayerTimeDateTime(
+                            ETimeType.MaghribSufficientTime,
+                            prayerTimeEntity.Maghrib.Start.Value.AddMinutes(maghribSufficientTimeConfig.MinuteAdjustment));
                     }
                     break;
                 default:
