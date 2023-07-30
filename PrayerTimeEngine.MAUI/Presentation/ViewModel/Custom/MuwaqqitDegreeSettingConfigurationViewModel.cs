@@ -8,13 +8,11 @@ namespace PrayerTimeEngine.Presentation.ViewModel.Custom
     [AddINotifyPropertyChangedInterface]
     public class MuwaqqitDegreeSettingConfigurationViewModel : ISettingConfigurationViewModel
     {
-        public MuwaqqitDegreeSettingConfigurationViewModel(
-            ETimeType timeType,
-            double selectedDegree)
+        public MuwaqqitDegreeSettingConfigurationViewModel(ETimeType timeType)
         {
-            SelectedDegree = selectedDegree;
             TimeType = timeType;
             DegreeItemsSource = getItemSource(TimeType);
+            SelectedDegree = DegreeItemsSource.First();
         }
 
         public double SelectedDegree { get; set; }

@@ -108,12 +108,10 @@ namespace PrayerTimeEngine.Presentation.ViewModel
                 return;
 
             if (SelectedCalculationSource == ECalculationSource.Muwaqqit
-                && MuwaqqitDegreeCalculationConfiguration.DegreePrayerTimeEvents.ContainsKey(TimeType))
+                && _timeTypeAttributeService.DegreeTypes.Contains(TimeType))
             {
                 CustomSettingConfigurationViewModel =
-                        new MuwaqqitDegreeSettingConfigurationViewModel(
-                            TimeType,
-                            MuwaqqitDegreeCalculationConfiguration.DegreePrayerTimeEvents[TimeType]);
+                    new MuwaqqitDegreeSettingConfigurationViewModel(TimeType);
             }
             else
             {
