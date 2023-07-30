@@ -5,6 +5,7 @@ using PrayerTimeEngine.Domain;
 using PrayerTimeEngine.Presentation.Service.Navigation;
 using PrayerTimeEngine.Presentation.Service.SettingsContentPageFactory;
 using PropertyChanged;
+using System.Linq;
 
 namespace PrayerTimeEngine.Presentation.ViewModel
 {
@@ -51,7 +52,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
                 throw new ArgumentException($"{nameof(parameter)} is not an {nameof(EPrayerType)}");
             }
 
-            foreach (ETimeType timeType in _timeTypeAttributeService.PrayerTypeToTimeTypes[prayerTime])
+            foreach (ETimeType timeType in _timeTypeAttributeService.PrayerTypeToTimeTypes[prayerTime].Except(_timeTypeAttributeService.SimpleTypes))
             {
                 SettingsContentPage settingsContentPage = _settingsContentPageFactory.Create();
                 SettingsContentPageViewModel tabViewModel = settingsContentPage.BindingContext as SettingsContentPageViewModel;

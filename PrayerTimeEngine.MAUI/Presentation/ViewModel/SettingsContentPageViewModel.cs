@@ -22,7 +22,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
             -19.5, -20.0
         }.AsReadOnly();
 
-        public static readonly IReadOnlyCollection<double> MODERATE_SELECTABLE_DEGREES = new List<double>
+        public static readonly IReadOnlyCollection<double> MODERATE_SELECTABLE_DEGREES_NEGATIVE = new List<double>
         {
             -2.0, -2.5, -3.0, -3.5, -4.0, -4.5,
             -5.0, -5.5, -6.0, -6.5, -7.0, -7.5,
@@ -30,7 +30,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
         }.AsReadOnly();
 
         public static readonly IReadOnlyCollection<double> MODERATE_SELECTABLE_DEGREES_POSITIVE =
-            MODERATE_SELECTABLE_DEGREES.Select(Math.Abs).ToList().AsReadOnly();
+            MODERATE_SELECTABLE_DEGREES_NEGATIVE.Select(Math.Abs).ToList().AsReadOnly();
 
         #endregion static fields
 
@@ -148,8 +148,13 @@ namespace PrayerTimeEngine.Presentation.ViewModel
 
         private void loadCalculationSource()
         {
-            List<ECalculationSource> calculationSources = _timeTypeAttributeService.TimeTypeCompatibleSources[TimeType].ToList();
-            CalculationSources = calculationSources;
+            if (!_timeTypeAttributeService.TimeTypeCompatibleSources.TryGetValue(TimeType, out IReadOnlyList<ECalculationSource> calculationSources))
+            {
+                CalculationSources = new List<ECalculationSource>();
+                return;
+            }
+
+            CalculationSources = calculationSources.ToList();
         }
 
         private void loadMinuteAdjustmentSource()

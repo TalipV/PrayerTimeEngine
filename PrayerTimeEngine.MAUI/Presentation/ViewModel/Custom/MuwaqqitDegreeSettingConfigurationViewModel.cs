@@ -69,14 +69,17 @@ namespace PrayerTimeEngine.Presentation.ViewModel.Custom
             else if (timeType == ETimeType.MaghribEnd
                 || timeType == ETimeType.IshaStart
                 || timeType == ETimeType.FajrStart
-                || timeType == ETimeType.FajrGhalas
-                || timeType == ETimeType.FajrKaraha)
+                || timeType == ETimeType.IshaEnd)
             {
                 return SettingsContentPageViewModel.FAJR_ISHA_SELECTABLE_DEGREES;
             }
+            else if (timeType == ETimeType.FajrGhalas || timeType == ETimeType.FajrKaraha || timeType == ETimeType.MaghribIshtibaq)
+            {
+                return SettingsContentPageViewModel.MODERATE_SELECTABLE_DEGREES_NEGATIVE;
+            }
             else
             {
-                return SettingsContentPageViewModel.MODERATE_SELECTABLE_DEGREES;
+                throw new NotImplementedException($"{timeType} not implemented for degree selection values.");
             }
         }
     }
