@@ -27,6 +27,11 @@ namespace PrayerTimeEngine.Domain.Calculators.Muwaqqit.Services
             DateTime date,
             List<BaseCalculationConfiguration> configurations)
         {
+            if (configurations.Any(x => x.Source != ECalculationSource.Muwaqqit))
+            {
+                throw new ArgumentException($"Only configurations with {nameof(ECalculationSource)}.{ECalculationSource.Muwaqqit} are permitted!");
+            }
+
             // location selection has not been implemented yet
             string timezone = PrayerTimesConfigurationStorage.TIMEZONE;
             decimal longitude = PrayerTimesConfigurationStorage.INNSBRUCK_LONGITUDE;

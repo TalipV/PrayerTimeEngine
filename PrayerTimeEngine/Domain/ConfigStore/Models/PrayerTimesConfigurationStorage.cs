@@ -58,10 +58,10 @@ namespace PrayerTimeEngine.Domain.ConfigStore.Models
                     {
                         [ETimeType.FajrStart] = new MuwaqqitDegreeCalculationConfiguration(ETimeType.FajrStart, 0, -12.0),
                         [ETimeType.FajrEnd] = new GenericSettingConfiguration(ETimeType.FajrEnd, 0, ECalculationSource.Muwaqqit),
-                        [ETimeType.FajrGhalas] = new MuwaqqitDegreeCalculationConfiguration(ETimeType.FajrGhalas, 0, -8),
+                        [ETimeType.FajrGhalas] = new MuwaqqitDegreeCalculationConfiguration(ETimeType.FajrGhalas, 0, -7.5),
                         [ETimeType.FajrKaraha] = new MuwaqqitDegreeCalculationConfiguration(ETimeType.FajrKaraha, 0, -4.5),
 
-                        [ETimeType.DuhaStart] = new MuwaqqitDegreeCalculationConfiguration(ETimeType.DuhaStart, 0, 4.5),
+                        [ETimeType.DuhaStart] = new MuwaqqitDegreeCalculationConfiguration(ETimeType.DuhaStart, 0, 3.5),
                         [ETimeType.DuhaEnd] = new GenericSettingConfiguration(ETimeType.DuhaEnd, -20),
 
                         [ETimeType.DhuhrStart] = new GenericSettingConfiguration(ETimeType.DhuhrStart, 0, ECalculationSource.Muwaqqit),

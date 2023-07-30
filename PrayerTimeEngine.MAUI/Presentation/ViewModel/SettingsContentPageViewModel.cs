@@ -148,12 +148,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
 
         private void loadCalculationSource()
         {
-            List<ECalculationSource> calculationSources =
-                Enum.GetValues(typeof(ECalculationSource))
-                    .Cast<ECalculationSource>()
-                    .Where(x => TimeType.IsSupportedBy(x))
-                    .ToList();
-
+            List<ECalculationSource> calculationSources = _timeTypeAttributeService.TimeTypeCompatibleSources[TimeType].ToList();
             CalculationSources = calculationSources;
         }
 

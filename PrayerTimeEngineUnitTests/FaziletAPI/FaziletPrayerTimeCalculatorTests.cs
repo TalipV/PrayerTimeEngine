@@ -1,4 +1,5 @@
 using PrayerTimeEngine.Common.Enum;
+using PrayerTimeEngine.Common.Extension;
 using PrayerTimeEngine.Domain.CalculationService.Interfaces;
 using PrayerTimeEngine.Domain.Calculators.Fazilet.Models;
 using PrayerTimeEngine.Domain.Calculators.Fazilet.Services;
@@ -46,8 +47,8 @@ namespace PrayerTimeEngineUnitTests.FaziletAPI
             ICalculationPrayerTimes result =
                 faziletPrayerTimeCalculator.GetPrayerTimesAsync(
                     new DateTime(2023, 7, 29),
-                    new GenericSettingConfiguration(ETimeType.DhuhrStart, calculationSource: ECalculationSource.Fazilet)
-                ).GetAwaiter().GetResult();
+                    new List<BaseCalculationConfiguration> { new GenericSettingConfiguration(ETimeType.DhuhrStart, calculationSource: ECalculationSource.Fazilet) }
+                ).GetAwaiter().GetResult().Single().Key;
 
             FaziletPrayerTimes faziletPrayerTimes = result as FaziletPrayerTimes;
 

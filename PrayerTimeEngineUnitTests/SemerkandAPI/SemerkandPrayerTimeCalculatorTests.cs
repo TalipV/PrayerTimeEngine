@@ -1,4 +1,5 @@
 using PrayerTimeEngine.Common.Enum;
+using PrayerTimeEngine.Common.Extension;
 using PrayerTimeEngine.Domain.CalculationService.Interfaces;
 using PrayerTimeEngine.Domain.Calculators.Semerkand.Models;
 using PrayerTimeEngine.Domain.Calculators.Semerkand.Services;
@@ -42,8 +43,8 @@ namespace PrayerTimeEngineUnitTests.SemerkandAPI
             ICalculationPrayerTimes result =
                 semerkandPrayerTimeCalculator.GetPrayerTimesAsync(
                     new DateTime(2023, 7, 29),
-                    new GenericSettingConfiguration(ETimeType.DhuhrStart, calculationSource: ECalculationSource.Semerkand)
-                ).GetAwaiter().GetResult();
+                    new List<BaseCalculationConfiguration> { new GenericSettingConfiguration(ETimeType.DhuhrStart, calculationSource: ECalculationSource.Semerkand) }
+                ).GetAwaiter().GetResult().Single().Key;
 
             SemerkandPrayerTimes semerkandPrayerTimes = result as SemerkandPrayerTimes;
 

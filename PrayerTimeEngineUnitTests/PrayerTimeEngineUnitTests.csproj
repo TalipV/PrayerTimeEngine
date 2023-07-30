@@ -23,6 +23,18 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="MuwaqqitAPI\TestData\Muwaqqit_TestPrayerTimeData_20230730_Innsbruck_Part1.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="MuwaqqitAPI\TestData\Muwaqqit_TestPrayerTimeData_20230730_Innsbruck_Part2.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="MuwaqqitAPI\TestData\Muwaqqit_TestPrayerTimeData_20230730_Innsbruck_Part3.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="MuwaqqitAPI\TestData\Muwaqqit_TestPrayerTimeData_20230730_Innsbruck_Part4.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="MuwaqqitAPI\TestData\Muwaqqit_TestPrayerTimeData_20230729_Innsbruck.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
