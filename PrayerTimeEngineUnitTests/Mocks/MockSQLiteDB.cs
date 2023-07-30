@@ -3,7 +3,7 @@ using NSubstitute;
 using System.Data;
 using System.Data.Common;
 
-namespace PrayerTimeEngineUnitTests.Mock
+namespace PrayerTimeEngineUnitTests.Mocks
 {
     public class MockSQLiteDB : ISQLiteDB
     {

@@ -1,8 +1,7 @@
-﻿
-using PrayerTimeEngine.Code.Presentation.ViewModel;
+﻿using PrayerTimeEngine.Presentation.ViewModel;
 using PrayerTimeEngine.Views;
 
-namespace PrayerTimeEngine.Code.Presentation.Service.Navigation
+namespace PrayerTimeEngine.Presentation.Service.Navigation
 {
     public interface INavigationService
     {

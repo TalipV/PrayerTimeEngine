@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PrayerTimeEngine.Code.Presentation.Service.SettingsContentPageFactory
+namespace PrayerTimeEngine.Presentation.Service.SettingsContentPageFactory
 {
     public class SettingsContentPageFactory : ISettingsContentPageFactory
     {

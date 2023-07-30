@@ -2,11 +2,11 @@
 using PrayerTimeEngine.Domain.CalculationService.Interfaces;
 using PrayerTimeEngine.Domain.ConfigStore.Models;
 
-namespace PrayerTimeEngine.Domain.Calculators
+namespace PrayerTimeEngine.Domain.Calculators.Semerkand
 {
     public interface IPrayerTimeCalculator
     {
-        public Task<ICalculationPrayerTimes> GetPrayerTimesAsync(DateTime date, BaseCalculationConfiguration configuration);
-        public HashSet<ETimeType> GetUnsupportedCalculationTimeTypes();
+        public Task<ILookup<ICalculationPrayerTimes, ETimeType>> GetPrayerTimesAsync(DateTime date, List<BaseCalculationConfiguration> configurations);
+        public HashSet<ETimeType> GetUnsupportedTimeTypes();
     }
 }

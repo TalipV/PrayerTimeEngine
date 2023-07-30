@@ -1,13 +1,13 @@
-﻿using PrayerTimeEngine.Code.Presentation.ViewModel.Custom;
-using PrayerTimeEngine.Common.Enum;
+﻿using PrayerTimeEngine.Common.Enum;
 using PrayerTimeEngine.Common.Extension;
 using PrayerTimeEngine.Domain;
 using PrayerTimeEngine.Domain.Calculators.Muwaqqit.Models;
 using PrayerTimeEngine.Domain.ConfigStore.Interfaces;
 using PrayerTimeEngine.Domain.ConfigStore.Models;
+using PrayerTimeEngine.Presentation.ViewModel.Custom;
 using PropertyChanged;
 
-namespace PrayerTimeEngine.Code.Presentation.ViewModel
+namespace PrayerTimeEngine.Presentation.ViewModel
 {
     [AddINotifyPropertyChangedInterface]
     public class SettingsContentPageViewModel
@@ -53,7 +53,7 @@ namespace PrayerTimeEngine.Code.Presentation.ViewModel
         private readonly PrayerTimesConfigurationStorage _prayerTimesConfigurationStorage;
         private readonly IConfigStoreService _configStoreService;
         private readonly TimeTypeAttributeService _timeTypeAttributeService;
-        
+
         private bool _isInitialized = false;
 
         #endregion fields
@@ -96,7 +96,7 @@ namespace PrayerTimeEngine.Code.Presentation.ViewModel
             SelectedCalculationSource = calculationConfiguration.Source;
             SelectedMinuteAdjustment = calculationConfiguration.MinuteAdjustment;
             _isInitialized = true;
-            
+
             OnSelectedCalculationSourceChanged();
             CustomSettingConfigurationViewModel?.AssignSettingValues(calculationConfiguration);
             OnViewModelInitialize_EventTrigger();
@@ -136,9 +136,9 @@ namespace PrayerTimeEngine.Code.Presentation.ViewModel
         private BaseCalculationConfiguration getCurrentCalculationConfiguration()
         {
             return
-                this.CustomSettingConfigurationViewModel?
+                CustomSettingConfigurationViewModel?
                     .BuildSetting(SelectedMinuteAdjustment, IsTimeShown)
-                        ?? this.getGeneralCalculationConfiguration();
+                        ?? getGeneralCalculationConfiguration();
         }
 
         private BaseCalculationConfiguration getGeneralCalculationConfiguration()
@@ -148,24 +148,24 @@ namespace PrayerTimeEngine.Code.Presentation.ViewModel
 
         private void loadCalculationSource()
         {
-            List<ECalculationSource> calculationSources = 
+            List<ECalculationSource> calculationSources =
                 Enum.GetValues(typeof(ECalculationSource))
                     .Cast<ECalculationSource>()
                     .Where(x => TimeType.IsSupportedBy(x))
                     .ToList();
 
-            this.CalculationSources = calculationSources;
+            CalculationSources = calculationSources;
         }
 
         private void loadMinuteAdjustmentSource()
         {
             if (TimeType == ETimeType.DuhaEnd)
             {
-                this.MinuteAdjustments = Enumerable.Range(-40, 35).ToList();
+                MinuteAdjustments = Enumerable.Range(-40, 35).ToList();
             }
             else
             {
-                this.MinuteAdjustments = Enumerable.Range(-15, 30).ToList();
+                MinuteAdjustments = Enumerable.Range(-15, 30).ToList();
             }
         }
 

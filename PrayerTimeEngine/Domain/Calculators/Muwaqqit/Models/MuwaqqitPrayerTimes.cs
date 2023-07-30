@@ -19,7 +19,7 @@ namespace PrayerTimeEngine.Domain.Calculators.Muwaqqit.Models
         public required DateTime Shuruq { get; set; }
         public required DateTime Duha { get; set; }
         public required DateTime Dhuhr { get; set; }
-        public required DateTime AsrMithl { get; set; }
+        public required DateTime Asr { get; set; }
         public required DateTime AsrMithlayn { get; set; }
         public required DateTime Maghrib { get; set; }
         public required DateTime Isha { get; set; }
@@ -42,9 +42,9 @@ namespace PrayerTimeEngine.Domain.Calculators.Muwaqqit.Models
                 case ETimeType.DuhaEnd:
                     return Dhuhr;
                 case ETimeType.DhuhrEnd:
-                    return AsrMithl;
+                    return Asr;
                 case ETimeType.AsrStart:
-                    return AsrMithl;
+                    return Asr;
                 case ETimeType.AsrEnd:
                     return Maghrib;
                 case ETimeType.AsrMithlayn:

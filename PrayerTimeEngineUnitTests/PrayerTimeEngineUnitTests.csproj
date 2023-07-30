@@ -23,6 +23,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="MuwaqqitAPI\TestData\Muwaqqit_TestPrayerTimeData_20230729_Innsbruck.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="FaziletAPI\TestData\Fazilet_TestCountriesData.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

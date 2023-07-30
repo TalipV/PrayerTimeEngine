@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PrayerTimeEngine.Code.Presentation.ViewModel.Custom
+namespace PrayerTimeEngine.Presentation.ViewModel.Custom
 {
     public interface ISettingConfigurationViewModel
     {

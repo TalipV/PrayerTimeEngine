@@ -21,6 +21,8 @@ namespace PrayerTimeEngine.Domain.Calculators.Muwaqqit.Services
             _httpClient = httpClient;
         }
 
+        internal const string MUWAQQIT_API_URL = @"https://www.muwaqqit.com/api2.json";
+
         public async Task<MuwaqqitPrayerTimes> GetTimesAsync(
             DateTime date,
             decimal longitude,
@@ -33,7 +35,7 @@ namespace PrayerTimeEngine.Domain.Calculators.Muwaqqit.Services
         {
             MuwaqqitPrayerTimes prayerTimes = null;
 
-            UriBuilder builder = new UriBuilder("https://www.muwaqqit.com/api2.json");
+            UriBuilder builder = new UriBuilder(MUWAQQIT_API_URL);
             NameValueCollection query = HttpUtility.ParseQueryString(builder.Query);
 
             query["d"] = date.ToString("yyyy-MM-dd");
@@ -69,7 +71,7 @@ namespace PrayerTimeEngine.Domain.Calculators.Muwaqqit.Services
                     Shuruq = DateTimeOffset.Parse(muwaqqitResponse.sunrise).DateTime,
                     Duha = DateTimeOffset.Parse(muwaqqitResponse.ishraq).DateTime,
                     Dhuhr = DateTimeOffset.Parse(muwaqqitResponse.zohr).DateTime,
-                    AsrMithl = DateTimeOffset.Parse(muwaqqitResponse.asr_shafi).DateTime,
+                    Asr = DateTimeOffset.Parse(muwaqqitResponse.asr_shafi).DateTime,
                     AsrMithlayn = DateTimeOffset.Parse(muwaqqitResponse.asr_hanafi).DateTime,
                     Maghrib = DateTimeOffset.Parse(muwaqqitResponse.sunset).DateTime,
                     Isha = DateTimeOffset.Parse(muwaqqitResponse.esha).DateTime,

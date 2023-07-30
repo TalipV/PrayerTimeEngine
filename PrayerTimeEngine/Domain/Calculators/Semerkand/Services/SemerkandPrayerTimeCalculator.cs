@@ -1,6 +1,6 @@
 ﻿using PrayerTimeEngine.Common.Enum;
 using PrayerTimeEngine.Domain.CalculationService.Interfaces;
-using PrayerTimeEngine.Domain.Calculators;
+using PrayerTimeEngine.Domain.Calculators.Fazilet.Models;
 using PrayerTimeEngine.Domain.Calculators.Semerkand.Interfaces;
 using PrayerTimeEngine.Domain.Calculators.Semerkand.Models;
 using PrayerTimeEngine.Domain.ConfigStore.Models;
@@ -23,12 +23,12 @@ namespace PrayerTimeEngine.Domain.Calculators.Semerkand.Services
             _semerkandApiService = semerkandApiService;
         }
 
-        public HashSet<ETimeType> GetUnsupportedCalculationTimeTypes()
+        public HashSet<ETimeType> GetUnsupportedTimeTypes()
         {
-            return _unsupportedCalculationTimeTypes;
+            return _unsupportedTimeTypes;
         }
 
-        private HashSet<ETimeType> _unsupportedCalculationTimeTypes =
+        private HashSet<ETimeType> _unsupportedTimeTypes =
             new HashSet<ETimeType>
             {
                 ETimeType.FajrGhalas,
@@ -39,15 +39,20 @@ namespace PrayerTimeEngine.Domain.Calculators.Semerkand.Services
                 ETimeType.MaghribIshtibaq,
             };
 
-        public async Task<ICalculationPrayerTimes> GetPrayerTimesAsync(
+        public async Task<ILookup<ICalculationPrayerTimes, ETimeType>> GetPrayerTimesAsync(
             DateTime date,
-            BaseCalculationConfiguration configuration)
+            List<BaseCalculationConfiguration> configurations)
         {
             // because currently there is no location selection
             string countryName = PrayerTimesConfigurationStorage.COUNTRY_NAME;
             string cityName = PrayerTimesConfigurationStorage.CITY_NAME;
 
-            return await getPrayerTimesInternal(date, countryName, cityName);
+            ICalculationPrayerTimes semerkandPrayerTimes = await getPrayerTimesInternal(date, countryName, cityName);
+
+            // this single calculation entity applies to all the TimeTypes of the configurations
+            return configurations
+            .Select(x => x.TimeType)
+                .ToLookup(x => semerkandPrayerTimes, y => y);
         }
 
         private async Task<SemerkandPrayerTimes> getPrayerTimesInternal(DateTime date, string countryName, string cityName)

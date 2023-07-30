@@ -52,7 +52,7 @@ namespace PrayerTimeEngine.Domain.Calculators.Muwaqqit.Services
                 command.Parameters.AddWithValue("$Duha", prayerTimes.Duha);
                 command.Parameters.AddWithValue("$Dhuhr", prayerTimes.Dhuhr);
 
-                command.Parameters.AddWithValue("$AsrMithl", prayerTimes.AsrMithl);
+                command.Parameters.AddWithValue("$AsrMithl", prayerTimes.Asr);
                 command.Parameters.AddWithValue("$AsrMithlayn", prayerTimes.AsrMithlayn);
                 command.Parameters.AddWithValue("$AsrKaraha", prayerTimes.AsrKaraha);
 
@@ -62,7 +62,7 @@ namespace PrayerTimeEngine.Domain.Calculators.Muwaqqit.Services
 
                 command.Parameters.AddWithValue("$InsertDateTime", DateTime.Now);
 
-                await command.ExecuteReaderAsync();
+                await command.ExecuteNonQueryAsync();
             });
         }
 
@@ -109,7 +109,7 @@ namespace PrayerTimeEngine.Domain.Calculators.Muwaqqit.Services
                             Shuruq = reader.GetDateTime(2),
                             Duha = reader.GetDateTime(3),
                             Dhuhr = reader.GetDateTime(4),
-                            AsrMithl = reader.GetDateTime(5),
+                            Asr = reader.GetDateTime(5),
                             AsrMithlayn = reader.GetDateTime(6),
                             Maghrib = reader.GetDateTime(7),
                             Isha = reader.GetDateTime(8),

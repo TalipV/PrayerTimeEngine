@@ -3,7 +3,7 @@ using PrayerTimeEngine.Domain.CalculationService.Interfaces;
 using PrayerTimeEngine.Domain.Calculators.Semerkand.Models;
 using PrayerTimeEngine.Domain.Calculators.Semerkand.Services;
 using PrayerTimeEngine.Domain.ConfigStore.Models;
-using PrayerTimeEngineUnitTests.Mock;
+using PrayerTimeEngineUnitTests.Mocks;
 using System.Net;
 
 namespace PrayerTimeEngineUnitTests.SemerkandAPI
@@ -12,7 +12,6 @@ namespace PrayerTimeEngineUnitTests.SemerkandAPI
     {
         private SemerkandApiService getMockedSemerkandApiService()
         {
-            string dummyBaseURL = @"http://dummy.url.com";
             Dictionary<string, string> urlToContentMap = new Dictionary<string, string>()
             {
                 [$@"{SemerkandApiService.GET_COUNTRIES_URL}"] = File.ReadAllText(@"SemerkandAPI\TestData\Semerkand_TestCountriesData.txt"),
@@ -21,10 +20,7 @@ namespace PrayerTimeEngineUnitTests.SemerkandAPI
             };
 
             var mockHttpMessageHandler = new MockHttpMessageHandler(HttpStatusCode.OK, urlToContentMap);
-            var httpClient = new HttpClient(mockHttpMessageHandler)
-            {
-                BaseAddress = new Uri(dummyBaseURL)
-            };
+            var httpClient = new HttpClient(mockHttpMessageHandler);
 
             return new SemerkandApiService(httpClient);
         }
@@ -33,9 +29,6 @@ namespace PrayerTimeEngineUnitTests.SemerkandAPI
         public void SemerkandPrayerTimeCalculator_GetPrayerTimesAsyncWithNormalInput_PrayerTimesForThatDay()
         {
             // ARRANGE
-            DateTime testDate = new DateTime(2023, 7, 29);
-            var config = new GenericSettingConfiguration(ETimeType.DhuhrStart, calculationSource: ECalculationSource.Semerkand);
-
             var semerkandDBAccess = new SemerkandDBAccess(new SQLiteDB());
             var semerkandApiService = getMockedSemerkandApiService();
 
@@ -48,8 +41,8 @@ namespace PrayerTimeEngineUnitTests.SemerkandAPI
             // ACT
             ICalculationPrayerTimes result =
                 semerkandPrayerTimeCalculator.GetPrayerTimesAsync(
-                    testDate,
-                    config
+                    new DateTime(2023, 7, 29),
+                    new GenericSettingConfiguration(ETimeType.DhuhrStart, calculationSource: ECalculationSource.Semerkand)
                 ).GetAwaiter().GetResult();
 
             SemerkandPrayerTimes semerkandPrayerTimes = result as SemerkandPrayerTimes;
@@ -57,7 +50,7 @@ namespace PrayerTimeEngineUnitTests.SemerkandAPI
             // ASSERT
             Assert.IsNotNull(semerkandPrayerTimes);
 
-            Assert.That(semerkandPrayerTimes.Date, Is.EqualTo(testDate));
+            Assert.That(semerkandPrayerTimes.Date, Is.EqualTo(new DateTime(2023, 7, 29)));
             Assert.That(semerkandPrayerTimes.Fajr, Is.EqualTo(new DateTime(2023, 7, 29, 03, 15, 0)));
             Assert.That(semerkandPrayerTimes.NextFajr, Is.EqualTo(new DateTime(2023, 7, 30, 03, 17, 0)));
 

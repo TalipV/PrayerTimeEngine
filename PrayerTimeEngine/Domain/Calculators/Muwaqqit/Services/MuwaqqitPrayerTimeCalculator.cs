@@ -3,6 +3,7 @@ using PrayerTimeEngine.Domain.CalculationService.Interfaces;
 using PrayerTimeEngine.Domain.ConfigStore.Models;
 using PrayerTimeEngine.Domain.Calculators.Muwaqqit.Interfaces;
 using PrayerTimeEngine.Domain.Calculators.Muwaqqit.Models;
+using PrayerTimeEngine.Domain.Calculators.Semerkand;
 
 namespace PrayerTimeEngine.Domain.Calculators.Muwaqqit.Services
 {
@@ -22,73 +23,146 @@ namespace PrayerTimeEngine.Domain.Calculators.Muwaqqit.Services
             _timeTypeAttributeService = timeTypeAttributeService;
         }
 
-        public async Task<ICalculationPrayerTimes> GetPrayerTimesAsync(
+        public async Task<ILookup<ICalculationPrayerTimes, ETimeType>> GetPrayerTimesAsync(
             DateTime date,
-            BaseCalculationConfiguration configuration)
+            List<BaseCalculationConfiguration> configurations)
         {
-            ETimeType timeType = configuration.TimeType;
-
             // location selection has not been implemented yet
             string timezone = PrayerTimesConfigurationStorage.TIMEZONE;
             decimal longitude = PrayerTimesConfigurationStorage.INNSBRUCK_LONGITUDE;
             decimal latitude = PrayerTimesConfigurationStorage.INNSBRUCK_LATITUDE;
 
-            double fajrDegree, ishaDegree, ishtibaqDegree, asrKarahaDegree;
-            getDegreeValue(
-                timeType,
-                configuration,
-                out fajrDegree,
-                out ishaDegree,
-                out ishtibaqDegree,
-                out asrKarahaDegree);
+            List<ETimeType> toBeCalculatedTimeTypes = configurations.Select(x => x.TimeType).ToList();
+            Dictionary<ICalculationPrayerTimes, List<ETimeType>> calculatedTimes = new Dictionary<ICalculationPrayerTimes, List<ETimeType>>();
 
-            return await getPrayerTimesInternal(date, longitude, latitude, fajrDegree, ishaDegree, ishtibaqDegree, asrKarahaDegree, timezone);
+            var toBeConsumedConfigurations = configurations.ToList();
+
+            while (toBeConsumedConfigurations.Count != 0)
+            {
+                double fajrDegree, ishaDegree, ishtibaqDegree, asrKarahaDegree;
+                List<ETimeType> consumedTimeTypes = 
+                    ConsumeDegreeValues(
+                        toBeConsumedConfigurations,
+                        out fajrDegree,
+                        out ishaDegree,
+                        out ishtibaqDegree,
+                        out asrKarahaDegree);
+
+                MuwaqqitPrayerTimes muwaqqitPrayerTimes = await getPrayerTimesInternal(date, longitude, latitude, fajrDegree, ishaDegree, ishtibaqDegree, asrKarahaDegree, timezone);
+                calculatedTimes[muwaqqitPrayerTimes] = consumedTimeTypes.ToList();
+            }
+
+            return calculatedTimes
+                .SelectMany(kv => kv.Value.Select(t => new { kv.Key, Value = t }))
+                .ToLookup(k => k.Key, k => k.Value);
         }
 
-        private void getDegreeValue(
-            ETimeType timeType,
-            BaseCalculationConfiguration muwaqqitConfig,
+        private List<ETimeType> ConsumeDegreeValues(
+            List<BaseCalculationConfiguration> muwaqqitConfigs,
             out double fajrDegree,
             out double ishaDegree,
             out double ishtibaqDegree,
             out double asrKarahaDegree)
         {
-            fajrDegree = -12.0;
-            ishaDegree = -12.0;
-            ishtibaqDegree = -12.0;
-            asrKarahaDegree = -12.0;
+            List<ETimeType> consumedTimeTypes = new List<ETimeType>();
 
-            if (muwaqqitConfig is not MuwaqqitDegreeCalculationConfiguration muwaqqitDegreeConfig)
+            double? calculatedFajrDegree = null;
+            double? calculatedIshaDegree = null;
+            double? calculatedIshtibaqDegree = null;
+            double? calculatedAsrKarahaDegree = null;
+
+            foreach (BaseCalculationConfiguration muwaqqitConfig in muwaqqitConfigs.ToList())
             {
-                if (_timeTypeAttributeService.DegreeTypes.Contains(timeType))
+                ETimeType timeType = muwaqqitConfig.TimeType;
+
+                if (muwaqqitConfig is not MuwaqqitDegreeCalculationConfiguration muwaqqitDegreeConfig)
                 {
-                    throw new ArgumentException($"Time {timeType} requires a {nameof(MuwaqqitDegreeCalculationConfiguration)} for its degree information.");
+                    if (_timeTypeAttributeService.DegreeTypes.Contains(timeType))
+                    {
+                        throw new ArgumentException($"Time {timeType} requires a {nameof(MuwaqqitDegreeCalculationConfiguration)} for its degree information.");
+                    }
+
+                    muwaqqitConfigs.Remove(muwaqqitConfig);
+                    consumedTimeTypes.Add(timeType);
+                    continue;
                 }
 
-                return;
+                double degreeValue = muwaqqitDegreeConfig.Degree;
+
+                switch (timeType)
+                {
+                    case ETimeType.IshaEnd:
+                    case ETimeType.FajrStart:
+                    case ETimeType.FajrGhalas:
+                    case ETimeType.FajrKaraha:
+                        if (calculatedFajrDegree == null)
+                        {
+                            calculatedFajrDegree = degreeValue;
+                            muwaqqitConfigs.Remove(muwaqqitConfig); 
+                            consumedTimeTypes.Add(timeType);
+                        }
+                        else if (calculatedFajrDegree == degreeValue)
+                        {
+                            muwaqqitConfigs.Remove(muwaqqitConfig); 
+                            consumedTimeTypes.Add(timeType);
+                        }
+                        break;
+
+                    case ETimeType.MaghribEnd:
+                    case ETimeType.IshaStart:
+                        if (calculatedIshaDegree == null)
+                        {
+                            calculatedIshaDegree = degreeValue;
+                            muwaqqitConfigs.Remove(muwaqqitConfig); 
+                            consumedTimeTypes.Add(timeType);
+                        }
+                        else if (calculatedIshaDegree == degreeValue)
+                        {
+                            muwaqqitConfigs.Remove(muwaqqitConfig); 
+                            consumedTimeTypes.Add(timeType);
+                        }
+                        break;
+
+                    case ETimeType.MaghribIshtibaq:
+                        if (calculatedIshtibaqDegree == null)
+                        {
+                            calculatedIshtibaqDegree = degreeValue;
+                            muwaqqitConfigs.Remove(muwaqqitConfig);
+                            consumedTimeTypes.Add(timeType);
+                        }
+                        else if (calculatedIshtibaqDegree == degreeValue)
+                        {
+                            muwaqqitConfigs.Remove(muwaqqitConfig);
+                            consumedTimeTypes.Add(timeType);
+                        }
+                        break;
+
+                    case ETimeType.DuhaStart:
+                    case ETimeType.AsrKaraha:
+                        if (calculatedAsrKarahaDegree == null)
+                        {
+                            calculatedAsrKarahaDegree = degreeValue;
+                            muwaqqitConfigs.Remove(muwaqqitConfig);
+                            consumedTimeTypes.Add(timeType);
+                        }
+                        else if (calculatedAsrKarahaDegree == degreeValue)
+                        {
+                            muwaqqitConfigs.Remove(muwaqqitConfig);
+                            consumedTimeTypes.Add(timeType);
+                        }
+                        break;
+                }
             }
 
-            if (timeType == ETimeType.FajrStart || timeType == ETimeType.FajrGhalas || timeType == ETimeType.FajrKaraha)
-                fajrDegree = muwaqqitDegreeConfig.Degree;
-            else if (timeType == ETimeType.IshaStart)
-                ishaDegree = muwaqqitDegreeConfig.Degree;
-            else if (timeType == ETimeType.IshaEnd)
-                fajrDegree = muwaqqitDegreeConfig.Degree;
-            else if (timeType == ETimeType.MaghribEnd)
-                ishaDegree = muwaqqitDegreeConfig.Degree;
-            else if (timeType == ETimeType.MaghribIshtibaq)
-                ishtibaqDegree = muwaqqitDegreeConfig.Degree;
-            else if (timeType == ETimeType.AsrKaraha)
-                asrKarahaDegree = muwaqqitDegreeConfig.Degree;
-            else if (timeType == ETimeType.DuhaStart)
-                asrKarahaDegree = muwaqqitDegreeConfig.Degree;
-            else
-                throw new ArgumentException(
-                    $"When {nameof(muwaqqitConfig)} is an instance of {nameof(MuwaqqitDegreeCalculationConfiguration)} it " +
-                    $"has to be a calculation of a time with a degree.");
+            fajrDegree = calculatedFajrDegree ?? - 12.0;
+            ishaDegree = calculatedIshaDegree ?? -12.0;
+            ishtibaqDegree = calculatedIshtibaqDegree ?? -12.0;
+            asrKarahaDegree = calculatedAsrKarahaDegree ?? -12.0;
+
+            return consumedTimeTypes;
         }
 
-        public HashSet<ETimeType> GetUnsupportedCalculationTimeTypes()
+        public HashSet<ETimeType> GetUnsupportedTimeTypes()
         {
             return new HashSet<ETimeType>();
         }

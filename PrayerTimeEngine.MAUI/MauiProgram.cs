@@ -1,9 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
-using PrayerTimeEngine.Code.Presentation.Service.Navigation;
-using PrayerTimeEngine.Code.Presentation.Service.SettingsContentPageFactory;
 using PrayerTimeEngine.Code.Presentation.View;
-using PrayerTimeEngine.Code.Presentation.ViewModel;
-using PrayerTimeEngine.Code.Presentation.ViewModel.Custom;
 using PrayerTimeEngine.Domain;
 using PrayerTimeEngine.Domain.CalculationService.Interfaces;
 using PrayerTimeEngine.Domain.Calculators.Fazilet.Interfaces;
@@ -15,6 +11,10 @@ using PrayerTimeEngine.Domain.Calculators.Semerkand.Services;
 using PrayerTimeEngine.Domain.ConfigStore.Interfaces;
 using PrayerTimeEngine.Domain.ConfigStore.Models;
 using PrayerTimeEngine.Domain.ConfigStore.Services;
+using PrayerTimeEngine.Presentation.Service.Navigation;
+using PrayerTimeEngine.Presentation.Service.SettingsContentPageFactory;
+using PrayerTimeEngine.Presentation.ViewModel;
+using PrayerTimeEngine.Presentation.ViewModel.Custom;
 using PrayerTimeEngine.Views;
 
 namespace PrayerTimeEngine;

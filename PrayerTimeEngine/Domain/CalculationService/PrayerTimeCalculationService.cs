@@ -2,9 +2,9 @@
 using PrayerTimeEngine.Common.Enum;
 using PrayerTimeEngine.Domain;
 using PrayerTimeEngine.Domain.CalculationService.Interfaces;
-using PrayerTimeEngine.Domain.Calculators;
 using PrayerTimeEngine.Domain.Calculators.Fazilet.Services;
 using PrayerTimeEngine.Domain.Calculators.Muwaqqit.Services;
+using PrayerTimeEngine.Domain.Calculators.Semerkand;
 using PrayerTimeEngine.Domain.Calculators.Semerkand.Services;
 using PrayerTimeEngine.Domain.ConfigStore.Models;
 using PrayerTimeEngine.Domain.Model;
@@ -34,30 +34,77 @@ public class PrayerTimeCalculationService : IPrayerTimeCalculationService
 
     private async Task handleComplexTypes(Profile profile, DateTime dateTime, PrayerTimesBundle prayerTimeEntity)
     {
-        foreach (ETimeType timeType in _timeTypeAttributeService.NonSimpleTypes)
+        List<BaseCalculationConfiguration> configurations = getActiveCalculationConfigurations(profile);
+
+        foreach (var calculationSourceConfigs in configurations.GroupBy(x => x.Source))
         {
-            if (profile.GetConfiguration(timeType) is not BaseCalculationConfiguration config
-                || config.Source == ECalculationSource.None
-                || !config.IsTimeShown)
+            ECalculationSource calculationSource = calculationSourceConfigs.Key;
+            List<BaseCalculationConfiguration> configs = calculationSourceConfigs.ToList();
+            var configsByTimeType = configs.ToDictionary(x => x.TimeType);
+
+            IPrayerTimeCalculator timeCalculator = getPrayerTimeCalculatorByCalculationSource(calculationSource);
+            throwIfConfigsHaveUnsupportedTimeTypes(calculationSource, configs, timeCalculator);
+
+            ILookup<ICalculationPrayerTimes, ETimeType> calculationPrayerTimes =
+                await timeCalculator.GetPrayerTimesAsync(dateTime, configs);
+
+            foreach (var calculationPrayerTimeKVP in calculationPrayerTimes)
             {
-                prayerTimeEntity.SetSpecificPrayerTimeDateTime(timeType, null);
-                continue;
+                handleSingleCalculationPrayerTimes(prayerTimeEntity, configsByTimeType, calculationPrayerTimeKVP);
             }
+        }
+    }
 
-            IPrayerTimeCalculator timeCalculator = getPrayerTimeCalculatorByCalculationSource(config.Source);
+    private static void handleSingleCalculationPrayerTimes(
+        PrayerTimesBundle prayerTimeEntity, 
+        Dictionary<ETimeType, BaseCalculationConfiguration> configsByTimeType, 
+        IGrouping<ICalculationPrayerTimes, ETimeType> calculationPrayerTimeKVP)
+    {
+        ICalculationPrayerTimes calculationPrayer = calculationPrayerTimeKVP.Key;
+        List<ETimeType> associatedTimeTypes = calculationPrayerTimeKVP.ToList();
 
-            if (timeCalculator.GetUnsupportedCalculationTimeTypes().Contains(timeType))
-            {
-                throw new ArgumentException($"{timeCalculator.GetType().Name}[{config.Source}] does not support {timeType}!");
-            }
-
-            ICalculationPrayerTimes calculationPrayerTimes = await timeCalculator.GetPrayerTimesAsync(dateTime, config);
-            DateTime calculatedTime = 
-                calculationPrayerTimes.GetDateTimeForTimeType(timeType)
+        foreach (var timeType in associatedTimeTypes)
+        {
+            BaseCalculationConfiguration config = configsByTimeType[timeType];
+            DateTime calculatedTime =
+                calculationPrayer.GetDateTimeForTimeType(timeType)
                 .AddMinutes(config.MinuteAdjustment);
 
             prayerTimeEntity.SetSpecificPrayerTimeDateTime(timeType, calculatedTime);
         }
+    }
+
+    private static void throwIfConfigsHaveUnsupportedTimeTypes(ECalculationSource calculationSource, List<BaseCalculationConfiguration> configs, IPrayerTimeCalculator timeCalculator)
+    {
+        List<ETimeType> unsupportedTimeTypes =
+            timeCalculator
+            .GetUnsupportedTimeTypes().Intersect(configs.Select(x => x.TimeType))
+            .ToList();
+
+        if (unsupportedTimeTypes.Count != 0)
+        {
+            throw new ArgumentException(
+                $"{timeCalculator.GetType().Name}[{calculationSource}] does not support the following values of {nameof(ETimeType)}: " +
+                string.Join(", ", unsupportedTimeTypes));
+        }
+    }
+
+    private List<BaseCalculationConfiguration> getActiveCalculationConfigurations(Profile profile)
+    {
+        return _timeTypeAttributeService
+            .NonSimpleTypes
+            .Select(x => profile.GetConfiguration(x))
+            .Where(config =>
+            {
+                if (config == null
+                    || config.Source == ECalculationSource.None
+                    || !config.IsTimeShown)
+                {
+                    return false;
+                }
+                return true;
+            })
+            .ToList();
     }
 
     private void handleSimpleTypes(Profile profile, PrayerTimesBundle prayerTimeEntity)

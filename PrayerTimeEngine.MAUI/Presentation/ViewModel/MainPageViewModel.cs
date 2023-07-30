@@ -1,14 +1,14 @@
 ﻿using MvvmHelpers;
 using System.Windows.Input;
-using PrayerTimeEngine.Code.Presentation.Service.Navigation;
 using PropertyChanged;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using PrayerTimeEngine.Common.Enum;
 using PrayerTimeEngine.Domain.Model;
 using PrayerTimeEngine.Domain.CalculationService.Interfaces;
 using PrayerTimeEngine.Domain.ConfigStore.Models;
+using PrayerTimeEngine.Presentation.Service.Navigation;
 
-namespace PrayerTimeEngine.Code.Presentation.ViewModel
+namespace PrayerTimeEngine.Presentation.ViewModel
 {
     [AddINotifyPropertyChangedInterface]
     public class MainPageViewModel : BaseViewModel
@@ -59,9 +59,9 @@ namespace PrayerTimeEngine.Code.Presentation.ViewModel
 
         #region ICommand
 
-        public ICommand GoToSettingsPageCommand 
+        public ICommand GoToSettingsPageCommand
             => new Command<EPrayerType>(
-                async (EPrayerType prayerTime) => 
+                async (prayerTime) =>
                 {
                     await _navigationService.NavigateTo<SettingsHandlerPageViewModel>(prayerTime);
                 });
@@ -84,27 +84,27 @@ namespace PrayerTimeEngine.Code.Presentation.ViewModel
         #endregion ICommand
 
         #region public methods
-        
+
         public void OnAppearing()
         {
             setValuesYo();
         }
-        
+
         #endregion public methods
 
         #region private methods 
 
         private void setValuesYo()
         {
-            ShowFajrGhalas =  IsCalculationShown(ETimeType.FajrGhalas);
+            ShowFajrGhalas = IsCalculationShown(ETimeType.FajrGhalas);
             ShowFajrRedness = IsCalculationShown(ETimeType.FajrKaraha);
             ShowDuhaQuarter = IsCalculationShown(ETimeType.DuhaQuarterOfDay);
-            ShowMithlayn =    IsCalculationShown(ETimeType.AsrMithlayn);
-            ShowKaraha =      IsCalculationShown(ETimeType.AsrKaraha);
-            ShowIshtibaq =    IsCalculationShown(ETimeType.MaghribIshtibaq);
-            ShowOneThird =    IsCalculationShown(ETimeType.IshaFirstThird);
-            ShowTwoThird =    IsCalculationShown(ETimeType.IshaSecondThird);
-            ShowMidnight =    IsCalculationShown(ETimeType.IshaMidnight);
+            ShowMithlayn = IsCalculationShown(ETimeType.AsrMithlayn);
+            ShowKaraha = IsCalculationShown(ETimeType.AsrKaraha);
+            ShowIshtibaq = IsCalculationShown(ETimeType.MaghribIshtibaq);
+            ShowOneThird = IsCalculationShown(ETimeType.IshaFirstThird);
+            ShowTwoThird = IsCalculationShown(ETimeType.IshaSecondThird);
+            ShowMidnight = IsCalculationShown(ETimeType.IshaMidnight);
 
             OnPropertyChanged();
         }

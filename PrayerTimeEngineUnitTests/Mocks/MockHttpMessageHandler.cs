@@ -1,6 +1,6 @@
 ﻿using System.Net;
 
-namespace PrayerTimeEngineUnitTests.Mock
+namespace PrayerTimeEngineUnitTests.Mocks
 {
     public class MockHttpMessageHandler : HttpMessageHandler
     {
@@ -17,11 +17,11 @@ namespace PrayerTimeEngineUnitTests.Mock
         {
             // Look up the response content in the dictionary
             string content;
-            if (this.urlToContentMap.TryGetValue(request.RequestUri.AbsoluteUri, out content))
+            if (urlToContentMap.TryGetValue(request.RequestUri.AbsoluteUri, out content))
             {
                 var responseMessage = new HttpResponseMessage
                 {
-                    StatusCode = this.statusCode,
+                    StatusCode = statusCode,
                     Content = new StringContent(content)
                 };
 

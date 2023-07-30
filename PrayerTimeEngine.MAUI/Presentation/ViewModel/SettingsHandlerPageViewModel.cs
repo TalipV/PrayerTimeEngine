@@ -1,12 +1,12 @@
 ﻿using MvvmHelpers;
-using PrayerTimeEngine.Code.Presentation.Service.Navigation;
-using PrayerTimeEngine.Code.Presentation.Service.SettingsContentPageFactory;
 using PrayerTimeEngine.Code.Presentation.View;
 using PrayerTimeEngine.Common.Enum;
 using PrayerTimeEngine.Domain;
+using PrayerTimeEngine.Presentation.Service.Navigation;
+using PrayerTimeEngine.Presentation.Service.SettingsContentPageFactory;
 using PropertyChanged;
 
-namespace PrayerTimeEngine.Code.Presentation.ViewModel
+namespace PrayerTimeEngine.Presentation.ViewModel
 {
     /// <summary>
     /// Dummy class for <see cref="INavigationService"/>.

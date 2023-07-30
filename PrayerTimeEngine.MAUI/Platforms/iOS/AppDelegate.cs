@@ -1,9 +1,9 @@
 ﻿using Foundation;
 
-namespace PrayerTimeEngine;
+namespace PrayerTimeEngine.Platforms.iOS;
 
 [Register("AppDelegate")]
 public class AppDelegate : MauiUIApplicationDelegate
 {
-	protected override MauiApp CreateMauiApp() => MauiProgram.CreateMauiApp();
+    protected override MauiApp CreateMauiApp() => MauiProgram.CreateMauiApp();
 }

@@ -1,4 +1,4 @@
-using PrayerTimeEngine.Code.Presentation.ViewModel;
+using PrayerTimeEngine.Presentation.ViewModel;
 
 namespace PrayerTimeEngine.Code.Presentation.View;
 

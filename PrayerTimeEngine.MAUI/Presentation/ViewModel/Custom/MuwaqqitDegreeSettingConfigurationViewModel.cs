@@ -3,7 +3,7 @@ using PrayerTimeEngine.Domain.Calculators.Muwaqqit.Models;
 using PrayerTimeEngine.Domain.ConfigStore.Models;
 using PropertyChanged;
 
-namespace PrayerTimeEngine.Code.Presentation.ViewModel.Custom
+namespace PrayerTimeEngine.Presentation.ViewModel.Custom
 {
     [AddINotifyPropertyChangedInterface]
     public class MuwaqqitDegreeSettingConfigurationViewModel : ISettingConfigurationViewModel
@@ -24,7 +24,7 @@ namespace PrayerTimeEngine.Code.Presentation.ViewModel.Custom
 
         public BaseCalculationConfiguration BuildSetting(int minuteAdjustment, bool isTimeShown)
         {
-            return new MuwaqqitDegreeCalculationConfiguration(minuteAdjustment, SelectedDegree, isTimeShown);
+            return new MuwaqqitDegreeCalculationConfiguration(TimeType, minuteAdjustment, SelectedDegree, isTimeShown);
         }
 
         private StackLayout stackLayout = null;
@@ -66,7 +66,7 @@ namespace PrayerTimeEngine.Code.Presentation.ViewModel.Custom
             {
                 return SettingsContentPageViewModel.MODERATE_SELECTABLE_DEGREES_POSITIVE;
             }
-            else if(timeType == ETimeType.MaghribEnd
+            else if (timeType == ETimeType.MaghribEnd
                 || timeType == ETimeType.IshaStart
                 || timeType == ETimeType.FajrStart
                 || timeType == ETimeType.FajrGhalas

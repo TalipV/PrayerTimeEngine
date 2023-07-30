@@ -3,7 +3,7 @@ using PrayerTimeEngine.Domain.CalculationService.Interfaces;
 using PrayerTimeEngine.Domain.Calculators.Fazilet.Models;
 using PrayerTimeEngine.Domain.Calculators.Fazilet.Services;
 using PrayerTimeEngine.Domain.ConfigStore.Models;
-using PrayerTimeEngineUnitTests.Mock;
+using PrayerTimeEngineUnitTests.Mocks;
 using System.Net;
 
 namespace PrayerTimeEngineUnitTests.FaziletAPI
@@ -33,9 +33,6 @@ namespace PrayerTimeEngineUnitTests.FaziletAPI
         public void FaziletPrayerTimeCalculator_GetPrayerTimesAsyncWithNormalInput_PrayerTimesForThatDay()
         {
             // ARRANGE
-            DateTime testDate = new DateTime(2023, 7, 29);
-            var config = new GenericSettingConfiguration(ETimeType.DhuhrStart, calculationSource: ECalculationSource.Fazilet);
-
             var faziletDBAccess = new FaziletDBAccess(new SQLiteDB());
             var faziletApiService = getMockedFaziletApiService();
 
@@ -48,8 +45,8 @@ namespace PrayerTimeEngineUnitTests.FaziletAPI
             // ACT
             ICalculationPrayerTimes result =
                 faziletPrayerTimeCalculator.GetPrayerTimesAsync(
-                    testDate,
-                    config
+                    new DateTime(2023, 7, 29),
+                    new GenericSettingConfiguration(ETimeType.DhuhrStart, calculationSource: ECalculationSource.Fazilet)
                 ).GetAwaiter().GetResult();
 
             FaziletPrayerTimes faziletPrayerTimes = result as FaziletPrayerTimes;
@@ -57,6 +54,7 @@ namespace PrayerTimeEngineUnitTests.FaziletAPI
             // ASSERT
             Assert.IsNotNull(faziletPrayerTimes);
 
+            Assert.That(faziletPrayerTimes.Date, Is.EqualTo(new DateTime(2023, 7, 29)));
             Assert.That(faziletPrayerTimes.Imsak, Is.EqualTo(new DateTime(2023, 7, 29, 03, 04, 0)));
             Assert.That(faziletPrayerTimes.Fajr, Is.EqualTo(new DateTime(2023, 7, 29, 03, 24, 0)));
             Assert.That(faziletPrayerTimes.NextFajr, Is.EqualTo(new DateTime(2023, 7, 30, 03, 27, 0)));
