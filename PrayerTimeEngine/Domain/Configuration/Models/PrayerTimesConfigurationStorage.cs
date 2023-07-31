@@ -40,7 +40,7 @@ namespace PrayerTimeEngine.Domain.ConfigStore.Models
             return _profiles;
         }
 
-        public BaseCalculationConfiguration GetConfiguration(ETimeType timeType)
+        public GenericSettingConfiguration GetConfiguration(ETimeType timeType)
         {
             Profile profile = GetProfiles().GetAwaiter().GetResult().First();
             return profile.GetConfiguration(timeType);
@@ -54,7 +54,7 @@ namespace PrayerTimeEngine.Domain.ConfigStore.Models
                 Name = "Standard-Profil",
                 SequenceNo = 1,
                 Configurations =
-                    new Dictionary<ETimeType, BaseCalculationConfiguration>()
+                    new Dictionary<ETimeType, GenericSettingConfiguration>()
                     {
                         [ETimeType.FajrStart] = new MuwaqqitDegreeCalculationConfiguration(ETimeType.FajrStart, 0, -12.0),
                         [ETimeType.FajrEnd] = new GenericSettingConfiguration(ETimeType.FajrEnd, 0, ECalculationSource.Muwaqqit),

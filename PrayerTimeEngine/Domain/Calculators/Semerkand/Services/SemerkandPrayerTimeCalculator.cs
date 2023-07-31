@@ -41,7 +41,7 @@ namespace PrayerTimeEngine.Domain.Calculators.Semerkand.Services
 
         public async Task<ILookup<ICalculationPrayerTimes, ETimeType>> GetPrayerTimesAsync(
             DateTime date,
-            List<BaseCalculationConfiguration> configurations)
+            List<GenericSettingConfiguration> configurations)
         {
             // because currently there is no location selection
             string countryName = PrayerTimesConfigurationStorage.COUNTRY_NAME;

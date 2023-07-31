@@ -9,8 +9,8 @@ namespace PrayerTimeEngine.Presentation.ViewModel.Custom
 {
     public interface ISettingConfigurationViewModel
     {
-        public BaseCalculationConfiguration BuildSetting(int minuteAdjustment, bool isTimeShown);
+        public GenericSettingConfiguration BuildSetting(int minuteAdjustment, bool isTimeShown);
         public IView GetUI();
-        public void AssignSettingValues(BaseCalculationConfiguration configuration);
+        public void AssignSettingValues(GenericSettingConfiguration configuration);
     }
 }

@@ -1,24 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json;
-using System.Threading.Tasks;
-using System.Xml.Linq;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using PrayerTimeEngine.Common.Enum;
 using PrayerTimeEngine.Domain.ConfigStore.Interfaces;
 using PrayerTimeEngine.Domain.ConfigStore.Models;
+using PrayerTimeEngine.Domain.Configuration.Interfaces;
 
 namespace PrayerTimeEngine.Domain.ConfigStore.Services
 {
     public class ConfigStoreDBAccess : IConfigStoreDBAccess
     {
-        private ISQLiteDB _db;
+        private readonly ISQLiteDB _db;
+        private readonly IConfigurationSerializationService _configurationSerializationService;
 
-        public ConfigStoreDBAccess(ISQLiteDB db)
+        public ConfigStoreDBAccess(ISQLiteDB db, IConfigurationSerializationService configurationSerializationService)
         {
             _db = db;
+            _configurationSerializationService = configurationSerializationService;
         }
 
         public async Task<List<Profile>> GetProfiles()
@@ -81,7 +77,7 @@ namespace PrayerTimeEngine.Domain.ConfigStore.Services
                         string jsonConfigurationString = reader.GetString(4);
 
                         timeSpecificConfig.CalculationConfiguration =
-                            BaseCalculationConfiguration.GetCalculationConfigurationFromJsonString(jsonConfigurationString, configurationTypeName);
+                            _configurationSerializationService.Deserialize(jsonConfigurationString, configurationTypeName);
 
                         timeSpecificConfigs.Add(timeSpecificConfig);
                     }
@@ -164,7 +160,7 @@ namespace PrayerTimeEngine.Domain.ConfigStore.Services
 
                         configCommand.Parameters.AddWithValue("$ProfileID", profile.ID);
                         configCommand.Parameters.AddWithValue("$TimeType", (int)config.Key);
-                        configCommand.Parameters.AddWithValue("$ConfigurationTypeName", BaseCalculationConfiguration.GetDiscriminatorForConfigurationType(config.Value.GetType()));
+                        configCommand.Parameters.AddWithValue("$ConfigurationTypeName", _configurationSerializationService.GetDiscriminator(config.Value.GetType()));
                         configCommand.Parameters.AddWithValue("$JsonConfigurationString", JsonConvert.SerializeObject(config.Value));
                         configCommand.Parameters.AddWithValue("$InsertDateTime", DateTime.Now);
 

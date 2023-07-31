@@ -180,7 +180,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
 
         private bool IsCalculationShown(ETimeType timeData)
         {
-            if (!CurrentProfile.Configurations.TryGetValue(timeData, out BaseCalculationConfiguration config) || config == null)
+            if (!CurrentProfile.Configurations.TryGetValue(timeData, out GenericSettingConfiguration config) || config == null)
             {
                 return true;
             }

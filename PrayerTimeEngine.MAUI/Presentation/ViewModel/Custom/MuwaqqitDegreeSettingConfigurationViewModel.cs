@@ -20,7 +20,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel.Custom
 
         public ETimeType TimeType { get; init; }
 
-        public BaseCalculationConfiguration BuildSetting(int minuteAdjustment, bool isTimeShown)
+        public GenericSettingConfiguration BuildSetting(int minuteAdjustment, bool isTimeShown)
         {
             return new MuwaqqitDegreeCalculationConfiguration(TimeType, minuteAdjustment, SelectedDegree, isTimeShown);
         }
@@ -47,7 +47,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel.Custom
             return stackLayout;
         }
 
-        public void AssignSettingValues(BaseCalculationConfiguration configuration)
+        public void AssignSettingValues(GenericSettingConfiguration configuration)
         {
             if (configuration is not MuwaqqitDegreeCalculationConfiguration muwaqqitConfig)
             {

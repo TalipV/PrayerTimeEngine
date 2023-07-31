@@ -34,12 +34,12 @@ public class PrayerTimeCalculationService : IPrayerTimeCalculationService
 
     private async Task handleComplexTypes(Profile profile, DateTime dateTime, PrayerTimesBundle prayerTimeEntity)
     {
-        List<BaseCalculationConfiguration> configurations = getActiveCalculationConfigurations(profile);
+        List<GenericSettingConfiguration> configurations = getActiveCalculationConfigurations(profile);
 
         foreach (var calculationSourceConfigs in configurations.GroupBy(x => x.Source))
         {
             ECalculationSource calculationSource = calculationSourceConfigs.Key;
-            List<BaseCalculationConfiguration> configs = calculationSourceConfigs.ToList();
+            List<GenericSettingConfiguration> configs = calculationSourceConfigs.ToList();
             var configsByTimeType = configs.ToDictionary(x => x.TimeType);
 
             IPrayerTimeCalculator timeCalculator = getPrayerTimeCalculatorByCalculationSource(calculationSource);
@@ -57,7 +57,7 @@ public class PrayerTimeCalculationService : IPrayerTimeCalculationService
 
     private static void handleSingleCalculationPrayerTimes(
         PrayerTimesBundle prayerTimeEntity, 
-        Dictionary<ETimeType, BaseCalculationConfiguration> configsByTimeType, 
+        Dictionary<ETimeType, GenericSettingConfiguration> configsByTimeType, 
         IGrouping<ICalculationPrayerTimes, ETimeType> calculationPrayerTimeKVP)
     {
         ICalculationPrayerTimes calculationPrayer = calculationPrayerTimeKVP.Key;
@@ -65,7 +65,7 @@ public class PrayerTimeCalculationService : IPrayerTimeCalculationService
 
         foreach (var timeType in associatedTimeTypes)
         {
-            BaseCalculationConfiguration config = configsByTimeType[timeType];
+            GenericSettingConfiguration config = configsByTimeType[timeType];
             DateTime calculatedTime =
                 calculationPrayer.GetDateTimeForTimeType(timeType)
                 .AddMinutes(config.MinuteAdjustment);
@@ -74,7 +74,7 @@ public class PrayerTimeCalculationService : IPrayerTimeCalculationService
         }
     }
 
-    private static void throwIfConfigsHaveUnsupportedTimeTypes(ECalculationSource calculationSource, List<BaseCalculationConfiguration> configs, IPrayerTimeCalculator timeCalculator)
+    private static void throwIfConfigsHaveUnsupportedTimeTypes(ECalculationSource calculationSource, List<GenericSettingConfiguration> configs, IPrayerTimeCalculator timeCalculator)
     {
         List<ETimeType> unsupportedTimeTypes =
             timeCalculator
@@ -89,7 +89,7 @@ public class PrayerTimeCalculationService : IPrayerTimeCalculationService
         }
     }
 
-    private List<BaseCalculationConfiguration> getActiveCalculationConfigurations(Profile profile)
+    private List<GenericSettingConfiguration> getActiveCalculationConfigurations(Profile profile)
     {
         return _timeTypeAttributeService
             .NonSimpleTypes
@@ -115,7 +115,7 @@ public class PrayerTimeCalculationService : IPrayerTimeCalculationService
             {
                 case ETimeType.DuhaEnd:
                     if (prayerTimeEntity.Dhuhr?.Start != null
-                        && profile.GetConfiguration(ETimeType.DuhaEnd) is BaseCalculationConfiguration duhaConfig
+                        && profile.GetConfiguration(ETimeType.DuhaEnd) is GenericSettingConfiguration duhaConfig
                         && duhaConfig.IsTimeShown)
                     {
                         prayerTimeEntity.SetSpecificPrayerTimeDateTime(
@@ -125,7 +125,7 @@ public class PrayerTimeCalculationService : IPrayerTimeCalculationService
                     break;
                 case ETimeType.MaghribSufficientTime:
                     if (prayerTimeEntity.Maghrib?.Start != null
-                        && profile.GetConfiguration(ETimeType.MaghribSufficientTime) is BaseCalculationConfiguration maghribSufficientTimeConfig
+                        && profile.GetConfiguration(ETimeType.MaghribSufficientTime) is GenericSettingConfiguration maghribSufficientTimeConfig
                         && maghribSufficientTimeConfig.IsTimeShown)
                     {
                         prayerTimeEntity.SetSpecificPrayerTimeDateTime(

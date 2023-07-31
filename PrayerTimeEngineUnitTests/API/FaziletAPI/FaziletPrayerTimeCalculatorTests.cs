@@ -7,7 +7,7 @@ using PrayerTimeEngine.Domain.ConfigStore.Models;
 using PrayerTimeEngineUnitTests.Mocks;
 using System.Net;
 
-namespace PrayerTimeEngineUnitTests.FaziletAPI
+namespace PrayerTimeEngineUnitTests.API.FaziletAPI
 {
     public class FaziletPrayerTimeCalculatorTests
     {
@@ -16,9 +16,9 @@ namespace PrayerTimeEngineUnitTests.FaziletAPI
             string dummyBaseURL = @"http://dummy.url.com";
             Dictionary<string, string> urlToContentMap = new Dictionary<string, string>()
             {
-                [$@"{dummyBaseURL}/{FaziletApiService.GET_COUNTRIES_URL}"] = File.ReadAllText(@"FaziletAPI\TestData\Fazilet_TestCountriesData.txt"),
-                [$@"{dummyBaseURL}/{FaziletApiService.GET_CITIES_BY_COUNTRY_URL}2"] = File.ReadAllText(@"FaziletAPI\TestData\Fazilet_TestCityData_Austria.txt"),
-                [$@"{dummyBaseURL}/{string.Format(FaziletApiService.GET_TIMES_BY_CITY_URL, "92")}"] = File.ReadAllText(@"FaziletAPI\TestData\Fazilet_TestPrayerTimeData_20230729_Innsbruck.txt"),
+                [$@"{dummyBaseURL}/{FaziletApiService.GET_COUNTRIES_URL}"] = File.ReadAllText(@"API\FaziletAPI\TestData\Fazilet_TestCountriesData.txt"),
+                [$@"{dummyBaseURL}/{FaziletApiService.GET_CITIES_BY_COUNTRY_URL}2"] = File.ReadAllText(@"API\FaziletAPI\TestData\Fazilet_TestCityData_Austria.txt"),
+                [$@"{dummyBaseURL}/{string.Format(FaziletApiService.GET_TIMES_BY_CITY_URL, "92")}"] = File.ReadAllText(@"API\FaziletAPI\TestData\Fazilet_TestPrayerTimeData_20230729_Innsbruck.txt"),
             };
 
             var mockHttpMessageHandler = new MockHttpMessageHandler(HttpStatusCode.OK, urlToContentMap);
@@ -47,7 +47,7 @@ namespace PrayerTimeEngineUnitTests.FaziletAPI
             ICalculationPrayerTimes result =
                 faziletPrayerTimeCalculator.GetPrayerTimesAsync(
                     new DateTime(2023, 7, 29),
-                    new List<BaseCalculationConfiguration> { new GenericSettingConfiguration(ETimeType.DhuhrStart, calculationSource: ECalculationSource.Fazilet) }
+                    new List<GenericSettingConfiguration> { new GenericSettingConfiguration(ETimeType.DhuhrStart, calculationSource: ECalculationSource.Fazilet) }
                 ).GetAwaiter().GetResult().Single().Key;
 
             FaziletPrayerTimes faziletPrayerTimes = result as FaziletPrayerTimes;

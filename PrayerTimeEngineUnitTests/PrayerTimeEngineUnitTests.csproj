@@ -23,37 +23,34 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="MuwaqqitAPI\TestData\Muwaqqit_TestPrayerTimeData_20230730_Innsbruck_Part1.txt">
+    <None Update="API\MuwaqqitAPI\TestData\Muwaqqit_TestPrayerTimeData_20230730_Innsbruck_Part1.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="MuwaqqitAPI\TestData\Muwaqqit_TestPrayerTimeData_20230730_Innsbruck_Part2.txt">
+    <None Update="API\MuwaqqitAPI\TestData\Muwaqqit_TestPrayerTimeData_20230730_Innsbruck_Part2.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="MuwaqqitAPI\TestData\Muwaqqit_TestPrayerTimeData_20230730_Innsbruck_Part3.txt">
+    <None Update="API\MuwaqqitAPI\TestData\Muwaqqit_TestPrayerTimeData_20230730_Innsbruck_Part3.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="MuwaqqitAPI\TestData\Muwaqqit_TestPrayerTimeData_20230730_Innsbruck_Part4.txt">
+    <None Update="API\MuwaqqitAPI\TestData\Muwaqqit_TestPrayerTimeData_20230730_Innsbruck_Part4.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="MuwaqqitAPI\TestData\Muwaqqit_TestPrayerTimeData_20230729_Innsbruck.txt">
+    <None Update="API\FaziletAPI\TestData\Fazilet_TestCountriesData.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="FaziletAPI\TestData\Fazilet_TestCountriesData.txt">
+    <None Update="API\FaziletAPI\TestData\Fazilet_TestCityData_Austria.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="FaziletAPI\TestData\Fazilet_TestCityData_Austria.txt">
+    <None Update="API\FaziletAPI\TestData\Fazilet_TestPrayerTimeData_20230729_Innsbruck.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="FaziletAPI\TestData\Fazilet_TestPrayerTimeData_20230729_Innsbruck.txt">
+    <None Update="API\SemerkandAPI\TestData\Semerkand_TestCityData_Austria.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="SemerkandAPI\TestData\Semerkand_TestCityData_Austria.txt">
+    <None Update="API\SemerkandAPI\TestData\Semerkand_TestCountriesData.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="SemerkandAPI\TestData\Semerkand_TestCountriesData.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="SemerkandAPI\TestData\Semerkand_TestPrayerTimeData_20230729_Innsbruck.txt">
+    <None Update="API\SemerkandAPI\TestData\Semerkand_TestPrayerTimeData_20230729_Innsbruck.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

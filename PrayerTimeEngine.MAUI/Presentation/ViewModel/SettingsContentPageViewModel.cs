@@ -91,7 +91,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
             CalculationSources = getCalculationSource();
             MinuteAdjustments = getMinuteAdjustmentSource();
 
-            BaseCalculationConfiguration calculationConfiguration = _prayerTimesConfigurationStorage.GetConfiguration(TimeType);
+            GenericSettingConfiguration calculationConfiguration = _prayerTimesConfigurationStorage.GetConfiguration(TimeType);
             IsTimeShown = !IsTimeShownCheckBoxVisible || calculationConfiguration.IsTimeShown;
             SelectedCalculationSource = calculationConfiguration.Source;
             SelectedMinuteAdjustment = calculationConfiguration.MinuteAdjustment;
@@ -123,7 +123,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
 
         public void OnDisappearing()
         {
-            BaseCalculationConfiguration settings = getCurrentCalculationConfiguration();
+            GenericSettingConfiguration settings = getCurrentCalculationConfiguration();
             saveSettingsToProfile(settings);
         }
 
@@ -131,7 +131,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
 
         #region private methods
 
-        private BaseCalculationConfiguration getCurrentCalculationConfiguration()
+        private GenericSettingConfiguration getCurrentCalculationConfiguration()
         {
             return
                 CustomSettingConfigurationViewModel?
@@ -139,7 +139,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
                         ?? getGeneralCalculationConfiguration();
         }
 
-        private BaseCalculationConfiguration getGeneralCalculationConfiguration()
+        private GenericSettingConfiguration getGeneralCalculationConfiguration()
         {
             return new GenericSettingConfiguration(TimeType, SelectedMinuteAdjustment, SelectedCalculationSource, IsTimeShown);
         }
@@ -170,7 +170,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
             }
         }
 
-        private void saveSettingsToProfile(BaseCalculationConfiguration settings)
+        private void saveSettingsToProfile(GenericSettingConfiguration settings)
         {
             List<Profile> profiles = _prayerTimesConfigurationStorage.GetProfiles().GetAwaiter().GetResult();
             profiles.First().Configurations[TimeType] = settings;

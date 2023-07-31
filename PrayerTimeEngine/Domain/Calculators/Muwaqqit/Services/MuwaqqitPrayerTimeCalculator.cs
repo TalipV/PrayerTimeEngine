@@ -25,7 +25,7 @@ namespace PrayerTimeEngine.Domain.Calculators.Muwaqqit.Services
 
         public async Task<ILookup<ICalculationPrayerTimes, ETimeType>> GetPrayerTimesAsync(
             DateTime date,
-            List<BaseCalculationConfiguration> configurations)
+            List<GenericSettingConfiguration> configurations)
         {
             if (configurations.Any(x => x.Source != ECalculationSource.Muwaqqit))
             {
@@ -63,7 +63,7 @@ namespace PrayerTimeEngine.Domain.Calculators.Muwaqqit.Services
         }
 
         private List<ETimeType> ConsumeDegreeValues(
-            List<BaseCalculationConfiguration> muwaqqitConfigs,
+            List<GenericSettingConfiguration> muwaqqitConfigs,
             out double fajrDegree,
             out double ishaDegree,
             out double ishtibaqDegree,
@@ -76,7 +76,7 @@ namespace PrayerTimeEngine.Domain.Calculators.Muwaqqit.Services
             double? calculatedIshtibaqDegree = null;
             double? calculatedAsrKarahaDegree = null;
 
-            foreach (BaseCalculationConfiguration muwaqqitConfig in muwaqqitConfigs.ToList())
+            foreach (GenericSettingConfiguration muwaqqitConfig in muwaqqitConfigs.ToList())
             {
                 ETimeType timeType = muwaqqitConfig.TimeType;
 

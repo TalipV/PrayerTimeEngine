@@ -6,7 +6,7 @@ namespace PrayerTimeEngine.Domain.Calculators.Semerkand
 {
     public interface IPrayerTimeCalculator
     {
-        public Task<ILookup<ICalculationPrayerTimes, ETimeType>> GetPrayerTimesAsync(DateTime date, List<BaseCalculationConfiguration> configurations);
+        public Task<ILookup<ICalculationPrayerTimes, ETimeType>> GetPrayerTimesAsync(DateTime date, List<GenericSettingConfiguration> configurations);
         public HashSet<ETimeType> GetUnsupportedTimeTypes();
     }
 }

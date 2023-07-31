@@ -11,6 +11,8 @@ using PrayerTimeEngine.Domain.Calculators.Semerkand.Services;
 using PrayerTimeEngine.Domain.ConfigStore.Interfaces;
 using PrayerTimeEngine.Domain.ConfigStore.Models;
 using PrayerTimeEngine.Domain.ConfigStore.Services;
+using PrayerTimeEngine.Domain.Configuration.Interfaces;
+using PrayerTimeEngine.Domain.Configuration.Services;
 using PrayerTimeEngine.Presentation.Service.Navigation;
 using PrayerTimeEngine.Presentation.Service.SettingsContentPageFactory;
 using PrayerTimeEngine.Presentation.ViewModel;
@@ -49,6 +51,8 @@ public static class MauiProgram
         serviceCollection.AddSingleton<IPrayerTimeCalculationService, PrayerTimeCalculationService>();
         serviceCollection.AddSingleton<TimeTypeAttributeService>();
 
+        #region FaziletAPI
+
         serviceCollection.AddTransient<FaziletPrayerTimeCalculator>();
         serviceCollection.AddSingleton<IFaziletDBAccess, FaziletDBAccess>();
         serviceCollection.AddHttpClient<IFaziletApiService, FaziletApiService>(client =>
@@ -57,6 +61,10 @@ public static class MauiProgram
             client.BaseAddress = new Uri("https://fazilettakvimi.com/api/cms/");
         });
 
+        #endregion FaziletAPI
+
+        #region SemerkandAPI
+
         serviceCollection.AddTransient<SemerkandPrayerTimeCalculator>();
         serviceCollection.AddSingleton<ISemerkandDBAccess, SemerkandDBAccess>();
         serviceCollection.AddHttpClient<ISemerkandApiService, SemerkandApiService>(client =>
@@ -64,17 +72,24 @@ public static class MauiProgram
             client.Timeout = TimeSpan.FromSeconds(20);
         });
 
+        #endregion SemerkandAPI
+
+        #region MuwaqqitAPI
+
         serviceCollection.AddTransient<MuwaqqitPrayerTimeCalculator>();
         serviceCollection.AddSingleton<IMuwaqqitDBAccess, MuwaqqitDBAccess>();
         serviceCollection.AddHttpClient<IMuwaqqitApiService, MuwaqqitApiService>(client =>
         {
             client.Timeout = TimeSpan.FromSeconds(20);
         });
+        
+        #endregion MuwaqqitAPI
 
         serviceCollection.AddTransient<IConfigStoreService, ConfigStoreService>();
         serviceCollection.AddTransient<IConfigStoreDBAccess, ConfigStoreDBAccess>();
 
         serviceCollection.AddSingleton<PrayerTimesConfigurationStorage>();
+        serviceCollection.AddSingleton<IConfigurationSerializationService, ConfigurationSerializationService>();
 
         addPresentationLayerServices(serviceCollection);
     }

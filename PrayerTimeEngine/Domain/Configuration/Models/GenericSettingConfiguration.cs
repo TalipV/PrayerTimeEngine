@@ -7,13 +7,19 @@ using System.Threading.Tasks;
 
 namespace PrayerTimeEngine.Domain.ConfigStore.Models
 {
-    public class GenericSettingConfiguration : BaseCalculationConfiguration
+    public class GenericSettingConfiguration
     {
         public GenericSettingConfiguration(ETimeType timeType, int minuteAdjustment = 0, ECalculationSource calculationSource = ECalculationSource.None, bool isTimeShown = true)
-            : base(minuteAdjustment, isTimeShown)
         {
+            MinuteAdjustment = minuteAdjustment;
+            IsTimeShown = isTimeShown;
             TimeType = timeType;
             Source = calculationSource;
         }
+
+        public virtual ECalculationSource Source { get; init; }
+        public ETimeType TimeType { get; init; }
+        public int MinuteAdjustment { get; set; }
+        public bool IsTimeShown { get; set; }
     }
 }

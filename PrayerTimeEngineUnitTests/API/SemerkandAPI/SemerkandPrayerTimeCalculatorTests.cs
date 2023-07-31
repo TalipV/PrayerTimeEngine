@@ -7,7 +7,7 @@ using PrayerTimeEngine.Domain.ConfigStore.Models;
 using PrayerTimeEngineUnitTests.Mocks;
 using System.Net;
 
-namespace PrayerTimeEngineUnitTests.SemerkandAPI
+namespace PrayerTimeEngineUnitTests.API.SemerkandAPI
 {
     public class SemerkandPrayerTimeCalculatorTests
     {
@@ -15,9 +15,9 @@ namespace PrayerTimeEngineUnitTests.SemerkandAPI
         {
             Dictionary<string, string> urlToContentMap = new Dictionary<string, string>()
             {
-                [$@"{SemerkandApiService.GET_COUNTRIES_URL}"] = File.ReadAllText(@"SemerkandAPI\TestData\Semerkand_TestCountriesData.txt"),
-                [$@"{SemerkandApiService.GET_CITIES_BY_COUNTRY_URL}"] = File.ReadAllText(@"SemerkandAPI\TestData\Semerkand_TestCityData_Austria.txt"),
-                [$@"{string.Format(SemerkandApiService.GET_TIMES_BY_CITY, "197", "2023")}"] = File.ReadAllText(@"SemerkandAPI\TestData\Semerkand_TestPrayerTimeData_20230729_Innsbruck.txt"),
+                [$@"{SemerkandApiService.GET_COUNTRIES_URL}"] = File.ReadAllText(@"API\SemerkandAPI\TestData\Semerkand_TestCountriesData.txt"),
+                [$@"{SemerkandApiService.GET_CITIES_BY_COUNTRY_URL}"] = File.ReadAllText(@"API\SemerkandAPI\TestData\Semerkand_TestCityData_Austria.txt"),
+                [$@"{string.Format(SemerkandApiService.GET_TIMES_BY_CITY, "197", "2023")}"] = File.ReadAllText(@"API\SemerkandAPI\TestData\Semerkand_TestPrayerTimeData_20230729_Innsbruck.txt"),
             };
 
             var mockHttpMessageHandler = new MockHttpMessageHandler(HttpStatusCode.OK, urlToContentMap);
@@ -43,7 +43,7 @@ namespace PrayerTimeEngineUnitTests.SemerkandAPI
             ICalculationPrayerTimes result =
                 semerkandPrayerTimeCalculator.GetPrayerTimesAsync(
                     new DateTime(2023, 7, 29),
-                    new List<BaseCalculationConfiguration> { new GenericSettingConfiguration(ETimeType.DhuhrStart, calculationSource: ECalculationSource.Semerkand) }
+                    new List<GenericSettingConfiguration> { new GenericSettingConfiguration(ETimeType.DhuhrStart, calculationSource: ECalculationSource.Semerkand) }
                 ).GetAwaiter().GetResult().Single().Key;
 
             SemerkandPrayerTimes semerkandPrayerTimes = result as SemerkandPrayerTimes;
