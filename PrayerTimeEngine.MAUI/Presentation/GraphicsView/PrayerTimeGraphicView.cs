@@ -17,13 +17,7 @@ namespace PrayerTimeEngine.Presentation.GraphicsView
         private Color PrayerSubTimeBorderColor = Colors.White;
         private Color PrayerSubTimeTextColor = Colors.Cyan;
 
-        public PrayerTime DisplayPrayerTime { get; set; } = 
-            new PrayerTime 
-            { 
-                Name = "Testzeit",
-                Start = new DateTime(2023, 07, 30, 17, 0, 0),
-                End = new DateTime(2023, 07, 30, 21, 30, 0),
-            };
+        public PrayerTime DisplayPrayerTime { get; set; }
 
         public void Draw(ICanvas canvas, RectF fullRectangle)
         {

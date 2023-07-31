@@ -11,12 +11,18 @@ namespace PrayerTimeEngine
         {
             InitializeComponent();
             BindingContext = this._viewModel = viewModel;
+            viewModel.OnAfterLoadingPrayerTimes_EventTrigger += ViewModel_OnAfterLoadingPrayerTimes_EventTrigger;
+        }
+
+        private void ViewModel_OnAfterLoadingPrayerTimes_EventTrigger()
+        {
+            PrayerTimeGraphicView.DisplayPrayerTime = _viewModel.DisplayPrayerTime;
+            PrayerTimeGraphicViewBase.Invalidate();
         }
 
         protected override void OnAppearing()
         {
             (BindingContext as MainPageViewModel).OnAppearing();
-            this.PrayerTimeGraphic.DisplayPrayerTime = _viewModel.DisplayPrayerTime;
         }
     }
 }

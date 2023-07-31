@@ -126,20 +126,28 @@ namespace PrayerTimeEngine.Presentation.ViewModel
                     await _navigationService.NavigateTo<SettingsHandlerPageViewModel>(prayerTime);
                 });
 
+        public event Action OnAfterLoadingPrayerTimes_EventTrigger = delegate { };
+
         public ICommand LoadPrayerTimesButton_ClickCommand
             => new Command(
                 async () =>
                 {
-                    try
-                    {
-                        IsLoading = true;
-                        Prayers = await _prayerTimeCalculationService.ExecuteAsync(CurrentProfile, DateTime.Today);
-                    }
-                    finally
-                    {
-                        IsLoading = false;
-                    }
+                    await loadPrayerTimes();
                 });
+
+        private async Task loadPrayerTimes()
+        {
+            try
+            {
+                IsLoading = true;
+                Prayers = await _prayerTimeCalculationService.ExecuteAsync(CurrentProfile, DateTime.Today);
+                OnAfterLoadingPrayerTimes_EventTrigger.Invoke();
+            }
+            finally
+            {
+                IsLoading = false;
+            }
+        }
 
         #endregion ICommand
 

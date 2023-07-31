@@ -6,6 +6,10 @@
              x:Class="PrayerTimeEngine.MainPage"
              BackgroundColor="#2e3548">
 
+    <ContentPage.Resources>
+        <drawable:PrayerTimeGraphicView x:Key="PrayerTimeGraphicDrawable" x:Name="PrayerTimeGraphicView"/>
+    </ContentPage.Resources>
+
     <Grid Padding="20, 0, 20, 0">
         
         <Grid.RowDefinitions>
@@ -351,14 +355,13 @@
             IsRunning="{Binding IsLoading}"
             />
 
-        <GraphicsView
+        <GraphicsView 
             Grid.Row="18"
-            Grid.ColumnSpan="10" >
-            <GraphicsView.Drawable>
-                <drawable:PrayerTimeGraphicView 
-                    x:Name="PrayerTimeGraphic"/>
-            </GraphicsView.Drawable>
-        </GraphicsView>
+            Grid.ColumnSpan="10"
+            Drawable="{StaticResource PrayerTimeGraphicDrawable}"
+            x:Name="PrayerTimeGraphicViewBase"
+            HeightRequest="300"
+            WidthRequest="400" />
     </Grid>
     
 </ContentPage>
