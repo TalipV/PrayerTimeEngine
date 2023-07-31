@@ -1,6 +1,5 @@
 ﻿using PrayerTimeEngine.Domain.Calculators.Fazilet.Interfaces;
 using PrayerTimeEngine.Domain.Calculators.Fazilet.Models;
-using System;
 
 namespace PrayerTimeEngine.Domain.Calculators.Fazilet.Services
 {

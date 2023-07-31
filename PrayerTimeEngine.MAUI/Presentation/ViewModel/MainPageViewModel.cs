@@ -1,7 +1,6 @@
 ﻿using MvvmHelpers;
 using System.Windows.Input;
 using PropertyChanged;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 using PrayerTimeEngine.Common.Enum;
 using PrayerTimeEngine.Domain.Model;
 using PrayerTimeEngine.Domain.CalculationService.Interfaces;

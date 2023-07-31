@@ -1,7 +1,4 @@
 ﻿using Microsoft.Data.Sqlite;
-using NSubstitute;
-using System.Data;
-using System.Data.Common;
 
 namespace PrayerTimeEngineUnitTests.Mocks
 {

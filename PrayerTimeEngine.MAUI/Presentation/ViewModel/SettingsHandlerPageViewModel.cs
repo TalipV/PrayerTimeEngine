@@ -5,7 +5,6 @@ using PrayerTimeEngine.Domain;
 using PrayerTimeEngine.Presentation.Service.Navigation;
 using PrayerTimeEngine.Presentation.Service.SettingsContentPageFactory;
 using PropertyChanged;
-using System.Linq;
 
 namespace PrayerTimeEngine.Presentation.ViewModel
 {

@@ -1,14 +1,8 @@
 ﻿using PrayerTimeEngine.Common.Enum;
 using PrayerTimeEngine.Domain.CalculationService.Interfaces;
-using PrayerTimeEngine.Domain.Calculators.Fazilet.Models;
 using PrayerTimeEngine.Domain.Calculators.Semerkand.Interfaces;
 using PrayerTimeEngine.Domain.Calculators.Semerkand.Models;
 using PrayerTimeEngine.Domain.ConfigStore.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PrayerTimeEngine.Domain.Calculators.Semerkand.Services
 {

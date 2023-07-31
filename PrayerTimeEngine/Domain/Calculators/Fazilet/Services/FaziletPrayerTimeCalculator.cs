@@ -3,8 +3,6 @@ using PrayerTimeEngine.Domain.CalculationService.Interfaces;
 using PrayerTimeEngine.Domain.ConfigStore.Models;
 using PrayerTimeEngine.Domain.Calculators.Fazilet.Interfaces;
 using PrayerTimeEngine.Domain.Calculators.Fazilet.Models;
-using PrayerTimeEngine.Domain.Calculators.Semerkand.Models;
-using PrayerTimeEngine.Common.Extension;
 using PrayerTimeEngine.Domain.Calculators.Semerkand;
 
 namespace PrayerTimeEngine.Domain.Calculators.Fazilet.Services

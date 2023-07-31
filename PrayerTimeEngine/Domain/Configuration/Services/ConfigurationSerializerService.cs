@@ -3,11 +3,6 @@ using PrayerTimeEngine.Common.Extension;
 using PrayerTimeEngine.Domain.Calculators.Muwaqqit.Models;
 using PrayerTimeEngine.Domain.ConfigStore.Models;
 using PrayerTimeEngine.Domain.Configuration.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PrayerTimeEngine.Domain.Configuration.Services
 {

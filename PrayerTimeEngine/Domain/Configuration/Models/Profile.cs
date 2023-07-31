@@ -1,5 +1,4 @@
 ﻿using PrayerTimeEngine.Common.Enum;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace PrayerTimeEngine.Domain.ConfigStore.Models
 {

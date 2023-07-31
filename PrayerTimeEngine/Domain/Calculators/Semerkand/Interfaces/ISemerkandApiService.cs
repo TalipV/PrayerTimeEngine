@@ -1,9 +1,4 @@
 ﻿using PrayerTimeEngine.Domain.Calculators.Semerkand.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PrayerTimeEngine.Domain.Calculators.Semerkand.Interfaces
 {

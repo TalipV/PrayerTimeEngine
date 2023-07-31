@@ -1,13 +1,8 @@
 ﻿using PrayerTimeEngine.Domain.Calculators.Muwaqqit.Interfaces;
 using PrayerTimeEngine.Domain.Calculators.Muwaqqit.Models;
-using System;
-using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Globalization;
-using System.Linq;
-using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 using System.Web;
 
 namespace PrayerTimeEngine.Domain.Calculators.Muwaqqit.Services

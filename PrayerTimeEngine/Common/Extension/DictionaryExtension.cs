@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace PrayerTimeEngine.Common.Extension
+﻿namespace PrayerTimeEngine.Common.Extension
 {
     public static class DictionaryExtension
     {

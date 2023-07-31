@@ -2,8 +2,6 @@
 using PrayerTimeEngine.Domain.Calculators.Fazilet.Interfaces;
 using PrayerTimeEngine.Domain.Calculators.Fazilet.Models;
 using System.Globalization;
-using System.Runtime.CompilerServices;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace PrayerTimeEngine.Domain.Calculators.Fazilet.Services
 {

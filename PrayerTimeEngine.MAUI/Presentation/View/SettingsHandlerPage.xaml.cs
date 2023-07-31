@@ -1,6 +1,5 @@
 using PrayerTimeEngine.Code.Presentation.View;
 using PrayerTimeEngine.Presentation.ViewModel;
-using System.ComponentModel.Design;
 
 namespace PrayerTimeEngine.Views;
 
