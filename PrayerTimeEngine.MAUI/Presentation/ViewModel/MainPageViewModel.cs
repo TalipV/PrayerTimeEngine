@@ -92,6 +92,8 @@ namespace PrayerTimeEngine.Presentation.ViewModel
 
         public PrayerTimesBundle Prayers { get; private set; }
 
+        public DateTime? LastUpdated { get; private set; }
+
         public bool IsLoading { get; private set; }
         public bool IsNotLoading => !IsLoading;
 
@@ -144,6 +146,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
             }
             finally
             {
+                LastUpdated = DateTime.Now;
                 IsLoading = false;
             }
         }
@@ -152,16 +155,17 @@ namespace PrayerTimeEngine.Presentation.ViewModel
 
         #region public methods
 
-        public void OnAppearing()
+        public async void OnAppearing()
         {
-            setValuesYo();
+            showHideSpecificTimes();
+            await loadPrayerTimes();
         }
 
         #endregion public methods
 
         #region private methods 
 
-        private void setValuesYo()
+        private void showHideSpecificTimes()
         {
             ShowFajrGhalas = IsCalculationShown(ETimeType.FajrGhalas);
             ShowFajrRedness = IsCalculationShown(ETimeType.FajrKaraha);

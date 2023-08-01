@@ -75,7 +75,7 @@
             Grid.Row="2"
             Grid.Column="2"
             Grid.ColumnSpan="2"
-            Text="{Binding Prayers.FajrGhalas}"
+            Text="{Binding Prayers.Fajr.Ghalas, StringFormat='{0:HH:mm:ss}'}"
             HorizontalOptions="Center"
             VerticalOptions="Center"
             IsVisible="{Binding ShowFajrGhalas}"/>
@@ -91,7 +91,7 @@
             Grid.Row="3"
             Grid.Column="2"
             Grid.ColumnSpan="2"
-            Text="{Binding Prayers.FajrSunriseRedness}"
+            Text="{Binding Prayers.Fajr.Karaha, StringFormat='{0:HH:mm:ss}'}"
             HorizontalOptions="Center"
             VerticalOptions="Center"
             IsVisible="{Binding ShowFajrRedness}"/>
@@ -131,7 +131,7 @@
             Grid.Row="5"
             Grid.Column="2"
             Grid.ColumnSpan="2"
-            Text="{Binding Prayers.DuhaQuarter}"
+            Text="{Binding Prayers.Duha.QuarterOfDay, StringFormat='{0:HH:mm:ss}'}"
             HorizontalOptions="Center"
             VerticalOptions="Center"
             IsVisible="{Binding ShowDuhaQuarter}"/>
@@ -193,7 +193,7 @@
             Grid.Row="8"
             Grid.Column="2"
             Grid.ColumnSpan="2"
-            Text="{Binding Prayers.AsrMithlayn}"
+            Text="{Binding Prayers.Asr.Mithlayn, StringFormat='{0:HH:mm:ss}'}"
             HorizontalOptions="Center"
             VerticalOptions="Center" 
             IsVisible="{Binding ShowMithlayn}"/>
@@ -209,7 +209,7 @@
             Grid.Row="9"
             Grid.Column="2"
             Grid.ColumnSpan="2"
-            Text="{Binding Prayers.AsrKaraha}"
+            Text="{Binding Prayers.Asr.Karaha, StringFormat='{0:HH:mm:ss}'}"
             HorizontalOptions="Center"
             VerticalOptions="Center" 
             IsVisible="{Binding ShowKaraha}"/>
@@ -248,7 +248,7 @@
             Grid.Row="11"
             Grid.Column="2"
             Grid.ColumnSpan="2"
-            Text="{Binding Prayers.MaghribSufficientTime}"
+            Text="{Binding Prayers.Maghrib.SufficientTime, StringFormat='{0:HH:mm:ss}'}"
             HorizontalOptions="Center"
             VerticalOptions="Center" 
             IsVisible="{Binding ShowMaghribSufficientTime}"/>
@@ -264,7 +264,7 @@
             Grid.Row="12"
             Grid.Column="2"
             Grid.ColumnSpan="2"
-            Text="{Binding Prayers.Ishtibaq}"
+            Text="{Binding Prayers.Maghrib.Ishtibaq, StringFormat='{0:HH:mm:ss}'}"
             HorizontalOptions="Center"
             VerticalOptions="Center" 
             IsVisible="{Binding ShowIshtibaq}"/>
@@ -304,7 +304,7 @@
             Grid.Row="14"
             Grid.Column="2"
             Grid.ColumnSpan="2"
-            Text="{Binding Prayers.OneThird}"
+            Text="{Binding Prayers.Isha.FirstThirdOfNight, StringFormat='{0:HH:mm:ss}'}"
             HorizontalOptions="Center"
             VerticalOptions="Center" 
             IsVisible="{Binding ShowOneThird}"/>
@@ -320,7 +320,7 @@
             Grid.Row="15"
             Grid.Column="2"
             Grid.ColumnSpan="2"
-            Text="{Binding Prayers.Midnight}"
+            Text="{Binding Prayers.Isha.MiddleOfNight, StringFormat='{0:HH:mm:ss}'}"
             HorizontalOptions="Center"
             VerticalOptions="Center" 
             IsVisible="{Binding ShowMidnight}"/>
@@ -336,10 +336,18 @@
             Grid.Row="16"
             Grid.Column="2"
             Grid.ColumnSpan="2"
-            Text="{Binding Prayers.TwoThirds}"
+            Text="{Binding Prayers.Isha.SecondThirdOfNight, StringFormat='{0:HH:mm:ss}'}"
             HorizontalOptions="Center"
             VerticalOptions="Center"  
             IsVisible="{Binding ShowTwoThird}"/>
+
+        <Label 
+            Grid.Row="0"
+            Grid.Column="1"
+            Grid.ColumnSpan="2"
+            Text="{Binding LastUpdated, StringFormat='{0:dd.MM.yyyy HH:mm:ss}'}" 
+            HorizontalOptions="Start"
+            VerticalOptions="Center" />
 
         <Button            
             Grid.Row="16"

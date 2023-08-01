@@ -9,7 +9,7 @@ namespace PrayerTimeEngine.Domain.ConfigStore.Models
         public int SequenceNo { get; set; }
         public Dictionary<ETimeType, GenericSettingConfiguration> Configurations { get; set; }
 
-        public List<ILocationConfig> LocationConfigurations { get; set; }
+        //public List<ILocationConfig> LocationConfigurations { get; set; }
 
         public GenericSettingConfiguration GetConfiguration(ETimeType timeType)
         {

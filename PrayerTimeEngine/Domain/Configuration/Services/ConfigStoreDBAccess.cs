@@ -87,43 +87,6 @@ namespace PrayerTimeEngine.Domain.ConfigStore.Services
             return timeSpecificConfigs;
         }
 
-        public async Task<List<ILocationConfig>> GetLocationConfigsByProfile(int profileID)
-        {
-            List<ILocationConfig> timeSpecificConfigs = new List<ILocationConfig>();
-
-            await _db.ExecuteCommandAsync(async connection =>
-            {
-                var command = connection.CreateCommand();
-                command.CommandText =
-                @"
-                SELECT Id, ProfileID, LocationConfigTypeName, JsonLocationInfo
-                FROM LocationConfig
-                WHERE ProfileID = $ProfileId;";
-
-                command.Parameters.AddWithValue("$ProfileId", profileID);
-
-                using (var reader = await command.ExecuteReaderAsync())
-                {
-                    while (await reader.ReadAsync())
-                    {
-                        throw new NotImplementedException();
-                        //TimeSpecificConfig timeSpecificConfig = new TimeSpecificConfig
-                        //{
-                        //    ID = reader.GetInt32(0),
-                        //    ProfileID = reader.GetInt32(1),
-                        //    PrayerTime = (EPrayerTime)reader.GetInt32(2),
-                        //    PrayerTimeEvent = (EPrayerTimeEvent)reader.GetInt32(3),
-                        //    ConfigurationTypeName = reader.GetString(4),
-                        //    JsonConfigurationString = reader.GetString(5),
-                        //};
-                        //timeSpecificConfigs.Add(timeSpecificConfig);
-                    }
-                }
-            });
-
-            return timeSpecificConfigs;
-        }
-
         public async Task SaveProfile(Profile profile)
         {
             await DeleteProfile(profile.ID);

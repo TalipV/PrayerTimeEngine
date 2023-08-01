@@ -1,107 +1,17 @@
 ﻿using PrayerTimeEngine.Common.Enum;
+using PropertyChanged;
 
 namespace PrayerTimeEngine.Domain.Model
 {
+    [AddINotifyPropertyChangedInterface]
     public class PrayerTimesBundle
     {
-        public PrayerTime Fajr { get; private set; } = new PrayerTime { Name = "Fajr" };
-        public PrayerTime Duha { get; private set; } = new PrayerTime { Name = "Duha" };
-        public PrayerTime Dhuhr { get; private set; } = new PrayerTime { Name = "Dhuhr" };
-        public PrayerTime Asr { get; private set; } = new PrayerTime { Name = "Asr" };
-        public PrayerTime Maghrib { get; private set; } = new PrayerTime { Name = "Maghrib" };
-        public PrayerTime Isha { get; private set; } = new PrayerTime { Name = "Isha" };
-
-        public TimeSpan? DayDuratiion
-        {
-            get
-            {
-                return Asr?.End - Fajr?.Start;
-            }
-        }
-
-        public TimeSpan? NightDuratiion
-        {
-            get
-            {
-                return Isha?.End - Maghrib?.Start;
-            }
-        }
-
-        public DateTime? OneThirdDateTime
-        {
-            get
-            {
-                if (NightDuratiion == null)
-                {
-                    return null;
-                }
-
-                return Maghrib.Start.Value.Add(TimeSpan.FromMilliseconds(NightDuratiion.Value.TotalMilliseconds * (1.0 / 3.0)));
-            }
-        }
-
-        public DateTime? TwoThirdsDateTime
-        {
-            get
-            {
-                if (NightDuratiion == null)
-                {
-                    return null;
-                }
-
-                return Maghrib.Start.Value.Add(TimeSpan.FromMilliseconds(NightDuratiion.Value.TotalMilliseconds * (2.0 / 3.0)));
-            }
-        }
-
-        public DateTime? MidnightDateTime
-        {
-            get
-            {
-                if (NightDuratiion == null)
-                {
-                    return null;
-                }
-
-                return Maghrib.Start.Value.Add(TimeSpan.FromMilliseconds(NightDuratiion.Value.TotalMilliseconds * (1.0 / 2.0)));
-            }
-        }
-
-        public DateTime? DuhaQuarterDateTime
-        {
-            get
-            {
-                if (DayDuratiion == null)
-                {
-                    return null;
-                }
-
-                return Fajr.Start.Value.Add(TimeSpan.FromMilliseconds(DayDuratiion.Value.TotalMilliseconds * (1.0 / 4.0)));
-            }
-        }
-        public DateTime? AsrMithlaynDateTime { get; set; }
-        public DateTime? IshtibaqDateTime { get; set; }
-        public DateTime? MaghribSufficientTimeDateTime { get; set; }
-
-        public string OneThird => OneThirdDateTime?.ToString("HH:mm:ss") ?? "xx:xx:xx";
-        public string Midnight => MidnightDateTime?.ToString("HH:mm:ss") ?? "xx:xx:xx";
-        public string TwoThirds => TwoThirdsDateTime?.ToString("HH:mm:ss") ?? "xx:xx:xx";
-
-
-        public DateTime? FajrGhalasDateTime { get; set; }
-        public DateTime? FajrSunriseRednessDateTime { get; set; }
-        public DateTime? DuhaHalfDateTime { get; set; }
-        public DateTime? AsrKarahaDateTime { get; set; }
-
-        public string FajrGhalas => FajrGhalasDateTime?.ToString("HH:mm:ss") ?? "xx:xx:xx";
-        public string FajrSunriseRedness => FajrSunriseRednessDateTime?.ToString("HH:mm:ss") ?? "xx:xx:xx";
-        public string DuhaHalf => DuhaHalfDateTime?.ToString("HH:mm:ss") ?? "xx:xx:xx";
-        public string AsrKaraha => AsrKarahaDateTime?.ToString("HH:mm:ss") ?? "xx:xx:xx";
-
-        public string DuhaQuarter => DuhaQuarterDateTime?.ToString("HH:mm:ss") ?? "xx:xx:xx";
-        public string AsrMithlayn => AsrMithlaynDateTime?.ToString("HH:mm:ss") ?? "xx:xx:xx";
-        public string MaghribSufficientTime => MaghribSufficientTimeDateTime?.ToString("HH:mm:ss") ?? "xx:xx:xx";
-        public string Ishtibaq => IshtibaqDateTime?.ToString("HH:mm:ss") ?? "xx:xx:xx";
-
+        public FajrPrayerTime Fajr { get; private set; } = new ();
+        public DuhaPrayerTime Duha { get; private set; } = new ();
+        public DhuhrPrayerTime Dhuhr { get; private set; } = new();
+        public AsrPrayerTime Asr { get; private set; } = new();
+        public MaghribPrayerTime Maghrib { get; private set; } = new();
+        public IshaPrayerTime Isha { get; private set; } = new();
 
         public void SetSpecificPrayerTimeDateTime(ETimeType timeType, DateTime? dateTime)
         {
@@ -114,10 +24,10 @@ namespace PrayerTimeEngine.Domain.Model
                     Fajr.End = dateTime;
                     break;
                 case ETimeType.FajrGhalas:
-                    FajrGhalasDateTime = dateTime;
+                    Fajr.Ghalas = dateTime;
                     break;
                 case ETimeType.FajrKaraha:
-                    FajrSunriseRednessDateTime = dateTime;
+                    Fajr.Karaha = dateTime;
                     break;
 
                 case ETimeType.DuhaStart:
@@ -125,6 +35,9 @@ namespace PrayerTimeEngine.Domain.Model
                     break;
                 case ETimeType.DuhaEnd:
                     Duha.End = dateTime;
+                    break;
+                case ETimeType.DuhaQuarterOfDay:
+                    Duha.QuarterOfDay = dateTime;
                     break;
 
                 case ETimeType.DhuhrStart:
@@ -141,10 +54,10 @@ namespace PrayerTimeEngine.Domain.Model
                     Asr.End = dateTime;
                     break;
                 case ETimeType.AsrMithlayn:
-                    AsrMithlaynDateTime = dateTime;
+                    Asr.Mithlayn = dateTime;
                     break;
                 case ETimeType.AsrKaraha:
-                    AsrKarahaDateTime = dateTime;
+                    Asr.Karaha = dateTime;
                     break;
 
                 case ETimeType.MaghribStart:
@@ -153,11 +66,11 @@ namespace PrayerTimeEngine.Domain.Model
                 case ETimeType.MaghribEnd:
                     Maghrib.End = dateTime;
                     break;
-                case ETimeType.MaghribIshtibaq:
-                    IshtibaqDateTime = dateTime;
-                    break;
                 case ETimeType.MaghribSufficientTime:
-                    MaghribSufficientTimeDateTime = dateTime;
+                    Maghrib.SufficientTime = dateTime;
+                    break;
+                case ETimeType.MaghribIshtibaq:
+                    Maghrib.Ishtibaq = dateTime;
                     break;
 
                 case ETimeType.IshaStart:
@@ -165,6 +78,15 @@ namespace PrayerTimeEngine.Domain.Model
                     break;
                 case ETimeType.IshaEnd:
                     Isha.End = dateTime;
+                    break;
+                case ETimeType.IshaFirstThird:
+                    Isha.FirstThirdOfNight = dateTime;
+                    break;
+                case ETimeType.IshaMidnight:
+                    Isha.MiddleOfNight = dateTime;
+                    break;
+                case ETimeType.IshaSecondThird:
+                    Isha.SecondThirdOfNight = dateTime;
                     break;
                 default:
                     throw new NotImplementedException();
