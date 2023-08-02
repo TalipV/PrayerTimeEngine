@@ -14,6 +14,7 @@ namespace PrayerTimeEngine.Domain.Model
                     Fajr, Duha, Dhuhr, Asr, Maghrib, Isha
                 }.AsReadOnly();
         }
+
         public IReadOnlyList<PrayerTime> AllPrayerTimes { get; init; }
 
         public FajrPrayerTime Fajr { get; private set; } = new ();
