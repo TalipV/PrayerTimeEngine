@@ -44,6 +44,14 @@ namespace PrayerTimeEngine.Presentation.GraphicsView
             canvas.FillColor = PrayerTimeColor;
             canvas.FillRoundedRectangle(mainGraphicRectangle, 15.0);
 
+            if (DisplayPrayerTime is FajrPrayerTime fajrPrayerTime)
+            {
+                drawFajrSubtimes(canvas, mainGraphicRectangle, fajrPrayerTime);
+            }            
+            if (DisplayPrayerTime is DuhaPrayerTime duhaPrayer)
+            {
+                drawDuhaSubtimes(canvas, mainGraphicRectangle, duhaPrayer);
+            }            
             if (DisplayPrayerTime is AsrPrayerTime asrPrayerTime)
             {
                 drawAsrSubtimes(canvas, mainGraphicRectangle, asrPrayerTime);
@@ -138,6 +146,62 @@ namespace PrayerTimeEngine.Presentation.GraphicsView
                 width: 90,
                 height: 20,
                 HorizontalAlignment.Center, VerticalAlignment.Center);
+        }
+
+        private void drawFajrSubtimes(ICanvas canvas, RectF mainGraphicRectangle, FajrPrayerTime fajrPrayerTime)
+        {
+            if (fajrPrayerTime.Ghalas == null || fajrPrayerTime.Karaha == null)
+            {
+                return;
+            }
+
+            drawSubTime(
+                canvas: canvas,
+                mainGraphicRectangle,
+                name: "Ikhtiyar",
+                fajrPrayerTime.Start.Value,
+                fajrPrayerTime.Ghalas.Value
+            );
+
+            drawSubTime(
+                canvas: canvas,
+                mainGraphicRectangle,
+                name: "Normal",
+                fajrPrayerTime.Ghalas.Value,
+                fajrPrayerTime.Karaha.Value
+            );
+
+            drawSubTime(
+                canvas: canvas,
+                mainGraphicRectangle,
+                name: "Karaha",
+                fajrPrayerTime.Karaha.Value,
+                fajrPrayerTime.End.Value
+            );
+        }
+
+        private void drawDuhaSubtimes(ICanvas canvas, RectF mainGraphicRectangle, DuhaPrayerTime duhaPrayerTime)
+        {
+            if (duhaPrayerTime.QuarterOfDay == null)
+            {
+                return;
+            }
+
+            drawSubTime(
+                canvas: canvas,
+                mainGraphicRectangle,
+                name: "Normal",
+                duhaPrayerTime.Start.Value,
+                duhaPrayerTime.QuarterOfDay.Value
+            );
+
+            drawSubTime(
+                canvas: canvas,
+                mainGraphicRectangle,
+                name: "Empfohlen",
+                duhaPrayerTime.QuarterOfDay.Value,
+                duhaPrayerTime.End.Value
+            );
         }
 
         private void drawAsrSubtimes(ICanvas canvas, RectF mainGraphicRectangle, AsrPrayerTime asrPrayerTime)

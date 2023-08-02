@@ -4,13 +4,14 @@
              xmlns:enum="clr-namespace:PrayerTimeEngine.Common.Enum;assembly=PrayerTimeEngine"
              xmlns:drawable="clr-namespace:PrayerTimeEngine.Presentation.GraphicsView"
              x:Class="PrayerTimeEngine.MainPage"
-             BackgroundColor="#2e3548">
+             BackgroundColor="#2e3548"
+             NavigationPage.HasNavigationBar="False">
 
     <ContentPage.Resources>
         <drawable:PrayerTimeGraphicView x:Key="PrayerTimeGraphicDrawable" x:Name="PrayerTimeGraphicView"/>
     </ContentPage.Resources>
 
-    <Grid Padding="20, 0, 20, 0">
+    <Grid Padding="20, 20, 20, 0">
         
         <Grid.RowDefinitions>
             <RowDefinition Height="20" />
@@ -364,12 +365,12 @@
             />
 
         <GraphicsView 
-            Grid.Row="18"
+            Grid.Row="17"
             Grid.ColumnSpan="10"
             Drawable="{StaticResource PrayerTimeGraphicDrawable}"
             x:Name="PrayerTimeGraphicViewBase"
-            HeightRequest="300"
-            WidthRequest="400" />
+            HeightRequest="220"
+            WidthRequest="350" />
     </Grid>
     
 </ContentPage>
