@@ -2,14 +2,22 @@
 
 public partial class App : Application
 {
-	public App(MainPage page, ISQLiteDB sqliteDB)
-	{
-		InitializeComponent();
+    public event Action Resumed;
 
-		MainPage = new NavigationPage(page);
+    public App(MainPage page, ISQLiteDB sqliteDB)
+    {
+        InitializeComponent();
+
+        MainPage = new NavigationPage(page);
 
         // Initialize the database
         sqliteDB?.InitializeDatabase();
+    }
+
+    protected override void OnResume()
+    {
+        base.OnResume();
+        Resumed?.Invoke();
     }
 
     protected override Window CreateWindow(IActivationState activationState)

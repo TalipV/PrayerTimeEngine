@@ -20,9 +20,33 @@ namespace PrayerTimeEngine
             PrayerTimeGraphicViewBase.Invalidate();
         }
 
+        /// <summary>
+        /// Triggers when the app is opened after being minimized
+        /// </summary>
+        private void app_Resumed()
+        {
+            _viewModel.OnActualAppearing();
+        }
+
+        /// <summary>
+        /// Triggers when this page is navigated to from another page
+        /// </summary>
         protected override void OnAppearing()
         {
-            (BindingContext as MainPageViewModel).OnAppearing();
+            if (Application.Current is App app)
+            {
+                app.Resumed += app_Resumed;
+            }
+
+            _viewModel.OnActualAppearing();
+        }
+
+        protected override void OnDisappearing()
+        {
+            if (Application.Current is App app)
+            {
+                app.Resumed -= app_Resumed;
+            }
         }
     }
 }

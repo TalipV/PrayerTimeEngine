@@ -6,6 +6,7 @@ using PrayerTimeEngine.Domain.Model;
 using PrayerTimeEngine.Domain.CalculationService.Interfaces;
 using PrayerTimeEngine.Domain.ConfigStore.Models;
 using PrayerTimeEngine.Presentation.Service.Navigation;
+using System.Linq;
 
 namespace PrayerTimeEngine.Presentation.ViewModel
 {
@@ -36,57 +37,16 @@ namespace PrayerTimeEngine.Presentation.ViewModel
         {
             get
             {
-                if (Prayers == null)
+                // only show data when 
+                if (Prayers == null || Prayers.AllPrayerTimes.Any(x => x.Start == null || x.End == null))
                 {
                     return null;
                 }
 
                 DateTime dateTime = DateTime.Now;
 
-                if (Prayers.Fajr.Start != null && Prayers.Fajr.End != null)
-                {
-                    if (Prayers.Fajr.Start < dateTime && dateTime < Prayers.Fajr.End)
-                    {
-                        return Prayers.Fajr;
-                    }
-                }
-                if (Prayers.Duha.Start != null && Prayers.Duha.End != null)
-                {
-                    if (Prayers.Duha.Start < dateTime && dateTime < Prayers.Duha.End)
-                    {
-                        return Prayers.Duha;
-                    }
-                }
-                if (Prayers.Dhuhr.Start != null && Prayers.Dhuhr.End != null)
-                {
-                    if (Prayers.Dhuhr.Start < dateTime && dateTime < Prayers.Dhuhr.End)
-                    {
-                        return Prayers.Dhuhr;
-                    }
-                }
-                if (Prayers.Asr.Start != null && Prayers.Asr.End != null)
-                {
-                    if (Prayers.Asr.Start < dateTime && dateTime < Prayers.Asr.End)
-                    {
-                        return Prayers.Asr;
-                    }
-                }
-                if (Prayers.Maghrib.Start != null && Prayers.Maghrib.End != null)
-                {
-                    if (Prayers.Maghrib.Start < dateTime && dateTime < Prayers.Maghrib.End)
-                    {
-                        return Prayers.Maghrib;
-                    }
-                }
-                if (Prayers.Isha.Start != null && Prayers.Isha.End != null)
-                {
-                    if (Prayers.Isha.Start < dateTime && dateTime < Prayers.Isha.End)
-                    {
-                        return Prayers.Isha;
-                    }
-                }
-
-                return null;
+                return Prayers.AllPrayerTimes.FirstOrDefault(x => x.Start <= dateTime && dateTime <= x.End)
+                    ?? Prayers.AllPrayerTimes.OrderBy(x => x.Start).FirstOrDefault(x => x.Start > dateTime);
             }
         }
 
@@ -155,7 +115,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
 
         #region public methods
 
-        public async void OnAppearing()
+        public async void OnActualAppearing()
         {
             showHideSpecificTimes();
             await loadPrayerTimes();
