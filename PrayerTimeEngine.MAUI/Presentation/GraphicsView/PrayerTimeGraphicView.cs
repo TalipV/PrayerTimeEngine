@@ -7,14 +7,14 @@ namespace PrayerTimeEngine.Presentation.GraphicsView
     public class PrayerTimeGraphicView : IDrawable
     {
         private Color MainBackgroundColor = Color.FromRgba(35, 41, 53, 255);
-        private Color PrayerTimeColor = Color.FromRgb(124, 197, 107);
+        private Color PrayerTimeColor = Colors.LightGray;
 
-        private Color PrayerMainTextColor = Colors.Yellow;
+        private Color PrayerMainTextColor = Colors.Black;
         private Color CurrentTimeTextColor = Colors.Red;
 
         private Color PrayerSubTimeBackgroundColor = Color.FromRgb(90, 187, 71);
-        private Color PrayerSubTimeBorderColor = Colors.White;
-        private Color PrayerSubTimeTextColor = Colors.Cyan;
+        private Color PrayerSubTimeBorderColor = Colors.BlueViolet;
+        private Color PrayerSubTimeTextColor = Colors.Black;
 
         public PrayerTime DisplayPrayerTime { get; set; }
 
@@ -32,8 +32,8 @@ namespace PrayerTimeEngine.Presentation.GraphicsView
 
         private void drawInternal(ICanvas canvas, RectF fullRectangle)
         {
-            canvas.FillColor = MainBackgroundColor;
-            canvas.FillRectangle(fullRectangle);
+            //canvas.FillColor = MainBackgroundColor;
+            //canvas.FillRectangle(fullRectangle);
 
             RectF mainGraphicRectangle =
                 new RectF(
