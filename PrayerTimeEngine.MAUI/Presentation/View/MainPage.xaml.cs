@@ -1,5 +1,6 @@
 ﻿using PrayerTimeEngine.Presentation.GraphicsView;
 using PrayerTimeEngine.Presentation.ViewModel;
+using System.Windows.Input;
 
 namespace PrayerTimeEngine
 {
@@ -13,7 +14,6 @@ namespace PrayerTimeEngine
             BindingContext = this._viewModel = viewModel;
             viewModel.OnAfterLoadingPrayerTimes_EventTrigger += ViewModel_OnAfterLoadingPrayerTimes_EventTrigger;
         }
-
         private void ViewModel_OnAfterLoadingPrayerTimes_EventTrigger()
         {
             PrayerTimeGraphicView.DisplayPrayerTime = _viewModel.DisplayPrayerTime;

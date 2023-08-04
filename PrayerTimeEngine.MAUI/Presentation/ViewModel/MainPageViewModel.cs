@@ -7,6 +7,8 @@ using PrayerTimeEngine.Domain.CalculationService.Interfaces;
 using PrayerTimeEngine.Domain.ConfigStore.Models;
 using PrayerTimeEngine.Presentation.Service.Navigation;
 using System.Linq;
+using PrayerTimeEngine.Domain.NominatimLocation.Interfaces;
+using PrayerTimeEngine.Domain.LocationService.Models;
 
 namespace PrayerTimeEngine.Presentation.ViewModel
 {
@@ -15,18 +17,21 @@ namespace PrayerTimeEngine.Presentation.ViewModel
     {
         public MainPageViewModel(
             IPrayerTimeCalculationService prayerTimeCalculator,
+            IPlaceService placeService,
             INavigationService navigationService,
             PrayerTimesConfigurationStorage prayerTimesConfigurationStorage)
         {
-            _navigationService = navigationService;
             _prayerTimeCalculationService = prayerTimeCalculator;
+            _placeService = placeService;
+            _navigationService = navigationService;
             _prayerTimesConfigurationStorage = prayerTimesConfigurationStorage;
         }
 
         #region fields
 
-        private readonly INavigationService _navigationService;
         private readonly IPrayerTimeCalculationService _prayerTimeCalculationService;
+        private readonly IPlaceService _placeService;
+        private readonly INavigationService _navigationService;
         private readonly PrayerTimesConfigurationStorage _prayerTimesConfigurationStorage;
 
         #endregion fields
@@ -49,6 +54,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
                     ?? Prayers.AllPrayerTimes.OrderBy(x => x.Start).FirstOrDefault(x => x.Start > dateTime);
             }
         }
+        public List<string> SearchResults { get; set; } = new List<string> { "A", "B", "C" };
 
         public PrayerTimesBundle Prayers { get; private set; }
 
@@ -79,6 +85,22 @@ namespace PrayerTimeEngine.Presentation.ViewModel
         #endregion properties
 
         #region ICommand
+
+        public ICommand PerformSearch => new Command<string>(async (string query) =>
+        {
+            try
+            {
+                List<Place> places = await _placeService.SearchPlacesAsync(query, "tr");
+                SearchResults = 
+                    places
+                    .Select(x => $"{x.display_name})")
+                    .ToList();
+            }
+            catch (Exception ex) 
+            {
+                SearchResults = new List<string> { ex.Message };
+            }
+        });
 
         public ICommand GoToSettingsPageCommand
             => new Command<EPrayerType>(

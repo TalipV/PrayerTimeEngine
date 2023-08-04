@@ -14,7 +14,7 @@ namespace PrayerTimeEngine.Domain.Calculators.Fazilet.Services
             _httpClient = httpClient;
         }
 
-        internal const string GET_COUNTRIES_URL = "daily?districtId=232&lang=0";
+        internal const string GET_COUNTRIES_URL = "daily?districtId=232&lang=1";
 
         public async Task<Dictionary<string, int>> GetCountries()
         {
@@ -60,7 +60,7 @@ namespace PrayerTimeEngine.Domain.Calculators.Fazilet.Services
             return cities;
         }
 
-        internal const string GET_TIMES_BY_CITY_URL = "daily?districtId={0}&lang=1";
+        internal const string GET_TIMES_BY_CITY_URL = "daily?districtId={0}&lang=2";
 
         public async Task<List<FaziletPrayerTimes>> GetTimesByCityID(int cityID)
         {

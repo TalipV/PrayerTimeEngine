@@ -13,6 +13,7 @@ using PrayerTimeEngine.Domain.ConfigStore.Models;
 using PrayerTimeEngine.Domain.ConfigStore.Services;
 using PrayerTimeEngine.Domain.Configuration.Interfaces;
 using PrayerTimeEngine.Domain.Configuration.Services;
+using PrayerTimeEngine.Domain.NominatimLocation.Interfaces;
 using PrayerTimeEngine.Presentation.Service.Navigation;
 using PrayerTimeEngine.Presentation.Service.SettingsContentPageFactory;
 using PrayerTimeEngine.Presentation.ViewModel;
@@ -82,8 +83,14 @@ public static class MauiProgram
         {
             client.Timeout = TimeSpan.FromSeconds(20);
         });
-        
+
         #endregion MuwaqqitAPI
+
+        serviceCollection.AddHttpClient<IPlaceService, PlaceService>(client =>
+        {
+            client.Timeout = TimeSpan.FromSeconds(20);
+            client.BaseAddress = new Uri("https://nominatim.openstreetmap.org/");
+        });
 
         serviceCollection.AddTransient<IConfigStoreService, ConfigStoreService>();
         serviceCollection.AddTransient<IConfigStoreDBAccess, ConfigStoreDBAccess>();
