@@ -57,21 +57,28 @@
 
         <SearchBar
             Grid.Row="0"
-            Grid.Column="1"
-            Grid.ColumnSpan="3"
+            Grid.Column="0"
+            Grid.ColumnSpan="5"
             x:Name="searchBar"
 
             BackgroundColor="LightGray"
-            Text="Hallo"
             HorizontalOptions="Center"
             SearchCommand="{Binding PerformSearch}"
             SearchCommandParameter="{Binding Text, Source={x:Reference searchBar}}" />
-        <dxco:DXPopup x:Name="Popup" PlacementTarget="{x:Reference searchBar}" Placement="Bottom" >
-            <ScrollView HeightRequest="400" BackgroundColor="AliceBlue" Padding="5, 5">
-            <ListView 
+
+        <dxco:DXPopup
+            x:Name="Popup"
+            PlacementTarget="{x:Reference searchBar}"
+            Placement="Bottom"
+            MinimumHeightRequest="180">
+
+            <ListView
                 x:Name="searchResults"
-                ItemsSource="{Binding SearchResults}" />
-            </ScrollView>
+                BackgroundColor="LightGray"
+                ItemsSource="{Binding SearchResults}"
+                SelectionMode="Single"
+                SelectedItem="{Binding SelectedPlace, Mode=TwoWay}"/>
+
         </dxco:DXPopup>
 
         <Label 

@@ -9,6 +9,7 @@ namespace PrayerTimeEngine.Domain.NominatimLocation.Interfaces
 {
     public interface IPlaceService
     {
-        Task<List<Place>> SearchPlacesAsync(string searchTerm, string language);
+        Task<List<LocationIQPlace>> SearchPlacesAsync(string searchTerm, string language);
+        Task<LocationIQPlace> GetPlaceByID(LocationIQPlace place, string languageIdentif);
     }
 }

@@ -36,7 +36,7 @@ namespace PrayerTimeEngineUnitTests.API.SemerkandAPI
             var semerkandPrayerTimeCalculator =
                 new SemerkandPrayerTimeCalculator(
                     semerkandDBAccess,
-                    semerkandApiService);
+                    semerkandApiService, null);
 
             // ACT
             ICalculationPrayerTimes result =

@@ -9,22 +9,32 @@ using PrayerTimeEngine.Presentation.Service.Navigation;
 using System.Linq;
 using PrayerTimeEngine.Domain.NominatimLocation.Interfaces;
 using PrayerTimeEngine.Domain.LocationService.Models;
+using System.Globalization;
+using PrayerTimeEngine.Domain.Calculators.Muwaqqit.Models;
+using PrayerTimeEngine.Domain.Calculators.Fazilet.Models;
+using PrayerTimeEngine.Domain.Calculators.Semerkand.Models;
+using CommunityToolkit.Maui.Core;
+using CommunityToolkit.Maui.Alerts;
+using Microsoft.Extensions.Logging;
+using MetroLog.Maui;
 
 namespace PrayerTimeEngine.Presentation.ViewModel
 {
     [AddINotifyPropertyChangedInterface]
-    public class MainPageViewModel : BaseViewModel
+    public class MainPageViewModel : LogController
     {
         public MainPageViewModel(
             IPrayerTimeCalculationService prayerTimeCalculator,
             IPlaceService placeService,
             INavigationService navigationService,
-            PrayerTimesConfigurationStorage prayerTimesConfigurationStorage)
+            PrayerTimesConfigurationStorage prayerTimesConfigurationStorage,
+            ILogger<MainPageViewModel> logger)
         {
             _prayerTimeCalculationService = prayerTimeCalculator;
             _placeService = placeService;
             _navigationService = navigationService;
             _prayerTimesConfigurationStorage = prayerTimesConfigurationStorage;
+            _logger = logger;
         }
 
         #region fields
@@ -33,6 +43,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
         private readonly IPlaceService _placeService;
         private readonly INavigationService _navigationService;
         private readonly PrayerTimesConfigurationStorage _prayerTimesConfigurationStorage;
+        private readonly ILogger<MainPageViewModel> _logger;
 
         #endregion fields
 
@@ -54,7 +65,9 @@ namespace PrayerTimeEngine.Presentation.ViewModel
                     ?? Prayers.AllPrayerTimes.OrderBy(x => x.Start).FirstOrDefault(x => x.Start > dateTime);
             }
         }
-        public List<string> SearchResults { get; set; } = new List<string> { "A", "B", "C" };
+        public List<LocationIQPlace> SearchResults { get; set; }
+        [OnChangedMethod(nameof(OnSelectedPlaceChanged))]
+        public LocationIQPlace SelectedPlace { get; set; }
 
         public PrayerTimesBundle Prayers { get; private set; }
 
@@ -83,22 +96,21 @@ namespace PrayerTimeEngine.Presentation.ViewModel
         public bool ShowMidnight { get; set; }
 
         #endregion properties
-
+        
         #region ICommand
 
         public ICommand PerformSearch => new Command<string>(async (string query) =>
         {
             try
             {
-                List<Place> places = await _placeService.SearchPlacesAsync(query, "tr");
-                SearchResults = 
-                    places
-                    .Select(x => $"{x.display_name})")
-                    .ToList();
+                string languageCode = CultureInfo.CurrentCulture.TwoLetterISOLanguageName;
+
+                List<LocationIQPlace> places = await _placeService.SearchPlacesAsync(query, languageCode);
+                SearchResults = places;
             }
             catch (Exception ex) 
             {
-                SearchResults = new List<string> { ex.Message };
+                await doToast(ex.Message);
             }
         });
 
@@ -139,8 +151,15 @@ namespace PrayerTimeEngine.Presentation.ViewModel
 
         public async void OnActualAppearing()
         {
-            showHideSpecificTimes();
-            await loadPrayerTimes();
+            try
+            {
+                showHideSpecificTimes();
+                await loadPrayerTimes();
+            }
+            catch (Exception exception)
+            {
+                await doToast(exception.Message);
+            }
         }
 
         #endregion public methods
@@ -171,6 +190,56 @@ namespace PrayerTimeEngine.Presentation.ViewModel
             }
 
             return config.IsTimeShown;
+        }
+
+        public void OnSelectedPlaceChanged()
+        {
+            Task.Run(async () =>
+            {
+                try
+                {
+                    if (SelectedPlace == null)
+                    {
+                        PrayerTimesConfigurationStorage.MuwaqqitLocationInfo = null;
+                        PrayerTimesConfigurationStorage.FaziletLocationInfo = null;
+                        PrayerTimesConfigurationStorage.SemerkandLocationInfo = null;
+                        return;
+                    }
+
+                    _logger.LogDebug("OnSelectedPlaceChanged logic begin");
+
+                    PrayerTimesConfigurationStorage.MuwaqqitLocationInfo =
+                        (await _prayerTimeCalculationService
+                        .GetPrayerTimeCalculatorByCalculationSource(ECalculationSource.Muwaqqit)
+                        .GetLocationInfo(SelectedPlace)) as MuwaqqitLocationInfo;
+                    PrayerTimesConfigurationStorage.FaziletLocationInfo =
+                        (await _prayerTimeCalculationService
+                        .GetPrayerTimeCalculatorByCalculationSource(ECalculationSource.Fazilet)
+                        .GetLocationInfo(SelectedPlace)) as FaziletLocationInfo;
+                    PrayerTimesConfigurationStorage.SemerkandLocationInfo =
+                        (await _prayerTimeCalculationService
+                        .GetPrayerTimeCalculatorByCalculationSource(ECalculationSource.Semerkand)
+                        .GetLocationInfo(SelectedPlace)) as SemerkandLocationInfo;
+
+                    await this.loadPrayerTimes();
+                }
+                catch (Exception exception)
+                {
+                    await doToast(exception.Message);
+                }
+            });
+        }
+
+        public async Task doToast(string text)
+        {
+            CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+
+            ToastDuration duration = ToastDuration.Short;
+            double fontSize = 14;
+
+            var toast = Toast.Make(text, duration, fontSize);
+
+            await toast.Show(cancellationTokenSource.Token);
         }
 
         #endregion private methods

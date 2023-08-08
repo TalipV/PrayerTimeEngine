@@ -4,10 +4,13 @@ using PrayerTimeEngine.Domain.ConfigStore.Models;
 using PrayerTimeEngine.Domain.Calculators.Muwaqqit.Interfaces;
 using PrayerTimeEngine.Domain.Calculators.Muwaqqit.Models;
 using PrayerTimeEngine.Domain.Calculators.Semerkand;
+using PrayerTimeEngine.Domain.Model;
+using PrayerTimeEngine.Domain.LocationService.Models;
+using PrayerTimeEngine.Domain.Calculators.Semerkand.Models;
 
 namespace PrayerTimeEngine.Domain.Calculators.Muwaqqit.Services
 {
-    public class MuwaqqitPrayerTimeCalculator : IPrayerTimeCalculator
+    public class MuwaqqitPrayerTimeCalculator : IPrayerTimeService
     {
         private readonly IMuwaqqitDBAccess _muwaqqitDBAccess;
         private readonly IMuwaqqitApiService _muwaqqitApiService;
@@ -32,10 +35,15 @@ namespace PrayerTimeEngine.Domain.Calculators.Muwaqqit.Services
                 throw new ArgumentException($"Only configurations with {nameof(ECalculationSource)}.{ECalculationSource.Muwaqqit} are permitted!");
             }
 
+            if (PrayerTimesConfigurationStorage.MuwaqqitLocationInfo == null)
+            {
+                throw new Exception("Location information for Muwaqqit is missing!");
+            }
+
             // location selection has not been implemented yet
             string timezone = PrayerTimesConfigurationStorage.TIMEZONE;
-            decimal longitude = PrayerTimesConfigurationStorage.INNSBRUCK_LONGITUDE;
-            decimal latitude = PrayerTimesConfigurationStorage.INNSBRUCK_LATITUDE;
+            decimal longitude = PrayerTimesConfigurationStorage.MuwaqqitLocationInfo.Longitude;
+            decimal latitude = PrayerTimesConfigurationStorage.MuwaqqitLocationInfo.Latitude;
 
             List<ETimeType> toBeCalculatedTimeTypes = configurations.Select(x => x.TimeType).ToList();
             Dictionary<ICalculationPrayerTimes, List<ETimeType>> calculatedTimes = new Dictionary<ICalculationPrayerTimes, List<ETimeType>>();
@@ -191,6 +199,18 @@ namespace PrayerTimeEngine.Domain.Calculators.Muwaqqit.Services
             }
 
             return prayerTimes;
+        }
+
+        public Task<ILocationInfo> GetLocationInfo(LocationIQPlace place)
+        {
+            if (place == null)
+                throw new ArgumentNullException(nameof(place));
+
+            return Task.FromResult<ILocationInfo>(new MuwaqqitLocationInfo
+            {
+                Longitude = decimal.Parse(place.lon, System.Globalization.CultureInfo.InvariantCulture),
+                Latitude = decimal.Parse(place.lat, System.Globalization.CultureInfo.InvariantCulture)
+            });
         }
     }
 }

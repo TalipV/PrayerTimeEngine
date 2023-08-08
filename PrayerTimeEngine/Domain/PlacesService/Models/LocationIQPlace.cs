@@ -1,18 +1,14 @@
-﻿using PrayerTimeEngine.Domain.NominatimLocation.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Net;
+using PrayerTimeEngine.Domain.NominatimLocation.Models;
 
 namespace PrayerTimeEngine.Domain.LocationService.Models
 {
-    public class Place
+    public class LocationIQPlace
     {
-        public int place_id { get; set; }
+        public string place_id { get; set; }
         public string licence { get; set; }
         public string osm_type { get; set; }
-        public long osm_id { get; set; }
+        public string osm_id { get; set; }
         public List<string> boundingbox { get; set; }
         public string lat { get; set; }
         public string lon { get; set; }
@@ -21,6 +17,11 @@ namespace PrayerTimeEngine.Domain.LocationService.Models
         public string type { get; set; }
         public double importance { get; set; }
         public string icon { get; set; }
-        public Address address { get; set; }
+        public LocationIQAddress address { get; set; }
+
+        public override string ToString()
+        {
+            return this.display_name;
+        }
     }
 }

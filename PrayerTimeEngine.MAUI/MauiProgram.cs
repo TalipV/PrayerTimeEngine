@@ -1,4 +1,6 @@
-﻿using DevExpress.Maui;
+﻿using CommunityToolkit.Maui;
+using DevExpress.Maui;
+using MetroLog.MicrosoftExtensions;
 using Microsoft.Extensions.Logging;
 using PrayerTimeEngine.Code.Presentation.View;
 using PrayerTimeEngine.Domain;
@@ -32,6 +34,7 @@ public static class MauiProgram
         var builder = MauiApp.CreateBuilder();
         builder
             .UseMauiApp<App>()
+            .UseMauiCommunityToolkit()
             .UseDevExpress()
             .ConfigureFonts(fonts =>
             {
@@ -40,7 +43,37 @@ public static class MauiProgram
             });
 
 #if DEBUG
-        builder.Logging.AddDebug();
+        builder.Logging
+            .SetMinimumLevel(LogLevel.Debug) // IMPORTANT: set your minimum log level, here Trace
+            .AddTraceLogger(
+                options =>
+                {
+                    options.MinLevel = LogLevel.Debug;
+                    options.MaxLevel = LogLevel.Debug;
+                }) // Will write to the Debug Output
+            .AddConsoleLogger(
+                options =>
+                {
+                    options.MinLevel = LogLevel.Debug;
+                    options.MaxLevel = LogLevel.Debug;
+                }) // Will write to the Console Output (logcat for android)
+            .AddInMemoryLogger(
+                options =>
+                {
+                    options.MaxLines = 1024;
+                    options.MinLevel = LogLevel.Debug;
+                    options.MaxLevel = LogLevel.Debug;
+                })
+            .AddStreamingFileLogger(
+                options =>
+                {
+                    options.RetainDays = 2;
+                    options.FolderPath = Path.Combine(
+                        FileSystem.CacheDirectory,
+                        "MetroLogs");
+                })
+            .AddInMemoryLogger(_ => { })
+            .AddStreamingFileLogger(_ => { });
 #endif
 
         addDependencyInjectionServices(builder.Services);
@@ -91,7 +124,6 @@ public static class MauiProgram
         serviceCollection.AddHttpClient<IPlaceService, PlaceService>(client =>
         {
             client.Timeout = TimeSpan.FromSeconds(20);
-            client.BaseAddress = new Uri("https://nominatim.openstreetmap.org/");
         });
 
         serviceCollection.AddTransient<IConfigStoreService, ConfigStoreService>();

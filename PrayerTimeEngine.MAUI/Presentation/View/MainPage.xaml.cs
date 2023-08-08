@@ -13,38 +13,14 @@ namespace PrayerTimeEngine
             InitializeComponent();
             BindingContext = this._viewModel = viewModel;
             viewModel.OnAfterLoadingPrayerTimes_EventTrigger += ViewModel_OnAfterLoadingPrayerTimes_EventTrigger;
+            viewModel.IsShakeEnabled = true;
 
             this.searchBar.SearchButtonPressed += SearchBar_SearchButtonPressed;
-
-            this.Popup.Opening += Popup_Opening;
-            this.Popup.Opened += Popup_Opened;
-            this.Popup.Closed += Popup_Closed;
-            this.Popup.Closing += Popup_Closing;
         }
 
         private void SearchBar_SearchButtonPressed(object sender, EventArgs e)
         {
             this.Popup.IsOpen = true;
-        }
-
-        private void Popup_Closing(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-            ;
-        }
-
-        private void Popup_Closed(object sender, EventArgs e)
-        {
-            ;
-        }
-
-        private void Popup_Opened(object sender, EventArgs e)
-        {
-            ;
-        }
-
-        private void Popup_Opening(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-            ;
         }
 
         private void ViewModel_OnAfterLoadingPrayerTimes_EventTrigger()

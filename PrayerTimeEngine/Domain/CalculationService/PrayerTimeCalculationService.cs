@@ -42,7 +42,7 @@ public class PrayerTimeCalculationService : IPrayerTimeCalculationService
             List<GenericSettingConfiguration> configs = calculationSourceConfigs.ToList();
             var configsByTimeType = configs.ToDictionary(x => x.TimeType);
 
-            IPrayerTimeCalculator timeCalculator = getPrayerTimeCalculatorByCalculationSource(calculationSource);
+            IPrayerTimeService timeCalculator = GetPrayerTimeCalculatorByCalculationSource(calculationSource);
             throwIfConfigsHaveUnsupportedTimeTypes(calculationSource, configs, timeCalculator);
 
             ILookup<ICalculationPrayerTimes, ETimeType> calculationPrayerTimes =
@@ -74,7 +74,7 @@ public class PrayerTimeCalculationService : IPrayerTimeCalculationService
         }
     }
 
-    private static void throwIfConfigsHaveUnsupportedTimeTypes(ECalculationSource calculationSource, List<GenericSettingConfiguration> configs, IPrayerTimeCalculator timeCalculator)
+    private static void throwIfConfigsHaveUnsupportedTimeTypes(ECalculationSource calculationSource, List<GenericSettingConfiguration> configs, IPrayerTimeService timeCalculator)
     {
         List<ETimeType> unsupportedTimeTypes =
             timeCalculator
@@ -170,7 +170,7 @@ public class PrayerTimeCalculationService : IPrayerTimeCalculationService
         }
     }
 
-    private IPrayerTimeCalculator getPrayerTimeCalculatorByCalculationSource(ECalculationSource source)
+    public IPrayerTimeService GetPrayerTimeCalculatorByCalculationSource(ECalculationSource source)
     {
         switch (source)
         {

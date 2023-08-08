@@ -1,6 +1,6 @@
 ﻿namespace PrayerTimeEngine.Domain.Model
 {
-    public class PrayerTimeLocation
+    public interface ILocationInfo
     {
     }
 }

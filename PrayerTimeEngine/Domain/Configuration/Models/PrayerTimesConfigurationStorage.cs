@@ -2,6 +2,8 @@
 using PrayerTimeEngine.Domain.Model;
 using PrayerTimeEngine.Domain.ConfigStore.Interfaces;
 using PrayerTimeEngine.Domain.Calculators.Muwaqqit.Models;
+using PrayerTimeEngine.Domain.Calculators.Fazilet.Models;
+using PrayerTimeEngine.Domain.Calculators.Semerkand.Models;
 
 namespace PrayerTimeEngine.Domain.ConfigStore.Models
 {
@@ -14,13 +16,25 @@ namespace PrayerTimeEngine.Domain.ConfigStore.Models
             _configStoreService = configStoreService;
         }
 
-        public PrayerTimeLocation Location { get; set; }
+        public static MuwaqqitLocationInfo MuwaqqitLocationInfo =
+            new MuwaqqitLocationInfo
+            {
+                Latitude = 47.2803835M,
+                Longitude = 11.41337M
+             };
+        public static FaziletLocationInfo FaziletLocationInfo =
+            new FaziletLocationInfo
+            {
+                CountryName = "Avusturya",
+                CityName = "Innsbruck"
+            };
+        public static SemerkandLocationInfo SemerkandLocationInfo =
+            new SemerkandLocationInfo
+            {
+                CountryName = "Avusturya",
+                CityName = "Innsbruck"
+            };
 
-        public const decimal INNSBRUCK_LATITUDE = 47.2803835M;
-        public const decimal INNSBRUCK_LONGITUDE = 11.41337M;
-
-        public const string COUNTRY_NAME = "Avusturya";
-        public const string CITY_NAME = "Innsbruck";
         public const string TIMEZONE = "Europe/Vienna";
 
         List<Profile> _profiles = null;

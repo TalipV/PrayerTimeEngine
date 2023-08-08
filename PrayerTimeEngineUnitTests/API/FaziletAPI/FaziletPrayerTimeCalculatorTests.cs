@@ -40,7 +40,8 @@ namespace PrayerTimeEngineUnitTests.API.FaziletAPI
             var faziletPrayerTimeCalculator =
                 new FaziletPrayerTimeCalculator(
                     faziletDBAccess,
-                    faziletApiService);
+                    faziletApiService,
+                    null);
 
             // ACT
             ICalculationPrayerTimes result =

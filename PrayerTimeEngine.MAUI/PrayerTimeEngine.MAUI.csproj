@@ -21,9 +21,58 @@
 
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">11.0</SupportedOSPlatformVersion>
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">21.0</SupportedOSPlatformVersion>
-		<Platforms>AnyCPU;x64</Platforms>
+		<Platforms>AnyCPU</Platforms>
 	</PropertyGroup>
 
+	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+	  <IntermediateOutputPath></IntermediateOutputPath>
+	  <DebugSymbols></DebugSymbols>
+	  <DebugType></DebugType>
+	  <Optimize></Optimize>
+	  <OutputPath></OutputPath>
+	  <DefineConstants></DefineConstants>
+	  <WarningLevel></WarningLevel>
+	  <TreatWarningsAsErrors></TreatWarningsAsErrors>
+	  <DocumentationFile></DocumentationFile>
+	  <ConsolePause>true</ConsolePause>
+	  <ExternalConsole>false</ExternalConsole>
+	  <Commandlineparameters></Commandlineparameters>
+	  <RunWithWarnings>true</RunWithWarnings>
+	  <NoWarn></NoWarn>
+	  <AllowUnsafeBlocks></AllowUnsafeBlocks>
+	  <CheckForOverflowUnderflow></CheckForOverflowUnderflow>
+	  <LangVersion>Default</LangVersion>
+	  <NoStdLib></NoStdLib>
+	  <PlatformTarget>anycpu</PlatformTarget>
+	  <WarningsNotAsErrors></WarningsNotAsErrors>
+	  <Nullable></Nullable>
+	</PropertyGroup>
+	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+	  <IntermediateOutputPath></IntermediateOutputPath>
+	  <DebugSymbols></DebugSymbols>
+	  <DebugType></DebugType>
+	  <Optimize></Optimize>
+	  <OutputPath></OutputPath>
+	  <DefineConstants></DefineConstants>
+	  <WarningLevel></WarningLevel>
+	  <TreatWarningsAsErrors></TreatWarningsAsErrors>
+	  <DocumentationFile></DocumentationFile>
+	  <ConsolePause>true</ConsolePause>
+	  <ExternalConsole>false</ExternalConsole>
+	  <Commandlineparameters></Commandlineparameters>
+	  <RunWithWarnings>true</RunWithWarnings>
+	  <NoWarn></NoWarn>
+	  <AllowUnsafeBlocks></AllowUnsafeBlocks>
+	  <CheckForOverflowUnderflow></CheckForOverflowUnderflow>
+	  <LangVersion>Default</LangVersion>
+	  <NoStdLib></NoStdLib>
+	  <PlatformTarget>anycpu</PlatformTarget>
+	  <WarningsNotAsErrors></WarningsNotAsErrors>
+	  <Nullable></Nullable>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net7.0-ios|AnyCPU'">
+	  <CreatePackage>false</CreatePackage>
+	</PropertyGroup>
 	<ItemGroup>
 		<!-- App Icon -->
 		<MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#512BD4" />
@@ -48,6 +97,8 @@
     <PackageReference Include="PropertyChanged.Fody" Version="4.1.0" PrivateAssets="All" />
     <PackageReference Include="Refractored.MvvmHelpers" Version="1.6.2" />
 		<PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" Version="2.1.5" />
+		<PackageReference Include="CommunityToolkit.Maui" Version="5.2.0" />
+		<PackageReference Include="MetroLog.Maui" Version="2.1.0" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -77,14 +128,12 @@
 	</ItemGroup>
 
 	<ItemGroup Condition="'$(TargetFramework)' == 'net7.0-android'">
-	  <PackageReference Include="DevExpress.Maui.Controls">
-	    <Version>23.1.4</Version>
+	  <PackageReference Include="DevExpress.Maui.Controls" Version="23.1.4">
 	  </PackageReference>
 	</ItemGroup>
 
 	<ItemGroup Condition="'$(TargetFramework)' == 'net7.0-ios'">
-	  <PackageReference Include="DevExpress.Maui.Controls">
-	    <Version>23.1.4</Version>
+	  <PackageReference Include="DevExpress.Maui.Controls" Version="23.1.4">
 	  </PackageReference>
 	</ItemGroup>
 

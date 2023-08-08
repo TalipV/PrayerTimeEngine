@@ -1,4 +1,6 @@
-﻿namespace PrayerTimeEngine;
+﻿using MetroLog.Maui;
+
+namespace PrayerTimeEngine;
 
 public partial class App : Application
 {
@@ -12,6 +14,10 @@ public partial class App : Application
 
         // Initialize the database
         sqliteDB?.InitializeDatabase();
+
+        LogController.InitializeNavigation(
+            page => MainPage.Navigation.PushModalAsync(page),
+            () => MainPage.Navigation.PopModalAsync());
     }
 
     protected override void OnResume()
