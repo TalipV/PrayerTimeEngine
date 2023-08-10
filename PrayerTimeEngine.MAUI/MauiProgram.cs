@@ -3,6 +3,7 @@ using DevExpress.Maui;
 using MetroLog.MicrosoftExtensions;
 using Microsoft.Extensions.Logging;
 using PrayerTimeEngine.Code.Presentation.View;
+using PrayerTimeEngine.Data.SQLite;
 using PrayerTimeEngine.Domain;
 using PrayerTimeEngine.Domain.CalculationService.Interfaces;
 using PrayerTimeEngine.Domain.Calculators.Fazilet.Interfaces;
@@ -14,8 +15,6 @@ using PrayerTimeEngine.Domain.Calculators.Semerkand.Services;
 using PrayerTimeEngine.Domain.ConfigStore.Interfaces;
 using PrayerTimeEngine.Domain.ConfigStore.Models;
 using PrayerTimeEngine.Domain.ConfigStore.Services;
-using PrayerTimeEngine.Domain.Configuration.Interfaces;
-using PrayerTimeEngine.Domain.Configuration.Services;
 using PrayerTimeEngine.Domain.NominatimLocation.Interfaces;
 using PrayerTimeEngine.Presentation.Service.Navigation;
 using PrayerTimeEngine.Presentation.Service.SettingsContentPageFactory;
@@ -121,7 +120,7 @@ public static class MauiProgram
 
         #endregion MuwaqqitAPI
 
-        serviceCollection.AddHttpClient<IPlaceService, PlaceService>(client =>
+        serviceCollection.AddHttpClient<ILocationService, LocationService>(client =>
         {
             client.Timeout = TimeSpan.FromSeconds(20);
         });
@@ -130,7 +129,6 @@ public static class MauiProgram
         serviceCollection.AddTransient<IConfigStoreDBAccess, ConfigStoreDBAccess>();
 
         serviceCollection.AddSingleton<PrayerTimesConfigurationStorage>();
-        serviceCollection.AddSingleton<IConfigurationSerializationService, ConfigurationSerializationService>();
 
         addPresentationLayerServices(serviceCollection);
     }

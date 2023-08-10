@@ -1,4 +1,5 @@
-﻿using PrayerTimeEngine.Domain.Calculators.Fazilet.Interfaces;
+﻿using PrayerTimeEngine.Data.SQLite;
+using PrayerTimeEngine.Domain.Calculators.Fazilet.Interfaces;
 using PrayerTimeEngine.Domain.Calculators.Fazilet.Models;
 
 namespace PrayerTimeEngine.Domain.Calculators.Fazilet.Services

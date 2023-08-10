@@ -1,22 +1,18 @@
-﻿using MvvmHelpers;
-using System.Windows.Input;
+﻿using System.Windows.Input;
 using PropertyChanged;
 using PrayerTimeEngine.Common.Enum;
 using PrayerTimeEngine.Domain.Model;
 using PrayerTimeEngine.Domain.CalculationService.Interfaces;
 using PrayerTimeEngine.Domain.ConfigStore.Models;
 using PrayerTimeEngine.Presentation.Service.Navigation;
-using System.Linq;
 using PrayerTimeEngine.Domain.NominatimLocation.Interfaces;
 using PrayerTimeEngine.Domain.LocationService.Models;
 using System.Globalization;
-using PrayerTimeEngine.Domain.Calculators.Muwaqqit.Models;
-using PrayerTimeEngine.Domain.Calculators.Fazilet.Models;
-using PrayerTimeEngine.Domain.Calculators.Semerkand.Models;
 using CommunityToolkit.Maui.Core;
 using CommunityToolkit.Maui.Alerts;
 using Microsoft.Extensions.Logging;
 using MetroLog.Maui;
+using PrayerTimeEngine.Domain.ConfigStore.Interfaces;
 
 namespace PrayerTimeEngine.Presentation.ViewModel
 {
@@ -25,13 +21,15 @@ namespace PrayerTimeEngine.Presentation.ViewModel
     {
         public MainPageViewModel(
             IPrayerTimeCalculationService prayerTimeCalculator,
-            IPlaceService placeService,
+            ILocationService placeService,
+            IConfigStoreService configStoreService,
             INavigationService navigationService,
             PrayerTimesConfigurationStorage prayerTimesConfigurationStorage,
             ILogger<MainPageViewModel> logger)
         {
             _prayerTimeCalculationService = prayerTimeCalculator;
             _placeService = placeService;
+            _configStoreService = configStoreService;
             _navigationService = navigationService;
             _prayerTimesConfigurationStorage = prayerTimesConfigurationStorage;
             _logger = logger;
@@ -40,7 +38,8 @@ namespace PrayerTimeEngine.Presentation.ViewModel
         #region fields
 
         private readonly IPrayerTimeCalculationService _prayerTimeCalculationService;
-        private readonly IPlaceService _placeService;
+        private readonly ILocationService _placeService;
+        private readonly IConfigStoreService _configStoreService;
         private readonly INavigationService _navigationService;
         private readonly PrayerTimesConfigurationStorage _prayerTimesConfigurationStorage;
         private readonly ILogger<MainPageViewModel> _logger;
@@ -53,7 +52,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
         {
             get
             {
-                // only show data when 
+                // only show data when no information is lacking
                 if (Prayers == null || Prayers.AllPrayerTimes.Any(x => x.Start == null || x.End == null))
                 {
                     return null;
@@ -65,24 +64,27 @@ namespace PrayerTimeEngine.Presentation.ViewModel
                     ?? Prayers.AllPrayerTimes.OrderBy(x => x.Start).FirstOrDefault(x => x.Start > dateTime);
             }
         }
-        public List<LocationIQPlace> SearchResults { get; set; }
-        [OnChangedMethod(nameof(OnSelectedPlaceChanged))]
-        public LocationIQPlace SelectedPlace { get; set; }
-
-        public PrayerTimesBundle Prayers { get; private set; }
-
-        public DateTime? LastUpdated { get; private set; }
-
-        public bool IsLoading { get; private set; }
-        public bool IsNotLoading => !IsLoading;
 
         public Profile CurrentProfile
         {
             get
             {
-                return _prayerTimesConfigurationStorage.GetProfiles().GetAwaiter().GetResult().First();
+                return Profiles?.FirstOrDefault();
             }
         }
+
+        public List<Profile> Profiles { get; private set; }
+
+        public PrayerTimesBundle Prayers { get; private set; }
+
+        public List<LocationIQPlace> SearchResults { get; set; }
+
+        [OnChangedMethod(nameof(onSelectedPlaceChanged))]
+        public LocationIQPlace SelectedPlace { get; set; }
+
+        public DateTime? LastUpdated { get; private set; }
+        public bool IsLoading { get; private set; }
+        public bool IsNotLoading => !IsLoading;
 
         public bool ShowFajrGhalas { get; set; }
         public bool ShowFajrRedness { get; set; }
@@ -110,7 +112,8 @@ namespace PrayerTimeEngine.Presentation.ViewModel
             }
             catch (Exception ex) 
             {
-                await doToast(ex.Message);
+                _logger.LogDebug(ex, "Error during place search");
+                doToast(ex.Message);
             }
         });
 
@@ -123,15 +126,45 @@ namespace PrayerTimeEngine.Presentation.ViewModel
 
         public event Action OnAfterLoadingPrayerTimes_EventTrigger = delegate { };
 
-        public ICommand LoadPrayerTimesButton_ClickCommand
-            => new Command(
-                async () =>
+        #endregion ICommand
+
+        #region public methods
+
+        public async void OnActualAppearing()
+        {
+            try
+            {
+                if (CurrentProfile == null)
                 {
-                    await loadPrayerTimes();
-                });
+                    return;
+                }
+
+                showHideSpecificTimes();
+                await loadPrayerTimes();
+            }
+            catch (Exception exception)
+            {
+                _logger.LogDebug(exception, "Error during OnActualAppearing");
+                doToast(exception.Message);
+            }
+        }
+
+        public async Task OnPageLoaded()
+        {
+            Profiles = await _prayerTimesConfigurationStorage.GetProfiles();
+        }
+
+        #endregion public methods
+
+        #region private methods
 
         private async Task loadPrayerTimes()
         {
+            if (CurrentProfile == null)
+            {
+                return;
+            }
+
             try
             {
                 IsLoading = true;
@@ -145,44 +178,23 @@ namespace PrayerTimeEngine.Presentation.ViewModel
             }
         }
 
-        #endregion ICommand
-
-        #region public methods
-
-        public async void OnActualAppearing()
-        {
-            try
-            {
-                showHideSpecificTimes();
-                await loadPrayerTimes();
-            }
-            catch (Exception exception)
-            {
-                await doToast(exception.Message);
-            }
-        }
-
-        #endregion public methods
-
-        #region private methods 
-
         private void showHideSpecificTimes()
         {
-            ShowFajrGhalas = IsCalculationShown(ETimeType.FajrGhalas);
-            ShowFajrRedness = IsCalculationShown(ETimeType.FajrKaraha);
-            ShowDuhaQuarter = IsCalculationShown(ETimeType.DuhaQuarterOfDay);
-            ShowMithlayn = IsCalculationShown(ETimeType.AsrMithlayn);
-            ShowKaraha = IsCalculationShown(ETimeType.AsrKaraha);
-            ShowMaghribSufficientTime = IsCalculationShown(ETimeType.MaghribSufficientTime);
-            ShowIshtibaq = IsCalculationShown(ETimeType.MaghribIshtibaq);
-            ShowOneThird = IsCalculationShown(ETimeType.IshaFirstThird);
-            ShowTwoThird = IsCalculationShown(ETimeType.IshaSecondThird);
-            ShowMidnight = IsCalculationShown(ETimeType.IshaMidnight);
+            ShowFajrGhalas = isCalculationShown(ETimeType.FajrGhalas);
+            ShowFajrRedness = isCalculationShown(ETimeType.FajrKaraha);
+            ShowDuhaQuarter = isCalculationShown(ETimeType.DuhaQuarterOfDay);
+            ShowMithlayn = isCalculationShown(ETimeType.AsrMithlayn);
+            ShowKaraha = isCalculationShown(ETimeType.AsrKaraha);
+            ShowMaghribSufficientTime = isCalculationShown(ETimeType.MaghribSufficientTime);
+            ShowIshtibaq = isCalculationShown(ETimeType.MaghribIshtibaq);
+            ShowOneThird = isCalculationShown(ETimeType.IshaFirstThird);
+            ShowTwoThird = isCalculationShown(ETimeType.IshaSecondThird);
+            ShowMidnight = isCalculationShown(ETimeType.IshaMidnight);
 
             OnPropertyChanged();
         }
 
-        private bool IsCalculationShown(ETimeType timeData)
+        private bool isCalculationShown(ETimeType timeData)
         {
             if (!CurrentProfile.Configurations.TryGetValue(timeData, out GenericSettingConfiguration config) || config == null)
             {
@@ -192,54 +204,70 @@ namespace PrayerTimeEngine.Presentation.ViewModel
             return config.IsTimeShown;
         }
 
-        public void OnSelectedPlaceChanged()
+        private void onSelectedPlaceChanged()
         {
             Task.Run(async () =>
             {
                 try
                 {
-                    if (SelectedPlace == null)
+                    if (CurrentProfile == null || SelectedPlace == null)
                     {
-                        PrayerTimesConfigurationStorage.MuwaqqitLocationInfo = null;
-                        PrayerTimesConfigurationStorage.FaziletLocationInfo = null;
-                        PrayerTimesConfigurationStorage.SemerkandLocationInfo = null;
                         return;
                     }
 
-                    _logger.LogDebug("OnSelectedPlaceChanged logic begin");
+                    this.SearchResults.Clear();
+                    CurrentProfile.LocationDataByCalculationSource.Clear();
 
-                    PrayerTimesConfigurationStorage.MuwaqqitLocationInfo =
-                        (await _prayerTimeCalculationService
-                        .GetPrayerTimeCalculatorByCalculationSource(ECalculationSource.Muwaqqit)
-                        .GetLocationInfo(SelectedPlace)) as MuwaqqitLocationInfo;
-                    PrayerTimesConfigurationStorage.FaziletLocationInfo =
-                        (await _prayerTimeCalculationService
-                        .GetPrayerTimeCalculatorByCalculationSource(ECalculationSource.Fazilet)
-                        .GetLocationInfo(SelectedPlace)) as FaziletLocationInfo;
-                    PrayerTimesConfigurationStorage.SemerkandLocationInfo =
-                        (await _prayerTimeCalculationService
-                        .GetPrayerTimeCalculatorByCalculationSource(ECalculationSource.Semerkand)
-                        .GetLocationInfo(SelectedPlace)) as SemerkandLocationInfo;
+                    foreach (var calculationSource in
+                        Enum.GetValues(typeof(ECalculationSource))
+                        .Cast<ECalculationSource>())
+                    {
+                        if (calculationSource == ECalculationSource.None)
+                            continue;
+
+                        CurrentProfile.LocationDataByCalculationSource[calculationSource] =
+                            await _prayerTimeCalculationService
+                                .GetPrayerTimeCalculatorByCalculationSource(calculationSource)
+                                .GetLocationInfo(SelectedPlace);
+                    }
+
+                    CurrentProfile.LocationName = SelectedPlace.address.city;
+                    _configStoreService.SaveProfile(CurrentProfile).GetAwaiter().GetResult();
 
                     await this.loadPrayerTimes();
+
+                    var missingLocationInfo =
+                        CurrentProfile.LocationDataByCalculationSource
+                            .Where(x => x.Value == null)
+                            .Select(x => x.Key.ToString())
+                            .ToList();
+
+                    if (missingLocationInfo.Count != 0)
+                    {
+                        doToast($"Location information missing for {string.Join(", ", missingLocationInfo)}");
+                    }
                 }
                 catch (Exception exception)
                 {
-                    await doToast(exception.Message);
+                    _logger.LogDebug(exception, "Error during place selection");
+                    doToast(exception.Message);
                 }
             });
         }
 
-        public async Task doToast(string text)
+        private static void doToast(string text)
         {
-            CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+            MainThread.BeginInvokeOnMainThread(async () =>
+            {
+                CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
 
-            ToastDuration duration = ToastDuration.Short;
-            double fontSize = 14;
+                ToastDuration duration = ToastDuration.Short;
+                double fontSize = 14;
 
-            var toast = Toast.Make(text, duration, fontSize);
+                var toast = Toast.Make(text, duration, fontSize);
 
-            await toast.Show(cancellationTokenSource.Token);
+                await toast.Show(cancellationTokenSource.Token);
+            });
         }
 
         #endregion private methods

@@ -1,44 +1,92 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json;
+using Microsoft.Data.Sqlite;
 using PrayerTimeEngine.Common.Enum;
+using PrayerTimeEngine.Data.SQLite;
 using PrayerTimeEngine.Domain.ConfigStore.Interfaces;
 using PrayerTimeEngine.Domain.ConfigStore.Models;
-using PrayerTimeEngine.Domain.Configuration.Interfaces;
+using PrayerTimeEngine.Domain.Model;
 
 namespace PrayerTimeEngine.Domain.ConfigStore.Services
 {
     public class ConfigStoreDBAccess : IConfigStoreDBAccess
     {
         private readonly ISQLiteDB _db;
-        private readonly IConfigurationSerializationService _configurationSerializationService;
 
-        public ConfigStoreDBAccess(ISQLiteDB db, IConfigurationSerializationService configurationSerializationService)
+        public ConfigStoreDBAccess(ISQLiteDB db)
         {
             _db = db;
-            _configurationSerializationService = configurationSerializationService;
         }
 
         public async Task<List<Profile>> GetProfiles()
         {
-            List<Profile> profiles = new List<Profile>();
+            List<Profile> profiles = new();
 
             await _db.ExecuteCommandAsync(async connection =>
             {
                 var command = connection.CreateCommand();
                 command.CommandText =
                 @"
-                SELECT Id, Name, SequenceNo
+                SELECT Id, Name, LocationName, SequenceNo
                 FROM Profile";
 
                 using (var reader = await command.ExecuteReaderAsync())
                 {
                     while (await reader.ReadAsync())
                     {
-                        Profile profile = new Profile
+                        Profile profile = new()
                         {
                             ID = reader.GetInt32(0),
                             Name = reader.GetString(1),
-                            SequenceNo = reader.GetInt32(2),
+                            LocationName = reader.GetString(2),
+                            SequenceNo = reader.GetInt32(3),
+                            Configurations = new(),
+                            LocationDataByCalculationSource = new()
                         };
+
+                        // Fetch configurations for the current profile
+                        var configCommand = connection.CreateCommand();
+                        configCommand.CommandText =
+                        @"
+                        SELECT TimeType, JsonConfigurationString
+                        FROM TimeSpecificConfig
+                        WHERE ProfileID = $ProfileId;";
+
+                        configCommand.Parameters.AddWithValue("$ProfileId", profile.ID);
+
+                        using (var configReader = await configCommand.ExecuteReaderAsync())
+                        {
+                            while (await configReader.ReadAsync())
+                            {
+                                ETimeType timeType = (ETimeType)configReader.GetInt32(0);
+                                string jsonConfigurationString = configReader.GetString(1);
+
+                                profile.Configurations[timeType] =
+                                    JsonSerializer.Deserialize<GenericSettingConfiguration>(jsonConfigurationString);
+                            }
+                        }
+
+                        // Fetch location data for the current profile
+                        var locationDataCommand = connection.CreateCommand();
+                        locationDataCommand.CommandText =
+                        @"
+                        SELECT CalculationSource, JsonLocationData
+                        FROM LocationData
+                        WHERE ProfileID = $ProfileId;";
+
+                        locationDataCommand.Parameters.AddWithValue("$ProfileId", profile.ID);
+
+                        using (var locationDataReader = await locationDataCommand.ExecuteReaderAsync())
+                        {
+                            while (await locationDataReader.ReadAsync())
+                            {
+                                ECalculationSource calculationSource = (ECalculationSource)locationDataReader.GetInt32(0);
+                                string jsonLocationData = locationDataReader.GetString(1);
+
+                                profile.LocationDataByCalculationSource[calculationSource] =
+                                    JsonSerializer.Deserialize<BaseLocationData>(jsonLocationData);
+                            }
+                        }
+
                         profiles.Add(profile);
                     }
                 }
@@ -47,16 +95,17 @@ namespace PrayerTimeEngine.Domain.ConfigStore.Services
             return profiles;
         }
 
+
         public async Task<List<TimeSpecificConfig>> GetTimeSpecificConfigsByProfile(int profileID)
         {
-            List<TimeSpecificConfig> timeSpecificConfigs = new List<TimeSpecificConfig>();
+            List<TimeSpecificConfig> timeSpecificConfigs = new();
 
             await _db.ExecuteCommandAsync(async connection =>
             {
                 var command = connection.CreateCommand();
                 command.CommandText =
                 @"
-                SELECT Id, ProfileID, TimeType, ConfigurationTypeName, JsonConfigurationString
+                SELECT Id, ProfileID, TimeType, JsonConfigurationString
                 FROM TimeSpecificConfig
                 WHERE ProfileID = $ProfileId;";
 
@@ -66,7 +115,7 @@ namespace PrayerTimeEngine.Domain.ConfigStore.Services
                 {
                     while (await reader.ReadAsync())
                     {
-                        TimeSpecificConfig timeSpecificConfig = new TimeSpecificConfig
+                        TimeSpecificConfig timeSpecificConfig = new()
                         {
                             ID = reader.GetInt32(0),
                             ProfileID = reader.GetInt32(1),
@@ -77,7 +126,7 @@ namespace PrayerTimeEngine.Domain.ConfigStore.Services
                         string jsonConfigurationString = reader.GetString(4);
 
                         timeSpecificConfig.CalculationConfiguration =
-                            _configurationSerializationService.Deserialize(jsonConfigurationString, configurationTypeName);
+                            JsonSerializer.Deserialize<GenericSettingConfiguration>(jsonConfigurationString);
 
                         timeSpecificConfigs.Add(timeSpecificConfig);
                     }
@@ -89,54 +138,87 @@ namespace PrayerTimeEngine.Domain.ConfigStore.Services
 
         public async Task SaveProfile(Profile profile)
         {
-            await DeleteProfile(profile.ID);
+            await DeleteProfile(profile);
 
             await _db.ExecuteCommandAsync(async connection =>
             {
                 using (var transaction = connection.BeginTransaction())
                 {
-                    var command = connection.CreateCommand();
-                    command.CommandText =
-                    @"
-                    INSERT INTO Profile (Id, Name, SequenceNo, InsertDateTime) 
-                    VALUES ($Id, $Name, $SequenceNo, $InsertDateTime);";
-
-                    command.Parameters.AddWithValue("$Id", profile.ID);
-                    command.Parameters.AddWithValue("$Name", profile.Name);
-                    command.Parameters.AddWithValue("$SequenceNo", profile.SequenceNo);
-                    command.Parameters.AddWithValue("$InsertDateTime", DateTime.Now);
-
-                    await command.ExecuteNonQueryAsync();
-
-                    foreach (var config in profile.Configurations)
-                    {
-                        if (config.Value == null)
-                        {
-                            continue;
-                        }
-
-                        var configCommand = connection.CreateCommand();
-                        configCommand.CommandText =
-                        @"
-                        INSERT INTO TimeSpecificConfig (ProfileID, TimeType, ConfigurationTypeName, JsonConfigurationString, InsertDateTime) 
-                        VALUES ($ProfileID, $TimeType, $ConfigurationTypeName, $JsonConfigurationString, $InsertDateTime);";
-
-                        configCommand.Parameters.AddWithValue("$ProfileID", profile.ID);
-                        configCommand.Parameters.AddWithValue("$TimeType", (int)config.Key);
-                        configCommand.Parameters.AddWithValue("$ConfigurationTypeName", _configurationSerializationService.GetDiscriminator(config.Value.GetType()));
-                        configCommand.Parameters.AddWithValue("$JsonConfigurationString", JsonConvert.SerializeObject(config.Value));
-                        configCommand.Parameters.AddWithValue("$InsertDateTime", DateTime.Now);
-
-                        await configCommand.ExecuteNonQueryAsync();
-                    }
+                    await insertProfile(connection, profile);
+                    await insertTimeSpecificConfigs(connection, profile);
+                    await insertLocationData(connection, profile);
 
                     transaction.Commit();
                 }
             });
         }
 
+        private async Task insertProfile(SqliteConnection connection, Profile profile)
+        {
+            var command = connection.CreateCommand();
+            command.CommandText =
+            @"
+            INSERT INTO Profile (Id, Name, LocationName, SequenceNo, InsertDateTime) 
+            VALUES ($Id, $Name, $LocationName, $SequenceNo, $InsertDateTime);";
 
-        public async Task DeleteProfile(int profileID)
+            command.Parameters.AddWithValue("$Id", profile.ID);
+            command.Parameters.AddWithValue("$Name", profile.Name);
+            command.Parameters.AddWithValue("$LocationName", profile.LocationName);
+            command.Parameters.AddWithValue("$SequenceNo", profile.SequenceNo);
+            command.Parameters.AddWithValue("$InsertDateTime", DateTime.Now);
+
+            await command.ExecuteNonQueryAsync();
+        }
+
+        private async Task insertTimeSpecificConfigs(SqliteConnection connection, Profile profile)
+        {
+            foreach (var config in profile.Configurations)
+            {
+                if (config.Value == null)
+                {
+                    continue;
+                }
+
+                var configCommand = connection.CreateCommand();
+                configCommand.CommandText =
+                @"
+                INSERT INTO TimeSpecificConfig (ProfileID, TimeType, JsonConfigurationString, InsertDateTime) 
+                VALUES ($ProfileID, $TimeType, $JsonConfigurationString, $InsertDateTime);";
+
+                configCommand.Parameters.AddWithValue("$ProfileID", profile.ID);
+                configCommand.Parameters.AddWithValue("$TimeType", (int)config.Key);
+                configCommand.Parameters.AddWithValue("$JsonConfigurationString", JsonSerializer.Serialize(config.Value));
+                configCommand.Parameters.AddWithValue("$InsertDateTime", DateTime.Now);
+
+                await configCommand.ExecuteNonQueryAsync();
+            }
+        }
+
+        private async Task insertLocationData(SqliteConnection connection, Profile profile)
+        {
+            foreach (var locationData in profile.LocationDataByCalculationSource)
+            {
+                if (locationData.Value == null)
+                {
+                    continue;
+                }
+
+                var configCommand = connection.CreateCommand();
+                configCommand.CommandText =
+                @"
+                INSERT INTO LocationData (ProfileID, CalculationSource, JsonLocationData, InsertDateTime) 
+                VALUES ($ProfileID, $CalculationSource, $JsonLocationData, $InsertDateTime);";
+
+                configCommand.Parameters.AddWithValue("$ProfileID", profile.ID);
+                configCommand.Parameters.AddWithValue("$CalculationSource", locationData.Value.Source);
+                configCommand.Parameters.AddWithValue("$JsonLocationData", JsonSerializer.Serialize(locationData.Value));
+                configCommand.Parameters.AddWithValue("$InsertDateTime", DateTime.Now);
+
+                await configCommand.ExecuteNonQueryAsync();
+            }
+        }
+
+        public async Task DeleteProfile(Profile profile)
         {
             await _db.ExecuteCommandAsync(async connection =>
             {
@@ -152,7 +234,7 @@ namespace PrayerTimeEngine.Domain.ConfigStore.Services
                 DELETE FROM Profile 
                 WHERE ID = $ProfileID;";
 
-                command.Parameters.AddWithValue("$ProfileID", profileID);
+                command.Parameters.AddWithValue("$ProfileID", profile.ID);
                 await command.ExecuteNonQueryAsync();
             });
         }

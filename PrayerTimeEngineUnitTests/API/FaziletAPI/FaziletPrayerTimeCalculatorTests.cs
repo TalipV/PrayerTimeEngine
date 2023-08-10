@@ -2,6 +2,7 @@ using PrayerTimeEngine.Common.Enum;
 using PrayerTimeEngine.Domain.CalculationService.Interfaces;
 using PrayerTimeEngine.Domain.Calculators.Fazilet.Models;
 using PrayerTimeEngine.Domain.Calculators.Fazilet.Services;
+using PrayerTimeEngine.Domain.Calculators.Semerkand.Models;
 using PrayerTimeEngine.Domain.ConfigStore.Models;
 using PrayerTimeEngineUnitTests.Mocks;
 using System.Net;
@@ -41,13 +42,15 @@ namespace PrayerTimeEngineUnitTests.API.FaziletAPI
                 new FaziletPrayerTimeCalculator(
                     faziletDBAccess,
                     faziletApiService,
+                    null,
                     null);
 
             // ACT
             ICalculationPrayerTimes result =
                 faziletPrayerTimeCalculator.GetPrayerTimesAsync(
                     new DateTime(2023, 7, 29),
-                    new List<GenericSettingConfiguration> { new GenericSettingConfiguration(ETimeType.DhuhrStart, calculationSource: ECalculationSource.Fazilet) }
+                    new FaziletLocationData { CountryName = "Avusturya", CityName = "Innsbruck" },
+                    new List<GenericSettingConfiguration> { new GenericSettingConfiguration { TimeType = ETimeType.DhuhrStart, Source = ECalculationSource.Fazilet }}
                 ).GetAwaiter().GetResult().Single().Key;
 
             FaziletPrayerTimes faziletPrayerTimes = result as FaziletPrayerTimes;

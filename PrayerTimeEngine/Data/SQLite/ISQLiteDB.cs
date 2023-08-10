@@ -1,7 +1,10 @@
 ﻿using Microsoft.Data.Sqlite;
 
-public interface ISQLiteDB
+namespace PrayerTimeEngine.Data.SQLite
 {
-    public void InitializeDatabase();
-    public Task ExecuteCommandAsync(Func<SqliteConnection, Task> commandAction);
+    public interface ISQLiteDB
+    {
+        public void InitializeDatabase();
+        public Task ExecuteCommandAsync(Func<SqliteConnection, Task> commandAction);
+    }
 }

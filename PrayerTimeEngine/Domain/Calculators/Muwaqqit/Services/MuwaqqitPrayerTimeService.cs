@@ -28,25 +28,24 @@ namespace PrayerTimeEngine.Domain.Calculators.Muwaqqit.Services
 
         public async Task<ILookup<ICalculationPrayerTimes, ETimeType>> GetPrayerTimesAsync(
             DateTime date,
+            BaseLocationData locationData,
             List<GenericSettingConfiguration> configurations)
         {
-            if (configurations.Any(x => x.Source != ECalculationSource.Muwaqqit))
+            // check configuration's calcultion sources?
+
+            if (locationData is not MuwaqqitLocationData muwaqqitLocationData)
             {
-                throw new ArgumentException($"Only configurations with {nameof(ECalculationSource)}.{ECalculationSource.Muwaqqit} are permitted!");
+                throw new Exception("Muwaqqit specific location information was not provided!");
             }
 
-            if (PrayerTimesConfigurationStorage.MuwaqqitLocationInfo == null)
-            {
-                throw new Exception("Location information for Muwaqqit is missing!");
-            }
-
-            // location selection has not been implemented yet
+            // time zone has to be added to location data
             string timezone = PrayerTimesConfigurationStorage.TIMEZONE;
-            decimal longitude = PrayerTimesConfigurationStorage.MuwaqqitLocationInfo.Longitude;
-            decimal latitude = PrayerTimesConfigurationStorage.MuwaqqitLocationInfo.Latitude;
+
+            decimal longitude = muwaqqitLocationData.Longitude;
+            decimal latitude = muwaqqitLocationData.Latitude;
 
             List<ETimeType> toBeCalculatedTimeTypes = configurations.Select(x => x.TimeType).ToList();
-            Dictionary<ICalculationPrayerTimes, List<ETimeType>> calculatedTimes = new Dictionary<ICalculationPrayerTimes, List<ETimeType>>();
+            Dictionary<ICalculationPrayerTimes, List<ETimeType>> calculatedTimes = new();
 
             var toBeConsumedConfigurations = configurations.ToList();
 
@@ -77,7 +76,7 @@ namespace PrayerTimeEngine.Domain.Calculators.Muwaqqit.Services
             out double ishtibaqDegree,
             out double asrKarahaDegree)
         {
-            List<ETimeType> consumedTimeTypes = new List<ETimeType>();
+            List<ETimeType> consumedTimeTypes = new();
 
             double? calculatedFajrDegree = null;
             double? calculatedIshaDegree = null;
@@ -201,12 +200,12 @@ namespace PrayerTimeEngine.Domain.Calculators.Muwaqqit.Services
             return prayerTimes;
         }
 
-        public Task<ILocationInfo> GetLocationInfo(LocationIQPlace place)
+        public Task<BaseLocationData> GetLocationInfo(LocationIQPlace place)
         {
             if (place == null)
                 throw new ArgumentNullException(nameof(place));
 
-            return Task.FromResult<ILocationInfo>(new MuwaqqitLocationInfo
+            return Task.FromResult<BaseLocationData>(new MuwaqqitLocationData
             {
                 Longitude = decimal.Parse(place.lon, System.Globalization.CultureInfo.InvariantCulture),
                 Latitude = decimal.Parse(place.lat, System.Globalization.CultureInfo.InvariantCulture)

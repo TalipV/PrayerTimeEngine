@@ -16,25 +16,6 @@ namespace PrayerTimeEngine.Domain.ConfigStore.Models
             _configStoreService = configStoreService;
         }
 
-        public static MuwaqqitLocationInfo MuwaqqitLocationInfo =
-            new MuwaqqitLocationInfo
-            {
-                Latitude = 47.2803835M,
-                Longitude = 11.41337M
-             };
-        public static FaziletLocationInfo FaziletLocationInfo =
-            new FaziletLocationInfo
-            {
-                CountryName = "Avusturya",
-                CityName = "Innsbruck"
-            };
-        public static SemerkandLocationInfo SemerkandLocationInfo =
-            new SemerkandLocationInfo
-            {
-                CountryName = "Avusturya",
-                CityName = "Innsbruck"
-            };
-
         public const string TIMEZONE = "Europe/Vienna";
 
         List<Profile> _profiles = null;
@@ -60,40 +41,57 @@ namespace PrayerTimeEngine.Domain.ConfigStore.Models
             return profile.GetConfiguration(timeType);
         }
 
-        private Profile getDummyProfile()
+        private static Profile getDummyProfile()
         {
             return new Profile
             {
                 ID = 1,
                 Name = "Standard-Profil",
+                LocationName = "Innsbruck",
                 SequenceNo = 1,
+                LocationDataByCalculationSource =
+                {
+                    [ECalculationSource.Muwaqqit] =
+                        new MuwaqqitLocationData
+                        {
+                            Latitude = 47.2803835M,
+                            Longitude = 11.41337M
+                        },
+                    [ECalculationSource.Fazilet] =
+                        new FaziletLocationData
+                        {
+                            CountryName = "Avusturya",
+                            CityName = "Innsbruck"
+                        },
+                    [ECalculationSource.Semerkand] =
+                        new SemerkandLocationData
+                        {
+                            CountryName = "Avusturya",
+                            CityName = "Innsbruck"
+                        },
+                },
                 Configurations =
                     new Dictionary<ETimeType, GenericSettingConfiguration>()
                     {
-                        [ETimeType.FajrStart] = new MuwaqqitDegreeCalculationConfiguration(ETimeType.FajrStart, 0, -12.0),
-                        [ETimeType.FajrEnd] = new GenericSettingConfiguration(ETimeType.FajrEnd, 0, ECalculationSource.Muwaqqit),
-                        [ETimeType.FajrGhalas] = new MuwaqqitDegreeCalculationConfiguration(ETimeType.FajrGhalas, 0, -7.5),
-                        [ETimeType.FajrKaraha] = new MuwaqqitDegreeCalculationConfiguration(ETimeType.FajrKaraha, 0, -4.5),
-
-                        [ETimeType.DuhaStart] = new MuwaqqitDegreeCalculationConfiguration(ETimeType.DuhaStart, 0, 3.5),
-                        [ETimeType.DuhaEnd] = new GenericSettingConfiguration(ETimeType.DuhaEnd, -20),
-
-                        [ETimeType.DhuhrStart] = new GenericSettingConfiguration(ETimeType.DhuhrStart, 0, ECalculationSource.Muwaqqit),
-                        [ETimeType.DhuhrEnd] = new GenericSettingConfiguration(ETimeType.DhuhrEnd, 0, ECalculationSource.Muwaqqit),
-
-                        [ETimeType.AsrStart] = new GenericSettingConfiguration(ETimeType.AsrStart, 0, ECalculationSource.Muwaqqit),
-                        [ETimeType.AsrEnd] = new GenericSettingConfiguration(ETimeType.AsrEnd, 0, ECalculationSource.Muwaqqit),
-                        [ETimeType.AsrMithlayn] = new GenericSettingConfiguration(ETimeType.AsrMithlayn, 0, ECalculationSource.Muwaqqit),
-                        [ETimeType.AsrKaraha] = new MuwaqqitDegreeCalculationConfiguration(ETimeType.AsrKaraha, 0, 4.5),
-
-                        [ETimeType.MaghribStart] = new GenericSettingConfiguration(ETimeType.MaghribStart, 0, ECalculationSource.Muwaqqit),
-                        [ETimeType.MaghribEnd] = new MuwaqqitDegreeCalculationConfiguration(ETimeType.MaghribEnd, 0, -12.0),
-                        [ETimeType.MaghribSufficientTime] = new GenericSettingConfiguration(ETimeType.MaghribSufficientTime, 20),
-                        [ETimeType.MaghribIshtibaq] = new MuwaqqitDegreeCalculationConfiguration(ETimeType.MaghribIshtibaq, 0, -8),
-
-                        [ETimeType.IshaStart] = new MuwaqqitDegreeCalculationConfiguration(ETimeType.IshaStart, 0, -15.5),
-                        [ETimeType.IshaEnd] = new MuwaqqitDegreeCalculationConfiguration(ETimeType.IshaEnd, 0, -15.0),
-                    },
+                        [ETimeType.FajrStart] = new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.FajrStart, MinuteAdjustment = 0, Degree = -12.0 },
+                        [ETimeType.FajrEnd] = new GenericSettingConfiguration { TimeType = ETimeType.FajrEnd, MinuteAdjustment = 0, Source = ECalculationSource.Muwaqqit },
+                        [ETimeType.FajrGhalas] = new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.FajrGhalas, MinuteAdjustment = 0, Degree = -7.5 },
+                        [ETimeType.FajrKaraha] = new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.FajrKaraha, MinuteAdjustment = 0, Degree = -4.5 },
+                        [ETimeType.DuhaStart] = new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.DuhaStart, MinuteAdjustment = 0, Degree = 3.5 },
+                        [ETimeType.DuhaEnd] = new GenericSettingConfiguration { TimeType = ETimeType.DuhaEnd, MinuteAdjustment = -20 },
+                        [ETimeType.DhuhrStart] = new GenericSettingConfiguration { TimeType = ETimeType.DhuhrStart, MinuteAdjustment = 0, Source = ECalculationSource.Muwaqqit },
+                        [ETimeType.DhuhrEnd] = new GenericSettingConfiguration { TimeType = ETimeType.DhuhrEnd, MinuteAdjustment = 0, Source = ECalculationSource.Muwaqqit },
+                        [ETimeType.AsrStart] = new GenericSettingConfiguration { TimeType = ETimeType.AsrStart, MinuteAdjustment = 0, Source = ECalculationSource.Muwaqqit },
+                        [ETimeType.AsrEnd] = new GenericSettingConfiguration { TimeType = ETimeType.AsrEnd, MinuteAdjustment = 0, Source = ECalculationSource.Muwaqqit },
+                        [ETimeType.AsrMithlayn] = new GenericSettingConfiguration { TimeType = ETimeType.AsrMithlayn, MinuteAdjustment = 0, Source = ECalculationSource.Muwaqqit },
+                        [ETimeType.AsrKaraha] = new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.AsrKaraha, MinuteAdjustment = 0, Degree = 4.5 },
+                        [ETimeType.MaghribStart] = new GenericSettingConfiguration { TimeType = ETimeType.MaghribStart, MinuteAdjustment = 0, Source = ECalculationSource.Muwaqqit },
+                        [ETimeType.MaghribEnd] = new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.MaghribEnd, MinuteAdjustment = 0, Degree = -12.0 },
+                        [ETimeType.MaghribSufficientTime] = new GenericSettingConfiguration { TimeType = ETimeType.MaghribSufficientTime, MinuteAdjustment = 20 },
+                        [ETimeType.MaghribIshtibaq] = new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.MaghribIshtibaq, MinuteAdjustment = 0, Degree = -8 },
+                        [ETimeType.IshaStart] = new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.IshaStart, MinuteAdjustment = 0, Degree = -15.5 },
+                        [ETimeType.IshaEnd] = new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.IshaEnd, MinuteAdjustment = 0, Degree = -15.0 },
+                    }
             };
         }
     }

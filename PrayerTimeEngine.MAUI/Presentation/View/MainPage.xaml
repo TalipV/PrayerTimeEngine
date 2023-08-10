@@ -77,7 +77,8 @@
                 BackgroundColor="LightGray"
                 ItemsSource="{Binding SearchResults}"
                 SelectionMode="Single"
-                SelectedItem="{Binding SelectedPlace, Mode=TwoWay}"/>
+                SelectedItem="{Binding SelectedPlace, Mode=TwoWay}"
+                ItemSelected="searchResults_ItemSelected"/>
 
         </dxco:DXPopup>
 
@@ -95,7 +96,8 @@
             Grid.Column="3"
             Grid.ColumnSpan="2"
             FontSize="Title" 
-            TextColor="Black" Text="Innsbruck" 
+            TextColor="Black"
+            Text="{Binding CurrentProfile.LocationName, Mode=TwoWay}" 
             HorizontalOptions="Center"
             VerticalOptions="Start" />
 

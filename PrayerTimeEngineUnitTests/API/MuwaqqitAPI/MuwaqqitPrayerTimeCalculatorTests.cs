@@ -2,6 +2,7 @@ using PrayerTimeEngine.Common.Enum;
 using PrayerTimeEngine.Common.Extension;
 using PrayerTimeEngine.Domain;
 using PrayerTimeEngine.Domain.CalculationService.Interfaces;
+using PrayerTimeEngine.Domain.Calculators.Fazilet.Models;
 using PrayerTimeEngine.Domain.Calculators.Muwaqqit.Models;
 using PrayerTimeEngine.Domain.Calculators.Muwaqqit.Services;
 using PrayerTimeEngine.Domain.ConfigStore.Models;
@@ -33,30 +34,25 @@ namespace PrayerTimeEngineUnitTests.API.MuwaqqitAPI
         {
             // ARRANGE
             DateTime testDate = new DateTime(2023, 7, 30);
-            var configs =
-                new List<GenericSettingConfiguration>
+            List<GenericSettingConfiguration> configs =
+                new()
                 {
-                    new MuwaqqitDegreeCalculationConfiguration(ETimeType.FajrStart, 0, -12.0),
-                    new GenericSettingConfiguration(ETimeType.FajrEnd, 0, ECalculationSource.Muwaqqit),
-                    new MuwaqqitDegreeCalculationConfiguration(ETimeType.FajrGhalas, 0, -7.5),
-                    new MuwaqqitDegreeCalculationConfiguration(ETimeType.FajrKaraha, 0, -4.5),
-
-                    new MuwaqqitDegreeCalculationConfiguration(ETimeType.DuhaStart, 0, 3.5),
-
-                    new GenericSettingConfiguration(ETimeType.DhuhrStart, 0, ECalculationSource.Muwaqqit),
-                    new GenericSettingConfiguration(ETimeType.DhuhrEnd, 0, ECalculationSource.Muwaqqit),
-
-                    new GenericSettingConfiguration(ETimeType.AsrStart, 0, ECalculationSource.Muwaqqit),
-                    new GenericSettingConfiguration(ETimeType.AsrEnd, 0, ECalculationSource.Muwaqqit),
-                    new GenericSettingConfiguration(ETimeType.AsrMithlayn, 0, ECalculationSource.Muwaqqit),
-                    new MuwaqqitDegreeCalculationConfiguration(ETimeType.AsrKaraha, 0, 4.5),
-
-                    new GenericSettingConfiguration(ETimeType.MaghribStart, 0, ECalculationSource.Muwaqqit),
-                    new MuwaqqitDegreeCalculationConfiguration(ETimeType.MaghribEnd, 0, -12.0),
-                    new MuwaqqitDegreeCalculationConfiguration(ETimeType.MaghribIshtibaq, 0, -8),
-
-                    new MuwaqqitDegreeCalculationConfiguration(ETimeType.IshaStart, 0, -15.5),
-                    new MuwaqqitDegreeCalculationConfiguration(ETimeType.IshaEnd, 0, -15.0),
+                    new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.FajrStart, Degree = -12.0 },
+                    new GenericSettingConfiguration { TimeType = ETimeType.FajrEnd, Source = ECalculationSource.Muwaqqit },
+                    new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.FajrGhalas, Degree = -7.5 },
+                    new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.FajrKaraha, Degree = -4.5 },
+                    new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.DuhaStart, Degree = 3.5 },
+                    new GenericSettingConfiguration { TimeType = ETimeType.DhuhrStart, Source = ECalculationSource.Muwaqqit },
+                    new GenericSettingConfiguration { TimeType = ETimeType.DhuhrEnd, Source = ECalculationSource.Muwaqqit },
+                    new GenericSettingConfiguration { TimeType = ETimeType.AsrStart, Source = ECalculationSource.Muwaqqit },
+                    new GenericSettingConfiguration { TimeType = ETimeType.AsrEnd, Source = ECalculationSource.Muwaqqit },
+                    new GenericSettingConfiguration { TimeType = ETimeType.AsrMithlayn, Source = ECalculationSource.Muwaqqit },
+                    new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.AsrKaraha, Degree = 4.5 },
+                    new GenericSettingConfiguration { TimeType = ETimeType.MaghribStart, Source = ECalculationSource.Muwaqqit },
+                    new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.MaghribEnd, Degree = -12.0 },
+                    new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.MaghribIshtibaq, Degree = -8 },
+                    new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.IshaStart, Degree = -15.5 },
+                    new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.IshaEnd, Degree = -15.0 },
                 };
 
             var muwaqqitDBAccess = new MuwaqqitDBAccess(new SQLiteDB());
@@ -73,6 +69,7 @@ namespace PrayerTimeEngineUnitTests.API.MuwaqqitAPI
             ILookup<ICalculationPrayerTimes, ETimeType> result =
                 muwaqqitPrayerTimeCalculator.GetPrayerTimesAsync(
                     testDate,
+                    new MuwaqqitLocationData { Latitude = 47.2803835M, Longitude = 11.41337M },
                     configs
                 ).GetAwaiter().GetResult();
 

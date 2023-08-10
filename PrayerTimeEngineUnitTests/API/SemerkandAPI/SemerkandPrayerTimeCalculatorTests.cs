@@ -3,6 +3,7 @@ using PrayerTimeEngine.Domain.CalculationService.Interfaces;
 using PrayerTimeEngine.Domain.Calculators.Semerkand.Models;
 using PrayerTimeEngine.Domain.Calculators.Semerkand.Services;
 using PrayerTimeEngine.Domain.ConfigStore.Models;
+using PrayerTimeEngine.Domain.Model;
 using PrayerTimeEngineUnitTests.Mocks;
 using System.Net;
 
@@ -42,7 +43,8 @@ namespace PrayerTimeEngineUnitTests.API.SemerkandAPI
             ICalculationPrayerTimes result =
                 semerkandPrayerTimeCalculator.GetPrayerTimesAsync(
                     new DateTime(2023, 7, 29),
-                    new List<GenericSettingConfiguration> { new GenericSettingConfiguration(ETimeType.DhuhrStart, calculationSource: ECalculationSource.Semerkand) }
+                    new SemerkandLocationData { CountryName = "Avusturya", CityName = "Innsbruck" },
+                    new List<GenericSettingConfiguration> { new GenericSettingConfiguration { TimeType = ETimeType.DhuhrStart, Source = ECalculationSource.Semerkand }}
                 ).GetAwaiter().GetResult().Single().Key;
 
             SemerkandPrayerTimes semerkandPrayerTimes = result as SemerkandPrayerTimes;

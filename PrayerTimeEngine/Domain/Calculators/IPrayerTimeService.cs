@@ -8,8 +8,8 @@ namespace PrayerTimeEngine.Domain.Calculators.Semerkand
 {
     public interface IPrayerTimeService
     {
-        public Task<ILookup<ICalculationPrayerTimes, ETimeType>> GetPrayerTimesAsync(DateTime date, List<GenericSettingConfiguration> configurations);
+        public Task<ILookup<ICalculationPrayerTimes, ETimeType>> GetPrayerTimesAsync(DateTime date, BaseLocationData locationData, List<GenericSettingConfiguration> configurations);
         public HashSet<ETimeType> GetUnsupportedTimeTypes();
-        public Task<ILocationInfo> GetLocationInfo(LocationIQPlace place);
+        public Task<BaseLocationData> GetLocationInfo(LocationIQPlace place);
     }
 }

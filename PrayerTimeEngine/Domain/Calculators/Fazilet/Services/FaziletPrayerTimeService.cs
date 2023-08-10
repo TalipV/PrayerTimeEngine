@@ -9,6 +9,7 @@ using PrayerTimeEngine.Domain.LocationService.Models;
 using PrayerTimeEngine.Domain.Model;
 using PrayerTimeEngine.Domain.NominatimLocation.Interfaces;
 using Microsoft.Extensions.Logging;
+using PrayerTimeEngine.Domain.Calculators.Muwaqqit.Models;
 
 namespace PrayerTimeEngine.Domain.Calculators.Fazilet.Services
 {
@@ -16,13 +17,13 @@ namespace PrayerTimeEngine.Domain.Calculators.Fazilet.Services
     {
         private readonly IFaziletDBAccess _faziletDBAccess;
         private readonly IFaziletApiService _faziletApiService;
-        private readonly IPlaceService _placeService;
+        private readonly ILocationService _placeService;
         private readonly ILogger<FaziletPrayerTimeCalculator> _logger;
 
         public FaziletPrayerTimeCalculator(
             IFaziletDBAccess faziletDBAccess,
             IFaziletApiService faziletApiService,
-            IPlaceService placeService,
+            ILocationService placeService,
             ILogger<FaziletPrayerTimeCalculator> logger)
         {
             _faziletDBAccess = faziletDBAccess;
@@ -49,16 +50,18 @@ namespace PrayerTimeEngine.Domain.Calculators.Fazilet.Services
 
         public async Task<ILookup<ICalculationPrayerTimes, ETimeType>> GetPrayerTimesAsync(
             DateTime date,
+            BaseLocationData locationData,
             List<GenericSettingConfiguration> configurations)
         {
-            if (PrayerTimesConfigurationStorage.FaziletLocationInfo == null)
+            // check configuration's calcultion sources?
+
+            if (locationData is not FaziletLocationData faziletLocationData)
             {
-                throw new Exception("Location information for Fazilet is missing!");
+                throw new Exception("Fazilet specific location information was not provided!");
             }
 
-            // because currently there is no location selection
-            string countryName = PrayerTimesConfigurationStorage.FaziletLocationInfo.CountryName;
-            string cityName = PrayerTimesConfigurationStorage.FaziletLocationInfo.CityName;
+            string countryName = faziletLocationData.CountryName;
+            string cityName = faziletLocationData.CityName;
 
             ICalculationPrayerTimes faziletPrayerTimes = await getPrayerTimesInternal(date, countryName, cityName);
 
@@ -102,18 +105,12 @@ namespace PrayerTimeEngine.Domain.Calculators.Fazilet.Services
             // We only check if it is empty because a selection of countries missing is not expected.
             if ((await _faziletDBAccess.GetCitiesByCountryID(countryID)).Count == 0)
             {
-                _logger.LogDebug("LOAD CITIES FROM API");
-
-
                 // load cities through HTTP request
                 Dictionary<string, int> cities = await _faziletApiService.GetCitiesByCountryID(countryID);
 
                 // save cities to db
                 await _faziletDBAccess.InsertCities(cities, countryID);
             }
-
-            _logger.LogDebug("ALL CITIES: {Cities}", string.Join(", ", (await _faziletDBAccess.GetCitiesByCountryID(countryID)).Keys));
-            _logger.LogDebug("SEARCH CITY: {City}", cityName);
 
             if ((await _faziletDBAccess.GetCitiesByCountryID(countryID)).TryGetValue(cityName, out int cityID))
                 return (true, cityID);
@@ -139,38 +136,35 @@ namespace PrayerTimeEngine.Domain.Calculators.Fazilet.Services
                 return (false, -1);
         }
 
-        public async Task<ILocationInfo> GetLocationInfo(LocationIQPlace place)
+        public async Task<BaseLocationData> GetLocationInfo(LocationIQPlace place)
         {
             if (place == null)
                 throw new ArgumentNullException(nameof(place));
 
             // if language is already turkish then use this place
 
-            _logger.LogDebug("FAZILET-SEARCH-PLACE");
-
             LocationIQPlace turkishPlaceInfo = await _placeService.GetPlaceByID(place, "tr");
             string countryName = turkishPlaceInfo.address.country;
             string cityName = turkishPlaceInfo.address.city;
 
-            _logger.LogDebug("PLACE-INFO: '{country}', '{city}'", countryName, cityName);
+            // QUICK FIX...
+            countryName = countryName.Replace("İ", "I");
+            cityName = cityName.Replace("İ", "I");
 
             var (success, countryID) = await this.tryGetCountryID(countryName);
 
-            _logger.LogDebug("PLACE-INFO.COUNTRY: '{result}' ('{CountryID}')", success, countryID);
+            _logger.LogDebug("Fazilet search location: {Country}, {City}", countryName, cityName);
 
             if (success && (await this.tryGetCityID(cityName, countryID)).success)
             {
-                _logger.LogDebug("PLACE-INFO.CITY: '{result}'", true);
+                _logger.LogDebug("Fazilet found location: {Country}, {City}", countryName, cityName);
 
-                return new FaziletLocationInfo
+                return new FaziletLocationData
                 {
                     CountryName = countryName,
                     CityName = cityName
                 };
             }
-
-
-            _logger.LogDebug("PLACE-INFO.CITY: {result}", false);
 
             return null;
         }

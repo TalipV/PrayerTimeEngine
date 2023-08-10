@@ -1,4 +1,5 @@
-﻿using PrayerTimeEngine.Common.Enum;
+﻿using Microsoft.Extensions.Logging;
+using PrayerTimeEngine.Common.Enum;
 using PrayerTimeEngine.Domain.CalculationService.Interfaces;
 using PrayerTimeEngine.Domain.Calculators.Semerkand.Interfaces;
 using PrayerTimeEngine.Domain.Calculators.Semerkand.Models;
@@ -13,16 +14,19 @@ namespace PrayerTimeEngine.Domain.Calculators.Semerkand.Services
     {
         private readonly ISemerkandDBAccess _semerkandDBAccess;
         private readonly ISemerkandApiService _semerkandApiService;
-        private readonly IPlaceService _placeService;
+        private readonly ILocationService _placeService;
+        private readonly ILogger<SemerkandPrayerTimeCalculator> _logger;
 
         public SemerkandPrayerTimeCalculator(
             ISemerkandDBAccess semerkandDBAccess,
             ISemerkandApiService semerkandApiService,
-            IPlaceService placeService )
+            ILocationService placeService,
+            ILogger<SemerkandPrayerTimeCalculator> logger)
         {
             _semerkandDBAccess = semerkandDBAccess;
             _semerkandApiService = semerkandApiService;
             _placeService = placeService;
+            _logger = logger;
         }
 
         public HashSet<ETimeType> GetUnsupportedTimeTypes()
@@ -43,16 +47,18 @@ namespace PrayerTimeEngine.Domain.Calculators.Semerkand.Services
 
         public async Task<ILookup<ICalculationPrayerTimes, ETimeType>> GetPrayerTimesAsync(
             DateTime date,
+            BaseLocationData locationData,
             List<GenericSettingConfiguration> configurations)
         {
-            if (PrayerTimesConfigurationStorage.SemerkandLocationInfo == null)
+            // check configuration's calcultion sources?
+
+            if (locationData is not SemerkandLocationData semerkandLocationData)
             {
-                throw new Exception("Location information for Semerkand is missing!");
+                throw new Exception("Semerkand specific location information was not provided!");
             }
 
-            // because currently there is no location selection
-            string countryName = PrayerTimesConfigurationStorage.SemerkandLocationInfo.CountryName;
-            string cityName = PrayerTimesConfigurationStorage.SemerkandLocationInfo.CityName;
+            string countryName = semerkandLocationData.CountryName;
+            string cityName = semerkandLocationData.CityName;
 
             ICalculationPrayerTimes semerkandPrayerTimes = await getPrayerTimesInternal(date, countryName, cityName);
 
@@ -126,7 +132,7 @@ namespace PrayerTimeEngine.Domain.Calculators.Semerkand.Services
                 return (false, -1);
         }
 
-        public async Task<ILocationInfo> GetLocationInfo(LocationIQPlace place)
+        public async Task<BaseLocationData> GetLocationInfo(LocationIQPlace place)
         {
             if (place == null)
                 throw new ArgumentNullException(nameof(place));
@@ -137,11 +143,19 @@ namespace PrayerTimeEngine.Domain.Calculators.Semerkand.Services
             string countryName = turkishPlaceInfo.address.country;
             string cityName = turkishPlaceInfo.address.city;
 
+            // QUICK FIX...
+            countryName = countryName.Replace("İ", "I");
+            cityName = cityName.Replace("İ", "I");
+
+            _logger.LogDebug("Semerkand search location: {Country}, {City}", countryName, cityName);
+
             var (success, countryID) = await this.tryGetCountryID(countryName);
 
             if (success && (await this.tryGetCityID(cityName, countryID)).success)
             {
-                return new SemerkandLocationInfo
+                _logger.LogDebug("Semerkand found location: {Country}, {City}", countryName, cityName);
+
+                return new SemerkandLocationData
                 {
                     CountryName = countryName,
                     CityName = cityName

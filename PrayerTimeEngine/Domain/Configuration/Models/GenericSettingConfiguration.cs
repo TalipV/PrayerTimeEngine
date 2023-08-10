@@ -1,20 +1,16 @@
-﻿using PrayerTimeEngine.Common.Enum;
+﻿using System.Text.Json.Serialization;
+using PrayerTimeEngine.Common.Enum;
+using PrayerTimeEngine.Domain.Calculators.Muwaqqit.Models;
 
 namespace PrayerTimeEngine.Domain.ConfigStore.Models
 {
+    [JsonDerivedType(typeof(GenericSettingConfiguration), typeDiscriminator: "GenericConfig")]
+    [JsonDerivedType(typeof(MuwaqqitDegreeCalculationConfiguration), typeDiscriminator: "MuwaqqitDegreeConfig")]
     public class GenericSettingConfiguration
     {
-        public GenericSettingConfiguration(ETimeType timeType, int minuteAdjustment = 0, ECalculationSource calculationSource = ECalculationSource.None, bool isTimeShown = true)
-        {
-            MinuteAdjustment = minuteAdjustment;
-            IsTimeShown = isTimeShown;
-            TimeType = timeType;
-            Source = calculationSource;
-        }
-
-        public virtual ECalculationSource Source { get; init; }
-        public ETimeType TimeType { get; init; }
-        public int MinuteAdjustment { get; set; }
-        public bool IsTimeShown { get; set; }
+        public required ETimeType TimeType { get; init; }
+        public virtual ECalculationSource Source { get; init; } = ECalculationSource.None;
+        public int MinuteAdjustment { get; set; } = 0;
+        public bool IsTimeShown { get; set; } = true;
     }
 }

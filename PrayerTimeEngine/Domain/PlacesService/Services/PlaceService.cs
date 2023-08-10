@@ -1,14 +1,11 @@
 ﻿using Microsoft.Extensions.Logging;
-using Newtonsoft.Json.Linq;
 using PrayerTimeEngine.Domain.LocationService.Models;
-using PrayerTimeEngine.Domain.NominatimLocation.Models;
 using System.Net;
-using System.Net.Http.Headers;
 using System.Text.Json;
 
 namespace PrayerTimeEngine.Domain.NominatimLocation.Interfaces
 {
-    public class PlaceService : IPlaceService
+    public class LocationService : ILocationService
     {
         private const string ACCESS_TOKEN = "pk.48863ca2d711d3a0ec7b118d88a24623";
         private const string BASE_URL = @"https://eu1.locationiq.com/v1/";
@@ -17,9 +14,9 @@ namespace PrayerTimeEngine.Domain.NominatimLocation.Interfaces
 
         private const int MAX_RESULTS = 4;
         private readonly HttpClient _httpClient;
-        private readonly ILogger<PlaceService> _logger;
+        private readonly ILogger<LocationService> _logger;
 
-        public PlaceService(HttpClient httpClient, ILogger<PlaceService> logger)
+        public LocationService(HttpClient httpClient, ILogger<LocationService> logger)
         {
             _httpClient = httpClient;
             _logger = logger;
@@ -61,8 +58,6 @@ namespace PrayerTimeEngine.Domain.NominatimLocation.Interfaces
                 $"&lon={place.lon}" +
                 $"&osm_id={place.osm_id}";
 
-            _logger.LogDebug("LOG PLACE SEARCH: {url}", url);
-
             HttpResponseMessage response = await _httpClient.GetAsync(url);
             response.EnsureSuccessStatusCode();
             lastAPICall = DateTime.Now;
@@ -71,7 +66,7 @@ namespace PrayerTimeEngine.Domain.NominatimLocation.Interfaces
             return JsonSerializer.Deserialize<LocationIQPlace>(jsonResult);
         }
 
-        private const double NECESSARY_COOL_DOWN_MS = 2000;
+        private const double NECESSARY_COOL_DOWN_MS = 3000;
         private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
 
         private async Task ensureCooldown()

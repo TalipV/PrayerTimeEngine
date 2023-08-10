@@ -22,7 +22,14 @@ namespace PrayerTimeEngine.Presentation.ViewModel.Custom
 
         public GenericSettingConfiguration BuildSetting(int minuteAdjustment, bool isTimeShown)
         {
-            return new MuwaqqitDegreeCalculationConfiguration(TimeType, minuteAdjustment, SelectedDegree, isTimeShown);
+            return
+                new MuwaqqitDegreeCalculationConfiguration
+                {
+                    TimeType = TimeType,
+                    MinuteAdjustment = minuteAdjustment,
+                    Degree = SelectedDegree,
+                    IsTimeShown = isTimeShown
+                };
         }
 
         private StackLayout stackLayout = null;

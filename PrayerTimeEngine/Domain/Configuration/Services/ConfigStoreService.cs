@@ -14,24 +14,12 @@ namespace PrayerTimeEngine.Domain.ConfigStore.Services
 
         public async Task<List<Profile>> GetProfiles()
         {
-            List<Profile> profiles = await _configStoreDBAccess.GetProfiles();
-
-            foreach (Profile profile in profiles)
-            {
-                profile.Configurations =
-                    (await _configStoreDBAccess.GetTimeSpecificConfigsByProfile(profile.ID))
-                        .ToDictionary(x => x.TimeType, x => x.CalculationConfiguration);
-            }
-
-            return profiles;
+            return await _configStoreDBAccess.GetProfiles();
         }
 
-        public async Task SaveProfiles(List<Profile> profiles)
+        public async Task SaveProfile(Profile profile)
         {
-            foreach (Profile profile in profiles)
-            {
-                await _configStoreDBAccess.SaveProfile(profile);
-            }
+            await _configStoreDBAccess.SaveProfile(profile);
         }
     }
 }

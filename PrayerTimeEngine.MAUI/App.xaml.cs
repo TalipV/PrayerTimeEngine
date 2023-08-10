@@ -1,4 +1,5 @@
 ﻿using MetroLog.Maui;
+using PrayerTimeEngine.Data.SQLite;
 
 namespace PrayerTimeEngine;
 
@@ -16,8 +17,8 @@ public partial class App : Application
         sqliteDB?.InitializeDatabase();
 
         LogController.InitializeNavigation(
-            page => MainPage.Navigation.PushModalAsync(page),
-            () => MainPage.Navigation.PopModalAsync());
+            MainPage.Navigation.PushModalAsync,
+            MainPage.Navigation.PopModalAsync);
     }
 
     protected override void OnResume()

@@ -41,12 +41,13 @@ public class PrayerTimeCalculationService : IPrayerTimeCalculationService
             ECalculationSource calculationSource = calculationSourceConfigs.Key;
             List<GenericSettingConfiguration> configs = calculationSourceConfigs.ToList();
             var configsByTimeType = configs.ToDictionary(x => x.TimeType);
-
+            
             IPrayerTimeService timeCalculator = GetPrayerTimeCalculatorByCalculationSource(calculationSource);
             throwIfConfigsHaveUnsupportedTimeTypes(calculationSource, configs, timeCalculator);
+            BaseLocationData locationData = profile.LocationDataByCalculationSource[calculationSource];
 
             ILookup<ICalculationPrayerTimes, ETimeType> calculationPrayerTimes =
-                await timeCalculator.GetPrayerTimesAsync(dateTime, configs);
+                await timeCalculator.GetPrayerTimesAsync(dateTime, locationData, configs);
 
             foreach (var calculationPrayerTimeKVP in calculationPrayerTimes)
             {
@@ -74,7 +75,10 @@ public class PrayerTimeCalculationService : IPrayerTimeCalculationService
         }
     }
 
-    private static void throwIfConfigsHaveUnsupportedTimeTypes(ECalculationSource calculationSource, List<GenericSettingConfiguration> configs, IPrayerTimeService timeCalculator)
+    private static void throwIfConfigsHaveUnsupportedTimeTypes(
+        ECalculationSource calculationSource,
+        List<GenericSettingConfiguration> configs,
+        IPrayerTimeService timeCalculator)
     {
         List<ETimeType> unsupportedTimeTypes =
             timeCalculator

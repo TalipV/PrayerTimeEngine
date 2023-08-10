@@ -15,12 +15,24 @@ namespace PrayerTimeEngine
             viewModel.OnAfterLoadingPrayerTimes_EventTrigger += ViewModel_OnAfterLoadingPrayerTimes_EventTrigger;
             viewModel.IsShakeEnabled = true;
 
+            this.Loaded += MainPage_Loaded;
             this.searchBar.SearchButtonPressed += SearchBar_SearchButtonPressed;
+        }
+
+        private void MainPage_Loaded(object sender, EventArgs e)
+        {
+            Task.Run(async () => await _viewModel.OnPageLoaded());
         }
 
         private void SearchBar_SearchButtonPressed(object sender, EventArgs e)
         {
             this.Popup.IsOpen = true;
+        }
+
+        void searchResults_ItemSelected(object sender, SelectedItemChangedEventArgs e)
+        {
+            searchBar.Text = "";
+            this.Popup.IsOpen = false;
         }
 
         private void ViewModel_OnAfterLoadingPrayerTimes_EventTrigger()

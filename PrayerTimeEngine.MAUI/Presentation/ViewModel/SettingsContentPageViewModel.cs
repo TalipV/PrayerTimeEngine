@@ -139,7 +139,14 @@ namespace PrayerTimeEngine.Presentation.ViewModel
 
         private GenericSettingConfiguration getGeneralCalculationConfiguration()
         {
-            return new GenericSettingConfiguration(TimeType, SelectedMinuteAdjustment, SelectedCalculationSource, IsTimeShown);
+            return
+                new GenericSettingConfiguration
+                {
+                    TimeType = TimeType,
+                    MinuteAdjustment = SelectedMinuteAdjustment,
+                    Source = SelectedCalculationSource,
+                    IsTimeShown = IsTimeShown
+                };
         }
 
         private List<ECalculationSource> getCalculationSource()
@@ -170,9 +177,9 @@ namespace PrayerTimeEngine.Presentation.ViewModel
 
         private void saveSettingsToProfile(GenericSettingConfiguration settings)
         {
-            List<Profile> profiles = _prayerTimesConfigurationStorage.GetProfiles().GetAwaiter().GetResult();
-            profiles.First().Configurations[TimeType] = settings;
-            _configStoreService.SaveProfiles(profiles).GetAwaiter().GetResult();
+            Profile profile = _prayerTimesConfigurationStorage.GetProfiles().GetAwaiter().GetResult().First();
+            profile.Configurations[TimeType] = settings;
+            _configStoreService.SaveProfile(profile).GetAwaiter().GetResult();
         }
 
         #endregion private methods
