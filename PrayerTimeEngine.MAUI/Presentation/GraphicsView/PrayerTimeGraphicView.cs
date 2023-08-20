@@ -1,6 +1,7 @@
 ﻿using PrayerTimeEngine.Domain.Model;
 using System.Xml.Linq;
 using System;
+using Microsoft.Maui.Graphics;
 
 namespace PrayerTimeEngine.Presentation.GraphicsView
 {
@@ -43,6 +44,8 @@ namespace PrayerTimeEngine.Presentation.GraphicsView
                     height: fullRectangle.Height - 40);
             canvas.FillColor = PrayerTimeColor;
             canvas.FillRoundedRectangle(mainGraphicRectangle, 15.0);
+
+            canvas.FontSize = 12;
 
             if (DisplayPrayerTime is FajrPrayerTime fajrPrayerTime)
             {
@@ -121,10 +124,10 @@ namespace PrayerTimeEngine.Presentation.GraphicsView
             // PRAYER NAME TEXT
             canvas.DrawString(
                 DisplayPrayerTime.Name,
-                x: (dirtyRect.Width/2) - 40, 
+                x: (dirtyRect.Width / 2) - 40, 
                 y: 15,
                 width: 90,
-                height: 20,
+                height: 30,
                 HorizontalAlignment.Center, VerticalAlignment.Center);
 
             canvas.FontSize = 15f;
@@ -376,9 +379,11 @@ namespace PrayerTimeEngine.Presentation.GraphicsView
 
                     canvas.DrawString(
                         name,
-                        innerSubtimeBackgroundRectangle.Center.X,
-                        innerSubtimeBackgroundRectangle.Center.Y,
-                        HorizontalAlignment.Center);
+                        innerSubtimeBackgroundRectangle.Center.X - 25,
+                        innerSubtimeBackgroundRectangle.Center.Y - 10,
+                        50,
+                        20,
+                        HorizontalAlignment.Center, VerticalAlignment.Center);
                 }
             }
         }

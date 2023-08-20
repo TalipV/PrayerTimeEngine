@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:enum="clr-namespace:PrayerTimeEngine.Common.Enum;assembly=PrayerTimeEngine"
              xmlns:drawable="clr-namespace:PrayerTimeEngine.Presentation.GraphicsView"
+             xmlns:markups="clr-namespace:OnScreenSizeMarkup.Forms;assembly=OnScreenSizeMarkup.Forms"
              xmlns:dxco="clr-namespace:DevExpress.Maui.Controls;assembly=DevExpress.Maui.Controls"
              x:Class="PrayerTimeEngine.MainPage"
              BackgroundColor="#f3eae3"
@@ -77,36 +78,44 @@
                 BackgroundColor="LightGray"
                 ItemsSource="{Binding SearchResults}"
                 SelectionMode="Single"
-                SelectedItem="{Binding SelectedPlace, Mode=TwoWay}"
+                SelectedItem="{Binding SelectedPlace}"
                 ItemSelected="searchResults_ItemSelected"/>
 
         </dxco:DXPopup>
 
-        <Label 
+        <Label
+            x:Name="lastUpdatedTextInfo"
             Grid.Row="2"
             Grid.Column="0"
             Grid.ColumnSpan="3"
-            FontSize="Title" 
-            TextColor="Black" Text="{Binding LastUpdated, StringFormat='{0:dd.MM.yyyy HH:mm:ss}'}" 
+            TextColor="Black" Text="{Binding LastUpdated, StringFormat='{0:dd.MM.yyyy HH:mm:ss}'}"
+            IsVisible="{Binding IsNotLoading}"
             HorizontalOptions="Center"
             VerticalOptions="Start" />
 
-        <Label 
+        <ActivityIndicator
+            Grid.Row="17"
+            Grid.Column="0"
+            IsRunning="{Binding IsLoading}"
+            />
+
+        <Label
+            x:Name="currentProfileLocationName"
             Grid.Row="2"
             Grid.Column="3"
             Grid.ColumnSpan="2"
-            FontSize="Title" 
             TextColor="Black"
-            Text="{Binding CurrentProfile.LocationName, Mode=TwoWay}" 
+            Text="{Binding CurrentProfile.LocationName, Mode=TwoWay}"
+            IsVisible="{Binding IsNotLoading}"
             HorizontalOptions="Center"
             VerticalOptions="Start" />
 
-        <Label 
+        <Label
+            x:Name="FajrName"
             Grid.Row="4"
             Grid.Column="0"
             TextColor="Black" 
             Text="Fajr" 
-            FontSize="Title" 
             FontAttributes="Bold"
             HorizontalOptions="Start"
             VerticalOptions="Start">
@@ -116,30 +125,34 @@
                     CommandParameter="{x:Static enum:EPrayerType.Fajr}"/>
             </Label.GestureRecognizers>
         </Label>
-        <Label 
+        <Label
+            x:Name="FajrDurationText"
             Grid.Row="5"
             Grid.Column="0"
             Grid.ColumnSpan="2"
             TextColor="Black" Text="{Binding Prayers.Fajr.DurationDisplayText}"
-            FontSize="Large" 
+            
             HorizontalOptions="Start"
-            VerticalOptions="Center" />
-        <Label 
+            VerticalOptions="Start" />
+        <Label
+            x:Name="FajrSubtimeGhalasName"
             Grid.Row="6"
             Grid.Column="0"
             Grid.ColumnSpan="1"
             TextColor="Black" Text="Ghalas" 
             HorizontalOptions="Start"
-            VerticalOptions="Start" 
+            VerticalOptions="Center" 
             IsVisible="{Binding ShowFajrGhalas}"/>
-        <Label 
+        <Label
+            x:Name="FajrSubtimeGhalasDisplayText"
             Grid.Row="6"
             Grid.Column="1"
             TextColor="Black" Text="{Binding Prayers.Fajr.Ghalas, StringFormat='{0:HH:mm:ss}'}"
-            HorizontalOptions="Start"
-            VerticalOptions="Start"
+            HorizontalOptions="Center"
+            VerticalOptions="Center"
             IsVisible="{Binding ShowFajrGhalas}"/>
-        <Label 
+        <Label
+            x:Name="FajrSubtimeRednessName"
             Grid.Row="7"
             Grid.Column="0"
             Grid.ColumnSpan="1"
@@ -148,19 +161,23 @@
             VerticalOptions="Start" 
             IsVisible="{Binding ShowFajrRedness}"/>
         <Label 
+            x:Name="FajrSubtimeRednessDisplayText"
             Grid.Row="7"
             Grid.Column="1"
             TextColor="Black" Text="{Binding Prayers.Fajr.Karaha, StringFormat='{0:HH:mm:ss}'}"
-            HorizontalOptions="Start"
+            HorizontalOptions="Center"
             VerticalOptions="Start"
             IsVisible="{Binding ShowFajrRedness}"/>
 
-        <Label 
+        <Label
+            x:Name="DuhaName"
             Grid.Row="4"
             Grid.Column="3"
-            TextColor="Black" Text="Duha" 
-            FontSize="Title"  FontAttributes="Bold"
-            HorizontalOptions="Center"
+            Grid.ColumnSpan="2"
+            TextColor="Black"
+            Text="Duha" 
+            FontAttributes="Bold"
+            HorizontalOptions="Start"
             VerticalOptions="Start">
             <Label.GestureRecognizers>
                 <TapGestureRecognizer 
@@ -168,23 +185,26 @@
                     CommandParameter="{x:Static enum:EPrayerType.Duha}"/>
             </Label.GestureRecognizers>
         </Label>
-        <Label 
+        <Label
+            x:Name="DuhaDurationText"
             Grid.Row="5"
             Grid.Column="3"
             Grid.ColumnSpan="2"
             TextColor="Black" Text="{Binding Prayers.Duha.DurationDisplayText}"
-            FontSize="Large" 
-            HorizontalOptions="Center"
+            
+            HorizontalOptions="Start"
             VerticalOptions="Start"/>
 
         <Label 
+            x:Name="DuhaSubtimeQuarterName"
             Grid.Row="6"
             Grid.Column="3"
             TextColor="Black" Text="Quarter" 
-            HorizontalOptions="Center"
+            HorizontalOptions="Start"
             VerticalOptions="Start" 
             IsVisible="{Binding ShowDuhaQuarter}"/>
         <Label 
+            x:Name="DuhaSubtimeQuarterDisplayText"
             Grid.Row="6"
             Grid.Column="4"
             TextColor="Black" Text="{Binding Prayers.Duha.QuarterOfDay, StringFormat='{0:HH:mm:ss}'}"
@@ -192,12 +212,13 @@
             VerticalOptions="Start"
             IsVisible="{Binding ShowDuhaQuarter}"/>
         
-        <Label 
+        <Label
+            x:Name="DhuhrName"
             Grid.Row="8"
             Grid.Column="0"
             Grid.ColumnSpan="2"
             TextColor="Black" Text="Dhuhr" 
-            FontSize="Title"  FontAttributes="Bold"
+            FontAttributes="Bold"
             HorizontalOptions="Start"
             VerticalOptions="Start">
             <Label.GestureRecognizers>
@@ -206,21 +227,24 @@
                     CommandParameter="{x:Static enum:EPrayerType.Dhuhr}"/>
             </Label.GestureRecognizers>
         </Label>
-        <Label 
+        <Label
+            x:Name="DhuhrDurationText"
             Grid.Row="9"
             Grid.Column="0"
             Grid.ColumnSpan="2"
             TextColor="Black" Text="{Binding Prayers.Dhuhr.DurationDisplayText}"
-            FontSize="Large" 
+            
             HorizontalOptions="Start"
-            VerticalOptions="Center"/>
+            VerticalOptions="Start"/>
 
-        <Label 
+        <Label
+            x:Name="AsrName"
             Grid.Row="8"
             Grid.Column="3"
-            TextColor="Black" Text="Asr" 
-            FontSize="Title"  FontAttributes="Bold"
-            HorizontalOptions="Center"
+            TextColor="Black"
+            Text="Asr" 
+            FontAttributes="Bold"
+            HorizontalOptions="Start"
             VerticalOptions="Start">
             <Label.GestureRecognizers>
                 <TapGestureRecognizer 
@@ -228,15 +252,17 @@
                     CommandParameter="{x:Static enum:EPrayerType.Asr}"/>
             </Label.GestureRecognizers>
         </Label>
-        <Label 
+        <Label
+            x:Name="AsrDurationText"
             Grid.Row="9"
             Grid.Column="3"            
             Grid.ColumnSpan="2"
             TextColor="Black" Text="{Binding Prayers.Asr.DurationDisplayText}"
-            FontSize="Large" 
-            HorizontalOptions="Center"
+            
+            HorizontalOptions="Start"
             VerticalOptions="Center"/>
         <Label 
+            x:Name="AsrSubtimeMithlaynName"
             Grid.Row="10"
             Grid.Column="3"
             TextColor="Black" Text="Mithlayn" 
@@ -244,50 +270,58 @@
             VerticalOptions="Start" 
             IsVisible="{Binding ShowMithlayn}"/>
         <Label 
+            x:Name="AsrSubtimeMithlaynDisplayText"
             Grid.Row="10"
             Grid.Column="4"
-            TextColor="Black" Text="{Binding Prayers.Asr.Mithlayn, StringFormat='{0:HH:mm:ss}'}"
+            TextColor="Black"
+            Text="{Binding Prayers.Asr.Mithlayn, StringFormat='{0:HH:mm:ss}'}"
             HorizontalOptions="Center"
             VerticalOptions="Start" 
             IsVisible="{Binding ShowMithlayn}"/>
         <Label 
+            x:Name="AsrSubtimeKarahaName"
             Grid.Row="11"
             Grid.Column="3"
             TextColor="Black" Text="Karaha" 
-            HorizontalOptions="Center"
+            HorizontalOptions="Start"
             VerticalOptions="Start" 
             IsVisible="{Binding ShowKaraha}"/>
         <Label 
+            x:Name="AsrSubtimeKarahaDisplayText"
             Grid.Row="11"
             Grid.Column="4"
-            TextColor="Black" Text="{Binding Prayers.Asr.Karaha, StringFormat='{0:HH:mm:ss}'}"
+            TextColor="Black"
+            Text="{Binding Prayers.Asr.Karaha, StringFormat='{0:HH:mm:ss}'}"
             HorizontalOptions="Center"
             VerticalOptions="Start" 
             IsVisible="{Binding ShowKaraha}"/>
 
-        <Label 
+        <Label
+            x:Name="MaghribName"
             Grid.Row="12"
             Grid.Column="0"
             Grid.ColumnSpan="2"
             TextColor="Black" Text="Maghrib" 
-            FontSize="Title"  FontAttributes="Bold"
+            FontAttributes="Bold"
             HorizontalOptions="Start"
-            VerticalOptions="Center">
+            VerticalOptions="Start">
             <Label.GestureRecognizers>
                 <TapGestureRecognizer 
                     Command="{Binding GoToSettingsPageCommand}" 
                     CommandParameter="{x:Static enum:EPrayerType.Maghrib}"/>
             </Label.GestureRecognizers>
         </Label>
-        <Label 
+        <Label
+            x:Name="MaghribDurationText"
             Grid.Row="13"
             Grid.Column="0"
             Grid.ColumnSpan="2"
             TextColor="Black" Text="{Binding Prayers.Maghrib.DurationDisplayText}"
-            FontSize="Large" 
+            
             HorizontalOptions="Start"
-            VerticalOptions="Center"/>
+            VerticalOptions="Start"/>
         <Label 
+            x:Name="MaghribSubtimeSufficientName"
             Grid.Row="14"
             Grid.Column="0"
             Grid.ColumnSpan="2"
@@ -296,6 +330,7 @@
             VerticalOptions="Start"  
             IsVisible="{Binding ShowMaghribSufficientTime}"/>
         <Label 
+            x:Name="MaghribSubtimeSufficientDisplayText"
             Grid.Row="14"
             Grid.Column="1"
             TextColor="Black" Text="{Binding Prayers.Maghrib.SufficientTime, StringFormat='{0:HH:mm:ss}'}"
@@ -303,6 +338,7 @@
             VerticalOptions="Start" 
             IsVisible="{Binding ShowMaghribSufficientTime}"/>
         <Label 
+            x:Name="MaghribSubtimeIshtibaqName"
             Grid.Row="15"
             Grid.Column="0"
             Grid.ColumnSpan="2"
@@ -311,6 +347,7 @@
             VerticalOptions="Start"  
             IsVisible="{Binding ShowIshtibaq}"/>
         <Label 
+            x:Name="MaghribSubtimeIshtibaqDisplayText"
             Grid.Row="15"
             Grid.Column="1"
             TextColor="Black" Text="{Binding Prayers.Maghrib.Ishtibaq, StringFormat='{0:HH:mm:ss}'}"
@@ -318,12 +355,13 @@
             VerticalOptions="Start" 
             IsVisible="{Binding ShowIshtibaq}"/>
 
-        <Label 
+        <Label
+            x:Name="IshaName"
             Grid.Row="12"
             Grid.Column="3"
             TextColor="Black" Text="Isha" 
-            FontSize="Title"  FontAttributes="Bold"
-            HorizontalOptions="Center"
+            FontAttributes="Bold"
+            HorizontalOptions="Start"
             VerticalOptions="Start">
             <Label.GestureRecognizers>
                 <TapGestureRecognizer 
@@ -331,16 +369,18 @@
                     CommandParameter="{x:Static enum:EPrayerType.Isha}"/>
             </Label.GestureRecognizers>
         </Label>
-        <Label 
+        <Label
+            x:Name="IshaDurationText"
             Grid.Row="13"
             Grid.Column="3"
             Grid.ColumnSpan="2"
             TextColor="Black" Text="{Binding Prayers.Isha.DurationDisplayText}"
-            FontSize="Large" 
-            HorizontalOptions="Center"
-            VerticalOptions="Center"/>
+            
+            HorizontalOptions="Start"
+            VerticalOptions="Start"/>
 
         <Label 
+            x:Name="IshaSubtimeOneThirdName"
             Grid.Row="14"
             Grid.Column="3"
             TextColor="Black" Text="1/3" 
@@ -348,6 +388,7 @@
             VerticalOptions="Start"  
             IsVisible="{Binding ShowOneThird}"/>
         <Label 
+            x:Name="IshaSubtimeOneThirdDisplayText"
             Grid.Row="14"
             Grid.Column="4"
             TextColor="Black" Text="{Binding Prayers.Isha.FirstThirdOfNight, StringFormat='{0:HH:mm:ss}'}"
@@ -355,6 +396,7 @@
             VerticalOptions="Start" 
             IsVisible="{Binding ShowOneThird}"/>
         <Label 
+            x:Name="IshaSubtimeOneHalfName"
             Grid.Row="15"
             Grid.Column="3"
             TextColor="Black" Text="1/2" 
@@ -362,6 +404,7 @@
             VerticalOptions="Start"  
             IsVisible="{Binding ShowMidnight}"/>
         <Label 
+            x:Name="IshaSubtimeOneHalfDisplayText"
             Grid.Row="15"
             Grid.Column="4"
             TextColor="Black" Text="{Binding Prayers.Isha.MiddleOfNight, StringFormat='{0:HH:mm:ss}'}"
@@ -369,6 +412,7 @@
             VerticalOptions="Start" 
             IsVisible="{Binding ShowMidnight}"/>
         <Label 
+            x:Name="IshaSubtimeTwoThirdsName"
             Grid.Row="16"
             Grid.Column="3"
             TextColor="Black" Text="2/3" 
@@ -376,18 +420,13 @@
             VerticalOptions="Start"  
             IsVisible="{Binding ShowTwoThird}"/>
         <Label 
+            x:Name="IshaSubtimeTwoThirdsDisplayText"
             Grid.Row="16"
             Grid.Column="4"
             TextColor="Black" Text="{Binding Prayers.Isha.SecondThirdOfNight, StringFormat='{0:HH:mm:ss}'}"
             HorizontalOptions="Center"
             VerticalOptions="Start"  
             IsVisible="{Binding ShowTwoThird}"/>
-
-        <ActivityIndicator
-            Grid.Row="17"
-            Grid.Column="0"
-            IsRunning="{Binding IsLoading}"
-            />
 
         <GraphicsView 
             Grid.Row="17"

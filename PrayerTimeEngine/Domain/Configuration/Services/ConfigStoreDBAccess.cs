@@ -25,9 +25,10 @@ namespace PrayerTimeEngine.Domain.ConfigStore.Services
             {
                 var command = connection.CreateCommand();
                 command.CommandText =
-                @"
+                """
                 SELECT Id, Name, LocationName, SequenceNo
-                FROM Profile";
+                FROM Profile;
+                """;
 
                 using (var reader = await command.ExecuteReaderAsync())
                 {
@@ -45,11 +46,11 @@ namespace PrayerTimeEngine.Domain.ConfigStore.Services
 
                         // Fetch configurations for the current profile
                         var configCommand = connection.CreateCommand();
-                        configCommand.CommandText =
-                        @"
-                        SELECT TimeType, JsonConfigurationString
-                        FROM TimeSpecificConfig
-                        WHERE ProfileID = $ProfileId;";
+                        configCommand.CommandText = """
+                            SELECT TimeType, JsonConfigurationString
+                            FROM TimeSpecificConfig
+                            WHERE ProfileID = $ProfileId;
+                            """;
 
                         configCommand.Parameters.AddWithValue("$ProfileId", profile.ID);
 
@@ -67,11 +68,11 @@ namespace PrayerTimeEngine.Domain.ConfigStore.Services
 
                         // Fetch location data for the current profile
                         var locationDataCommand = connection.CreateCommand();
-                        locationDataCommand.CommandText =
-                        @"
-                        SELECT CalculationSource, JsonLocationData
-                        FROM LocationData
-                        WHERE ProfileID = $ProfileId;";
+                        locationDataCommand.CommandText = """
+                            SELECT CalculationSource, JsonLocationData
+                            FROM LocationData
+                            WHERE ProfileID = $ProfileId;
+                            """;
 
                         locationDataCommand.Parameters.AddWithValue("$ProfileId", profile.ID);
 
@@ -103,11 +104,11 @@ namespace PrayerTimeEngine.Domain.ConfigStore.Services
             await _db.ExecuteCommandAsync(async connection =>
             {
                 var command = connection.CreateCommand();
-                command.CommandText =
-                @"
-                SELECT Id, ProfileID, TimeType, JsonConfigurationString
-                FROM TimeSpecificConfig
-                WHERE ProfileID = $ProfileId;";
+                command.CommandText = """
+                    SELECT Id, ProfileID, TimeType, JsonConfigurationString
+                    FROM TimeSpecificConfig
+                    WHERE ProfileID = $ProfileId;
+                    """;
 
                 command.Parameters.AddWithValue("$ProfileId", profileID);
 
@@ -156,10 +157,10 @@ namespace PrayerTimeEngine.Domain.ConfigStore.Services
         private async Task insertProfile(SqliteConnection connection, Profile profile)
         {
             var command = connection.CreateCommand();
-            command.CommandText =
-            @"
-            INSERT INTO Profile (Id, Name, LocationName, SequenceNo, InsertDateTime) 
-            VALUES ($Id, $Name, $LocationName, $SequenceNo, $InsertDateTime);";
+            command.CommandText = """
+                INSERT INTO Profile (Id, Name, LocationName, SequenceNo, InsertDateTime) 
+                VALUES ($Id, $Name, $LocationName, $SequenceNo, $InsertDateTime);
+                """;
 
             command.Parameters.AddWithValue("$Id", profile.ID);
             command.Parameters.AddWithValue("$Name", profile.Name);
@@ -180,10 +181,10 @@ namespace PrayerTimeEngine.Domain.ConfigStore.Services
                 }
 
                 var configCommand = connection.CreateCommand();
-                configCommand.CommandText =
-                @"
-                INSERT INTO TimeSpecificConfig (ProfileID, TimeType, JsonConfigurationString, InsertDateTime) 
-                VALUES ($ProfileID, $TimeType, $JsonConfigurationString, $InsertDateTime);";
+                configCommand.CommandText = """
+                    INSERT INTO TimeSpecificConfig (ProfileID, TimeType, JsonConfigurationString, InsertDateTime) 
+                    VALUES ($ProfileID, $TimeType, $JsonConfigurationString, $InsertDateTime);
+                    """;
 
                 configCommand.Parameters.AddWithValue("$ProfileID", profile.ID);
                 configCommand.Parameters.AddWithValue("$TimeType", (int)config.Key);
@@ -194,7 +195,7 @@ namespace PrayerTimeEngine.Domain.ConfigStore.Services
             }
         }
 
-        private async Task insertLocationData(SqliteConnection connection, Profile profile)
+        private static async Task insertLocationData(SqliteConnection connection, Profile profile)
         {
             foreach (var locationData in profile.LocationDataByCalculationSource)
             {
@@ -204,10 +205,10 @@ namespace PrayerTimeEngine.Domain.ConfigStore.Services
                 }
 
                 var configCommand = connection.CreateCommand();
-                configCommand.CommandText =
-                @"
-                INSERT INTO LocationData (ProfileID, CalculationSource, JsonLocationData, InsertDateTime) 
-                VALUES ($ProfileID, $CalculationSource, $JsonLocationData, $InsertDateTime);";
+                configCommand.CommandText = """
+                    INSERT INTO LocationData (ProfileID, CalculationSource, JsonLocationData, InsertDateTime) 
+                    VALUES ($ProfileID, $CalculationSource, $JsonLocationData, $InsertDateTime);
+                    """;
 
                 configCommand.Parameters.AddWithValue("$ProfileID", profile.ID);
                 configCommand.Parameters.AddWithValue("$CalculationSource", locationData.Value.Source);
@@ -223,16 +224,16 @@ namespace PrayerTimeEngine.Domain.ConfigStore.Services
             await _db.ExecuteCommandAsync(async connection =>
             {
                 var command = connection.CreateCommand();
-                command.CommandText =
-                @"
-                DELETE FROM LocationData 
-                WHERE ProfileID = $ProfileID;
+                command.CommandText = """
+                    DELETE FROM LocationData 
+                    WHERE ProfileID = $ProfileID;
 
-                DELETE FROM TimeSpecificConfig 
-                WHERE ProfileID = $ProfileID;
+                    DELETE FROM TimeSpecificConfig 
+                    WHERE ProfileID = $ProfileID;
 
-                DELETE FROM Profile 
-                WHERE ID = $ProfileID;";
+                    DELETE FROM Profile 
+                    WHERE ID = $ProfileID;
+                    """;
 
                 command.Parameters.AddWithValue("$ProfileID", profile.ID);
                 await command.ExecuteNonQueryAsync();

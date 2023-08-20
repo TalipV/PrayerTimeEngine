@@ -97,17 +97,13 @@ public class PrayerTimeCalculationService : IPrayerTimeCalculationService
     {
         return _timeTypeAttributeService
             .NonSimpleTypes
-            .Select(x => profile.GetConfiguration(x))
+            .Select(profile.GetConfiguration)
             .Where(config =>
-            {
-                if (config == null 
-                    || config.Source == ECalculationSource.None 
-                    || !config.IsTimeShown)
+                config is GenericSettingConfiguration
                 {
-                    return false;
-                }
-                return true;
-            })
+                    Source: not ECalculationSource.None,
+                    IsTimeShown: true
+                })
             .ToList();
     }
 

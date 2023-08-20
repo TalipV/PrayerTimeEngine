@@ -151,12 +151,45 @@ namespace PrayerTimeEngine.Presentation.ViewModel
 
         public async Task OnPageLoaded()
         {
-            Profiles = await _prayerTimesConfigurationStorage.GetProfiles();
+            try
+            {
+
+                Profiles = await _prayerTimesConfigurationStorage.GetProfiles();
+
+                await loadPrayerTimes();
+                showHideSpecificTimes();
+            }
+            catch (Exception exception)
+            {
+                _logger.LogDebug(exception, "Error during page load");
+                doToast(exception.Message);
+            }
         }
 
         #endregion public methods
 
         #region private methods
+
+        private void createNewProfile()
+        {
+            // create new profile with SequenceNo = profiles.Select(x => x.SequenceNo).Max();
+            // switch to this new profile
+        }
+
+        private void deleteCurrentProfile()
+        {
+            // don't allow if it is the only profile
+
+            // delete current profile and recalculate SequenceNos
+            // switch to profil before it or alternatively after it
+        }
+
+        private void switchProfile()
+        {
+            // set CurrentProfile to new value
+
+            // reload prayer times for new profile
+        }
 
         private async Task loadPrayerTimes()
         {
@@ -232,7 +265,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
                     }
 
                     CurrentProfile.LocationName = SelectedPlace.address.city;
-                    _configStoreService.SaveProfile(CurrentProfile).GetAwaiter().GetResult();
+                    await _configStoreService.SaveProfile(CurrentProfile);
 
                     await this.loadPrayerTimes();
 
@@ -255,6 +288,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
             });
         }
 
+        // TODO REFACTOR
         private static void doToast(string text)
         {
             MainThread.BeginInvokeOnMainThread(async () =>

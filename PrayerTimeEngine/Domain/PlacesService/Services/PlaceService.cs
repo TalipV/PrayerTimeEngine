@@ -67,7 +67,7 @@ namespace PrayerTimeEngine.Domain.NominatimLocation.Interfaces
         }
 
         private const double NECESSARY_COOL_DOWN_MS = 3000;
-        private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
+        private readonly SemaphoreSlim _semaphore = new(1, 1);
 
         private async Task ensureCooldown()
         {

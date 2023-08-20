@@ -47,7 +47,9 @@ namespace PrayerTimeEngine.Data.SQLite
                 using (SqliteConnection connection = getSqliteConnection())
                 {
                     connection.Open();
+
                     createProfileTablesIfNotExists(connection);
+
                     createFaziletTablesIfNotExists(connection);
                     createSemerkandTablesIfNotExists(connection);
                     createMuwaqqitTablesIfNotExists(connection);
@@ -57,8 +59,8 @@ namespace PrayerTimeEngine.Data.SQLite
 
         private void createProfileTablesIfNotExists(SqliteConnection connection) 
         {
-            string tableProfil =
-                @"CREATE TABLE IF NOT EXISTS
+            string tableProfil = """
+                CREATE TABLE IF NOT EXISTS
                     Profile (
                         Id INTEGER PRIMARY KEY,
                         Name NVARCHAR(2048) NOT NULL,
@@ -66,11 +68,12 @@ namespace PrayerTimeEngine.Data.SQLite
                         SequenceNo INTEGER NOT NULL,
                         InsertDateTime DATETIME NOT NULL,
                         UNIQUE(SequenceNo),
-                        UNIQUE(Name))";
+                        UNIQUE(Name))
+                """;
             createTable(connection, tableProfil);
 
-            string tableTimeSpecificConfig =
-                @"CREATE TABLE IF NOT EXISTS
+            string tableTimeSpecificConfig = """
+                CREATE TABLE IF NOT EXISTS
                     TimeSpecificConfig (
                         Id INTEGER PRIMARY KEY,
                         ProfileID INTEGER NOT NULL,
@@ -79,11 +82,12 @@ namespace PrayerTimeEngine.Data.SQLite
 
                         InsertDateTime DATETIME NOT NULL,
                         UNIQUE(ProfileID, TimeType),
-                        FOREIGN KEY(ProfileID) REFERENCES Profile(Id))";
+                        FOREIGN KEY(ProfileID) REFERENCES Profile(Id))
+                """;
             createTable(connection, tableTimeSpecificConfig);
 
-            string tableLocationData =
-                @"CREATE TABLE IF NOT EXISTS
+            string tableLocationData = """
+                CREATE TABLE IF NOT EXISTS
                     LocationData (
                         Id INTEGER PRIMARY KEY,
                         ProfileID INTEGER NOT NULL,
@@ -93,34 +97,37 @@ namespace PrayerTimeEngine.Data.SQLite
                         InsertDateTime DATETIME NOT NULL,
 
                         UNIQUE(ProfileID, CalculationSource),
-                        FOREIGN KEY(ProfileID) REFERENCES Profile(Id))";
+                        FOREIGN KEY(ProfileID) REFERENCES Profile(Id))
+                """;
             createTable(connection, tableLocationData);
         }
 
         private void createFaziletTablesIfNotExists(SqliteConnection connection)
         {
-            string tableFaziletCountries =
-                @"CREATE TABLE IF NOT EXISTS 
+            string tableFaziletCountries = """
+                CREATE TABLE IF NOT EXISTS 
                     FaziletCountries (
                         Id INTEGER PRIMARY KEY, 
                         Name NVARCHAR(200) NOT NULL,
                         InsertDateTime DATETIME NOT NULL,
-                        UNIQUE(Name))";
+                        UNIQUE(Name))
+                """;
             createTable(connection, tableFaziletCountries);
 
-            string tableFaziletCities =
-                @"CREATE TABLE IF NOT EXISTS 
+            string tableFaziletCities = """
+                CREATE TABLE IF NOT EXISTS 
                     FaziletCities (
                         Id INTEGER PRIMARY KEY, 
                         CountryId INTEGER NOT NULL, 
                         Name NVARCHAR(200) NOT NULL, 
                         InsertDateTime DATETIME NOT NULL,
                         FOREIGN KEY(CountryId) REFERENCES FaziletCountries(Id),
-                        UNIQUE(CountryId, Name))";
+                        UNIQUE(CountryId, Name))
+                """;
             createTable(connection, tableFaziletCities);
 
-            string tableFaziletPrayerTimes =
-                @"CREATE TABLE IF NOT EXISTS 
+            string tableFaziletPrayerTimes = """
+                CREATE TABLE IF NOT EXISTS 
                     FaziletPrayerTimes (
                         Id INTEGER PRIMARY KEY AUTOINCREMENT, 
 
@@ -137,34 +144,37 @@ namespace PrayerTimeEngine.Data.SQLite
                         InsertDateTime DATETIME NOT NULL,
 
                         FOREIGN KEY(CityId) REFERENCES FaziletCities(Id),
-                        UNIQUE(Date, CityId))";
+                        UNIQUE(Date, CityId))
+                """;
             createTable(connection, tableFaziletPrayerTimes);
         }
 
         private void createSemerkandTablesIfNotExists(SqliteConnection connection)
         {
-            string tableSemerkandCountries =
-                @"CREATE TABLE IF NOT EXISTS 
+            string tableSemerkandCountries = """
+                CREATE TABLE IF NOT EXISTS 
                     SemerkandCountries (
                         Id INTEGER PRIMARY KEY, 
                         Name NVARCHAR(200) NOT NULL,
                         InsertDateTime DATETIME NOT NULL,
-                        UNIQUE(Name))";
+                        UNIQUE(Name))
+                """;
             createTable(connection, tableSemerkandCountries);
 
-            string tableSemerkandCities =
-                @"CREATE TABLE IF NOT EXISTS 
+            string tableSemerkandCities = """
+                CREATE TABLE IF NOT EXISTS 
                     SemerkandCities (
                         Id INTEGER PRIMARY KEY, 
                         CountryId INTEGER NOT NULL, 
                         Name NVARCHAR(200) NOT NULL, 
                         InsertDateTime DATETIME NOT NULL,
                         FOREIGN KEY(CountryId) REFERENCES SemerkandCountries(Id),
-                        UNIQUE(CountryId, Name))";
+                        UNIQUE(CountryId, Name))
+                """;
             createTable(connection, tableSemerkandCities);
 
-            string tableSemerkandPrayerTimes =
-                @"CREATE TABLE IF NOT EXISTS 
+            string tableSemerkandPrayerTimes = """
+                CREATE TABLE IF NOT EXISTS 
                     SemerkandPrayerTimes (
                         Id INTEGER PRIMARY KEY AUTOINCREMENT, 
 
@@ -180,14 +190,15 @@ namespace PrayerTimeEngine.Data.SQLite
                         InsertDateTime DATETIME NOT NULL,
 
                         FOREIGN KEY(CityId) REFERENCES SemerkandCities(Id),
-                        UNIQUE(Date, CityId))";
+                        UNIQUE(Date, CityId))
+                """;
             createTable(connection, tableSemerkandPrayerTimes);
         }
     
         private void createMuwaqqitTablesIfNotExists(SqliteConnection connection)
         {
-            string tableMuwaqqitPrayerTimes =
-                @"CREATE TABLE IF NOT EXISTS 
+            string tableMuwaqqitPrayerTimes = """
+                CREATE TABLE IF NOT EXISTS 
                     MuwaqqitPrayerTimes (
 
                     Id INTEGER PRIMARY KEY AUTOINCREMENT, 
@@ -217,14 +228,15 @@ namespace PrayerTimeEngine.Data.SQLite
                     Isha DATETIME NOT NULL, 
                     Isha_Degree REAL NOT NULL,
                     InsertDateTime DATETIME NOT NULL,
-                    UNIQUE(Date, Longitude, Latitude, Timezone, Fajr_Degree, AsrKaraha_Degree, Ishtibaq_Degree, Isha_Degree))";
+                    UNIQUE(Date, Longitude, Latitude, Timezone, Fajr_Degree, AsrKaraha_Degree, Ishtibaq_Degree, Isha_Degree))
+                """;
 
             createTable(connection, tableMuwaqqitPrayerTimes);
         }
 
         private void createTable(SqliteConnection db, string createTableCommand)
         {
-            SqliteCommand createTable = new SqliteCommand(createTableCommand, db);
+            SqliteCommand createTable = new(createTableCommand, db);
             createTable.ExecuteReader();
         }
     }

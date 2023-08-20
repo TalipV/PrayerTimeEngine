@@ -27,10 +27,10 @@ namespace PrayerTimeEngine.Domain.Calculators.Muwaqqit.Services
             await _db.ExecuteCommandAsync(async connection =>
             {
                 var command = connection.CreateCommand();
-                command.CommandText =
-                @"
-                INSERT INTO MuwaqqitPrayerTimes (Date, Timezone, Longitude, Latitude, Fajr_Degree, Isha_Degree, Ishtibaq_Degree, AsrKaraha_Degree, Fajr, NextFajr, Shuruq, Duha, Dhuhr, AsrMithl, AsrMithlayn, AsrKaraha, Maghrib, Isha, Ishtibaq, InsertDateTime) 
-                VALUES                          ($Date, $Timezone, $Longitude, $Latitude, $Fajr_Degree, $Isha_Degree, $Ishtibaq_Degree, $AsrKaraha_Degree, $Fajr, $NextFajr, $Shuruq, $Duha, $Dhuhr, $AsrMithl, $AsrMithlayn, $AsrKaraha, $Maghrib, $Isha, $Ishtibaq, $InsertDateTime);";
+                command.CommandText = """
+                    INSERT INTO MuwaqqitPrayerTimes (Date, Timezone, Longitude, Latitude, Fajr_Degree, Isha_Degree, Ishtibaq_Degree, AsrKaraha_Degree, Fajr, NextFajr, Shuruq, Duha, Dhuhr, AsrMithl, AsrMithlayn, AsrKaraha, Maghrib, Isha, Ishtibaq, InsertDateTime) 
+                    VALUES                          ($Date, $Timezone, $Longitude, $Latitude, $Fajr_Degree, $Isha_Degree, $Ishtibaq_Degree, $AsrKaraha_Degree, $Fajr, $NextFajr, $Shuruq, $Duha, $Dhuhr, $AsrMithl, $AsrMithlayn, $AsrKaraha, $Maghrib, $Isha, $Ishtibaq, $InsertDateTime);
+                    """;
 
                 command.Parameters.AddWithValue("$Date", date);
                 command.Parameters.AddWithValue("$Timezone", timezone);
@@ -76,12 +76,16 @@ namespace PrayerTimeEngine.Domain.Calculators.Muwaqqit.Services
             await _db.ExecuteCommandAsync(async connection =>
             {
                 var command = connection.CreateCommand();
-                command.CommandText =
-                @"
-                SELECT Fajr, NextFajr, Shuruq, Duha, Dhuhr, AsrMithl, AsrMithlayn, Maghrib, Isha, Ishtibaq, AsrKaraha
-                FROM MuwaqqitPrayerTimes
-                WHERE Date = $Date AND Longitude = $Longitude AND Latitude = $Latitude 
-                AND Fajr_Degree = $Fajr_Degree AND Isha_Degree = $Isha_Degree AND Ishtibaq_Degree = $Ishtibaq_Degree AND AsrKaraha_Degree = $AsrKaraha_Degree;";
+                command.CommandText = """
+                    SELECT Fajr, NextFajr, Shuruq, Duha, Dhuhr, AsrMithl, AsrMithlayn, Maghrib, Isha, Ishtibaq, AsrKaraha
+                    FROM MuwaqqitPrayerTimes
+                    WHERE
+                        Date = $Date AND Longitude = $Longitude AND Latitude = $Latitude 
+                        AND Fajr_Degree = $Fajr_Degree
+                        AND Isha_Degree = $Isha_Degree
+                        AND Ishtibaq_Degree = $Ishtibaq_Degree
+                        AND AsrKaraha_Degree = $AsrKaraha_Degree;
+                    """;
 
                 command.Parameters.AddWithValue("$Date", date);
                 command.Parameters.AddWithValue("$Longitude", longitude);

@@ -19,11 +19,10 @@ namespace PrayerTimeEngine.Domain.Calculators.Fazilet.Services
             await _db.ExecuteCommandAsync(async connection =>
             {
                 var command = connection.CreateCommand();
-                command.CommandText =
-                @"
-                SELECT Id, Name
-                FROM FaziletCountries;
-                ";
+                command.CommandText = """
+                    SELECT Id, Name
+                    FROM FaziletCountries;
+                    """;
 
                 using (var reader = await command.ExecuteReaderAsync())
                 {
@@ -42,10 +41,10 @@ namespace PrayerTimeEngine.Domain.Calculators.Fazilet.Services
             await _db.ExecuteCommandAsync(async connection =>
             {
                 var command = connection.CreateCommand();
-                command.CommandText =
-                @"
-                INSERT INTO FaziletCountries (Id, Name, InsertDateTime) 
-                VALUES ($Id, $Name, $InsertDateTime);";
+                command.CommandText = """
+                    INSERT INTO FaziletCountries (Id, Name, InsertDateTime) 
+                    VALUES ($Id, $Name, $InsertDateTime);
+                    """;
 
                 command.Parameters.AddWithValue("$Id", id);
                 command.Parameters.AddWithValue("$Name", name);
@@ -61,11 +60,11 @@ namespace PrayerTimeEngine.Domain.Calculators.Fazilet.Services
             await _db.ExecuteCommandAsync(async connection =>
             {
                 var command = connection.CreateCommand();
-                command.CommandText =
-                @"
-                SELECT Id, Name
-                FROM FaziletCities
-                WHERE CountryId = $CountryId;";
+                command.CommandText = """
+                    SELECT Id, Name
+                    FROM FaziletCities
+                    WHERE CountryId = $CountryId;
+                    """;
 
                 command.Parameters.AddWithValue("$CountryId", countryId);
 
@@ -85,10 +84,10 @@ namespace PrayerTimeEngine.Domain.Calculators.Fazilet.Services
             await _db.ExecuteCommandAsync(async connection =>
             {
                 var command = connection.CreateCommand();
-                command.CommandText =
-                @"
-                INSERT INTO FaziletCities (Id, Name, CountryId, InsertDateTime) 
-                VALUES ($Id, $Name, $CountryId, $InsertDateTime);";
+                command.CommandText = """
+                    INSERT INTO FaziletCities (Id, Name, CountryId, InsertDateTime) 
+                    VALUES ($Id, $Name, $CountryId, $InsertDateTime);
+                    """;
 
                 command.Parameters.AddWithValue("$Id", id);
                 command.Parameters.AddWithValue("$Name", name);
@@ -106,11 +105,11 @@ namespace PrayerTimeEngine.Domain.Calculators.Fazilet.Services
             await _db.ExecuteCommandAsync(async connection =>
             {
                 var command = connection.CreateCommand();
-                command.CommandText =
-                @"
-                SELECT Imsak, Fajr, Shuruq, Dhuhr, Asr, Maghrib, Isha, Date
-                FROM FaziletPrayerTimes
-                WHERE CityId = $CityId AND Date = $Date;";
+                command.CommandText = """
+                    SELECT Imsak, Fajr, Shuruq, Dhuhr, Asr, Maghrib, Isha, Date
+                    FROM FaziletPrayerTimes
+                    WHERE CityId = $CityId AND Date = $Date;
+                    """;
 
                 command.Parameters.AddWithValue("$CityId", cityId);
                 command.Parameters.AddWithValue("$Date", date.Date);
@@ -145,10 +144,10 @@ namespace PrayerTimeEngine.Domain.Calculators.Fazilet.Services
                 foreach (var country in countries)
                 {
                     var command = connection.CreateCommand();
-                    command.CommandText =
-                    @"
-                    INSERT INTO FaziletCountries (Id, Name, InsertDateTime) 
-                    VALUES ($Id, $Name, $InsertDateTime);";
+                    command.CommandText = """
+                        INSERT INTO FaziletCountries (Id, Name, InsertDateTime) 
+                        VALUES ($Id, $Name, $InsertDateTime);
+                        """;
 
                     command.Parameters.AddWithValue("$Id", country.Value);
                     command.Parameters.AddWithValue("$Name", country.Key);
@@ -166,10 +165,10 @@ namespace PrayerTimeEngine.Domain.Calculators.Fazilet.Services
                 foreach (var city in cities)
                 {
                     var command = connection.CreateCommand();
-                    command.CommandText =
-                    @"
-            INSERT INTO FaziletCities (Id, Name, CountryId, InsertDateTime) 
-            VALUES ($Id, $Name, $CountryId, $InsertDateTime);";
+                    command.CommandText = """
+                        INSERT INTO FaziletCities (Id, Name, CountryId, InsertDateTime) 
+                        VALUES ($Id, $Name, $CountryId, $InsertDateTime);
+                        """;
 
                     command.Parameters.AddWithValue("$Id", city.Value);
                     command.Parameters.AddWithValue("$Name", city.Key);
@@ -186,10 +185,10 @@ namespace PrayerTimeEngine.Domain.Calculators.Fazilet.Services
             await _db.ExecuteCommandAsync(async connection =>
             {
                 var command = connection.CreateCommand();
-                command.CommandText =
-                @"
-                INSERT INTO FaziletPrayerTimes (Date, CityId, Imsak, Fajr, Shuruq, Dhuhr, Asr, Maghrib, Isha, InsertDateTime) 
-                VALUES ($Date, $CityId, $Imsak, $Fajr, $Shuruq, $Dhuhr, $Asr, $Maghrib, $Isha, $InsertDateTime);";
+                command.CommandText = """
+                    INSERT INTO FaziletPrayerTimes (Date, CityId, Imsak, Fajr, Shuruq, Dhuhr, Asr, Maghrib, Isha, InsertDateTime) 
+                    VALUES ($Date, $CityId, $Imsak, $Fajr, $Shuruq, $Dhuhr, $Asr, $Maghrib, $Isha, $InsertDateTime);
+                    """;
 
                 command.Parameters.AddWithValue("$Date", date);
                 command.Parameters.AddWithValue("$CityId", cityID);
@@ -212,10 +211,7 @@ namespace PrayerTimeEngine.Domain.Calculators.Fazilet.Services
             await _db.ExecuteCommandAsync(async connection =>
             {
                 var command = connection.CreateCommand();
-                command.CommandText =
-                @"
-                DELETE FROM FaziletPrayerTimes;";
-
+                command.CommandText = "DELETE FROM FaziletPrayerTimes;";
                 await command.ExecuteNonQueryAsync();
             });
         }
