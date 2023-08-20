@@ -1,8 +1,9 @@
+using Microsoft.Extensions.Logging;
 using PrayerTimeEngine.Common.Enum;
+using PrayerTimeEngine.Data.SQLite;
 using PrayerTimeEngine.Domain.CalculationService.Interfaces;
 using PrayerTimeEngine.Domain.Calculators.Fazilet.Models;
 using PrayerTimeEngine.Domain.Calculators.Fazilet.Services;
-using PrayerTimeEngine.Domain.Calculators.Semerkand.Models;
 using PrayerTimeEngine.Domain.ConfigStore.Models;
 using PrayerTimeEngineUnitTests.Mocks;
 using System.Net;
@@ -34,7 +35,7 @@ namespace PrayerTimeEngineUnitTests.API.FaziletAPI
         public void FaziletPrayerTimeCalculator_GetPrayerTimesAsyncWithNormalInput_PrayerTimesForThatDay()
         {
             // ARRANGE
-            var faziletDBAccess = new FaziletDBAccess(new SQLiteDB());
+            var faziletDBAccess = new FaziletDBAccess(new SQLiteDB(null));
             var faziletApiService = getMockedFaziletApiService();
 
             // Put together calculator

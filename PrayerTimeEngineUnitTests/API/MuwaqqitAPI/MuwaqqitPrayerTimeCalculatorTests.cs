@@ -1,5 +1,6 @@
 using PrayerTimeEngine.Common.Enum;
 using PrayerTimeEngine.Common.Extension;
+using PrayerTimeEngine.Data.SQLite;
 using PrayerTimeEngine.Domain;
 using PrayerTimeEngine.Domain.CalculationService.Interfaces;
 using PrayerTimeEngine.Domain.Calculators.Fazilet.Models;
@@ -55,7 +56,7 @@ namespace PrayerTimeEngineUnitTests.API.MuwaqqitAPI
                     new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.IshaEnd, Degree = -15.0 },
                 };
 
-            var muwaqqitDBAccess = new MuwaqqitDBAccess(new SQLiteDB());
+            var muwaqqitDBAccess = new MuwaqqitDBAccess(new SQLiteDB(null));
             var muwaqqitApiService = getMockedMuwaqqitApiService();
 
             // Put together calculator

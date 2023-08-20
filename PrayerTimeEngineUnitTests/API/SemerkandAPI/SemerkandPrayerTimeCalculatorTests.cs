@@ -1,4 +1,5 @@
 using PrayerTimeEngine.Common.Enum;
+using PrayerTimeEngine.Data.SQLite;
 using PrayerTimeEngine.Domain.CalculationService.Interfaces;
 using PrayerTimeEngine.Domain.Calculators.Semerkand.Models;
 using PrayerTimeEngine.Domain.Calculators.Semerkand.Services;
@@ -30,14 +31,16 @@ namespace PrayerTimeEngineUnitTests.API.SemerkandAPI
         public void SemerkandPrayerTimeCalculator_GetPrayerTimesAsyncWithNormalInput_PrayerTimesForThatDay()
         {
             // ARRANGE
-            var semerkandDBAccess = new SemerkandDBAccess(new SQLiteDB());
+            var semerkandDBAccess = new SemerkandDBAccess(new SQLiteDB(null));
             var semerkandApiService = getMockedSemerkandApiService();
 
             // Put together calculator
             var semerkandPrayerTimeCalculator =
                 new SemerkandPrayerTimeCalculator(
                     semerkandDBAccess,
-                    semerkandApiService, null);
+                    semerkandApiService, 
+                    null,
+                    null);
 
             // ACT
             ICalculationPrayerTimes result =
