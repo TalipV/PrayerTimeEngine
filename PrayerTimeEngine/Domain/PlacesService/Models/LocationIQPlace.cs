@@ -1,5 +1,4 @@
-﻿using System.Net;
-using PrayerTimeEngine.Domain.NominatimLocation.Models;
+﻿using PrayerTimeEngine.Domain.NominatimLocation.Models;
 
 namespace PrayerTimeEngine.Domain.LocationService.Models
 {

@@ -77,7 +77,7 @@ namespace PrayerTimeEngine.Domain.Calculators.Semerkand.Services
                 Culture = CultureInfo.InvariantCulture
             };
 
-        private const int EXTEND_OF_DAYS_RETRIEVED = 5;
+        private const int EXTENT_OF_DAYS_RETRIEVED = 5;
 
         public async Task<List<SemerkandPrayerTimes>> GetTimesByCityID(DateTime date, int cityID)
         {
@@ -86,6 +86,11 @@ namespace PrayerTimeEngine.Domain.Calculators.Semerkand.Services
             HttpResponseMessage response = await _httpClient.GetAsync(prayerTimesURL);
             response.EnsureSuccessStatusCode();
             string jsonPrayerTimesString = await response.Content.ReadAsStringAsync();
+
+            // API adds "*" in front of 'Isha and Fajr to indicate some kind of special calculation,
+            // which leads to problems with the automatic parsing of the string to the DateTime
+            // e.g. "*23:54" instead of "23:54"
+            jsonPrayerTimesString = jsonPrayerTimesString.Replace("*", "");
 
             List<SemerkandPrayerTimes> allPrayerTimes = JsonConvert.DeserializeObject<List<SemerkandPrayerTimes>>(jsonPrayerTimesString, settings);
 
@@ -106,7 +111,7 @@ namespace PrayerTimeEngine.Domain.Calculators.Semerkand.Services
             }
 
             DateTime minDateTime = date.Date;
-            DateTime maxDateTime = date.Date.AddDays(EXTEND_OF_DAYS_RETRIEVED);
+            DateTime maxDateTime = date.Date.AddDays(EXTENT_OF_DAYS_RETRIEVED);
 
             return allPrayerTimes.Where(pt => minDateTime <= pt.Date && pt.Date < maxDateTime).ToList();
         }

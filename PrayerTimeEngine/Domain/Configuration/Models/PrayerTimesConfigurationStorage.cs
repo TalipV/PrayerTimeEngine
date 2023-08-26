@@ -1,5 +1,4 @@
 ﻿using PrayerTimeEngine.Common.Enum;
-using PrayerTimeEngine.Domain.Model;
 using PrayerTimeEngine.Domain.ConfigStore.Interfaces;
 using PrayerTimeEngine.Domain.Calculators.Muwaqqit.Models;
 using PrayerTimeEngine.Domain.Calculators.Fazilet.Models;

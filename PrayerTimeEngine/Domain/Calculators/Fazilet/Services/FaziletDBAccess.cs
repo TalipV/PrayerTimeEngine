@@ -206,7 +206,7 @@ namespace PrayerTimeEngine.Domain.Calculators.Fazilet.Services
             });
         }
 
-        public async Task DeleteAllPrayerTimes()
+        public async Task DeleteAllTimes()
         {
             await _db.ExecuteCommandAsync(async connection =>
             {

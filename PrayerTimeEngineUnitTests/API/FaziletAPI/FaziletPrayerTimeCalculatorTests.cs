@@ -1,4 +1,3 @@
-using Microsoft.Extensions.Logging;
 using PrayerTimeEngine.Common.Enum;
 using PrayerTimeEngine.Data.SQLite;
 using PrayerTimeEngine.Domain.CalculationService.Interfaces;

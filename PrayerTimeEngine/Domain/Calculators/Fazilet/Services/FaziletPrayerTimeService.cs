@@ -4,12 +4,10 @@ using PrayerTimeEngine.Domain.ConfigStore.Models;
 using PrayerTimeEngine.Domain.Calculators.Fazilet.Interfaces;
 using PrayerTimeEngine.Domain.Calculators.Fazilet.Models;
 using PrayerTimeEngine.Domain.Calculators.Semerkand;
-using PrayerTimeEngine.Domain.Calculators.Semerkand.Models;
 using PrayerTimeEngine.Domain.LocationService.Models;
 using PrayerTimeEngine.Domain.Model;
 using PrayerTimeEngine.Domain.NominatimLocation.Interfaces;
 using Microsoft.Extensions.Logging;
-using PrayerTimeEngine.Domain.Calculators.Muwaqqit.Models;
 
 namespace PrayerTimeEngine.Domain.Calculators.Fazilet.Services
 {
@@ -86,30 +84,55 @@ namespace PrayerTimeEngine.Domain.Calculators.Fazilet.Services
             return prayerTimes;
         }
 
+
+        private SemaphoreSlim semaphoreGetPrayerTimesByDateAndCityID = new SemaphoreSlim(1, 1);
+
         private async Task<FaziletPrayerTimes> getPrayerTimesByDateAndCityID(DateTime date, int cityID)
         {
-            FaziletPrayerTimes prayerTimes = await _faziletDBAccess.GetTimesByDateAndCityID(date, cityID);
+            // check-then-act has to be thread safe
+            await semaphoreGetPrayerTimesByDateAndCityID.WaitAsync();
 
-            if (prayerTimes == null)
+            try
             {
-                List<FaziletPrayerTimes> prayerTimesLst = await _faziletApiService.GetTimesByCityID(cityID);
-                prayerTimesLst.ForEach(async x => await _faziletDBAccess.InsertFaziletPrayerTimes(x.Date.Date, cityID, x));
-                prayerTimes = prayerTimesLst.FirstOrDefault(x => x.Date == date.Date);
-            }
+                FaziletPrayerTimes prayerTimes = await _faziletDBAccess.GetTimesByDateAndCityID(date, cityID);
 
-            return prayerTimes;
+                if (prayerTimes == null)
+                {
+                    List<FaziletPrayerTimes> prayerTimesLst = await _faziletApiService.GetTimesByCityID(cityID);
+                    prayerTimesLst.ForEach(async x => await _faziletDBAccess.InsertFaziletPrayerTimes(x.Date.Date, cityID, x));
+                    prayerTimes = prayerTimesLst.FirstOrDefault(x => x.Date == date.Date);
+                }
+
+                return prayerTimes;
+            }
+            finally
+            {
+                semaphoreGetPrayerTimesByDateAndCityID.Release();
+            }
         }
+
+        private SemaphoreSlim semaphoreTryGetCityID = new SemaphoreSlim(1, 1);
 
         private async Task<(bool success, int cityID)> tryGetCityID(string cityName, int countryID)
         {
-            // We only check if it is empty because a selection of countries missing is not expected.
-            if ((await _faziletDBAccess.GetCitiesByCountryID(countryID)).Count == 0)
-            {
-                // load cities through HTTP request
-                Dictionary<string, int> cities = await _faziletApiService.GetCitiesByCountryID(countryID);
+            // check-then-act has to be thread safe
+            await semaphoreTryGetCityID.WaitAsync();
 
-                // save cities to db
-                await _faziletDBAccess.InsertCities(cities, countryID);
+            try
+            {
+                // We only check if it is empty because a selection of countries missing is not expected.
+                if ((await _faziletDBAccess.GetCitiesByCountryID(countryID)).Count == 0)
+                {
+                    // load cities through HTTP request
+                    Dictionary<string, int> cities = await _faziletApiService.GetCitiesByCountryID(countryID);
+
+                    // save cities to db
+                    await _faziletDBAccess.InsertCities(cities, countryID);
+                }
+            }
+            finally
+            {
+                semaphoreTryGetCityID.Release();
             }
 
             if ((await _faziletDBAccess.GetCitiesByCountryID(countryID)).TryGetValue(cityName, out int cityID))
@@ -118,16 +141,29 @@ namespace PrayerTimeEngine.Domain.Calculators.Fazilet.Services
                 return (false, -1);
         }
 
+        private SemaphoreSlim semaphoreTryGetCountryID = new SemaphoreSlim(1, 1);
+
         private async Task<(bool success, int countryID)> tryGetCountryID(string countryName)
         {
-            // We only check if it is empty because a selection of countries missing is not expected.
-            if ((await _faziletDBAccess.GetCountries()).Count == 0)
-            {
-                // load countries through HTTP request
-                Dictionary<string, int> countries = await _faziletApiService.GetCountries();
+            // check-then-act has to be thread safe
+            await semaphoreTryGetCountryID.WaitAsync();
 
-                // save countries to db
-                await _faziletDBAccess.InsertCountries(countries);
+            try
+            {
+
+                // We only check if it is empty because a selection of countries missing is not expected.
+                if ((await _faziletDBAccess.GetCountries()).Count == 0)
+                {
+                    // load countries through HTTP request
+                    Dictionary<string, int> countries = await _faziletApiService.GetCountries();
+
+                    // save countries to db
+                    await _faziletDBAccess.InsertCountries(countries);
+                }
+            }
+            finally
+            {
+                semaphoreTryGetCountryID.Release();
             }
 
             if ((await _faziletDBAccess.GetCountries()).TryGetValue(countryName, out int countryID))

@@ -1,10 +1,9 @@
-﻿using System;
-using PrayerTimeEngine.Common.Enum;
+﻿using PrayerTimeEngine.Common.Enum;
 using PrayerTimeEngine.Domain.Model;
 
 namespace PrayerTimeEngine.Domain.Calculators.Muwaqqit.Models
 {
-	public class MuwaqqitLocationData : BaseLocationData
+    public class MuwaqqitLocationData : BaseLocationData
     {
         public required decimal Longitude { get; init; }
         public required decimal Latitude { get; init; }

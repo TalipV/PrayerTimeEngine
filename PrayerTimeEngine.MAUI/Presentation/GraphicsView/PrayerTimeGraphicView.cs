@@ -1,7 +1,4 @@
 ﻿using PrayerTimeEngine.Domain.Model;
-using System.Xml.Linq;
-using System;
-using Microsoft.Maui.Graphics;
 
 namespace PrayerTimeEngine.Presentation.GraphicsView
 {

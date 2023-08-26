@@ -47,7 +47,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel.Custom
 
                 Picker picker = new Picker();
                 picker.ItemsSource = DegreeItemsSource.ToList();
-                picker.SetBinding(Picker.SelectedItemProperty, new Binding("SelectedDegree"));
+                picker.SetBinding(Picker.SelectedItemProperty, new Binding(nameof(SelectedDegree)));
                 stackLayout.Children.Add(picker);
             }
 
@@ -78,9 +78,13 @@ namespace PrayerTimeEngine.Presentation.ViewModel.Custom
             {
                 return SettingsContentPageViewModel.FAJR_ISHA_SELECTABLE_DEGREES;
             }
-            else if (timeType == ETimeType.FajrGhalas || timeType == ETimeType.FajrKaraha || timeType == ETimeType.MaghribIshtibaq)
+            else if (timeType == ETimeType.FajrGhalas || timeType == ETimeType.FajrKaraha)
             {
                 return SettingsContentPageViewModel.MODERATE_SELECTABLE_DEGREES_NEGATIVE;
+            }
+            else if (timeType == ETimeType.MaghribIshtibaq)
+            {
+                return SettingsContentPageViewModel.ISHTIBAQ_SELECTABLE_DEGREES;
             }
             else
             {

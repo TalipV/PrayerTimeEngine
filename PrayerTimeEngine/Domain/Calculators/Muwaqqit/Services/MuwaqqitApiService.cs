@@ -39,9 +39,9 @@ namespace PrayerTimeEngine.Domain.Calculators.Muwaqqit.Services
             query["tz"] = timezone;
 
             query["fa"] = fajrDegree.ToString(CultureInfo.InvariantCulture);
-            query["ea"] = ishaDegree.ToString(CultureInfo.InvariantCulture);
-            query["isn"] = ishtibaqDegree.ToString(CultureInfo.InvariantCulture);
             query["ia"] = asrKarahaDegree.ToString(CultureInfo.InvariantCulture);
+            query["isn"] = ishtibaqDegree.ToString(CultureInfo.InvariantCulture);
+            query["ea"] = ishaDegree.ToString(CultureInfo.InvariantCulture);
 
             builder.Query = query.ToString();
 
@@ -61,6 +61,12 @@ namespace PrayerTimeEngine.Domain.Calculators.Muwaqqit.Services
                     Date = DateTimeOffset.Parse(muwaqqitResponse.d).DateTime,
                     Longitude = muwaqqitResponse.ln,
                     Latitude = muwaqqitResponse.lt,
+
+                    FajrDegree = fajrDegree,
+                    AsrKarahaDegree = asrKarahaDegree,
+                    IshtibaqDegree = ishtibaqDegree,
+                    IshaDegree = ishaDegree,
+
                     Fajr = DateTimeOffset.Parse(muwaqqitResponse.fajr).DateTime,
                     NextFajr = DateTimeOffset.Parse(muwaqqitResponse.fajr_t).DateTime,
                     Shuruq = DateTimeOffset.Parse(muwaqqitResponse.sunrise).DateTime,

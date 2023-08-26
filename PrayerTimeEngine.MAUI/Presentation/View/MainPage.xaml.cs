@@ -4,7 +4,6 @@ using OnScreenSizeMarkup.Maui.Helpers;
 using System.Reflection;
 using Microsoft.Extensions.Logging;
 using OnScreenSizeMarkup.Maui;
-using OnScreenSizeMarkup.Maui.Categories;
 
 namespace PrayerTimeEngine
 {
@@ -34,14 +33,9 @@ namespace PrayerTimeEngine
             // Medium: Google Pixel 5
             // ************************
 
-            // Get the Type for the 'ScreenCategoryHelper' class
-            Type type = Type.GetType("OnScreenSizeMarkup.Maui.Helpers.ScreenCategoryHelper, OnScreenSizeMarkup.MAUI");
-
-            _logger.LogDebug("Reflection start");
-
-            this.searchBar.Text = getScreenCategoryName();
-
-            _logger.LogDebug("Reflection end");
+#if DEBUG
+            this.searchBar.Text = getScreenSizeCategoryName();
+#endif
 
             // STATUS TEXTS
             new List<Label>()
@@ -139,7 +133,7 @@ namespace PrayerTimeEngine
             //    return;
         }
 
-        private string getScreenCategoryName()
+        private string getScreenSizeCategoryName()
         {
             Type helpersType = typeof(OnScreenSizeHelpers);// Fetch screen diagonal from OnScreenSizeHelpers with no parameters
             MethodInfo getDiagonalMethod = helpersType?.GetMethod("GetScreenDiagonalInches",

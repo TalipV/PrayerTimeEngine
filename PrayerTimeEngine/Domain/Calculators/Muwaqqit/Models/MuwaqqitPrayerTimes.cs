@@ -8,6 +8,12 @@ namespace PrayerTimeEngine.Domain.Calculators.Muwaqqit.Models
         public required DateTime Date { get; set; }
         public required decimal Longitude { get; set; }
         public required decimal Latitude { get; set; }
+        public DateTime? InsertDateTime { get; set; }
+
+        public required double FajrDegree { get; set; }
+        public required double AsrKarahaDegree { get; set; }
+        public required double IshtibaqDegree { get; set; }
+        public required double IshaDegree { get; set; }
 
         public required DateTime Fajr { get; set; }
         public required DateTime NextFajr { get; set; }

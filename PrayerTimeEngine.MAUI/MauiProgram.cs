@@ -41,27 +41,38 @@ public static class MauiProgram
                 fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
             });
 
-#if DEBUG
+        addLogging(builder);
+        addDependencyInjectionServices(builder.Services);
+
+        return builder.Build();
+    }
+
+    class LoggingLayout : MetroLog.Layouts.Layout
+    {
+        public override string GetFormattedString(MetroLog.LogWriteContext context, MetroLog.LogEventInfo info)
+        {
+            string text = $"{info.TimeStamp.ToString("HH:mm:ss:fff")}|{info.Logger}|{info.Message}";
+
+            if (info.Exception != null)
+            {
+                text += $"|Exception:'{info.Exception.Message}' AT '{info.Exception.StackTrace}'";
+            }
+
+            return text;
+        }
+    }
+
+    private static void addLogging(MauiAppBuilder builder)
+    {
         builder.Logging
-            .SetMinimumLevel(LogLevel.Debug) // IMPORTANT: set your minimum log level, here Trace
-            .AddTraceLogger(
-                options =>
-                {
-                    options.MinLevel = LogLevel.Debug;
-                    options.MaxLevel = LogLevel.Debug;
-                }) // Will write to the Debug Output
-            .AddConsoleLogger(
-                options =>
-                {
-                    options.MinLevel = LogLevel.Debug;
-                    options.MaxLevel = LogLevel.Debug;
-                }) // Will write to the Console Output (logcat for android)
+            .SetMinimumLevel(LogLevel.Debug)
             .AddInMemoryLogger(
                 options =>
                 {
-                    options.MaxLines = 1024;
+                    //options.MaxLines = 1024;
                     options.MinLevel = LogLevel.Debug;
                     options.MaxLevel = LogLevel.Debug;
+                    options.Layout = new LoggingLayout();
                 })
             .AddStreamingFileLogger(
                 options =>
@@ -70,14 +81,7 @@ public static class MauiProgram
                     options.FolderPath = Path.Combine(
                         FileSystem.CacheDirectory,
                         "MetroLogs");
-                })
-            .AddInMemoryLogger(_ => { })
-            .AddStreamingFileLogger(_ => { });
-#endif
-
-        addDependencyInjectionServices(builder.Services);
-
-        return builder.Build();
+                });
     }
 
     private static void addDependencyInjectionServices(IServiceCollection serviceCollection)

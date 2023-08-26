@@ -83,8 +83,8 @@ namespace PrayerTimeEngine.Presentation.ViewModel
         public LocationIQPlace SelectedPlace { get; set; }
 
         public DateTime? LastUpdated { get; private set; }
-        public bool IsLoading { get; private set; }
-        public bool IsNotLoading => !IsLoading;
+        public bool IsCurrentlyLoadingTimes => this.isLoadPrayerTimesRunningInterlockedInt != 0;
+        public bool IsNotLoading => !IsCurrentlyLoadingTimes;
 
         public bool ShowFajrGhalas { get; set; }
         public bool ShowFajrRedness { get; set; }
@@ -103,6 +103,11 @@ namespace PrayerTimeEngine.Presentation.ViewModel
 
         public ICommand PerformSearch => new Command<string>(async (string query) =>
         {
+            if (this.IsCurrentlyLoadingTimes)
+            {
+                return;
+            }
+
             try
             {
                 string languageCode = CultureInfo.CurrentCulture.TwoLetterISOLanguageName;
@@ -121,7 +126,10 @@ namespace PrayerTimeEngine.Presentation.ViewModel
             => new Command<EPrayerType>(
                 async (prayerTime) =>
                 {
-                    await _navigationService.NavigateTo<SettingsHandlerPageViewModel>(prayerTime);
+                    if (!IsCurrentlyLoadingTimes)
+                    {
+                        await _navigationService.NavigateTo<SettingsHandlerPageViewModel>(prayerTime);
+                    }
                 });
 
         public event Action OnAfterLoadingPrayerTimes_EventTrigger = delegate { };
@@ -191,23 +199,24 @@ namespace PrayerTimeEngine.Presentation.ViewModel
             // reload prayer times for new profile
         }
 
+        private int isLoadPrayerTimesRunningInterlockedInt = 0;  // 0 for false, 1 for true
+
         private async Task loadPrayerTimes()
         {
-            if (CurrentProfile == null)
+            if (CurrentProfile == null || Interlocked.CompareExchange(ref isLoadPrayerTimesRunningInterlockedInt, 1, 0) == 1)
             {
                 return;
             }
 
             try
             {
-                IsLoading = true;
                 Prayers = await _prayerTimeCalculationService.ExecuteAsync(CurrentProfile, DateTime.Today);
                 OnAfterLoadingPrayerTimes_EventTrigger.Invoke();
             }
             finally
             {
+                Interlocked.Exchange(ref isLoadPrayerTimesRunningInterlockedInt, 0);  // Reset the flag to allow future runs
                 LastUpdated = DateTime.Now;
-                IsLoading = false;
             }
         }
 
@@ -267,7 +276,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
                     CurrentProfile.LocationName = SelectedPlace.address.city;
                     await _configStoreService.SaveProfile(CurrentProfile);
 
-                    await this.loadPrayerTimes();
+                    await loadPrayerTimes();
 
                     var missingLocationInfo =
                         CurrentProfile.LocationDataByCalculationSource

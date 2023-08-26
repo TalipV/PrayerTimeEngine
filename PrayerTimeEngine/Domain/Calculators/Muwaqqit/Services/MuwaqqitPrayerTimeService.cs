@@ -6,7 +6,6 @@ using PrayerTimeEngine.Domain.Calculators.Muwaqqit.Models;
 using PrayerTimeEngine.Domain.Calculators.Semerkand;
 using PrayerTimeEngine.Domain.Model;
 using PrayerTimeEngine.Domain.LocationService.Models;
-using PrayerTimeEngine.Domain.Calculators.Semerkand.Models;
 
 namespace PrayerTimeEngine.Domain.Calculators.Muwaqqit.Services
 {
@@ -179,6 +178,8 @@ namespace PrayerTimeEngine.Domain.Calculators.Muwaqqit.Services
             return new HashSet<ETimeType>();
         }
 
+        private SemaphoreSlim semaphoreGetPrayerTimesInternal = new SemaphoreSlim(1, 1);
+
         private async Task<MuwaqqitPrayerTimes> getPrayerTimesInternal(
             DateTime date,
             decimal longitude,
@@ -189,15 +190,25 @@ namespace PrayerTimeEngine.Domain.Calculators.Muwaqqit.Services
             double asrKarahaDegree,
             string timezone)
         {
-            MuwaqqitPrayerTimes prayerTimes = await _muwaqqitDBAccess.GetTimesAsync(date, longitude, latitude, fajrDegree, ishaDegree, ishtibaqDegree, asrKarahaDegree);
+            // check-then-act has to be thread safe
+            await semaphoreGetPrayerTimesInternal.WaitAsync();
 
-            if (prayerTimes == null)
+            try
             {
-                prayerTimes = await _muwaqqitApiService.GetTimesAsync(date, longitude, latitude, fajrDegree, ishaDegree, ishtibaqDegree, asrKarahaDegree, timezone);
-                await _muwaqqitDBAccess.InsertMuwaqqitPrayerTimesAsync(date, timezone, longitude, latitude, fajrDegree, ishaDegree, ishtibaqDegree, asrKarahaDegree, prayerTimes);
-            }
+                MuwaqqitPrayerTimes prayerTimes = await _muwaqqitDBAccess.GetTimesAsync(date, longitude, latitude, fajrDegree, ishaDegree, ishtibaqDegree, asrKarahaDegree);
 
-            return prayerTimes;
+                if (prayerTimes == null)
+                {
+                    prayerTimes = await _muwaqqitApiService.GetTimesAsync(date, longitude, latitude, fajrDegree, ishaDegree, ishtibaqDegree, asrKarahaDegree, timezone);
+                    await _muwaqqitDBAccess.InsertMuwaqqitPrayerTimesAsync(date, timezone, longitude, latitude, fajrDegree, ishaDegree, ishtibaqDegree, asrKarahaDegree, prayerTimes);
+                }
+
+                return prayerTimes;
+            }
+            finally
+            {
+                semaphoreGetPrayerTimesInternal.Release();
+            }
         }
 
         public Task<BaseLocationData> GetLocationInfo(LocationIQPlace place)

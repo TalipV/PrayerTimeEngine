@@ -21,7 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\PrayerTimeEngine\PrayerTimeEngine.csproj" />
+    <ProjectReference Include="..\PrayerTimeEngine\PrayerTimeEngine.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>

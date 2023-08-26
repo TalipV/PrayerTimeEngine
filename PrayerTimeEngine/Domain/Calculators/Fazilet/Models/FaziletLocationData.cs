@@ -1,5 +1,4 @@
-﻿using System;
-using PrayerTimeEngine.Common.Enum;
+﻿using PrayerTimeEngine.Common.Enum;
 using PrayerTimeEngine.Domain.Model;
 
 namespace PrayerTimeEngine.Domain.Calculators.Fazilet.Models

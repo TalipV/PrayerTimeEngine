@@ -4,7 +4,6 @@ using PrayerTimeEngine.Domain.CalculationService.Interfaces;
 using PrayerTimeEngine.Domain.Calculators.Semerkand.Models;
 using PrayerTimeEngine.Domain.Calculators.Semerkand.Services;
 using PrayerTimeEngine.Domain.ConfigStore.Models;
-using PrayerTimeEngine.Domain.Model;
 using PrayerTimeEngineUnitTests.Mocks;
 using System.Net;
 

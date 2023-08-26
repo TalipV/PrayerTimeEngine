@@ -83,30 +83,55 @@ namespace PrayerTimeEngine.Domain.Calculators.Semerkand.Services
             return prayerTimes;
         }
 
+        private SemaphoreSlim semaphoreGetPrayerTimesByDateAndCityID = new SemaphoreSlim(1, 1);
+
         private async Task<SemerkandPrayerTimes> getPrayerTimesByDateAndCityID(DateTime date, int cityID)
         {
-            SemerkandPrayerTimes prayerTimes = await _semerkandDBAccess.GetTimesByDateAndCityID(date, cityID);
+            // check-then-act has to be thread safe
+            await semaphoreGetPrayerTimesByDateAndCityID.WaitAsync();
 
-            if (prayerTimes == null)
+            try
             {
-                List<SemerkandPrayerTimes> prayerTimesLst = await _semerkandApiService.GetTimesByCityID(date, cityID);
-                prayerTimesLst.ForEach(async x => await _semerkandDBAccess.InsertSemerkandPrayerTimes(x.Date.Date, cityID, x));
-                prayerTimes = prayerTimesLst.FirstOrDefault(x => x.Date == date.Date);
-            }
+                SemerkandPrayerTimes prayerTimes = await _semerkandDBAccess.GetTimesByDateAndCityID(date, cityID);
 
-            return prayerTimes;
+                if (prayerTimes == null)
+                {
+                    List<SemerkandPrayerTimes> prayerTimesLst = await _semerkandApiService.GetTimesByCityID(date, cityID);
+                    prayerTimesLst.ForEach(async x => await _semerkandDBAccess.InsertSemerkandPrayerTimes(x.Date.Date, cityID, x));
+                    prayerTimes = prayerTimesLst.FirstOrDefault(x => x.Date == date.Date);
+                }
+
+                return prayerTimes;
+            }
+            finally
+            {
+                semaphoreGetPrayerTimesByDateAndCityID.Release();
+            }
         }
-        
+
+
+        private SemaphoreSlim semaphoreTryGetCityID = new SemaphoreSlim(1, 1);
+
         private async Task<(bool success, int cityID)> tryGetCityID(string cityName, int countryID)
         {
-            // We only check if it is empty because a selection of countries missing is not expected.
-            if ((await _semerkandDBAccess.GetCitiesByCountryID(countryID)).Count == 0)
-            {
-                // load cities through HTTP request
-                Dictionary<string, int> cities = await _semerkandApiService.GetCitiesByCountryID(countryID);
+            // check-then-act has to be thread safe
+            await semaphoreTryGetCityID.WaitAsync();
 
-                // save cities to db
-                await _semerkandDBAccess.InsertCities(cities, countryID);
+            try
+            {
+                // We only check if it is empty because a selection of countries missing is not expected.
+                if ((await _semerkandDBAccess.GetCitiesByCountryID(countryID)).Count == 0)
+                {
+                    // load cities through HTTP request
+                    Dictionary<string, int> cities = await _semerkandApiService.GetCitiesByCountryID(countryID);
+
+                    // save cities to db
+                    await _semerkandDBAccess.InsertCities(cities, countryID);
+                }
+            }
+            finally
+            {
+                semaphoreTryGetCityID.Release();
             }
 
             if ((await _semerkandDBAccess.GetCitiesByCountryID(countryID)).TryGetValue(cityName, out int cityID))
@@ -115,17 +140,30 @@ namespace PrayerTimeEngine.Domain.Calculators.Semerkand.Services
                 return (false, -1);
         }
 
+        private SemaphoreSlim semaphoreTryGetCountryID = new SemaphoreSlim(1, 1);
+
         private async Task<(bool success, int countryID)> tryGetCountryID(string countryName)
         {
-            // We only check if it is empty because a selection of countries missing is not expected.
-            if ((await _semerkandDBAccess.GetCountries()).Count == 0)
-            {
-                // load countries through HTTP request
-                Dictionary<string, int> countries = await _semerkandApiService.GetCountries();
+            // check-then-act has to be thread safe
+            await semaphoreTryGetCountryID.WaitAsync();
 
-                // save countries to db
-                await _semerkandDBAccess.InsertCountries(countries);
+            try
+            {
+                // We only check if it is empty because a selection of countries missing is not expected.
+                if ((await _semerkandDBAccess.GetCountries()).Count == 0)
+                {
+                    // load countries through HTTP request
+                    Dictionary<string, int> countries = await _semerkandApiService.GetCountries();
+
+                    // save countries to db
+                    await _semerkandDBAccess.InsertCountries(countries);
+                }
             }
+            finally
+            {
+                semaphoreTryGetCountryID.Release();
+            }
+
             if ((await _semerkandDBAccess.GetCountries()).TryGetValue(countryName, out int countryID))
                 return (true, countryID);
             else

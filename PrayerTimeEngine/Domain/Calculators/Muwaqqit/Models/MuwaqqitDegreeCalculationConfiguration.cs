@@ -1,6 +1,4 @@
-﻿using PrayerTimeEngine.Common.Enum;
-
-namespace PrayerTimeEngine.Domain.Calculators.Muwaqqit.Models
+﻿namespace PrayerTimeEngine.Domain.Calculators.Muwaqqit.Models
 {
     public class MuwaqqitDegreeCalculationConfiguration : MuwaqqitCalculationConfiguration
     {

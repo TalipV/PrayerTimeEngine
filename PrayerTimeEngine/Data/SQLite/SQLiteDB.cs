@@ -1,6 +1,5 @@
 ﻿using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Logging;
-using PrayerTimeEngine.Domain.Calculators.Fazilet.Services;
 
 namespace PrayerTimeEngine.Data.SQLite
 {
@@ -32,17 +31,17 @@ namespace PrayerTimeEngine.Data.SQLite
 
         public void InitializeDatabase()
         {
-            _logger.LogDebug("InitializeDatabase");
+            _logger.LogDebug("Initialize");
 
 #if DEBUG
             //if (File.Exists(DatabasePath))
             //    File.Delete(DatabasePath);
-            //_logger.LogDebug("Delete DBs");
+            //_logger.LogDebug("Delete database");
 #endif
 
             if (!File.Exists(DatabasePath))
             {
-                _logger.LogDebug("Create database");
+                _logger.LogDebug("Create table schemas");
 
                 using (SqliteConnection connection = getSqliteConnection())
                 {

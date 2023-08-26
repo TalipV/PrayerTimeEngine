@@ -5,9 +5,9 @@ VisualStudioVersion = 17.0.31611.283
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PrayerTimeEngine.MAUI", "PrayerTimeEngine.MAUI\PrayerTimeEngine.MAUI.csproj", "{09BF846A-68B9-47EE-8F08-2D3E413CCB01}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PrayerTimeEngine", "PrayerTimeEngine\PrayerTimeEngine.csproj", "{900682D9-A67A-4112-BA7E-88AECD351554}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PrayerTimeEngine.Core", "PrayerTimeEngine\PrayerTimeEngine.Core.csproj", "{900682D9-A67A-4112-BA7E-88AECD351554}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PrayerTimeEngineUnitTests", "PrayerTimeEngineUnitTests\PrayerTimeEngineUnitTests.csproj", "{FB9E7882-87DF-4ED2-B871-00A55C04B1F6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PrayerTimeEngine.Core.Tests", "PrayerTimeEngineUnitTests\PrayerTimeEngine.Core.Tests.csproj", "{FB9E7882-87DF-4ED2-B871-00A55C04B1F6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
