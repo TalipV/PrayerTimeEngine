@@ -70,27 +70,27 @@ namespace PrayerTimeEngine.Domain.ConfigStore.Models
                         },
                 },
                 Configurations =
-                    new Dictionary<ETimeType, GenericSettingConfiguration>()
+                    new List<GenericSettingConfiguration>()
                     {
-                        [ETimeType.FajrStart] = new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.FajrStart, MinuteAdjustment = 0, Degree = -12.0 },
-                        [ETimeType.FajrEnd] = new GenericSettingConfiguration { TimeType = ETimeType.FajrEnd, MinuteAdjustment = 0, Source = ECalculationSource.Muwaqqit },
-                        [ETimeType.FajrGhalas] = new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.FajrGhalas, MinuteAdjustment = 0, Degree = -7.5 },
-                        [ETimeType.FajrKaraha] = new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.FajrKaraha, MinuteAdjustment = 0, Degree = -4.5 },
-                        [ETimeType.DuhaStart] = new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.DuhaStart, MinuteAdjustment = 0, Degree = 3.5 },
-                        [ETimeType.DuhaEnd] = new GenericSettingConfiguration { TimeType = ETimeType.DuhaEnd, MinuteAdjustment = -20 },
-                        [ETimeType.DhuhrStart] = new GenericSettingConfiguration { TimeType = ETimeType.DhuhrStart, MinuteAdjustment = 0, Source = ECalculationSource.Muwaqqit },
-                        [ETimeType.DhuhrEnd] = new GenericSettingConfiguration { TimeType = ETimeType.DhuhrEnd, MinuteAdjustment = 0, Source = ECalculationSource.Muwaqqit },
-                        [ETimeType.AsrStart] = new GenericSettingConfiguration { TimeType = ETimeType.AsrStart, MinuteAdjustment = 0, Source = ECalculationSource.Muwaqqit },
-                        [ETimeType.AsrEnd] = new GenericSettingConfiguration { TimeType = ETimeType.AsrEnd, MinuteAdjustment = 0, Source = ECalculationSource.Muwaqqit },
-                        [ETimeType.AsrMithlayn] = new GenericSettingConfiguration { TimeType = ETimeType.AsrMithlayn, MinuteAdjustment = 0, Source = ECalculationSource.Muwaqqit },
-                        [ETimeType.AsrKaraha] = new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.AsrKaraha, MinuteAdjustment = 0, Degree = 4.5 },
-                        [ETimeType.MaghribStart] = new GenericSettingConfiguration { TimeType = ETimeType.MaghribStart, MinuteAdjustment = 0, Source = ECalculationSource.Muwaqqit },
-                        [ETimeType.MaghribEnd] = new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.MaghribEnd, MinuteAdjustment = 0, Degree = -12.0 },
-                        [ETimeType.MaghribSufficientTime] = new GenericSettingConfiguration { TimeType = ETimeType.MaghribSufficientTime, MinuteAdjustment = 20 },
-                        [ETimeType.MaghribIshtibaq] = new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.MaghribIshtibaq, MinuteAdjustment = 0, Degree = -8 },
-                        [ETimeType.IshaStart] = new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.IshaStart, MinuteAdjustment = 0, Degree = -15.5 },
-                        [ETimeType.IshaEnd] = new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.IshaEnd, MinuteAdjustment = 0, Degree = -15.0 },
-                    }
+                        new GenericSettingConfiguration { Source = ECalculationSource.Fazilet, TimeType = ETimeType.FajrStart }, // späteste Berechnung
+                        new GenericSettingConfiguration { Source = ECalculationSource.Semerkand, TimeType = ETimeType.FajrEnd }, // früheste Berechnung
+                        new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.FajrGhalas, Degree = -8.5 }, // Grobe Einschätzung anhand von Sichtung  
+                        new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.FajrKaraha, Degree = -4.0 }, // ### keine Erfahrung
+                        new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.DuhaStart, Degree = 5.0 }, // von Gebetszeiten-Hoca, späteste
+                        new GenericSettingConfiguration { TimeType = ETimeType.DuhaEnd, MinuteAdjustment = -25 }, // ### keine Erfahrung
+                        new GenericSettingConfiguration { Source = ECalculationSource.Fazilet, TimeType = ETimeType.DhuhrStart }, // späteste Berechnung
+                        new GenericSettingConfiguration { Source = ECalculationSource.Muwaqqit, TimeType = ETimeType.DhuhrEnd }, // früheste Berechnung
+                        new GenericSettingConfiguration { Source = ECalculationSource.Fazilet, TimeType = ETimeType.AsrStart }, // späteste Berechnung
+                        new GenericSettingConfiguration { Source = ECalculationSource.Muwaqqit, TimeType = ETimeType.AsrEnd }, // früheste Berechnung
+                        new GenericSettingConfiguration { Source = ECalculationSource.Muwaqqit, TimeType = ETimeType.AsrMithlayn },
+                        new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.AsrKaraha, Degree = 5.0 }, // von Gebetszeiten-Hoca, früheste
+                        new GenericSettingConfiguration { Source = ECalculationSource.Fazilet, TimeType = ETimeType.MaghribStart },
+                        new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.MaghribEnd, Degree = -15.0 }, // ### keine Erfahrung, aber Sicherheitsabstand
+                        new GenericSettingConfiguration { TimeType = ETimeType.MaghribSufficientTime, MinuteAdjustment = 20 },
+                        new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.MaghribIshtibaq, Degree = -10.0 }, // von Gebetszeiten-Hoca
+                        new GenericSettingConfiguration { Source = ECalculationSource.Fazilet, TimeType = ETimeType.IshaStart },
+                        new GenericSettingConfiguration { Source = ECalculationSource.Semerkand, TimeType = ETimeType.IshaEnd },
+                    }.ToDictionary(x => x.TimeType)
             };
         }
     }
