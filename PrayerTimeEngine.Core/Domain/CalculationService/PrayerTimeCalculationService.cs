@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using PrayerTimeEngine.Common.Enum;
 using PrayerTimeEngine.Domain;
 using PrayerTimeEngine.Domain.CalculationService.Interfaces;
@@ -8,18 +9,22 @@ using PrayerTimeEngine.Domain.Calculators.Semerkand;
 using PrayerTimeEngine.Domain.Calculators.Semerkand.Services;
 using PrayerTimeEngine.Domain.ConfigStore.Models;
 using PrayerTimeEngine.Domain.Model;
+using System.Diagnostics;
 
 public class PrayerTimeCalculationService : IPrayerTimeCalculationService
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly TimeTypeAttributeService _timeTypeAttributeService;
+    private readonly ILogger<PrayerTimeCalculationService> _logger;
 
     public PrayerTimeCalculationService(
         IServiceProvider serviceProvider, 
-        TimeTypeAttributeService timeTypeAttributeService)
+        TimeTypeAttributeService timeTypeAttributeService,
+        ILogger<PrayerTimeCalculationService> logger)
     {
         _serviceProvider = serviceProvider;
         _timeTypeAttributeService = timeTypeAttributeService;
+        _logger = logger;
     }
 
     public async Task<PrayerTimesBundle> ExecuteAsync(Profile profile, DateTime dateTime)
@@ -46,8 +51,14 @@ public class PrayerTimeCalculationService : IPrayerTimeCalculationService
             throwIfConfigsHaveUnsupportedTimeTypes(calculationSource, configs, timeCalculator);
             BaseLocationData locationData = profile.LocationDataByCalculationSource[calculationSource];
 
+            Stopwatch stopwatch = Stopwatch.StartNew();
+
             ILookup<ICalculationPrayerTimes, ETimeType> calculationPrayerTimes =
                 await timeCalculator.GetPrayerTimesAsync(dateTime, locationData, configs);
+
+            _logger.LogDebug(
+                "{CalculationCount} times took {DurationMS} ms for {TimeCalculatorBane}", 
+                configs.Count, stopwatch.ElapsedMilliseconds, timeCalculator.GetType().Name);
 
             foreach (var calculationPrayerTimeKVP in calculationPrayerTimes)
             {

@@ -63,6 +63,5 @@ namespace PrayerTimeEngine.Presentation.ViewModel
         }
 
         #endregion public methods
-
     }
 }

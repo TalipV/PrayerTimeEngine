@@ -6,6 +6,7 @@ using PrayerTimeEngine.Domain.Calculators.Muwaqqit.Models;
 using PrayerTimeEngine.Domain.Calculators.Semerkand;
 using PrayerTimeEngine.Domain.Model;
 using PrayerTimeEngine.Domain.LocationService.Models;
+using PrayerTimeEngine.Core.Common;
 
 namespace PrayerTimeEngine.Domain.Calculators.Muwaqqit.Services
 {
@@ -178,7 +179,7 @@ namespace PrayerTimeEngine.Domain.Calculators.Muwaqqit.Services
             return new HashSet<ETimeType>();
         }
 
-        private SemaphoreSlim semaphoreGetPrayerTimesInternal = new SemaphoreSlim(1, 1);
+        private readonly AsyncDuplicateLock getPrayerTimesLocker = new();
 
         private async Task<MuwaqqitPrayerTimes> getPrayerTimesInternal(
             DateTime date,
@@ -190,10 +191,9 @@ namespace PrayerTimeEngine.Domain.Calculators.Muwaqqit.Services
             double asrKarahaDegree,
             string timezone)
         {
-            // check-then-act has to be thread safe
-            await semaphoreGetPrayerTimesInternal.WaitAsync();
+            var lockTuple = (date, longitude, latitude, fajrDegree, ishaDegree, ishtibaqDegree, asrKarahaDegree, timezone);
 
-            try
+            using (await getPrayerTimesLocker.LockAsync(lockTuple))
             {
                 MuwaqqitPrayerTimes prayerTimes = await _muwaqqitDBAccess.GetTimesAsync(date, longitude, latitude, fajrDegree, ishaDegree, ishtibaqDegree, asrKarahaDegree);
 
@@ -204,10 +204,6 @@ namespace PrayerTimeEngine.Domain.Calculators.Muwaqqit.Services
                 }
 
                 return prayerTimes;
-            }
-            finally
-            {
-                semaphoreGetPrayerTimesInternal.Release();
             }
         }
 

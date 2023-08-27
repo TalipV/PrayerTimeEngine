@@ -1,31 +1,31 @@
-﻿using PrayerTimeEngine.Common.Enum;
+﻿using Microsoft.Extensions.Logging;
+using PrayerTimeEngine.Common.Enum;
+using PrayerTimeEngine.Core.Common;
 using PrayerTimeEngine.Domain.CalculationService.Interfaces;
+using PrayerTimeEngine.Domain.Calculators.Semerkand.Interfaces;
+using PrayerTimeEngine.Domain.Calculators.Semerkand.Models;
 using PrayerTimeEngine.Domain.ConfigStore.Models;
-using PrayerTimeEngine.Domain.Calculators.Fazilet.Interfaces;
-using PrayerTimeEngine.Domain.Calculators.Fazilet.Models;
-using PrayerTimeEngine.Domain.Calculators.Semerkand;
 using PrayerTimeEngine.Domain.LocationService.Models;
 using PrayerTimeEngine.Domain.Model;
 using PrayerTimeEngine.Domain.NominatimLocation.Interfaces;
-using Microsoft.Extensions.Logging;
 
-namespace PrayerTimeEngine.Domain.Calculators.Fazilet.Services
+namespace PrayerTimeEngine.Domain.Calculators.Semerkand.Services
 {
-    public class FaziletPrayerTimeCalculator : IPrayerTimeService
+    public class SemerkandPrayerTimeCalculator : IPrayerTimeService
     {
-        private readonly IFaziletDBAccess _faziletDBAccess;
-        private readonly IFaziletApiService _faziletApiService;
+        private readonly ISemerkandDBAccess _semerkandDBAccess;
+        private readonly ISemerkandApiService _semerkandApiService;
         private readonly ILocationService _placeService;
-        private readonly ILogger<FaziletPrayerTimeCalculator> _logger;
+        private readonly ILogger<SemerkandPrayerTimeCalculator> _logger;
 
-        public FaziletPrayerTimeCalculator(
-            IFaziletDBAccess faziletDBAccess,
-            IFaziletApiService faziletApiService,
+        public SemerkandPrayerTimeCalculator(
+            ISemerkandDBAccess semerkandDBAccess,
+            ISemerkandApiService semerkandApiService,
             ILocationService placeService,
-            ILogger<FaziletPrayerTimeCalculator> logger)
+            ILogger<SemerkandPrayerTimeCalculator> logger)
         {
-            _faziletDBAccess = faziletDBAccess;
-            _faziletApiService = faziletApiService;
+            _semerkandDBAccess = semerkandDBAccess;
+            _semerkandApiService = semerkandApiService;
             _placeService = placeService;
             _logger = logger;
         }
@@ -53,30 +53,30 @@ namespace PrayerTimeEngine.Domain.Calculators.Fazilet.Services
         {
             // check configuration's calcultion sources?
 
-            if (locationData is not FaziletLocationData faziletLocationData)
+            if (locationData is not SemerkandLocationData semerkandLocationData)
             {
-                throw new Exception("Fazilet specific location information was not provided!");
+                throw new Exception("Semerkand specific location information was not provided!");
             }
 
-            string countryName = faziletLocationData.CountryName;
-            string cityName = faziletLocationData.CityName;
+            string countryName = semerkandLocationData.CountryName;
+            string cityName = semerkandLocationData.CityName;
 
-            ICalculationPrayerTimes faziletPrayerTimes = await getPrayerTimesInternal(date, countryName, cityName);
+            ICalculationPrayerTimes semerkandPrayerTimes = await getPrayerTimesInternal(date, countryName, cityName);
 
             // this single calculation entity applies to all the TimeTypes of the configurations
             return configurations
-                .Select(x => x.TimeType)
-                .ToLookup(x => faziletPrayerTimes, y => y);
+            .Select(x => x.TimeType)
+                .ToLookup(x => semerkandPrayerTimes, y => y);
         }
 
-        private async Task<FaziletPrayerTimes> getPrayerTimesInternal(DateTime date, string countryName, string cityName)
+        private async Task<SemerkandPrayerTimes> getPrayerTimesInternal(DateTime date, string countryName, string cityName)
         {
-            if ((await tryGetCountryID(countryName)) is (bool countrySuccess, int countryID) countryResult && !countrySuccess)
+            if((await tryGetCountryID(countryName)) is (bool countrySuccess, int countryID) countryResult && !countrySuccess)
                 throw new ArgumentException($"{nameof(countryName)} could not be found!");
             if ((await tryGetCityID(cityName, countryID)) is (bool citySuccess, int cityID) cityResult && !citySuccess)
                 throw new ArgumentException($"{nameof(cityName)} could not be found!");
 
-            FaziletPrayerTimes prayerTimes = await getPrayerTimesByDateAndCityID(date, cityID)
+            SemerkandPrayerTimes prayerTimes = await getPrayerTimesByDateAndCityID(date, cityID)
                 ?? throw new Exception($"Prayer times for the {date:D} could not be found for an unknown reason.");
 
             prayerTimes.NextFajr = (await getPrayerTimesByDateAndCityID(date.AddDays(1), cityID))?.Fajr;
@@ -84,32 +84,27 @@ namespace PrayerTimeEngine.Domain.Calculators.Fazilet.Services
             return prayerTimes;
         }
 
+        private readonly AsyncDuplicateLock getPrayerTimesLocker = new();
 
-        private SemaphoreSlim semaphoreGetPrayerTimesByDateAndCityID = new SemaphoreSlim(1, 1);
-
-        private async Task<FaziletPrayerTimes> getPrayerTimesByDateAndCityID(DateTime date, int cityID)
+        private async Task<SemerkandPrayerTimes> getPrayerTimesByDateAndCityID(DateTime date, int cityID)
         {
-            // check-then-act has to be thread safe
-            await semaphoreGetPrayerTimesByDateAndCityID.WaitAsync();
+            var lockTuple = (date, cityID);
 
-            try
+            using (await getPrayerTimesLocker.LockAsync(lockTuple))
             {
-                FaziletPrayerTimes prayerTimes = await _faziletDBAccess.GetTimesByDateAndCityID(date, cityID);
+                SemerkandPrayerTimes prayerTimes = await _semerkandDBAccess.GetTimesByDateAndCityID(date, cityID);
 
                 if (prayerTimes == null)
                 {
-                    List<FaziletPrayerTimes> prayerTimesLst = await _faziletApiService.GetTimesByCityID(cityID);
-                    prayerTimesLst.ForEach(async x => await _faziletDBAccess.InsertFaziletPrayerTimes(x.Date.Date, cityID, x));
+                    List<SemerkandPrayerTimes> prayerTimesLst = await _semerkandApiService.GetTimesByCityID(date, cityID);
+                    prayerTimesLst.ForEach(async x => await _semerkandDBAccess.InsertSemerkandPrayerTimes(x.Date.Date, cityID, x));
                     prayerTimes = prayerTimesLst.FirstOrDefault(x => x.Date == date.Date);
                 }
 
                 return prayerTimes;
             }
-            finally
-            {
-                semaphoreGetPrayerTimesByDateAndCityID.Release();
-            }
         }
+
 
         private SemaphoreSlim semaphoreTryGetCityID = new SemaphoreSlim(1, 1);
 
@@ -121,13 +116,13 @@ namespace PrayerTimeEngine.Domain.Calculators.Fazilet.Services
             try
             {
                 // We only check if it is empty because a selection of countries missing is not expected.
-                if ((await _faziletDBAccess.GetCitiesByCountryID(countryID)).Count == 0)
+                if ((await _semerkandDBAccess.GetCitiesByCountryID(countryID)).Count == 0)
                 {
                     // load cities through HTTP request
-                    Dictionary<string, int> cities = await _faziletApiService.GetCitiesByCountryID(countryID);
+                    Dictionary<string, int> cities = await _semerkandApiService.GetCitiesByCountryID(countryID);
 
                     // save cities to db
-                    await _faziletDBAccess.InsertCities(cities, countryID);
+                    await _semerkandDBAccess.InsertCities(cities, countryID);
                 }
             }
             finally
@@ -135,7 +130,7 @@ namespace PrayerTimeEngine.Domain.Calculators.Fazilet.Services
                 semaphoreTryGetCityID.Release();
             }
 
-            if ((await _faziletDBAccess.GetCitiesByCountryID(countryID)).TryGetValue(cityName, out int cityID))
+            if ((await _semerkandDBAccess.GetCitiesByCountryID(countryID)).TryGetValue(cityName, out int cityID))
                 return (true, cityID);
             else
                 return (false, -1);
@@ -150,15 +145,14 @@ namespace PrayerTimeEngine.Domain.Calculators.Fazilet.Services
 
             try
             {
-
                 // We only check if it is empty because a selection of countries missing is not expected.
-                if ((await _faziletDBAccess.GetCountries()).Count == 0)
+                if ((await _semerkandDBAccess.GetCountries()).Count == 0)
                 {
                     // load countries through HTTP request
-                    Dictionary<string, int> countries = await _faziletApiService.GetCountries();
+                    Dictionary<string, int> countries = await _semerkandApiService.GetCountries();
 
                     // save countries to db
-                    await _faziletDBAccess.InsertCountries(countries);
+                    await _semerkandDBAccess.InsertCountries(countries);
                 }
             }
             finally
@@ -166,7 +160,7 @@ namespace PrayerTimeEngine.Domain.Calculators.Fazilet.Services
                 semaphoreTryGetCountryID.Release();
             }
 
-            if ((await _faziletDBAccess.GetCountries()).TryGetValue(countryName, out int countryID))
+            if ((await _semerkandDBAccess.GetCountries()).TryGetValue(countryName, out int countryID))
                 return (true, countryID);
             else
                 return (false, -1);
@@ -187,15 +181,15 @@ namespace PrayerTimeEngine.Domain.Calculators.Fazilet.Services
             countryName = countryName.Replace("İ", "I");
             cityName = cityName.Replace("İ", "I");
 
-            var (success, countryID) = await this.tryGetCountryID(countryName);
+            _logger.LogDebug("Semerkand search location: {Country}, {City}", countryName, cityName);
 
-            _logger.LogDebug("Fazilet search location: {Country}, {City}", countryName, cityName);
+            var (success, countryID) = await this.tryGetCountryID(countryName);
 
             if (success && (await this.tryGetCityID(cityName, countryID)).success)
             {
-                _logger.LogDebug("Fazilet found location: {Country}, {City}", countryName, cityName);
+                _logger.LogDebug("Semerkand found location: {Country}, {City}", countryName, cityName);
 
-                return new FaziletLocationData
+                return new SemerkandLocationData
                 {
                     CountryName = countryName,
                     CityName = cityName

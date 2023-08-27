@@ -17,7 +17,7 @@ public partial class SettingsHandlerPage : TabbedPage
     {
         foreach (SettingsContentPage settingContentPages in viewModel.SettingsContentPages)
         {
-            settingContentPages.SetBinding(TitleProperty, "TabTitle");
+            settingContentPages.SetBinding(TitleProperty, nameof(SettingsContentPageViewModel.TabTitle));
             this.Children.Add(settingContentPages);
         }
     }
