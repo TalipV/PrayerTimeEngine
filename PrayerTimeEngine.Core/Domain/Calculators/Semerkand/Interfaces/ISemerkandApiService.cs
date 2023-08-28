@@ -1,6 +1,6 @@
-﻿using PrayerTimeEngine.Domain.Calculators.Semerkand.Models;
+﻿using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Models;
 
-namespace PrayerTimeEngine.Domain.Calculators.Semerkand.Interfaces
+namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Interfaces
 {
     public interface ISemerkandApiService
     {

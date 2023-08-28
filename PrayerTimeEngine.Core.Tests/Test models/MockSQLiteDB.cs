@@ -1,5 +1,5 @@
 ﻿using Microsoft.Data.Sqlite;
-using PrayerTimeEngine.Data.SQLite;
+using PrayerTimeEngine.Core.Data.SQLite;
 
 namespace PrayerTimeEngineUnitTests.Mocks
 {

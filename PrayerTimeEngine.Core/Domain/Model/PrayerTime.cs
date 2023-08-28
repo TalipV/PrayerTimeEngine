@@ -1,4 +1,4 @@
-﻿namespace PrayerTimeEngine.Domain.Model
+﻿namespace PrayerTimeEngine.Core.Domain.Model
 {
     public abstract class PrayerTime
     {
@@ -31,7 +31,7 @@
         public DateTime? QuarterOfDay { get; set; }
     }
 
-    public class DhuhrPrayerTime : PrayerTime 
+    public class DhuhrPrayerTime : PrayerTime
     {
         public override string Name => "Dhuhr";
     }

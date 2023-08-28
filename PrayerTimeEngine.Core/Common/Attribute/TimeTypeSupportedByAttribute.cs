@@ -1,6 +1,6 @@
-﻿using PrayerTimeEngine.Common.Enum;
+﻿using PrayerTimeEngine.Core.Common.Enum;
 
-namespace PrayerTimeEngine.Common.Attribute
+namespace PrayerTimeEngine.Core.Common.Attribute
 {
     [AttributeUsage(AttributeTargets.Field)]
     public class TimeTypeSupportedByAttribute : System.Attribute

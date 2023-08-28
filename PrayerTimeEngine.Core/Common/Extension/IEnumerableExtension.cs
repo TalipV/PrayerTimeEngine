@@ -1,4 +1,4 @@
-﻿namespace PrayerTimeEngine.Common.Extension
+﻿namespace PrayerTimeEngine.Core.Common.Extension
 {
     public static class IEnumerableExtension
     {

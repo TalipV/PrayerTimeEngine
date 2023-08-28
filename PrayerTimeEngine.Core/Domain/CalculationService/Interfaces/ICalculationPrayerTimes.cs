@@ -1,6 +1,6 @@
-﻿using PrayerTimeEngine.Common.Enum;
+﻿using PrayerTimeEngine.Core.Common.Enum;
 
-namespace PrayerTimeEngine.Domain.CalculationService.Interfaces
+namespace PrayerTimeEngine.Core.Domain.CalculationService.Interfaces
 {
     public interface ICalculationPrayerTimes
     {

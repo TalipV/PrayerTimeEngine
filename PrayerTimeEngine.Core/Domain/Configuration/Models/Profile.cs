@@ -1,8 +1,8 @@
-﻿using PrayerTimeEngine.Common.Enum;
-using PrayerTimeEngine.Domain.Model;
+﻿using PrayerTimeEngine.Core.Common.Enum;
+using PrayerTimeEngine.Core.Domain.Model;
 using PropertyChanged;
 
-namespace PrayerTimeEngine.Domain.ConfigStore.Models
+namespace PrayerTimeEngine.Core.Domain.Configuration.Models
 {
     [AddINotifyPropertyChangedInterface]
     public class Profile

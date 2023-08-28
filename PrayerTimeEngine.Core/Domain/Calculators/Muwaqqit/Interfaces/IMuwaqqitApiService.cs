@@ -1,6 +1,6 @@
-﻿using PrayerTimeEngine.Domain.Calculators.Muwaqqit.Models;
+﻿using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Models;
 
-namespace PrayerTimeEngine.Domain.Calculators.Muwaqqit.Interfaces
+namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Interfaces
 {
     public interface IMuwaqqitApiService
     {

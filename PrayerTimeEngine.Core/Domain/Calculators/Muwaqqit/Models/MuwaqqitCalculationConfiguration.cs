@@ -1,7 +1,7 @@
-﻿using PrayerTimeEngine.Common.Enum;
-using PrayerTimeEngine.Domain.ConfigStore.Models;
+﻿using PrayerTimeEngine.Core.Common.Enum;
+using PrayerTimeEngine.Core.Domain.Configuration.Models;
 
-namespace PrayerTimeEngine.Domain.Calculators.Muwaqqit.Models
+namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Models
 {
     public class MuwaqqitCalculationConfiguration : GenericSettingConfiguration
     {

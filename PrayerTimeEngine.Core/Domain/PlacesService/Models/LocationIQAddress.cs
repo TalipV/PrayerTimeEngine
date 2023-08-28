@@ -1,4 +1,4 @@
-﻿namespace PrayerTimeEngine.Domain.NominatimLocation.Models
+﻿namespace PrayerTimeEngine.Core.Domain.PlacesService.Models
 {
     public class LocationIQAddress
     {

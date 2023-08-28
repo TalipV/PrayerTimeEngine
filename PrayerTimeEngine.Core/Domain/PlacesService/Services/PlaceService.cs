@@ -1,9 +1,10 @@
 ﻿using Microsoft.Extensions.Logging;
-using PrayerTimeEngine.Domain.LocationService.Models;
+using PrayerTimeEngine.Core.Domain.PlacesService.Interfaces;
+using PrayerTimeEngine.Core.Domain.PlacesService.Models;
 using System.Net;
 using System.Text.Json;
 
-namespace PrayerTimeEngine.Domain.NominatimLocation.Interfaces
+namespace PrayerTimeEngine.Core.Domain.PlacesService.Services
 {
     public class LocationService : ILocationService
     {
@@ -40,7 +41,7 @@ namespace PrayerTimeEngine.Domain.NominatimLocation.Interfaces
             HttpResponseMessage response = await _httpClient.GetAsync(url);
             response.EnsureSuccessStatusCode();
             lastAPICall = DateTime.Now;
-            
+
             string jsonResult = await response.Content.ReadAsStringAsync();
             return JsonSerializer.Deserialize<List<LocationIQPlace>>(jsonResult);
         }

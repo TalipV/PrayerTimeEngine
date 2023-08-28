@@ -1,6 +1,6 @@
-﻿using PrayerTimeEngine.Domain.LocationService.Models;
+﻿using PrayerTimeEngine.Core.Domain.PlacesService.Models;
 
-namespace PrayerTimeEngine.Domain.NominatimLocation.Interfaces
+namespace PrayerTimeEngine.Core.Domain.PlacesService.Interfaces
 {
     public interface ILocationService
     {

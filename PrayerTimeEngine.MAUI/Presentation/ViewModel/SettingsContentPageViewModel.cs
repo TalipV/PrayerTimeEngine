@@ -1,7 +1,7 @@
-﻿using PrayerTimeEngine.Common.Enum;
-using PrayerTimeEngine.Domain;
-using PrayerTimeEngine.Domain.ConfigStore.Interfaces;
-using PrayerTimeEngine.Domain.ConfigStore.Models;
+﻿using PrayerTimeEngine.Core.Common.Enum;
+using PrayerTimeEngine.Core.Domain;
+using PrayerTimeEngine.Core.Domain.Configuration.Interfaces;
+using PrayerTimeEngine.Core.Domain.Configuration.Models;
 using PrayerTimeEngine.Presentation.ViewModel.Custom;
 using PropertyChanged;
 

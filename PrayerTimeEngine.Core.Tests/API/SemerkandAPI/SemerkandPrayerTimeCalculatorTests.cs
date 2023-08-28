@@ -1,13 +1,15 @@
-using PrayerTimeEngine.Common.Enum;
+using PrayerTimeEngine.Core.Common.Enum;
+using PrayerTimeEngine.Core.Domain.CalculationService.Interfaces;
+using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Models;
+using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services;
+using PrayerTimeEngine.Core.Domain.Configuration.Models;
 using PrayerTimeEngine.Data.SQLite;
-using PrayerTimeEngine.Domain.CalculationService.Interfaces;
 using PrayerTimeEngine.Domain.Calculators.Semerkand.Models;
 using PrayerTimeEngine.Domain.Calculators.Semerkand.Services;
-using PrayerTimeEngine.Domain.ConfigStore.Models;
 using PrayerTimeEngineUnitTests.Mocks;
 using System.Net;
 
-namespace PrayerTimeEngineUnitTests.API.SemerkandAPI
+namespace PrayerTimeEngine.Core.Tests.API.SemerkandAPI
 {
     public class SemerkandPrayerTimeCalculatorTests
     {
@@ -37,7 +39,7 @@ namespace PrayerTimeEngineUnitTests.API.SemerkandAPI
             var semerkandPrayerTimeCalculator =
                 new SemerkandPrayerTimeCalculator(
                     semerkandDBAccess,
-                    semerkandApiService, 
+                    semerkandApiService,
                     null,
                     null);
 
@@ -46,7 +48,7 @@ namespace PrayerTimeEngineUnitTests.API.SemerkandAPI
                 semerkandPrayerTimeCalculator.GetPrayerTimesAsync(
                     new DateTime(2023, 7, 29),
                     new SemerkandLocationData { CountryName = "Avusturya", CityName = "Innsbruck" },
-                    new List<GenericSettingConfiguration> { new GenericSettingConfiguration { TimeType = ETimeType.DhuhrStart, Source = ECalculationSource.Semerkand }}
+                    new List<GenericSettingConfiguration> { new GenericSettingConfiguration { TimeType = ETimeType.DhuhrStart, Source = ECalculationSource.Semerkand } }
                 ).GetAwaiter().GetResult().Single().Key;
 
             SemerkandPrayerTimes semerkandPrayerTimes = result as SemerkandPrayerTimes;

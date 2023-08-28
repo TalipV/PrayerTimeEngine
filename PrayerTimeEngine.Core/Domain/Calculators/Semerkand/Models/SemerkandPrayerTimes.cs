@@ -1,8 +1,8 @@
 ﻿using Newtonsoft.Json;
-using PrayerTimeEngine.Common.Enum;
-using PrayerTimeEngine.Domain.CalculationService.Interfaces;
+using PrayerTimeEngine.Core.Common.Enum;
+using PrayerTimeEngine.Core.Domain.CalculationService.Interfaces;
 
-namespace PrayerTimeEngine.Domain.Calculators.Semerkand.Models
+namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Models
 {
     public class SemerkandPrayerTimes : ICalculationPrayerTimes
     {

@@ -1,8 +1,8 @@
 ﻿using System.Text.Json.Serialization;
-using PrayerTimeEngine.Common.Enum;
-using PrayerTimeEngine.Domain.Calculators.Muwaqqit.Models;
+using PrayerTimeEngine.Core.Common.Enum;
+using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Models;
 
-namespace PrayerTimeEngine.Domain.ConfigStore.Models
+namespace PrayerTimeEngine.Core.Domain.Configuration.Models
 {
     [JsonDerivedType(typeof(GenericSettingConfiguration), typeDiscriminator: "GenericConfig")]
     [JsonDerivedType(typeof(MuwaqqitDegreeCalculationConfiguration), typeDiscriminator: "MuwaqqitDegreeConfig")]

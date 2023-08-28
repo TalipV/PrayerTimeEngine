@@ -1,6 +1,6 @@
-﻿using PrayerTimeEngine.Common.Enum;
+﻿using PrayerTimeEngine.Core.Common.Enum;
 
-namespace PrayerTimeEngine.Domain.ConfigStore.Models
+namespace PrayerTimeEngine.Core.Domain.Configuration.Models
 {
     public class TimeSpecificConfig
     {

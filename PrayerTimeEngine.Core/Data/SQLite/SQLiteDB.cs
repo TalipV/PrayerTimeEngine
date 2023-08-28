@@ -1,7 +1,7 @@
 ﻿using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Logging;
 
-namespace PrayerTimeEngine.Data.SQLite
+namespace PrayerTimeEngine.Core.Data.SQLite
 {
     public class SQLiteDB : ISQLiteDB
     {
@@ -56,7 +56,7 @@ namespace PrayerTimeEngine.Data.SQLite
             }
         }
 
-        private void createProfileTablesIfNotExists(SqliteConnection connection) 
+        private void createProfileTablesIfNotExists(SqliteConnection connection)
         {
             string tableProfil = """
                 CREATE TABLE IF NOT EXISTS
@@ -193,7 +193,7 @@ namespace PrayerTimeEngine.Data.SQLite
                 """;
             createTable(connection, tableSemerkandPrayerTimes);
         }
-    
+
         private void createMuwaqqitTablesIfNotExists(SqliteConnection connection)
         {
             string tableMuwaqqitPrayerTimes = """

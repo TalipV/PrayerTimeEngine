@@ -1,14 +1,14 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using PrayerTimeEngine.Common.Enum;
-using PrayerTimeEngine.Domain;
-using PrayerTimeEngine.Domain.CalculationService.Interfaces;
-using PrayerTimeEngine.Domain.Calculators.Fazilet.Services;
-using PrayerTimeEngine.Domain.Calculators.Muwaqqit.Services;
-using PrayerTimeEngine.Domain.Calculators.Semerkand;
-using PrayerTimeEngine.Domain.Calculators.Semerkand.Services;
-using PrayerTimeEngine.Domain.ConfigStore.Models;
-using PrayerTimeEngine.Domain.Model;
+using PrayerTimeEngine.Core.Common.Enum;
+using PrayerTimeEngine.Core.Domain;
+using PrayerTimeEngine.Core.Domain.CalculationService.Interfaces;
+using PrayerTimeEngine.Core.Domain.Calculators;
+using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services;
+using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services;
+using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services;
+using PrayerTimeEngine.Core.Domain.Configuration.Models;
+using PrayerTimeEngine.Core.Domain.Model;
 using System.Diagnostics;
 
 public class PrayerTimeCalculationService : IPrayerTimeCalculationService

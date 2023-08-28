@@ -1,4 +1,4 @@
-﻿namespace PrayerTimeEngine.Domain.Calculators.Muwaqqit.Models
+﻿namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Models
 {
     public class MuwaqqitDegreeCalculationConfiguration : MuwaqqitCalculationConfiguration
     {

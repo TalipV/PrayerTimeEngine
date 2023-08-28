@@ -1,8 +1,8 @@
 ﻿using System.Reflection;
-using PrayerTimeEngine.Common.Attribute;
-using PrayerTimeEngine.Common.Enum;
+using PrayerTimeEngine.Core.Common.Attribute;
+using PrayerTimeEngine.Core.Common.Enum;
 
-namespace PrayerTimeEngine.Domain
+namespace PrayerTimeEngine.Core.Domain
 {
     public class TimeTypeAttributeService
     {

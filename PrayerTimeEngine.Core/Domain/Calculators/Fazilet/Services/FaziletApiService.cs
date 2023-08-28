@@ -1,9 +1,9 @@
 ﻿using Newtonsoft.Json.Linq;
-using PrayerTimeEngine.Domain.Calculators.Fazilet.Interfaces;
-using PrayerTimeEngine.Domain.Calculators.Fazilet.Models;
+using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Interfaces;
+using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Models;
 using System.Globalization;
 
-namespace PrayerTimeEngine.Domain.Calculators.Fazilet.Services
+namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
 {
     public class FaziletApiService : IFaziletApiService
     {

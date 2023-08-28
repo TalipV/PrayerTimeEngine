@@ -1,10 +1,10 @@
-﻿using PrayerTimeEngine.Common.Enum;
-using PrayerTimeEngine.Domain.CalculationService.Interfaces;
-using PrayerTimeEngine.Domain.ConfigStore.Models;
-using PrayerTimeEngine.Domain.LocationService.Models;
-using PrayerTimeEngine.Domain.Model;
+﻿using PrayerTimeEngine.Core.Common.Enum;
+using PrayerTimeEngine.Core.Domain.CalculationService.Interfaces;
+using PrayerTimeEngine.Core.Domain.Configuration.Models;
+using PrayerTimeEngine.Core.Domain.Model;
+using PrayerTimeEngine.Core.Domain.PlacesService.Models;
 
-namespace PrayerTimeEngine.Domain.Calculators.Semerkand
+namespace PrayerTimeEngine.Core.Domain.Calculators
 {
     public interface IPrayerTimeService
     {

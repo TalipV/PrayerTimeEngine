@@ -1,14 +1,14 @@
-﻿using PrayerTimeEngine.Common.Enum;
+﻿using PrayerTimeEngine.Core.Common.Enum;
 using PropertyChanged;
 
-namespace PrayerTimeEngine.Domain.Model
+namespace PrayerTimeEngine.Core.Domain.Model
 {
     [AddINotifyPropertyChangedInterface]
     public class PrayerTimesBundle
     {
         public PrayerTimesBundle()
         {
-            AllPrayerTimes = 
+            AllPrayerTimes =
                 new List<PrayerTime>
                 {
                     Fajr, Duha, Dhuhr, Asr, Maghrib, Isha
@@ -17,8 +17,8 @@ namespace PrayerTimeEngine.Domain.Model
 
         public IReadOnlyList<PrayerTime> AllPrayerTimes { get; init; }
 
-        public FajrPrayerTime Fajr { get; private set; } = new ();
-        public DuhaPrayerTime Duha { get; private set; } = new ();
+        public FajrPrayerTime Fajr { get; private set; } = new();
+        public DuhaPrayerTime Duha { get; private set; } = new();
         public DhuhrPrayerTime Dhuhr { get; private set; } = new();
         public AsrPrayerTime Asr { get; private set; } = new();
         public MaghribPrayerTime Maghrib { get; private set; } = new();

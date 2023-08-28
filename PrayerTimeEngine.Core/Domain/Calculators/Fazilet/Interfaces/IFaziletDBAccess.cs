@@ -1,6 +1,6 @@
-﻿using PrayerTimeEngine.Domain.Calculators.Fazilet.Models;
+﻿using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Models;
 
-namespace PrayerTimeEngine.Domain.Calculators.Fazilet.Interfaces
+namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Interfaces
 {
     public interface IFaziletDBAccess
     {

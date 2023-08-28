@@ -1,13 +1,13 @@
-using PrayerTimeEngine.Common.Enum;
+using PrayerTimeEngine.Core.Common.Enum;
+using PrayerTimeEngine.Core.Domain.CalculationService.Interfaces;
+using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Models;
+using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services;
+using PrayerTimeEngine.Core.Domain.Configuration.Models;
 using PrayerTimeEngine.Data.SQLite;
-using PrayerTimeEngine.Domain.CalculationService.Interfaces;
-using PrayerTimeEngine.Domain.Calculators.Fazilet.Models;
-using PrayerTimeEngine.Domain.Calculators.Fazilet.Services;
-using PrayerTimeEngine.Domain.ConfigStore.Models;
 using PrayerTimeEngineUnitTests.Mocks;
 using System.Net;
 
-namespace PrayerTimeEngineUnitTests.API.FaziletAPI
+namespace PrayerTimeEngine.Core.Tests.API.FaziletAPI
 {
     public class FaziletPrayerTimeCalculatorTests
     {
@@ -50,7 +50,7 @@ namespace PrayerTimeEngineUnitTests.API.FaziletAPI
                 faziletPrayerTimeCalculator.GetPrayerTimesAsync(
                     new DateTime(2023, 7, 29),
                     new FaziletLocationData { CountryName = "Avusturya", CityName = "Innsbruck" },
-                    new List<GenericSettingConfiguration> { new GenericSettingConfiguration { TimeType = ETimeType.DhuhrStart, Source = ECalculationSource.Fazilet }}
+                    new List<GenericSettingConfiguration> { new GenericSettingConfiguration { TimeType = ETimeType.DhuhrStart, Source = ECalculationSource.Fazilet } }
                 ).GetAwaiter().GetResult().Single().Key;
 
             FaziletPrayerTimes faziletPrayerTimes = result as FaziletPrayerTimes;

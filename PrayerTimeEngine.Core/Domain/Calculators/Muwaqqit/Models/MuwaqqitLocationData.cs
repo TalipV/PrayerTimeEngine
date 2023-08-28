@@ -1,7 +1,7 @@
-﻿using PrayerTimeEngine.Common.Enum;
-using PrayerTimeEngine.Domain.Model;
+﻿using PrayerTimeEngine.Core.Common.Enum;
+using PrayerTimeEngine.Core.Domain.Model;
 
-namespace PrayerTimeEngine.Domain.Calculators.Muwaqqit.Models
+namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Models
 {
     public class MuwaqqitLocationData : BaseLocationData
     {

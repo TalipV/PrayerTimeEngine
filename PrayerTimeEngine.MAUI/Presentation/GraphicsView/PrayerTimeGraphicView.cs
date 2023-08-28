@@ -1,4 +1,4 @@
-﻿using PrayerTimeEngine.Domain.Model;
+﻿using PrayerTimeEngine.Core.Domain.Model;
 
 namespace PrayerTimeEngine.Presentation.GraphicsView
 {

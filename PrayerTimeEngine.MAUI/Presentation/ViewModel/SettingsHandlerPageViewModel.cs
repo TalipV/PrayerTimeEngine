@@ -1,7 +1,7 @@
 ﻿using MvvmHelpers;
 using PrayerTimeEngine.Code.Presentation.View;
-using PrayerTimeEngine.Common.Enum;
-using PrayerTimeEngine.Domain;
+using PrayerTimeEngine.Core.Common.Enum;
+using PrayerTimeEngine.Core.Domain;
 using PrayerTimeEngine.Presentation.Service.Navigation;
 using PrayerTimeEngine.Presentation.Service.SettingsContentPageFactory;
 using PropertyChanged;

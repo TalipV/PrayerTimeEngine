@@ -1,15 +1,16 @@
 ﻿using Microsoft.Extensions.Logging;
-using PrayerTimeEngine.Common.Enum;
 using PrayerTimeEngine.Core.Common;
-using PrayerTimeEngine.Domain.CalculationService.Interfaces;
-using PrayerTimeEngine.Domain.Calculators.Semerkand.Interfaces;
-using PrayerTimeEngine.Domain.Calculators.Semerkand.Models;
-using PrayerTimeEngine.Domain.ConfigStore.Models;
-using PrayerTimeEngine.Domain.LocationService.Models;
-using PrayerTimeEngine.Domain.Model;
-using PrayerTimeEngine.Domain.NominatimLocation.Interfaces;
+using PrayerTimeEngine.Core.Common.Enum;
+using PrayerTimeEngine.Core.Domain.CalculationService.Interfaces;
+using PrayerTimeEngine.Core.Domain.Calculators;
+using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Interfaces;
+using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Models;
+using PrayerTimeEngine.Core.Domain.Configuration.Models;
+using PrayerTimeEngine.Core.Domain.Model;
+using PrayerTimeEngine.Core.Domain.PlacesService.Interfaces;
+using PrayerTimeEngine.Core.Domain.PlacesService.Models;
 
-namespace PrayerTimeEngine.Domain.Calculators.Semerkand.Services
+namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
 {
     public class SemerkandPrayerTimeCalculator : IPrayerTimeService
     {
@@ -71,9 +72,9 @@ namespace PrayerTimeEngine.Domain.Calculators.Semerkand.Services
 
         private async Task<SemerkandPrayerTimes> getPrayerTimesInternal(DateTime date, string countryName, string cityName)
         {
-            if((await tryGetCountryID(countryName)) is (bool countrySuccess, int countryID) countryResult && !countrySuccess)
+            if (await tryGetCountryID(countryName) is (bool countrySuccess, int countryID) countryResult && !countrySuccess)
                 throw new ArgumentException($"{nameof(countryName)} could not be found!");
-            if ((await tryGetCityID(cityName, countryID)) is (bool citySuccess, int cityID) cityResult && !citySuccess)
+            if (await tryGetCityID(cityName, countryID) is (bool citySuccess, int cityID) cityResult && !citySuccess)
                 throw new ArgumentException($"{nameof(cityName)} could not be found!");
 
             SemerkandPrayerTimes prayerTimes = await getPrayerTimesByDateAndCityID(date, cityID)
@@ -183,9 +184,9 @@ namespace PrayerTimeEngine.Domain.Calculators.Semerkand.Services
 
             _logger.LogDebug("Semerkand search location: {Country}, {City}", countryName, cityName);
 
-            var (success, countryID) = await this.tryGetCountryID(countryName);
+            var (success, countryID) = await tryGetCountryID(countryName);
 
-            if (success && (await this.tryGetCityID(cityName, countryID)).success)
+            if (success && (await tryGetCityID(cityName, countryID)).success)
             {
                 _logger.LogDebug("Semerkand found location: {Country}, {City}", countryName, cityName);
 

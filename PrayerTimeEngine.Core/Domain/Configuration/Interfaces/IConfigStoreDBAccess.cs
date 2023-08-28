@@ -1,6 +1,6 @@
-﻿using PrayerTimeEngine.Domain.ConfigStore.Models;
+﻿using PrayerTimeEngine.Core.Domain.Configuration.Models;
 
-namespace PrayerTimeEngine.Domain.ConfigStore.Interfaces
+namespace PrayerTimeEngine.Core.Domain.Configuration.Interfaces
 {
     public interface IConfigStoreDBAccess
     {

@@ -1,9 +1,9 @@
-﻿using PrayerTimeEngine.Common.Enum;
-using PrayerTimeEngine.Domain.Calculators.Semerkand;
-using PrayerTimeEngine.Domain.ConfigStore.Models;
-using PrayerTimeEngine.Domain.Model;
+﻿using PrayerTimeEngine.Core.Common.Enum;
+using PrayerTimeEngine.Core.Domain.Calculators;
+using PrayerTimeEngine.Core.Domain.Configuration.Models;
+using PrayerTimeEngine.Core.Domain.Model;
 
-namespace PrayerTimeEngine.Domain.CalculationService.Interfaces
+namespace PrayerTimeEngine.Core.Domain.CalculationService.Interfaces
 {
     public interface IPrayerTimeCalculationService
     {

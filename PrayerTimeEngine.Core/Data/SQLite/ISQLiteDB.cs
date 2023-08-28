@@ -1,6 +1,6 @@
 ﻿using Microsoft.Data.Sqlite;
 
-namespace PrayerTimeEngine.Data.SQLite
+namespace PrayerTimeEngine.Core.Data.SQLite
 {
     public interface ISQLiteDB
     {

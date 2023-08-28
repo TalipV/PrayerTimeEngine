@@ -1,5 +1,5 @@
 ﻿using MetroLog.Maui;
-using PrayerTimeEngine.Data.SQLite;
+using PrayerTimeEngine.Core.Data.SQLite;
 
 namespace PrayerTimeEngine;
 

@@ -1,6 +1,6 @@
 ﻿using PrayerTimeEngine.Common.Attribute;
 
-namespace PrayerTimeEngine.Common.Enum
+namespace PrayerTimeEngine.Core.Common.Enum
 {
     public enum ETimeType
     {

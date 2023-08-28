@@ -1,16 +1,16 @@
-﻿using PrayerTimeEngine.Common.Enum;
-using PrayerTimeEngine.Domain.CalculationService.Interfaces;
-using PrayerTimeEngine.Domain.ConfigStore.Models;
-using PrayerTimeEngine.Domain.Calculators.Fazilet.Interfaces;
-using PrayerTimeEngine.Domain.Calculators.Fazilet.Models;
-using PrayerTimeEngine.Domain.Calculators.Semerkand;
-using PrayerTimeEngine.Domain.LocationService.Models;
-using PrayerTimeEngine.Domain.Model;
-using PrayerTimeEngine.Domain.NominatimLocation.Interfaces;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using PrayerTimeEngine.Core.Common;
+using PrayerTimeEngine.Core.Domain.Model;
+using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Interfaces;
+using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Models;
+using PrayerTimeEngine.Core.Domain.Configuration.Models;
+using PrayerTimeEngine.Core.Domain.Calculators;
+using PrayerTimeEngine.Core.Domain.PlacesService.Models;
+using PrayerTimeEngine.Core.Domain.CalculationService.Interfaces;
+using PrayerTimeEngine.Core.Common.Enum;
+using PrayerTimeEngine.Core.Domain.PlacesService.Interfaces;
 
-namespace PrayerTimeEngine.Domain.Calculators.Fazilet.Services
+namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
 {
     public class FaziletPrayerTimeCalculator : IPrayerTimeService
     {
@@ -72,9 +72,9 @@ namespace PrayerTimeEngine.Domain.Calculators.Fazilet.Services
 
         private async Task<FaziletPrayerTimes> getPrayerTimesInternal(DateTime date, string countryName, string cityName)
         {
-            if ((await tryGetCountryID(countryName)) is (bool countrySuccess, int countryID) countryResult && !countrySuccess)
+            if (await tryGetCountryID(countryName) is (bool countrySuccess, int countryID) countryResult && !countrySuccess)
                 throw new ArgumentException($"{nameof(countryName)} could not be found!");
-            if ((await tryGetCityID(cityName, countryID)) is (bool citySuccess, int cityID) cityResult && !citySuccess)
+            if (await tryGetCityID(cityName, countryID) is (bool citySuccess, int cityID) cityResult && !citySuccess)
                 throw new ArgumentException($"{nameof(cityName)} could not be found!");
 
             FaziletPrayerTimes prayerTimes = await getPrayerTimesByDateAndCityID(date, cityID)
@@ -182,11 +182,11 @@ namespace PrayerTimeEngine.Domain.Calculators.Fazilet.Services
             countryName = countryName.Replace("İ", "I");
             cityName = cityName.Replace("İ", "I");
 
-            var (success, countryID) = await this.tryGetCountryID(countryName);
+            var (success, countryID) = await tryGetCountryID(countryName);
 
             _logger.LogDebug("Fazilet search location: {Country}, {City}", countryName, cityName);
 
-            if (success && (await this.tryGetCityID(cityName, countryID)).success)
+            if (success && (await tryGetCityID(cityName, countryID)).success)
             {
                 _logger.LogDebug("Fazilet found location: {Country}, {City}", countryName, cityName);
 

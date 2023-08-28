@@ -1,10 +1,10 @@
 ﻿using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Logging;
-using PrayerTimeEngine.Data.SQLite;
-using PrayerTimeEngine.Domain.Calculators.Muwaqqit.Interfaces;
-using PrayerTimeEngine.Domain.Calculators.Muwaqqit.Models;
+using PrayerTimeEngine.Core.Data.SQLite;
+using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Interfaces;
+using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Models;
 
-namespace PrayerTimeEngine.Domain.Calculators.Muwaqqit.Services
+namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services
 {
     public class MuwaqqitDBAccess : IMuwaqqitDBAccess
     {

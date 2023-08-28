@@ -1,8 +1,8 @@
-﻿using PrayerTimeEngine.Data.SQLite;
-using PrayerTimeEngine.Domain.Calculators.Semerkand.Interfaces;
-using PrayerTimeEngine.Domain.Calculators.Semerkand.Models;
+﻿using PrayerTimeEngine.Core.Data.SQLite;
+using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Interfaces;
+using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Models;
 
-namespace PrayerTimeEngine.Domain.Calculators.Semerkand.Services
+namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
 {
     public class SemerkandDBAccess : ISemerkandDBAccess
     {

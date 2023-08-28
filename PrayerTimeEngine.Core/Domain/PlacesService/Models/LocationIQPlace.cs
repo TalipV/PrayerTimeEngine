@@ -1,6 +1,4 @@
-﻿using PrayerTimeEngine.Domain.NominatimLocation.Models;
-
-namespace PrayerTimeEngine.Domain.LocationService.Models
+﻿namespace PrayerTimeEngine.Core.Domain.PlacesService.Models
 {
     public class LocationIQPlace
     {
@@ -20,7 +18,7 @@ namespace PrayerTimeEngine.Domain.LocationService.Models
 
         public override string ToString()
         {
-            return this.display_name;
+            return display_name;
         }
     }
 }

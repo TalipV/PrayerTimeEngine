@@ -1,10 +1,10 @@
-﻿using PrayerTimeEngine.Common.Enum;
-using PrayerTimeEngine.Domain.ConfigStore.Interfaces;
-using PrayerTimeEngine.Domain.Calculators.Muwaqqit.Models;
+﻿using PrayerTimeEngine.Domain.Calculators.Muwaqqit.Models;
 using PrayerTimeEngine.Domain.Calculators.Fazilet.Models;
 using PrayerTimeEngine.Domain.Calculators.Semerkand.Models;
+using PrayerTimeEngine.Core.Domain.Configuration.Interfaces;
+using PrayerTimeEngine.Core.Common.Enum;
 
-namespace PrayerTimeEngine.Domain.ConfigStore.Models
+namespace PrayerTimeEngine.Core.Domain.Configuration.Models
 {
     public class PrayerTimesConfigurationStorage
     {

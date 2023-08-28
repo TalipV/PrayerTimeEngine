@@ -1,18 +1,18 @@
 ﻿using System.Windows.Input;
 using PropertyChanged;
-using PrayerTimeEngine.Common.Enum;
-using PrayerTimeEngine.Domain.Model;
-using PrayerTimeEngine.Domain.CalculationService.Interfaces;
-using PrayerTimeEngine.Domain.ConfigStore.Models;
 using PrayerTimeEngine.Presentation.Service.Navigation;
-using PrayerTimeEngine.Domain.NominatimLocation.Interfaces;
-using PrayerTimeEngine.Domain.LocationService.Models;
 using System.Globalization;
 using CommunityToolkit.Maui.Core;
 using CommunityToolkit.Maui.Alerts;
 using Microsoft.Extensions.Logging;
 using MetroLog.Maui;
-using PrayerTimeEngine.Domain.ConfigStore.Interfaces;
+using PrayerTimeEngine.Core.Domain.Configuration.Models;
+using PrayerTimeEngine.Core.Domain.PlacesService.Models;
+using PrayerTimeEngine.Core.Domain.Model;
+using PrayerTimeEngine.Core.Common.Enum;
+using PrayerTimeEngine.Core.Domain.Configuration.Interfaces;
+using PrayerTimeEngine.Core.Domain.CalculationService.Interfaces;
+using PrayerTimeEngine.Core.Domain.PlacesService.Interfaces;
 
 namespace PrayerTimeEngine.Presentation.ViewModel
 {

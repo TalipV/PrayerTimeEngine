@@ -1,8 +1,8 @@
-﻿using PrayerTimeEngine.Data.SQLite;
-using PrayerTimeEngine.Domain.Calculators.Fazilet.Interfaces;
-using PrayerTimeEngine.Domain.Calculators.Fazilet.Models;
+﻿using PrayerTimeEngine.Core.Data.SQLite;
+using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Interfaces;
+using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Models;
 
-namespace PrayerTimeEngine.Domain.Calculators.Fazilet.Services
+namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
 {
     public class FaziletDBAccess : IFaziletDBAccess
     {

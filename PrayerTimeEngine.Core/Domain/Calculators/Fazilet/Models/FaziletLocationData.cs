@@ -1,7 +1,7 @@
-﻿using PrayerTimeEngine.Common.Enum;
-using PrayerTimeEngine.Domain.Model;
+﻿using PrayerTimeEngine.Core.Common.Enum;
+using PrayerTimeEngine.Core.Domain.Model;
 
-namespace PrayerTimeEngine.Domain.Calculators.Fazilet.Models
+namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Models
 {
     public class FaziletLocationData : BaseLocationData
     {

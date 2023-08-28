@@ -1,7 +1,7 @@
-﻿using PrayerTimeEngine.Domain.ConfigStore.Interfaces;
-using PrayerTimeEngine.Domain.ConfigStore.Models;
+﻿using PrayerTimeEngine.Core.Domain.Configuration.Interfaces;
+using PrayerTimeEngine.Core.Domain.Configuration.Models;
 
-namespace PrayerTimeEngine.Domain.ConfigStore.Services
+namespace PrayerTimeEngine.Core.Domain.Configuration.Services
 {
     public class ConfigStoreService : IConfigStoreService
     {

@@ -1,14 +1,13 @@
-﻿using PrayerTimeEngine.Common.Enum;
-using PrayerTimeEngine.Domain.CalculationService.Interfaces;
-using PrayerTimeEngine.Domain.ConfigStore.Models;
-using PrayerTimeEngine.Domain.Calculators.Muwaqqit.Interfaces;
-using PrayerTimeEngine.Domain.Calculators.Muwaqqit.Models;
-using PrayerTimeEngine.Domain.Calculators.Semerkand;
-using PrayerTimeEngine.Domain.Model;
-using PrayerTimeEngine.Domain.LocationService.Models;
-using PrayerTimeEngine.Core.Common;
+﻿using PrayerTimeEngine.Core.Common;
+using PrayerTimeEngine.Core.Domain.Model;
+using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Models;
+using PrayerTimeEngine.Core.Domain.Configuration.Models;
+using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Interfaces;
+using PrayerTimeEngine.Core.Domain.PlacesService.Models;
+using PrayerTimeEngine.Core.Domain.CalculationService.Interfaces;
+using PrayerTimeEngine.Core.Common.Enum;
 
-namespace PrayerTimeEngine.Domain.Calculators.Muwaqqit.Services
+namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services
 {
     public class MuwaqqitPrayerTimeCalculator : IPrayerTimeService
     {
@@ -52,7 +51,7 @@ namespace PrayerTimeEngine.Domain.Calculators.Muwaqqit.Services
             while (toBeConsumedConfigurations.Count != 0)
             {
                 double fajrDegree, ishaDegree, ishtibaqDegree, asrKarahaDegree;
-                List<ETimeType> consumedTimeTypes = 
+                List<ETimeType> consumedTimeTypes =
                     ConsumeDegreeValues(
                         toBeConsumedConfigurations,
                         out fajrDegree,
@@ -110,12 +109,12 @@ namespace PrayerTimeEngine.Domain.Calculators.Muwaqqit.Services
                         if (calculatedFajrDegree == null)
                         {
                             calculatedFajrDegree = degreeValue;
-                            muwaqqitConfigs.Remove(muwaqqitConfig); 
+                            muwaqqitConfigs.Remove(muwaqqitConfig);
                             consumedTimeTypes.Add(timeType);
                         }
                         else if (calculatedFajrDegree == degreeValue)
                         {
-                            muwaqqitConfigs.Remove(muwaqqitConfig); 
+                            muwaqqitConfigs.Remove(muwaqqitConfig);
                             consumedTimeTypes.Add(timeType);
                         }
                         break;
@@ -125,12 +124,12 @@ namespace PrayerTimeEngine.Domain.Calculators.Muwaqqit.Services
                         if (calculatedIshaDegree == null)
                         {
                             calculatedIshaDegree = degreeValue;
-                            muwaqqitConfigs.Remove(muwaqqitConfig); 
+                            muwaqqitConfigs.Remove(muwaqqitConfig);
                             consumedTimeTypes.Add(timeType);
                         }
                         else if (calculatedIshaDegree == degreeValue)
                         {
-                            muwaqqitConfigs.Remove(muwaqqitConfig); 
+                            muwaqqitConfigs.Remove(muwaqqitConfig);
                             consumedTimeTypes.Add(timeType);
                         }
                         break;
@@ -166,7 +165,7 @@ namespace PrayerTimeEngine.Domain.Calculators.Muwaqqit.Services
                 }
             }
 
-            fajrDegree = calculatedFajrDegree ?? - 12.0;
+            fajrDegree = calculatedFajrDegree ?? -12.0;
             ishaDegree = calculatedIshaDegree ?? -12.0;
             ishtibaqDegree = calculatedIshtibaqDegree ?? -12.0;
             asrKarahaDegree = calculatedAsrKarahaDegree ?? -12.0;

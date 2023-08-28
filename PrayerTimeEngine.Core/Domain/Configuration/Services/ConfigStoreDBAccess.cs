@@ -1,12 +1,12 @@
 ﻿using System.Text.Json;
 using Microsoft.Data.Sqlite;
-using PrayerTimeEngine.Common.Enum;
-using PrayerTimeEngine.Data.SQLite;
-using PrayerTimeEngine.Domain.ConfigStore.Interfaces;
-using PrayerTimeEngine.Domain.ConfigStore.Models;
-using PrayerTimeEngine.Domain.Model;
+using PrayerTimeEngine.Core.Common.Enum;
+using PrayerTimeEngine.Core.Data.SQLite;
+using PrayerTimeEngine.Core.Domain.Configuration.Interfaces;
+using PrayerTimeEngine.Core.Domain.Configuration.Models;
+using PrayerTimeEngine.Core.Domain.Model;
 
-namespace PrayerTimeEngine.Domain.ConfigStore.Services
+namespace PrayerTimeEngine.Core.Domain.Configuration.Services
 {
     public class ConfigStoreDBAccess : IConfigStoreDBAccess
     {
