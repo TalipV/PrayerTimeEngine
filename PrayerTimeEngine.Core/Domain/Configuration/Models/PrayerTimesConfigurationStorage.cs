@@ -1,8 +1,8 @@
-﻿using PrayerTimeEngine.Domain.Calculators.Muwaqqit.Models;
-using PrayerTimeEngine.Domain.Calculators.Fazilet.Models;
-using PrayerTimeEngine.Domain.Calculators.Semerkand.Models;
-using PrayerTimeEngine.Core.Domain.Configuration.Interfaces;
+﻿using PrayerTimeEngine.Core.Domain.Configuration.Interfaces;
 using PrayerTimeEngine.Core.Common.Enum;
+using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Models;
+using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Models;
+using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Models;
 
 namespace PrayerTimeEngine.Core.Domain.Configuration.Models
 {

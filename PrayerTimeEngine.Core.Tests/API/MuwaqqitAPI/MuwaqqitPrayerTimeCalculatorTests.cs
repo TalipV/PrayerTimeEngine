@@ -1,11 +1,11 @@
 using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Common.Extension;
+using PrayerTimeEngine.Core.Data.SQLite;
+using PrayerTimeEngine.Core.Domain;
 using PrayerTimeEngine.Core.Domain.CalculationService.Interfaces;
 using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Models;
 using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services;
 using PrayerTimeEngine.Core.Domain.Configuration.Models;
-using PrayerTimeEngine.Data.SQLite;
-using PrayerTimeEngine.Domain;
 using PrayerTimeEngineUnitTests.Mocks;
 using System.Net;
 

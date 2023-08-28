@@ -1,11 +1,9 @@
 using PrayerTimeEngine.Core.Common.Enum;
+using PrayerTimeEngine.Core.Data.SQLite;
 using PrayerTimeEngine.Core.Domain.CalculationService.Interfaces;
 using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Models;
 using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services;
 using PrayerTimeEngine.Core.Domain.Configuration.Models;
-using PrayerTimeEngine.Data.SQLite;
-using PrayerTimeEngine.Domain.Calculators.Semerkand.Models;
-using PrayerTimeEngine.Domain.Calculators.Semerkand.Services;
 using PrayerTimeEngineUnitTests.Mocks;
 using System.Net;
 

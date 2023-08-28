@@ -1,9 +1,9 @@
 using PrayerTimeEngine.Core.Common.Enum;
+using PrayerTimeEngine.Core.Data.SQLite;
 using PrayerTimeEngine.Core.Domain.CalculationService.Interfaces;
 using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Models;
 using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services;
 using PrayerTimeEngine.Core.Domain.Configuration.Models;
-using PrayerTimeEngine.Data.SQLite;
 using PrayerTimeEngineUnitTests.Mocks;
 using System.Net;
 

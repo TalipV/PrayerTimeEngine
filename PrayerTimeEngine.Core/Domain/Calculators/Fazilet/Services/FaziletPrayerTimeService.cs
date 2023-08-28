@@ -4,7 +4,6 @@ using PrayerTimeEngine.Core.Domain.Model;
 using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Interfaces;
 using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Models;
 using PrayerTimeEngine.Core.Domain.Configuration.Models;
-using PrayerTimeEngine.Core.Domain.Calculators;
 using PrayerTimeEngine.Core.Domain.PlacesService.Models;
 using PrayerTimeEngine.Core.Domain.CalculationService.Interfaces;
 using PrayerTimeEngine.Core.Common.Enum;

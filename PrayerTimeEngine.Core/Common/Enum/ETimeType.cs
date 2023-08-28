@@ -1,4 +1,4 @@
-﻿using PrayerTimeEngine.Common.Attribute;
+﻿using PrayerTimeEngine.Core.Common.Attribute;
 
 namespace PrayerTimeEngine.Core.Common.Enum
 {
