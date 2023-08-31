@@ -1,4 +1,5 @@
-﻿using PrayerTimeEngine.Core.Domain.Model;
+﻿using NodaTime;
+using PrayerTimeEngine.Core.Domain.Model;
 
 namespace PrayerTimeEngine.Presentation.GraphicsView
 {
@@ -18,7 +19,7 @@ namespace PrayerTimeEngine.Presentation.GraphicsView
 
         public void Draw(ICanvas canvas, RectF fullRectangle)
         {
-            if (DisplayPrayerTime == null 
+            if (DisplayPrayerTime == null
                 || DisplayPrayerTime.Start == null
                 || DisplayPrayerTime.End == null)
             {
@@ -71,16 +72,16 @@ namespace PrayerTimeEngine.Presentation.GraphicsView
 
         private void drawCurrentTimeIndicator(ICanvas canvas, RectF baseRectangle)
         {
-            DateTime dateTime = DateTime.Now;
+            Instant currentInstant = SystemClock.Instance.GetCurrentInstant();
 
-            if (dateTime < DisplayPrayerTime.Start || dateTime > DisplayPrayerTime.End)
+            if (currentInstant < DisplayPrayerTime.Start.Value.ToInstant() || currentInstant > DisplayPrayerTime.End.Value.ToInstant())
             {
                 // It's not within the time of DisplayPrayerTIme
                 // so don't draw the indicator
                 return;
             }
 
-            float relativePos = getRelativeDepthByTime(dateTime, baseRectangle);
+            float relativePos = getRelativeDepthByInstant(currentInstant, baseRectangle);
 
             RectF indicatorRectangle =
                 new RectF(
@@ -95,7 +96,7 @@ namespace PrayerTimeEngine.Presentation.GraphicsView
 
             // CURRENT TIME TEXT
             canvas.DrawString(
-                dateTime.ToString("HH:mm"),
+                currentInstant.ToString("HH:mm", null),
                 x: indicatorRectangle.X - 40,
                 y: indicatorRectangle.Y - 10,
                 width: 40,
@@ -103,10 +104,10 @@ namespace PrayerTimeEngine.Presentation.GraphicsView
                 HorizontalAlignment.Center, VerticalAlignment.Center);
         }
 
-        private float getRelativeDepthByTime(DateTime dateTime, RectF rectangle)
+        private float getRelativeDepthByInstant(Instant dateTime, RectF rectangle)
         {
-            float durationInSeconds = (float) (DisplayPrayerTime.End.Value - DisplayPrayerTime.Start.Value).TotalSeconds;
-            float secondsSoFar = (float) (dateTime - DisplayPrayerTime.Start.Value).TotalSeconds;
+            float durationInSeconds = (float)(DisplayPrayerTime.End.Value.ToInstant() - DisplayPrayerTime.Start.Value.ToInstant()).TotalSeconds;
+            float secondsSoFar = (float) (dateTime - DisplayPrayerTime.Start.Value.ToInstant()).TotalSeconds;
 
             float percentageOfDuration = secondsSoFar / durationInSeconds;
 
@@ -131,7 +132,7 @@ namespace PrayerTimeEngine.Presentation.GraphicsView
             
             // PRAYER TIME BEGINNING TEXT
             canvas.DrawString(
-                DisplayPrayerTime.Start.Value.ToString("HH:mm"),
+                DisplayPrayerTime.Start.Value.ToInstant().ToString("HH:mm", null),
                 x: -25,
                 y: 30,
                 width: 90,
@@ -140,7 +141,7 @@ namespace PrayerTimeEngine.Presentation.GraphicsView
 
             // PRAYER TIME END TEXT
             canvas.DrawString(
-                DisplayPrayerTime.End.Value.ToString("HH:mm"),
+                DisplayPrayerTime.End.Value.ToInstant().ToString("HH:mm", null),
                 x: -25,
                 y: dirtyRect.Height - 20,
                 width: 90,
@@ -159,24 +160,24 @@ namespace PrayerTimeEngine.Presentation.GraphicsView
                 canvas: canvas,
                 mainGraphicRectangle,
                 name: "Ikhtiyar",
-                fajrPrayerTime.Start.Value,
-                fajrPrayerTime.Ghalas.Value
+                fajrPrayerTime.Start.Value.ToInstant(),
+                fajrPrayerTime.Ghalas.Value.ToInstant()
             );
 
             drawSubTime(
                 canvas: canvas,
                 mainGraphicRectangle,
                 name: "Normal",
-                fajrPrayerTime.Ghalas.Value,
-                fajrPrayerTime.Karaha.Value
+                fajrPrayerTime.Ghalas.Value.ToInstant(),
+                fajrPrayerTime.Karaha.Value.ToInstant()
             );
 
             drawSubTime(
                 canvas: canvas,
                 mainGraphicRectangle,
                 name: "Karaha",
-                fajrPrayerTime.Karaha.Value,
-                fajrPrayerTime.End.Value
+                fajrPrayerTime.Karaha.Value.ToInstant(),
+                fajrPrayerTime.End.Value.ToInstant()
             );
         }
 
@@ -191,16 +192,16 @@ namespace PrayerTimeEngine.Presentation.GraphicsView
                 canvas: canvas,
                 mainGraphicRectangle,
                 name: "Normal",
-                duhaPrayerTime.Start.Value,
-                duhaPrayerTime.QuarterOfDay.Value
+                duhaPrayerTime.Start.Value.ToInstant(),
+                duhaPrayerTime.QuarterOfDay.Value.ToInstant()
             );
 
             drawSubTime(
                 canvas: canvas,
                 mainGraphicRectangle,
                 name: "Empfohlen",
-                duhaPrayerTime.QuarterOfDay.Value,
-                duhaPrayerTime.End.Value
+                duhaPrayerTime.QuarterOfDay.Value.ToInstant(),
+                duhaPrayerTime.End.Value.ToInstant()
             );
         }
 
@@ -215,24 +216,24 @@ namespace PrayerTimeEngine.Presentation.GraphicsView
                 canvas: canvas,
                 mainGraphicRectangle,
                 name: "Ikhtiyar",
-                asrPrayerTime.Start.Value,
-                asrPrayerTime.Mithlayn.Value
+                asrPrayerTime.Start.Value.ToInstant(),
+                asrPrayerTime.Mithlayn.Value.ToInstant()
             );
 
             drawSubTime(
                 canvas: canvas,
                 mainGraphicRectangle,
                 name: "Normal",
-                asrPrayerTime.Mithlayn.Value,
-                asrPrayerTime.Karaha.Value
+                asrPrayerTime.Mithlayn.Value.ToInstant(),
+                asrPrayerTime.Karaha.Value.ToInstant()
             );
 
             drawSubTime(
                 canvas: canvas,
                 mainGraphicRectangle,
                 name: "Karaha",
-                asrPrayerTime.Karaha.Value,
-                asrPrayerTime.End.Value
+                asrPrayerTime.Karaha.Value.ToInstant(),
+                asrPrayerTime.End.Value.ToInstant()
             );
         }
 
@@ -247,24 +248,24 @@ namespace PrayerTimeEngine.Presentation.GraphicsView
                 canvas: canvas,
                 mainGraphicRectangle,
                 name: "Normal",
-                maghribPrayerTime.Start.Value,
-                maghribPrayerTime.SufficientTime.Value
+                maghribPrayerTime.Start.Value.ToInstant(),
+                maghribPrayerTime.SufficientTime.Value.ToInstant()
             );
 
             drawSubTime(
                 canvas: canvas,
                 mainGraphicRectangle,
                 name: "Karaha1",
-                maghribPrayerTime.SufficientTime.Value,
-                maghribPrayerTime.Ishtibaq.Value
+                maghribPrayerTime.SufficientTime.Value.ToInstant(),
+                maghribPrayerTime.Ishtibaq.Value.ToInstant()
             );
 
             drawSubTime(
                 canvas: canvas,
                 mainGraphicRectangle,
                 name: "Karaha2",
-                maghribPrayerTime.Ishtibaq.Value,
-                maghribPrayerTime.End.Value
+                maghribPrayerTime.Ishtibaq.Value.ToInstant(),
+                maghribPrayerTime.End.Value.ToInstant()
             );
         }
 
@@ -281,8 +282,8 @@ namespace PrayerTimeEngine.Presentation.GraphicsView
                 canvas: canvas,
                 mainGraphicRectangle,
                 name: "1/3",
-                ishaPrayerTime.Start.Value,
-                ishaPrayerTime.FirstThirdOfNight.Value,
+                ishaPrayerTime.Start.Value.ToInstant(),
+                ishaPrayerTime.FirstThirdOfNight.Value.ToInstant(),
                 1
             );
 
@@ -290,8 +291,8 @@ namespace PrayerTimeEngine.Presentation.GraphicsView
                 canvas: canvas,
                 mainGraphicRectangle,
                 name: "2/3",
-                ishaPrayerTime.FirstThirdOfNight.Value,
-                ishaPrayerTime.SecondThirdOfNight.Value,
+                ishaPrayerTime.FirstThirdOfNight.Value.ToInstant(),
+                ishaPrayerTime.SecondThirdOfNight.Value.ToInstant(),
                 1
             );
 
@@ -299,8 +300,8 @@ namespace PrayerTimeEngine.Presentation.GraphicsView
                 canvas: canvas,
                 mainGraphicRectangle,
                 name: "3/3",
-                ishaPrayerTime.SecondThirdOfNight.Value,
-                ishaPrayerTime.End.Value,
+                ishaPrayerTime.SecondThirdOfNight.Value.ToInstant(),
+                ishaPrayerTime.End.Value.ToInstant(),
                 1
             );
 
@@ -308,8 +309,8 @@ namespace PrayerTimeEngine.Presentation.GraphicsView
                 canvas: canvas,
                 mainGraphicRectangle,
                 name: "1/2",
-                ishaPrayerTime.Start.Value,
-                ishaPrayerTime.MiddleOfNight.Value,
+                ishaPrayerTime.Start.Value.ToInstant(),
+                ishaPrayerTime.MiddleOfNight.Value.ToInstant(),
                 2
             );
 
@@ -317,15 +318,15 @@ namespace PrayerTimeEngine.Presentation.GraphicsView
                 canvas: canvas,
                 mainGraphicRectangle,
                 name: "2/2",
-                ishaPrayerTime.MiddleOfNight.Value,
-                ishaPrayerTime.End.Value,
+                ishaPrayerTime.MiddleOfNight.Value.ToInstant(),
+                ishaPrayerTime.End.Value.ToInstant(),
                 2
             );
         }
 
         private void drawSubTime(
             ICanvas canvas, RectF innerBackgroundRectangle, string name, 
-            DateTime startDateTime, DateTime endDateTime, 
+            Instant startDateTime, Instant endDateTime, 
             int displayMode = 0)
         {
             float leftPos = 0.0f;
@@ -352,8 +353,8 @@ namespace PrayerTimeEngine.Presentation.GraphicsView
                     break;
             }
 
-            float topPos = innerBackgroundRectangle.Top + getRelativeDepthByTime(startDateTime, innerBackgroundRectangle);
-            float height = getRelativeDepthByTime(endDateTime, innerBackgroundRectangle) - getRelativeDepthByTime(startDateTime, innerBackgroundRectangle);
+            float topPos = innerBackgroundRectangle.Top + getRelativeDepthByInstant(startDateTime, innerBackgroundRectangle);
+            float height = getRelativeDepthByInstant(endDateTime, innerBackgroundRectangle) - getRelativeDepthByInstant(startDateTime, innerBackgroundRectangle);
 
             RectF innerSubtimeBackgroundRectangle =
                 new RectF(

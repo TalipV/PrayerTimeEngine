@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using NodaTime;
 using PrayerTimeEngine.Core.Domain.PlacesService.Interfaces;
 using PrayerTimeEngine.Core.Domain.PlacesService.Models;
 using System.Net;
@@ -11,7 +12,7 @@ namespace PrayerTimeEngine.Core.Domain.PlacesService.Services
         private const string ACCESS_TOKEN = "pk.48863ca2d711d3a0ec7b118d88a24623";
         private const string BASE_URL = @"https://eu1.locationiq.com/v1/";
 
-        private DateTime? lastAPICall;
+        private Instant? lastAPICallInstant;
 
         private const int MAX_RESULTS = 4;
         private readonly HttpClient _httpClient;
@@ -40,7 +41,7 @@ namespace PrayerTimeEngine.Core.Domain.PlacesService.Services
 
             HttpResponseMessage response = await _httpClient.GetAsync(url);
             response.EnsureSuccessStatusCode();
-            lastAPICall = DateTime.Now;
+            lastAPICallInstant = SystemClock.Instance.GetCurrentInstant();
 
             string jsonResult = await response.Content.ReadAsStringAsync();
             return JsonSerializer.Deserialize<List<LocationIQPlace>>(jsonResult);
@@ -61,7 +62,7 @@ namespace PrayerTimeEngine.Core.Domain.PlacesService.Services
 
             HttpResponseMessage response = await _httpClient.GetAsync(url);
             response.EnsureSuccessStatusCode();
-            lastAPICall = DateTime.Now;
+            lastAPICallInstant = SystemClock.Instance.GetCurrentInstant();
 
             string jsonResult = await response.Content.ReadAsStringAsync();
             return JsonSerializer.Deserialize<LocationIQPlace>(jsonResult);
@@ -76,16 +77,16 @@ namespace PrayerTimeEngine.Core.Domain.PlacesService.Services
 
             try
             {
-                if (lastAPICall.HasValue)
+                if (lastAPICallInstant != null)
                 {
-                    int milliseconds = (int)Math.Ceiling((DateTime.Now - lastAPICall.Value).TotalMilliseconds);
+                    int milliseconds = (int)Math.Ceiling((SystemClock.Instance.GetCurrentInstant() - lastAPICallInstant.Value).TotalMilliseconds);
 
                     if (0 <= milliseconds && milliseconds <= NECESSARY_COOL_DOWN_MS)
                     {
                         await Task.Delay(milliseconds);
                     }
 
-                    lastAPICall = null;
+                    lastAPICallInstant = null;
                 }
             }
             finally

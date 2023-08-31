@@ -1,5 +1,7 @@
 ﻿using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Logging;
+using NodaTime;
+using PrayerTimeEngine.Core.Common.Extension;
 using PrayerTimeEngine.Core.Data.SQLite;
 using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Interfaces;
 using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Models;
@@ -10,7 +12,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services
     {
         private const string _selectSQL = """
                     SELECT 
-                        Date, Longitude, Latitude, InsertDateTime,
+                        Date, Longitude, Latitude, InsertInstant,
                         Fajr, NextFajr, Shuruq, Duha, Dhuhr, AsrMithl, AsrMithlayn, Maghrib, Isha, Ishtibaq, AsrKaraha,
                         Fajr_Degree, AsrKaraha_Degree, Ishtibaq_Degree, Isha_Degree
                     FROM MuwaqqitPrayerTimes
@@ -28,7 +30,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services
         }
 
         public async Task InsertMuwaqqitPrayerTimesAsync(
-            DateTime date,
+            LocalDate date,
             string timezone,
             decimal longitude,
             decimal latitude,
@@ -42,11 +44,11 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services
             {
                 var command = connection.CreateCommand();
                 command.CommandText = """
-                    INSERT INTO MuwaqqitPrayerTimes (Date, Timezone, Longitude, Latitude, Fajr_Degree, Isha_Degree, Ishtibaq_Degree, AsrKaraha_Degree, Fajr, NextFajr, Shuruq, Duha, Dhuhr, AsrMithl, AsrMithlayn, AsrKaraha, Maghrib, Isha, Ishtibaq, InsertDateTime) 
-                    VALUES                          ($Date, $Timezone, $Longitude, $Latitude, $Fajr_Degree, $Isha_Degree, $Ishtibaq_Degree, $AsrKaraha_Degree, $Fajr, $NextFajr, $Shuruq, $Duha, $Dhuhr, $AsrMithl, $AsrMithlayn, $AsrKaraha, $Maghrib, $Isha, $Ishtibaq, $InsertDateTime);
+                    INSERT INTO MuwaqqitPrayerTimes (Date, Timezone, Longitude, Latitude, Fajr_Degree, Isha_Degree, Ishtibaq_Degree, AsrKaraha_Degree, Fajr, NextFajr, Shuruq, Duha, Dhuhr, AsrMithl, AsrMithlayn, AsrKaraha, Maghrib, Isha, Ishtibaq, InsertInstant) 
+                    VALUES                          ($Date, $Timezone, $Longitude, $Latitude, $Fajr_Degree, $Isha_Degree, $Ishtibaq_Degree, $AsrKaraha_Degree, $Fajr, $NextFajr, $Shuruq, $Duha, $Dhuhr, $AsrMithl, $AsrMithlayn, $AsrKaraha, $Maghrib, $Isha, $Ishtibaq, $InsertInstant);
                     """;
 
-                command.Parameters.AddWithValue("$Date", date);
+                command.Parameters.AddWithValue("$Date", date.GetStringForDBColumn());
                 command.Parameters.AddWithValue("$Timezone", timezone);
                 command.Parameters.AddWithValue("$Longitude", longitude);
                 command.Parameters.AddWithValue("$Latitude", latitude);
@@ -56,21 +58,21 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services
                 command.Parameters.AddWithValue("$Ishtibaq_Degree", ishtibaqDegree);
                 command.Parameters.AddWithValue("$AsrKaraha_Degree", asrKarahaDegree);
 
-                command.Parameters.AddWithValue("$Fajr", prayerTimes.Fajr);
-                command.Parameters.AddWithValue("$NextFajr", prayerTimes.NextFajr);
-                command.Parameters.AddWithValue("$Shuruq", prayerTimes.Shuruq);
-                command.Parameters.AddWithValue("$Duha", prayerTimes.Duha);
-                command.Parameters.AddWithValue("$Dhuhr", prayerTimes.Dhuhr);
+                command.Parameters.AddWithValue("$Fajr", prayerTimes.Fajr.GetStringForDBColumn());
+                command.Parameters.AddWithValue("$NextFajr", prayerTimes.NextFajr.GetStringForDBColumn());
+                command.Parameters.AddWithValue("$Shuruq", prayerTimes.Shuruq.GetStringForDBColumn());
+                command.Parameters.AddWithValue("$Duha", prayerTimes.Duha.GetStringForDBColumn());
+                command.Parameters.AddWithValue("$Dhuhr", prayerTimes.Dhuhr.GetStringForDBColumn());
 
-                command.Parameters.AddWithValue("$AsrMithl", prayerTimes.Asr);
-                command.Parameters.AddWithValue("$AsrMithlayn", prayerTimes.AsrMithlayn);
-                command.Parameters.AddWithValue("$AsrKaraha", prayerTimes.AsrKaraha);
+                command.Parameters.AddWithValue("$AsrMithl", prayerTimes.Asr.GetStringForDBColumn());
+                command.Parameters.AddWithValue("$AsrMithlayn", prayerTimes.AsrMithlayn.GetStringForDBColumn());
+                command.Parameters.AddWithValue("$AsrKaraha", prayerTimes.AsrKaraha.GetStringForDBColumn());
 
-                command.Parameters.AddWithValue("$Maghrib", prayerTimes.Maghrib);
-                command.Parameters.AddWithValue("$Isha", prayerTimes.Isha);
-                command.Parameters.AddWithValue("$Ishtibaq", prayerTimes.Ishtibaq);
+                command.Parameters.AddWithValue("$Maghrib", prayerTimes.Maghrib.GetStringForDBColumn());
+                command.Parameters.AddWithValue("$Isha", prayerTimes.Isha.GetStringForDBColumn());
+                command.Parameters.AddWithValue("$Ishtibaq", prayerTimes.Ishtibaq.GetStringForDBColumn());
 
-                command.Parameters.AddWithValue("$InsertDateTime", DateTime.Now);
+                command.Parameters.AddWithValue("$InsertInstant", SystemClock.Instance.GetCurrentInstant().GetStringForDBColumn());
 
                 await command.ExecuteNonQueryAsync();
             });
@@ -105,22 +107,22 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services
         {
             return new MuwaqqitPrayerTimes
             {
-                Date = reader.GetDateTime(0),
+                Date = reader.GetString(0).GetLocalDateFromDBColumnString(),
                 Longitude = reader.GetDecimal(1),
                 Latitude = reader.GetDecimal(2),
-                InsertDateTime = reader.GetDateTime(3),
+                InsertInstant = reader.GetString(3).GetInstantFromDBColumnString(),
 
-                Fajr = reader.GetDateTime(4),
-                NextFajr = reader.GetDateTime(5),
-                Shuruq = reader.GetDateTime(6),
-                Duha = reader.GetDateTime(7),
-                Dhuhr = reader.GetDateTime(8),
-                Asr = reader.GetDateTime(9),
-                AsrMithlayn = reader.GetDateTime(10),
-                Maghrib = reader.GetDateTime(11),
-                Isha = reader.GetDateTime(12),
-                Ishtibaq = reader.GetDateTime(13),
-                AsrKaraha = reader.GetDateTime(14),
+                Fajr = reader.GetString(4).GetZonedDateTimeFromDBColumnString(),
+                NextFajr = reader.GetString(5).GetZonedDateTimeFromDBColumnString(),
+                Shuruq = reader.GetString(6).GetZonedDateTimeFromDBColumnString(),
+                Duha = reader.GetString(7).GetZonedDateTimeFromDBColumnString(),
+                Dhuhr = reader.GetString(8).GetZonedDateTimeFromDBColumnString(),
+                Asr = reader.GetString(9).GetZonedDateTimeFromDBColumnString(),
+                AsrMithlayn = reader.GetString(10).GetZonedDateTimeFromDBColumnString(),
+                Maghrib = reader.GetString(11).GetZonedDateTimeFromDBColumnString(),
+                Isha = reader.GetString(12).GetZonedDateTimeFromDBColumnString(),
+                Ishtibaq = reader.GetString(13).GetZonedDateTimeFromDBColumnString(),
+                AsrKaraha = reader.GetString(14).GetZonedDateTimeFromDBColumnString(),
 
                 FajrDegree = reader.GetDouble(15),
                 AsrKarahaDegree = reader.GetDouble(16),
@@ -140,7 +142,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services
         }
 
         public async Task<MuwaqqitPrayerTimes> GetTimesAsync(
-            DateTime date,
+            LocalDate date,
             decimal longitude,
             decimal latitude,
             double fajrDegree,
@@ -163,7 +165,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services
                         AND AsrKaraha_Degree = $AsrKaraha_Degree;
                     """;
 
-                command.Parameters.AddWithValue("$Date", date);
+                command.Parameters.AddWithValue("$Date", date.GetStringForDBColumn());
                 command.Parameters.AddWithValue("$Longitude", longitude);
                 command.Parameters.AddWithValue("$Latitude", latitude);
                 command.Parameters.AddWithValue("$Fajr_Degree", fajrDegree);

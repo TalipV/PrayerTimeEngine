@@ -1,17 +1,30 @@
-﻿namespace PrayerTimeEngine.Core.Domain.Model
+﻿using NodaTime;
+
+namespace PrayerTimeEngine.Core.Domain.Model
 {
     public abstract class PrayerTime
     {
         public abstract string Name { get; }
-        public DateTime? Start { get; set; }
-        public DateTime? End { get; set; }
+        public ZonedDateTime? Start { get; set; }
+        public ZonedDateTime? End { get; set; }
+
+        public Duration? Duration
+        {
+            get
+            {
+                if (Start == null || End == null)
+                    return null;
+
+                return Start.Value.ToInstant() - End.Value.ToInstant();
+            }
+        }
 
         public string DurationDisplayText
         {
             get
             {
-                string startTime = Start?.ToString("HH:mm:ss") ?? "xx:xx:xx";
-                string endTime = End?.ToString("HH:mm:ss") ?? "xx:xx:xx";
+                string startTime = Start?.ToString("HH:mm:ss", null) ?? "xx:xx:xx";
+                string endTime = End?.ToString("HH:mm:ss", null) ?? "xx:xx:xx";
 
                 return $"{startTime} - {endTime}"; ;
             }
@@ -21,14 +34,14 @@
     public class FajrPrayerTime : PrayerTime
     {
         public override string Name => "Fajr";
-        public DateTime? Ghalas { get; set; }
-        public DateTime? Karaha { get; set; }
+        public ZonedDateTime? Ghalas { get; set; }
+        public ZonedDateTime? Karaha { get; set; }
     }
 
     public class DuhaPrayerTime : PrayerTime
     {
         public override string Name => "Duha";
-        public DateTime? QuarterOfDay { get; set; }
+        public ZonedDateTime? QuarterOfDay { get; set; }
     }
 
     public class DhuhrPrayerTime : PrayerTime
@@ -39,22 +52,22 @@
     public class AsrPrayerTime : PrayerTime
     {
         public override string Name => "Asr";
-        public DateTime? Mithlayn { get; set; }
-        public DateTime? Karaha { get; set; }
+        public ZonedDateTime? Mithlayn { get; set; }
+        public ZonedDateTime? Karaha { get; set; }
     }
 
     public class MaghribPrayerTime : PrayerTime
     {
         public override string Name => "Maghrib";
-        public DateTime? SufficientTime { get; set; }
-        public DateTime? Ishtibaq { get; set; }
+        public ZonedDateTime? SufficientTime { get; set; }
+        public ZonedDateTime? Ishtibaq { get; set; }
     }
 
     public class IshaPrayerTime : PrayerTime
     {
         public override string Name => "Isha";
-        public DateTime? FirstThirdOfNight { get; set; }
-        public DateTime? MiddleOfNight { get; set; }
-        public DateTime? SecondThirdOfNight { get; set; }
+        public ZonedDateTime? FirstThirdOfNight { get; set; }
+        public ZonedDateTime? MiddleOfNight { get; set; }
+        public ZonedDateTime? SecondThirdOfNight { get; set; }
     }
 }

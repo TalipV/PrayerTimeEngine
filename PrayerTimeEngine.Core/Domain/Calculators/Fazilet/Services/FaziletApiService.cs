@@ -1,7 +1,8 @@
 ﻿using Newtonsoft.Json.Linq;
+using NodaTime;
+using NodaTime.Text;
 using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Interfaces;
 using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Models;
-using System.Globalization;
 
 namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
 {
@@ -18,7 +19,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
 
         public async Task<Dictionary<string, int>> GetCountries()
         {
-            Dictionary<string, int> countries = new Dictionary<string, int>();
+            Dictionary<string, int> countries = new();
 
             HttpResponseMessage response = await _httpClient.GetAsync(GET_COUNTRIES_URL);
             if (response.IsSuccessStatusCode)
@@ -67,32 +68,31 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
             List<FaziletPrayerTimes> prayerTimesList = new List<FaziletPrayerTimes>();
 
             string url = string.Format(GET_TIMES_BY_CITY_URL, cityID);
-
             HttpResponseMessage response = await _httpClient.GetAsync(url);
 
             if (response.IsSuccessStatusCode)
             {
                 string json = await response.Content.ReadAsStringAsync();
                 JObject jObject = JObject.Parse(json);
-                JArray timesArray = (JArray)jObject["vakitler"];
+                JArray timesJArray = (JArray)jObject["vakitler"];
 
                 string timeZoneName = jObject.GetValue("bolge_saatdilimi").Value<string>();
-                TimeZoneInfo timeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(timeZoneName);
+                DateTimeZone timeZone = DateTimeZoneProviders.Tzdb[timeZoneName];
 
-                foreach (JObject times in timesArray)
+                foreach (JObject timesJObject in timesJArray)
                 {
                     prayerTimesList.Add(
                         new FaziletPrayerTimes
                         {
                             CityID = cityID,
-                            Imsak = getParsedDateTime(times, "imsak", timeZoneInfo),
-                            Fajr = getParsedDateTime(times, "sabah", timeZoneInfo),
-                            Shuruq = getParsedDateTime(times, "gunes", timeZoneInfo),
-                            Dhuhr = getParsedDateTime(times, "ogle", timeZoneInfo),
-                            Asr = getParsedDateTime(times, "ikindi", timeZoneInfo),
-                            Maghrib = getParsedDateTime(times, "aksam", timeZoneInfo),
-                            Isha = getParsedDateTime(times, "yatsi", timeZoneInfo),
-                            Date = getParsedDateTime(times, "ogle", timeZoneInfo).Date
+                            Imsak = getZonedDateTime(timeZone, (string)timesJObject["imsak"][0]["tarih"]),
+                            Fajr = getZonedDateTime(timeZone, (string)timesJObject["sabah"][0]["tarih"]),
+                            Shuruq = getZonedDateTime(timeZone, (string)timesJObject["gunes"][0]["tarih"]),
+                            Dhuhr = getZonedDateTime(timeZone, (string)timesJObject["ogle"][0]["tarih"]),
+                            Asr = getZonedDateTime(timeZone, (string)timesJObject["ikindi"][0]["tarih"]),
+                            Maghrib = getZonedDateTime(timeZone, (string)timesJObject["aksam"][0]["tarih"]),
+                            Isha = getZonedDateTime(timeZone, (string)timesJObject["yatsi"][0]["tarih"]),
+                            Date = getZonedDateTime(timeZone, (string)timesJObject["ogle"][0]["tarih"]).Date
                         }
                     );
                 }
@@ -101,16 +101,14 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
             return prayerTimesList;
         }
 
-        private static DateTime getParsedDateTime(JObject times, string timeName, TimeZoneInfo timeZoneInfo)
+        private ZonedDateTime getZonedDateTime(DateTimeZone timeZone, string timeStr)
         {
-            DateTime dateTime =
-                DateTime.ParseExact(
-                    (string)times[timeName][0]["tarih"],
-                    "MM/dd/yyyy HH:mm:ss",
-                    CultureInfo.InvariantCulture,
-                    DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal);
+            Instant instant = 
+                InstantPattern.CreateWithInvariantCulture("MM/dd/yyyy HH:mm:ss")
+                .Parse(timeStr)
+                .Value;
 
-            return TimeZoneInfo.ConvertTime(dateTime, timeZoneInfo);
+            return instant.InZone(timeZone);
         }
     }
 }

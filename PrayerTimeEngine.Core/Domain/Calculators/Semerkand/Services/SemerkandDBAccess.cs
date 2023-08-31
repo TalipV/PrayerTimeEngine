@@ -1,4 +1,6 @@
-﻿using PrayerTimeEngine.Core.Data.SQLite;
+﻿using NodaTime;
+using PrayerTimeEngine.Core.Common.Extension;
+using PrayerTimeEngine.Core.Data.SQLite;
 using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Interfaces;
 using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Models;
 
@@ -42,13 +44,13 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
             {
                 var command = connection.CreateCommand();
                 command.CommandText = """
-                    INSERT INTO SemerkandCountries (Id, Name, InsertDateTime) 
-                    VALUES ($Id, $Name, $InsertDateTime);
+                    INSERT INTO SemerkandCountries (Id, Name, InsertInstant) 
+                    VALUES ($Id, $Name, $InsertInstant);
                     """;
 
                 command.Parameters.AddWithValue("$Id", id);
                 command.Parameters.AddWithValue("$Name", name);
-                command.Parameters.AddWithValue("$InsertDateTime", DateTime.Now);
+                command.Parameters.AddWithValue("$InsertInstant", SystemClock.Instance.GetCurrentInstant().GetStringForDBColumn());
 
                 await command.ExecuteNonQueryAsync();
             });
@@ -85,20 +87,20 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
             {
                 var command = connection.CreateCommand();
                 command.CommandText = """
-                    INSERT INTO SemerkandCities (Id, Name, CountryId, InsertDateTime) 
-                    VALUES ($Id, $Name, $CountryId, $InsertDateTime);
+                    INSERT INTO SemerkandCities (Id, Name, CountryId, InsertInstant) 
+                    VALUES ($Id, $Name, $CountryId, $InsertInstant);
                     """;
 
                 command.Parameters.AddWithValue("$Id", id);
                 command.Parameters.AddWithValue("$Name", name);
                 command.Parameters.AddWithValue("$CountryId", countryId);
-                command.Parameters.AddWithValue("$InsertDateTime", DateTime.Now);
+                command.Parameters.AddWithValue("$InsertInstant", SystemClock.Instance.GetCurrentInstant().GetStringForDBColumn());
 
                 await command.ExecuteNonQueryAsync();
             });
         }
 
-        public async Task<SemerkandPrayerTimes> GetTimesByDateAndCityID(DateTime date, int cityId)
+        public async Task<SemerkandPrayerTimes> GetTimesByDateAndCityID(LocalDate date, int cityId)
         {
             SemerkandPrayerTimes time = null;
 
@@ -112,7 +114,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
                     """;
 
                 command.Parameters.AddWithValue("$CityId", cityId);
-                command.Parameters.AddWithValue("$Date", date.Date);
+                command.Parameters.AddWithValue("$Date", date.GetStringForDBColumn());
 
                 using (var reader = await command.ExecuteReaderAsync())
                 {
@@ -122,13 +124,13 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
                         new SemerkandPrayerTimes
                         {
                             CityID = cityId,
-                            Fajr = reader.GetDateTime(0),
-                            Shuruq = reader.GetDateTime(1),
-                            Dhuhr = reader.GetDateTime(2),
-                            Asr = reader.GetDateTime(3),
-                            Maghrib = reader.GetDateTime(4),
-                            Isha = reader.GetDateTime(5),
-                            Date = reader.GetDateTime(6)
+                            Fajr = reader.GetString(0).GetZonedDateTimeFromDBColumnString(),
+                            Shuruq = reader.GetString(1).GetZonedDateTimeFromDBColumnString(),
+                            Dhuhr = reader.GetString(2).GetZonedDateTimeFromDBColumnString(),
+                            Asr = reader.GetString(3).GetZonedDateTimeFromDBColumnString(),
+                            Maghrib = reader.GetString(4).GetZonedDateTimeFromDBColumnString(),
+                            Isha = reader.GetString(5).GetZonedDateTimeFromDBColumnString(),
+                            Date = reader.GetString(6).GetLocalDateFromDBColumnString()
                         };
                     }
                 }
@@ -145,13 +147,13 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
                 {
                     var command = connection.CreateCommand();
                     command.CommandText = """
-                        INSERT INTO SemerkandCountries (Id, Name, InsertDateTime) 
-                        VALUES ($Id, $Name, $InsertDateTime);
+                        INSERT INTO SemerkandCountries (Id, Name, InsertInstant) 
+                        VALUES ($Id, $Name, $InsertInstant);
                         """;
 
                     command.Parameters.AddWithValue("$Id", country.Value);
                     command.Parameters.AddWithValue("$Name", country.Key);
-                    command.Parameters.AddWithValue("$InsertDateTime", DateTime.Now);
+                    command.Parameters.AddWithValue("$InsertInstant", SystemClock.Instance.GetCurrentInstant().GetStringForDBColumn());
 
                     await command.ExecuteNonQueryAsync();
                 }
@@ -166,40 +168,40 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
                 {
                     var command = connection.CreateCommand();
                     command.CommandText = """
-                        INSERT INTO SemerkandCities (Id, Name, CountryId, InsertDateTime) 
-                        VALUES ($Id, $Name, $CountryId, $InsertDateTime);
+                        INSERT INTO SemerkandCities (Id, Name, CountryId, InsertInstant) 
+                        VALUES ($Id, $Name, $CountryId, $InsertInstant);
                         """;
 
                     command.Parameters.AddWithValue("$Id", city.Value);
                     command.Parameters.AddWithValue("$Name", city.Key);
                     command.Parameters.AddWithValue("$CountryId", countryId);
-                    command.Parameters.AddWithValue("$InsertDateTime", DateTime.Now);
+                    command.Parameters.AddWithValue("$InsertInstant", SystemClock.Instance.GetCurrentInstant().GetStringForDBColumn());
 
                     await command.ExecuteNonQueryAsync();
                 }
             });
         }
 
-        public async Task InsertSemerkandPrayerTimes(DateTime date, int cityID, SemerkandPrayerTimes semerkandPrayerTimes)
+        public async Task InsertSemerkandPrayerTimes(LocalDate date, int cityID, SemerkandPrayerTimes semerkandPrayerTimes)
         {
             await _db.ExecuteCommandAsync(async connection =>
             {
                 var command = connection.CreateCommand();
                 command.CommandText = """
-                    INSERT INTO SemerkandPrayerTimes (Date, CityId, Fajr, Shuruq, Dhuhr, Asr, Maghrib, Isha, InsertDateTime) 
-                    VALUES ($Date, $CityId, $Fajr, $Shuruq, $Dhuhr, $Asr, $Maghrib, $Isha, $InsertDateTime);
+                    INSERT INTO SemerkandPrayerTimes (Date, CityId, Fajr, Shuruq, Dhuhr, Asr, Maghrib, Isha, InsertInstant) 
+                    VALUES ($Date, $CityId, $Fajr, $Shuruq, $Dhuhr, $Asr, $Maghrib, $Isha, $InsertInstant);
                     """;
 
-                command.Parameters.AddWithValue("$Date", date);
+                command.Parameters.AddWithValue("$Date", date.GetStringForDBColumn());
                 command.Parameters.AddWithValue("$CityId", cityID);
 
-                command.Parameters.AddWithValue("$Fajr", semerkandPrayerTimes.Fajr);
-                command.Parameters.AddWithValue("$Shuruq", semerkandPrayerTimes.Shuruq);
-                command.Parameters.AddWithValue("$Dhuhr", semerkandPrayerTimes.Dhuhr);
-                command.Parameters.AddWithValue("$Asr", semerkandPrayerTimes.Asr);
-                command.Parameters.AddWithValue("$Maghrib", semerkandPrayerTimes.Maghrib);
-                command.Parameters.AddWithValue("$Isha", semerkandPrayerTimes.Isha);
-                command.Parameters.AddWithValue("$InsertDateTime", DateTime.Now);
+                command.Parameters.AddWithValue("$Fajr", semerkandPrayerTimes.Fajr.GetStringForDBColumn());
+                command.Parameters.AddWithValue("$Shuruq", semerkandPrayerTimes.Shuruq.GetStringForDBColumn());
+                command.Parameters.AddWithValue("$Dhuhr", semerkandPrayerTimes.Dhuhr.GetStringForDBColumn());
+                command.Parameters.AddWithValue("$Asr", semerkandPrayerTimes.Asr.GetStringForDBColumn());
+                command.Parameters.AddWithValue("$Maghrib", semerkandPrayerTimes.Maghrib.GetStringForDBColumn());
+                command.Parameters.AddWithValue("$Isha", semerkandPrayerTimes.Isha.GetStringForDBColumn());
+                command.Parameters.AddWithValue("$InsertInstant", SystemClock.Instance.GetCurrentInstant().GetStringForDBColumn());
 
                 await command.ExecuteNonQueryAsync();
             });

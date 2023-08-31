@@ -8,6 +8,7 @@ using PrayerTimeEngine.Core.Domain.PlacesService.Models;
 using PrayerTimeEngine.Core.Domain.CalculationService.Interfaces;
 using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Domain.PlacesService.Interfaces;
+using NodaTime;
 
 namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
 {
@@ -47,7 +48,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
             };
 
         public async Task<ILookup<ICalculationPrayerTimes, ETimeType>> GetPrayerTimesAsync(
-            DateTime date,
+            LocalDate date,
             BaseLocationData locationData,
             List<GenericSettingConfiguration> configurations)
         {
@@ -69,7 +70,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
                 .ToLookup(x => faziletPrayerTimes, y => y);
         }
 
-        private async Task<FaziletPrayerTimes> getPrayerTimesInternal(DateTime date, string countryName, string cityName)
+        private async Task<FaziletPrayerTimes> getPrayerTimesInternal(LocalDate date, string countryName, string cityName)
         {
             if (await tryGetCountryID(countryName) is (bool countrySuccess, int countryID) countryResult && !countrySuccess)
                 throw new ArgumentException($"{nameof(countryName)} could not be found!");
@@ -79,14 +80,14 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
             FaziletPrayerTimes prayerTimes = await getPrayerTimesByDateAndCityID(date, cityID)
                 ?? throw new Exception($"Prayer times for the {date:D} could not be found for an unknown reason.");
 
-            prayerTimes.NextFajr = (await getPrayerTimesByDateAndCityID(date.AddDays(1), cityID))?.Fajr;
+            prayerTimes.NextFajr = (await getPrayerTimesByDateAndCityID(date.PlusDays(1), cityID))?.Fajr;
 
             return prayerTimes;
         }
 
         private readonly AsyncDuplicateLock getPrayerTimesLocker = new();
 
-        private async Task<FaziletPrayerTimes> getPrayerTimesByDateAndCityID(DateTime date, int cityID)
+        private async Task<FaziletPrayerTimes> getPrayerTimesByDateAndCityID(LocalDate date, int cityID)
         {
             var lockTuple = (date, cityID);
 
@@ -97,8 +98,8 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
                 if (prayerTimes == null)
                 {
                     List<FaziletPrayerTimes> prayerTimesLst = await _faziletApiService.GetTimesByCityID(cityID);
-                    prayerTimesLst.ForEach(async x => await _faziletDBAccess.InsertFaziletPrayerTimes(x.Date.Date, cityID, x));
-                    prayerTimes = prayerTimesLst.FirstOrDefault(x => x.Date == date.Date);
+                    prayerTimesLst.ForEach(async x => await _faziletDBAccess.InsertFaziletPrayerTimes(x.Date, cityID, x));
+                    prayerTimes = prayerTimesLst.FirstOrDefault(x => x.Date == date);
                 }
 
                 return prayerTimes;

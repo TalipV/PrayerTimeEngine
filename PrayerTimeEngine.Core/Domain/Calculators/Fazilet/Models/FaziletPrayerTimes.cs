@@ -1,23 +1,24 @@
-﻿using PrayerTimeEngine.Core.Common.Enum;
+﻿using NodaTime;
+using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Domain.CalculationService.Interfaces;
 
 namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Models
 {
     public class FaziletPrayerTimes : ICalculationPrayerTimes
     {
-        public required DateTime Date { get; set; }
+        public required LocalDate Date { get; set; }
         public required int CityID { get; set; }
 
-        public required DateTime Imsak { get; set; }
-        public DateTime? NextFajr { get; set; }
-        public required DateTime Fajr { get; set; }
-        public required DateTime Shuruq { get; set; }
-        public required DateTime Dhuhr { get; set; }
-        public required DateTime Asr { get; set; }
-        public required DateTime Maghrib { get; set; }
-        public required DateTime Isha { get; set; }
+        public required ZonedDateTime Imsak { get; set; }
+        public ZonedDateTime? NextFajr { get; set; }
+        public required ZonedDateTime Fajr { get; set; }
+        public required ZonedDateTime Shuruq { get; set; }
+        public required ZonedDateTime Dhuhr { get; set; }
+        public required ZonedDateTime Asr { get; set; }
+        public required ZonedDateTime Maghrib { get; set; }
+        public required ZonedDateTime Isha { get; set; }
 
-        public DateTime GetDateTimeForTimeType(ETimeType timeType)
+        public ZonedDateTime GetZonedDateTimeForTimeType(ETimeType timeType)
         {
             switch (timeType)
             {
@@ -46,7 +47,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Models
                 case ETimeType.IshaStart:
                     return Isha;
                 case ETimeType.IshaEnd:
-                    return NextFajr ?? DateTime.MinValue;
+                    return NextFajr ?? new ZonedDateTime(Instant.MinValue, DateTimeZone.Utc);
                 default:
                     throw new ArgumentException($"Invalid {nameof(timeType)} value: {timeType}.");
             }

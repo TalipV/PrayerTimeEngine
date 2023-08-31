@@ -1,33 +1,34 @@
-﻿using PrayerTimeEngine.Core.Common.Enum;
+﻿using NodaTime;
+using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Domain.CalculationService.Interfaces;
 
 namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Models
 {
     public class MuwaqqitPrayerTimes : ICalculationPrayerTimes
     {
-        public required DateTime Date { get; set; }
+        public required LocalDate Date { get; set; }
         public required decimal Longitude { get; set; }
         public required decimal Latitude { get; set; }
-        public DateTime? InsertDateTime { get; set; }
+        public Instant? InsertInstant { get; set; }
 
         public required double FajrDegree { get; set; }
         public required double AsrKarahaDegree { get; set; }
         public required double IshtibaqDegree { get; set; }
         public required double IshaDegree { get; set; }
 
-        public required DateTime Fajr { get; set; }
-        public required DateTime NextFajr { get; set; }
-        public required DateTime Shuruq { get; set; }
-        public required DateTime Duha { get; set; }
-        public required DateTime Dhuhr { get; set; }
-        public required DateTime Asr { get; set; }
-        public required DateTime AsrMithlayn { get; set; }
-        public required DateTime Maghrib { get; set; }
-        public required DateTime Isha { get; set; }
-        public required DateTime Ishtibaq { get; set; }
-        public required DateTime AsrKaraha { get; set; }
+        public required ZonedDateTime Fajr { get; set; }
+        public required ZonedDateTime NextFajr { get; set; }
+        public required ZonedDateTime Shuruq { get; set; }
+        public required ZonedDateTime Duha { get; set; }
+        public required ZonedDateTime Dhuhr { get; set; }
+        public required ZonedDateTime Asr { get; set; }
+        public required ZonedDateTime AsrMithlayn { get; set; }
+        public required ZonedDateTime Maghrib { get; set; }
+        public required ZonedDateTime Isha { get; set; }
+        public required ZonedDateTime Ishtibaq { get; set; }
+        public required ZonedDateTime AsrKaraha { get; set; }
 
-        public DateTime GetDateTimeForTimeType(ETimeType timeType)
+        public ZonedDateTime GetZonedDateTimeForTimeType(ETimeType timeType)
         {
             switch (timeType)
             {

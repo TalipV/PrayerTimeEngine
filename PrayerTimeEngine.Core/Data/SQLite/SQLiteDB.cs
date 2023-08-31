@@ -11,25 +11,28 @@ namespace PrayerTimeEngine.Core.Data.SQLite
         }
 
         private readonly ILogger<SQLiteDB> _logger;
-        private static readonly string folderPath = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
-        private const string DatabaseName = "PrayerTimeEngineDB.db";
-        private static readonly string DatabasePath = Path.Combine(folderPath, DatabaseName);
+        private static readonly string _folderPath = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+        private const string _databaseName = "PrayerTimeEngineDB.db";
+        private static readonly string _databasePath = Path.Combine(_folderPath, _databaseName);
 
-        private SqliteConnection getSqliteConnection()
+        public SqliteConnection GetSqliteConnection(string connectionString = null)
         {
-            return new SqliteConnection($"Data Source={DatabasePath}");
+            if (string.IsNullOrWhiteSpace(connectionString))
+                connectionString = $"Data Source={_databasePath}";
+
+            return new SqliteConnection(connectionString);
         }
 
         public async Task ExecuteCommandAsync(Func<SqliteConnection, Task> commandAction)
         {
-            using (SqliteConnection connection = getSqliteConnection())
+            using (SqliteConnection connection = GetSqliteConnection())
             {
                 await connection.OpenAsync();
                 await commandAction(connection);
             }
         }
 
-        public void InitializeDatabase()
+        public void InitializeDatabase(bool createDatabaseIfNotExist = true)
         {
             _logger.LogDebug("Initialize");
 
@@ -39,11 +42,11 @@ namespace PrayerTimeEngine.Core.Data.SQLite
             //_logger.LogDebug("Delete database");
 #endif
 
-            if (!File.Exists(DatabasePath))
+            if (createDatabaseIfNotExist && !File.Exists(_databasePath))
             {
                 _logger.LogDebug("Create table schemas");
 
-                using (SqliteConnection connection = getSqliteConnection())
+                using (SqliteConnection connection = GetSqliteConnection())
                 {
                     connection.Open();
 
@@ -62,10 +65,10 @@ namespace PrayerTimeEngine.Core.Data.SQLite
                 CREATE TABLE IF NOT EXISTS
                     Profile (
                         Id INTEGER PRIMARY KEY,
-                        Name NVARCHAR(2048) NOT NULL,
-                        LocationName NVARCHAR(2048) NOT NULL,
+                        Name TEXT NOT NULL,
+                        LocationName TEXT NOT NULL,
                         SequenceNo INTEGER NOT NULL,
-                        InsertDateTime DATETIME NOT NULL,
+                        InsertInstant TEXT NOT NULL,
                         UNIQUE(SequenceNo),
                         UNIQUE(Name))
                 """;
@@ -79,7 +82,7 @@ namespace PrayerTimeEngine.Core.Data.SQLite
                         TimeType INTEGER NOT NULL,
                         JsonConfigurationString TEXT NOT NULL,
 
-                        InsertDateTime DATETIME NOT NULL,
+                        InsertInstant TEXT NOT NULL,
                         UNIQUE(ProfileID, TimeType),
                         FOREIGN KEY(ProfileID) REFERENCES Profile(Id))
                 """;
@@ -93,7 +96,7 @@ namespace PrayerTimeEngine.Core.Data.SQLite
                         CalculationSource INTEGER NOT NULL,
                         JsonLocationData TEXT NOT NULL,
 
-                        InsertDateTime DATETIME NOT NULL,
+                        InsertInstant TEXT NOT NULL,
 
                         UNIQUE(ProfileID, CalculationSource),
                         FOREIGN KEY(ProfileID) REFERENCES Profile(Id))
@@ -107,8 +110,8 @@ namespace PrayerTimeEngine.Core.Data.SQLite
                 CREATE TABLE IF NOT EXISTS 
                     FaziletCountries (
                         Id INTEGER PRIMARY KEY, 
-                        Name NVARCHAR(200) NOT NULL,
-                        InsertDateTime DATETIME NOT NULL,
+                        Name TEXT NOT NULL,
+                        InsertInstant TEXT NOT NULL,
                         UNIQUE(Name))
                 """;
             createTable(connection, tableFaziletCountries);
@@ -118,8 +121,8 @@ namespace PrayerTimeEngine.Core.Data.SQLite
                     FaziletCities (
                         Id INTEGER PRIMARY KEY, 
                         CountryId INTEGER NOT NULL, 
-                        Name NVARCHAR(200) NOT NULL, 
-                        InsertDateTime DATETIME NOT NULL,
+                        Name TEXT NOT NULL, 
+                        InsertInstant TEXT NOT NULL,
                         FOREIGN KEY(CountryId) REFERENCES FaziletCountries(Id),
                         UNIQUE(CountryId, Name))
                 """;
@@ -130,17 +133,17 @@ namespace PrayerTimeEngine.Core.Data.SQLite
                     FaziletPrayerTimes (
                         Id INTEGER PRIMARY KEY AUTOINCREMENT, 
 
-                        Date DATETIME NOT NULL, 
+                        Date TEXT NOT NULL, 
                         CityId INTEGER NOT NULL, 
 
-                        Imsak DATETIME NOT NULL, 
-                        Fajr DATETIME NOT NULL, 
-                        Shuruq DATETIME NOT NULL, 
-                        Dhuhr DATETIME NOT NULL, 
-                        Asr DATETIME NOT NULL, 
-                        Maghrib DATETIME NOT NULL, 
-                        Isha DATETIME NOT NULL, 
-                        InsertDateTime DATETIME NOT NULL,
+                        Imsak TEXT NOT NULL, 
+                        Fajr TEXT NOT NULL, 
+                        Shuruq TEXT NOT NULL, 
+                        Dhuhr TEXT NOT NULL, 
+                        Asr TEXT NOT NULL, 
+                        Maghrib TEXT NOT NULL, 
+                        Isha TEXT NOT NULL, 
+                        InsertInstant TEXT NOT NULL,
 
                         FOREIGN KEY(CityId) REFERENCES FaziletCities(Id),
                         UNIQUE(Date, CityId))
@@ -154,8 +157,8 @@ namespace PrayerTimeEngine.Core.Data.SQLite
                 CREATE TABLE IF NOT EXISTS 
                     SemerkandCountries (
                         Id INTEGER PRIMARY KEY, 
-                        Name NVARCHAR(200) NOT NULL,
-                        InsertDateTime DATETIME NOT NULL,
+                        Name TEXT NOT NULL,
+                        InsertInstant TEXT NOT NULL,
                         UNIQUE(Name))
                 """;
             createTable(connection, tableSemerkandCountries);
@@ -165,8 +168,8 @@ namespace PrayerTimeEngine.Core.Data.SQLite
                     SemerkandCities (
                         Id INTEGER PRIMARY KEY, 
                         CountryId INTEGER NOT NULL, 
-                        Name NVARCHAR(200) NOT NULL, 
-                        InsertDateTime DATETIME NOT NULL,
+                        Name TEXT NOT NULL, 
+                        InsertInstant TEXT NOT NULL,
                         FOREIGN KEY(CountryId) REFERENCES SemerkandCountries(Id),
                         UNIQUE(CountryId, Name))
                 """;
@@ -177,16 +180,16 @@ namespace PrayerTimeEngine.Core.Data.SQLite
                     SemerkandPrayerTimes (
                         Id INTEGER PRIMARY KEY AUTOINCREMENT, 
 
-                        Date DATETIME NOT NULL, 
+                        Date TEXT NOT NULL, 
                         CityId INTEGER NOT NULL, 
 
-                        Fajr DATETIME NOT NULL, 
-                        Shuruq DATETIME NOT NULL, 
-                        Dhuhr DATETIME NOT NULL, 
-                        Asr DATETIME NOT NULL, 
-                        Maghrib DATETIME NOT NULL, 
-                        Isha DATETIME NOT NULL, 
-                        InsertDateTime DATETIME NOT NULL,
+                        Fajr TEXT NOT NULL, 
+                        Shuruq TEXT NOT NULL, 
+                        Dhuhr TEXT NOT NULL, 
+                        Asr TEXT NOT NULL, 
+                        Maghrib TEXT NOT NULL, 
+                        Isha TEXT NOT NULL, 
+                        InsertInstant TEXT NOT NULL,
 
                         FOREIGN KEY(CityId) REFERENCES SemerkandCities(Id),
                         UNIQUE(Date, CityId))
@@ -202,31 +205,31 @@ namespace PrayerTimeEngine.Core.Data.SQLite
 
                     Id INTEGER PRIMARY KEY AUTOINCREMENT, 
 
-                    Date DATETIME NOT NULL, 
+                    Date TEXT NOT NULL, 
                     Longitude REAL NOT NULL, 
                     Latitude REAL NOT NULL, 
-                    Timezone VARCHAR(100) NOT NULL, 
+                    Timezone TEXT NOT NULL, 
 
-                    Fajr DATETIME NOT NULL, 
-                    NextFajr DATETIME NOT NULL, 
+                    Fajr TEXT NOT NULL, 
+                    NextFajr TEXT NOT NULL, 
                     Fajr_Degree REAL NOT NULL, 
 
-                    Shuruq DATETIME NOT NULL, 
-                    Duha DATETIME NOT NULL, 
-                    Dhuhr DATETIME NOT NULL, 
+                    Shuruq TEXT NOT NULL, 
+                    Duha TEXT NOT NULL, 
+                    Dhuhr TEXT NOT NULL, 
 
-                    AsrMithl DATETIME NOT NULL, 
-                    AsrMithlayn DATETIME NOT NULL, 
-                    AsrKaraha DATETIME NOT NULL, 
+                    AsrMithl TEXT NOT NULL, 
+                    AsrMithlayn TEXT NOT NULL, 
+                    AsrKaraha TEXT NOT NULL, 
                     AsrKaraha_Degree REAL NOT NULL, 
 
-                    Maghrib DATETIME NOT NULL, 
-                    Ishtibaq DATETIME NOT NULL, 
+                    Maghrib TEXT NOT NULL, 
+                    Ishtibaq TEXT NOT NULL, 
                     Ishtibaq_Degree REAL NOT NULL, 
 
-                    Isha DATETIME NOT NULL, 
+                    Isha TEXT NOT NULL, 
                     Isha_Degree REAL NOT NULL,
-                    InsertDateTime DATETIME NOT NULL,
+                    InsertInstant TEXT NOT NULL,
                     UNIQUE(Date, Longitude, Latitude, Timezone, Fajr_Degree, AsrKaraha_Degree, Ishtibaq_Degree, Isha_Degree))
                 """;
 

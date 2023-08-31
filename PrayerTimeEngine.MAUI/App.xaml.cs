@@ -14,7 +14,7 @@ public partial class App : Application
         MainPage = new NavigationPage(page);
 
         // Initialize the database
-        sqliteDB?.InitializeDatabase();
+        sqliteDB.InitializeDatabase();
 
         LogController.InitializeNavigation(
             MainPage.Navigation.PushModalAsync,

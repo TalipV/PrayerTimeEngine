@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NodaTime;
 using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Domain;
 using PrayerTimeEngine.Core.Domain.CalculationService.Interfaces;
@@ -27,17 +28,17 @@ public class PrayerTimeCalculationService : IPrayerTimeCalculationService
         _logger = logger;
     }
 
-    public async Task<PrayerTimesBundle> ExecuteAsync(Profile profile, DateTime dateTime)
+    public async Task<PrayerTimesBundle> ExecuteAsync(Profile profile, LocalDate date)
     {
         PrayerTimesBundle prayerTimeEntity = new();
 
-        await handleComplexTypes(profile, dateTime, prayerTimeEntity);
+        await handleComplexTypes(profile, date, prayerTimeEntity);
         handleSimpleTypes(profile, prayerTimeEntity);
 
         return prayerTimeEntity;
     }
 
-    private async Task handleComplexTypes(Profile profile, DateTime dateTime, PrayerTimesBundle prayerTimeEntity)
+    private async Task handleComplexTypes(Profile profile, LocalDate date, PrayerTimesBundle prayerTimeEntity)
     {
         List<GenericSettingConfiguration> configurations = getActiveCalculationConfigurations(profile);
 
@@ -54,7 +55,7 @@ public class PrayerTimeCalculationService : IPrayerTimeCalculationService
             Stopwatch stopwatch = Stopwatch.StartNew();
 
             ILookup<ICalculationPrayerTimes, ETimeType> calculationPrayerTimes =
-                await timeCalculator.GetPrayerTimesAsync(dateTime, locationData, configs);
+                await timeCalculator.GetPrayerTimesAsync(date, locationData, configs);
 
             _logger.LogDebug(
                 "{CalculationCount} times took {DurationMS} ms for {TimeCalculatorBane}", 
@@ -78,11 +79,11 @@ public class PrayerTimeCalculationService : IPrayerTimeCalculationService
         foreach (var timeType in associatedTimeTypes)
         {
             GenericSettingConfiguration config = configsByTimeType[timeType];
-            DateTime calculatedTime =
-                calculationPrayer.GetDateTimeForTimeType(timeType)
-                .AddMinutes(config.MinuteAdjustment);
+            ZonedDateTime calculatedZonedDateTime =
+                calculationPrayer.GetZonedDateTimeForTimeType(timeType)
+                .PlusMinutes(config.MinuteAdjustment);
 
-            prayerTimeEntity.SetSpecificPrayerTimeDateTime(timeType, calculatedTime);
+            prayerTimeEntity.SetSpecificPrayerTimeDateTime(timeType, calculatedZonedDateTime);
         }
     }
 
@@ -126,7 +127,7 @@ public class PrayerTimeCalculationService : IPrayerTimeCalculationService
         {
             prayerTimeEntity.SetSpecificPrayerTimeDateTime(
                 ETimeType.DuhaEnd,
-                prayerTimeEntity.Dhuhr.Start.Value.AddMinutes(duhaConfig.MinuteAdjustment));
+                prayerTimeEntity.Dhuhr.Start.Value.PlusMinutes(duhaConfig.MinuteAdjustment));
         }
 
         if (prayerTimeEntity.Maghrib?.Start != null
@@ -135,48 +136,48 @@ public class PrayerTimeCalculationService : IPrayerTimeCalculationService
         {
             prayerTimeEntity.SetSpecificPrayerTimeDateTime(
                 ETimeType.MaghribSufficientTime,
-                prayerTimeEntity.Maghrib.Start.Value.AddMinutes(maghribSufficientTimeConfig.MinuteAdjustment));
+                prayerTimeEntity.Maghrib.Start.Value.PlusMinutes(maghribSufficientTimeConfig.MinuteAdjustment));
         }
 
-        if ((prayerTimeEntity.Asr?.End - prayerTimeEntity.Fajr?.Start) is TimeSpan dayDuration
+        if ((prayerTimeEntity.Asr?.End - prayerTimeEntity.Fajr?.Start) is Duration dayDuration
             && profile.GetConfiguration(ETimeType.DuhaQuarterOfDay) is GenericSettingConfiguration duhaQuarterOfDayConfig
             && duhaQuarterOfDayConfig.IsTimeShown)
         {
-            TimeSpan quarterOfDayDuration = TimeSpan.FromMilliseconds(dayDuration.TotalMilliseconds * (1.0 / 4.0));
+            Duration quarterOfDayDuration = dayDuration / 4.0;
 
             prayerTimeEntity.SetSpecificPrayerTimeDateTime(
                 ETimeType.DuhaQuarterOfDay,
-                prayerTimeEntity.Fajr.Start.Value.Add(quarterOfDayDuration));
+                prayerTimeEntity.Fajr.Start.Value + quarterOfDayDuration);
         }
 
-        if ((prayerTimeEntity.Isha?.End - prayerTimeEntity.Maghrib?.Start) is TimeSpan nightDuration)
+        if ((prayerTimeEntity.Isha?.End - prayerTimeEntity.Maghrib?.Start) is Duration nightDuration)
         {
             if (profile.GetConfiguration(ETimeType.IshaFirstThird) is GenericSettingConfiguration firstThirdOfNightConfig
                 && firstThirdOfNightConfig.IsTimeShown)
             {
-                TimeSpan thirdOfNightDuration = TimeSpan.FromMilliseconds(nightDuration.TotalMilliseconds * (1.0 / 3.0));
+                Duration thirdOfNightDuration = nightDuration / 3.0;
 
                 prayerTimeEntity.SetSpecificPrayerTimeDateTime(
                     ETimeType.IshaFirstThird,
-                    prayerTimeEntity.Maghrib.Start.Value.Add(thirdOfNightDuration));
+                    prayerTimeEntity.Maghrib.Start.Value + thirdOfNightDuration);
             }
             if (profile.GetConfiguration(ETimeType.IshaMidnight) is GenericSettingConfiguration halfOfNightConfig
                 && halfOfNightConfig.IsTimeShown)
             {
-                TimeSpan halfOfNightDuration = TimeSpan.FromMilliseconds(nightDuration.TotalMilliseconds * (1.0 / 2.0));
+                Duration halfOfNightDuration = nightDuration / 2.0;
 
                 prayerTimeEntity.SetSpecificPrayerTimeDateTime(
                     ETimeType.IshaMidnight,
-                    prayerTimeEntity.Maghrib.Start.Value.Add(halfOfNightDuration));
+                    prayerTimeEntity.Maghrib.Start.Value + halfOfNightDuration);
             }
             if (profile.GetConfiguration(ETimeType.IshaSecondThird) is GenericSettingConfiguration secondThirdOfNightConfig
                 && secondThirdOfNightConfig.IsTimeShown)
             {
-                TimeSpan twoThirdsOfNightDuration = TimeSpan.FromMilliseconds(nightDuration.TotalMilliseconds * (2.0 / 3.0));
+                Duration twoThirdsOfNightDuration = nightDuration * (2.0 / 3.0);
 
                 prayerTimeEntity.SetSpecificPrayerTimeDateTime(
                     ETimeType.IshaSecondThird,
-                    prayerTimeEntity.Maghrib.Start.Value.Add(twoThirdsOfNightDuration));
+                    prayerTimeEntity.Maghrib.Start.Value + twoThirdsOfNightDuration);
             }
         }
     }

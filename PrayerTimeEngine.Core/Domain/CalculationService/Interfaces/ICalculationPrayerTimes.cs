@@ -1,18 +1,19 @@
-﻿using PrayerTimeEngine.Core.Common.Enum;
+﻿using NodaTime;
+using PrayerTimeEngine.Core.Common.Enum;
 
 namespace PrayerTimeEngine.Core.Domain.CalculationService.Interfaces
 {
     public interface ICalculationPrayerTimes
     {
-        public DateTime Date { get; }
+        public LocalDate Date { get; }
 
-        public DateTime Fajr { get; }
-        public DateTime Shuruq { get; }
-        public DateTime Dhuhr { get; }
-        public DateTime Asr { get; }
-        public DateTime Maghrib { get; }
-        public DateTime Isha { get; }
+        public ZonedDateTime Fajr { get; }
+        public ZonedDateTime Shuruq { get; }
+        public ZonedDateTime Dhuhr { get; }
+        public ZonedDateTime Asr { get; }
+        public ZonedDateTime Maghrib { get; }
+        public ZonedDateTime Isha { get; }
 
-        DateTime GetDateTimeForTimeType(ETimeType timeType);
+        ZonedDateTime GetZonedDateTimeForTimeType(ETimeType timeType);
     }
 }

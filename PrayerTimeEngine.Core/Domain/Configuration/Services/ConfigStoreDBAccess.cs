@@ -1,5 +1,6 @@
 ﻿using System.Text.Json;
 using Microsoft.Data.Sqlite;
+using NodaTime;
 using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Data.SQLite;
 using PrayerTimeEngine.Core.Domain.Configuration.Interfaces;
@@ -158,15 +159,15 @@ namespace PrayerTimeEngine.Core.Domain.Configuration.Services
         {
             var command = connection.CreateCommand();
             command.CommandText = """
-                INSERT INTO Profile (Id, Name, LocationName, SequenceNo, InsertDateTime) 
-                VALUES ($Id, $Name, $LocationName, $SequenceNo, $InsertDateTime);
+                INSERT INTO Profile (Id, Name, LocationName, SequenceNo, InsertInstant) 
+                VALUES ($Id, $Name, $LocationName, $SequenceNo, $InsertInstant);
                 """;
 
             command.Parameters.AddWithValue("$Id", profile.ID);
             command.Parameters.AddWithValue("$Name", profile.Name);
             command.Parameters.AddWithValue("$LocationName", profile.LocationName);
             command.Parameters.AddWithValue("$SequenceNo", profile.SequenceNo);
-            command.Parameters.AddWithValue("$InsertDateTime", DateTime.Now);
+            command.Parameters.AddWithValue("$InsertInstant", SystemClock.Instance.GetCurrentInstant());
 
             await command.ExecuteNonQueryAsync();
         }
@@ -182,14 +183,14 @@ namespace PrayerTimeEngine.Core.Domain.Configuration.Services
 
                 var configCommand = connection.CreateCommand();
                 configCommand.CommandText = """
-                    INSERT INTO TimeSpecificConfig (ProfileID, TimeType, JsonConfigurationString, InsertDateTime) 
-                    VALUES ($ProfileID, $TimeType, $JsonConfigurationString, $InsertDateTime);
+                    INSERT INTO TimeSpecificConfig (ProfileID, TimeType, JsonConfigurationString, InsertInstant) 
+                    VALUES ($ProfileID, $TimeType, $JsonConfigurationString, $InsertInstant);
                     """;
 
                 configCommand.Parameters.AddWithValue("$ProfileID", profile.ID);
                 configCommand.Parameters.AddWithValue("$TimeType", (int)config.Key);
                 configCommand.Parameters.AddWithValue("$JsonConfigurationString", JsonSerializer.Serialize(config.Value));
-                configCommand.Parameters.AddWithValue("$InsertDateTime", DateTime.Now);
+                configCommand.Parameters.AddWithValue("$InsertInstant", SystemClock.Instance.GetCurrentInstant());
 
                 await configCommand.ExecuteNonQueryAsync();
             }
@@ -206,14 +207,14 @@ namespace PrayerTimeEngine.Core.Domain.Configuration.Services
 
                 var configCommand = connection.CreateCommand();
                 configCommand.CommandText = """
-                    INSERT INTO LocationData (ProfileID, CalculationSource, JsonLocationData, InsertDateTime) 
-                    VALUES ($ProfileID, $CalculationSource, $JsonLocationData, $InsertDateTime);
+                    INSERT INTO LocationData (ProfileID, CalculationSource, JsonLocationData, InsertInstant) 
+                    VALUES ($ProfileID, $CalculationSource, $JsonLocationData, $InsertInstant);
                     """;
 
                 configCommand.Parameters.AddWithValue("$ProfileID", profile.ID);
                 configCommand.Parameters.AddWithValue("$CalculationSource", locationData.Value.Source);
                 configCommand.Parameters.AddWithValue("$JsonLocationData", JsonSerializer.Serialize(locationData.Value));
-                configCommand.Parameters.AddWithValue("$InsertDateTime", DateTime.Now);
+                configCommand.Parameters.AddWithValue("$InsertInstant", SystemClock.Instance.GetCurrentInstant());
 
                 await configCommand.ExecuteNonQueryAsync();
             }

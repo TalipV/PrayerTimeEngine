@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using NodaTime;
 using PrayerTimeEngine.Core.Common;
 using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Domain.CalculationService.Interfaces;
@@ -47,7 +48,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
             };
 
         public async Task<ILookup<ICalculationPrayerTimes, ETimeType>> GetPrayerTimesAsync(
-            DateTime date,
+            LocalDate date,
             BaseLocationData locationData,
             List<GenericSettingConfiguration> configurations)
         {
@@ -69,7 +70,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
                 .ToLookup(x => semerkandPrayerTimes, y => y);
         }
 
-        private async Task<SemerkandPrayerTimes> getPrayerTimesInternal(DateTime date, string countryName, string cityName)
+        private async Task<SemerkandPrayerTimes> getPrayerTimesInternal(LocalDate date, string countryName, string cityName)
         {
             if (await tryGetCountryID(countryName) is (bool countrySuccess, int countryID) countryResult && !countrySuccess)
                 throw new ArgumentException($"{nameof(countryName)} could not be found!");
@@ -79,14 +80,14 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
             SemerkandPrayerTimes prayerTimes = await getPrayerTimesByDateAndCityID(date, cityID)
                 ?? throw new Exception($"Prayer times for the {date:D} could not be found for an unknown reason.");
 
-            prayerTimes.NextFajr = (await getPrayerTimesByDateAndCityID(date.AddDays(1), cityID))?.Fajr;
+            prayerTimes.NextFajr = (await getPrayerTimesByDateAndCityID(date.PlusDays(1), cityID))?.Fajr;
 
             return prayerTimes;
         }
 
         private readonly AsyncDuplicateLock getPrayerTimesLocker = new();
 
-        private async Task<SemerkandPrayerTimes> getPrayerTimesByDateAndCityID(DateTime date, int cityID)
+        private async Task<SemerkandPrayerTimes> getPrayerTimesByDateAndCityID(LocalDate date, int cityID)
         {
             var lockTuple = (date, cityID);
 
@@ -97,8 +98,8 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
                 if (prayerTimes == null)
                 {
                     List<SemerkandPrayerTimes> prayerTimesLst = await _semerkandApiService.GetTimesByCityID(date, cityID);
-                    prayerTimesLst.ForEach(async x => await _semerkandDBAccess.InsertSemerkandPrayerTimes(x.Date.Date, cityID, x));
-                    prayerTimes = prayerTimesLst.FirstOrDefault(x => x.Date == date.Date);
+                    prayerTimesLst.ForEach(async x => await _semerkandDBAccess.InsertSemerkandPrayerTimes(x.Date, cityID, x));
+                    prayerTimes = prayerTimesLst.FirstOrDefault(x => x.Date == date);
                 }
 
                 return prayerTimes;

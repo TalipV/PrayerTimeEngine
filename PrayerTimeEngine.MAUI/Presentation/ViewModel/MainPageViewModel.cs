@@ -13,6 +13,8 @@ using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Domain.Configuration.Interfaces;
 using PrayerTimeEngine.Core.Domain.CalculationService.Interfaces;
 using PrayerTimeEngine.Core.Domain.PlacesService.Interfaces;
+using NodaTime;
+using NodaTime.Extensions;
 
 namespace PrayerTimeEngine.Presentation.ViewModel
 {
@@ -58,10 +60,10 @@ namespace PrayerTimeEngine.Presentation.ViewModel
                     return null;
                 }
 
-                DateTime dateTime = DateTime.Now;
+                Instant currentInstant = SystemClock.Instance.GetCurrentInstant();
 
-                return Prayers.AllPrayerTimes.FirstOrDefault(x => x.Start <= dateTime && dateTime <= x.End)
-                    ?? Prayers.AllPrayerTimes.OrderBy(x => x.Start).FirstOrDefault(x => x.Start > dateTime);
+                return Prayers.AllPrayerTimes.FirstOrDefault(x => x.Start?.ToInstant() <= currentInstant && currentInstant <= x.End?.ToInstant())
+                    ?? Prayers.AllPrayerTimes.OrderBy(x => x.Start).FirstOrDefault(x => x.Start?.ToInstant() > currentInstant);
             }
         }
 
@@ -82,7 +84,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
         [OnChangedMethod(nameof(onSelectedPlaceChanged))]
         public LocationIQPlace SelectedPlace { get; set; }
 
-        public DateTime? LastUpdated { get; private set; }
+        public ZonedDateTime? LastUpdated { get; private set; }
         public bool IsCurrentlyLoadingTimes => this.isLoadPrayerTimesRunningInterlockedInt != 0;
         public bool IsNotLoading => !IsCurrentlyLoadingTimes;
 
@@ -210,13 +212,14 @@ namespace PrayerTimeEngine.Presentation.ViewModel
 
             try
             {
-                Prayers = await _prayerTimeCalculationService.ExecuteAsync(CurrentProfile, DateTime.Today);
+                LocalDate today = DateTime.Now.ToLocalDateTime().Date;
+                Prayers = await _prayerTimeCalculationService.ExecuteAsync(CurrentProfile, today);
                 OnAfterLoadingPrayerTimes_EventTrigger.Invoke();
             }
             finally
             {
                 Interlocked.Exchange(ref isLoadPrayerTimesRunningInterlockedInt, 0);  // Reset the flag to allow future runs
-                LastUpdated = DateTime.Now;
+                LastUpdated = SystemClock.Instance.GetCurrentInstant().InZone(DateTimeZoneProviders.Tzdb[TimeZoneInfo.Local.Id]);
             }
         }
 

@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿using NodaTime;
 using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Domain.CalculationService.Interfaces;
 
@@ -8,30 +8,23 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Models
     {
         public required int CityID { get; set; }
 
-        [JsonProperty("DayOfYear")]
         public int DayOfYear { get; set; }
-        public required DateTime Date { get; set; }
+        public required LocalDate Date { get; set; }
 
-        [JsonProperty("Fajr")]
-        public required DateTime Fajr { get; set; }
-        public DateTime? NextFajr { get; set; }
+        public required ZonedDateTime Fajr { get; set; }
+        public ZonedDateTime? NextFajr { get; set; }
 
-        [JsonProperty("Tulu")]
-        public required DateTime Shuruq { get; set; }
+        public required ZonedDateTime Shuruq { get; set; }
 
-        [JsonProperty("Zuhr")]
-        public required DateTime Dhuhr { get; set; }
+        public required ZonedDateTime Dhuhr { get; set; }
 
-        [JsonProperty("Asr")]
-        public required DateTime Asr { get; set; }
+        public required ZonedDateTime Asr { get; set; }
 
-        [JsonProperty("Maghrib")]
-        public required DateTime Maghrib { get; set; }
+        public required ZonedDateTime Maghrib { get; set; }
 
-        [JsonProperty("Isha")]
-        public required DateTime Isha { get; set; }
+        public required ZonedDateTime Isha { get; set; }
 
-        public DateTime GetDateTimeForTimeType(ETimeType timeType)
+        public ZonedDateTime GetZonedDateTimeForTimeType(ETimeType timeType)
         {
             switch (timeType)
             {
@@ -61,7 +54,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Models
                 case ETimeType.IshaStart:
                     return Isha;
                 case ETimeType.IshaEnd:
-                    return NextFajr ?? DateTime.MinValue;
+                    return NextFajr ?? new ZonedDateTime(Instant.MinValue, DateTimeZone.Utc);
                 default:
                     throw new ArgumentException($"Invalid {nameof(timeType)} value: {timeType}.");
             }

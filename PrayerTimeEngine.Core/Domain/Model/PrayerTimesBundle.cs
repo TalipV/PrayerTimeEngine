@@ -1,4 +1,5 @@
-﻿using PrayerTimeEngine.Core.Common.Enum;
+﻿using NodaTime;
+using PrayerTimeEngine.Core.Common.Enum;
 using PropertyChanged;
 
 namespace PrayerTimeEngine.Core.Domain.Model
@@ -24,80 +25,80 @@ namespace PrayerTimeEngine.Core.Domain.Model
         public MaghribPrayerTime Maghrib { get; private set; } = new();
         public IshaPrayerTime Isha { get; private set; } = new();
 
-        public void SetSpecificPrayerTimeDateTime(ETimeType timeType, DateTime? dateTime)
+        public void SetSpecificPrayerTimeDateTime(ETimeType timeType, ZonedDateTime? zonedDateTime)
         {
             switch (timeType)
             {
                 case ETimeType.FajrStart:
-                    Fajr.Start = dateTime;
+                    Fajr.Start = zonedDateTime;
                     break;
                 case ETimeType.FajrEnd:
-                    Fajr.End = dateTime;
+                    Fajr.End = zonedDateTime;
                     break;
                 case ETimeType.FajrGhalas:
-                    Fajr.Ghalas = dateTime;
+                    Fajr.Ghalas = zonedDateTime;
                     break;
                 case ETimeType.FajrKaraha:
-                    Fajr.Karaha = dateTime;
+                    Fajr.Karaha = zonedDateTime;
                     break;
 
                 case ETimeType.DuhaStart:
-                    Duha.Start = dateTime;
+                    Duha.Start = zonedDateTime;
                     break;
                 case ETimeType.DuhaEnd:
-                    Duha.End = dateTime;
+                    Duha.End = zonedDateTime;
                     break;
                 case ETimeType.DuhaQuarterOfDay:
-                    Duha.QuarterOfDay = dateTime;
+                    Duha.QuarterOfDay = zonedDateTime;
                     break;
 
                 case ETimeType.DhuhrStart:
-                    Dhuhr.Start = dateTime;
+                    Dhuhr.Start = zonedDateTime;
                     break;
                 case ETimeType.DhuhrEnd:
-                    Dhuhr.End = dateTime;
+                    Dhuhr.End = zonedDateTime;
                     break;
 
                 case ETimeType.AsrStart:
-                    Asr.Start = dateTime;
+                    Asr.Start = zonedDateTime;
                     break;
                 case ETimeType.AsrEnd:
-                    Asr.End = dateTime;
+                    Asr.End = zonedDateTime;
                     break;
                 case ETimeType.AsrMithlayn:
-                    Asr.Mithlayn = dateTime;
+                    Asr.Mithlayn = zonedDateTime;
                     break;
                 case ETimeType.AsrKaraha:
-                    Asr.Karaha = dateTime;
+                    Asr.Karaha = zonedDateTime;
                     break;
 
                 case ETimeType.MaghribStart:
-                    Maghrib.Start = dateTime;
+                    Maghrib.Start = zonedDateTime;
                     break;
                 case ETimeType.MaghribEnd:
-                    Maghrib.End = dateTime;
+                    Maghrib.End = zonedDateTime;
                     break;
                 case ETimeType.MaghribSufficientTime:
-                    Maghrib.SufficientTime = dateTime;
+                    Maghrib.SufficientTime = zonedDateTime;
                     break;
                 case ETimeType.MaghribIshtibaq:
-                    Maghrib.Ishtibaq = dateTime;
+                    Maghrib.Ishtibaq = zonedDateTime;
                     break;
 
                 case ETimeType.IshaStart:
-                    Isha.Start = dateTime;
+                    Isha.Start = zonedDateTime;
                     break;
                 case ETimeType.IshaEnd:
-                    Isha.End = dateTime;
+                    Isha.End = zonedDateTime;
                     break;
                 case ETimeType.IshaFirstThird:
-                    Isha.FirstThirdOfNight = dateTime;
+                    Isha.FirstThirdOfNight = zonedDateTime;
                     break;
                 case ETimeType.IshaMidnight:
-                    Isha.MiddleOfNight = dateTime;
+                    Isha.MiddleOfNight = zonedDateTime;
                     break;
                 case ETimeType.IshaSecondThird:
-                    Isha.SecondThirdOfNight = dateTime;
+                    Isha.SecondThirdOfNight = zonedDateTime;
                     break;
                 default:
                     throw new NotImplementedException();

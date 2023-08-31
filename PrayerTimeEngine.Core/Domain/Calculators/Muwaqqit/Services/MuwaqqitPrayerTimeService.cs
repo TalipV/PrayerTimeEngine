@@ -6,6 +6,7 @@ using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Interfaces;
 using PrayerTimeEngine.Core.Domain.PlacesService.Models;
 using PrayerTimeEngine.Core.Domain.CalculationService.Interfaces;
 using PrayerTimeEngine.Core.Common.Enum;
+using NodaTime;
 
 namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services
 {
@@ -26,7 +27,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services
         }
 
         public async Task<ILookup<ICalculationPrayerTimes, ETimeType>> GetPrayerTimesAsync(
-            DateTime date,
+            LocalDate date,
             BaseLocationData locationData,
             List<GenericSettingConfiguration> configurations)
         {
@@ -181,7 +182,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services
         private readonly AsyncDuplicateLock getPrayerTimesLocker = new();
 
         private async Task<MuwaqqitPrayerTimes> getPrayerTimesInternal(
-            DateTime date,
+            LocalDate date,
             decimal longitude,
             decimal latitude,
             double fajrDegree,

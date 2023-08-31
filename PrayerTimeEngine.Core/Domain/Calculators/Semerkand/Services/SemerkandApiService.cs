@@ -1,8 +1,9 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json.Linq;
+using NodaTime;
+using NodaTime.Text;
 using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Interfaces;
 using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Models;
-using System.Globalization;
+using PrayerTimeEngine.Core.Domain.Configuration.Models;
 
 namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
 {
@@ -69,18 +70,14 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
 
         internal const string GET_TIMES_BY_CITY = @"http://semerkandtakvimi.semerkandmobile.com/salaattimes?cityId={0}&year={1}";
 
-        private static readonly JsonSerializerSettings settings =
-            new JsonSerializerSettings
-            {
-                DateParseHandling = DateParseHandling.DateTime,
-                DateTimeZoneHandling = DateTimeZoneHandling.Local,
-                Culture = CultureInfo.InvariantCulture
-            };
-
+        // UNUSED!!
         private const int EXTENT_OF_DAYS_RETRIEVED = 5;
 
-        public async Task<List<SemerkandPrayerTimes>> GetTimesByCityID(DateTime date, int cityID)
+        public async Task<List<SemerkandPrayerTimes>> GetTimesByCityID(LocalDate date, int cityID)
         {
+            // TODO: get timezone from place API
+            DateTimeZone timezone = DateTimeZoneProviders.Tzdb[PrayerTimesConfigurationStorage.TIMEZONE];
+
             string prayerTimesURL = string.Format(GET_TIMES_BY_CITY, cityID, date.Year);
 
             HttpResponseMessage response = await _httpClient.GetAsync(prayerTimesURL);
@@ -92,39 +89,45 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
             // e.g. "*23:54" instead of "23:54"
             jsonPrayerTimesString = jsonPrayerTimesString.Replace("*", "");
 
-            List<SemerkandPrayerTimes> allPrayerTimes = JsonConvert.DeserializeObject<List<SemerkandPrayerTimes>>(jsonPrayerTimesString, settings);
+            JArray prayerTimesJArray = JArray.Parse(jsonPrayerTimesString);
 
-            foreach (SemerkandPrayerTimes prayerTime in allPrayerTimes)
+            List<SemerkandPrayerTimes> allPrayerTimes = new();
+
+            foreach (JObject prayerTimeJObject in prayerTimesJArray)
             {
-                DateTime currentPrayerTimeDate =
-                    new DateTime(date.Year, 1, 1)
-                        .AddDays(prayerTime.DayOfYear - 1);
+                int currentDayOfYear = (int)prayerTimeJObject["DayOfYear"];
+                LocalDate currentDate = new LocalDate(date.Year, 1, 1).PlusDays(currentDayOfYear - 1);
 
-                prayerTime.CityID = cityID;
-                prayerTime.Date = currentPrayerTimeDate;
-                prayerTime.Fajr = getFullDateTime(currentPrayerTimeDate, prayerTime.Fajr);
-                prayerTime.Shuruq = getFullDateTime(currentPrayerTimeDate, prayerTime.Shuruq);
-                prayerTime.Dhuhr = getFullDateTime(currentPrayerTimeDate, prayerTime.Dhuhr);
-                prayerTime.Asr = getFullDateTime(currentPrayerTimeDate, prayerTime.Asr);
-                prayerTime.Maghrib = getFullDateTime(currentPrayerTimeDate, prayerTime.Maghrib);
-                prayerTime.Isha = getFullDateTime(currentPrayerTimeDate, prayerTime.Isha);
+                SemerkandPrayerTimes prayerTime = new()
+                {
+                    DayOfYear = currentDayOfYear,
+                    CityID = cityID,
+                    Date = currentDate,
+
+                    Fajr = getZonedDateTime(timezone, currentDate, (string)prayerTimeJObject["Fajr"]),
+                    Shuruq = getZonedDateTime(timezone, currentDate, (string)prayerTimeJObject["Tulu"]),
+                    Dhuhr = getZonedDateTime(timezone, currentDate, (string)prayerTimeJObject["Zuhr"]),
+                    Asr = getZonedDateTime(timezone, currentDate, (string)prayerTimeJObject["Asr"]),
+                    Maghrib = getZonedDateTime(timezone, currentDate, (string)prayerTimeJObject["Maghrib"]),
+                    Isha = getZonedDateTime(timezone, currentDate, (string)prayerTimeJObject["Isha"])
+                };
+
+                allPrayerTimes.Add(prayerTime);
             }
 
-            DateTime minDateTime = date.Date;
-            DateTime maxDateTime = date.Date.AddDays(EXTENT_OF_DAYS_RETRIEVED);
-
-            return allPrayerTimes.Where(pt => minDateTime <= pt.Date && pt.Date < maxDateTime).ToList();
+            return allPrayerTimes;
         }
-
-        private DateTime getFullDateTime(DateTime actualDate, DateTime onlyDayTime)
+        
+        private ZonedDateTime getZonedDateTime(DateTimeZone timezone, LocalDate date, string timeString)
         {
-            return new DateTime(
-                actualDate.Year,
-                actualDate.Month,
-                actualDate.Day,
-                onlyDayTime.Hour,
-                onlyDayTime.Minute,
-                onlyDayTime.Second);
+            LocalTime time =
+                LocalTimePattern.CreateWithInvariantCulture("HH:mm")
+                .Parse(timeString)
+                .Value;
+
+            // InZoneStrictly throws an exception if the time is inacceptable,
+            // like within the skipped hour of DST or ambiguous duplicate hour
+            return (date + time).InZoneStrictly(timezone);
         }
     }
 }

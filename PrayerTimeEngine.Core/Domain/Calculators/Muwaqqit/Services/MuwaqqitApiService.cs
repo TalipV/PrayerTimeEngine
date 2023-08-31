@@ -1,4 +1,6 @@
-﻿using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Interfaces;
+﻿using NodaTime;
+using NodaTime.Text;
+using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Interfaces;
 using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Models;
 using System.Collections.Specialized;
 using System.Globalization;
@@ -19,7 +21,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services
         internal const string MUWAQQIT_API_URL = @"https://www.muwaqqit.com/api2.json";
 
         public async Task<MuwaqqitPrayerTimes> GetTimesAsync(
-            DateTime date,
+            LocalDate date,
             decimal longitude,
             decimal latitude,
             double fajrDegree,
@@ -33,7 +35,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services
             UriBuilder builder = new UriBuilder(MUWAQQIT_API_URL);
             NameValueCollection query = HttpUtility.ParseQueryString(builder.Query);
 
-            query["d"] = date.ToString("yyyy-MM-dd");
+            query["d"] = date.ToString("yyyy-MM-dd", null);
             query["ln"] = longitude.ToString(CultureInfo.InvariantCulture);
             query["lt"] = latitude.ToString(CultureInfo.InvariantCulture);
             query["tz"] = timezone;
@@ -56,9 +58,11 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services
                 // Parse the JSON response to the MuwaqqitJSONResponse object
                 MuwaqqitJSONResponse muwaqqitResponse = JsonSerializer.Deserialize<MuwaqqitJSONResponse>(jsonResponse);
 
+                DateTimeZone dateTimeZone = DateTimeZoneProviders.Tzdb[timezone];
+
                 prayerTimes = new MuwaqqitPrayerTimes
                 {
-                    Date = DateTimeOffset.Parse(muwaqqitResponse.d).DateTime,
+                    Date = getZonedDateTime(muwaqqitResponse.d, dateTimeZone).Date,
                     Longitude = muwaqqitResponse.ln,
                     Latitude = muwaqqitResponse.lt,
 
@@ -67,21 +71,35 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services
                     IshtibaqDegree = ishtibaqDegree,
                     IshaDegree = ishaDegree,
 
-                    Fajr = DateTimeOffset.Parse(muwaqqitResponse.fajr).DateTime,
-                    NextFajr = DateTimeOffset.Parse(muwaqqitResponse.fajr_t).DateTime,
-                    Shuruq = DateTimeOffset.Parse(muwaqqitResponse.sunrise).DateTime,
-                    Duha = DateTimeOffset.Parse(muwaqqitResponse.ishraq).DateTime,
-                    Dhuhr = DateTimeOffset.Parse(muwaqqitResponse.zohr).DateTime,
-                    Asr = DateTimeOffset.Parse(muwaqqitResponse.asr_shafi).DateTime,
-                    AsrMithlayn = DateTimeOffset.Parse(muwaqqitResponse.asr_hanafi).DateTime,
-                    Maghrib = DateTimeOffset.Parse(muwaqqitResponse.sunset).DateTime,
-                    Isha = DateTimeOffset.Parse(muwaqqitResponse.esha).DateTime,
-                    Ishtibaq = DateTimeOffset.Parse(muwaqqitResponse.ishtibak).DateTime,
-                    AsrKaraha = DateTimeOffset.Parse(muwaqqitResponse.asr_makrooh).DateTime,
+                    Fajr = getZonedDateTime(muwaqqitResponse.fajr, dateTimeZone),
+                    NextFajr = getZonedDateTime(muwaqqitResponse.fajr_t, dateTimeZone),
+                    Shuruq = getZonedDateTime(muwaqqitResponse.sunrise, dateTimeZone),
+                    Duha = getZonedDateTime(muwaqqitResponse.ishraq, dateTimeZone),
+                    Dhuhr = getZonedDateTime(muwaqqitResponse.zohr, dateTimeZone),
+                    Asr = getZonedDateTime(muwaqqitResponse.asr_shafi, dateTimeZone),
+                    AsrMithlayn = getZonedDateTime(muwaqqitResponse.asr_hanafi, dateTimeZone),
+                    Maghrib = getZonedDateTime(muwaqqitResponse.sunset, dateTimeZone),
+                    Isha = getZonedDateTime(muwaqqitResponse.esha, dateTimeZone),
+                    Ishtibaq = getZonedDateTime(muwaqqitResponse.ishtibak, dateTimeZone),
+                    AsrKaraha = getZonedDateTime(muwaqqitResponse.asr_makrooh, dateTimeZone),
                 };
             }
 
             return prayerTimes;
+        }
+
+        private ZonedDateTime getZonedDateTime(string zonedDateTimeString, DateTimeZone dateTimeZone)
+        {
+            OffsetDateTimePattern.CreateWithInvariantCulture("yyyy-MM-dd HH:mm:ss.FFFFFFFo<G>")
+                .Parse(zonedDateTimeString)
+                .Value
+                .Deconstruct(out LocalDateTime localDateTime, out Offset offset);
+
+            // ignore fractions of seconds
+            localDateTime = 
+                localDateTime.Date + new LocalTime(localDateTime.Hour, localDateTime.Minute, localDateTime.Second);
+
+            return new ZonedDateTime(localDateTime, dateTimeZone, offset);
         }
     }
 }

@@ -1,9 +1,15 @@
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using NodaTime;
+using NSubstitute;
 using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Data.SQLite;
 using PrayerTimeEngine.Core.Domain.CalculationService.Interfaces;
+using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Interfaces;
 using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Models;
 using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services;
 using PrayerTimeEngine.Core.Domain.Configuration.Models;
+using PrayerTimeEngine.Core.Domain.PlacesService.Interfaces;
 using PrayerTimeEngineUnitTests.Mocks;
 using System.Net;
 
@@ -11,7 +17,34 @@ namespace PrayerTimeEngine.Core.Tests.API.SemerkandAPI
 {
     public class SemerkandPrayerTimeCalculatorTests
     {
-        private SemerkandApiService getMockedSemerkandApiService()
+        private static ServiceProvider _serviceProvider = null;
+
+        public static ServiceProvider ServiceProvider
+        {
+            get
+            {
+                if (_serviceProvider == null)
+                {
+                    var serviceCollection = new ServiceCollection();
+
+                    serviceCollection.AddSingleton(Substitute.For<ILocationService>());
+
+                    serviceCollection.AddSingleton(Substitute.For<ILogger<SQLiteDB>>());
+                    serviceCollection.AddSingleton<ISQLiteDB, SQLiteDB>();
+
+                    serviceCollection.AddSingleton<ISemerkandDBAccess, SemerkandDBAccess>();
+                    serviceCollection.AddSingleton<ISemerkandApiService>(getMockedSemerkandApiService());
+                    serviceCollection.AddSingleton(Substitute.For<ILogger<SemerkandPrayerTimeCalculator>>());
+                    serviceCollection.AddSingleton<SemerkandPrayerTimeCalculator>();
+
+                    _serviceProvider = serviceCollection.BuildServiceProvider();
+                }
+
+                return _serviceProvider;
+            }
+        }
+
+        private static SemerkandApiService getMockedSemerkandApiService()
         {
             Dictionary<string, string> urlToContentMap = new Dictionary<string, string>()
             {
@@ -30,39 +63,37 @@ namespace PrayerTimeEngine.Core.Tests.API.SemerkandAPI
         public void SemerkandPrayerTimeCalculator_GetPrayerTimesAsyncWithNormalInput_PrayerTimesForThatDay()
         {
             // ARRANGE
-            var semerkandDBAccess = new SemerkandDBAccess(new SQLiteDB(null));
-            var semerkandApiService = getMockedSemerkandApiService();
+            SQLiteDB sqLiteDb = ServiceProvider.GetService<ISQLiteDB>() as SQLiteDB;
 
-            // Put together calculator
-            var semerkandPrayerTimeCalculator =
-                new SemerkandPrayerTimeCalculator(
-                    semerkandDBAccess,
-                    semerkandApiService,
-                    null,
-                    null);
+            using (sqLiteDb.GetSqliteConnection("Data Source=:memory:"))
+            {
+                sqLiteDb.InitializeDatabase(createDatabaseIfNotExist: false);
 
-            // ACT
-            ICalculationPrayerTimes result =
-                semerkandPrayerTimeCalculator.GetPrayerTimesAsync(
-                    new DateTime(2023, 7, 29),
-                    new SemerkandLocationData { CountryName = "Avusturya", CityName = "Innsbruck" },
-                    new List<GenericSettingConfiguration> { new GenericSettingConfiguration { TimeType = ETimeType.DhuhrStart, Source = ECalculationSource.Semerkand } }
-                ).GetAwaiter().GetResult().Single().Key;
+                SemerkandPrayerTimeCalculator semerkandPrayerTimeCalculator = ServiceProvider.GetService<SemerkandPrayerTimeCalculator>();
 
-            SemerkandPrayerTimes semerkandPrayerTimes = result as SemerkandPrayerTimes;
+                // ACT
+                ICalculationPrayerTimes result =
+                    semerkandPrayerTimeCalculator.GetPrayerTimesAsync(
+                        new LocalDate(2023, 7, 29),
+                        new SemerkandLocationData { CountryName = "Avusturya", CityName = "Innsbruck" },
+                        new List<GenericSettingConfiguration> { new GenericSettingConfiguration { TimeType = ETimeType.DhuhrStart, Source = ECalculationSource.Semerkand } }
+                    ).GetAwaiter().GetResult().Single().Key;
 
-            // ASSERT
-            Assert.IsNotNull(semerkandPrayerTimes);
+                SemerkandPrayerTimes semerkandPrayerTimes = result as SemerkandPrayerTimes;
 
-            Assert.That(semerkandPrayerTimes.Date, Is.EqualTo(new DateTime(2023, 7, 29)));
-            Assert.That(semerkandPrayerTimes.Fajr, Is.EqualTo(new DateTime(2023, 7, 29, 03, 15, 0)));
-            Assert.That(semerkandPrayerTimes.NextFajr, Is.EqualTo(new DateTime(2023, 7, 30, 03, 17, 0)));
+                // ASSERT
+                Assert.IsNotNull(semerkandPrayerTimes);
 
-            Assert.That(semerkandPrayerTimes.Shuruq, Is.EqualTo(new DateTime(2023, 7, 29, 05, 41, 0)));
-            Assert.That(semerkandPrayerTimes.Dhuhr, Is.EqualTo(new DateTime(2023, 7, 29, 13, 26, 0)));
-            Assert.That(semerkandPrayerTimes.Asr, Is.EqualTo(new DateTime(2023, 7, 29, 17, 30, 0)));
-            Assert.That(semerkandPrayerTimes.Maghrib, Is.EqualTo(new DateTime(2023, 7, 29, 21, 00, 0)));
-            Assert.That(semerkandPrayerTimes.Isha, Is.EqualTo(new DateTime(2023, 7, 29, 23, 02, 0)));
+                Assert.That(semerkandPrayerTimes.Date, Is.EqualTo(new LocalDate(2023, 7, 29)));
+                Assert.That(semerkandPrayerTimes.Fajr.LocalDateTime, Is.EqualTo(new LocalDateTime(2023, 7, 29, 03, 15, 0)));
+                Assert.That(semerkandPrayerTimes.NextFajr.Value.LocalDateTime, Is.EqualTo(new LocalDateTime(2023, 7, 30, 03, 17, 0)));
+
+                Assert.That(semerkandPrayerTimes.Shuruq.LocalDateTime, Is.EqualTo(new LocalDateTime(2023, 7, 29, 05, 41, 0)));
+                Assert.That(semerkandPrayerTimes.Dhuhr.LocalDateTime, Is.EqualTo(new LocalDateTime(2023, 7, 29, 13, 26, 0)));
+                Assert.That(semerkandPrayerTimes.Asr.LocalDateTime, Is.EqualTo(new LocalDateTime(2023, 7, 29, 17, 30, 0)));
+                Assert.That(semerkandPrayerTimes.Maghrib.LocalDateTime, Is.EqualTo(new LocalDateTime(2023, 7, 29, 21, 00, 0)));
+                Assert.That(semerkandPrayerTimes.Isha.LocalDateTime, Is.EqualTo(new LocalDateTime(2023, 7, 29, 23, 02, 0)));
+            }
         }
     }
 }
