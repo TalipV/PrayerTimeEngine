@@ -64,7 +64,7 @@ namespace PrayerTimeEngine.Core.Tests.API.MuwaqqitAPI
         }
 
         [Test]
-        public void MuwaqqitPrayerTimeCalculator_GetPrayerTimesAsyncWithNormalInput_PrayerTimesForThatDay()
+        public async Task MuwaqqitPrayerTimeCalculator_GetPrayerTimesAsyncWithNormalInput_PrayerTimesForThatDay()
         {
             // ARRANGE
             LocalDate testDate = new LocalDate(2023, 7, 30);
@@ -93,17 +93,17 @@ namespace PrayerTimeEngine.Core.Tests.API.MuwaqqitAPI
 
             using (sqLiteDb.GetSqliteConnection("Data Source=:memory:"))
             {
-                sqLiteDb.InitializeDatabase(createDatabaseIfNotExist: false);
+                sqLiteDb.InitializeDatabase(filePathDatabase: false);
 
                 MuwaqqitPrayerTimeCalculator muwaqqitPrayerTimeCalculator = ServiceProvider.GetService<MuwaqqitPrayerTimeCalculator>();
 
                 // ACT
                 ILookup<ICalculationPrayerTimes, ETimeType> result =
-                muwaqqitPrayerTimeCalculator.GetPrayerTimesAsync(
-                    testDate,
-                    new MuwaqqitLocationData { Latitude = 47.2803835M, Longitude = 11.41337M },
-                    configs
-                ).GetAwaiter().GetResult();
+                    await muwaqqitPrayerTimeCalculator.GetPrayerTimesAsync(
+                        testDate,
+                        new MuwaqqitLocationData { Latitude = 47.2803835M, Longitude = 11.41337M },
+                        configs
+                    );
 
                 IDictionary<ETimeType, MuwaqqitPrayerTimes> timeTypeByCalculationPrayerTimes =
                     result

@@ -64,24 +64,24 @@ namespace PrayerTimeEngine.Core.Tests.API.FaziletAPI
         }
 
         [Test]
-        public void FaziletPrayerTimeCalculator_GetPrayerTimesAsyncWithNormalInput_PrayerTimesForThatDay()
+        public async Task FaziletPrayerTimeCalculator_GetPrayerTimesAsyncWithNormalInput_PrayerTimesForThatDay()
         {
             // ARRANGE
             SQLiteDB sqLiteDb = ServiceProvider.GetService<ISQLiteDB>() as SQLiteDB;
 
             using (sqLiteDb.GetSqliteConnection("Data Source=:memory:"))
             {
-                sqLiteDb.InitializeDatabase(createDatabaseIfNotExist: false);
+                sqLiteDb.InitializeDatabase(filePathDatabase: false);
 
                 FaziletPrayerTimeCalculator faziletPrayerTimeCalculator = ServiceProvider.GetService<FaziletPrayerTimeCalculator>();
 
                 // ACT
                 ICalculationPrayerTimes result =
-                    faziletPrayerTimeCalculator.GetPrayerTimesAsync(
+                    (await faziletPrayerTimeCalculator.GetPrayerTimesAsync(
                         new LocalDate(2023, 7, 29),
                         new FaziletLocationData { CountryName = "Avusturya", CityName = "Innsbruck" },
                         new List<GenericSettingConfiguration> { new GenericSettingConfiguration { TimeType = ETimeType.DhuhrStart, Source = ECalculationSource.Fazilet } }
-                    ).GetAwaiter().GetResult().Single().Key;
+                    )).Single().Key;
 
                 FaziletPrayerTimes faziletPrayerTimes = result as FaziletPrayerTimes;
 

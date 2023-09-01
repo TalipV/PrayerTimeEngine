@@ -60,24 +60,24 @@ namespace PrayerTimeEngine.Core.Tests.API.SemerkandAPI
         }
 
         [Test]
-        public void SemerkandPrayerTimeCalculator_GetPrayerTimesAsyncWithNormalInput_PrayerTimesForThatDay()
+        public async Task SemerkandPrayerTimeCalculator_GetPrayerTimesAsyncWithNormalInput_PrayerTimesForThatDay()
         {
             // ARRANGE
             SQLiteDB sqLiteDb = ServiceProvider.GetService<ISQLiteDB>() as SQLiteDB;
 
             using (sqLiteDb.GetSqliteConnection("Data Source=:memory:"))
             {
-                sqLiteDb.InitializeDatabase(createDatabaseIfNotExist: false);
+                sqLiteDb.InitializeDatabase(filePathDatabase: false);
 
                 SemerkandPrayerTimeCalculator semerkandPrayerTimeCalculator = ServiceProvider.GetService<SemerkandPrayerTimeCalculator>();
 
                 // ACT
                 ICalculationPrayerTimes result =
-                    semerkandPrayerTimeCalculator.GetPrayerTimesAsync(
+                    (await semerkandPrayerTimeCalculator.GetPrayerTimesAsync(
                         new LocalDate(2023, 7, 29),
                         new SemerkandLocationData { CountryName = "Avusturya", CityName = "Innsbruck" },
                         new List<GenericSettingConfiguration> { new GenericSettingConfiguration { TimeType = ETimeType.DhuhrStart, Source = ECalculationSource.Semerkand } }
-                    ).GetAwaiter().GetResult().Single().Key;
+                    )).Single().Key;
 
                 SemerkandPrayerTimes semerkandPrayerTimes = result as SemerkandPrayerTimes;
 

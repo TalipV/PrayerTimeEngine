@@ -29,7 +29,7 @@ public partial class SettingsContentPage : ContentPage
     protected override void OnDisappearing()
     {
         // for ViewModel to handle setting saving
-        ViewModel.OnDisappearing();
+        Task.Run(async () => await ViewModel.OnDisappearing());
     }
 
     private void configureCustomUISection()

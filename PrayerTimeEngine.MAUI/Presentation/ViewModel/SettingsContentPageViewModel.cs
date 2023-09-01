@@ -82,7 +82,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
 
         #region public methods
 
-        public void Initialize(ETimeType timeType)
+        public async Task Initialize(ETimeType timeType)
         {
             TabTitle = $"{timeType}";
             TimeType = timeType;
@@ -92,7 +92,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
             CalculationSources = getCalculationSource();
             MinuteAdjustments = getMinuteAdjustmentSource();
 
-            GenericSettingConfiguration calculationConfiguration = _prayerTimesConfigurationStorage.GetConfiguration(TimeType);
+            GenericSettingConfiguration calculationConfiguration = await _prayerTimesConfigurationStorage.GetConfiguration(TimeType);
             IsTimeShown = !IsTimeShownCheckBoxVisible || calculationConfiguration.IsTimeShown;
             SelectedCalculationSource = calculationConfiguration.Source;
             SelectedMinuteAdjustment = calculationConfiguration.MinuteAdjustment;
@@ -122,10 +122,10 @@ namespace PrayerTimeEngine.Presentation.ViewModel
             OnInitializeCustomUI_EventTrigger.Invoke();
         }
 
-        public void OnDisappearing()
+        public async Task OnDisappearing()
         {
             GenericSettingConfiguration settings = getCurrentCalculationConfiguration();
-            saveSettingsToProfile(settings);
+            await saveSettingsToProfile(settings);
         }
 
         #endregion public methods
@@ -178,11 +178,11 @@ namespace PrayerTimeEngine.Presentation.ViewModel
             }
         }
 
-        private void saveSettingsToProfile(GenericSettingConfiguration settings)
+        private async Task saveSettingsToProfile(GenericSettingConfiguration settings)
         {
-            Profile profile = _prayerTimesConfigurationStorage.GetProfiles().GetAwaiter().GetResult().First();
+            Profile profile = (await _prayerTimesConfigurationStorage.GetProfiles()).First();
             profile.Configurations[TimeType] = settings;
-            _configStoreService.SaveProfile(profile).GetAwaiter().GetResult();
+            await _configStoreService.SaveProfile(profile);
         }
 
         #endregion private methods

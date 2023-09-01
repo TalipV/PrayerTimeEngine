@@ -32,17 +32,17 @@ namespace PrayerTimeEngine.Core.Data.SQLite
             }
         }
 
-        public void InitializeDatabase(bool createDatabaseIfNotExist = true)
+        public void InitializeDatabase(bool filePathDatabase = true)
         {
             _logger.LogDebug("Initialize");
 
 #if DEBUG
-            //if (File.Exists(DatabasePath))
-            //    File.Delete(DatabasePath);
+            //if (filePathDatabase && File.Exists(_databasePath))
+            //    File.Delete(_databasePath);
             //_logger.LogDebug("Delete database");
 #endif
 
-            if (createDatabaseIfNotExist && !File.Exists(_databasePath))
+            if (!filePathDatabase || !File.Exists(_databasePath))
             {
                 _logger.LogDebug("Create table schemas");
 

@@ -3,7 +3,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:enum="clr-namespace:PrayerTimeEngine.Core.Common.Enum;assembly=PrayerTimeEngine.Core"
              xmlns:drawable="clr-namespace:PrayerTimeEngine.Presentation.GraphicsView"
-             xmlns:markups="clr-namespace:OnScreenSizeMarkup.Forms;assembly=OnScreenSizeMarkup.Forms"
              xmlns:dxco="clr-namespace:DevExpress.Maui.Controls;assembly=DevExpress.Maui.Controls"
              x:Class="PrayerTimeEngine.MainPage"
              BackgroundColor="#f3eae3"

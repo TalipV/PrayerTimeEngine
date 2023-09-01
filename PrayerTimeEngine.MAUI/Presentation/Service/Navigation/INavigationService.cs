@@ -38,7 +38,7 @@ namespace PrayerTimeEngine.Presentation.Service.Navigation
 
                 if (page.BindingContext is TViewModel viewModel)
                 {
-                    viewModel.Initialize(parameter);
+                    await viewModel.Initialize(parameter);
                 }
 
                 await navigationPage.PushAsync(page);

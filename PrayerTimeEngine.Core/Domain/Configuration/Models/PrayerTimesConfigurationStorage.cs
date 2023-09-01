@@ -34,9 +34,9 @@ namespace PrayerTimeEngine.Core.Domain.Configuration.Models
             return _profiles;
         }
 
-        public GenericSettingConfiguration GetConfiguration(ETimeType timeType)
+        public async Task<GenericSettingConfiguration> GetConfiguration(ETimeType timeType)
         {
-            Profile profile = GetProfiles().GetAwaiter().GetResult().First();
+            Profile profile = (await GetProfiles()).First();
             return profile.GetConfiguration(timeType);
         }
 

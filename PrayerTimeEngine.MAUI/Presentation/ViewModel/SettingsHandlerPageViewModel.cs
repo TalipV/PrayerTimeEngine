@@ -13,7 +13,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
     /// </summary>
     public abstract class CustomBaseViewModel : BaseViewModel
     {
-        public abstract void Initialize(object parameter);
+        public abstract Task Initialize(object parameter);
     }
 
     [AddINotifyPropertyChangedInterface]
@@ -44,7 +44,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
 
         #region public methods
 
-        public override void Initialize(object parameter)
+        public override async Task Initialize(object parameter)
         {
             if (parameter is not EPrayerType prayerTime)
             {
@@ -55,7 +55,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
             {
                 SettingsContentPage settingsContentPage = _settingsContentPageFactory.Create();
                 SettingsContentPageViewModel tabViewModel = settingsContentPage.BindingContext as SettingsContentPageViewModel;
-                tabViewModel.Initialize(timeType);
+                await tabViewModel.Initialize(timeType);
                 SettingsContentPages.Add(settingsContentPage);
             }
 
