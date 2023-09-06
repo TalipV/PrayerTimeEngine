@@ -4,11 +4,12 @@ using PrayerTimeEngine.Core.Domain.Model;
 using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Interfaces;
 using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Models;
 using PrayerTimeEngine.Core.Domain.Configuration.Models;
-using PrayerTimeEngine.Core.Domain.PlacesService.Models;
 using PrayerTimeEngine.Core.Domain.CalculationService.Interfaces;
 using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Domain.PlacesService.Interfaces;
 using NodaTime;
+using MethodTimer;
+using PrayerTimeEngine.Core.Domain.PlacesService.Models.Common;
 
 namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
 {
@@ -47,6 +48,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
                 ETimeType.MaghribIshtibaq,
             };
 
+        [Time]
         public async Task<ILookup<ICalculationPrayerTimes, ETimeType>> GetPrayerTimesAsync(
             LocalDate date,
             BaseLocationData locationData,
@@ -98,7 +100,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
                 if (prayerTimes == null)
                 {
                     List<FaziletPrayerTimes> prayerTimesLst = await _faziletApiService.GetTimesByCityID(cityID);
-                    prayerTimesLst.ForEach(async x => await _faziletDBAccess.InsertFaziletPrayerTimes(x.Date, cityID, x));
+                    prayerTimesLst.ForEach(async x => await _faziletDBAccess.InsertFaziletPrayerTimesIfNotExists(x.Date, cityID, x));
                     prayerTimes = prayerTimesLst.FirstOrDefault(x => x.Date == date);
                 }
 
@@ -108,6 +110,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
 
         private readonly SemaphoreSlim semaphoreTryGetCityID = new(1, 1);
 
+        [Time]
         private async Task<(bool success, int cityID)> tryGetCityID(string cityName, int countryID)
         {
             // check-then-act has to be thread safe
@@ -138,6 +141,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
 
         private SemaphoreSlim semaphoreTryGetCountryID = new SemaphoreSlim(1, 1);
 
+        [Time]
         private async Task<(bool success, int countryID)> tryGetCountryID(string countryName)
         {
             // check-then-act has to be thread safe
@@ -167,16 +171,21 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
                 return (false, -1);
         }
 
-        public async Task<BaseLocationData> GetLocationInfo(LocationIQPlace place)
+        public async Task<BaseLocationData> GetLocationInfo(CompletePlaceInfo place)
         {
             if (place == null)
                 throw new ArgumentNullException(nameof(place));
 
             // if language is already turkish then use this place
 
-            LocationIQPlace turkishPlaceInfo = await _placeService.GetPlaceByID(place, "tr");
-            string countryName = turkishPlaceInfo.address.country;
-            string cityName = turkishPlaceInfo.address.city;
+            var turkishPlaceInfo = 
+                new CompletePlaceInfo(await _placeService.GetPlaceBasedOnPlace(place, "tr")) 
+                { 
+                    TimezoneInfo = place.TimezoneInfo
+                };
+            
+            string countryName = turkishPlaceInfo.Country;
+            string cityName = turkishPlaceInfo.City;
 
             // QUICK FIX...
             countryName = countryName.Replace("İ", "I");

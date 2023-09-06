@@ -15,8 +15,6 @@ namespace PrayerTimeEngine.Core.Domain.Configuration.Models
             _configStoreService = configStoreService;
         }
 
-        public const string TIMEZONE = "Europe/Vienna";
-
         List<Profile> _profiles = null;
 
         public async Task<List<Profile>> GetProfiles()
@@ -54,7 +52,8 @@ namespace PrayerTimeEngine.Core.Domain.Configuration.Models
                         new MuwaqqitLocationData
                         {
                             Latitude = 47.2803835M,
-                            Longitude = 11.41337M
+                            Longitude = 11.41337M,
+                            TimezoneName = "Europe/Vienna"
                         },
                     [ECalculationSource.Fazilet] =
                         new FaziletLocationData
@@ -66,7 +65,8 @@ namespace PrayerTimeEngine.Core.Domain.Configuration.Models
                         new SemerkandLocationData
                         {
                             CountryName = "Avusturya",
-                            CityName = "Innsbruck"
+                            CityName = "Innsbruck",
+                            TimezoneName = "Europe/Vienna"
                         },
                 },
                 Configurations =

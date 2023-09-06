@@ -182,13 +182,13 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
             });
         }
 
-        public async Task InsertFaziletPrayerTimes(LocalDate date, int cityID, FaziletPrayerTimes faziletPrayerTimes)
+        public async Task InsertFaziletPrayerTimesIfNotExists(LocalDate date, int cityID, FaziletPrayerTimes faziletPrayerTimes)
         {
             await _db.ExecuteCommandAsync(async connection =>
             {
                 var command = connection.CreateCommand();
                 command.CommandText = """
-                    INSERT INTO FaziletPrayerTimes (Date, CityId, Imsak, Fajr, Shuruq, Dhuhr, Asr, Maghrib, Isha, InsertInstant) 
+                    INSERT OR IGNORE INTO FaziletPrayerTimes (Date, CityId, Imsak, Fajr, Shuruq, Dhuhr, Asr, Maghrib, Isha, InsertInstant) 
                     VALUES ($Date, $CityId, $Imsak, $Fajr, $Shuruq, $Dhuhr, $Asr, $Maghrib, $Isha, $InsertInstant);
                     """;
 

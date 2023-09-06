@@ -75,7 +75,12 @@ namespace PrayerTimeEngine.Core.Tests.API.SemerkandAPI
                 ICalculationPrayerTimes result =
                     (await semerkandPrayerTimeCalculator.GetPrayerTimesAsync(
                         new LocalDate(2023, 7, 29),
-                        new SemerkandLocationData { CountryName = "Avusturya", CityName = "Innsbruck" },
+                        new SemerkandLocationData 
+                        { 
+                            CountryName = "Avusturya", 
+                            CityName = "Innsbruck",
+                            TimezoneName = "Europe/Vienna"
+                        },
                         new List<GenericSettingConfiguration> { new GenericSettingConfiguration { TimeType = ETimeType.DhuhrStart, Source = ECalculationSource.Semerkand } }
                     )).Single().Key;
 

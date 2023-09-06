@@ -150,7 +150,7 @@ public static class MauiProgram
 
         serviceCollection.AddTransient<SettingsContentPage>();
         serviceCollection.AddTransient<SettingsContentPageViewModel>();
-        serviceCollection.AddSingleton<ISettingsContentPageFactory, SettingsContentPageFactory>();
+        serviceCollection.AddSingleton<SettingsContentPageFactory>();
 
         serviceCollection.AddTransient<MuwaqqitDegreeSettingConfigurationViewModel>();
     }

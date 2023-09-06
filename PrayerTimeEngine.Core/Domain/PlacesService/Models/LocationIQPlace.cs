@@ -1,6 +1,6 @@
 ﻿namespace PrayerTimeEngine.Core.Domain.PlacesService.Models
 {
-    public class LocationIQPlace
+    internal class LocationIQPlace
     {
         public string place_id { get; set; }
         public string licence { get; set; }
@@ -15,10 +15,5 @@
         public double importance { get; set; }
         public string icon { get; set; }
         public LocationIQAddress address { get; set; }
-
-        public override string ToString()
-        {
-            return display_name;
-        }
     }
 }

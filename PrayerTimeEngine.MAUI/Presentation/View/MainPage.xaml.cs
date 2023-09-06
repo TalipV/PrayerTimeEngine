@@ -1,9 +1,10 @@
 ﻿using PrayerTimeEngine.Presentation.GraphicsView;
 using PrayerTimeEngine.Presentation.ViewModel;
 using OnScreenSizeMarkup.Maui.Helpers;
-using System.Reflection;
 using Microsoft.Extensions.Logging;
-using OnScreenSizeMarkup.Maui;
+using PrayerTimeEngine.Presentation;
+using DevExpress.Maui.Editors;
+using PrayerTimeEngine.Core.Domain.PlacesService.Models.Common;
 
 namespace PrayerTimeEngine
 {
@@ -14,7 +15,10 @@ namespace PrayerTimeEngine
 
         public MainPage(MainPageViewModel viewModel, ILogger<MainPage> logger)
         {
+            //var talip = this.LoadFromXaml(typeof(MainPage));
+
             InitializeComponent();
+
             _logger = logger;
             BindingContext = this._viewModel = viewModel;
 
@@ -22,9 +26,54 @@ namespace PrayerTimeEngine
             viewModel.IsShakeEnabled = true;
 
             this.Loaded += MainPage_Loaded;
-            this.searchBar.SearchButtonPressed += SearchBar_SearchButtonPressed;
 
             setCustomSizes();
+
+            var asyncItemsSourceProvider = new AsyncItemsSourceProvider
+            {
+                RequestDelay = 1000,
+                CharacterCountThreshold = 4
+            };
+
+            asyncItemsSourceProvider.ItemsRequested += AsyncItemsSourceProvider_ItemsRequested;
+            autoCompleteSearch.ItemsSourceProvider = asyncItemsSourceProvider;
+
+            this.lastUpdatedTextInfo.GestureRecognizers
+                .Add(
+                    new TapGestureRecognizer
+                    {
+                        Command = new Command(async () => await displayAlert(this._viewModel.GetPrayerTimeConfigDisplayText())),
+                        NumberOfTapsRequired = 2,
+                    });
+
+            this.currentProfileLocationName.GestureRecognizers
+                .Add(
+                    new TapGestureRecognizer
+                    {
+                        Command = new Command(async () => await displayAlert(this._viewModel.GetLocationDataDisplayText())),
+                        NumberOfTapsRequired = 2,
+                    });
+        }
+
+        private async Task displayAlert(string text)
+        {
+            await DisplayAlert("Info", text, "Ok");
+        }
+
+        private void AsyncItemsSourceProvider_ItemsRequested(object sender, ItemsRequestEventArgs e)
+        {
+            Func<System.Collections.IEnumerable> func = 
+                () => {
+                    var placeSearchTask = Task.Run(async () => await this._viewModel.PerformPlaceSearch(e.Text));
+                    placeSearchTask.Wait();
+                    return placeSearchTask.Result;
+                };
+
+            Func<Task<System.Collections.IEnumerable>> funcx =
+                async () =>
+                {
+                    return await this._viewModel.PerformPlaceSearch(e.Text);
+                };
         }
 
         private void setCustomSizes()
@@ -34,7 +83,7 @@ namespace PrayerTimeEngine
             // ************************
 
 #if DEBUG
-            this.searchBar.Text = getScreenSizeCategoryName();
+            //this.searchBar.Text = DebugUtil.GetScreenSizeCategoryName();
 #endif
 
             // STATUS TEXTS
@@ -45,7 +94,7 @@ namespace PrayerTimeEngine
             {
                 label.FontSize =
                     OnScreenSizeHelpers.OnScreenSize<double>(
-                        defaultSize:99,
+                        defaultSize: 99,
                         extraLarge: 99,
                         large: 25,
                         medium: 23,
@@ -65,13 +114,13 @@ namespace PrayerTimeEngine
                         defaultSize: 99,
                         extraLarge: 99,
                         large: 24,
-                        medium:22,
+                        medium: 22,
                         small: 99,
-                        extraSmall:99);
+                        extraSmall: 99);
             });
 
             // PRAYER TIME MAIN DURATIONS
-            new List<Label>()
+            new List<Label>
             {
                 FajrDurationText, DuhaDurationText, DhuhrDurationText, AsrDurationText,
                 MaghribDurationText, IshaDurationText
@@ -126,57 +175,11 @@ namespace PrayerTimeEngine
                         small: 99,
                         extraSmall: 99);
             });
-
-            //if (DeviceInfo.Platform == DevicePlatform.iOS)
-            //    return;
-            //else if (DeviceInfo.Platform == DevicePlatform.Android)
-            //    return;
         }
-
-        private string getScreenSizeCategoryName()
-        {
-            Type helpersType = typeof(OnScreenSizeHelpers);// Fetch screen diagonal from OnScreenSizeHelpers with no parameters
-            MethodInfo getDiagonalMethod = helpersType?.GetMethod("GetScreenDiagonalInches",
-                                                                 BindingFlags.Static | BindingFlags.NonPublic,
-                                                                 null,
-                                                                 new Type[] { },
-                                                                 null);
-
-            double screenDiagonalInches = (double)getDiagonalMethod?.Invoke(null, null);
-
-
-
-            // 2. Fetch the Categorizer property from Manager.Current
-            Type managerType = typeof(Manager);
-            PropertyInfo instanceProperty = managerType?.GetProperty("Current", BindingFlags.Static | BindingFlags.Public);
-            object managerInstance = instanceProperty?.GetValue(null);
-            PropertyInfo categorizerProperty = managerType?.GetProperty("Categorizer", BindingFlags.Instance | BindingFlags.NonPublic);
-            object categorizerInstance = categorizerProperty?.GetValue(managerInstance);
-
-            // 3. Call GetCategoryByDiagonalSize method on Categorizer
-            Type categorizerType = categorizerInstance.GetType();
-            MethodInfo getCategoryMethod = categorizerType.GetMethod("GetCategoryByDiagonalSize");
-            object[] parameters = new object[] { Manager.Current.Mappings, screenDiagonalInches };
-            string result = getCategoryMethod?.Invoke(categorizerInstance, parameters)?.ToString() ?? "NOT FOUND";
-
-            return result;
-        }
-
 
         private void MainPage_Loaded(object sender, EventArgs e)
         {
             Task.Run(_viewModel.OnPageLoaded);
-        }
-
-        private void SearchBar_SearchButtonPressed(object sender, EventArgs e)
-        {
-            this.Popup.IsOpen = true;
-        }
-
-        void searchResults_ItemSelected(object sender, SelectedItemChangedEventArgs e)
-        {
-            searchBar.Text = "";
-            this.Popup.IsOpen = false;
         }
 
         private void ViewModel_OnAfterLoadingPrayerTimes_EventTrigger()
@@ -203,6 +206,7 @@ namespace PrayerTimeEngine
         {
             if (Application.Current is App app)
             {
+                app.Resumed -= app_Resumed;
                 app.Resumed += app_Resumed;
             }
 

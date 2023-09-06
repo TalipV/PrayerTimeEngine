@@ -1,9 +1,9 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using MethodTimer;
+using Newtonsoft.Json.Linq;
 using NodaTime;
 using NodaTime.Text;
 using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Interfaces;
 using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Models;
-using PrayerTimeEngine.Core.Domain.Configuration.Models;
 
 namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
 {
@@ -73,11 +73,10 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
         // UNUSED!!
         private const int EXTENT_OF_DAYS_RETRIEVED = 5;
 
-        public async Task<List<SemerkandPrayerTimes>> GetTimesByCityID(LocalDate date, int cityID)
+        [Time]
+        public async Task<List<SemerkandPrayerTimes>> GetTimesByCityID(LocalDate date, string timezoneName, int cityID)
         {
-            // TODO: get timezone from place API
-            DateTimeZone timezone = DateTimeZoneProviders.Tzdb[PrayerTimesConfigurationStorage.TIMEZONE];
-
+            DateTimeZone dateTimeZone = DateTimeZoneProviders.Tzdb[timezoneName];
             string prayerTimesURL = string.Format(GET_TIMES_BY_CITY, cityID, date.Year);
 
             HttpResponseMessage response = await _httpClient.GetAsync(prayerTimesURL);
@@ -104,12 +103,12 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
                     CityID = cityID,
                     Date = currentDate,
 
-                    Fajr = getZonedDateTime(timezone, currentDate, (string)prayerTimeJObject["Fajr"]),
-                    Shuruq = getZonedDateTime(timezone, currentDate, (string)prayerTimeJObject["Tulu"]),
-                    Dhuhr = getZonedDateTime(timezone, currentDate, (string)prayerTimeJObject["Zuhr"]),
-                    Asr = getZonedDateTime(timezone, currentDate, (string)prayerTimeJObject["Asr"]),
-                    Maghrib = getZonedDateTime(timezone, currentDate, (string)prayerTimeJObject["Maghrib"]),
-                    Isha = getZonedDateTime(timezone, currentDate, (string)prayerTimeJObject["Isha"])
+                    Fajr = getZonedDateTime(dateTimeZone, currentDate, (string)prayerTimeJObject["Fajr"]),
+                    Shuruq = getZonedDateTime(dateTimeZone, currentDate, (string)prayerTimeJObject["Tulu"]),
+                    Dhuhr = getZonedDateTime(dateTimeZone, currentDate, (string)prayerTimeJObject["Zuhr"]),
+                    Asr = getZonedDateTime(dateTimeZone, currentDate, (string)prayerTimeJObject["Asr"]),
+                    Maghrib = getZonedDateTime(dateTimeZone, currentDate, (string)prayerTimeJObject["Maghrib"]),
+                    Isha = getZonedDateTime(dateTimeZone, currentDate, (string)prayerTimeJObject["Isha"])
                 };
 
                 allPrayerTimes.Add(prayerTime);

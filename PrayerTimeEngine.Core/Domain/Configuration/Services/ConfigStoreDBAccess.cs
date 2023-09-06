@@ -2,6 +2,7 @@
 using Microsoft.Data.Sqlite;
 using NodaTime;
 using PrayerTimeEngine.Core.Common.Enum;
+using PrayerTimeEngine.Core.Common.Extension;
 using PrayerTimeEngine.Core.Data.SQLite;
 using PrayerTimeEngine.Core.Domain.Configuration.Interfaces;
 using PrayerTimeEngine.Core.Domain.Configuration.Models;
@@ -167,7 +168,7 @@ namespace PrayerTimeEngine.Core.Domain.Configuration.Services
             command.Parameters.AddWithValue("$Name", profile.Name);
             command.Parameters.AddWithValue("$LocationName", profile.LocationName);
             command.Parameters.AddWithValue("$SequenceNo", profile.SequenceNo);
-            command.Parameters.AddWithValue("$InsertInstant", SystemClock.Instance.GetCurrentInstant());
+            command.Parameters.AddWithValue("$InsertInstant", SystemClock.Instance.GetCurrentInstant().GetStringForDBColumn());
 
             await command.ExecuteNonQueryAsync();
         }
@@ -190,7 +191,7 @@ namespace PrayerTimeEngine.Core.Domain.Configuration.Services
                 configCommand.Parameters.AddWithValue("$ProfileID", profile.ID);
                 configCommand.Parameters.AddWithValue("$TimeType", (int)config.Key);
                 configCommand.Parameters.AddWithValue("$JsonConfigurationString", JsonSerializer.Serialize(config.Value));
-                configCommand.Parameters.AddWithValue("$InsertInstant", SystemClock.Instance.GetCurrentInstant());
+                configCommand.Parameters.AddWithValue("$InsertInstant", SystemClock.Instance.GetCurrentInstant().GetStringForDBColumn());
 
                 await configCommand.ExecuteNonQueryAsync();
             }
@@ -214,7 +215,7 @@ namespace PrayerTimeEngine.Core.Domain.Configuration.Services
                 configCommand.Parameters.AddWithValue("$ProfileID", profile.ID);
                 configCommand.Parameters.AddWithValue("$CalculationSource", locationData.Value.Source);
                 configCommand.Parameters.AddWithValue("$JsonLocationData", JsonSerializer.Serialize(locationData.Value));
-                configCommand.Parameters.AddWithValue("$InsertInstant", SystemClock.Instance.GetCurrentInstant());
+                configCommand.Parameters.AddWithValue("$InsertInstant", SystemClock.Instance.GetCurrentInstant().GetStringForDBColumn());
 
                 await configCommand.ExecuteNonQueryAsync();
             }

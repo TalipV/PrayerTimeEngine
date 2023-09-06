@@ -26,17 +26,4 @@ public partial class App : Application
         base.OnResume();
         Resumed?.Invoke();
     }
-
-    protected override Window CreateWindow(IActivationState activationState)
-    {
-        var window = base.CreateWindow(activationState);
-
-        const int newWidth = 440;
-        const int newHeight = 800;
-
-        window.Width = newWidth;
-        window.Height = newHeight;
-
-        return window;
-    }
 }

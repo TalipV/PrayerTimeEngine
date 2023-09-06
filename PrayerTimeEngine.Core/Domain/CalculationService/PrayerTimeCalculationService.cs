@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using MethodTimer;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NodaTime;
 using PrayerTimeEngine.Core.Common.Enum;
@@ -10,7 +11,6 @@ using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services;
 using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services;
 using PrayerTimeEngine.Core.Domain.Configuration.Models;
 using PrayerTimeEngine.Core.Domain.Model;
-using System.Diagnostics;
 
 public class PrayerTimeCalculationService : IPrayerTimeCalculationService
 {
@@ -28,6 +28,7 @@ public class PrayerTimeCalculationService : IPrayerTimeCalculationService
         _logger = logger;
     }
 
+    [Time]
     public async Task<PrayerTimesBundle> ExecuteAsync(Profile profile, LocalDate date)
     {
         PrayerTimesBundle prayerTimeEntity = new();
@@ -52,14 +53,8 @@ public class PrayerTimeCalculationService : IPrayerTimeCalculationService
             throwIfConfigsHaveUnsupportedTimeTypes(calculationSource, configs, timeCalculator);
             BaseLocationData locationData = profile.LocationDataByCalculationSource[calculationSource];
 
-            Stopwatch stopwatch = Stopwatch.StartNew();
-
             ILookup<ICalculationPrayerTimes, ETimeType> calculationPrayerTimes =
                 await timeCalculator.GetPrayerTimesAsync(date, locationData, configs);
-
-            _logger.LogDebug(
-                "{CalculationCount} times took {DurationMS} ms for {TimeCalculatorBane}", 
-                configs.Count, stopwatch.ElapsedMilliseconds, timeCalculator.GetType().Name);
 
             foreach (var calculationPrayerTimeKVP in calculationPrayerTimes)
             {

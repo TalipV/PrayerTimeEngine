@@ -26,12 +26,6 @@ public partial class SettingsContentPage : ContentPage
         configureCustomUISection();
     }
 
-    protected override void OnDisappearing()
-    {
-        // for ViewModel to handle setting saving
-        Task.Run(async () => await ViewModel.OnDisappearing());
-    }
-
     private void configureCustomUISection()
     {
         ConfigurableUIContainer.Children.Clear();

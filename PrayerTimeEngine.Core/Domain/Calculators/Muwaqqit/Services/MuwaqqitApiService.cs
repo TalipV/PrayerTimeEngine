@@ -1,4 +1,5 @@
-﻿using NodaTime;
+﻿using MethodTimer;
+using NodaTime;
 using NodaTime.Text;
 using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Interfaces;
 using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Models;
@@ -20,6 +21,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services
 
         internal const string MUWAQQIT_API_URL = @"https://www.muwaqqit.com/api2.json";
 
+        [Time]
         public async Task<MuwaqqitPrayerTimes> GetTimesAsync(
             LocalDate date,
             decimal longitude,
@@ -50,40 +52,38 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services
             string url = builder.ToString();
 
             HttpResponseMessage response = await _httpClient.GetAsync(url);
+            response.EnsureSuccessStatusCode();
 
-            if (response.IsSuccessStatusCode)
+            string jsonResponse = await response.Content.ReadAsStringAsync();
+
+            // Parse the JSON response to the MuwaqqitJSONResponse object
+            MuwaqqitJSONResponse muwaqqitResponse = JsonSerializer.Deserialize<MuwaqqitJSONResponse>(jsonResponse);
+
+            DateTimeZone dateTimeZone = DateTimeZoneProviders.Tzdb[timezone];
+
+            prayerTimes = new MuwaqqitPrayerTimes
             {
-                string jsonResponse = await response.Content.ReadAsStringAsync();
+                Date = getZonedDateTime(muwaqqitResponse.d, dateTimeZone).Date,
+                Longitude = muwaqqitResponse.ln,
+                Latitude = muwaqqitResponse.lt,
 
-                // Parse the JSON response to the MuwaqqitJSONResponse object
-                MuwaqqitJSONResponse muwaqqitResponse = JsonSerializer.Deserialize<MuwaqqitJSONResponse>(jsonResponse);
+                FajrDegree = fajrDegree,
+                AsrKarahaDegree = asrKarahaDegree,
+                IshtibaqDegree = ishtibaqDegree,
+                IshaDegree = ishaDegree,
 
-                DateTimeZone dateTimeZone = DateTimeZoneProviders.Tzdb[timezone];
-
-                prayerTimes = new MuwaqqitPrayerTimes
-                {
-                    Date = getZonedDateTime(muwaqqitResponse.d, dateTimeZone).Date,
-                    Longitude = muwaqqitResponse.ln,
-                    Latitude = muwaqqitResponse.lt,
-
-                    FajrDegree = fajrDegree,
-                    AsrKarahaDegree = asrKarahaDegree,
-                    IshtibaqDegree = ishtibaqDegree,
-                    IshaDegree = ishaDegree,
-
-                    Fajr = getZonedDateTime(muwaqqitResponse.fajr, dateTimeZone),
-                    NextFajr = getZonedDateTime(muwaqqitResponse.fajr_t, dateTimeZone),
-                    Shuruq = getZonedDateTime(muwaqqitResponse.sunrise, dateTimeZone),
-                    Duha = getZonedDateTime(muwaqqitResponse.ishraq, dateTimeZone),
-                    Dhuhr = getZonedDateTime(muwaqqitResponse.zohr, dateTimeZone),
-                    Asr = getZonedDateTime(muwaqqitResponse.asr_shafi, dateTimeZone),
-                    AsrMithlayn = getZonedDateTime(muwaqqitResponse.asr_hanafi, dateTimeZone),
-                    Maghrib = getZonedDateTime(muwaqqitResponse.sunset, dateTimeZone),
-                    Isha = getZonedDateTime(muwaqqitResponse.esha, dateTimeZone),
-                    Ishtibaq = getZonedDateTime(muwaqqitResponse.ishtibak, dateTimeZone),
-                    AsrKaraha = getZonedDateTime(muwaqqitResponse.asr_makrooh, dateTimeZone),
-                };
-            }
+                Fajr = getZonedDateTime(muwaqqitResponse.fajr, dateTimeZone),
+                NextFajr = getZonedDateTime(muwaqqitResponse.fajr_t, dateTimeZone),
+                Shuruq = getZonedDateTime(muwaqqitResponse.sunrise, dateTimeZone),
+                Duha = getZonedDateTime(muwaqqitResponse.ishraq, dateTimeZone),
+                Dhuhr = getZonedDateTime(muwaqqitResponse.zohr, dateTimeZone),
+                Asr = getZonedDateTime(muwaqqitResponse.asr_shafi, dateTimeZone),
+                AsrMithlayn = getZonedDateTime(muwaqqitResponse.asr_hanafi, dateTimeZone),
+                Maghrib = getZonedDateTime(muwaqqitResponse.sunset, dateTimeZone),
+                Isha = getZonedDateTime(muwaqqitResponse.esha, dateTimeZone),
+                Ishtibaq = getZonedDateTime(muwaqqitResponse.ishtibak, dateTimeZone),
+                AsrKaraha = getZonedDateTime(muwaqqitResponse.asr_makrooh, dateTimeZone),
+            };
 
             return prayerTimes;
         }

@@ -7,7 +7,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Models
     {
         public required string CountryName { get; init; }
         public required string CityName { get; init; }
-
+        public required string TimezoneName { get; set; }
         public override ECalculationSource Source => ECalculationSource.Semerkand;
     }
 }

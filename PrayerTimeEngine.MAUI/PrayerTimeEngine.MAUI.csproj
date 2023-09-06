@@ -26,8 +26,8 @@
 
 	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
 	  <IntermediateOutputPath></IntermediateOutputPath>
-	  <DebugSymbols></DebugSymbols>
-	  <DebugType></DebugType>
+		<DebugType>portable</DebugType>
+		<DebugSymbols>true</DebugSymbols>
 	  <Optimize></Optimize>
 	  <OutputPath></OutputPath>
 	  <DefineConstants></DefineConstants>
@@ -92,6 +92,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
+    <PackageReference Include="DevExpress.Maui.Editors" Version="23.1.5" />
+    <PackageReference Include="MethodTimer.Fody" Version="3.2.2" PrivateAssets="All" />
     <PackageReference Include="NodaTime" Version="3.1.9" />
     <PackageReference Include="PropertyChanged.Fody" Version="4.1.0" PrivateAssets="All" />
     <PackageReference Include="Refractored.MvvmHelpers" Version="1.6.2" />
@@ -129,12 +131,12 @@
 	</ItemGroup>
 
 	<ItemGroup Condition="'$(TargetFramework)' == 'net7.0-android'">
-	  <PackageReference Include="DevExpress.Maui.Controls" Version="23.1.4">
+	  <PackageReference Include="DevExpress.Maui.Controls" Version="23.1.5">
 	  </PackageReference>
 	</ItemGroup>
 
 	<ItemGroup Condition="'$(TargetFramework)' == 'net7.0-ios'">
-	  <PackageReference Include="DevExpress.Maui.Controls" Version="23.1.4">
+	  <PackageReference Include="DevExpress.Maui.Controls" Version="23.1.5">
 	  </PackageReference>
 	</ItemGroup>
 

@@ -101,7 +101,12 @@ namespace PrayerTimeEngine.Core.Tests.API.MuwaqqitAPI
                 ILookup<ICalculationPrayerTimes, ETimeType> result =
                     await muwaqqitPrayerTimeCalculator.GetPrayerTimesAsync(
                         testDate,
-                        new MuwaqqitLocationData { Latitude = 47.2803835M, Longitude = 11.41337M },
+                        new MuwaqqitLocationData 
+                        { 
+                            Latitude = 47.2803835M, 
+                            Longitude = 11.41337M,
+                            TimezoneName = "Europe/Vienna"
+                        },
                         configs
                     );
 

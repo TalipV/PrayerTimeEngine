@@ -1,4 +1,4 @@
-﻿using Microsoft.Data.Sqlite;
+﻿    using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Logging;
 
 namespace PrayerTimeEngine.Core.Data.SQLite

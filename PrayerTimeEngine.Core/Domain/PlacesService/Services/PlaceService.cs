@@ -2,6 +2,8 @@
 using NodaTime;
 using PrayerTimeEngine.Core.Domain.PlacesService.Interfaces;
 using PrayerTimeEngine.Core.Domain.PlacesService.Models;
+using PrayerTimeEngine.Core.Domain.PlacesService.Models.Common;
+using System.Globalization;
 using System.Net;
 using System.Text.Json;
 
@@ -12,9 +14,9 @@ namespace PrayerTimeEngine.Core.Domain.PlacesService.Services
         private const string ACCESS_TOKEN = "pk.48863ca2d711d3a0ec7b118d88a24623";
         private const string BASE_URL = @"https://eu1.locationiq.com/v1/";
 
-        private Instant? lastAPICallInstant;
+        private Instant? lastCooldownCheck;
 
-        private const int MAX_RESULTS = 4;
+        private const int MAX_RESULTS = 10;
         private readonly HttpClient _httpClient;
         private readonly ILogger<LocationService> _logger;
 
@@ -24,51 +26,88 @@ namespace PrayerTimeEngine.Core.Domain.PlacesService.Services
             _logger = logger;
         }
 
-        public async Task<List<LocationIQPlace>> SearchPlacesAsync(string searchTerm, string language)
-        {
-            await ensureCooldown();
+        private const string BASE_URL_TIMEZONE = "https://eu1.locationiq.com/v1/timezone?key=pk.48863ca2d711d3a0ec7b118d88a24623&lat=47.2803835&lon=11.41337";
 
-            string countryCodes = WebUtility.UrlEncode("de,at");
+        public async Task<CompletePlaceInfo> GetTimezoneInfo(BasicPlaceInfo basicPlaceInfo)
+        {
             string url =
-                $"{BASE_URL}search" +
+                $"{BASE_URL_TIMEZONE}timezone" +
+                    $"?format=json" +
+                    $"&key={ACCESS_TOKEN}" +
+                    $"&lat={basicPlaceInfo.Latitude.ToString(CultureInfo.InvariantCulture)}" +
+                    $"&lon={basicPlaceInfo.Longitude.ToString(CultureInfo.InvariantCulture)}";
+
+            await ensureCooldown();
+            HttpResponseMessage response = await _httpClient.GetAsync(url);
+            
+            response.EnsureSuccessStatusCode();
+
+            string jsonResult = await response.Content.ReadAsStringAsync();
+
+            JsonElement jsonElement = JsonSerializer.Deserialize<JsonElement>(jsonResult).GetProperty("timezone");
+            LocationIQTimezone locationIQTimezone = JsonSerializer.Deserialize<LocationIQTimezone>(jsonElement);
+
+            return new CompletePlaceInfo(basicPlaceInfo)
+            {
+                TimezoneInfo = new TimezoneInfo
+                {
+                    DisplayName = locationIQTimezone.short_name,
+                    Name = locationIQTimezone.name,
+                    UtcOffsetSeconds = locationIQTimezone.offset_sec
+                }
+            };
+        }
+
+        public async Task<List<BasicPlaceInfo>> SearchPlacesAsync(string searchTerm, string language)
+        {
+            string url =
+                $"{BASE_URL}autocomplete" +
                     $"?format=json" +
                     $"&key={ACCESS_TOKEN}" +
                     $"&addressdetails=1" +
                     $"&limit={MAX_RESULTS}" +
                     $"&accept-language={language}" +
-                    $"&countrycodes={countryCodes}" +
+                    //$"&countrycodes={countryCodes}" +
                     $"&q={searchTerm}";
 
+            await ensureCooldown();
             HttpResponseMessage response = await _httpClient.GetAsync(url);
-            response.EnsureSuccessStatusCode();
-            lastAPICallInstant = SystemClock.Instance.GetCurrentInstant();
 
+            if (response.StatusCode == HttpStatusCode.NotFound)
+                return new List<BasicPlaceInfo>();
+
+            response.EnsureSuccessStatusCode();
             string jsonResult = await response.Content.ReadAsStringAsync();
-            return JsonSerializer.Deserialize<List<LocationIQPlace>>(jsonResult);
+
+            return 
+                JsonSerializer.Deserialize<List<LocationIQPlace>>(jsonResult)
+                    .Select(x => getlocationIQPlace(x, language))
+                    .Where(x => !string.IsNullOrWhiteSpace(x.City) && !string.IsNullOrWhiteSpace(x.Country))
+                    .ToList();
         }
 
-        public async Task<LocationIQPlace> GetPlaceByID(LocationIQPlace place, string languageIdentif)
+        public async Task<BasicPlaceInfo> GetPlaceBasedOnPlace(BasicPlaceInfo place, string languageIdentif)
         {
-            await ensureCooldown();
-
             string url =
                 $"{BASE_URL}reverse" +
                 $"?key={ACCESS_TOKEN}" +
                 $"&format=json" +
                 $"&accept-language={languageIdentif}" +
-                $"&lat={place.lat}" +
-                $"&lon={place.lon}" +
-                $"&osm_id={place.osm_id}";
+                $"&lat={place.Latitude.ToString(CultureInfo.InvariantCulture)}" +
+                $"&lon={place.Longitude.ToString(CultureInfo.InvariantCulture)}" +
+                $"&osm_id={place.ID}";
 
+            await ensureCooldown();
             HttpResponseMessage response = await _httpClient.GetAsync(url);
+
             response.EnsureSuccessStatusCode();
-            lastAPICallInstant = SystemClock.Instance.GetCurrentInstant();
 
             string jsonResult = await response.Content.ReadAsStringAsync();
-            return JsonSerializer.Deserialize<LocationIQPlace>(jsonResult);
+            return getlocationIQPlace(JsonSerializer.Deserialize<LocationIQPlace>(jsonResult), languageIdentif);
         }
 
-        private const double NECESSARY_COOL_DOWN_MS = 3000;
+        // only allowed two calls per second
+        private const int NECESSARY_COOL_DOWN_MS = 500;
         private readonly SemaphoreSlim _semaphore = new(1, 1);
 
         private async Task ensureCooldown()
@@ -77,23 +116,42 @@ namespace PrayerTimeEngine.Core.Domain.PlacesService.Services
 
             try
             {
-                if (lastAPICallInstant != null)
+                if (lastCooldownCheck != null)
                 {
-                    int milliseconds = (int)Math.Ceiling((SystemClock.Instance.GetCurrentInstant() - lastAPICallInstant.Value).TotalMilliseconds);
+                    Instant currentInstant = SystemClock.Instance.GetCurrentInstant();
+                    int millisecondsSinceLastCooldownCheck = (int)Math.Floor((currentInstant - lastCooldownCheck.Value).TotalMilliseconds);
 
-                    if (0 <= milliseconds && milliseconds <= NECESSARY_COOL_DOWN_MS)
+                    if (millisecondsSinceLastCooldownCheck < NECESSARY_COOL_DOWN_MS)
                     {
-                        await Task.Delay(milliseconds);
+                        await Task.Delay(NECESSARY_COOL_DOWN_MS - millisecondsSinceLastCooldownCheck);
                     }
-
-                    lastAPICallInstant = null;
                 }
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError(exception, "Exception during cooldown logic");
+                await Task.Delay(NECESSARY_COOL_DOWN_MS);
             }
             finally
             {
+                lastCooldownCheck = SystemClock.Instance.GetCurrentInstant();
+                _logger.LogDebug("Cooldown end at {Instant} ms", lastCooldownCheck.Value.ToUnixTimeMilliseconds());
                 _semaphore.Release();
             }
         }
 
+        private BasicPlaceInfo getlocationIQPlace(LocationIQPlace locationIQPlace, string languageCode)
+        {
+            return new BasicPlaceInfo(
+                id: locationIQPlace.osm_id,
+                longitude: decimal.Parse(locationIQPlace.lon, CultureInfo.InvariantCulture), 
+                latitude: decimal.Parse(locationIQPlace.lat, CultureInfo.InvariantCulture),
+                infoLanguageCode: languageCode,
+                country: locationIQPlace.address.country, 
+                city: locationIQPlace.address.city, 
+                cityDistrict: locationIQPlace.address.suburb, 
+                postCode: locationIQPlace.address.postcode, 
+                street: $"{locationIQPlace.address.road} {locationIQPlace.address.house_number}");
+        }
     }
 }

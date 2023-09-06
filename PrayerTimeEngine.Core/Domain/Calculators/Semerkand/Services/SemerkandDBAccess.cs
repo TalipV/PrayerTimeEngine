@@ -188,7 +188,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
             {
                 var command = connection.CreateCommand();
                 command.CommandText = """
-                    INSERT INTO SemerkandPrayerTimes (Date, CityId, Fajr, Shuruq, Dhuhr, Asr, Maghrib, Isha, InsertInstant) 
+                    INSERT OR IGNORE INTO SemerkandPrayerTimes (Date, CityId, Fajr, Shuruq, Dhuhr, Asr, Maghrib, Isha, InsertInstant) 
                     VALUES ($Date, $CityId, $Fajr, $Shuruq, $Dhuhr, $Asr, $Maghrib, $Isha, $InsertInstant);
                     """;
 

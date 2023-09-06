@@ -3,11 +3,46 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:enum="clr-namespace:PrayerTimeEngine.Core.Common.Enum;assembly=PrayerTimeEngine.Core"
              xmlns:drawable="clr-namespace:PrayerTimeEngine.Presentation.GraphicsView"
-             xmlns:dxco="clr-namespace:DevExpress.Maui.Controls;assembly=DevExpress.Maui.Controls"
+             xmlns:devExpressControls="clr-namespace:DevExpress.Maui.Controls;assembly=DevExpress.Maui.Controls"
+             xmlns:devExpressEditors="clr-namespace:DevExpress.Maui.Editors;assembly=DevExpress.Maui.Editors"
              x:Class="PrayerTimeEngine.MainPage"
-             BackgroundColor="#f3eae3"
-             NavigationPage.HasNavigationBar="False">
+             BackgroundColor="#f3eae3">
 
+    <NavigationPage.TitleView>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <ActivityIndicator
+                Grid.ColumnSpan="2"
+                IsRunning="{Binding IsLoadingPrayerTimesOrSelectedPlace}"/>
+
+            <Label
+                x:Name="lastUpdatedTextInfo"
+                Text="{Binding LastUpdated, StringFormat='{0:dd.MM, HH:mm:ss}'}"
+                IsVisible="{Binding IsNotLoadingPrayerTimesOrSelectedPlace}"
+                
+                FontSize="10"
+                Grid.Column="0"
+                HorizontalTextAlignment="Start"
+                VerticalTextAlignment="Center"/>
+
+            <Label
+                x:Name="currentProfileLocationName"
+                Text="{Binding CurrentProfile.LocationName}"
+                IsVisible="{Binding IsNotLoadingPrayerTimesOrSelectedPlace}"
+                
+                Padding="0,0,20,0"
+                Grid.Column="1"
+                HorizontalTextAlignment="End"
+                VerticalTextAlignment="Center"/>
+            
+        </Grid>
+        
+    </NavigationPage.TitleView>
+    
     <ContentPage.Resources>
         <drawable:PrayerTimeGraphicView x:Key="PrayerTimeGraphicDrawable" x:Name="PrayerTimeGraphicView"/>
     </ContentPage.Resources>
@@ -16,12 +51,12 @@
         
         <Grid.RowDefinitions>
 
-            <RowDefinition Height="2*" />
+            <RowDefinition Height="3*" />
             <RowDefinition Height="3*" />
 
-            <RowDefinition Height="2*" />
+            <RowDefinition Height="0" />
             
-            <RowDefinition Height="*" />
+            <RowDefinition Height="0" />
             
             <!--Fajr & Duha-->
             <RowDefinition Height="2*" />
@@ -55,61 +90,24 @@
             <ColumnDefinition Width="2*" />
         </Grid.ColumnDefinitions>
 
-        <SearchBar
+        <devExpressEditors:AutoCompleteEdit
+            x:Name="autoCompleteSearch"
             Grid.Row="0"
             Grid.Column="0"
             Grid.ColumnSpan="5"
-            x:Name="searchBar"
-            IsEnabled="{Binding IsNotLoading}"
+            VerticalOptions="Center"
 
-            BackgroundColor="LightGray"
-            HorizontalOptions="Center"
-            SearchCommand="{Binding PerformSearch}"
-            SearchCommandParameter="{Binding Text, Source={x:Reference searchBar}}" />
-
-        <dxco:DXPopup
-            x:Name="Popup"
-            PlacementTarget="{x:Reference searchBar}"
-            Placement="Bottom"
-            MinimumHeightRequest="180">
-
-            <ListView
-                x:Name="searchResults"
-                BackgroundColor="LightGray"
-                ItemsSource="{Binding SearchResults}"
-                SelectionMode="Single"
-                SelectedItem="{Binding SelectedPlace}"
-                ItemSelected="searchResults_ItemSelected"/>
-
-        </dxco:DXPopup>
-
-        <Label
-            x:Name="lastUpdatedTextInfo"
-            Grid.Row="2"
-            Grid.Column="0"
-            Grid.ColumnSpan="3"
-            TextColor="Black" Text="{Binding LastUpdated, StringFormat='{0:dd.MM.yyyy HH:mm:ss}'}"
-            IsVisible="{Binding IsNotLoading}"
-            HorizontalOptions="Center"
-            VerticalOptions="Start" />
-
-        <ActivityIndicator
-            Grid.Row="2"
-            Grid.Column="2"
-            Scale="2"
-            IsRunning="{Binding IsLoading}"
-            />
-
-        <Label
-            x:Name="currentProfileLocationName"
-            Grid.Row="2"
-            Grid.Column="3"
-            Grid.ColumnSpan="2"
             TextColor="Black"
-            Text="{Binding CurrentProfile.LocationName, Mode=TwoWay}"
-            IsVisible="{Binding IsNotLoading}"
-            HorizontalOptions="Center"
-            VerticalOptions="Start" />
+            PlaceholderColor="Gray"
+            SelectedItem="{ Binding SelectedPlace}"
+            
+            DisplayMember="DisplayText"
+            PlaceholderText="Ortseingabe"
+            NoResultsFoundText="Not found"
+            ErrorText="I am error text"
+            HasError="False">
+
+        </devExpressEditors:AutoCompleteEdit>
 
         <Label
             x:Name="FajrName"

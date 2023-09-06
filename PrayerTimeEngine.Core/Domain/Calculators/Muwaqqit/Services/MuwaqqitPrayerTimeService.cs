@@ -3,10 +3,11 @@ using PrayerTimeEngine.Core.Domain.Model;
 using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Models;
 using PrayerTimeEngine.Core.Domain.Configuration.Models;
 using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Interfaces;
-using PrayerTimeEngine.Core.Domain.PlacesService.Models;
 using PrayerTimeEngine.Core.Domain.CalculationService.Interfaces;
 using PrayerTimeEngine.Core.Common.Enum;
 using NodaTime;
+using MethodTimer;
+using PrayerTimeEngine.Core.Domain.PlacesService.Models.Common;
 
 namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services
 {
@@ -26,6 +27,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services
             _timeTypeAttributeService = timeTypeAttributeService;
         }
 
+        [Time]
         public async Task<ILookup<ICalculationPrayerTimes, ETimeType>> GetPrayerTimesAsync(
             LocalDate date,
             BaseLocationData locationData,
@@ -39,7 +41,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services
             }
 
             // time zone has to be added to location data
-            string timezone = PrayerTimesConfigurationStorage.TIMEZONE;
+            string timezone = muwaqqitLocationData.TimezoneName;
 
             decimal longitude = muwaqqitLocationData.Longitude;
             decimal latitude = muwaqqitLocationData.Latitude;
@@ -207,15 +209,16 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services
             }
         }
 
-        public Task<BaseLocationData> GetLocationInfo(LocationIQPlace place)
+        public Task<BaseLocationData> GetLocationInfo(CompletePlaceInfo place)
         {
             if (place == null)
                 throw new ArgumentNullException(nameof(place));
 
             return Task.FromResult<BaseLocationData>(new MuwaqqitLocationData
             {
-                Longitude = decimal.Parse(place.lon, System.Globalization.CultureInfo.InvariantCulture),
-                Latitude = decimal.Parse(place.lat, System.Globalization.CultureInfo.InvariantCulture)
+                Longitude = place.Longitude,
+                Latitude = place.Latitude,
+                TimezoneName = place.TimezoneInfo.Name
             });
         }
     }

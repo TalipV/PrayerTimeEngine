@@ -20,7 +20,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
     public class SettingsHandlerPageViewModel : CustomBaseViewModel
     {
         public SettingsHandlerPageViewModel(
-            ISettingsContentPageFactory settingsContentPageFactory,
+            SettingsContentPageFactory settingsContentPageFactory,
             TimeTypeAttributeService timeTypeAttributeService)
         {
             _settingsContentPageFactory = settingsContentPageFactory;
@@ -31,7 +31,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
 
         #region fields
 
-        private readonly ISettingsContentPageFactory _settingsContentPageFactory;
+        private readonly SettingsContentPageFactory _settingsContentPageFactory;
         private readonly TimeTypeAttributeService _timeTypeAttributeService;
 
         #endregion fields

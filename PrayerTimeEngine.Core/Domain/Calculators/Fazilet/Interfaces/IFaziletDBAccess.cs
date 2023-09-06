@@ -12,6 +12,6 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Interfaces
 
         public Task InsertCountries(Dictionary<string, int> countries);
         public Task InsertCities(Dictionary<string, int> cities, int countryId);
-        public Task InsertFaziletPrayerTimes(LocalDate date, int cityID, FaziletPrayerTimes faziletPrayerTimes);
+        public Task InsertFaziletPrayerTimesIfNotExists(LocalDate date, int cityID, FaziletPrayerTimes faziletPrayerTimes);
     }
 }

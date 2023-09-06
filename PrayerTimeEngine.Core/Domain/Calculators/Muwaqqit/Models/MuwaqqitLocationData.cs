@@ -7,7 +7,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Models
     {
         public required decimal Longitude { get; init; }
         public required decimal Latitude { get; init; }
-
+        public required string TimezoneName { get; set; }
         public override ECalculationSource Source => ECalculationSource.Muwaqqit;
     }
 }

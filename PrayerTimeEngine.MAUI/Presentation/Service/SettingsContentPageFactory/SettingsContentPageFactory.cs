@@ -2,7 +2,7 @@
 
 namespace PrayerTimeEngine.Presentation.Service.SettingsContentPageFactory
 {
-    public class SettingsContentPageFactory : ISettingsContentPageFactory
+    public class SettingsContentPageFactory
     {
         private readonly IServiceProvider _serviceProvider;
 

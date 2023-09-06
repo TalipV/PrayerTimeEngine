@@ -7,7 +7,6 @@ using CommunityToolkit.Maui.Alerts;
 using Microsoft.Extensions.Logging;
 using MetroLog.Maui;
 using PrayerTimeEngine.Core.Domain.Configuration.Models;
-using PrayerTimeEngine.Core.Domain.PlacesService.Models;
 using PrayerTimeEngine.Core.Domain.Model;
 using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Domain.Configuration.Interfaces;
@@ -15,6 +14,11 @@ using PrayerTimeEngine.Core.Domain.CalculationService.Interfaces;
 using PrayerTimeEngine.Core.Domain.PlacesService.Interfaces;
 using NodaTime;
 using NodaTime.Extensions;
+using PrayerTimeEngine.Core.Domain.PlacesService.Models.Common;
+using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Models;
+using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Models;
+using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Models;
+using PrayerTimeEngine.Core.Domain;
 
 namespace PrayerTimeEngine.Presentation.ViewModel
 {
@@ -27,7 +31,8 @@ namespace PrayerTimeEngine.Presentation.ViewModel
             IConfigStoreService configStoreService,
             INavigationService navigationService,
             PrayerTimesConfigurationStorage prayerTimesConfigurationStorage,
-            ILogger<MainPageViewModel> logger)
+            ILogger<MainPageViewModel> logger,
+            TimeTypeAttributeService timeTypeAttributeService)
         {
             _prayerTimeCalculationService = prayerTimeCalculator;
             _placeService = placeService;
@@ -35,12 +40,14 @@ namespace PrayerTimeEngine.Presentation.ViewModel
             _navigationService = navigationService;
             _prayerTimesConfigurationStorage = prayerTimesConfigurationStorage;
             _logger = logger;
+            _timeTypeAttributeService = timeTypeAttributeService;
         }
 
         #region fields
 
         private readonly IPrayerTimeCalculationService _prayerTimeCalculationService;
         private readonly ILocationService _placeService;
+        private readonly TimeTypeAttributeService _timeTypeAttributeService;
         private readonly IConfigStoreService _configStoreService;
         private readonly INavigationService _navigationService;
         private readonly PrayerTimesConfigurationStorage _prayerTimesConfigurationStorage;
@@ -79,14 +86,16 @@ namespace PrayerTimeEngine.Presentation.ViewModel
 
         public PrayerTimesBundle Prayers { get; private set; }
 
-        public List<LocationIQPlace> SearchResults { get; set; }
-
         [OnChangedMethod(nameof(onSelectedPlaceChanged))]
-        public LocationIQPlace SelectedPlace { get; set; }
+        public BasicPlaceInfo SelectedPlace { get; set; }
 
         public ZonedDateTime? LastUpdated { get; private set; }
-        public bool IsCurrentlyLoadingTimes => this.isLoadPrayerTimesRunningInterlockedInt != 0;
-        public bool IsNotLoading => !IsCurrentlyLoadingTimes;
+
+        public bool IsLoadingPrayerTimesOrSelectedPlace => IsLoadingPrayerTimes || IsLoadingSelectedPlace;
+        public bool IsNotLoadingPrayerTimesOrSelectedPlace => !IsLoadingPrayerTimesOrSelectedPlace;
+
+        public bool IsLoadingSelectedPlace { get; set; }
+        public bool IsLoadingPrayerTimes { get; set; }
 
         public bool ShowFajrGhalas { get; set; }
         public bool ShowFajrRedness { get; set; }
@@ -100,35 +109,32 @@ namespace PrayerTimeEngine.Presentation.ViewModel
         public bool ShowMidnight { get; set; }
 
         #endregion properties
-        
+
         #region ICommand
 
-        public ICommand PerformSearch => new Command<string>(async (string query) =>
-        {
-            if (this.IsCurrentlyLoadingTimes)
-            {
-                return;
-            }
+        public ICommand PerformSearch => new Command<string>(async query => await PerformPlaceSearch(query));
 
+        public async Task<List<BasicPlaceInfo>> PerformPlaceSearch(string searchText)
+        {
             try
             {
                 string languageCode = CultureInfo.CurrentCulture.TwoLetterISOLanguageName;
-
-                List<LocationIQPlace> places = await _placeService.SearchPlacesAsync(query, languageCode);
-                SearchResults = places;
+                return await _placeService.SearchPlacesAsync(searchText, languageCode);
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
                 _logger.LogDebug(ex, "Error during place search");
                 doToast(ex.Message);
             }
-        });
+
+            return new List<BasicPlaceInfo>();
+        }
 
         public ICommand GoToSettingsPageCommand
             => new Command<EPrayerType>(
                 async (prayerTime) =>
                 {
-                    if (!IsCurrentlyLoadingTimes)
+                    if (!IsLoadingPrayerTimes)
                     {
                         await _navigationService.NavigateTo<SettingsHandlerPageViewModel>(prayerTime);
                     }
@@ -212,12 +218,15 @@ namespace PrayerTimeEngine.Presentation.ViewModel
 
             try
             {
+                IsLoadingPrayerTimes = true;
+
                 LocalDate today = DateTime.Now.ToLocalDateTime().Date;
                 Prayers = await _prayerTimeCalculationService.ExecuteAsync(CurrentProfile, today);
                 OnAfterLoadingPrayerTimes_EventTrigger.Invoke();
             }
             finally
             {
+                IsLoadingPrayerTimes = false;
                 Interlocked.Exchange(ref isLoadPrayerTimesRunningInterlockedInt, 0);  // Reset the flag to allow future runs
                 LastUpdated = SystemClock.Instance.GetCurrentInstant().InZone(DateTimeZoneProviders.Tzdb[TimeZoneInfo.Local.Id]);
             }
@@ -253,15 +262,17 @@ namespace PrayerTimeEngine.Presentation.ViewModel
         {
             Task.Run(async () =>
             {
+                if (CurrentProfile == null || SelectedPlace == null)
+                {
+                    return;
+                }
+
                 try
                 {
-                    if (CurrentProfile == null || SelectedPlace == null)
-                    {
-                        return;
-                    }
-
-                    this.SearchResults.Clear();
+                    this.IsLoadingSelectedPlace = true;
                     CurrentProfile.LocationDataByCalculationSource.Clear();
+
+                    CompletePlaceInfo completePlaceInfo = await _placeService.GetTimezoneInfo(SelectedPlace);
 
                     foreach (var calculationSource in
                         Enum.GetValues(typeof(ECalculationSource))
@@ -273,13 +284,11 @@ namespace PrayerTimeEngine.Presentation.ViewModel
                         CurrentProfile.LocationDataByCalculationSource[calculationSource] =
                             await _prayerTimeCalculationService
                                 .GetPrayerTimeCalculatorByCalculationSource(calculationSource)
-                                .GetLocationInfo(SelectedPlace);
+                                .GetLocationInfo(completePlaceInfo);
                     }
 
-                    CurrentProfile.LocationName = SelectedPlace.address.city;
+                    CurrentProfile.LocationName = completePlaceInfo.DisplayText;
                     await _configStoreService.SaveProfile(CurrentProfile);
-
-                    await loadPrayerTimes();
 
                     var missingLocationInfo =
                         CurrentProfile.LocationDataByCalculationSource
@@ -297,7 +306,74 @@ namespace PrayerTimeEngine.Presentation.ViewModel
                     _logger.LogDebug(exception, "Error during place selection");
                     doToast(exception.Message);
                 }
+                finally
+                {
+                    this.IsLoadingSelectedPlace = false;
+                }
+
+                await loadPrayerTimes();
             });
+        }
+
+        public string GetLocationDataDisplayText()
+        {
+            if (this.CurrentProfile == null)
+                return "";
+
+            MuwaqqitLocationData muwaqqitLocationData = this.CurrentProfile.LocationDataByCalculationSource[ECalculationSource.Muwaqqit] as MuwaqqitLocationData;
+            FaziletLocationData faziletLocationData = this.CurrentProfile.LocationDataByCalculationSource[ECalculationSource.Fazilet] as FaziletLocationData;
+            SemerkandLocationData semerkandLocationData = this.CurrentProfile.LocationDataByCalculationSource[ECalculationSource.Semerkand] as SemerkandLocationData;
+
+            return $"""
+                    Muwaqqit:
+                        - Coordinates:  
+                        ({muwaqqitLocationData.Latitude} / {muwaqqitLocationData.Longitude})
+                        - Timezone:     
+                        '{muwaqqitLocationData.TimezoneName}'
+                    
+                    Fazilet:
+                        - Country 
+                        '{faziletLocationData.CountryName}'
+                        - City 
+                        '{faziletLocationData.CityName}'
+                    
+                    Semerkand:
+                        - Country 
+                        '{semerkandLocationData.CountryName}'
+                        - City 
+                        '{semerkandLocationData.CityName}'
+                    """;
+        }
+
+        public string GetPrayerTimeConfigDisplayText()
+        {
+            string outputText = "";
+
+            foreach (KeyValuePair<EPrayerType, List<ETimeType>> item in _timeTypeAttributeService.PrayerTypeToTimeTypes)
+            {
+                EPrayerType prayerType = item.Key;
+                outputText += prayerType.ToString();
+
+                foreach (ETimeType timeType in item.Value)
+                {
+                    if (!_timeTypeAttributeService.ConfigurableTypes.Contains(timeType))
+                        continue;
+
+                    GenericSettingConfiguration config = this.CurrentProfile.Configurations[timeType];
+
+                    outputText += Environment.NewLine;
+                    outputText += $"- {timeType} mit {config.Source}";
+                    if (config is MuwaqqitDegreeCalculationConfiguration degreeConfig)
+                    {
+                        outputText += $" ({degreeConfig.Degree}°)";
+                    }
+                }
+
+                outputText += Environment.NewLine;
+                outputText += Environment.NewLine;
+            }
+
+            return outputText;
         }
 
         // TODO REFACTOR

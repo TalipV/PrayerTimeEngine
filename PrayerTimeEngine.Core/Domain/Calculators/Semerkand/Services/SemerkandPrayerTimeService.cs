@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using MethodTimer;
+using Microsoft.Extensions.Logging;
 using NodaTime;
 using PrayerTimeEngine.Core.Common;
 using PrayerTimeEngine.Core.Common.Enum;
@@ -8,7 +9,7 @@ using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Models;
 using PrayerTimeEngine.Core.Domain.Configuration.Models;
 using PrayerTimeEngine.Core.Domain.Model;
 using PrayerTimeEngine.Core.Domain.PlacesService.Interfaces;
-using PrayerTimeEngine.Core.Domain.PlacesService.Models;
+using PrayerTimeEngine.Core.Domain.PlacesService.Models.Common;
 
 namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
 {
@@ -47,6 +48,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
                 ETimeType.MaghribIshtibaq,
             };
 
+        [Time]
         public async Task<ILookup<ICalculationPrayerTimes, ETimeType>> GetPrayerTimesAsync(
             LocalDate date,
             BaseLocationData locationData,
@@ -59,10 +61,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
                 throw new Exception("Semerkand specific location information was not provided!");
             }
 
-            string countryName = semerkandLocationData.CountryName;
-            string cityName = semerkandLocationData.CityName;
-
-            ICalculationPrayerTimes semerkandPrayerTimes = await getPrayerTimesInternal(date, countryName, cityName);
+            ICalculationPrayerTimes semerkandPrayerTimes = await getPrayerTimesInternal(date, semerkandLocationData);
 
             // this single calculation entity applies to all the TimeTypes of the configurations
             return configurations
@@ -70,24 +69,28 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
                 .ToLookup(x => semerkandPrayerTimes, y => y);
         }
 
-        private async Task<SemerkandPrayerTimes> getPrayerTimesInternal(LocalDate date, string countryName, string cityName)
+        private async Task<SemerkandPrayerTimes> getPrayerTimesInternal(LocalDate date, SemerkandLocationData semerkandLocationData)
         {
+            string countryName = semerkandLocationData.CountryName;
+            string cityName = semerkandLocationData.CityName;
+
             if (await tryGetCountryID(countryName) is (bool countrySuccess, int countryID) countryResult && !countrySuccess)
                 throw new ArgumentException($"{nameof(countryName)} could not be found!");
             if (await tryGetCityID(cityName, countryID) is (bool citySuccess, int cityID) cityResult && !citySuccess)
                 throw new ArgumentException($"{nameof(cityName)} could not be found!");
 
-            SemerkandPrayerTimes prayerTimes = await getPrayerTimesByDateAndCityID(date, cityID)
+            SemerkandPrayerTimes prayerTimes = await getPrayerTimesByDateAndCityID(date, semerkandLocationData.TimezoneName, cityID)
                 ?? throw new Exception($"Prayer times for the {date:D} could not be found for an unknown reason.");
 
-            prayerTimes.NextFajr = (await getPrayerTimesByDateAndCityID(date.PlusDays(1), cityID))?.Fajr;
+            prayerTimes.NextFajr = (await getPrayerTimesByDateAndCityID(date.PlusDays(1), semerkandLocationData.TimezoneName, cityID))?.Fajr;
 
             return prayerTimes;
         }
 
         private readonly AsyncDuplicateLock getPrayerTimesLocker = new();
 
-        private async Task<SemerkandPrayerTimes> getPrayerTimesByDateAndCityID(LocalDate date, int cityID)
+        [Time]
+        private async Task<SemerkandPrayerTimes> getPrayerTimesByDateAndCityID(LocalDate date, string timezone, int cityID)
         {
             var lockTuple = (date, cityID);
 
@@ -97,7 +100,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
 
                 if (prayerTimes == null)
                 {
-                    List<SemerkandPrayerTimes> prayerTimesLst = await _semerkandApiService.GetTimesByCityID(date, cityID);
+                    List<SemerkandPrayerTimes> prayerTimesLst = await _semerkandApiService.GetTimesByCityID(date, timezone, cityID);
                     prayerTimesLst.ForEach(async x => await _semerkandDBAccess.InsertSemerkandPrayerTimes(x.Date, cityID, x));
                     prayerTimes = prayerTimesLst.FirstOrDefault(x => x.Date == date);
                 }
@@ -109,6 +112,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
 
         private SemaphoreSlim semaphoreTryGetCityID = new SemaphoreSlim(1, 1);
 
+        [Time]
         private async Task<(bool success, int cityID)> tryGetCityID(string cityName, int countryID)
         {
             // check-then-act has to be thread safe
@@ -139,6 +143,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
 
         private SemaphoreSlim semaphoreTryGetCountryID = new SemaphoreSlim(1, 1);
 
+        [Time]
         private async Task<(bool success, int countryID)> tryGetCountryID(string countryName)
         {
             // check-then-act has to be thread safe
@@ -167,16 +172,21 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
                 return (false, -1);
         }
 
-        public async Task<BaseLocationData> GetLocationInfo(LocationIQPlace place)
+        public async Task<BaseLocationData> GetLocationInfo(CompletePlaceInfo place)
         {
             if (place == null)
                 throw new ArgumentNullException(nameof(place));
 
             // if language is already turkish then use this place
 
-            LocationIQPlace turkishPlaceInfo = await _placeService.GetPlaceByID(place, "tr");
-            string countryName = turkishPlaceInfo.address.country;
-            string cityName = turkishPlaceInfo.address.city;
+            var turkishPlaceInfo =
+                new CompletePlaceInfo(await _placeService.GetPlaceBasedOnPlace(place, "tr"))
+                {
+                    TimezoneInfo = place.TimezoneInfo
+                };
+
+            string countryName = turkishPlaceInfo.Country;
+            string cityName = turkishPlaceInfo.City;
 
             // QUICK FIX...
             countryName = countryName.Replace("İ", "I");
@@ -193,7 +203,8 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
                 return new SemerkandLocationData
                 {
                     CountryName = countryName,
-                    CityName = cityName
+                    CityName = cityName,
+                    TimezoneName = place.TimezoneInfo.Name
                 };
             }
 

@@ -1,10 +1,11 @@
-﻿using PrayerTimeEngine.Core.Domain.PlacesService.Models;
+﻿using PrayerTimeEngine.Core.Domain.PlacesService.Models.Common;
 
 namespace PrayerTimeEngine.Core.Domain.PlacesService.Interfaces
 {
     public interface ILocationService
     {
-        Task<List<LocationIQPlace>> SearchPlacesAsync(string searchTerm, string language);
-        Task<LocationIQPlace> GetPlaceByID(LocationIQPlace place, string languageIdentif);
+        Task<List<BasicPlaceInfo>> SearchPlacesAsync(string searchTerm, string language);
+        Task<BasicPlaceInfo> GetPlaceBasedOnPlace(BasicPlaceInfo place, string languageIdentif);
+        Task<CompletePlaceInfo> GetTimezoneInfo(BasicPlaceInfo placeInfo);
     }
 }

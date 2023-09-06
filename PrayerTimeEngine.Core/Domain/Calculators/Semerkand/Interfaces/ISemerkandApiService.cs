@@ -7,6 +7,6 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Interfaces
     {
         public Task<Dictionary<string, int>> GetCountries();
         public Task<Dictionary<string, int>> GetCitiesByCountryID(int countryID);
-        public Task<List<SemerkandPrayerTimes>> GetTimesByCityID(LocalDate date, int cityID);
+        public Task<List<SemerkandPrayerTimes>> GetTimesByCityID(LocalDate date, string timezone, int cityID);
     }
 }
