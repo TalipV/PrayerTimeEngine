@@ -27,8 +27,8 @@ namespace PrayerTimeEngine.Core.Data.SQLite
         {
             using (SqliteConnection connection = GetSqliteConnection())
             {
-                await connection.OpenAsync();
-                await commandAction(connection);
+                await connection.OpenAsync().ConfigureAwait(false);
+                await commandAction(connection).ConfigureAwait(false);
             }
         }
 

@@ -32,9 +32,9 @@ namespace PrayerTimeEngine.Core.Domain.Configuration.Services
                 FROM Profile;
                 """;
 
-                using (var reader = await command.ExecuteReaderAsync())
+                using (var reader = await command.ExecuteReaderAsync().ConfigureAwait(false))
                 {
-                    while (await reader.ReadAsync())
+                    while (await reader.ReadAsync().ConfigureAwait(false))
                     {
                         Profile profile = new()
                         {
@@ -56,9 +56,9 @@ namespace PrayerTimeEngine.Core.Domain.Configuration.Services
 
                         configCommand.Parameters.AddWithValue("$ProfileId", profile.ID);
 
-                        using (var configReader = await configCommand.ExecuteReaderAsync())
+                        using (var configReader = await configCommand.ExecuteReaderAsync().ConfigureAwait(false))
                         {
-                            while (await configReader.ReadAsync())
+                            while (await configReader.ReadAsync().ConfigureAwait(false))
                             {
                                 ETimeType timeType = (ETimeType)configReader.GetInt32(0);
                                 string jsonConfigurationString = configReader.GetString(1);
@@ -78,9 +78,9 @@ namespace PrayerTimeEngine.Core.Domain.Configuration.Services
 
                         locationDataCommand.Parameters.AddWithValue("$ProfileId", profile.ID);
 
-                        using (var locationDataReader = await locationDataCommand.ExecuteReaderAsync())
+                        using (var locationDataReader = await locationDataCommand.ExecuteReaderAsync().ConfigureAwait(false))
                         {
-                            while (await locationDataReader.ReadAsync())
+                            while (await locationDataReader.ReadAsync().ConfigureAwait(false))
                             {
                                 ECalculationSource calculationSource = (ECalculationSource)locationDataReader.GetInt32(0);
                                 string jsonLocationData = locationDataReader.GetString(1);
@@ -93,7 +93,7 @@ namespace PrayerTimeEngine.Core.Domain.Configuration.Services
                         profiles.Add(profile);
                     }
                 }
-            });
+            }).ConfigureAwait(false);
 
             return profiles;
         }
@@ -114,9 +114,9 @@ namespace PrayerTimeEngine.Core.Domain.Configuration.Services
 
                 command.Parameters.AddWithValue("$ProfileId", profileID);
 
-                using (var reader = await command.ExecuteReaderAsync())
+                using (var reader = await command.ExecuteReaderAsync().ConfigureAwait(false))
                 {
-                    while (await reader.ReadAsync())
+                    while (await reader.ReadAsync().ConfigureAwait(false))
                     {
                         TimeSpecificConfig timeSpecificConfig = new()
                         {
@@ -134,7 +134,7 @@ namespace PrayerTimeEngine.Core.Domain.Configuration.Services
                         timeSpecificConfigs.Add(timeSpecificConfig);
                     }
                 }
-            });
+            }).ConfigureAwait(false);
 
             return timeSpecificConfigs;
         }
@@ -147,13 +147,13 @@ namespace PrayerTimeEngine.Core.Domain.Configuration.Services
             {
                 using (var transaction = connection.BeginTransaction())
                 {
-                    await insertProfile(connection, profile);
-                    await insertTimeSpecificConfigs(connection, profile);
-                    await insertLocationData(connection, profile);
+                    await insertProfile(connection, profile).ConfigureAwait(false);
+                    await insertTimeSpecificConfigs(connection, profile).ConfigureAwait(false);
+                    await insertLocationData(connection, profile).ConfigureAwait(false);
 
                     transaction.Commit();
                 }
-            });
+            }).ConfigureAwait(false);
         }
 
         private async Task insertProfile(SqliteConnection connection, Profile profile)
@@ -170,7 +170,7 @@ namespace PrayerTimeEngine.Core.Domain.Configuration.Services
             command.Parameters.AddWithValue("$SequenceNo", profile.SequenceNo);
             command.Parameters.AddWithValue("$InsertInstant", SystemClock.Instance.GetCurrentInstant().GetStringForDBColumn());
 
-            await command.ExecuteNonQueryAsync();
+            await command.ExecuteNonQueryAsync().ConfigureAwait(false);
         }
 
         private async Task insertTimeSpecificConfigs(SqliteConnection connection, Profile profile)
@@ -193,7 +193,7 @@ namespace PrayerTimeEngine.Core.Domain.Configuration.Services
                 configCommand.Parameters.AddWithValue("$JsonConfigurationString", JsonSerializer.Serialize(config.Value));
                 configCommand.Parameters.AddWithValue("$InsertInstant", SystemClock.Instance.GetCurrentInstant().GetStringForDBColumn());
 
-                await configCommand.ExecuteNonQueryAsync();
+                await configCommand.ExecuteNonQueryAsync().ConfigureAwait(false);
             }
         }
 
@@ -217,7 +217,7 @@ namespace PrayerTimeEngine.Core.Domain.Configuration.Services
                 configCommand.Parameters.AddWithValue("$JsonLocationData", JsonSerializer.Serialize(locationData.Value));
                 configCommand.Parameters.AddWithValue("$InsertInstant", SystemClock.Instance.GetCurrentInstant().GetStringForDBColumn());
 
-                await configCommand.ExecuteNonQueryAsync();
+                await configCommand.ExecuteNonQueryAsync().ConfigureAwait(false);
             }
         }
 
@@ -238,8 +238,8 @@ namespace PrayerTimeEngine.Core.Domain.Configuration.Services
                     """;
 
                 command.Parameters.AddWithValue("$ProfileID", profile.ID);
-                await command.ExecuteNonQueryAsync();
-            });
+                await command.ExecuteNonQueryAsync().ConfigureAwait(false);
+            }).ConfigureAwait(false);
         }
     }
 }

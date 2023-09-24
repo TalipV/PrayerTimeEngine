@@ -22,10 +22,10 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
         {
             Dictionary<string, int> countries = new();
 
-            HttpResponseMessage response = await _httpClient.GetAsync(GET_COUNTRIES_URL);
+            HttpResponseMessage response = await _httpClient.GetAsync(GET_COUNTRIES_URL).ConfigureAwait(false);
             response.EnsureSuccessStatusCode();
 
-            string json = await response.Content.ReadAsStringAsync();
+            string json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
             JObject jObject = JObject.Parse(json);
 
             foreach (JObject country in (JArray)jObject["ulkeler"])
@@ -44,7 +44,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
         {
             Dictionary<string, int> cities = new Dictionary<string, int>();
 
-            HttpResponseMessage response = await _httpClient.GetAsync(GET_CITIES_BY_COUNTRY_URL + countryID);
+            HttpResponseMessage response = await _httpClient.GetAsync(GET_CITIES_BY_COUNTRY_URL + countryID).ConfigureAwait(false);
             response.EnsureSuccessStatusCode();
 
             string json = await response.Content.ReadAsStringAsync();
@@ -67,9 +67,9 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
             List<FaziletPrayerTimes> prayerTimesList = new List<FaziletPrayerTimes>();
 
             string url = string.Format(GET_TIMES_BY_CITY_URL, cityID);
-            HttpResponseMessage response = await _httpClient.GetAsync(url);
+            HttpResponseMessage response = await _httpClient.GetAsync(url).ConfigureAwait(false);
 
-            string json = await response.Content.ReadAsStringAsync();
+            string json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
             JObject jObject = JObject.Parse(json);
             JArray timesJArray = (JArray)jObject["vakitler"];
 

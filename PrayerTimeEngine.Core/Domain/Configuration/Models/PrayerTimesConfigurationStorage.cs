@@ -21,7 +21,7 @@ namespace PrayerTimeEngine.Core.Domain.Configuration.Models
         {
             if (_profiles == null)
             {
-                _profiles = await _configStoreService.GetProfiles();
+                _profiles = await _configStoreService.GetProfiles().ConfigureAwait(false);
 
                 if (_profiles.Count == 0)
                 {
@@ -34,7 +34,7 @@ namespace PrayerTimeEngine.Core.Domain.Configuration.Models
 
         public async Task<GenericSettingConfiguration> GetConfiguration(ETimeType timeType)
         {
-            Profile profile = (await GetProfiles()).First();
+            Profile profile = (await GetProfiles().ConfigureAwait(false)).First();
             return profile.GetConfiguration(timeType);
         }
 

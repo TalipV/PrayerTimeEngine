@@ -26,14 +26,14 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
                     FROM FaziletCountries;
                     """;
 
-                using (var reader = await command.ExecuteReaderAsync())
+                using (var reader = await command.ExecuteReaderAsync().ConfigureAwait(false))
                 {
-                    while (await reader.ReadAsync())
+                    while (await reader.ReadAsync().ConfigureAwait(false))
                     {
                         countries.Add(reader.GetString(1), reader.GetInt32(0));
                     }
                 }
-            });
+            }).ConfigureAwait(false);
 
             return countries;
         }
@@ -52,8 +52,8 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
                 command.Parameters.AddWithValue("$Name", name);
                 command.Parameters.AddWithValue("$InsertInstant", SystemClock.Instance.GetCurrentInstant());
 
-                await command.ExecuteNonQueryAsync();
-            });
+                await command.ExecuteNonQueryAsync().ConfigureAwait(false);
+            }).ConfigureAwait(false);
         }
 
         public async Task<Dictionary<string, int>> GetCitiesByCountryID(int countryId)
@@ -70,14 +70,15 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
 
                 command.Parameters.AddWithValue("$CountryId", countryId);
 
-                using (var reader = await command.ExecuteReaderAsync())
+                using (var reader = await command.ExecuteReaderAsync().ConfigureAwait(false))
                 {
-                    while (await reader.ReadAsync())
+                    while (await reader.ReadAsync().ConfigureAwait(false))
                     {
                         cities.Add(reader.GetString(1), reader.GetInt32(0));
                     }
                 }
-            });
+            }).ConfigureAwait(false);
+
             return cities;
         }
 
@@ -96,8 +97,8 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
                 command.Parameters.AddWithValue("$CountryId", countryId);
                 command.Parameters.AddWithValue("$InsertInstant", SystemClock.Instance.GetCurrentInstant());
 
-                await command.ExecuteNonQueryAsync();
-            });
+                await command.ExecuteNonQueryAsync().ConfigureAwait(false);
+            }).ConfigureAwait(false);
         }
 
         public async Task<FaziletPrayerTimes> GetTimesByDateAndCityID(LocalDate date, int cityId)
@@ -116,9 +117,9 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
                 command.Parameters.AddWithValue("$CityId", cityId);
                 command.Parameters.AddWithValue("$Date", date.GetStringForDBColumn());
 
-                using (var reader = await command.ExecuteReaderAsync())
+                using (var reader = await command.ExecuteReaderAsync().ConfigureAwait(false))
                 {
-                    if (await reader.ReadAsync())
+                    if (await reader.ReadAsync().ConfigureAwait(false))
                     {
                         time = new FaziletPrayerTimes
                         {
@@ -134,7 +135,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
                         };
                     }
                 }
-            });
+            }).ConfigureAwait(false);
 
             return time;
         }
@@ -155,9 +156,9 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
                     command.Parameters.AddWithValue("$Name", country.Key);
                     command.Parameters.AddWithValue("$InsertInstant", SystemClock.Instance.GetCurrentInstant().GetStringForDBColumn());
 
-                    await command.ExecuteNonQueryAsync();
+                    await command.ExecuteNonQueryAsync().ConfigureAwait(false);
                 }
-            });
+            }).ConfigureAwait(false);
         }
 
         public async Task InsertCities(Dictionary<string, int> cities, int countryId)
@@ -177,9 +178,9 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
                     command.Parameters.AddWithValue("$CountryId", countryId);
                     command.Parameters.AddWithValue("$InsertInstant", SystemClock.Instance.GetCurrentInstant().GetStringForDBColumn());
 
-                    await command.ExecuteNonQueryAsync();
+                    await command.ExecuteNonQueryAsync().ConfigureAwait(false);
                 }
-            });
+            }).ConfigureAwait(false);
         }
 
         public async Task InsertFaziletPrayerTimesIfNotExists(LocalDate date, int cityID, FaziletPrayerTimes faziletPrayerTimes)
@@ -204,8 +205,8 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
                 command.Parameters.AddWithValue("$Isha", faziletPrayerTimes.Isha.GetStringForDBColumn());
                 command.Parameters.AddWithValue("$InsertInstant", SystemClock.Instance.GetCurrentInstant().GetStringForDBColumn());
 
-                await command.ExecuteNonQueryAsync();
-            });
+                await command.ExecuteNonQueryAsync().ConfigureAwait(false);
+            }).ConfigureAwait(false);
         }
 
         public async Task DeleteAllTimes()
@@ -214,8 +215,8 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
             {
                 var command = connection.CreateCommand();
                 command.CommandText = "DELETE FROM FaziletPrayerTimes;";
-                await command.ExecuteNonQueryAsync();
-            });
+                await command.ExecuteNonQueryAsync().ConfigureAwait(false);
+            }).ConfigureAwait(false);
         }
     }
 }

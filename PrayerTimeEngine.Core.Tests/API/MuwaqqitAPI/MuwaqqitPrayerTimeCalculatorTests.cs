@@ -108,7 +108,7 @@ namespace PrayerTimeEngine.Core.Tests.API.MuwaqqitAPI
                             TimezoneName = "Europe/Vienna"
                         },
                         configs
-                    );
+                    ).ConfigureAwait(false);
 
                 IDictionary<ETimeType, MuwaqqitPrayerTimes> timeTypeByCalculationPrayerTimes =
                     result

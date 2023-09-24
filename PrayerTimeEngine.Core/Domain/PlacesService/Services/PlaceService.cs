@@ -37,12 +37,12 @@ namespace PrayerTimeEngine.Core.Domain.PlacesService.Services
                     $"&lat={basicPlaceInfo.Latitude.ToString(CultureInfo.InvariantCulture)}" +
                     $"&lon={basicPlaceInfo.Longitude.ToString(CultureInfo.InvariantCulture)}";
 
-            await ensureCooldown();
-            HttpResponseMessage response = await _httpClient.GetAsync(url);
+            await ensureCooldown().ConfigureAwait(false);
+            HttpResponseMessage response = await _httpClient.GetAsync(url).ConfigureAwait(false);
             
             response.EnsureSuccessStatusCode();
 
-            string jsonResult = await response.Content.ReadAsStringAsync();
+            string jsonResult = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
             JsonElement jsonElement = JsonSerializer.Deserialize<JsonElement>(jsonResult).GetProperty("timezone");
             LocationIQTimezone locationIQTimezone = JsonSerializer.Deserialize<LocationIQTimezone>(jsonElement);
@@ -70,14 +70,14 @@ namespace PrayerTimeEngine.Core.Domain.PlacesService.Services
                     //$"&countrycodes={countryCodes}" +
                     $"&q={searchTerm}";
 
-            await ensureCooldown();
-            HttpResponseMessage response = await _httpClient.GetAsync(url);
+            await ensureCooldown().ConfigureAwait(false);
+            HttpResponseMessage response = await _httpClient.GetAsync(url).ConfigureAwait(false);
 
             if (response.StatusCode == HttpStatusCode.NotFound)
                 return new List<BasicPlaceInfo>();
 
             response.EnsureSuccessStatusCode();
-            string jsonResult = await response.Content.ReadAsStringAsync();
+            string jsonResult = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
             return 
                 JsonSerializer.Deserialize<List<LocationIQPlace>>(jsonResult)
@@ -97,12 +97,12 @@ namespace PrayerTimeEngine.Core.Domain.PlacesService.Services
                 $"&lon={place.Longitude.ToString(CultureInfo.InvariantCulture)}" +
                 $"&osm_id={place.ID}";
 
-            await ensureCooldown();
-            HttpResponseMessage response = await _httpClient.GetAsync(url);
+            await ensureCooldown().ConfigureAwait(false);
+            HttpResponseMessage response = await _httpClient.GetAsync(url).ConfigureAwait(false);
 
             response.EnsureSuccessStatusCode();
 
-            string jsonResult = await response.Content.ReadAsStringAsync();
+            string jsonResult = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
             return getlocationIQPlace(JsonSerializer.Deserialize<LocationIQPlace>(jsonResult), languageIdentif);
         }
 
@@ -112,7 +112,7 @@ namespace PrayerTimeEngine.Core.Domain.PlacesService.Services
 
         private async Task ensureCooldown()
         {
-            await _semaphore.WaitAsync();
+            await _semaphore.WaitAsync().ConfigureAwait(false);
 
             try
             {
@@ -123,14 +123,14 @@ namespace PrayerTimeEngine.Core.Domain.PlacesService.Services
 
                     if (millisecondsSinceLastCooldownCheck < NECESSARY_COOL_DOWN_MS)
                     {
-                        await Task.Delay(NECESSARY_COOL_DOWN_MS - millisecondsSinceLastCooldownCheck);
+                        await Task.Delay(NECESSARY_COOL_DOWN_MS - millisecondsSinceLastCooldownCheck).ConfigureAwait(false);
                     }
                 }
             }
             catch (Exception exception)
             {
                 _logger.LogError(exception, "Exception during cooldown logic");
-                await Task.Delay(NECESSARY_COOL_DOWN_MS);
+                await Task.Delay(NECESSARY_COOL_DOWN_MS).ConfigureAwait(false);
             }
             finally
             {

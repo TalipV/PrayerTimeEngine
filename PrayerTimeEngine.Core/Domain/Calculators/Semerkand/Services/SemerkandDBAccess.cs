@@ -26,14 +26,14 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
                     FROM SemerkandCountries;
                     """;
 
-                using (var reader = await command.ExecuteReaderAsync())
+                using (var reader = await command.ExecuteReaderAsync().ConfigureAwait(false))
                 {
-                    while (await reader.ReadAsync())
+                    while (await reader.ReadAsync().ConfigureAwait(false))
                     {
                         countries.Add(reader.GetString(1), reader.GetInt32(0));
                     }
                 }
-            });
+            }).ConfigureAwait(false);
 
             return countries;
         }
@@ -52,8 +52,8 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
                 command.Parameters.AddWithValue("$Name", name);
                 command.Parameters.AddWithValue("$InsertInstant", SystemClock.Instance.GetCurrentInstant().GetStringForDBColumn());
 
-                await command.ExecuteNonQueryAsync();
-            });
+                await command.ExecuteNonQueryAsync().ConfigureAwait(false);
+            }).ConfigureAwait(false);
         }
 
         public async Task<Dictionary<string, int>> GetCitiesByCountryID(int countryId)
@@ -70,14 +70,15 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
 
                 command.Parameters.AddWithValue("$CountryId", countryId);
 
-                using (var reader = await command.ExecuteReaderAsync())
+                using (var reader = await command.ExecuteReaderAsync().ConfigureAwait(false))
                 {
-                    while (await reader.ReadAsync())
+                    while (await reader.ReadAsync().ConfigureAwait(false))
                     {
                         cities.Add(reader.GetString(1), reader.GetInt32(0));
                     }
                 }
-            });
+            }).ConfigureAwait(false);
+
             return cities;
         }
 
@@ -96,8 +97,8 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
                 command.Parameters.AddWithValue("$CountryId", countryId);
                 command.Parameters.AddWithValue("$InsertInstant", SystemClock.Instance.GetCurrentInstant().GetStringForDBColumn());
 
-                await command.ExecuteNonQueryAsync();
-            });
+                await command.ExecuteNonQueryAsync().ConfigureAwait(false);
+            }).ConfigureAwait(false);
         }
 
         public async Task<SemerkandPrayerTimes> GetTimesByDateAndCityID(LocalDate date, int cityId)
@@ -116,9 +117,9 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
                 command.Parameters.AddWithValue("$CityId", cityId);
                 command.Parameters.AddWithValue("$Date", date.GetStringForDBColumn());
 
-                using (var reader = await command.ExecuteReaderAsync())
+                using (var reader = await command.ExecuteReaderAsync().ConfigureAwait(false))
                 {
-                    if (await reader.ReadAsync())
+                    if (await reader.ReadAsync().ConfigureAwait(false))
                     {
                         time =
                         new SemerkandPrayerTimes
@@ -134,7 +135,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
                         };
                     }
                 }
-            });
+            }).ConfigureAwait(false);
 
             return time;
         }
@@ -155,9 +156,9 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
                     command.Parameters.AddWithValue("$Name", country.Key);
                     command.Parameters.AddWithValue("$InsertInstant", SystemClock.Instance.GetCurrentInstant().GetStringForDBColumn());
 
-                    await command.ExecuteNonQueryAsync();
+                    await command.ExecuteNonQueryAsync().ConfigureAwait(false);
                 }
-            });
+            }).ConfigureAwait(false);
         }
 
         public async Task InsertCities(Dictionary<string, int> cities, int countryId)
@@ -177,9 +178,9 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
                     command.Parameters.AddWithValue("$CountryId", countryId);
                     command.Parameters.AddWithValue("$InsertInstant", SystemClock.Instance.GetCurrentInstant().GetStringForDBColumn());
 
-                    await command.ExecuteNonQueryAsync();
+                    await command.ExecuteNonQueryAsync().ConfigureAwait(false);
                 }
-            });
+            }).ConfigureAwait(false);
         }
 
         public async Task InsertSemerkandPrayerTimes(LocalDate date, int cityID, SemerkandPrayerTimes semerkandPrayerTimes)
@@ -203,8 +204,8 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
                 command.Parameters.AddWithValue("$Isha", semerkandPrayerTimes.Isha.GetStringForDBColumn());
                 command.Parameters.AddWithValue("$InsertInstant", SystemClock.Instance.GetCurrentInstant().GetStringForDBColumn());
 
-                await command.ExecuteNonQueryAsync();
-            });
+                await command.ExecuteNonQueryAsync().ConfigureAwait(false);
+            }).ConfigureAwait(false);
         }
 
         public async Task DeleteAllPrayerTimes()
@@ -213,8 +214,8 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
             {
                 var command = connection.CreateCommand();
                 command.CommandText = "DELETE FROM SemerkandPrayerTimes;";
-                await command.ExecuteNonQueryAsync();
-            });
+                await command.ExecuteNonQueryAsync().ConfigureAwait(false);
+            }).ConfigureAwait(false);
         }
     }
 }

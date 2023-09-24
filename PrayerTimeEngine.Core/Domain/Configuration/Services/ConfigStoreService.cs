@@ -14,12 +14,12 @@ namespace PrayerTimeEngine.Core.Domain.Configuration.Services
 
         public async Task<List<Profile>> GetProfiles()
         {
-            return await _configStoreDBAccess.GetProfiles();
+            return await _configStoreDBAccess.GetProfiles().ConfigureAwait(false);
         }
 
         public async Task SaveProfile(Profile profile)
         {
-            await _configStoreDBAccess.SaveProfile(profile);
+            await _configStoreDBAccess.SaveProfile(profile).ConfigureAwait(false);
         }
     }
 }

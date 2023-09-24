@@ -33,7 +33,7 @@ public class PrayerTimeCalculationService : IPrayerTimeCalculationService
     {
         PrayerTimesBundle prayerTimeEntity = new();
 
-        await handleComplexTypes(profile, date, prayerTimeEntity);
+        await handleComplexTypes(profile, date, prayerTimeEntity).ConfigureAwait(false);
         handleSimpleTypes(profile, prayerTimeEntity);
 
         return prayerTimeEntity;
@@ -43,23 +43,32 @@ public class PrayerTimeCalculationService : IPrayerTimeCalculationService
     {
         List<GenericSettingConfiguration> configurations = getActiveCalculationConfigurations(profile);
 
+        List<Task> calculationTasks = new List<Task>();
+
         foreach (var calculationSourceConfigs in configurations.GroupBy(x => x.Source))
         {
             ECalculationSource calculationSource = calculationSourceConfigs.Key;
             List<GenericSettingConfiguration> configs = calculationSourceConfigs.ToList();
-            var configsByTimeType = configs.ToDictionary(x => x.TimeType);
-            
-            IPrayerTimeService timeCalculator = GetPrayerTimeCalculatorByCalculationSource(calculationSource);
-            throwIfConfigsHaveUnsupportedTimeTypes(calculationSource, configs, timeCalculator);
-            BaseLocationData locationData = profile.LocationDataByCalculationSource[calculationSource];
+            calculationTasks.Add(handleComplexTypesOfSource(profile, date, prayerTimeEntity, calculationSource, configs));
+        }
 
-            ILookup<ICalculationPrayerTimes, ETimeType> calculationPrayerTimes =
-                await timeCalculator.GetPrayerTimesAsync(date, locationData, configs);
+        await Task.WhenAll(calculationTasks).ConfigureAwait(false);
+    }
 
-            foreach (var calculationPrayerTimeKVP in calculationPrayerTimes)
-            {
-                handleSingleCalculationPrayerTimes(prayerTimeEntity, configsByTimeType, calculationPrayerTimeKVP);
-            }
+    private async Task handleComplexTypesOfSource(Profile profile, LocalDate date, PrayerTimesBundle prayerTimeEntity, ECalculationSource calculationSource, List<GenericSettingConfiguration> configs)
+    {
+        var configsByTimeType = configs.ToDictionary(x => x.TimeType);
+
+        IPrayerTimeService timeCalculator = GetPrayerTimeCalculatorByCalculationSource(calculationSource);
+        throwIfConfigsHaveUnsupportedTimeTypes(calculationSource, configs, timeCalculator);
+        BaseLocationData locationData = profile.LocationDataByCalculationSource[calculationSource];
+
+        ILookup<ICalculationPrayerTimes, ETimeType> calculationPrayerTimes =
+            await timeCalculator.GetPrayerTimesAsync(date, locationData, configs).ConfigureAwait(false);
+
+        foreach (var calculationPrayerTimeKVP in calculationPrayerTimes)
+        {
+            handleSingleCalculationPrayerTimes(prayerTimeEntity, configsByTimeType, calculationPrayerTimeKVP);
         }
     }
 

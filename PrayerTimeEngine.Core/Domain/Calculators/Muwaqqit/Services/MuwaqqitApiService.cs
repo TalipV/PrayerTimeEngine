@@ -51,10 +51,10 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services
 
             string url = builder.ToString();
 
-            HttpResponseMessage response = await _httpClient.GetAsync(url);
+            HttpResponseMessage response = await _httpClient.GetAsync(url).ConfigureAwait(false);
             response.EnsureSuccessStatusCode();
 
-            string jsonResponse = await response.Content.ReadAsStringAsync();
+            string jsonResponse = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
             // Parse the JSON response to the MuwaqqitJSONResponse object
             MuwaqqitJSONResponse muwaqqitResponse = JsonSerializer.Deserialize<MuwaqqitJSONResponse>(jsonResponse);

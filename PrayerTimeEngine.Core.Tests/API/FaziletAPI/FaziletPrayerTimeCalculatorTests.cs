@@ -81,7 +81,7 @@ namespace PrayerTimeEngine.Core.Tests.API.FaziletAPI
                         new LocalDate(2023, 7, 29),
                         new FaziletLocationData { CountryName = "Avusturya", CityName = "Innsbruck" },
                         new List<GenericSettingConfiguration> { new GenericSettingConfiguration { TimeType = ETimeType.DhuhrStart, Source = ECalculationSource.Fazilet } }
-                    )).Single().Key;
+                    ).ConfigureAwait(false)).Single().Key;
 
                 FaziletPrayerTimes faziletPrayerTimes = result as FaziletPrayerTimes;
 

@@ -15,6 +15,8 @@ namespace PrayerTimeEngine.Presentation.GraphicsView
         private Color PrayerSubTimeBorderColor = Colors.BlueViolet;
         private Color PrayerSubTimeTextColor = Colors.Black;
 
+        private DateTimeZone _timeZone { get; } = DateTimeZoneProviders.Tzdb[TimeZoneInfo.Local.Id];
+
         public PrayerTime DisplayPrayerTime { get; set; }
 
         public void Draw(ICanvas canvas, RectF fullRectangle)
@@ -31,9 +33,6 @@ namespace PrayerTimeEngine.Presentation.GraphicsView
 
         private void drawInternal(ICanvas canvas, RectF fullRectangle)
         {
-            //canvas.FillColor = MainBackgroundColor;
-            //canvas.FillRectangle(fullRectangle);
-
             RectF mainGraphicRectangle =
                 new RectF(
                     x: 40,
@@ -96,7 +95,7 @@ namespace PrayerTimeEngine.Presentation.GraphicsView
 
             // CURRENT TIME TEXT
             canvas.DrawString(
-                currentInstant.ToString("HH:mm", null),
+                currentInstant.InZone(_timeZone).ToString("HH:mm", null),
                 x: indicatorRectangle.X - 40,
                 y: indicatorRectangle.Y - 10,
                 width: 40,
@@ -132,7 +131,7 @@ namespace PrayerTimeEngine.Presentation.GraphicsView
             
             // PRAYER TIME BEGINNING TEXT
             canvas.DrawString(
-                DisplayPrayerTime.Start.Value.ToInstant().ToString("HH:mm", null),
+                DisplayPrayerTime.Start.Value.WithZone(_timeZone).ToString("HH:mm", null),
                 x: -25,
                 y: 30,
                 width: 90,
@@ -141,7 +140,7 @@ namespace PrayerTimeEngine.Presentation.GraphicsView
 
             // PRAYER TIME END TEXT
             canvas.DrawString(
-                DisplayPrayerTime.End.Value.ToInstant().ToString("HH:mm", null),
+                DisplayPrayerTime.End.Value.WithZone(_timeZone).ToString("HH:mm", null),
                 x: -25,
                 y: dirtyRect.Height - 20,
                 width: 90,

@@ -62,7 +62,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services
                         out ishtibaqDegree,
                         out asrKarahaDegree);
 
-                MuwaqqitPrayerTimes muwaqqitPrayerTimes = await getPrayerTimesInternal(date, longitude, latitude, fajrDegree, ishaDegree, ishtibaqDegree, asrKarahaDegree, timezone);
+                MuwaqqitPrayerTimes muwaqqitPrayerTimes = await getPrayerTimesInternal(date, longitude, latitude, fajrDegree, ishaDegree, ishtibaqDegree, asrKarahaDegree, timezone).ConfigureAwait(false);
                 calculatedTimes[muwaqqitPrayerTimes] = consumedTimeTypes.ToList();
             }
 
@@ -195,14 +195,14 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services
         {
             var lockTuple = (date, longitude, latitude, fajrDegree, ishaDegree, ishtibaqDegree, asrKarahaDegree, timezone);
 
-            using (await getPrayerTimesLocker.LockAsync(lockTuple))
+            using (await getPrayerTimesLocker.LockAsync(lockTuple).ConfigureAwait(false))
             {
-                MuwaqqitPrayerTimes prayerTimes = await _muwaqqitDBAccess.GetTimesAsync(date, longitude, latitude, fajrDegree, ishaDegree, ishtibaqDegree, asrKarahaDegree);
+                MuwaqqitPrayerTimes prayerTimes = await _muwaqqitDBAccess.GetTimesAsync(date, longitude, latitude, fajrDegree, ishaDegree, ishtibaqDegree, asrKarahaDegree).ConfigureAwait(false);
 
                 if (prayerTimes == null)
                 {
-                    prayerTimes = await _muwaqqitApiService.GetTimesAsync(date, longitude, latitude, fajrDegree, ishaDegree, ishtibaqDegree, asrKarahaDegree, timezone);
-                    await _muwaqqitDBAccess.InsertMuwaqqitPrayerTimesAsync(date, timezone, longitude, latitude, fajrDegree, ishaDegree, ishtibaqDegree, asrKarahaDegree, prayerTimes);
+                    prayerTimes = await _muwaqqitApiService.GetTimesAsync(date, longitude, latitude, fajrDegree, ishaDegree, ishtibaqDegree, asrKarahaDegree, timezone).ConfigureAwait(false);
+                    await _muwaqqitDBAccess.InsertMuwaqqitPrayerTimesAsync(date, timezone, longitude, latitude, fajrDegree, ishaDegree, ishtibaqDegree, asrKarahaDegree, prayerTimes).ConfigureAwait(false);
                 }
 
                 return prayerTimes;

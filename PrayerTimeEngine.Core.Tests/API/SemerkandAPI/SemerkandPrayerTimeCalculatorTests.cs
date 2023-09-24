@@ -82,7 +82,7 @@ namespace PrayerTimeEngine.Core.Tests.API.SemerkandAPI
                             TimezoneName = "Europe/Vienna"
                         },
                         new List<GenericSettingConfiguration> { new GenericSettingConfiguration { TimeType = ETimeType.DhuhrStart, Source = ECalculationSource.Semerkand } }
-                    )).Single().Key;
+                    ).ConfigureAwait(false)).Single().Key;
 
                 SemerkandPrayerTimes semerkandPrayerTimes = result as SemerkandPrayerTimes;
 

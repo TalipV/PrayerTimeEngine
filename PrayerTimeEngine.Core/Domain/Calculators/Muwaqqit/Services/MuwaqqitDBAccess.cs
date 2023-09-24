@@ -74,8 +74,8 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services
 
                 command.Parameters.AddWithValue("$InsertInstant", SystemClock.Instance.GetCurrentInstant().GetStringForDBColumn());
 
-                await command.ExecuteNonQueryAsync();
-            });
+                await command.ExecuteNonQueryAsync().ConfigureAwait(false);
+            }).ConfigureAwait(false);
 
             _logger.LogDebug(
                 "Inserted time: {Date} ({Timezone}), ({Longitude}/{Latitude}), Fajr {FajrDegree}, AsrKaraha {AsrKarahaDegree}, Ishtibaq {IshtibaqDegree}, Isha {IshaDegree}",
@@ -91,14 +91,14 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services
                 var command = connection.CreateCommand();
                 command.CommandText = _selectSQL;
 
-                using (var reader = await command.ExecuteReaderAsync())
+                using (var reader = await command.ExecuteReaderAsync().ConfigureAwait(false))
                 {
-                    while (await reader.ReadAsync())
+                    while (await reader.ReadAsync().ConfigureAwait(false))
                     {
                         times.Add(getMuwaqqitPrayerTimesFromReader(reader));
                     }
                 }
-            });
+            }).ConfigureAwait(false);
 
             return times;
         }
@@ -137,8 +137,8 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services
             {
                 var command = connection.CreateCommand();
                 command.CommandText = "DELETE FROM MuwaqqitPrayerTimes;";
-                await command.ExecuteNonQueryAsync();
-            });
+                await command.ExecuteNonQueryAsync().ConfigureAwait(false);
+            }).ConfigureAwait(false);
         }
 
         public async Task<MuwaqqitPrayerTimes> GetTimesAsync(
@@ -173,12 +173,12 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services
                 command.Parameters.AddWithValue("$Ishtibaq_Degree", ishtibaqDegree);
                 command.Parameters.AddWithValue("$AsrKaraha_Degree", asrKarahaDegree);
 
-                using SqliteDataReader reader = await command.ExecuteReaderAsync();
-                if (await reader.ReadAsync())
+                using SqliteDataReader reader = await command.ExecuteReaderAsync().ConfigureAwait(false);
+                if (await reader.ReadAsync().ConfigureAwait(false))
                 {
                     time = getMuwaqqitPrayerTimesFromReader(reader);
                 }
-            });
+            }).ConfigureAwait(false);
 
             return time;
         }
