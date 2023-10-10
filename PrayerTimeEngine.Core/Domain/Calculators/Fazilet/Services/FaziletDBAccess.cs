@@ -6,19 +6,14 @@ using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Models;
 
 namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
 {
-    public class FaziletDBAccess : IFaziletDBAccess
+    public class FaziletDBAccess(
+            ISQLiteDB db
+        ) : IFaziletDBAccess
     {
-        private readonly ISQLiteDB _db;
-
-        public FaziletDBAccess(ISQLiteDB db)
-        {
-            _db = db;
-        }
-
         public async Task<Dictionary<string, int>> GetCountries()
         {
             var countries = new Dictionary<string, int>();
-            await _db.ExecuteCommandAsync(async connection =>
+            await db.ExecuteCommandAsync(async connection =>
             {
                 var command = connection.CreateCommand();
                 command.CommandText = """
@@ -40,7 +35,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
 
         public async Task InsertCountry(int id, string name)
         {
-            await _db.ExecuteCommandAsync(async connection =>
+            await db.ExecuteCommandAsync(async connection =>
             {
                 var command = connection.CreateCommand();
                 command.CommandText = """
@@ -59,7 +54,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
         public async Task<Dictionary<string, int>> GetCitiesByCountryID(int countryId)
         {
             var cities = new Dictionary<string, int>();
-            await _db.ExecuteCommandAsync(async connection =>
+            await db.ExecuteCommandAsync(async connection =>
             {
                 var command = connection.CreateCommand();
                 command.CommandText = """
@@ -84,7 +79,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
 
         public async Task InsertCity(int id, string name, int countryId)
         {
-            await _db.ExecuteCommandAsync(async connection =>
+            await db.ExecuteCommandAsync(async connection =>
             {
                 var command = connection.CreateCommand();
                 command.CommandText = """
@@ -105,7 +100,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
         {
             FaziletPrayerTimes time = null;
 
-            await _db.ExecuteCommandAsync(async connection =>
+            await db.ExecuteCommandAsync(async connection =>
             {
                 var command = connection.CreateCommand();
                 command.CommandText = """
@@ -142,7 +137,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
 
         public async Task InsertCountries(Dictionary<string, int> countries)
         {
-            await _db.ExecuteCommandAsync(async connection =>
+            await db.ExecuteCommandAsync(async connection =>
             {
                 foreach (var country in countries)
                 {
@@ -163,7 +158,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
 
         public async Task InsertCities(Dictionary<string, int> cities, int countryId)
         {
-            await _db.ExecuteCommandAsync(async connection =>
+            await db.ExecuteCommandAsync(async connection =>
             {
                 foreach (var city in cities)
                 {
@@ -185,7 +180,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
 
         public async Task InsertFaziletPrayerTimesIfNotExists(LocalDate date, int cityID, FaziletPrayerTimes faziletPrayerTimes)
         {
-            await _db.ExecuteCommandAsync(async connection =>
+            await db.ExecuteCommandAsync(async connection =>
             {
                 var command = connection.CreateCommand();
                 command.CommandText = """
@@ -211,7 +206,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
 
         public async Task DeleteAllTimes()
         {
-            await _db.ExecuteCommandAsync(async connection =>
+            await db.ExecuteCommandAsync(async connection =>
             {
                 var command = connection.CreateCommand();
                 command.CommandText = "DELETE FROM FaziletPrayerTimes;";

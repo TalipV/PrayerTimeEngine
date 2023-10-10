@@ -11,22 +11,12 @@ using PrayerTimeEngine.Core.Domain.PlacesService.Models.Common;
 
 namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services
 {
-    public class MuwaqqitPrayerTimeCalculator : IPrayerTimeService
-    {
-        private readonly IMuwaqqitDBAccess _muwaqqitDBAccess;
-        private readonly IMuwaqqitApiService _muwaqqitApiService;
-        private readonly TimeTypeAttributeService _timeTypeAttributeService;
-
-        public MuwaqqitPrayerTimeCalculator(
+    public class MuwaqqitPrayerTimeCalculator(
             IMuwaqqitDBAccess muwaqqitDBAccess,
             IMuwaqqitApiService muwaqqitApiService,
-            TimeTypeAttributeService timeTypeAttributeService)
-        {
-            _muwaqqitDBAccess = muwaqqitDBAccess;
-            _muwaqqitApiService = muwaqqitApiService;
-            _timeTypeAttributeService = timeTypeAttributeService;
-        }
-
+            TimeTypeAttributeService timeTypeAttributeService
+        ) : IPrayerTimeService
+    {
         [Time]
         public async Task<ILookup<ICalculationPrayerTimes, ETimeType>> GetPrayerTimesAsync(
             LocalDate date,
@@ -91,7 +81,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services
 
                 if (muwaqqitConfig is not MuwaqqitDegreeCalculationConfiguration muwaqqitDegreeConfig)
                 {
-                    if (_timeTypeAttributeService.DegreeTypes.Contains(timeType))
+                    if (timeTypeAttributeService.DegreeTypes.Contains(timeType))
                     {
                         throw new ArgumentException($"Time {timeType} requires a {nameof(MuwaqqitDegreeCalculationConfiguration)} for its degree information.");
                     }
@@ -197,12 +187,12 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services
 
             using (await getPrayerTimesLocker.LockAsync(lockTuple).ConfigureAwait(false))
             {
-                MuwaqqitPrayerTimes prayerTimes = await _muwaqqitDBAccess.GetTimesAsync(date, longitude, latitude, fajrDegree, ishaDegree, ishtibaqDegree, asrKarahaDegree).ConfigureAwait(false);
+                MuwaqqitPrayerTimes prayerTimes = await muwaqqitDBAccess.GetTimesAsync(date, longitude, latitude, fajrDegree, ishaDegree, ishtibaqDegree, asrKarahaDegree).ConfigureAwait(false);
 
                 if (prayerTimes == null)
                 {
-                    prayerTimes = await _muwaqqitApiService.GetTimesAsync(date, longitude, latitude, fajrDegree, ishaDegree, ishtibaqDegree, asrKarahaDegree, timezone).ConfigureAwait(false);
-                    await _muwaqqitDBAccess.InsertMuwaqqitPrayerTimesAsync(date, timezone, longitude, latitude, fajrDegree, ishaDegree, ishtibaqDegree, asrKarahaDegree, prayerTimes).ConfigureAwait(false);
+                    prayerTimes = await muwaqqitApiService.GetTimesAsync(date, longitude, latitude, fajrDegree, ishaDegree, ishtibaqDegree, asrKarahaDegree, timezone).ConfigureAwait(false);
+                    await muwaqqitDBAccess.InsertMuwaqqitPrayerTimesAsync(date, timezone, longitude, latitude, fajrDegree, ishaDegree, ishtibaqDegree, asrKarahaDegree, prayerTimes).ConfigureAwait(false);
                 }
 
                 return prayerTimes;

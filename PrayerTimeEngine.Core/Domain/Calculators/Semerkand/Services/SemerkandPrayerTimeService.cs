@@ -13,25 +13,13 @@ using PrayerTimeEngine.Core.Domain.PlacesService.Models.Common;
 
 namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
 {
-    public class SemerkandPrayerTimeCalculator : IPrayerTimeService
-    {
-        private readonly ISemerkandDBAccess _semerkandDBAccess;
-        private readonly ISemerkandApiService _semerkandApiService;
-        private readonly ILocationService _placeService;
-        private readonly ILogger<SemerkandPrayerTimeCalculator> _logger;
-
-        public SemerkandPrayerTimeCalculator(
+    public class SemerkandPrayerTimeCalculator(
             ISemerkandDBAccess semerkandDBAccess,
             ISemerkandApiService semerkandApiService,
             ILocationService placeService,
-            ILogger<SemerkandPrayerTimeCalculator> logger)
-        {
-            _semerkandDBAccess = semerkandDBAccess;
-            _semerkandApiService = semerkandApiService;
-            _placeService = placeService;
-            _logger = logger;
-        }
-
+            ILogger<SemerkandPrayerTimeCalculator> logger
+        ) : IPrayerTimeService
+    {
         public HashSet<ETimeType> GetUnsupportedTimeTypes()
         {
             return _unsupportedTimeTypes;
@@ -96,12 +84,12 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
 
             using (await getPrayerTimesLocker.LockAsync(lockTuple).ConfigureAwait(false))
             {
-                SemerkandPrayerTimes prayerTimes = await _semerkandDBAccess.GetTimesByDateAndCityID(date, cityID).ConfigureAwait(false);
+                SemerkandPrayerTimes prayerTimes = await semerkandDBAccess.GetTimesByDateAndCityID(date, cityID).ConfigureAwait(false);
 
                 if (prayerTimes == null)
                 {
-                    List<SemerkandPrayerTimes> prayerTimesLst = await _semerkandApiService.GetTimesByCityID(date, timezone, cityID).ConfigureAwait(false);
-                    prayerTimesLst.ForEach(async x => await _semerkandDBAccess.InsertSemerkandPrayerTimes(x.Date, cityID, x).ConfigureAwait(false));
+                    List<SemerkandPrayerTimes> prayerTimesLst = await semerkandApiService.GetTimesByCityID(date, timezone, cityID).ConfigureAwait(false);
+                    prayerTimesLst.ForEach(async x => await semerkandDBAccess.InsertSemerkandPrayerTimes(x.Date, cityID, x).ConfigureAwait(false));
                     prayerTimes = prayerTimesLst.FirstOrDefault(x => x.Date == date);
                 }
 
@@ -121,13 +109,13 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
             try
             {
                 // We only check if it is empty because a selection of countries missing is not expected.
-                if ((await _semerkandDBAccess.GetCitiesByCountryID(countryID).ConfigureAwait(false)).Count == 0)
+                if ((await semerkandDBAccess.GetCitiesByCountryID(countryID).ConfigureAwait(false)).Count == 0)
                 {
                     // load cities through HTTP request
-                    Dictionary<string, int> cities = await _semerkandApiService.GetCitiesByCountryID(countryID).ConfigureAwait(false);
+                    Dictionary<string, int> cities = await semerkandApiService.GetCitiesByCountryID(countryID).ConfigureAwait(false);
 
                     // save cities to db
-                    await _semerkandDBAccess.InsertCities(cities, countryID).ConfigureAwait(false);
+                    await semerkandDBAccess.InsertCities(cities, countryID).ConfigureAwait(false);
                 }
             }
             finally
@@ -135,7 +123,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
                 semaphoreTryGetCityID.Release();
             }
 
-            if ((await _semerkandDBAccess.GetCitiesByCountryID(countryID).ConfigureAwait(false)).TryGetValue(cityName, out int cityID))
+            if ((await semerkandDBAccess.GetCitiesByCountryID(countryID).ConfigureAwait(false)).TryGetValue(cityName, out int cityID))
                 return (true, cityID);
             else
                 return (false, -1);
@@ -152,13 +140,13 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
             try
             {
                 // We only check if it is empty because a selection of countries missing is not expected.
-                if ((await _semerkandDBAccess.GetCountries().ConfigureAwait(false)).Count == 0)
+                if ((await semerkandDBAccess.GetCountries().ConfigureAwait(false)).Count == 0)
                 {
                     // load countries through HTTP request
-                    Dictionary<string, int> countries = await _semerkandApiService.GetCountries().ConfigureAwait(false);
+                    Dictionary<string, int> countries = await semerkandApiService.GetCountries().ConfigureAwait(false);
 
                     // save countries to db
-                    await _semerkandDBAccess.InsertCountries(countries).ConfigureAwait(false);
+                    await semerkandDBAccess.InsertCountries(countries).ConfigureAwait(false);
                 }
             }
             finally
@@ -166,7 +154,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
                 semaphoreTryGetCountryID.Release();
             }
 
-            if ((await _semerkandDBAccess.GetCountries().ConfigureAwait(false)).TryGetValue(countryName, out int countryID))
+            if ((await semerkandDBAccess.GetCountries().ConfigureAwait(false)).TryGetValue(countryName, out int countryID))
                 return (true, countryID);
             else
                 return (false, -1);
@@ -180,7 +168,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
             // if language is already turkish then use this place
 
             var turkishPlaceInfo =
-                new CompletePlaceInfo(await _placeService.GetPlaceBasedOnPlace(place, "tr").ConfigureAwait(false))
+                new CompletePlaceInfo(await placeService.GetPlaceBasedOnPlace(place, "tr").ConfigureAwait(false))
                 {
                     TimezoneInfo = place.TimezoneInfo
                 };
@@ -192,13 +180,13 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
             countryName = countryName.Replace("İ", "I");
             cityName = cityName.Replace("İ", "I");
 
-            _logger.LogDebug("Semerkand search location: {Country}, {City}", countryName, cityName);
+            logger.LogDebug("Semerkand search location: {Country}, {City}", countryName, cityName);
 
             var (success, countryID) = await tryGetCountryID(countryName).ConfigureAwait(false);
 
             if (success && (await tryGetCityID(cityName, countryID).ConfigureAwait(false)).success)
             {
-                _logger.LogDebug("Semerkand found location: {Country}, {City}", countryName, cityName);
+                logger.LogDebug("Semerkand found location: {Country}, {City}", countryName, cityName);
 
                 return new SemerkandLocationData
                 {

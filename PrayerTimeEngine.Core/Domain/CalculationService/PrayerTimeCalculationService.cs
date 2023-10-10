@@ -1,6 +1,5 @@
 ﻿using MethodTimer;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using NodaTime;
 using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Domain;
@@ -12,22 +11,11 @@ using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services;
 using PrayerTimeEngine.Core.Domain.Configuration.Models;
 using PrayerTimeEngine.Core.Domain.Model;
 
-public class PrayerTimeCalculationService : IPrayerTimeCalculationService
+public class PrayerTimeCalculationService(
+        IServiceProvider serviceProvider,
+        TimeTypeAttributeService timeTypeAttributeService
+    ) : IPrayerTimeCalculationService
 {
-    private readonly IServiceProvider _serviceProvider;
-    private readonly TimeTypeAttributeService _timeTypeAttributeService;
-    private readonly ILogger<PrayerTimeCalculationService> _logger;
-
-    public PrayerTimeCalculationService(
-        IServiceProvider serviceProvider, 
-        TimeTypeAttributeService timeTypeAttributeService,
-        ILogger<PrayerTimeCalculationService> logger)
-    {
-        _serviceProvider = serviceProvider;
-        _timeTypeAttributeService = timeTypeAttributeService;
-        _logger = logger;
-    }
-
     [Time]
     public async Task<PrayerTimesBundle> ExecuteAsync(Profile profile, LocalDate date)
     {
@@ -111,7 +99,7 @@ public class PrayerTimeCalculationService : IPrayerTimeCalculationService
 
     private List<GenericSettingConfiguration> getActiveCalculationConfigurations(Profile profile)
     {
-        return _timeTypeAttributeService
+        return timeTypeAttributeService
             .NonSimpleTypes
             .Select(profile.GetConfiguration)
             .Where(config =>
@@ -191,11 +179,11 @@ public class PrayerTimeCalculationService : IPrayerTimeCalculationService
         switch (source)
         {
             case ECalculationSource.Fazilet:
-                return _serviceProvider.GetRequiredService<FaziletPrayerTimeCalculator>();
+                return serviceProvider.GetRequiredService<FaziletPrayerTimeCalculator>();
             case ECalculationSource.Semerkand:
-                return _serviceProvider.GetRequiredService<SemerkandPrayerTimeCalculator>();
+                return serviceProvider.GetRequiredService<SemerkandPrayerTimeCalculator>();
             case ECalculationSource.Muwaqqit:
-                return _serviceProvider.GetRequiredService<MuwaqqitPrayerTimeCalculator>();
+                return serviceProvider.GetRequiredService<MuwaqqitPrayerTimeCalculator>();
             default:
                 throw new NotImplementedException($"No calculator service implemented for source: {source}");
         }

@@ -9,7 +9,10 @@ using System.Text.Json;
 
 namespace PrayerTimeEngine.Core.Domain.PlacesService.Services
 {
-    public class LocationService : ILocationService
+    public class LocationService(
+            HttpClient httpClient, 
+            ILogger<LocationService> logger
+        ) : ILocationService
     {
         private const string ACCESS_TOKEN = "pk.48863ca2d711d3a0ec7b118d88a24623";
         private const string BASE_URL = @"https://eu1.locationiq.com/v1/";
@@ -17,15 +20,6 @@ namespace PrayerTimeEngine.Core.Domain.PlacesService.Services
         private Instant? lastCooldownCheck;
 
         private const int MAX_RESULTS = 10;
-        private readonly HttpClient _httpClient;
-        private readonly ILogger<LocationService> _logger;
-
-        public LocationService(HttpClient httpClient, ILogger<LocationService> logger)
-        {
-            _httpClient = httpClient;
-            _logger = logger;
-        }
-
         private const string BASE_URL_TIMEZONE = "https://eu1.locationiq.com/v1/timezone?key=pk.48863ca2d711d3a0ec7b118d88a24623&lat=47.2803835&lon=11.41337";
 
         public async Task<CompletePlaceInfo> GetTimezoneInfo(BasicPlaceInfo basicPlaceInfo)
@@ -38,7 +32,7 @@ namespace PrayerTimeEngine.Core.Domain.PlacesService.Services
                     $"&lon={basicPlaceInfo.Longitude.ToString(CultureInfo.InvariantCulture)}";
 
             await ensureCooldown().ConfigureAwait(false);
-            HttpResponseMessage response = await _httpClient.GetAsync(url).ConfigureAwait(false);
+            HttpResponseMessage response = await httpClient.GetAsync(url).ConfigureAwait(false);
             
             response.EnsureSuccessStatusCode();
 
@@ -71,7 +65,7 @@ namespace PrayerTimeEngine.Core.Domain.PlacesService.Services
                     $"&q={searchTerm}";
 
             await ensureCooldown().ConfigureAwait(false);
-            HttpResponseMessage response = await _httpClient.GetAsync(url).ConfigureAwait(false);
+            HttpResponseMessage response = await httpClient.GetAsync(url).ConfigureAwait(false);
 
             if (response.StatusCode == HttpStatusCode.NotFound)
                 return new List<BasicPlaceInfo>();
@@ -98,7 +92,7 @@ namespace PrayerTimeEngine.Core.Domain.PlacesService.Services
                 $"&osm_id={place.ID}";
 
             await ensureCooldown().ConfigureAwait(false);
-            HttpResponseMessage response = await _httpClient.GetAsync(url).ConfigureAwait(false);
+            HttpResponseMessage response = await httpClient.GetAsync(url).ConfigureAwait(false);
 
             response.EnsureSuccessStatusCode();
 
@@ -129,13 +123,13 @@ namespace PrayerTimeEngine.Core.Domain.PlacesService.Services
             }
             catch (Exception exception)
             {
-                _logger.LogError(exception, "Exception during cooldown logic");
+                logger.LogError(exception, "Exception during cooldown logic");
                 await Task.Delay(NECESSARY_COOL_DOWN_MS).ConfigureAwait(false);
             }
             finally
             {
                 lastCooldownCheck = SystemClock.Instance.GetCurrentInstant();
-                _logger.LogDebug("Cooldown end at {Instant} ms", lastCooldownCheck.Value.ToUnixTimeMilliseconds());
+                logger.LogDebug("Cooldown end at {Instant} ms", lastCooldownCheck.Value.ToUnixTimeMilliseconds());
                 _semaphore.Release();
             }
         }

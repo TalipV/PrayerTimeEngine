@@ -1,7 +1,11 @@
 ﻿using CommunityToolkit.Maui;
 using DevExpress.Maui;
 using MetroLog.MicrosoftExtensions;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Maui.Controls.Hosting;
+using Microsoft.Maui.Hosting;
+using Microsoft.Maui.Storage;
 using PrayerTimeEngine.Code.Presentation.View;
 using PrayerTimeEngine.Core.Data.SQLite;
 using PrayerTimeEngine.Core.Domain;

@@ -10,15 +10,10 @@ using System.Web;
 
 namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services
 {
-    public class MuwaqqitApiService : IMuwaqqitApiService
+    public class MuwaqqitApiService(
+            HttpClient httpClient
+        ) : IMuwaqqitApiService
     {
-        private readonly HttpClient _httpClient;
-
-        public MuwaqqitApiService(HttpClient httpClient)
-        {
-            _httpClient = httpClient;
-        }
-
         internal const string MUWAQQIT_API_URL = @"https://www.muwaqqit.com/api2.json";
 
         [Time]
@@ -51,7 +46,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services
 
             string url = builder.ToString();
 
-            HttpResponseMessage response = await _httpClient.GetAsync(url).ConfigureAwait(false);
+            HttpResponseMessage response = await httpClient.GetAsync(url).ConfigureAwait(false);
             response.EnsureSuccessStatusCode();
 
             string jsonResponse = await response.Content.ReadAsStringAsync().ConfigureAwait(false);

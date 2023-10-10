@@ -3,23 +3,18 @@ using PrayerTimeEngine.Core.Domain.Configuration.Models;
 
 namespace PrayerTimeEngine.Core.Domain.Configuration.Services
 {
-    public class ConfigStoreService : IConfigStoreService
+    public class ConfigStoreService(
+            IConfigStoreDBAccess configStoreDBAccess
+        ) : IConfigStoreService
     {
-        IConfigStoreDBAccess _configStoreDBAccess;
-
-        public ConfigStoreService(IConfigStoreDBAccess configStoreDBAccess)
-        {
-            _configStoreDBAccess = configStoreDBAccess;
-        }
-
         public async Task<List<Profile>> GetProfiles()
         {
-            return await _configStoreDBAccess.GetProfiles().ConfigureAwait(false);
+            return await configStoreDBAccess.GetProfiles().ConfigureAwait(false);
         }
 
         public async Task SaveProfile(Profile profile)
         {
-            await _configStoreDBAccess.SaveProfile(profile).ConfigureAwait(false);
+            await configStoreDBAccess.SaveProfile(profile).ConfigureAwait(false);
         }
     }
 }

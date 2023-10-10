@@ -7,22 +7,17 @@ using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Models;
 
 namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
 {
-    public class FaziletApiService : IFaziletApiService
+    public class FaziletApiService(
+            HttpClient httpClient
+        ) : IFaziletApiService
     {
-        private readonly HttpClient _httpClient;
-
-        public FaziletApiService(HttpClient httpClient)
-        {
-            _httpClient = httpClient;
-        }
-
         internal const string GET_COUNTRIES_URL = "daily?districtId=232&lang=1";
 
         public async Task<Dictionary<string, int>> GetCountries()
         {
             Dictionary<string, int> countries = new();
 
-            HttpResponseMessage response = await _httpClient.GetAsync(GET_COUNTRIES_URL).ConfigureAwait(false);
+            HttpResponseMessage response = await httpClient.GetAsync(GET_COUNTRIES_URL).ConfigureAwait(false);
             response.EnsureSuccessStatusCode();
 
             string json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
@@ -44,7 +39,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
         {
             Dictionary<string, int> cities = new Dictionary<string, int>();
 
-            HttpResponseMessage response = await _httpClient.GetAsync(GET_CITIES_BY_COUNTRY_URL + countryID).ConfigureAwait(false);
+            HttpResponseMessage response = await httpClient.GetAsync(GET_CITIES_BY_COUNTRY_URL + countryID).ConfigureAwait(false);
             response.EnsureSuccessStatusCode();
 
             string json = await response.Content.ReadAsStringAsync();
@@ -67,7 +62,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
             List<FaziletPrayerTimes> prayerTimesList = new List<FaziletPrayerTimes>();
 
             string url = string.Format(GET_TIMES_BY_CITY_URL, cityID);
-            HttpResponseMessage response = await _httpClient.GetAsync(url).ConfigureAwait(false);
+            HttpResponseMessage response = await httpClient.GetAsync(url).ConfigureAwait(false);
 
             string json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
             JObject jObject = JObject.Parse(json);

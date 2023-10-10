@@ -1,6 +1,4 @@
-﻿using UIKit;
-
-namespace PrayerTimeEngine.Platforms.MacCatalyst;
+﻿namespace PrayerTimeEngine.Platforms.MacCatalyst;
 
 public class Program
 {

@@ -6,22 +6,17 @@ using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Models;
 
 namespace PrayerTimeEngine.Core.Domain.Configuration.Models
 {
-    public class PrayerTimesConfigurationStorage
+    public class PrayerTimesConfigurationStorage(
+            IConfigStoreService configStoreService
+        )
     {
-        IConfigStoreService _configStoreService;
-
-        public PrayerTimesConfigurationStorage(IConfigStoreService configStoreService)
-        {
-            _configStoreService = configStoreService;
-        }
-
         List<Profile> _profiles = null;
 
         public async Task<List<Profile>> GetProfiles()
         {
             if (_profiles == null)
             {
-                _profiles = await _configStoreService.GetProfiles().ConfigureAwait(false);
+                _profiles = await configStoreService.GetProfiles().ConfigureAwait(false);
 
                 if (_profiles.Count == 0)
                 {

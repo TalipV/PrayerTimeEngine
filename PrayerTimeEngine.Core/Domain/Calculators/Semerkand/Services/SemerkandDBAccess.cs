@@ -6,19 +6,14 @@ using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Models;
 
 namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
 {
-    public class SemerkandDBAccess : ISemerkandDBAccess
+    public class SemerkandDBAccess(
+            ISQLiteDB db
+        ) : ISemerkandDBAccess
     {
-        private readonly ISQLiteDB _db;
-
-        public SemerkandDBAccess(ISQLiteDB db)
-        {
-            _db = db;
-        }
-
         public async Task<Dictionary<string, int>> GetCountries()
         {
             var countries = new Dictionary<string, int>();
-            await _db.ExecuteCommandAsync(async connection =>
+            await db.ExecuteCommandAsync(async connection =>
             {
                 var command = connection.CreateCommand();
                 command.CommandText = """
@@ -40,7 +35,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
 
         public async Task InsertCountry(int id, string name)
         {
-            await _db.ExecuteCommandAsync(async connection =>
+            await db.ExecuteCommandAsync(async connection =>
             {
                 var command = connection.CreateCommand();
                 command.CommandText = """
@@ -59,7 +54,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
         public async Task<Dictionary<string, int>> GetCitiesByCountryID(int countryId)
         {
             var cities = new Dictionary<string, int>();
-            await _db.ExecuteCommandAsync(async connection =>
+            await db.ExecuteCommandAsync(async connection =>
             {
                 var command = connection.CreateCommand();
                 command.CommandText = """
@@ -84,7 +79,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
 
         public async Task InsertCity(int id, string name, int countryId)
         {
-            await _db.ExecuteCommandAsync(async connection =>
+            await db.ExecuteCommandAsync(async connection =>
             {
                 var command = connection.CreateCommand();
                 command.CommandText = """
@@ -105,7 +100,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
         {
             SemerkandPrayerTimes time = null;
 
-            await _db.ExecuteCommandAsync(async connection =>
+            await db.ExecuteCommandAsync(async connection =>
             {
                 var command = connection.CreateCommand();
                 command.CommandText = """
@@ -142,7 +137,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
 
         public async Task InsertCountries(Dictionary<string, int> countries)
         {
-            await _db.ExecuteCommandAsync(async connection =>
+            await db.ExecuteCommandAsync(async connection =>
             {
                 foreach (var country in countries)
                 {
@@ -163,7 +158,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
 
         public async Task InsertCities(Dictionary<string, int> cities, int countryId)
         {
-            await _db.ExecuteCommandAsync(async connection =>
+            await db.ExecuteCommandAsync(async connection =>
             {
                 foreach (var city in cities)
                 {
@@ -185,7 +180,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
 
         public async Task InsertSemerkandPrayerTimes(LocalDate date, int cityID, SemerkandPrayerTimes semerkandPrayerTimes)
         {
-            await _db.ExecuteCommandAsync(async connection =>
+            await db.ExecuteCommandAsync(async connection =>
             {
                 var command = connection.CreateCommand();
                 command.CommandText = """
@@ -210,7 +205,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
 
         public async Task DeleteAllPrayerTimes()
         {
-            await _db.ExecuteCommandAsync(async connection =>
+            await db.ExecuteCommandAsync(async connection =>
             {
                 var command = connection.CreateCommand();
                 command.CommandText = "DELETE FROM SemerkandPrayerTimes;";

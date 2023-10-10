@@ -1,10 +1,8 @@
-﻿using PrayerTimeEngine.Presentation.GraphicsView;
-using PrayerTimeEngine.Presentation.ViewModel;
-using OnScreenSizeMarkup.Maui.Helpers;
+﻿using DevExpress.Maui.Editors;
 using Microsoft.Extensions.Logging;
-using PrayerTimeEngine.Presentation;
-using DevExpress.Maui.Editors;
-using PrayerTimeEngine.Core.Domain.PlacesService.Models.Common;
+using OnScreenSizeMarkup.Maui.Helpers;
+using PrayerTimeEngine.Presentation.GraphicsView;
+using PrayerTimeEngine.Presentation.ViewModel;
 
 namespace PrayerTimeEngine
 {

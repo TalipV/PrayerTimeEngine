@@ -10,20 +10,15 @@ using PrayerTimeEngine.Core.Domain.Model;
 
 namespace PrayerTimeEngine.Core.Domain.Configuration.Services
 {
-    public class ConfigStoreDBAccess : IConfigStoreDBAccess
+    public class ConfigStoreDBAccess(
+            ISQLiteDB db
+        ) : IConfigStoreDBAccess
     {
-        private readonly ISQLiteDB _db;
-
-        public ConfigStoreDBAccess(ISQLiteDB db)
-        {
-            _db = db;
-        }
-
         public async Task<List<Profile>> GetProfiles()
         {
             List<Profile> profiles = new();
 
-            await _db.ExecuteCommandAsync(async connection =>
+            await db.ExecuteCommandAsync(async connection =>
             {
                 var command = connection.CreateCommand();
                 command.CommandText =
@@ -103,7 +98,7 @@ namespace PrayerTimeEngine.Core.Domain.Configuration.Services
         {
             List<TimeSpecificConfig> timeSpecificConfigs = new();
 
-            await _db.ExecuteCommandAsync(async connection =>
+            await db.ExecuteCommandAsync(async connection =>
             {
                 var command = connection.CreateCommand();
                 command.CommandText = """
@@ -143,7 +138,7 @@ namespace PrayerTimeEngine.Core.Domain.Configuration.Services
         {
             await DeleteProfile(profile);
 
-            await _db.ExecuteCommandAsync(async connection =>
+            await db.ExecuteCommandAsync(async connection =>
             {
                 using (var transaction = connection.BeginTransaction())
                 {
@@ -223,7 +218,7 @@ namespace PrayerTimeEngine.Core.Domain.Configuration.Services
 
         public async Task DeleteProfile(Profile profile)
         {
-            await _db.ExecuteCommandAsync(async connection =>
+            await db.ExecuteCommandAsync(async connection =>
             {
                 var command = connection.CreateCommand();
                 command.CommandText = """

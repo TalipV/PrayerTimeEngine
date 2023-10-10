@@ -13,25 +13,13 @@ using PrayerTimeEngine.Core.Domain.PlacesService.Models.Common;
 
 namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
 {
-    public class FaziletPrayerTimeCalculator : IPrayerTimeService
-    {
-        private readonly IFaziletDBAccess _faziletDBAccess;
-        private readonly IFaziletApiService _faziletApiService;
-        private readonly ILocationService _placeService;
-        private readonly ILogger<FaziletPrayerTimeCalculator> _logger;
-
-        public FaziletPrayerTimeCalculator(
+    public class FaziletPrayerTimeCalculator(
             IFaziletDBAccess faziletDBAccess,
             IFaziletApiService faziletApiService,
             ILocationService placeService,
-            ILogger<FaziletPrayerTimeCalculator> logger)
-        {
-            _faziletDBAccess = faziletDBAccess;
-            _faziletApiService = faziletApiService;
-            _placeService = placeService;
-            _logger = logger;
-        }
-
+            ILogger<FaziletPrayerTimeCalculator> logger
+        ) : IPrayerTimeService
+    {
         public HashSet<ETimeType> GetUnsupportedTimeTypes()
         {
             return _unsupportedTimeTypes;
@@ -95,12 +83,12 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
 
             using (await getPrayerTimesLocker.LockAsync(lockTuple).ConfigureAwait(false))
             {
-                FaziletPrayerTimes prayerTimes = await _faziletDBAccess.GetTimesByDateAndCityID(date, cityID).ConfigureAwait(false);
+                FaziletPrayerTimes prayerTimes = await faziletDBAccess.GetTimesByDateAndCityID(date, cityID).ConfigureAwait(false);
 
                 if (prayerTimes == null)
                 {
-                    List<FaziletPrayerTimes> prayerTimesLst = await _faziletApiService.GetTimesByCityID(cityID).ConfigureAwait(false);
-                    prayerTimesLst.ForEach(async x => await _faziletDBAccess.InsertFaziletPrayerTimesIfNotExists(x.Date, cityID, x).ConfigureAwait(false));
+                    List<FaziletPrayerTimes> prayerTimesLst = await faziletApiService.GetTimesByCityID(cityID).ConfigureAwait(false);
+                    prayerTimesLst.ForEach(async x => await faziletDBAccess.InsertFaziletPrayerTimesIfNotExists(x.Date, cityID, x).ConfigureAwait(false));
                     prayerTimes = prayerTimesLst.FirstOrDefault(x => x.Date == date);
                 }
 
@@ -119,13 +107,13 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
             try
             {
                 // We only check if it is empty because a selection of countries missing is not expected.
-                if ((await _faziletDBAccess.GetCitiesByCountryID(countryID).ConfigureAwait(false)).Count == 0)
+                if ((await faziletDBAccess.GetCitiesByCountryID(countryID).ConfigureAwait(false)).Count == 0)
                 {
                     // load cities through HTTP request
-                    Dictionary<string, int> cities = await _faziletApiService.GetCitiesByCountryID(countryID).ConfigureAwait(false);
+                    Dictionary<string, int> cities = await faziletApiService.GetCitiesByCountryID(countryID).ConfigureAwait(false);
 
                     // save cities to db
-                    await _faziletDBAccess.InsertCities(cities, countryID).ConfigureAwait(false);
+                    await faziletDBAccess.InsertCities(cities, countryID).ConfigureAwait(false);
                 }
             }
             finally
@@ -133,7 +121,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
                 semaphoreTryGetCityID.Release();
             }
 
-            if ((await _faziletDBAccess.GetCitiesByCountryID(countryID).ConfigureAwait(false)).TryGetValue(cityName, out int cityID))
+            if ((await faziletDBAccess.GetCitiesByCountryID(countryID).ConfigureAwait(false)).TryGetValue(cityName, out int cityID))
                 return (true, cityID);
             else
                 return (false, -1);
@@ -151,13 +139,13 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
             {
 
                 // We only check if it is empty because a selection of countries missing is not expected.
-                if ((await _faziletDBAccess.GetCountries().ConfigureAwait(false)).Count == 0)
+                if ((await faziletDBAccess.GetCountries().ConfigureAwait(false)).Count == 0)
                 {
                     // load countries through HTTP request
-                    Dictionary<string, int> countries = await _faziletApiService.GetCountries().ConfigureAwait(false);
+                    Dictionary<string, int> countries = await faziletApiService.GetCountries().ConfigureAwait(false);
 
                     // save countries to db
-                    await _faziletDBAccess.InsertCountries(countries).ConfigureAwait(false);
+                    await faziletDBAccess.InsertCountries(countries).ConfigureAwait(false);
                 }
             }
             finally
@@ -165,7 +153,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
                 semaphoreTryGetCountryID.Release();
             }
 
-            if ((await _faziletDBAccess.GetCountries().ConfigureAwait(false)).TryGetValue(countryName, out int countryID))
+            if ((await faziletDBAccess.GetCountries().ConfigureAwait(false)).TryGetValue(countryName, out int countryID))
                 return (true, countryID);
             else
                 return (false, -1);
@@ -179,7 +167,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
             // if language is already turkish then use this place
 
             var turkishPlaceInfo = 
-                new CompletePlaceInfo(await _placeService.GetPlaceBasedOnPlace(place, "tr").ConfigureAwait(false)) 
+                new CompletePlaceInfo(await placeService.GetPlaceBasedOnPlace(place, "tr").ConfigureAwait(false)) 
                 { 
                     TimezoneInfo = place.TimezoneInfo
                 };
@@ -193,11 +181,11 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
 
             var (success, countryID) = await tryGetCountryID(countryName).ConfigureAwait(false);
 
-            _logger.LogDebug("Fazilet search location: {Country}, {City}", countryName, cityName);
+            logger.LogDebug("Fazilet search location: {Country}, {City}", countryName, cityName);
 
             if (success && (await tryGetCityID(cityName, countryID).ConfigureAwait(false)).success)
             {
-                _logger.LogDebug("Fazilet found location: {Country}, {City}", countryName, cityName);
+                logger.LogDebug("Fazilet found location: {Country}, {City}", countryName, cityName);
 
                 return new FaziletLocationData
                 {

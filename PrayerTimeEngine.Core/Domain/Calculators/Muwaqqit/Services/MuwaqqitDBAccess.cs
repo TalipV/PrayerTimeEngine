@@ -8,7 +8,10 @@ using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Models;
 
 namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services
 {
-    public class MuwaqqitDBAccess : IMuwaqqitDBAccess
+    public class MuwaqqitDBAccess(
+            ISQLiteDB db,
+            ILogger<MuwaqqitDBAccess> logger
+        ) : IMuwaqqitDBAccess
     {
         private const string _selectSQL = """
                     SELECT 
@@ -17,17 +20,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services
                         Fajr_Degree, AsrKaraha_Degree, Ishtibaq_Degree, Isha_Degree
                     FROM MuwaqqitPrayerTimes
                     """;
-
-        private readonly ISQLiteDB _db;
-        private readonly ILogger _logger;
-
-        public MuwaqqitDBAccess(
-            ISQLiteDB db,
-            ILogger<MuwaqqitDBAccess> logger)
-        {
-            _db = db;
-            _logger = logger;
-        }
+        private readonly ILogger _logger = logger;
 
         public async Task InsertMuwaqqitPrayerTimesAsync(
             LocalDate date,
@@ -40,7 +33,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services
             double asrKarahaDegree,
             MuwaqqitPrayerTimes prayerTimes)
         {
-            await _db.ExecuteCommandAsync(async connection =>
+            await db.ExecuteCommandAsync(async connection =>
             {
                 var command = connection.CreateCommand();
                 command.CommandText = """
@@ -86,7 +79,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services
         {
             List<MuwaqqitPrayerTimes> times = new();
 
-            await _db.ExecuteCommandAsync(async connection =>
+            await db.ExecuteCommandAsync(async connection =>
             {
                 var command = connection.CreateCommand();
                 command.CommandText = _selectSQL;
@@ -133,7 +126,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services
 
         public async Task DeleteAllTimes()
         {
-            await _db.ExecuteCommandAsync(async connection =>
+            await db.ExecuteCommandAsync(async connection =>
             {
                 var command = connection.CreateCommand();
                 command.CommandText = "DELETE FROM MuwaqqitPrayerTimes;";
@@ -152,7 +145,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services
         {
             MuwaqqitPrayerTimes time = null;
 
-            await _db.ExecuteCommandAsync(async connection =>
+            await db.ExecuteCommandAsync(async connection =>
             {
                 var command = connection.CreateCommand();
                 command.CommandText = $"""
