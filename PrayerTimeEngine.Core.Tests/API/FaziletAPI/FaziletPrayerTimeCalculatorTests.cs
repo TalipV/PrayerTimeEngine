@@ -1,9 +1,10 @@
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NodaTime;
 using NSubstitute;
 using PrayerTimeEngine.Core.Common.Enum;
-using PrayerTimeEngine.Core.Data.SQLite;
+using PrayerTimeEngine.Core.Data.EntityFramework;
 using PrayerTimeEngine.Core.Domain.CalculationService.Interfaces;
 using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Interfaces;
 using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Models;
@@ -29,15 +30,20 @@ namespace PrayerTimeEngine.Core.Tests.API.FaziletAPI
 
                     serviceCollection.AddSingleton(Substitute.For<ILocationService>());
 
-                    serviceCollection.AddSingleton(Substitute.For<ILogger<SQLiteDB>>());
-                    serviceCollection.AddSingleton<ISQLiteDB, SQLiteDB>();
-
                     serviceCollection.AddSingleton<IFaziletDBAccess, FaziletDBAccess>();
                     serviceCollection.AddSingleton<IFaziletApiService>(getMockedFaziletApiService());
                     serviceCollection.AddSingleton(Substitute.For<ILogger<FaziletPrayerTimeCalculator>>());
                     serviceCollection.AddSingleton<FaziletPrayerTimeCalculator>();
 
-                    _serviceProvider = serviceCollection.BuildServiceProvider();
+                    serviceCollection.AddDbContext<AppDbContext>(options =>
+                    {
+                        options.UseSqlite("Data Source=:memory:");
+                    });
+
+                    _serviceProvider = serviceCollection.BuildServiceProvider(); 
+                    var database = ServiceProvider.GetService<AppDbContext>().Database;
+                    database.GetDbConnection().Open();
+                    database.EnsureCreated();
                 }
 
                 return _serviceProvider;
@@ -67,38 +73,31 @@ namespace PrayerTimeEngine.Core.Tests.API.FaziletAPI
         public async Task FaziletPrayerTimeCalculator_GetPrayerTimesAsyncWithNormalInput_PrayerTimesForThatDay()
         {
             // ARRANGE
-            SQLiteDB sqLiteDb = ServiceProvider.GetService<ISQLiteDB>() as SQLiteDB;
+            FaziletPrayerTimeCalculator faziletPrayerTimeCalculator = ServiceProvider.GetService<FaziletPrayerTimeCalculator>();
 
-            using (sqLiteDb.GetSqliteConnection("Data Source=:memory:"))
-            {
-                sqLiteDb.InitializeDatabase(filePathDatabase: false);
+            // ACT
+            ICalculationPrayerTimes result =
+                (await faziletPrayerTimeCalculator.GetPrayerTimesAsync(
+                    new LocalDate(2023, 7, 29),
+                    new FaziletLocationData { CountryName = "Avusturya", CityName = "Innsbruck" },
+                    new List<GenericSettingConfiguration> { new GenericSettingConfiguration { TimeType = ETimeType.DhuhrStart, Source = ECalculationSource.Fazilet } }
+                ).ConfigureAwait(false)).Single().Key;
 
-                FaziletPrayerTimeCalculator faziletPrayerTimeCalculator = ServiceProvider.GetService<FaziletPrayerTimeCalculator>();
+            FaziletPrayerTimes faziletPrayerTimes = result as FaziletPrayerTimes;
 
-                // ACT
-                ICalculationPrayerTimes result =
-                    (await faziletPrayerTimeCalculator.GetPrayerTimesAsync(
-                        new LocalDate(2023, 7, 29),
-                        new FaziletLocationData { CountryName = "Avusturya", CityName = "Innsbruck" },
-                        new List<GenericSettingConfiguration> { new GenericSettingConfiguration { TimeType = ETimeType.DhuhrStart, Source = ECalculationSource.Fazilet } }
-                    ).ConfigureAwait(false)).Single().Key;
+            // ASSERT
+            Assert.IsNotNull(faziletPrayerTimes);
 
-                FaziletPrayerTimes faziletPrayerTimes = result as FaziletPrayerTimes;
+            Assert.That(faziletPrayerTimes.Date, Is.EqualTo(new LocalDate(2023, 7, 29)));
+            Assert.That(faziletPrayerTimes.Imsak.LocalDateTime, Is.EqualTo(new LocalDateTime(2023, 7, 29, 03, 04, 0)));
+            Assert.That(faziletPrayerTimes.Fajr.LocalDateTime, Is.EqualTo(new LocalDateTime(2023, 7, 29, 03, 24, 0)));
+            Assert.That(faziletPrayerTimes.NextFajr.Value.LocalDateTime, Is.EqualTo(new LocalDateTime(2023, 7, 30, 03, 27, 0)));
 
-                // ASSERT
-                Assert.IsNotNull(faziletPrayerTimes);
-
-                Assert.That(faziletPrayerTimes.Date, Is.EqualTo(new LocalDate(2023, 7, 29)));
-                Assert.That(faziletPrayerTimes.Imsak.LocalDateTime, Is.EqualTo(new LocalDateTime(2023, 7, 29, 03, 04, 0)));
-                Assert.That(faziletPrayerTimes.Fajr.LocalDateTime, Is.EqualTo(new LocalDateTime(2023, 7, 29, 03, 24, 0)));
-                Assert.That(faziletPrayerTimes.NextFajr.Value.LocalDateTime, Is.EqualTo(new LocalDateTime(2023, 7, 30, 03, 27, 0)));
-
-                Assert.That(faziletPrayerTimes.Shuruq.LocalDateTime, Is.EqualTo(new LocalDateTime(2023, 7, 29, 05, 43, 0)));
-                Assert.That(faziletPrayerTimes.Dhuhr.LocalDateTime, Is.EqualTo(new LocalDateTime(2023, 7, 29, 13, 28, 0)));
-                Assert.That(faziletPrayerTimes.Asr.LocalDateTime, Is.EqualTo(new LocalDateTime(2023, 7, 29, 17, 31, 0)));
-                Assert.That(faziletPrayerTimes.Maghrib.LocalDateTime, Is.EqualTo(new LocalDateTime(2023, 7, 29, 21, 02, 0)));
-                Assert.That(faziletPrayerTimes.Isha.LocalDateTime, Is.EqualTo(new LocalDateTime(2023, 7, 29, 23, 11, 0)));
-            }
+            Assert.That(faziletPrayerTimes.Shuruq.LocalDateTime, Is.EqualTo(new LocalDateTime(2023, 7, 29, 05, 43, 0)));
+            Assert.That(faziletPrayerTimes.Dhuhr.LocalDateTime, Is.EqualTo(new LocalDateTime(2023, 7, 29, 13, 28, 0)));
+            Assert.That(faziletPrayerTimes.Asr.LocalDateTime, Is.EqualTo(new LocalDateTime(2023, 7, 29, 17, 31, 0)));
+            Assert.That(faziletPrayerTimes.Maghrib.LocalDateTime, Is.EqualTo(new LocalDateTime(2023, 7, 29, 21, 02, 0)));
+            Assert.That(faziletPrayerTimes.Isha.LocalDateTime, Is.EqualTo(new LocalDateTime(2023, 7, 29, 23, 11, 0)));
         }
     }
 }

@@ -94,6 +94,7 @@
   <ItemGroup>
     <PackageReference Include="DevExpress.Maui.Editors" Version="23.2.1-alpha-23255" />
     <PackageReference Include="MethodTimer.Fody" Version="3.2.2" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="7.0.12" />
     <PackageReference Include="NodaTime" Version="3.1.9" />
     <PackageReference Include="PropertyChanged.Fody" Version="4.1.0" PrivateAssets="All" />
     <PackageReference Include="Refractored.MvvmHelpers" Version="1.6.2" />

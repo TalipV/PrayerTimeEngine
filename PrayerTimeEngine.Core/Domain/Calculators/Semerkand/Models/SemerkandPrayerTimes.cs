@@ -1,11 +1,15 @@
 ﻿using NodaTime;
 using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Domain.CalculationService.Interfaces;
+using System.ComponentModel.DataAnnotations;
 
 namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Models
 {
     public class SemerkandPrayerTimes : ICalculationPrayerTimes
     {
+        [Key]
+        public int ID { get; set; }
+
         public required int CityID { get; set; }
 
         public int DayOfYear { get; set; }

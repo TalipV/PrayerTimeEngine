@@ -1,13 +1,10 @@
 ﻿using CommunityToolkit.Maui;
 using DevExpress.Maui;
 using MetroLog.MicrosoftExtensions;
-using Microsoft.Extensions.DependencyInjection;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Microsoft.Maui.Controls.Hosting;
-using Microsoft.Maui.Hosting;
-using Microsoft.Maui.Storage;
 using PrayerTimeEngine.Code.Presentation.View;
-using PrayerTimeEngine.Core.Data.SQLite;
+using PrayerTimeEngine.Core.Data.EntityFramework;
 using PrayerTimeEngine.Core.Domain;
 using PrayerTimeEngine.Core.Domain.CalculationService.Interfaces;
 using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Interfaces;
@@ -91,7 +88,12 @@ public static class MauiProgram
 
     private static void addDependencyInjectionServices(IServiceCollection serviceCollection)
     {
-        serviceCollection.AddSingleton<ISQLiteDB, SQLiteDB>();
+        serviceCollection.AddDbContext<AppDbContext>(options =>
+        {
+            string _databasePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "PrayerTimeEngineDB.db");
+            options.UseSqlite($"Data Source={_databasePath}");
+        }, ServiceLifetime.Transient);
+
         serviceCollection.AddSingleton<IPrayerTimeCalculationService, PrayerTimeCalculationService>();
         serviceCollection.AddSingleton<TimeTypeAttributeService>();
 

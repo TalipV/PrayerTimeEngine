@@ -35,58 +35,205 @@ namespace PrayerTimeEngine.Core.Domain.Configuration.Models
 
         private static Profile getDummyProfile()
         {
-            return new Profile
+            Profile profile = new Profile
             {
                 ID = 1,
                 Name = "Standard-Profil",
                 LocationName = "Innsbruck",
                 SequenceNo = 1,
-                LocationDataByCalculationSource =
-                {
-                    [ECalculationSource.Muwaqqit] =
-                        new MuwaqqitLocationData
-                        {
-                            Latitude = 47.2803835M,
-                            Longitude = 11.41337M,
-                            TimezoneName = "Europe/Vienna"
-                        },
-                    [ECalculationSource.Fazilet] =
-                        new FaziletLocationData
-                        {
-                            CountryName = "Avusturya",
-                            CityName = "Innsbruck"
-                        },
-                    [ECalculationSource.Semerkand] =
-                        new SemerkandLocationData
-                        {
-                            CountryName = "Avusturya",
-                            CityName = "Innsbruck",
-                            TimezoneName = "Europe/Vienna"
-                        },
-                },
-                Configurations =
-                    new List<GenericSettingConfiguration>()
-                    {
-                        new GenericSettingConfiguration { Source = ECalculationSource.Fazilet, TimeType = ETimeType.FajrStart }, // späteste Berechnung
-                        new GenericSettingConfiguration { Source = ECalculationSource.Semerkand, TimeType = ETimeType.FajrEnd }, // früheste Berechnung
-                        new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.FajrGhalas, Degree = -8.5 }, // Grobe Einschätzung anhand von Sichtung  
-                        new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.FajrKaraha, Degree = -4.0 }, // ### keine Erfahrung
-                        new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.DuhaStart, Degree = 5.0 }, // von Gebetszeiten-Hoca, späteste
-                        new GenericSettingConfiguration { TimeType = ETimeType.DuhaEnd, MinuteAdjustment = -25 }, // ### keine Erfahrung
-                        new GenericSettingConfiguration { Source = ECalculationSource.Fazilet, TimeType = ETimeType.DhuhrStart }, // späteste Berechnung
-                        new GenericSettingConfiguration { Source = ECalculationSource.Muwaqqit, TimeType = ETimeType.DhuhrEnd }, // früheste Berechnung
-                        new GenericSettingConfiguration { Source = ECalculationSource.Fazilet, TimeType = ETimeType.AsrStart }, // späteste Berechnung
-                        new GenericSettingConfiguration { Source = ECalculationSource.Muwaqqit, TimeType = ETimeType.AsrEnd }, // früheste Berechnung
-                        new GenericSettingConfiguration { Source = ECalculationSource.Muwaqqit, TimeType = ETimeType.AsrMithlayn },
-                        new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.AsrKaraha, Degree = 5.0 }, // von Gebetszeiten-Hoca, früheste
-                        new GenericSettingConfiguration { Source = ECalculationSource.Fazilet, TimeType = ETimeType.MaghribStart },
-                        new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.MaghribEnd, Degree = -15.0 }, // ### keine Erfahrung, aber Sicherheitsabstand
-                        new GenericSettingConfiguration { TimeType = ETimeType.MaghribSufficientTime, MinuteAdjustment = 20 },
-                        new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.MaghribIshtibaq, Degree = -10.0 }, // von Gebetszeiten-Hoca
-                        new GenericSettingConfiguration { Source = ECalculationSource.Fazilet, TimeType = ETimeType.IshaStart },
-                        new GenericSettingConfiguration { Source = ECalculationSource.Semerkand, TimeType = ETimeType.IshaEnd },
-                    }.ToDictionary(x => x.TimeType)
             };
+
+            profile.LocationConfigs =
+                new List<ProfileLocationConfig>
+                {
+                    new ProfileLocationConfig
+                    {
+                        CalculationSource = ECalculationSource.Muwaqqit,
+                        ProfileID = profile.ID,
+                        Profile = profile,
+                        LocationData =
+                            new MuwaqqitLocationData
+                            {
+                                Latitude = 47.2803835M,
+                                Longitude = 11.41337M,
+                                TimezoneName = "Europe/Vienna"
+                            }
+                    },
+                    new ProfileLocationConfig
+                    {
+                        CalculationSource = ECalculationSource.Fazilet,
+                        ProfileID = profile.ID,
+                        Profile = profile,
+                        LocationData =
+                            new FaziletLocationData
+                            {
+                                CountryName = "Avusturya",
+                                CityName = "Innsbruck"
+                            }
+                    },
+                    new ProfileLocationConfig
+                    {
+                        CalculationSource = ECalculationSource.Semerkand,
+                        ProfileID = profile.ID,
+                        Profile = profile,
+                        LocationData =
+                            new SemerkandLocationData
+                            {
+                                CountryName = "Avusturya",
+                                CityName = "Innsbruck",
+                                TimezoneName = "Europe/Vienna"
+                            }
+                    },
+                };
+
+            profile.TimeConfigs =
+                new List<ProfileTimeConfig>
+                {
+                    new ProfileTimeConfig
+                    {
+                        TimeType = ETimeType.FajrStart,
+                        ProfileID = profile.ID,
+                        Profile = profile,
+                        // späteste Berechnung
+                        CalculationConfiguration = new GenericSettingConfiguration { Source = ECalculationSource.Fazilet, TimeType = ETimeType.FajrStart }
+                    },
+                    new ProfileTimeConfig
+                    {
+                        TimeType = ETimeType.FajrEnd,
+                        ProfileID = profile.ID,
+                        Profile = profile,
+                        // früheste Berechnung
+                        CalculationConfiguration = new GenericSettingConfiguration { Source = ECalculationSource.Semerkand, TimeType = ETimeType.FajrEnd }
+                    },
+                    new ProfileTimeConfig
+                    {
+                        TimeType = ETimeType.FajrGhalas,
+                        ProfileID = profile.ID,
+                        Profile = profile,
+                        // Grobe Einschätzung anhand von Sichtung  
+                        CalculationConfiguration = new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.FajrGhalas, Degree = -8.5 }
+                    },
+                    new ProfileTimeConfig
+                    {
+                        TimeType = ETimeType.FajrKaraha,
+                        ProfileID = profile.ID,
+                        Profile = profile,
+                        // ### keine Erfahrung
+                        CalculationConfiguration = new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.FajrKaraha, Degree = -4.0 }
+                    },
+                    new ProfileTimeConfig
+                    {
+                        TimeType = ETimeType.DuhaStart,
+                        ProfileID = profile.ID,
+                        Profile = profile,
+                        // von Gebetszeiten-Hoca, späteste
+                        CalculationConfiguration = new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.DuhaStart, Degree = 5.0 }
+                    },
+                    new ProfileTimeConfig
+                    {
+                        TimeType = ETimeType.DuhaEnd,
+                        ProfileID = profile.ID,
+                        Profile = profile,
+                        // ### keine Erfahrung
+                        CalculationConfiguration = new GenericSettingConfiguration { TimeType = ETimeType.DuhaEnd, MinuteAdjustment = -25 }
+                    },
+                    new ProfileTimeConfig
+                    {
+                        TimeType = ETimeType.DhuhrStart,
+                        ProfileID = profile.ID,
+                        Profile = profile,
+                        // späteste Berechnung
+                        CalculationConfiguration = new GenericSettingConfiguration { Source = ECalculationSource.Fazilet, TimeType = ETimeType.DhuhrStart }
+                    },
+                    new ProfileTimeConfig
+                    {
+                        TimeType = ETimeType.DhuhrEnd,
+                        ProfileID = profile.ID,
+                        Profile = profile,
+                        // früheste Berechnung
+                        CalculationConfiguration = new GenericSettingConfiguration { Source = ECalculationSource.Muwaqqit, TimeType = ETimeType.DhuhrEnd }
+                    },
+                    new ProfileTimeConfig
+                    {
+                        TimeType = ETimeType.AsrStart,
+                        ProfileID = profile.ID,
+                        Profile = profile,
+                        // späteste Berechnung
+                        CalculationConfiguration = new GenericSettingConfiguration { Source = ECalculationSource.Fazilet, TimeType = ETimeType.AsrStart }
+                    },
+                    new ProfileTimeConfig
+                    {
+                        TimeType = ETimeType.AsrEnd,
+                        ProfileID = profile.ID,
+                        Profile = profile,
+                        // früheste Berechnung
+                        CalculationConfiguration = new GenericSettingConfiguration { Source = ECalculationSource.Muwaqqit, TimeType = ETimeType.AsrEnd }
+                    },
+                    new ProfileTimeConfig
+                    {
+                        TimeType = ETimeType.AsrMithlayn,
+                        ProfileID = profile.ID,
+                        Profile = profile,
+                        CalculationConfiguration = new GenericSettingConfiguration { Source = ECalculationSource.Muwaqqit, TimeType = ETimeType.AsrMithlayn }
+                    },
+                    new ProfileTimeConfig
+                    {
+                        TimeType = ETimeType.AsrKaraha,
+                        ProfileID = profile.ID,
+                        Profile = profile,
+                        // von Gebetszeiten-Hoca, früheste
+                        CalculationConfiguration = new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.AsrKaraha, Degree = 5.0 }
+                    },
+                    new ProfileTimeConfig
+                    {
+                        TimeType = ETimeType.MaghribStart,
+                        ProfileID = profile.ID,
+                        Profile = profile,
+                        // späteste Berechnung
+                        CalculationConfiguration = new GenericSettingConfiguration { Source = ECalculationSource.Fazilet, TimeType = ETimeType.MaghribStart }
+                    },
+                    new ProfileTimeConfig
+                    {
+                        TimeType = ETimeType.MaghribEnd,
+                        ProfileID = profile.ID,
+                        Profile = profile,
+                        // ### keine Erfahrung, aber Sicherheitsabstand
+                        CalculationConfiguration = new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.MaghribEnd, Degree = -15.0 }
+                    },
+                    new ProfileTimeConfig
+                    {
+                        TimeType = ETimeType.MaghribSufficientTime,
+                        ProfileID = profile.ID,
+                        Profile = profile,
+                        CalculationConfiguration = new GenericSettingConfiguration { TimeType = ETimeType.MaghribSufficientTime, MinuteAdjustment = 20 }
+                    },
+                    new ProfileTimeConfig
+                    {
+                        TimeType = ETimeType.MaghribIshtibaq,
+                        ProfileID = profile.ID,
+                        Profile = profile,
+                        // von Gebetszeiten-Hoca
+                        CalculationConfiguration = new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.MaghribIshtibaq, Degree = -10.0 }
+                    },
+                    new ProfileTimeConfig
+                    {
+                        TimeType = ETimeType.IshaStart,
+                        ProfileID = profile.ID,
+                        Profile = profile,
+                        // späteste Berechnung
+                        CalculationConfiguration = new GenericSettingConfiguration { Source = ECalculationSource.Fazilet, TimeType = ETimeType.IshaStart }
+                    },
+                    new ProfileTimeConfig
+                    {
+                        TimeType = ETimeType.IshaEnd,
+                        ProfileID = profile.ID,
+                        Profile = profile,
+                        // früheste Berechnung
+                        CalculationConfiguration = new GenericSettingConfiguration { Source = ECalculationSource.Semerkand, TimeType = ETimeType.IshaEnd }
+                    }
+                };
+
+            return profile;
         }
     }
 }

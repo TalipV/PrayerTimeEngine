@@ -192,7 +192,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services
                 if (prayerTimes == null)
                 {
                     prayerTimes = await muwaqqitApiService.GetTimesAsync(date, longitude, latitude, fajrDegree, ishaDegree, ishtibaqDegree, asrKarahaDegree, timezone).ConfigureAwait(false);
-                    await muwaqqitDBAccess.InsertMuwaqqitPrayerTimesAsync(date, timezone, longitude, latitude, fajrDegree, ishaDegree, ishtibaqDegree, asrKarahaDegree, prayerTimes).ConfigureAwait(false);
+                    await muwaqqitDBAccess.InsertMuwaqqitPrayerTimesAsync(prayerTimes).ConfigureAwait(false);
                 }
 
                 return prayerTimes;
