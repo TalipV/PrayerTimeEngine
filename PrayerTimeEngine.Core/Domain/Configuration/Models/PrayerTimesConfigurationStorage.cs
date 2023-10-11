@@ -30,7 +30,7 @@ namespace PrayerTimeEngine.Core.Domain.Configuration.Models
         public async Task<GenericSettingConfiguration> GetConfiguration(ETimeType timeType)
         {
             Profile profile = (await GetProfiles().ConfigureAwait(false)).First();
-            return profile.GetConfiguration(timeType);
+            return profile.GetTimeConfig(timeType);
         }
 
         private static Profile getDummyProfile()

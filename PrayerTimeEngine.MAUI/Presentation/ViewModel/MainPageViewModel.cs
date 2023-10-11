@@ -250,12 +250,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
 
         private bool isCalculationShown(ETimeType timeData)
         {
-            if (!CurrentProfile.Configurations.TryGetValue(timeData, out GenericSettingConfiguration config) || config == null)
-            {
-                return true;
-            }
-
-            return config.IsTimeShown;
+            return CurrentProfile.GetTimeConfig(timeData).IsTimeShown;
         }
 
         private void onSelectedPlaceChanged()
@@ -270,30 +265,29 @@ namespace PrayerTimeEngine.Presentation.ViewModel
                 try
                 {
                     this.IsLoadingSelectedPlace = true;
-                    CurrentProfile.LocationDataByCalculationSource.Clear();
+                    CurrentProfile.LocationConfigs.Clear();
 
                     CompletePlaceInfo completePlaceInfo = await _placeService.GetTimezoneInfo(SelectedPlace);
 
-                    foreach (var calculationSource in
-                        Enum.GetValues(typeof(ECalculationSource))
-                        .Cast<ECalculationSource>())
+                    foreach (var calculationSource in Enum.GetValues<ECalculationSource>())
                     {
                         if (calculationSource == ECalculationSource.None)
                             continue;
 
-                        CurrentProfile.LocationDataByCalculationSource[calculationSource] =
+                        BaseLocationData locationConfig =
                             await _prayerTimeCalculationService
                                 .GetPrayerTimeCalculatorByCalculationSource(calculationSource)
                                 .GetLocationInfo(completePlaceInfo);
+
+                        CurrentProfile.SetLocationConfig(calculationSource, locationConfig);
                     }
 
                     CurrentProfile.LocationName = completePlaceInfo.DisplayText;
                     await _configStoreService.SaveProfile(CurrentProfile);
 
-                    var missingLocationInfo =
-                        CurrentProfile.LocationDataByCalculationSource
-                            .Where(x => x.Value == null)
-                            .Select(x => x.Key.ToString())
+                    List<ECalculationSource> missingLocationInfo =
+                        Enum.GetValues<ECalculationSource>()
+                            .Where(enumValue => !CurrentProfile.LocationConfigs.Select(x => x.CalculationSource).Contains(enumValue))
                             .ToList();
 
                     if (missingLocationInfo.Count != 0)
@@ -320,9 +314,9 @@ namespace PrayerTimeEngine.Presentation.ViewModel
             if (this.CurrentProfile == null)
                 return "";
 
-            MuwaqqitLocationData muwaqqitLocationData = this.CurrentProfile.LocationDataByCalculationSource[ECalculationSource.Muwaqqit] as MuwaqqitLocationData;
-            FaziletLocationData faziletLocationData = this.CurrentProfile.LocationDataByCalculationSource[ECalculationSource.Fazilet] as FaziletLocationData;
-            SemerkandLocationData semerkandLocationData = this.CurrentProfile.LocationDataByCalculationSource[ECalculationSource.Semerkand] as SemerkandLocationData;
+            MuwaqqitLocationData muwaqqitLocationData = this.CurrentProfile.GetLocationConfig(ECalculationSource.Muwaqqit) as MuwaqqitLocationData;
+            FaziletLocationData faziletLocationData = this.CurrentProfile.GetLocationConfig(ECalculationSource.Fazilet) as FaziletLocationData;
+            SemerkandLocationData semerkandLocationData = this.CurrentProfile.GetLocationConfig(ECalculationSource.Semerkand) as SemerkandLocationData;
 
             return $"""
                     Muwaqqit:
@@ -359,7 +353,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
                     if (!_timeTypeAttributeService.ConfigurableTypes.Contains(timeType))
                         continue;
 
-                    GenericSettingConfiguration config = this.CurrentProfile.Configurations[timeType];
+                    GenericSettingConfiguration config = this.CurrentProfile.GetTimeConfig(timeType);
 
                     outputText += Environment.NewLine;
                     outputText += $"- {timeType} mit {config.Source}";

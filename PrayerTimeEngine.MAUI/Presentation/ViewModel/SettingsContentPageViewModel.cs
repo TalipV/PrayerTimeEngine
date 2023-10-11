@@ -181,7 +181,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
         private async Task saveSettingsToProfile(GenericSettingConfiguration settings)
         {
             Profile profile = (await _prayerTimesConfigurationStorage.GetProfiles()).First();
-            profile.Configurations[TimeType] = settings;
+            profile.SetTimeConfig(TimeType, settings);
             await _configStoreService.SaveProfile(profile);
         }
 

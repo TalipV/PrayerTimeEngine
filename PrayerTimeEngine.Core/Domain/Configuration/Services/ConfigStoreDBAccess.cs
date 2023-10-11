@@ -12,7 +12,7 @@ namespace PrayerTimeEngine.Core.Domain.Configuration.Services
         public async Task<List<Profile>> GetProfiles()
         {
             return await dbContext.Profiles
-                .Include(x => x.Configurations)
+                .Include(x => x.TimeConfigs)
                 .Include(x => x.LocationConfigs)
                 .ToListAsync().ConfigureAwait(false);
         }
