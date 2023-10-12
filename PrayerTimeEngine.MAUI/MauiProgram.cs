@@ -90,8 +90,9 @@ public static class MauiProgram
     {
         serviceCollection.AddDbContext<AppDbContext>(options =>
         {
-            string _databasePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "PrayerTimeEngineDB.db");
+            string _databasePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "PrayerTimeEngineDB_ET.db");
             options.UseSqlite($"Data Source={_databasePath}");
+            options.LogTo(Console.WriteLine, LogLevel.Trace);
         }, ServiceLifetime.Transient);
 
         serviceCollection.AddSingleton<IPrayerTimeCalculationService, PrayerTimeCalculationService>();
