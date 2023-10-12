@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PrayerTimeEngine.Core", "Pr
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PrayerTimeEngine.Core.Tests", "PrayerTimeEngine.Core.Tests\PrayerTimeEngine.Core.Tests.csproj", "{FB9E7882-87DF-4ED2-B871-00A55C04B1F6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PrayerTimeEngine.BenchmarkDotNet", "PrayerTimeEngine.BenchmarkDotNet\PrayerTimeEngine.BenchmarkDotNet.csproj", "{08538029-6CAC-45B7-AE29-172B60744EE6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -43,6 +45,14 @@ Global
 		{FB9E7882-87DF-4ED2-B871-00A55C04B1F6}.Release|Any CPU.Build.0 = Release|Any CPU
 		{FB9E7882-87DF-4ED2-B871-00A55C04B1F6}.Release|x64.ActiveCfg = Release|Any CPU
 		{FB9E7882-87DF-4ED2-B871-00A55C04B1F6}.Release|x64.Build.0 = Release|Any CPU
+		{08538029-6CAC-45B7-AE29-172B60744EE6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{08538029-6CAC-45B7-AE29-172B60744EE6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{08538029-6CAC-45B7-AE29-172B60744EE6}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{08538029-6CAC-45B7-AE29-172B60744EE6}.Debug|x64.Build.0 = Debug|Any CPU
+		{08538029-6CAC-45B7-AE29-172B60744EE6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{08538029-6CAC-45B7-AE29-172B60744EE6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{08538029-6CAC-45B7-AE29-172B60744EE6}.Release|x64.ActiveCfg = Release|Any CPU
+		{08538029-6CAC-45B7-AE29-172B60744EE6}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
