@@ -13,8 +13,6 @@ namespace PrayerTimeEngine
 
         public MainPage(MainPageViewModel viewModel, ILogger<MainPage> logger)
         {
-            //var talip = this.LoadFromXaml(typeof(MainPage));
-
             InitializeComponent();
 
             _logger = logger;
