@@ -10,6 +10,7 @@ using PrayerTimeEngine.Core.Domain.PlacesService.Interfaces;
 using NodaTime;
 using MethodTimer;
 using PrayerTimeEngine.Core.Domain.PlacesService.Models.Common;
+using AsyncKeyedLock;
 
 namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
 {
@@ -75,7 +76,11 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
             return prayerTimes;
         }
 
-        private readonly AsyncDuplicateLock getPrayerTimesLocker = new();
+        private readonly AsyncKeyedLocker<(LocalDate date, int cityID)> getPrayerTimesLocker = new(o =>
+        {
+            o.PoolSize = 20;
+            o.PoolInitialFill = 1;
+        });
 
         private async Task<FaziletPrayerTimes> getPrayerTimesByDateAndCityID(LocalDate date, int cityID)
         {

@@ -1,4 +1,5 @@
-﻿using MethodTimer;
+﻿using AsyncKeyedLock;
+using MethodTimer;
 using Microsoft.Extensions.Logging;
 using NodaTime;
 using PrayerTimeEngine.Core.Common;
@@ -75,7 +76,11 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
             return prayerTimes;
         }
 
-        private readonly AsyncDuplicateLock getPrayerTimesLocker = new();
+        private readonly AsyncKeyedLocker<(LocalDate date, int cityID)> getPrayerTimesLocker = new(o =>
+        {
+            o.PoolSize = 20;
+            o.PoolInitialFill = 1;
+        });
 
         [Time]
         private async Task<SemerkandPrayerTimes> getPrayerTimesByDateAndCityID(LocalDate date, string timezone, int cityID)

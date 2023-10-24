@@ -8,6 +8,7 @@ using PrayerTimeEngine.Core.Common.Enum;
 using NodaTime;
 using MethodTimer;
 using PrayerTimeEngine.Core.Domain.PlacesService.Models.Common;
+using AsyncKeyedLock;
 
 namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services
 {
@@ -171,7 +172,11 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services
             return new HashSet<ETimeType>();
         }
 
-        private readonly AsyncDuplicateLock getPrayerTimesLocker = new();
+        private readonly AsyncKeyedLocker<(LocalDate date, decimal longitude, decimal latitude, double fajrDegree, double ishaDegree, double ishtibaqDegree, double asrKarahaDegree, string timezone)> getPrayerTimesLocker = new(o =>
+        {
+            o.PoolSize = 20;
+            o.PoolInitialFill = 1;
+        });
 
         private async Task<MuwaqqitPrayerTimes> getPrayerTimesInternal(
             LocalDate date,
