@@ -18,51 +18,28 @@ using System.Net;
 
 namespace PrayerTimeEngine.Core.Tests.API.MuwaqqitAPI
 {
-    public class MuwaqqitPrayerTimeCalculatorTests
+    public class MuwaqqitPrayerTimeCalculatorTests : BaseTest
     {
-        private static ServiceProvider _serviceProvider = null;
-
-        public static ServiceProvider ServiceProvider
+        protected override void ConfigureServiceProvider(ServiceCollection serviceCollection)
         {
-            get
-            {
-                if (_serviceProvider == null)
-                {
-                    var serviceCollection = new ServiceCollection();
+            serviceCollection.AddSingleton(Substitute.For<ILocationService>());
+            serviceCollection.AddSingleton<TimeTypeAttributeService>();
 
-                    serviceCollection.AddSingleton(Substitute.For<ILocationService>());
-                    serviceCollection.AddSingleton<TimeTypeAttributeService>();
-
-                    serviceCollection.AddSingleton(Substitute.For<ILogger<MuwaqqitDBAccess>>());
-                    serviceCollection.AddSingleton<IMuwaqqitDBAccess, MuwaqqitDBAccess>();
-                    serviceCollection.AddSingleton<IMuwaqqitApiService>(getMockedMuwaqqitApiService());
-                    serviceCollection.AddSingleton(Substitute.For<ILogger<MuwaqqitPrayerTimeCalculator>>());
-                    serviceCollection.AddSingleton<MuwaqqitPrayerTimeCalculator>();
-
-                    serviceCollection.AddDbContext<AppDbContext>(options =>
-                    {
-                        options.UseSqlite("Data Source=:memory:");
-                    });
-
-                    _serviceProvider = serviceCollection.BuildServiceProvider();
-
-                    var database = _serviceProvider.GetService<AppDbContext>().Database;
-                    database.OpenConnection();
-                    database.EnsureCreated();
-                }
-
-                return _serviceProvider;
-            }
+            serviceCollection.AddSingleton(Substitute.For<ILogger<MuwaqqitDBAccess>>());
+            serviceCollection.AddSingleton<IMuwaqqitDBAccess, MuwaqqitDBAccess>();
+            serviceCollection.AddSingleton<IMuwaqqitApiService>(getMockedMuwaqqitApiService());
+            serviceCollection.AddSingleton(Substitute.For<ILogger<MuwaqqitPrayerTimeCalculator>>());
+            serviceCollection.AddSingleton<MuwaqqitPrayerTimeCalculator>();
         }
 
         private static MuwaqqitApiService getMockedMuwaqqitApiService()
         {
             Dictionary<string, string> urlToContentMap = new Dictionary<string, string>()
             {
-                [@"https://www.muwaqqit.com/api2.json?d=2023-07-30&ln=11.41337&lt=47.2803835&tz=Europe%2fVienna&fa=-12&ia=3.5&isn=-8&ea=-12"] = File.ReadAllText(@"API\MuwaqqitAPI\TestData\Muwaqqit_TestPrayerTimeData_20230730_Innsbruck_Part1.txt"),
-                [@"https://www.muwaqqit.com/api2.json?d=2023-07-30&ln=11.41337&lt=47.2803835&tz=Europe%2fVienna&fa=-7.5&ia=4.5&isn=-12&ea=-15.5"] = File.ReadAllText(@"API\MuwaqqitAPI\TestData\Muwaqqit_TestPrayerTimeData_20230730_Innsbruck_Part2.txt"),
-                [@"https://www.muwaqqit.com/api2.json?d=2023-07-30&ln=11.41337&lt=47.2803835&tz=Europe%2fVienna&fa=-4.5&ia=-12&isn=-12&ea=-12"] = File.ReadAllText(@"API\MuwaqqitAPI\TestData\Muwaqqit_TestPrayerTimeData_20230730_Innsbruck_Part3.txt"),
-                [@"https://www.muwaqqit.com/api2.json?d=2023-07-30&ln=11.41337&lt=47.2803835&tz=Europe%2fVienna&fa=-15&ia=-12&isn=-12&ea=-12"] = File.ReadAllText(@"API\MuwaqqitAPI\TestData\Muwaqqit_TestPrayerTimeData_20230730_Innsbruck_Part4.txt"),
+                [@"https://www.muwaqqit.com/api2.json?d=2023-07-30&ln=11.41337&lt=47.2803835&tz=Europe%2fVienna&fa=-12&ia=3.5&isn=-8&ea=-12"] = File.ReadAllText(@"APIs\MuwaqqitAPI\TestData\Muwaqqit_TestPrayerTimeData_20230730_Innsbruck_Part1.txt"),
+                [@"https://www.muwaqqit.com/api2.json?d=2023-07-30&ln=11.41337&lt=47.2803835&tz=Europe%2fVienna&fa=-7.5&ia=4.5&isn=-12&ea=-15.5"] = File.ReadAllText(@"APIs\MuwaqqitAPI\TestData\Muwaqqit_TestPrayerTimeData_20230730_Innsbruck_Part2.txt"),
+                [@"https://www.muwaqqit.com/api2.json?d=2023-07-30&ln=11.41337&lt=47.2803835&tz=Europe%2fVienna&fa=-4.5&ia=-12&isn=-12&ea=-12"] = File.ReadAllText(@"APIs\MuwaqqitAPI\TestData\Muwaqqit_TestPrayerTimeData_20230730_Innsbruck_Part3.txt"),
+                [@"https://www.muwaqqit.com/api2.json?d=2023-07-30&ln=11.41337&lt=47.2803835&tz=Europe%2fVienna&fa=-15&ia=-12&isn=-12&ea=-12"] = File.ReadAllText(@"APIs\MuwaqqitAPI\TestData\Muwaqqit_TestPrayerTimeData_20230730_Innsbruck_Part4.txt"),
             };
 
             var mockHttpMessageHandler = new MockHttpMessageHandler(HttpStatusCode.OK, urlToContentMap);

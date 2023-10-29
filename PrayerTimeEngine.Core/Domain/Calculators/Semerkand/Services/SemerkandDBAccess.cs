@@ -10,15 +10,42 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
             AppDbContext dbContext
         ) : ISemerkandDBAccess
     {
-        public async Task<Dictionary<string, int>> GetCountries()
+        public async Task<List<SemerkandCountry>> GetCountries()
         {
-            List<SemerkandCountry> countries = await dbContext.SemerkandCountries.ToListAsync().ConfigureAwait(false);
-            return countries.ToDictionary(x => x.Name, x => x.ID);
+            return await dbContext
+                .SemerkandCountries.AsNoTracking()
+                .ToListAsync().ConfigureAwait(false);
+        }
+        public async Task<List<SemerkandCity>> GetCitiesByCountryID(int countryId)
+        {
+            return await dbContext
+                .SemerkandCities.AsNoTracking()
+                .Where(x => x.CountryID == countryId)
+                .ToListAsync().ConfigureAwait(false);
+        }
+        public async Task<SemerkandPrayerTimes> GetTimesByDateAndCityID(LocalDate date, int cityId)
+        {
+            return await dbContext
+                .SemerkandPrayerTimes.AsNoTracking()
+                .Where(x => x.Date == date && x.CityID == cityId)
+                .FirstOrDefaultAsync().ConfigureAwait(false);
         }
 
         public async Task InsertCountry(int id, string name)
         {
             await dbContext.SemerkandCountries.AddAsync(new SemerkandCountry { ID = id, Name = name }).ConfigureAwait(false);
+            await dbContext.SaveChangesAsync().ConfigureAwait(false);
+        }
+
+        public async Task InsertCity(int id, string name, int countryId)
+        {
+            await dbContext.SemerkandCities.AddAsync(new SemerkandCity { ID = id, Name = name, CountryID = countryId }).ConfigureAwait(false);
+            await dbContext.SaveChangesAsync().ConfigureAwait(false);
+        }
+
+        public async Task InsertSemerkandPrayerTimes(LocalDate date, int cityID, SemerkandPrayerTimes semerkandPrayerTimes)
+        {
+            await dbContext.SemerkandPrayerTimes.AddAsync(semerkandPrayerTimes).ConfigureAwait(false);
             await dbContext.SaveChangesAsync().ConfigureAwait(false);
         }
 
@@ -30,35 +57,12 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
             }
         }
 
-        public async Task InsertCity(int id, string name, int countryId)
-        {
-            await dbContext.SemerkandCities.AddAsync(new SemerkandCity { ID = id, Name = name, CountryID = countryId }).ConfigureAwait(false);
-            await dbContext.SaveChangesAsync().ConfigureAwait(false);
-        }
-
         public async Task InsertCities(Dictionary<string, int> cities, int countryId)
         {
             foreach (var item in cities)
             {
                 await InsertCity(item.Value, item.Key, countryId).ConfigureAwait(false);
             }
-        }
-
-        public async Task<Dictionary<string, int>> GetCitiesByCountryID(int countryId)
-        {
-            List<SemerkandCity> cities = await dbContext.SemerkandCities.Where(x => x.CountryID == countryId).ToListAsync().ConfigureAwait(false);
-            return cities.ToDictionary(x => x.Name, x => x.ID);
-        }
-
-        public async Task<SemerkandPrayerTimes> GetTimesByDateAndCityID(LocalDate date, int cityId)
-        {
-            return await dbContext.SemerkandPrayerTimes.Where(x => x.Date == date && x.CityID == cityId).FirstOrDefaultAsync().ConfigureAwait(false);
-        }
-
-        public async Task InsertSemerkandPrayerTimes(LocalDate date, int cityID, SemerkandPrayerTimes semerkandPrayerTimes)
-        {
-            await dbContext.SemerkandPrayerTimes.AddAsync(semerkandPrayerTimes).ConfigureAwait(false);
-            await dbContext.SaveChangesAsync().ConfigureAwait(false);
         }
 
         public async Task DeleteAllPrayerTimes()

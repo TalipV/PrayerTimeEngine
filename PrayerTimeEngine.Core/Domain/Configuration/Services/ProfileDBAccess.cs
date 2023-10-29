@@ -5,28 +5,24 @@ using PrayerTimeEngine.Core.Domain.Configuration.Models;
 
 namespace PrayerTimeEngine.Core.Domain.Configuration.Services
 {
-    public class ConfigStoreDBAccess(
+    public class ProfileDBAccess(
             AppDbContext dbContext
-        ) : IConfigStoreDBAccess
+        ) : IProfileDBAccess
     {
         public async Task<List<Profile>> GetProfiles()
         {
             return await dbContext.Profiles
                 .Include(x => x.TimeConfigs)
                 .Include(x => x.LocationConfigs)
+                .AsNoTracking()
                 .ToListAsync().ConfigureAwait(false);
         }
 
         public async Task SaveProfile(Profile profile)
         {
-            await DeleteProfile(profile);
-            await dbContext.Profiles.AddAsync(profile).ConfigureAwait(false);
-            await dbContext.SaveChangesAsync().ConfigureAwait(false);
-        }
-
-        public async Task DeleteProfile(Profile profile)
-        {
             dbContext.Profiles.Remove(profile);
+            await dbContext.SaveChangesAsync().ConfigureAwait(false);
+            await dbContext.Profiles.AddAsync(profile).ConfigureAwait(false);
             await dbContext.SaveChangesAsync().ConfigureAwait(false);
         }
     }

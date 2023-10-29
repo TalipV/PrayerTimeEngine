@@ -2,7 +2,7 @@
 
 namespace PrayerTimeEngine.Core.Domain.Configuration.Interfaces
 {
-    public interface IConfigStoreDBAccess
+    public interface IProfileDBAccess
     {
         public Task<List<Profile>> GetProfiles();
         public Task SaveProfile(Profile profile);

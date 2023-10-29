@@ -14,7 +14,6 @@ using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services;
 using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Interfaces;
 using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services;
 using PrayerTimeEngine.Core.Domain.Configuration.Interfaces;
-using PrayerTimeEngine.Core.Domain.Configuration.Models;
 using PrayerTimeEngine.Core.Domain.Configuration.Services;
 using PrayerTimeEngine.Core.Domain.PlacesService.Interfaces;
 using PrayerTimeEngine.Core.Domain.PlacesService.Services;
@@ -137,10 +136,8 @@ public static class MauiProgram
             client.Timeout = TimeSpan.FromSeconds(20);
         });
 
-        serviceCollection.AddTransient<IConfigStoreService, ConfigStoreService>();
-        serviceCollection.AddTransient<IConfigStoreDBAccess, ConfigStoreDBAccess>();
-
-        serviceCollection.AddSingleton<PrayerTimesConfigurationStorage>();
+        serviceCollection.AddTransient<IProfileService, ProfileService>();
+        serviceCollection.AddTransient<IProfileDBAccess, ProfileDBAccess>();
 
         addPresentationLayerServices(serviceCollection);
     }

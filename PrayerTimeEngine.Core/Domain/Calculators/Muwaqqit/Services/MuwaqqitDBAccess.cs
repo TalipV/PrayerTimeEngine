@@ -10,21 +10,11 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services
             AppDbContext dbContext
         ) : IMuwaqqitDBAccess
     {
-        public async Task InsertMuwaqqitPrayerTimesAsync(MuwaqqitPrayerTimes prayerTimes)
-        {
-            await dbContext.MuwaqqitPrayerTimes.AddAsync(prayerTimes).ConfigureAwait(false);
-            await dbContext.SaveChangesAsync().ConfigureAwait(false);
-        }
-
         public async Task<List<MuwaqqitPrayerTimes>> GetAllTimes()
         {
-            return await dbContext.MuwaqqitPrayerTimes.ToListAsync().ConfigureAwait(false);
-        }
-
-        public async Task DeleteAllTimes()
-        {
-            dbContext.MuwaqqitPrayerTimes.RemoveRange(await dbContext.MuwaqqitPrayerTimes.ToListAsync().ConfigureAwait(false));
-            await dbContext.SaveChangesAsync().ConfigureAwait(false);
+            return await dbContext
+                .MuwaqqitPrayerTimes.AsNoTracking()
+                .ToListAsync().ConfigureAwait(false);
         }
 
         public async Task<MuwaqqitPrayerTimes> GetTimesAsync(
@@ -37,7 +27,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services
             double asrKarahaDegree)
         {
             return await dbContext
-                .MuwaqqitPrayerTimes
+                .MuwaqqitPrayerTimes.AsNoTracking()
                 .Where(x => 
                     x.Date == date
                     && x.Longitude == longitude
@@ -47,6 +37,18 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services
                     && x.IshtibaqDegree == ishtibaqDegree
                     && x.AsrKarahaDegree == asrKarahaDegree)
                 .FirstOrDefaultAsync().ConfigureAwait(false);
+        }
+
+        public async Task InsertMuwaqqitPrayerTimesAsync(MuwaqqitPrayerTimes prayerTimes)
+        {
+            await dbContext.MuwaqqitPrayerTimes.AddAsync(prayerTimes).ConfigureAwait(false);
+            await dbContext.SaveChangesAsync().ConfigureAwait(false);
+        }
+
+        public async Task DeleteAllTimes()
+        {
+            dbContext.MuwaqqitPrayerTimes.RemoveRange(await dbContext.MuwaqqitPrayerTimes.ToListAsync().ConfigureAwait(false));
+            await dbContext.SaveChangesAsync().ConfigureAwait(false);
         }
     }
 }

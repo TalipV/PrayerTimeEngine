@@ -1,39 +1,143 @@
-﻿using PrayerTimeEngine.Core.Domain.Configuration.Interfaces;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using PrayerTimeEngine.Core.Common.Enum;
-using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Models;
-using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Models;
+using PrayerTimeEngine.Core.Data.EntityFramework;
 using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Models;
+using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Models;
+using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Models;
+using PrayerTimeEngine.Core.Domain.Configuration.Interfaces;
+using PrayerTimeEngine.Core.Domain.Configuration.Models;
+using PrayerTimeEngine.Core.Domain.Model;
 
-namespace PrayerTimeEngine.Core.Domain.Configuration.Models
+namespace PrayerTimeEngine.Core.Domain.Configuration.Services
 {
-    public class PrayerTimesConfigurationStorage(
-            IConfigStoreService configStoreService
-        )
+    public class ProfileService(
+            AppDbContext dbContext,
+            IProfileDBAccess profileDBAccess
+        ) : IProfileService
     {
-        List<Profile> _profiles = null;
-
         public async Task<List<Profile>> GetProfiles()
         {
-            if (_profiles == null)
-            {
-                _profiles = await configStoreService.GetProfiles().ConfigureAwait(false);
+            List<Profile> profiles = await profileDBAccess.GetProfiles().ConfigureAwait(false);
 
-                if (_profiles.Count == 0)
-                {
-                    _profiles.Add(getDummyProfile());
-                }
+            if (profiles.Count == 0)
+            {
+                profiles.Add(getDefaultProfile());
+                await SaveProfile(profiles[0]);
             }
 
-            return _profiles;
+            return profiles;
         }
 
-        public async Task<GenericSettingConfiguration> GetConfiguration(ETimeType timeType)
+        public async Task SaveProfile(Profile profile)
         {
-            Profile profile = (await GetProfiles().ConfigureAwait(false)).First();
-            return profile.GetTimeConfig(timeType);
+            await profileDBAccess.SaveProfile(profile).ConfigureAwait(false);
         }
 
-        private static Profile getDummyProfile()
+        public GenericSettingConfiguration GetTimeConfig(Profile profile, ETimeType timeType, bool createIfNotExists = false)
+        {
+            if (profile.TimeConfigs.FirstOrDefault(x => x.TimeType == timeType) is ProfileTimeConfig foundTimeConfig)
+            {
+                return foundTimeConfig.CalculationConfiguration;
+            }
+
+            if (!createIfNotExists)
+                return null;
+
+            ProfileTimeConfig missingTimeConfig = createNewTimeConfig(profile, timeType);
+            return missingTimeConfig.CalculationConfiguration;
+        }
+
+        public void SetTimeConfig(Profile profile, ETimeType timeType, GenericSettingConfiguration settings)
+        {
+            if (profile.TimeConfigs.FirstOrDefault(x => x.TimeType == timeType) is ProfileTimeConfig foundTimeConfig)
+            {
+                profile.TimeConfigs.Remove(foundTimeConfig);
+            }
+
+            createNewTimeConfig(profile, timeType, settings);
+        }
+
+        public BaseLocationData GetLocationConfig(Profile profile, ECalculationSource calculationSource)
+        {
+            return profile.LocationConfigs.FirstOrDefault(x => x.CalculationSource == calculationSource)?.LocationData;
+        }
+
+        public async Task UpdateLocationConfig(
+            Profile profile,
+            string locationName,
+            Dictionary<ECalculationSource, BaseLocationData> locationDataByCalculationSource)
+        {
+            Profile trackedProfile = dbContext.Profiles.Find(profile.ID);
+
+            try
+            {
+                using (IDbContextTransaction transaction = await dbContext.Database.BeginTransactionAsync())
+                {
+                    await this.SetNewLocationData(trackedProfile, locationDataByCalculationSource);
+                    trackedProfile.LocationName = locationName;
+
+                    await this.SaveProfile(trackedProfile);
+                    await transaction.CommitAsync();
+                }
+            }
+            finally
+            {
+                dbContext.Entry(trackedProfile).State = EntityState.Detached;
+
+                await dbContext.Entry(profile).ReloadAsync();
+                foreach (var locationConfig in profile.LocationConfigs)
+                    await dbContext.Entry(locationConfig).ReloadAsync();
+                foreach (var timeConfig in profile.TimeConfigs)
+                    await dbContext.Entry(timeConfig).ReloadAsync();
+            }
+        }
+
+        public async Task SetNewLocationData(Profile profile, Dictionary<ECalculationSource, BaseLocationData> locationDataByCalculationSource)
+        {
+            // delete the old entries
+            var currentLocationConfigs = profile.LocationConfigs.ToList();
+            dbContext.ProfileLocations.RemoveRange(currentLocationConfigs);
+            profile.LocationConfigs.Clear();
+
+            foreach (KeyValuePair<ECalculationSource, BaseLocationData> locationData in locationDataByCalculationSource)
+            {
+                createNewLocationConfig(profile, locationData.Key, locationData.Value);
+            }
+            await dbContext.ProfileLocations.AddRangeAsync(profile.LocationConfigs);
+            await dbContext.SaveChangesAsync();
+        }
+
+        private ProfileTimeConfig createNewTimeConfig(Profile profile, ETimeType timeType, GenericSettingConfiguration config = null)
+        {
+            var missingTimeConfig =
+                new ProfileTimeConfig
+                {
+                    TimeType = timeType,
+                    ProfileID = profile.ID,
+                    Profile = profile,
+                    CalculationConfiguration = config ?? new GenericSettingConfiguration { TimeType = timeType }
+                };
+
+            profile.TimeConfigs.Add(missingTimeConfig);
+            return missingTimeConfig;
+        }
+        private ProfileLocationConfig createNewLocationConfig(Profile profile, ECalculationSource calculationSource, BaseLocationData locationData)
+        {
+            var missingLocationConfig =
+                new ProfileLocationConfig
+                {
+                    CalculationSource = calculationSource,
+                    ProfileID = profile.ID,
+                    Profile = profile,
+                    LocationData = locationData
+                };
+
+            profile.LocationConfigs.Add(missingLocationConfig);
+            return missingLocationConfig;
+        }
+
+        private static Profile getDefaultProfile()
         {
             Profile profile = new Profile
             {

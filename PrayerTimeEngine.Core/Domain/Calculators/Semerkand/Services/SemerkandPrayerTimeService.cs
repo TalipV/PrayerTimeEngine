@@ -123,7 +123,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
                 semaphoreTryGetCityID.Release();
             }
 
-            if ((await semerkandDBAccess.GetCitiesByCountryID(countryID).ConfigureAwait(false)).TryGetValue(cityName, out int cityID))
+            if ((await semerkandDBAccess.GetCitiesByCountryID(countryID).ConfigureAwait(false)).FirstOrDefault(x => x.Name == cityName)?.ID is int cityID)
                 return (true, cityID);
             else
                 return (false, -1);
@@ -154,7 +154,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
                 semaphoreTryGetCountryID.Release();
             }
 
-            if ((await semerkandDBAccess.GetCountries().ConfigureAwait(false)).TryGetValue(countryName, out int countryID))
+            if ((await semerkandDBAccess.GetCountries().ConfigureAwait(false)).FirstOrDefault(x => x.Name == countryName)?.ID is int countryID)
                 return (true, countryID);
             else
                 return (false, -1);

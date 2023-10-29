@@ -16,48 +16,25 @@ using System.Net;
 
 namespace PrayerTimeEngine.Core.Tests.API.SemerkandAPI
 {
-    public class SemerkandPrayerTimeCalculatorTests
+    public class SemerkandPrayerTimeCalculatorTests : BaseTest
     {
-        private static ServiceProvider _serviceProvider = null;
-
-        public static ServiceProvider ServiceProvider
+        protected override void ConfigureServiceProvider(ServiceCollection serviceCollection)
         {
-            get
-            {
-                if (_serviceProvider == null)
-                {
-                    var serviceCollection = new ServiceCollection();
+            serviceCollection.AddSingleton(Substitute.For<ILocationService>());
 
-                    serviceCollection.AddSingleton(Substitute.For<ILocationService>());
-
-                    serviceCollection.AddSingleton<ISemerkandDBAccess, SemerkandDBAccess>();
-                    serviceCollection.AddSingleton<ISemerkandApiService>(getMockedSemerkandApiService());
-                    serviceCollection.AddSingleton(Substitute.For<ILogger<SemerkandPrayerTimeCalculator>>());
-                    serviceCollection.AddSingleton<SemerkandPrayerTimeCalculator>();
-
-                    serviceCollection.AddDbContext<AppDbContext>(options =>
-                    {
-                        options.UseSqlite("Data Source=:memory:");
-                    });
-
-                    _serviceProvider = serviceCollection.BuildServiceProvider();
-
-                    var database = _serviceProvider.GetService<AppDbContext>().Database;
-                    database.OpenConnection();
-                    database.EnsureCreated();
-                }
-
-                return _serviceProvider;
-            }
+            serviceCollection.AddSingleton<ISemerkandDBAccess, SemerkandDBAccess>();
+            serviceCollection.AddSingleton<ISemerkandApiService>(getMockedSemerkandApiService());
+            serviceCollection.AddSingleton(Substitute.For<ILogger<SemerkandPrayerTimeCalculator>>());
+            serviceCollection.AddSingleton<SemerkandPrayerTimeCalculator>();
         }
 
         private static SemerkandApiService getMockedSemerkandApiService()
         {
             Dictionary<string, string> urlToContentMap = new Dictionary<string, string>()
             {
-                [$@"{SemerkandApiService.GET_COUNTRIES_URL}"] = File.ReadAllText(@"API\SemerkandAPI\TestData\Semerkand_TestCountriesData.txt"),
-                [$@"{SemerkandApiService.GET_CITIES_BY_COUNTRY_URL}"] = File.ReadAllText(@"API\SemerkandAPI\TestData\Semerkand_TestCityData_Austria.txt"),
-                [$@"{string.Format(SemerkandApiService.GET_TIMES_BY_CITY, "197", "2023")}"] = File.ReadAllText(@"API\SemerkandAPI\TestData\Semerkand_TestPrayerTimeData_20230729_Innsbruck.txt"),
+                [$@"{SemerkandApiService.GET_COUNTRIES_URL}"] = File.ReadAllText(@"APIs\SemerkandAPI\TestData\Semerkand_TestCountriesData.txt"),
+                [$@"{SemerkandApiService.GET_CITIES_BY_COUNTRY_URL}"] = File.ReadAllText(@"APIs\SemerkandAPI\TestData\Semerkand_TestCityData_Austria.txt"),
+                [$@"{string.Format(SemerkandApiService.GET_TIMES_BY_CITY, "197", "2023")}"] = File.ReadAllText(@"APIs\SemerkandAPI\TestData\Semerkand_TestPrayerTimeData_20230729_Innsbruck.txt"),
             };
 
             var mockHttpMessageHandler = new MockHttpMessageHandler(HttpStatusCode.OK, urlToContentMap);

@@ -16,38 +16,15 @@ using System.Net;
 
 namespace PrayerTimeEngine.Core.Tests.API.FaziletAPI
 {
-    public class FaziletPrayerTimeCalculatorTests
+    public class FaziletPrayerTimeCalculatorTests : BaseTest
     {
-        private static ServiceProvider _serviceProvider = null;
-
-        public static ServiceProvider ServiceProvider
+        protected override void ConfigureServiceProvider(ServiceCollection serviceCollection)
         {
-            get
-            {
-                if (_serviceProvider == null)
-                {
-                    var serviceCollection = new ServiceCollection();
-
-                    serviceCollection.AddSingleton(Substitute.For<ILocationService>());
-
-                    serviceCollection.AddSingleton<IFaziletDBAccess, FaziletDBAccess>();
-                    serviceCollection.AddSingleton<IFaziletApiService>(getMockedFaziletApiService());
-                    serviceCollection.AddSingleton(Substitute.For<ILogger<FaziletPrayerTimeCalculator>>());
-                    serviceCollection.AddSingleton<FaziletPrayerTimeCalculator>();
-
-                    serviceCollection.AddDbContext<AppDbContext>(options =>
-                    {
-                        options.UseSqlite("Data Source=:memory:");
-                    });
-
-                    _serviceProvider = serviceCollection.BuildServiceProvider(); 
-                    var database = ServiceProvider.GetService<AppDbContext>().Database;
-                    database.GetDbConnection().Open();
-                    database.EnsureCreated();
-                }
-
-                return _serviceProvider;
-            }
+            serviceCollection.AddSingleton(Substitute.For<ILocationService>());
+            serviceCollection.AddSingleton<IFaziletDBAccess, FaziletDBAccess>();
+            serviceCollection.AddSingleton<IFaziletApiService>(getMockedFaziletApiService());
+            serviceCollection.AddSingleton(Substitute.For<ILogger<FaziletPrayerTimeCalculator>>());
+            serviceCollection.AddSingleton<FaziletPrayerTimeCalculator>();
         }
 
         private static FaziletApiService getMockedFaziletApiService()
@@ -55,9 +32,9 @@ namespace PrayerTimeEngine.Core.Tests.API.FaziletAPI
             string dummyBaseURL = @"http://dummy.url.com";
             Dictionary<string, string> urlToContentMap = new Dictionary<string, string>()
             {
-                [$@"{dummyBaseURL}/{FaziletApiService.GET_COUNTRIES_URL}"] = File.ReadAllText(@"API\FaziletAPI\TestData\Fazilet_TestCountriesData.txt"),
-                [$@"{dummyBaseURL}/{FaziletApiService.GET_CITIES_BY_COUNTRY_URL}2"] = File.ReadAllText(@"API\FaziletAPI\TestData\Fazilet_TestCityData_Austria.txt"),
-                [$@"{dummyBaseURL}/{string.Format(FaziletApiService.GET_TIMES_BY_CITY_URL, "92")}"] = File.ReadAllText(@"API\FaziletAPI\TestData\Fazilet_TestPrayerTimeData_20230729_Innsbruck.txt"),
+                [$@"{dummyBaseURL}/{FaziletApiService.GET_COUNTRIES_URL}"] = File.ReadAllText(@"APIs\FaziletAPI\TestData\Fazilet_TestCountriesData.txt"),
+                [$@"{dummyBaseURL}/{FaziletApiService.GET_CITIES_BY_COUNTRY_URL}2"] = File.ReadAllText(@"APIs\FaziletAPI\TestData\Fazilet_TestCityData_Austria.txt"),
+                [$@"{dummyBaseURL}/{string.Format(FaziletApiService.GET_TIMES_BY_CITY_URL, "92")}"] = File.ReadAllText(@"APIs\FaziletAPI\TestData\Fazilet_TestPrayerTimeData_20230729_Innsbruck.txt"),
             };
 
             var mockHttpMessageHandler = new MockHttpMessageHandler(HttpStatusCode.OK, urlToContentMap);
