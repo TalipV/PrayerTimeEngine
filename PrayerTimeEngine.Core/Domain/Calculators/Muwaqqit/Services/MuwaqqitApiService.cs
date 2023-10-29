@@ -58,7 +58,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services
 
             prayerTimes = new MuwaqqitPrayerTimes
             {
-                Date = getZonedDateTime(muwaqqitResponse.d, dateTimeZone).Date,
+                Date = getLocalDate(muwaqqitResponse.d),
                 Longitude = muwaqqitResponse.ln,
                 Latitude = muwaqqitResponse.lt,
 
@@ -83,6 +83,16 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services
             return prayerTimes;
         }
 
+        private LocalDate getLocalDate(string zonedDateTimeString)
+        {
+            OffsetDateTimePattern.CreateWithInvariantCulture("yyyy-MM-dd HH:mm:ss.FFFFFFFo<G>")
+                .Parse(zonedDateTimeString)
+                .Value
+                .Deconstruct(out LocalDateTime localDateTime, out _);
+
+            return localDateTime.Date;
+        }
+
         private ZonedDateTime getZonedDateTime(string zonedDateTimeString, DateTimeZone dateTimeZone)
         {
             OffsetDateTimePattern.CreateWithInvariantCulture("yyyy-MM-dd HH:mm:ss.FFFFFFFo<G>")
@@ -91,7 +101,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services
                 .Deconstruct(out LocalDateTime localDateTime, out Offset offset);
 
             // ignore fractions of seconds
-            localDateTime = 
+            localDateTime =
                 localDateTime.Date + new LocalTime(localDateTime.Hour, localDateTime.Minute, localDateTime.Second);
 
             return new ZonedDateTime(localDateTime, dateTimeZone, offset);
