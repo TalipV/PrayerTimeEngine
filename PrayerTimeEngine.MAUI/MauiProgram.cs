@@ -42,6 +42,9 @@ public static class MauiProgram
                 fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
             });
 
+        DevExpress.Maui.Editors.Initializer.Init();
+        DevExpress.Maui.Controls.Initializer.Init();
+
         addLogging(builder);
         addDependencyInjectionServices(builder.Services);
 

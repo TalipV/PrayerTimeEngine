@@ -111,8 +111,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
             if (SelectedCalculationSource == ECalculationSource.Muwaqqit
                 && _timeTypeAttributeService.DegreeTypes.Contains(TimeType))
             {
-                CustomSettingConfigurationViewModel =
-                    new MuwaqqitDegreeSettingConfigurationViewModel(TimeType);
+                CustomSettingConfigurationViewModel = new MuwaqqitDegreeSettingConfigurationViewModel(TimeType);
             }
             else
             {
