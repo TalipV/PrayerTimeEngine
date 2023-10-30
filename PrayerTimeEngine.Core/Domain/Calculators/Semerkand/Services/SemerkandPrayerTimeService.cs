@@ -2,7 +2,6 @@
 using MethodTimer;
 using Microsoft.Extensions.Logging;
 using NodaTime;
-using PrayerTimeEngine.Core.Common;
 using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Domain.CalculationService.Interfaces;
 using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Interfaces;

@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Logging;
-using PrayerTimeEngine.Core.Common;
 using PrayerTimeEngine.Core.Domain.Model;
 using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Interfaces;
 using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Models;

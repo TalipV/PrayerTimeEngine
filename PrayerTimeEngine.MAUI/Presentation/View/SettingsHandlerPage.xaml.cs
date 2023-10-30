@@ -1,5 +1,4 @@
 using DevExpress.Maui.Controls;
-using Microsoft.Maui.Controls;
 using PrayerTimeEngine.Code.Presentation.View;
 using PrayerTimeEngine.Presentation.ViewModel;
 
