@@ -1,5 +1,4 @@
-﻿using PrayerTimeEngine.Core.Common;
-using PrayerTimeEngine.Core.Domain.Model;
+﻿using PrayerTimeEngine.Core.Domain.Model;
 using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Models;
 using PrayerTimeEngine.Core.Domain.Configuration.Models;
 using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Interfaces;
