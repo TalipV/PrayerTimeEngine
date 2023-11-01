@@ -1,4 +1,5 @@
 ﻿using MetroLog.Maui;
+using Microsoft.EntityFrameworkCore;
 using PrayerTimeEngine.Core.Data.EntityFramework;
 
 namespace PrayerTimeEngine;
@@ -14,7 +15,7 @@ public partial class App : Application
         MainPage = new NavigationPage(page);
 
         // Initialize the database
-        dbContext.Database.EnsureCreated();
+        dbContext.Database.Migrate();
 
         LogController.InitializeNavigation(
             MainPage.Navigation.PushModalAsync,
