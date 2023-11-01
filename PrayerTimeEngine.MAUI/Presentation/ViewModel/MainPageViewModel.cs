@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Maui.Alerts;
 using CommunityToolkit.Maui.Core;
+using Java.Util.Logging;
 using MetroLog.Maui;
 using Microsoft.Extensions.Logging;
 using NodaTime;
@@ -12,6 +13,7 @@ using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Models;
 using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Models;
 using PrayerTimeEngine.Core.Domain.Configuration.Interfaces;
 using PrayerTimeEngine.Core.Domain.Configuration.Models;
+using PrayerTimeEngine.Core.Domain.Configuration.Services;
 using PrayerTimeEngine.Core.Domain.Model;
 using PrayerTimeEngine.Core.Domain.PlacesService.Interfaces;
 using PrayerTimeEngine.Core.Domain.PlacesService.Models.Common;
@@ -23,37 +25,31 @@ using System.Windows.Input;
 namespace PrayerTimeEngine.Presentation.ViewModel
 {
     [AddINotifyPropertyChangedInterface]
-    public class MainPageViewModel : LogController
+    public class MainPageViewModel: LogController
     {
+        private readonly IPrayerTimeCalculationService prayerTimeCalculator;
+        private readonly ILocationService placeService;
+        private readonly IProfileService profileService;
+        private readonly INavigationService navigationService;
+        private readonly ILogger<MainPageViewModel> logger;
+        private readonly TimeTypeAttributeService timeTypeAttributeService;
+
         public MainPageViewModel(
             IPrayerTimeCalculationService prayerTimeCalculator,
             ILocationService placeService,
-            IConfigStoreService configStoreService,
+            IProfileService profileService,
             INavigationService navigationService,
-            PrayerTimesConfigurationStorage prayerTimesConfigurationStorage,
             ILogger<MainPageViewModel> logger,
-            TimeTypeAttributeService timeTypeAttributeService)
+            TimeTypeAttributeService timeTypeAttributeService
+        )
         {
-            _prayerTimeCalculationService = prayerTimeCalculator;
-            _placeService = placeService;
-            _configStoreService = configStoreService;
-            _navigationService = navigationService;
-            _prayerTimesConfigurationStorage = prayerTimesConfigurationStorage;
-            _logger = logger;
-            _timeTypeAttributeService = timeTypeAttributeService;
+            this.prayerTimeCalculator = prayerTimeCalculator;
+            this.placeService = placeService;
+            this.profileService = profileService;
+            this.navigationService = navigationService;
+            this.logger = logger;
+            this.timeTypeAttributeService = timeTypeAttributeService;
         }
-
-        #region fields
-
-        private readonly IPrayerTimeCalculationService _prayerTimeCalculationService;
-        private readonly ILocationService _placeService;
-        private readonly TimeTypeAttributeService _timeTypeAttributeService;
-        private readonly IConfigStoreService _configStoreService;
-        private readonly INavigationService _navigationService;
-        private readonly PrayerTimesConfigurationStorage _prayerTimesConfigurationStorage;
-        private readonly ILogger<MainPageViewModel> _logger;
-
-        #endregion fields
 
         #region properties
 
@@ -119,11 +115,11 @@ namespace PrayerTimeEngine.Presentation.ViewModel
             try
             {
                 string languageCode = CultureInfo.CurrentCulture.TwoLetterISOLanguageName;
-                return await _placeService.SearchPlacesAsync(searchText, languageCode);
+                return await placeService.SearchPlacesAsync(searchText, languageCode);
             }
             catch (Exception ex)
             {
-                _logger.LogDebug(ex, "Error during place search");
+                logger.LogDebug(ex, "Error during place search");
                 doToast(ex.Message);
             }
 
@@ -136,7 +132,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
                 {
                     if (!IsLoadingPrayerTimes)
                     {
-                        await _navigationService.NavigateTo<SettingsHandlerPageViewModel>(prayerTime);
+                        await navigationService.NavigateTo<SettingsHandlerPageViewModel>(prayerTime);
                     }
                 });
 
@@ -160,7 +156,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
             }
             catch (Exception exception)
             {
-                _logger.LogDebug(exception, "Error during OnActualAppearing");
+                logger.LogDebug(exception, "Error during OnActualAppearing");
                 doToast(exception.Message);
             }
         }
@@ -170,14 +166,14 @@ namespace PrayerTimeEngine.Presentation.ViewModel
             try
             {
 
-                Profiles = await _prayerTimesConfigurationStorage.GetProfiles();
+                Profiles = await profileService.GetProfiles();
 
                 await loadPrayerTimes();
                 showHideSpecificTimes();
             }
             catch (Exception exception)
             {
-                _logger.LogDebug(exception, "Error during page load");
+                logger.LogDebug(exception, "Error during page load");
                 doToast(exception.Message);
             }
         }
@@ -221,7 +217,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
                 IsLoadingPrayerTimes = true;
 
                 LocalDate today = DateTime.Now.ToLocalDateTime().Date;
-                Prayers = await _prayerTimeCalculationService.ExecuteAsync(CurrentProfile, today);
+                Prayers = await prayerTimeCalculator.ExecuteAsync(CurrentProfile, today);
                 OnAfterLoadingPrayerTimes_EventTrigger.Invoke();
             }
             finally
@@ -250,12 +246,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
 
         private bool isCalculationShown(ETimeType timeData)
         {
-            if (!CurrentProfile.Configurations.TryGetValue(timeData, out GenericSettingConfiguration config) || config == null)
-            {
-                return true;
-            }
-
-            return config.IsTimeShown;
+            return profileService.GetTimeConfig(CurrentProfile, timeData)?.IsTimeShown == true;
         }
 
         private void onSelectedPlaceChanged()
@@ -270,30 +261,27 @@ namespace PrayerTimeEngine.Presentation.ViewModel
                 try
                 {
                     this.IsLoadingSelectedPlace = true;
-                    CurrentProfile.LocationDataByCalculationSource.Clear();
 
-                    CompletePlaceInfo completePlaceInfo = await _placeService.GetTimezoneInfo(SelectedPlace);
-
-                    foreach (var calculationSource in
-                        Enum.GetValues(typeof(ECalculationSource))
-                        .Cast<ECalculationSource>())
+                    CompletePlaceInfo completePlaceInfo = await placeService.GetTimezoneInfo(SelectedPlace);
+                    var locationDataByCalculationSource = new Dictionary<ECalculationSource, BaseLocationData>();
+                    foreach (var calculationSource in Enum.GetValues<ECalculationSource>())
                     {
                         if (calculationSource == ECalculationSource.None)
                             continue;
 
-                        CurrentProfile.LocationDataByCalculationSource[calculationSource] =
-                            await _prayerTimeCalculationService
+                        BaseLocationData locationConfig =
+                            await prayerTimeCalculator
                                 .GetPrayerTimeCalculatorByCalculationSource(calculationSource)
                                 .GetLocationInfo(completePlaceInfo);
+
+                        locationDataByCalculationSource[calculationSource] = locationConfig;
                     }
 
-                    CurrentProfile.LocationName = completePlaceInfo.DisplayText;
-                    await _configStoreService.SaveProfile(CurrentProfile);
+                    await profileService.UpdateLocationConfig(CurrentProfile, completePlaceInfo.DisplayText, locationDataByCalculationSource);
 
-                    var missingLocationInfo =
-                        CurrentProfile.LocationDataByCalculationSource
-                            .Where(x => x.Value == null)
-                            .Select(x => x.Key.ToString())
+                    List<ECalculationSource> missingLocationInfo =
+                        Enum.GetValues<ECalculationSource>()
+                            .Where(enumValue => !CurrentProfile.LocationConfigs.Select(x => x.CalculationSource).Contains(enumValue))
                             .ToList();
 
                     if (missingLocationInfo.Count != 0)
@@ -303,7 +291,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
                 }
                 catch (Exception exception)
                 {
-                    _logger.LogDebug(exception, "Error during place selection");
+                    logger.LogDebug(exception, "Error during place selection");
                     doToast(exception.Message);
                 }
                 finally
@@ -318,48 +306,48 @@ namespace PrayerTimeEngine.Presentation.ViewModel
         public string GetLocationDataDisplayText()
         {
             if (this.CurrentProfile == null)
-                return "";
+                return string.Empty;
 
-            MuwaqqitLocationData muwaqqitLocationData = this.CurrentProfile.LocationDataByCalculationSource[ECalculationSource.Muwaqqit] as MuwaqqitLocationData;
-            FaziletLocationData faziletLocationData = this.CurrentProfile.LocationDataByCalculationSource[ECalculationSource.Fazilet] as FaziletLocationData;
-            SemerkandLocationData semerkandLocationData = this.CurrentProfile.LocationDataByCalculationSource[ECalculationSource.Semerkand] as SemerkandLocationData;
+            MuwaqqitLocationData muwaqqitLocationData = profileService.GetLocationConfig(this.CurrentProfile, ECalculationSource.Muwaqqit) as MuwaqqitLocationData;
+            FaziletLocationData faziletLocationData = profileService.GetLocationConfig(this.CurrentProfile, ECalculationSource.Fazilet) as FaziletLocationData;
+            SemerkandLocationData semerkandLocationData = profileService.GetLocationConfig(this.CurrentProfile, ECalculationSource.Semerkand) as SemerkandLocationData;
 
             return $"""
                     Muwaqqit:
                         - Coordinates:  
-                        ({muwaqqitLocationData.Latitude} / {muwaqqitLocationData.Longitude})
+                        ({muwaqqitLocationData?.Latitude} / {muwaqqitLocationData?.Longitude})
                         - Timezone:     
-                        '{muwaqqitLocationData.TimezoneName}'
+                        '{muwaqqitLocationData?.TimezoneName}'
                     
                     Fazilet:
                         - Country 
-                        '{faziletLocationData.CountryName}'
+                        '{faziletLocationData?.CountryName}'
                         - City 
-                        '{faziletLocationData.CityName}'
+                        '{faziletLocationData?.CityName}'
                     
                     Semerkand:
                         - Country 
-                        '{semerkandLocationData.CountryName}'
+                        '{semerkandLocationData?.CountryName}'
                         - City 
-                        '{semerkandLocationData.CityName}'
+                        '{semerkandLocationData?.CityName}'
                     """;
         }
 
         public string GetPrayerTimeConfigDisplayText()
         {
-            string outputText = "";
+            string outputText = string.Empty;
 
-            foreach (KeyValuePair<EPrayerType, List<ETimeType>> item in _timeTypeAttributeService.PrayerTypeToTimeTypes)
+            foreach (KeyValuePair<EPrayerType, List<ETimeType>> item in timeTypeAttributeService.PrayerTypeToTimeTypes)
             {
                 EPrayerType prayerType = item.Key;
                 outputText += prayerType.ToString();
 
                 foreach (ETimeType timeType in item.Value)
                 {
-                    if (!_timeTypeAttributeService.ConfigurableTypes.Contains(timeType))
+                    if (!timeTypeAttributeService.ConfigurableTypes.Contains(timeType))
                         continue;
 
-                    GenericSettingConfiguration config = this.CurrentProfile.Configurations[timeType];
+                    GenericSettingConfiguration config = profileService.GetTimeConfig(this.CurrentProfile, timeType);
 
                     outputText += Environment.NewLine;
                     outputText += $"- {timeType} mit {config.Source}";

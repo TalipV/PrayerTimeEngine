@@ -35,25 +35,22 @@ namespace PrayerTimeEngine.Presentation.ViewModel
 
         #endregion static fields
 
+        private IProfileService profileService;
+        private TimeTypeAttributeService timeTypeAttributeService;
+
         public SettingsContentPageViewModel(
-            PrayerTimesConfigurationStorage prayerTimesConfigurationStorage,
-            IConfigStoreService configStoreService,
-            TimeTypeAttributeService timeTypeAttributeService)
+            IProfileService profileService,
+            TimeTypeAttributeService timeTypeAttributeService
+        )
         {
-            _configStoreService = configStoreService;
-            _prayerTimesConfigurationStorage = prayerTimesConfigurationStorage;
-            _timeTypeAttributeService = timeTypeAttributeService;
+            this.profileService = profileService;
+            this.timeTypeAttributeService = timeTypeAttributeService;
         }
 
         public event Action OnInitializeCustomUI_EventTrigger = delegate { };
-
         public event Action OnViewModelInitialize_EventTrigger = delegate { };
 
         #region fields
-
-        private readonly PrayerTimesConfigurationStorage _prayerTimesConfigurationStorage;
-        private readonly IConfigStoreService _configStoreService;
-        private readonly TimeTypeAttributeService _timeTypeAttributeService;
 
         private bool _isInitialized = false;
 
@@ -78,6 +75,8 @@ namespace PrayerTimeEngine.Presentation.ViewModel
 
         public ISettingConfigurationViewModel CustomSettingConfigurationViewModel { get; set; }
 
+        public Profile Profile { get; set; }
+
         #endregion properties
 
         #region public methods
@@ -86,13 +85,14 @@ namespace PrayerTimeEngine.Presentation.ViewModel
         {
             TabTitle = $"{timeType}";
             TimeType = timeType;
-            ShowCalculationSourcePicker = !_timeTypeAttributeService.ConfigurableSimpleTypes.Contains(timeType);
-            IsTimeShownCheckBoxVisible = !_timeTypeAttributeService.NotHideableTypes.Contains(timeType);
+            ShowCalculationSourcePicker = !timeTypeAttributeService.ConfigurableSimpleTypes.Contains(timeType);
+            IsTimeShownCheckBoxVisible = !timeTypeAttributeService.NotHideableTypes.Contains(timeType);
 
             CalculationSources = getCalculationSource();
             MinuteAdjustments = getMinuteAdjustmentSource();
 
-            GenericSettingConfiguration calculationConfiguration = await _prayerTimesConfigurationStorage.GetConfiguration(TimeType);
+            Profile = (await profileService.GetProfiles())[0];
+            GenericSettingConfiguration calculationConfiguration = profileService.GetTimeConfig(Profile, TimeType, createIfNotExists: true);
             IsTimeShown = !IsTimeShownCheckBoxVisible || calculationConfiguration.IsTimeShown;
             SelectedCalculationSource = calculationConfiguration.Source;
             SelectedMinuteAdjustment = calculationConfiguration.MinuteAdjustment;
@@ -109,7 +109,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
                 return;
 
             if (SelectedCalculationSource == ECalculationSource.Muwaqqit
-                && _timeTypeAttributeService.DegreeTypes.Contains(TimeType))
+                && timeTypeAttributeService.DegreeTypes.Contains(TimeType))
             {
                 CustomSettingConfigurationViewModel = new MuwaqqitDegreeSettingConfigurationViewModel(TimeType);
             }
@@ -124,7 +124,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
         public async Task OnDisappearing()
         {
             GenericSettingConfiguration settings = getCurrentCalculationConfiguration();
-            await saveSettingsToProfile(settings);
+            await saveSettingsToProfile(Profile, settings);
         }
 
         #endregion public methods
@@ -153,7 +153,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
 
         private List<ECalculationSource> getCalculationSource()
         {
-            if (!_timeTypeAttributeService.TimeTypeCompatibleSources.TryGetValue(TimeType, out IReadOnlyList<ECalculationSource> calculationSources))
+            if (!timeTypeAttributeService.TimeTypeCompatibleSources.TryGetValue(TimeType, out IReadOnlyList<ECalculationSource> calculationSources))
             {
                 return new List<ECalculationSource>();
             }
@@ -177,11 +177,10 @@ namespace PrayerTimeEngine.Presentation.ViewModel
             }
         }
 
-        private async Task saveSettingsToProfile(GenericSettingConfiguration settings)
+        private async Task saveSettingsToProfile(Profile profile, GenericSettingConfiguration settings)
         {
-            Profile profile = (await _prayerTimesConfigurationStorage.GetProfiles()).First();
-            profile.Configurations[TimeType] = settings;
-            await _configStoreService.SaveProfile(profile);
+            profileService.SetTimeConfig(profile, TimeType, settings);
+            await profileService.SaveProfile(profile);
         }
 
         #endregion private methods

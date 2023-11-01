@@ -2,7 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using NodaTime;
 using PrayerTimeEngine.Core.Common.Enum;
-using PrayerTimeEngine.Core.Data.SQLite;
+using PrayerTimeEngine.Core.Data.EntityFramework;
 using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Models;
 using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services;
 using PrayerTimeEngine.Core.Domain.Configuration.Models;
@@ -14,7 +14,7 @@ namespace PrayerTimeEngine.BenchmarkDotNet
     [MemoryDiagnoser]
     public class MuwaqqitPrayerTimeCalculatorBenchmark
     {
-        private static SQLiteDB _sqlite = null;
+        private static AppDbContext _appDbContext = null;
         private static MuwaqqitPrayerTimeCalculator _muwaqqitPrayerTimeCalculator = null;
         private static List<GenericSettingConfiguration> _configs =
             new()
@@ -44,28 +44,28 @@ namespace PrayerTimeEngine.BenchmarkDotNet
                 TimezoneName = "Europe/Vienna"
             };
 
-        [GlobalSetup]
-        public void Setup()
-        {
-            _sqlite = MuwaqqitPrayerTimeCalculatorTests.ServiceProvider.GetService<ISQLiteDB>() as SQLiteDB;
-            _muwaqqitPrayerTimeCalculator = MuwaqqitPrayerTimeCalculatorTests.ServiceProvider.GetService<MuwaqqitPrayerTimeCalculator>();
-        }
+        //[GlobalSetup]
+        //public void Setup()
+        //{
+        //    _appDbContext = MuwaqqitPrayerTimeCalculatorTests.ServiceProvider.GetService<AppDbContext>();
+        //    _muwaqqitPrayerTimeCalculator = MuwaqqitPrayerTimeCalculatorTests.ServiceProvider.GetService<MuwaqqitPrayerTimeCalculator>();
+        //}
 
-        private static Microsoft.Data.Sqlite.SqliteConnection _sqlConnection;
+        //private static Microsoft.Data.Sqlite.SqliteConnection _sqlConnection;
 
-        [IterationSetup]
-        public void IterationSetup()
-        {
-            _sqlConnection = _sqlite.GetSqliteConnection("Data Source=:memory:");
-            _sqlite.InitializeDatabase(filePathDatabase: false);
-        }
+        //[IterationSetup]
+        //public void IterationSetup()
+        //{
+        //    _sqlConnection = _appDbContext.GetSqliteConnection("Data Source=:memory:");
+        //    _appDbContext.InitializeDatabase(filePathDatabase: false);
+        //}
 
-        [IterationCleanup]
-        public void IterationCleanup()
-        {
-            _sqlConnection?.Close();
-            _sqlConnection?.Dispose();
-        }
+        //[IterationCleanup]
+        //public void IterationCleanup()
+        //{
+        //    _sqlConnection?.Close();
+        //    _sqlConnection?.Dispose();
+        //}
 
         [Benchmark]
         public void Test1()

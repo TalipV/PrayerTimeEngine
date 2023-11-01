@@ -5,9 +5,8 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Interfaces
 {
     public interface IFaziletDBAccess
     {
-        public Task<Dictionary<string, int>> GetCountries();
-        public Task<Dictionary<string, int>> GetCitiesByCountryID(int countryID);
-
+        public Task<List<FaziletCountry>> GetCountries();
+        public Task<List<FaziletCity>> GetCitiesByCountryID(int countryID);
         public Task<FaziletPrayerTimes> GetTimesByDateAndCityID(LocalDate date, int cityID);
 
         public Task InsertCountries(Dictionary<string, int> countries);
