@@ -27,6 +27,26 @@ namespace PrayerTimeEngine;
 
 // dotnet publish -c release -f net7.0-android -p:false
 
+// BUGS:
+// - Next Fajr (value and for graphic) & Last 'Isha (for graphic)
+// - No robust system for country and city (re)load from fazilet/semerkand API (e.g. failed city retrieval leads to no second try)
+// - Fazilet/Semerkand country/city names which are unexpected (e.g. "Vienna (Wien)")
+// - Turkish location details for Fazilet/Semerkand not robust
+// - Exception for single calculation prevents all the other calculations
+
+// TODO:
+// - Performance
+// - Multiple profiles
+// - Decrease count of reloads (e.g. mere app switch shouldn't always require reload)
+// - CancellationTokens
+
+// TODO late:
+// - Check for possibly unsafe concurrent actions (fast user interactions, app crashes and other special cases) 
+// - Logging
+// - Comments
+// - Translation
+// - Check MVVM
+
 public static class MauiProgram
 {
     public static MauiApp CreateMauiApp()
