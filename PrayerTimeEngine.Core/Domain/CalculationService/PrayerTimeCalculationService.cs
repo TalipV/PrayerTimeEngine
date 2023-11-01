@@ -8,11 +8,13 @@ using PrayerTimeEngine.Core.Domain.Calculators;
 using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services;
 using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services;
 using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services;
+using PrayerTimeEngine.Core.Domain.Configuration.Interfaces;
 using PrayerTimeEngine.Core.Domain.Configuration.Models;
 using PrayerTimeEngine.Core.Domain.Model;
 
 public class PrayerTimeCalculationService(
         IServiceProvider serviceProvider,
+        IProfileService profileService,
         TimeTypeAttributeService timeTypeAttributeService
     ) : IPrayerTimeCalculationService
 {
@@ -49,7 +51,7 @@ public class PrayerTimeCalculationService(
 
         IPrayerTimeService timeCalculator = GetPrayerTimeCalculatorByCalculationSource(calculationSource);
         throwIfConfigsHaveUnsupportedTimeTypes(calculationSource, configs, timeCalculator);
-        BaseLocationData locationData = profile.LocationDataByCalculationSource[calculationSource];
+        BaseLocationData locationData = profileService.GetLocationConfig(profile, calculationSource);
 
         ILookup<ICalculationPrayerTimes, ETimeType> calculationPrayerTimes =
             await timeCalculator.GetPrayerTimesAsync(date, locationData, configs).ConfigureAwait(false);
@@ -101,7 +103,7 @@ public class PrayerTimeCalculationService(
     {
         return timeTypeAttributeService
             .NonSimpleTypes
-            .Select(profile.GetConfiguration)
+            .Select(x => profileService.GetTimeConfig(profile, x))
             .Where(config =>
                 config is GenericSettingConfiguration
                 {
@@ -114,7 +116,7 @@ public class PrayerTimeCalculationService(
     private void handleSimpleTypes(Profile profile, PrayerTimesBundle prayerTimeEntity)
     {
         if (prayerTimeEntity.Dhuhr?.Start != null
-            && profile.GetConfiguration(ETimeType.DuhaEnd) is GenericSettingConfiguration duhaConfig
+            && profileService.GetTimeConfig(profile, ETimeType.DuhaEnd) is GenericSettingConfiguration duhaConfig
             && duhaConfig.IsTimeShown)
         {
             prayerTimeEntity.SetSpecificPrayerTimeDateTime(
@@ -123,7 +125,7 @@ public class PrayerTimeCalculationService(
         }
 
         if (prayerTimeEntity.Maghrib?.Start != null
-            && profile.GetConfiguration(ETimeType.MaghribSufficientTime) is GenericSettingConfiguration maghribSufficientTimeConfig
+            && profileService.GetTimeConfig(profile, ETimeType.MaghribSufficientTime) is GenericSettingConfiguration maghribSufficientTimeConfig
             && maghribSufficientTimeConfig.IsTimeShown)
         {
             prayerTimeEntity.SetSpecificPrayerTimeDateTime(
@@ -132,7 +134,7 @@ public class PrayerTimeCalculationService(
         }
 
         if ((prayerTimeEntity.Asr?.End - prayerTimeEntity.Fajr?.Start) is Duration dayDuration
-            && profile.GetConfiguration(ETimeType.DuhaQuarterOfDay) is GenericSettingConfiguration duhaQuarterOfDayConfig
+            && profileService.GetTimeConfig(profile, ETimeType.DuhaQuarterOfDay) is GenericSettingConfiguration duhaQuarterOfDayConfig
             && duhaQuarterOfDayConfig.IsTimeShown)
         {
             Duration quarterOfDayDuration = dayDuration / 4.0;
@@ -144,7 +146,7 @@ public class PrayerTimeCalculationService(
 
         if ((prayerTimeEntity.Isha?.End - prayerTimeEntity.Maghrib?.Start) is Duration nightDuration)
         {
-            if (profile.GetConfiguration(ETimeType.IshaFirstThird) is GenericSettingConfiguration firstThirdOfNightConfig
+            if (profileService.GetTimeConfig(profile, ETimeType.IshaFirstThird) is GenericSettingConfiguration firstThirdOfNightConfig
                 && firstThirdOfNightConfig.IsTimeShown)
             {
                 Duration thirdOfNightDuration = nightDuration / 3.0;
@@ -153,7 +155,7 @@ public class PrayerTimeCalculationService(
                     ETimeType.IshaFirstThird,
                     prayerTimeEntity.Maghrib.Start.Value + thirdOfNightDuration);
             }
-            if (profile.GetConfiguration(ETimeType.IshaMidnight) is GenericSettingConfiguration halfOfNightConfig
+            if (profileService.GetTimeConfig(profile, ETimeType.IshaMidnight) is GenericSettingConfiguration halfOfNightConfig
                 && halfOfNightConfig.IsTimeShown)
             {
                 Duration halfOfNightDuration = nightDuration / 2.0;
@@ -162,7 +164,7 @@ public class PrayerTimeCalculationService(
                     ETimeType.IshaMidnight,
                     prayerTimeEntity.Maghrib.Start.Value + halfOfNightDuration);
             }
-            if (profile.GetConfiguration(ETimeType.IshaSecondThird) is GenericSettingConfiguration secondThirdOfNightConfig
+            if (profileService.GetTimeConfig(profile, ETimeType.IshaSecondThird) is GenericSettingConfiguration secondThirdOfNightConfig
                 && secondThirdOfNightConfig.IsTimeShown)
             {
                 Duration twoThirdsOfNightDuration = nightDuration * (2.0 / 3.0);

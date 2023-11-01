@@ -125,7 +125,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
                 semaphoreTryGetCityID.Release();
             }
 
-            if ((await faziletDBAccess.GetCitiesByCountryID(countryID).ConfigureAwait(false)).TryGetValue(cityName, out int cityID))
+            if ((await faziletDBAccess.GetCitiesByCountryID(countryID).ConfigureAwait(false)).FirstOrDefault(x => x.Name == cityName)?.ID is int cityID)
                 return (true, cityID);
             else
                 return (false, -1);
@@ -141,7 +141,6 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
 
             try
             {
-
                 // We only check if it is empty because a selection of countries missing is not expected.
                 if ((await faziletDBAccess.GetCountries().ConfigureAwait(false)).Count == 0)
                 {
@@ -157,7 +156,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
                 semaphoreTryGetCountryID.Release();
             }
 
-            if ((await faziletDBAccess.GetCountries().ConfigureAwait(false)).TryGetValue(countryName, out int countryID))
+            if ((await faziletDBAccess.GetCountries().ConfigureAwait(false)).FirstOrDefault(x => x.Name == countryName)?.ID is int countryID)
                 return (true, countryID);
             else
                 return (false, -1);

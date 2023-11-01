@@ -1,4 +1,5 @@
 ﻿using PrayerTimeEngine.Core.Common.Enum;
+using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Models;
 using PrayerTimeEngine.Core.Domain.Model;
 
 namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Models
@@ -9,6 +10,21 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Models
         public required string CityName { get; init; }
         public required string TimezoneName { get; set; }
         public override ECalculationSource Source => ECalculationSource.Semerkand;
+
+        public override bool Equals(object obj)
+        {
+            if (obj is not SemerkandLocationData otherLocationData)
+                return false;
+
+            return this.CountryName == otherLocationData.CountryName
+                && this.CityName == otherLocationData.CityName
+                && this.TimezoneName == otherLocationData.TimezoneName;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(CountryName, CityName, TimezoneName);
+        }
     }
 }
 

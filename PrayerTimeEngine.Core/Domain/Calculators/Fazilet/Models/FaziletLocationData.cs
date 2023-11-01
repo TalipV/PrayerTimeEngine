@@ -9,5 +9,19 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Models
         public required string CityName { get; init; }
 
         public override ECalculationSource Source => ECalculationSource.Fazilet;
+
+        public override bool Equals(object obj)
+        {
+            if (obj is not FaziletLocationData otherLocationData)
+                return false;
+
+            return this.CountryName == otherLocationData.CountryName
+                && this.CityName == otherLocationData.CityName;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(CountryName, CityName);
+        }
     }
 }

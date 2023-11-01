@@ -1,6 +1,4 @@
-﻿using PrayerTimeEngine.Core.Common.Enum;
-using PrayerTimeEngine.Core.Domain.Model;
-using PropertyChanged;
+﻿using PropertyChanged;
 
 namespace PrayerTimeEngine.Core.Domain.Configuration.Models
 {
@@ -12,18 +10,7 @@ namespace PrayerTimeEngine.Core.Domain.Configuration.Models
         public string LocationName { get; set; }
         public int SequenceNo { get; set; }
 
-        public Dictionary<ETimeType, GenericSettingConfiguration> Configurations { get; init; } = new();
-        public Dictionary<ECalculationSource, BaseLocationData> LocationDataByCalculationSource { get; init; } = new();
-
-        public GenericSettingConfiguration GetConfiguration(ETimeType timeType)
-        {
-            if (!Configurations.TryGetValue(timeType, out GenericSettingConfiguration calculationConfiguration)
-                || calculationConfiguration == null)
-            {
-                Configurations[timeType] = calculationConfiguration = new GenericSettingConfiguration { TimeType = timeType };
-            }
-
-            return calculationConfiguration;
-        }
+        public ICollection<ProfileTimeConfig> TimeConfigs { get; set; }
+        public ICollection<ProfileLocationConfig> LocationConfigs { get; set; }
     }
 }

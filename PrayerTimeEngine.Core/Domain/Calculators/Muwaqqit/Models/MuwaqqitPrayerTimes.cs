@@ -1,11 +1,15 @@
 ﻿using NodaTime;
 using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Domain.CalculationService.Interfaces;
+using System.ComponentModel.DataAnnotations;
 
 namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Models
 {
     public class MuwaqqitPrayerTimes : ICalculationPrayerTimes
     {
+        [Key]
+        public int ID { get; set; }
+
         public required LocalDate Date { get; set; }
         public required decimal Longitude { get; set; }
         public required decimal Latitude { get; set; }

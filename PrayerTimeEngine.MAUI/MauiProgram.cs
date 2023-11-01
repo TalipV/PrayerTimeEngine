@@ -1,9 +1,10 @@
 ﻿using CommunityToolkit.Maui;
 using DevExpress.Maui;
 using MetroLog.MicrosoftExtensions;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using PrayerTimeEngine.Code.Presentation.View;
-using PrayerTimeEngine.Core.Data.SQLite;
+using PrayerTimeEngine.Core.Data.EntityFramework;
 using PrayerTimeEngine.Core.Domain;
 using PrayerTimeEngine.Core.Domain.CalculationService.Interfaces;
 using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Interfaces;
@@ -13,7 +14,6 @@ using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services;
 using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Interfaces;
 using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services;
 using PrayerTimeEngine.Core.Domain.Configuration.Interfaces;
-using PrayerTimeEngine.Core.Domain.Configuration.Models;
 using PrayerTimeEngine.Core.Domain.Configuration.Services;
 using PrayerTimeEngine.Core.Domain.PlacesService.Interfaces;
 using PrayerTimeEngine.Core.Domain.PlacesService.Services;
@@ -90,7 +90,13 @@ public static class MauiProgram
 
     private static void addDependencyInjectionServices(IServiceCollection serviceCollection)
     {
-        serviceCollection.AddSingleton<ISQLiteDB, SQLiteDB>();
+        serviceCollection.AddDbContext<AppDbContext>(options =>
+        {
+            string _databasePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "PrayerTimeEngineDB_ET.db");
+            options.UseSqlite($"Data Source={_databasePath}");
+            options.LogTo(Console.WriteLine, LogLevel.Trace);
+        }, ServiceLifetime.Transient);
+
         serviceCollection.AddSingleton<IPrayerTimeCalculationService, PrayerTimeCalculationService>();
         serviceCollection.AddSingleton<TimeTypeAttributeService>();
 
@@ -133,10 +139,8 @@ public static class MauiProgram
             client.Timeout = TimeSpan.FromSeconds(20);
         });
 
-        serviceCollection.AddTransient<IConfigStoreService, ConfigStoreService>();
-        serviceCollection.AddTransient<IConfigStoreDBAccess, ConfigStoreDBAccess>();
-
-        serviceCollection.AddSingleton<PrayerTimesConfigurationStorage>();
+        serviceCollection.AddTransient<IProfileService, ProfileService>();
+        serviceCollection.AddTransient<IProfileDBAccess, ProfileDBAccess>();
 
         addPresentationLayerServices(serviceCollection);
     }
