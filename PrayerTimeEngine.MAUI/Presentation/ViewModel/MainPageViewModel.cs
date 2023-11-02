@@ -66,7 +66,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
                 Instant currentInstant = SystemClock.Instance.GetCurrentInstant();
 
                 return Prayers.AllPrayerTimes.FirstOrDefault(x => x.Start.Value.ToInstant() <= currentInstant && currentInstant <= x.End.Value.ToInstant())
-                    ?? Prayers.AllPrayerTimes.OrderBy(x => x.Start.Value.Second).FirstOrDefault(x => x.Start.Value.ToInstant() > currentInstant);
+                    ?? Prayers.AllPrayerTimes.OrderBy(x => x.Start.Value.ToInstant()).FirstOrDefault(x => x.Start.Value.ToInstant() > currentInstant);
             }
         }
 
