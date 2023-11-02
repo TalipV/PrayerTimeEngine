@@ -1,5 +1,4 @@
-﻿using MethodTimer;
-using NodaTime;
+﻿using NodaTime;
 using NodaTime.Text;
 using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Interfaces;
 using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Models;
@@ -16,7 +15,6 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services
     {
         internal const string MUWAQQIT_API_URL = @"https://www.muwaqqit.com/api2.json";
 
-        [Time]
         public async Task<MuwaqqitPrayerTimes> GetTimesAsync(
             LocalDate date,
             decimal longitude,

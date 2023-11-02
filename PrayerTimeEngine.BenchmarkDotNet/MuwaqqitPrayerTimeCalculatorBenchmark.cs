@@ -1,4 +1,8 @@
 ﻿using BenchmarkDotNet.Attributes;
+using BenchmarkDotNet.Configs;
+using BenchmarkDotNet.Jobs;
+using BenchmarkDotNet.Toolchains.InProcess.NoEmit;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using NodaTime;
 using PrayerTimeEngine.Core.Common.Enum;
@@ -8,9 +12,11 @@ using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services;
 using PrayerTimeEngine.Core.Domain.Configuration.Models;
 using PrayerTimeEngine.Core.Tests.API.MuwaqqitAPI;
 using SQLitePCL;
+using System.Data.Common;
 
 namespace PrayerTimeEngine.BenchmarkDotNet
 {
+    [Config(typeof(AntiVirusFriendlyConfig))]
     [MemoryDiagnoser]
     public class MuwaqqitPrayerTimeCalculatorBenchmark
     {
@@ -44,39 +50,52 @@ namespace PrayerTimeEngine.BenchmarkDotNet
                 TimezoneName = "Europe/Vienna"
             };
 
-        //[GlobalSetup]
-        //public void Setup()
-        //{
-        //    _appDbContext = MuwaqqitPrayerTimeCalculatorTests.ServiceProvider.GetService<AppDbContext>();
-        //    _muwaqqitPrayerTimeCalculator = MuwaqqitPrayerTimeCalculatorTests.ServiceProvider.GetService<MuwaqqitPrayerTimeCalculator>();
-        //}
+        [GlobalSetup]
+        public void Setup()
+        {
+            var stuff = new MuwaqqitPrayerTimeCalculatorTests();
+            stuff.SetUp();
+            _appDbContext = stuff.ServiceProvider.GetService<AppDbContext>();
+            _muwaqqitPrayerTimeCalculator = stuff.ServiceProvider.GetService<MuwaqqitPrayerTimeCalculator>();
+        }
 
-        //private static Microsoft.Data.Sqlite.SqliteConnection _sqlConnection;
+        private static DbConnection _sqlConnection;
 
-        //[IterationSetup]
-        //public void IterationSetup()
-        //{
-        //    _sqlConnection = _appDbContext.GetSqliteConnection("Data Source=:memory:");
-        //    _appDbContext.InitializeDatabase(filePathDatabase: false);
-        //}
+        [IterationSetup]
+        public void IterationSetup()
+        {
+            _sqlConnection = _appDbContext.Database.GetDbConnection();
+            _appDbContext.Database.EnsureCreated();
+        }
 
-        //[IterationCleanup]
-        //public void IterationCleanup()
-        //{
-        //    _sqlConnection?.Close();
-        //    _sqlConnection?.Dispose();
-        //}
+        [IterationCleanup]
+        public void IterationCleanup()
+        {
+            _sqlConnection?.Close();
+            _sqlConnection?.Dispose();
+        }
+
+        private static LocalDate localDate = new LocalDate(2023, 7, 30);
 
         [Benchmark]
         public void Test1()
         {
-            for(int i = 0; i < 1000; i++)
+            for(int i = 0; i < 10; i++)
             {
                 var result = _muwaqqitPrayerTimeCalculator.GetPrayerTimesAsync(
-                    date: new LocalDate(2023, 7, 30),
+                    date: localDate,
                     locationData: _locationData,
                     configurations: _configs);
             }
+        }
+    }
+
+    public class AntiVirusFriendlyConfig : ManualConfig
+    {
+        public AntiVirusFriendlyConfig()
+        {
+            AddJob(Job.MediumRun
+                .WithToolchain(InProcessNoEmitToolchain.Instance));
         }
     }
 }

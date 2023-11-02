@@ -1,5 +1,4 @@
-﻿using MethodTimer;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json.Linq;
 using NodaTime;
 using NodaTime.Text;
 using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Interfaces;
@@ -56,7 +55,6 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
 
         internal const string GET_TIMES_BY_CITY_URL = "daily?districtId={0}&lang=2";
 
-        [Time]
         public async Task<List<FaziletPrayerTimes>> GetTimesByCityID(int cityID)
         {
             List<FaziletPrayerTimes> prayerTimesList = new List<FaziletPrayerTimes>();
