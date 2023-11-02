@@ -23,7 +23,7 @@ namespace PrayerTimeEngine.Core.Tests
     public abstract class BaseTest
     {
         private DbConnection _keepMemoryDbAliveDbConnection = null;
-        protected ServiceProvider ServiceProvider { get; set; }
+        public ServiceProvider ServiceProvider { get; set; }
 
         [SetUp]
         public void SetUp()

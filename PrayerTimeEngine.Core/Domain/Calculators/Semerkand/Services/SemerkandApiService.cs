@@ -1,5 +1,4 @@
-﻿using MethodTimer;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json.Linq;
 using NodaTime;
 using NodaTime.Text;
 using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Interfaces;
@@ -68,7 +67,6 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
         // UNUSED!!
         private const int EXTENT_OF_DAYS_RETRIEVED = 5;
 
-        [Time]
         public async Task<List<SemerkandPrayerTimes>> GetTimesByCityID(LocalDate date, string timezoneName, int cityID)
         {
             DateTimeZone dateTimeZone = DateTimeZoneProviders.Tzdb[timezoneName];

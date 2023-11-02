@@ -1,6 +1,8 @@
 ﻿using DevExpress.Maui.Editors;
-using Microsoft.Extensions.Logging;
+using MethodTimer;
+using Microsoft.EntityFrameworkCore;
 using OnScreenSizeMarkup.Maui.Helpers;
+using PrayerTimeEngine.Core.Data.EntityFramework;
 using PrayerTimeEngine.Presentation.GraphicsView;
 using PrayerTimeEngine.Presentation.ViewModel;
 
@@ -9,14 +11,14 @@ namespace PrayerTimeEngine
     public partial class MainPage : ContentPage
     {
         private readonly MainPageViewModel _viewModel;
-        private readonly ILogger<MainPage> _logger;
+        private readonly AppDbContext _dbContext;
 
-        public MainPage(MainPageViewModel viewModel, ILogger<MainPage> logger)
+        [Time]
+        public MainPage(MainPageViewModel viewModel, AppDbContext dbContext)
         {
             InitializeComponent();
-
-            _logger = logger;
             BindingContext = this._viewModel = viewModel;
+            this._dbContext = dbContext;
 
             viewModel.OnAfterLoadingPrayerTimes_EventTrigger += ViewModel_OnAfterLoadingPrayerTimes_EventTrigger;
             viewModel.IsShakeEnabled = true;
@@ -175,7 +177,13 @@ namespace PrayerTimeEngine
 
         private void MainPage_Loaded(object sender, EventArgs e)
         {
-            Task.Run(_viewModel.OnPageLoaded);
+            // awaiting in the event might not block the UI thread
+            // but it (apparently) still will prevent the UI thread from finishing the code after its Loaded event triggering
+            Task.Run(async () =>
+            {
+                await _dbContext.Database.MigrateAsync();
+                await _viewModel.OnPageLoaded();
+            });
         }
 
         private void ViewModel_OnAfterLoadingPrayerTimes_EventTrigger()

@@ -1,5 +1,4 @@
-﻿using MethodTimer;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using NodaTime;
 using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Domain;
@@ -18,7 +17,6 @@ public class PrayerTimeCalculationService(
         TimeTypeAttributeService timeTypeAttributeService
     ) : IPrayerTimeCalculationService
 {
-    [Time]
     public async Task<PrayerTimesBundle> ExecuteAsync(Profile profile, LocalDate date)
     {
         PrayerTimesBundle prayerTimeEntity = new();

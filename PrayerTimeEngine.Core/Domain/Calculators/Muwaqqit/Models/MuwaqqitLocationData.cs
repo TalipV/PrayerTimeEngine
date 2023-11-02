@@ -1,5 +1,4 @@
 ﻿using PrayerTimeEngine.Core.Common.Enum;
-using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Models;
 using PrayerTimeEngine.Core.Domain.Model;
 
 namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Models

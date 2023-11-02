@@ -1,5 +1,4 @@
 ﻿using AsyncKeyedLock;
-using MethodTimer;
 using Microsoft.Extensions.Logging;
 using NodaTime;
 using PrayerTimeEngine.Core.Common.Enum;
@@ -36,7 +35,6 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
                 ETimeType.MaghribIshtibaq,
             };
 
-        [Time]
         public async Task<ILookup<ICalculationPrayerTimes, ETimeType>> GetPrayerTimesAsync(
             LocalDate date,
             BaseLocationData locationData,
@@ -81,7 +79,6 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
             o.PoolInitialFill = 1;
         });
 
-        [Time]
         private async Task<SemerkandPrayerTimes> getPrayerTimesByDateAndCityID(LocalDate date, string timezone, int cityID)
         {
             var lockTuple = (date, cityID);
@@ -104,7 +101,6 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
 
         private SemaphoreSlim semaphoreTryGetCityID = new SemaphoreSlim(1, 1);
 
-        [Time]
         private async Task<(bool success, int cityID)> tryGetCityID(string cityName, int countryID)
         {
             // check-then-act has to be thread safe
@@ -135,7 +131,6 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
 
         private SemaphoreSlim semaphoreTryGetCountryID = new SemaphoreSlim(1, 1);
 
-        [Time]
         private async Task<(bool success, int countryID)> tryGetCountryID(string countryName)
         {
             // check-then-act has to be thread safe

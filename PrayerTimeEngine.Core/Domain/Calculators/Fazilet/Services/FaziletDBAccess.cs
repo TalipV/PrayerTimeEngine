@@ -17,12 +17,21 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
                 .ToListAsync().ConfigureAwait(false);
         }
 
+        private static readonly Func<AppDbContext, int, IAsyncEnumerable<FaziletCity>> compiledQuery_GetCitiesByCountryID =
+            EF.CompileAsyncQuery(
+                (AppDbContext context, int countryId) =>
+                    context.FaziletCities.Where(x => x.CountryID == countryId));
+
         public async Task<List<FaziletCity>> GetCitiesByCountryID(int countryId)
         {
-            return await dbContext
-                .FaziletCities.AsNoTracking()
-                .Where(x => x.CountryID == countryId)
-                .ToListAsync().ConfigureAwait(false);
+            var returnLst = new List<FaziletCity>();
+
+            await foreach (var s in compiledQuery_GetCitiesByCountryID(dbContext, countryId))
+            {
+                returnLst.Add(s);
+            }
+
+            return returnLst;
         }
 
         public async Task<FaziletPrayerTimes> GetTimesByDateAndCityID(LocalDate date, int cityId)

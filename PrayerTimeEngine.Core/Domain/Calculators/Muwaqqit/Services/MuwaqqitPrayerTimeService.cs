@@ -5,7 +5,6 @@ using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Interfaces;
 using PrayerTimeEngine.Core.Domain.CalculationService.Interfaces;
 using PrayerTimeEngine.Core.Common.Enum;
 using NodaTime;
-using MethodTimer;
 using PrayerTimeEngine.Core.Domain.PlacesService.Models.Common;
 using AsyncKeyedLock;
 
@@ -17,7 +16,6 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services
             TimeTypeAttributeService timeTypeAttributeService
         ) : IPrayerTimeService
     {
-        [Time]
         public async Task<ILookup<ICalculationPrayerTimes, ETimeType>> GetPrayerTimesAsync(
             LocalDate date,
             BaseLocationData locationData,

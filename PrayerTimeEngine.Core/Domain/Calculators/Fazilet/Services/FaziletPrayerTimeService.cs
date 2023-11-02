@@ -7,7 +7,6 @@ using PrayerTimeEngine.Core.Domain.CalculationService.Interfaces;
 using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Domain.PlacesService.Interfaces;
 using NodaTime;
-using MethodTimer;
 using PrayerTimeEngine.Core.Domain.PlacesService.Models.Common;
 using AsyncKeyedLock;
 
@@ -36,7 +35,6 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
                 ETimeType.MaghribIshtibaq,
             };
 
-        [Time]
         public async Task<ILookup<ICalculationPrayerTimes, ETimeType>> GetPrayerTimesAsync(
             LocalDate date,
             BaseLocationData locationData,
@@ -62,9 +60,9 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
 
         private async Task<FaziletPrayerTimes> getPrayerTimesInternal(LocalDate date, string countryName, string cityName)
         {
-            if (await tryGetCountryID(countryName) is (bool countrySuccess, int countryID) countryResult && !countrySuccess)
+            if (await tryGetCountryID(countryName) is (bool countrySuccess, int countryID) && !countrySuccess)
                 throw new ArgumentException($"{nameof(countryName)} could not be found!");
-            if (await tryGetCityID(cityName, countryID) is (bool citySuccess, int cityID) cityResult && !citySuccess)
+            if (await tryGetCityID(cityName, countryID) is (bool citySuccess, int cityID) && !citySuccess)
                 throw new ArgumentException($"{nameof(cityName)} could not be found!");
 
             FaziletPrayerTimes prayerTimes = await getPrayerTimesByDateAndCityID(date, cityID).ConfigureAwait(false)
@@ -102,7 +100,6 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
 
         private readonly SemaphoreSlim semaphoreTryGetCityID = new(1, 1);
 
-        [Time]
         private async Task<(bool success, int cityID)> tryGetCityID(string cityName, int countryID)
         {
             // check-then-act has to be thread safe
@@ -133,7 +130,6 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
 
         private SemaphoreSlim semaphoreTryGetCountryID = new SemaphoreSlim(1, 1);
 
-        [Time]
         private async Task<(bool success, int countryID)> tryGetCountryID(string countryName)
         {
             // check-then-act has to be thread safe

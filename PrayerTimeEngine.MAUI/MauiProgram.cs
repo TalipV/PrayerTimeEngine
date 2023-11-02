@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Maui;
 using DevExpress.Maui;
+using MethodTimer;
 using MetroLog.MicrosoftExtensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -49,6 +50,7 @@ namespace PrayerTimeEngine;
 
 public static class MauiProgram
 {
+    [Time]
     public static MauiApp CreateMauiApp()
     {
         var builder = MauiApp.CreateBuilder();
@@ -62,9 +64,6 @@ public static class MauiProgram
                 fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
             });
 
-        DevExpress.Maui.Editors.Initializer.Init();
-        DevExpress.Maui.Controls.Initializer.Init();
-
         addLogging(builder);
         addDependencyInjectionServices(builder.Services);
 
@@ -75,7 +74,7 @@ public static class MauiProgram
     {
         public override string GetFormattedString(MetroLog.LogWriteContext context, MetroLog.LogEventInfo info)
         {
-            string text = $"{info.TimeStamp.ToString("HH:mm:ss:fff")}|{info.Logger}|{info.Message}";
+            string text = $"███ {info.TimeStamp:HH:mm:ss:fff}|{info.Level}|{info.Logger}|{info.Message}";
 
             if (info.Exception != null)
             {
@@ -89,22 +88,21 @@ public static class MauiProgram
     private static void addLogging(MauiAppBuilder builder)
     {
         builder.Logging
-            .SetMinimumLevel(LogLevel.Debug)
+            .SetMinimumLevel(LogLevel.Trace)
+            .AddFilter((loggerProviderFullName, loggerFullName, level) =>
+            {
+                if (loggerFullName == "Microsoft.EntityFrameworkCore.Model")
+                {
+                    return false;
+                }
+
+                return true;
+            })
             .AddInMemoryLogger(
                 options =>
                 {
                     //options.MaxLines = 1024;
-                    options.MinLevel = LogLevel.Debug;
-                    options.MaxLevel = LogLevel.Debug;
                     options.Layout = new LoggingLayout();
-                })
-            .AddStreamingFileLogger(
-                options =>
-                {
-                    options.RetainDays = 2;
-                    options.FolderPath = Path.Combine(
-                        FileSystem.CacheDirectory,
-                        "MetroLogs");
                 });
     }
 
@@ -113,7 +111,8 @@ public static class MauiProgram
         serviceCollection.AddDbContext<AppDbContext>(options =>
         {
             string _databasePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "PrayerTimeEngineDB_ET.db");
-            options.UseSqlite($"Data Source={_databasePath}");
+            options.UseSqlite($"Data Source={_databasePath}", x => x.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery));
+            //options.ConfigureWarnings(x => x.Throw(RelationalEventId.MultipleCollectionIncludeWarning));
             //options.LogTo(Console.WriteLine, LogLevel.Trace);
         }, ServiceLifetime.Transient);
 

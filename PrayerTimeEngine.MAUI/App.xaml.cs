@@ -1,6 +1,6 @@
-﻿using MetroLog.Maui;
-using Microsoft.EntityFrameworkCore;
-using PrayerTimeEngine.Core.Data.EntityFramework;
+﻿using MethodTimer;
+using MetroLog.Maui;
+using PrayerTimeEngine.Core.Common;
 
 namespace PrayerTimeEngine;
 
@@ -8,18 +8,26 @@ public partial class App : Application
 {
     public event Action Resumed;
 
-    public App(MainPage page, AppDbContext dbContext)
+    public App(MainPage page)
     {
         InitializeComponent();
+        additionalAppSetup(page);
+    }
 
+    [Time]
+    private void additionalAppSetup(MainPage page)
+    {
+        // first page
         MainPage = new NavigationPage(page);
 
-        // Initialize the database
-        dbContext.Database.Migrate();
-
+        // initialize log page access
         LogController.InitializeNavigation(
             MainPage.Navigation.PushModalAsync,
             MainPage.Navigation.PopModalAsync);
+
+        // slightly slowls down startup
+        // DevExpress.Maui.Editors.Initializer.Init();
+        // DevExpress.Maui.Controls.Initializer.Init();
     }
 
     protected override void OnResume()
