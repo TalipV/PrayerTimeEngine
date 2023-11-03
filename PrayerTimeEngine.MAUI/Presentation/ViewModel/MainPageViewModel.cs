@@ -32,6 +32,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
         private readonly INavigationService navigationService;
         private readonly ILogger<MainPageViewModel> logger;
         private readonly TimeTypeAttributeService timeTypeAttributeService;
+        private readonly ConcurrentDataLoader concurrentDataLoader;
 
         public MainPageViewModel(
             IPrayerTimeCalculationService prayerTimeCalculator,
@@ -39,7 +40,8 @@ namespace PrayerTimeEngine.Presentation.ViewModel
             IProfileService profileService,
             INavigationService navigationService,
             ILogger<MainPageViewModel> logger,
-            TimeTypeAttributeService timeTypeAttributeService
+            TimeTypeAttributeService timeTypeAttributeService,
+            ConcurrentDataLoader concurrentDataLoader
         )
         {
             this.prayerTimeCalculator = prayerTimeCalculator;
@@ -48,6 +50,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
             this.navigationService = navigationService;
             this.logger = logger;
             this.timeTypeAttributeService = timeTypeAttributeService;
+            this.concurrentDataLoader = concurrentDataLoader;
         }
 
         #region properties
@@ -164,8 +167,8 @@ namespace PrayerTimeEngine.Presentation.ViewModel
         {
             try
             {
-
-                Profiles = await profileService.GetProfiles();
+                //Profiles = await profileService.GetProfiles();
+                Profiles = await concurrentDataLoader.LoadAllProfilesTask;
 
                 await loadPrayerTimes();
                 showHideSpecificTimes();

@@ -3,6 +3,7 @@ using MetroLog.Maui;
 using Microsoft.EntityFrameworkCore;
 using PrayerTimeEngine.Core.Common;
 using PrayerTimeEngine.Core.Data.EntityFramework;
+using PrayerTimeEngine.Core.Domain;
 
 namespace PrayerTimeEngine;
 
@@ -12,20 +13,16 @@ public partial class App : Application
 
     public App(
         IServiceProvider serviceProvider,
-        AppDbContext dbContext,
-        MainPage page)
+        ConcurrentDataLoader concurrentDataLoader)
     {
+        // start concurrent loading as soon as possible
+        concurrentDataLoader.InitiateConcurrentDataLoad();
+        
         InitializeComponent();
+
         MethodTimeLogger.logger = serviceProvider.GetService<Microsoft.Extensions.Logging.ILogger<App>>();
 
-        additionalAppSetup(page, dbContext);
-    }
-
-    [Time]
-    private void additionalAppSetup(MainPage page, AppDbContext dbContext)
-    {
-        // first page
-        MainPage = new NavigationPage(page);
+        MainPage = new NavigationPage(serviceProvider.GetService<MainPage>());
 
         // initialize log page access
         LogController.InitializeNavigation(
@@ -35,8 +32,6 @@ public partial class App : Application
         // slightly slowls down startup
         // DevExpress.Maui.Editors.Initializer.Init();
         // DevExpress.Maui.Controls.Initializer.Init();
-
-        dbContext.Database.Migrate();
     }
 
     protected override void OnResume()
