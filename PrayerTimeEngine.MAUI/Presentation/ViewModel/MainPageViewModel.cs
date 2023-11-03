@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Maui.Alerts;
 using CommunityToolkit.Maui.Core;
 using Java.Util.Logging;
+using MethodTimer;
 using MetroLog.Maui;
 using Microsoft.Extensions.Logging;
 using NodaTime;
@@ -205,6 +206,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
 
         private int isLoadPrayerTimesRunningInterlockedInt = 0;  // 0 for false, 1 for true
 
+        [Time]
         private async Task loadPrayerTimes()
         {
             if (CurrentProfile == null || Interlocked.CompareExchange(ref isLoadPrayerTimesRunningInterlockedInt, 1, 0) == 1)

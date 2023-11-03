@@ -1,6 +1,4 @@
-﻿using BenchmarkDotNet.Configs;
-using BenchmarkDotNet.Running;
-using BenchmarkDotNet.Toolchains.InProcess.Emit;
+﻿using BenchmarkDotNet.Running;
 
 namespace PrayerTimeEngine.BenchmarkDotNet
 {
@@ -8,7 +6,7 @@ namespace PrayerTimeEngine.BenchmarkDotNet
     {
         static void Main(string[] args)
         {
-            var summary = BenchmarkRunner.Run<MuwaqqitPrayerTimeCalculatorBenchmark>();
+            var summary = BenchmarkRunner.Run<ProfileServiceBenchmark>();
         }
     }
 }

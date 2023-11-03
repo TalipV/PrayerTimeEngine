@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using MethodTimer;
+using Microsoft.EntityFrameworkCore;
 using PrayerTimeEngine.Core.Data.EntityFramework;
 using PrayerTimeEngine.Core.Domain.Configuration.Interfaces;
 using PrayerTimeEngine.Core.Domain.Configuration.Models;
@@ -9,6 +10,8 @@ namespace PrayerTimeEngine.Core.Domain.Configuration.Services
             AppDbContext dbContext
         ) : IProfileDBAccess
     {
+
+        [Time]
         public async Task<List<Profile>> GetProfiles()
         {
             return await dbContext.Profiles

@@ -1,7 +1,4 @@
 ﻿using BenchmarkDotNet.Attributes;
-using BenchmarkDotNet.Configs;
-using BenchmarkDotNet.Jobs;
-using BenchmarkDotNet.Toolchains.InProcess.NoEmit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using NodaTime;
@@ -11,12 +8,11 @@ using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Models;
 using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services;
 using PrayerTimeEngine.Core.Domain.Configuration.Models;
 using PrayerTimeEngine.Core.Tests.API.MuwaqqitAPI;
-using SQLitePCL;
 using System.Data.Common;
 
 namespace PrayerTimeEngine.BenchmarkDotNet
 {
-    [Config(typeof(AntiVirusFriendlyConfig))]
+    [Config(typeof(BenchmarkConfig))]
     [MemoryDiagnoser]
     public class MuwaqqitPrayerTimeCalculatorBenchmark
     {
@@ -90,12 +86,4 @@ namespace PrayerTimeEngine.BenchmarkDotNet
         }
     }
 
-    public class AntiVirusFriendlyConfig : ManualConfig
-    {
-        public AntiVirusFriendlyConfig()
-        {
-            AddJob(Job.MediumRun
-                .WithToolchain(InProcessNoEmitToolchain.Instance));
-        }
-    }
 }

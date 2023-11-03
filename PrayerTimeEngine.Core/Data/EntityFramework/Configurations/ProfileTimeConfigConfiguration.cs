@@ -17,8 +17,8 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Configurations
             builder
                 .Property(x => x.CalculationConfiguration)
                 .HasConversion(
-                    x => JsonSerializer.Serialize(x, new JsonSerializerOptions()),
-                    x => JsonSerializer.Deserialize<GenericSettingConfiguration>(x, new JsonSerializerOptions())
+                    x => JsonSerializer.Serialize(x, (JsonSerializerOptions) null),
+                    x => JsonSerializer.Deserialize<GenericSettingConfiguration>(x, (JsonSerializerOptions)null)
                 );
         }
     }
