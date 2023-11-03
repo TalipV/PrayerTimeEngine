@@ -1,6 +1,5 @@
 ﻿using DevExpress.Maui.Editors;
 using MethodTimer;
-using Microsoft.EntityFrameworkCore;
 using OnScreenSizeMarkup.Maui.Helpers;
 using PrayerTimeEngine.Core.Data.EntityFramework;
 using PrayerTimeEngine.Presentation.GraphicsView;

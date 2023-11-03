@@ -14,7 +14,6 @@ using PrayerTimeEngine.Core.Domain.Configuration.Interfaces;
 using PrayerTimeEngine.Core.Domain.Configuration.Models;
 using PrayerTimeEngine.Core.Domain.Configuration.Services;
 using PrayerTimeEngine.Core.Domain.Model;
-using System;
 
 namespace PrayerTimeEngine.Core.Tests
 {
