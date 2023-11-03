@@ -1,5 +1,4 @@
-﻿using Android.Content;
-using MethodTimer;
+﻿using MethodTimer;
 using MetroLog.Maui;
 using Microsoft.EntityFrameworkCore;
 using PrayerTimeEngine.Core.Common;

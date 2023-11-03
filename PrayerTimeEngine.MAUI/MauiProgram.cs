@@ -1,6 +1,5 @@
 ﻿using CommunityToolkit.Maui;
 using DevExpress.Maui;
-using MethodTimer;
 using MetroLog.MicrosoftExtensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
