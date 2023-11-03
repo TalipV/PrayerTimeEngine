@@ -178,12 +178,9 @@ namespace PrayerTimeEngine
         private void MainPage_Loaded(object sender, EventArgs e)
         {
             // awaiting in the event might not block the UI thread
-            // but it (apparently) still will prevent the UI thread from finishing the code after its Loaded event triggering
-            Task.Run(async () =>
-            {
-                await _dbContext.Database.MigrateAsync();
-                await _viewModel.OnPageLoaded();
-            });
+            // but it (apparently) still will prevent the UI thread from finishing the code
+            // after this event trigger
+            Task.Run(_viewModel.OnPageLoaded);
         }
 
         private void ViewModel_OnAfterLoadingPrayerTimes_EventTrigger()

@@ -50,7 +50,6 @@ namespace PrayerTimeEngine;
 
 public static class MauiProgram
 {
-    [Time]
     public static MauiApp CreateMauiApp()
     {
         var builder = MauiApp.CreateBuilder();
@@ -74,6 +73,12 @@ public static class MauiProgram
     {
         public override string GetFormattedString(MetroLog.LogWriteContext context, MetroLog.LogEventInfo info)
         {
+            // temp fix, EF logs too much about its queries
+            if (info.Message.Contains("SELECT"))
+            {
+                return "";
+            }
+
             string text = $"███ {info.TimeStamp:HH:mm:ss:fff}|{info.Level}|{info.Logger}|{info.Message}";
 
             if (info.Exception != null)
