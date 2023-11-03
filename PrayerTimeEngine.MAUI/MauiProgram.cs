@@ -122,6 +122,7 @@ public static class MauiProgram
 
         serviceCollection.AddSingleton<IPrayerTimeCalculationService, PrayerTimeCalculationService>();
         serviceCollection.AddSingleton<TimeTypeAttributeService>();
+        serviceCollection.AddSingleton<ConcurrentDataLoader>();
 
         #region FaziletAPI
 
