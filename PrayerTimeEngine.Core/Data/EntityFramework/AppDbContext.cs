@@ -9,12 +9,8 @@ using System.Reflection;
 
 namespace PrayerTimeEngine.Core.Data.EntityFramework
 {
-    public class AppDbContext : DbContext
+    public class AppDbContext(DbContextOptions options) : DbContext(options)
     {
-        public AppDbContext(DbContextOptions options) : base(options)
-        {
-        }
-
         public DbSet<Profile> Profiles { get; set; }
         public DbSet<ProfileLocationConfig> ProfileLocations { get; set; }
         public DbSet<ProfileTimeConfig> ProfileConfigs { get; set; }

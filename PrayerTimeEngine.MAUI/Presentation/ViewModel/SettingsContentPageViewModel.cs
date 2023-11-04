@@ -8,7 +8,10 @@ using PropertyChanged;
 namespace PrayerTimeEngine.Presentation.ViewModel
 {
     [AddINotifyPropertyChangedInterface]
-    public class SettingsContentPageViewModel
+    public class SettingsContentPageViewModel(
+            IProfileService profileService,
+            TimeTypeAttributeService timeTypeAttributeService
+        )
     {
         #region static fields
 
@@ -34,18 +37,6 @@ namespace PrayerTimeEngine.Presentation.ViewModel
             MODERATE_SELECTABLE_DEGREES_NEGATIVE.Select(Math.Abs).ToList().AsReadOnly();
 
         #endregion static fields
-
-        private IProfileService profileService;
-        private TimeTypeAttributeService timeTypeAttributeService;
-
-        public SettingsContentPageViewModel(
-            IProfileService profileService,
-            TimeTypeAttributeService timeTypeAttributeService
-        )
-        {
-            this.profileService = profileService;
-            this.timeTypeAttributeService = timeTypeAttributeService;
-        }
 
         public event Action OnInitializeCustomUI_EventTrigger = delegate { };
         public event Action OnViewModelInitialize_EventTrigger = delegate { };

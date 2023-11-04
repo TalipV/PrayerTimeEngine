@@ -2,17 +2,11 @@
 
 namespace PrayerTimeEngineUnitTests.Mocks
 {
-    public class MockHttpMessageHandler : HttpMessageHandler
+    public class MockHttpMessageHandler(
+            HttpStatusCode statusCode, 
+            Dictionary<string, string> urlToContentMap
+        ) : HttpMessageHandler
     {
-        private readonly HttpStatusCode statusCode;
-        private readonly Dictionary<string, string> urlToContentMap;
-
-        public MockHttpMessageHandler(HttpStatusCode statusCode, Dictionary<string, string> urlToContentMap)
-        {
-            this.statusCode = statusCode;
-            this.urlToContentMap = urlToContentMap;
-        }
-
         protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
             // Look up the response content in the dictionary
