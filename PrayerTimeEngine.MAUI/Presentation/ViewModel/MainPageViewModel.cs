@@ -163,6 +163,8 @@ namespace PrayerTimeEngine.Presentation.ViewModel
             }
         }
 
+        private static bool _startUpTimeShown = false;
+
         [Time]
         public async Task OnPageLoaded()
         {
@@ -173,6 +175,12 @@ namespace PrayerTimeEngine.Presentation.ViewModel
 
                 await loadPrayerTimes();
                 showHideSpecificTimes();
+
+                if (!_startUpTimeShown) 
+                {
+                    doToast($"{(DateTime.Now - MauiProgram.StartDateTime).TotalMilliseconds.ToString("N0")}ms to start!");
+                    _startUpTimeShown = true;
+                }
             }
             catch (Exception exception)
             {
