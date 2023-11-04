@@ -163,6 +163,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
             }
         }
 
+        [Time]
         public async Task OnPageLoaded()
         {
             try
