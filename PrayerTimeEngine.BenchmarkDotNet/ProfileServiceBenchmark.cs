@@ -28,7 +28,7 @@ namespace PrayerTimeEngine.BenchmarkDotNet
             _profileService = new ProfileService(_appDbContext, _profileDBAccess);
 
             _sqlConnection = _appDbContext.Database.GetDbConnection();
-            _appDbContext.Database.EnsureCreated();
+            _appDbContext.Database.Migrate();
 
             var profiles = _profileService.GetProfiles();
         }

@@ -116,6 +116,7 @@ public static class MauiProgram
 
                 return true;
             })
+            // for the logs to be visible within the app
             .AddInMemoryLogger(
                 options =>
                 {
@@ -137,7 +138,7 @@ public static class MauiProgram
     {
         serviceCollection.AddDbContext<AppDbContext>(options =>
         {
-            string _databasePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "PrayerTimeEngineDB_ET.db");
+            string _databasePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "PrayerTimeEngineDB_ET.db");
             options.UseSqlite($"Data Source={_databasePath}", x => x.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery));
             //options.ConfigureWarnings(x => x.Throw(RelationalEventId.MultipleCollectionIncludeWarning));
             //options.LogTo(Console.WriteLine, LogLevel.Trace);

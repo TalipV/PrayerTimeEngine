@@ -17,22 +17,14 @@ namespace PrayerTimeEngine.Presentation.ViewModel
     }
 
     [AddINotifyPropertyChangedInterface]
-    public class SettingsHandlerPageViewModel : CustomBaseViewModel
-    {
-        public SettingsHandlerPageViewModel(
+    public class SettingsHandlerPageViewModel(
             SettingsContentPageFactory settingsContentPageFactory,
-            TimeTypeAttributeService timeTypeAttributeService)
-        {
-            _settingsContentPageFactory = settingsContentPageFactory;
-            _timeTypeAttributeService = timeTypeAttributeService;
-        }
-
+            TimeTypeAttributeService timeTypeAttributeService
+        ) : CustomBaseViewModel
+    {
         public event Action Initialized = delegate { };
 
         #region fields
-
-        private readonly SettingsContentPageFactory _settingsContentPageFactory;
-        private readonly TimeTypeAttributeService _timeTypeAttributeService;
 
         #endregion fields
 
@@ -51,9 +43,9 @@ namespace PrayerTimeEngine.Presentation.ViewModel
                 throw new ArgumentException($"{nameof(parameter)} is not an {nameof(EPrayerType)}");
             }
 
-            foreach (ETimeType timeType in _timeTypeAttributeService.PrayerTypeToTimeTypes[prayerTime].Intersect(_timeTypeAttributeService.ConfigurableTypes))
+            foreach (ETimeType timeType in timeTypeAttributeService.PrayerTypeToTimeTypes[prayerTime].Intersect(timeTypeAttributeService.ConfigurableTypes))
             {
-                SettingsContentPage settingsContentPage = _settingsContentPageFactory.Create();
+                SettingsContentPage settingsContentPage = settingsContentPageFactory.Create();
                 SettingsContentPageViewModel tabViewModel = settingsContentPage.BindingContext as SettingsContentPageViewModel;
                 await tabViewModel.Initialize(timeType);
                 SettingsContentPages.Add(settingsContentPage);
