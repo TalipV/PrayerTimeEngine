@@ -51,6 +51,8 @@ namespace PrayerTimeEngine;
 
 public static class MauiProgram
 {
+    public static readonly DateTime StartDateTime = DateTime.Now;
+
     [Time]
     public static MauiApp CreateMauiApp()
     {

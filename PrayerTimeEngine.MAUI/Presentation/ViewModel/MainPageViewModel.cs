@@ -18,6 +18,7 @@ using PrayerTimeEngine.Core.Domain.PlacesService.Interfaces;
 using PrayerTimeEngine.Core.Domain.PlacesService.Models.Common;
 using PrayerTimeEngine.Presentation.Service.Navigation;
 using PropertyChanged;
+using System;
 using System.Globalization;
 using System.Windows.Input;
 
@@ -144,6 +145,8 @@ namespace PrayerTimeEngine.Presentation.ViewModel
             }
         }
 
+        private static bool _startUpTimeShown = false;
+
         [Time]
         public async Task OnPageLoaded()
         {
@@ -154,6 +157,12 @@ namespace PrayerTimeEngine.Presentation.ViewModel
 
                 await loadPrayerTimes();
                 showHideSpecificTimes();
+
+                if (!_startUpTimeShown)
+                {
+                    doToast($"{(DateTime.Now - MauiProgram.StartDateTime).TotalMilliseconds.ToString("N0")}ms to start!");
+                    _startUpTimeShown = true;
+                }
             }
             catch (Exception exception)
             {
