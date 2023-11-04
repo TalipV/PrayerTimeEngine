@@ -2,6 +2,7 @@
 
 	<PropertyGroup>
 		<TargetFrameworks>net7.0-android</TargetFrameworks>
+    <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net7.0-windows10.0.19041.0</TargetFrameworks>
 		<OutputType>Exe</OutputType>
 		<RootNamespace>PrayerTimeEngine</RootNamespace>
 		<UseMaui>true</UseMaui>
@@ -21,6 +22,8 @@
 
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">11.0</SupportedOSPlatformVersion>
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">21.0</SupportedOSPlatformVersion>
+    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</SupportedOSPlatformVersion>
+    <TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
 		<Platforms>AnyCPU</Platforms>
 		<LangVersion>preview</LangVersion>
 	</PropertyGroup>
@@ -129,13 +132,6 @@
 	  <ProjectReference Include="..\PrayerTimeEngine.Core\PrayerTimeEngine.Core.csproj">
 	    <ReferenceSourceTarget>ProjectReference</ReferenceSourceTarget>
 	  </ProjectReference>
-	</ItemGroup>
-
-	<ItemGroup Condition="'$(TargetFramework)' == 'net7.0-android'">
-    <PackageReference Include="DevExpress.Maui.Controls" Version="23.1.5">
-    </PackageReference>
-    <PackageReference Include="DevExpress.Maui.Editors" Version="23.1.5">
-    </PackageReference>
 	</ItemGroup>
 
 </Project>

@@ -15,7 +15,7 @@ namespace PrayerTimeEngine.Presentation.GraphicsView
         private Color PrayerSubTimeBorderColor = Colors.BlueViolet;
         private Color PrayerSubTimeTextColor = Colors.Black;
 
-        private DateTimeZone _timeZone { get; } = DateTimeZoneProviders.Tzdb[TimeZoneInfo.Local.Id];
+        private DateTimeZone _timeZone { get; } = DateTimeZoneProviders.Bcl[TimeZoneInfo.Local.Id];
 
         public PrayerTime DisplayPrayerTime { get; set; }
 

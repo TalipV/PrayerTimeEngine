@@ -1,5 +1,4 @@
 ﻿using CommunityToolkit.Maui;
-using DevExpress.Maui;
 using MethodTimer;
 using MetroLog.MicrosoftExtensions;
 using Microsoft.EntityFrameworkCore;
@@ -58,7 +57,6 @@ public static class MauiProgram
         builder
             .UseMauiApp<App>()
             .UseMauiCommunityToolkit()
-            .UseDevExpress()
             .ConfigureFonts(fonts =>
             {
                 fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");

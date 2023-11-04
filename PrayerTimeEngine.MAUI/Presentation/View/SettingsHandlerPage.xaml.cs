@@ -1,4 +1,3 @@
-using DevExpress.Maui.Controls;
 using PrayerTimeEngine.Code.Presentation.View;
 using PrayerTimeEngine.Presentation.ViewModel;
 
@@ -12,8 +11,6 @@ public partial class SettingsHandlerPage : ContentPage
     {
         InitializeComponent();
         BindingContext = _viewModel = viewModel;
-
-        viewModel.Initialized += setUpTabPages;
     }
 
     protected override void OnDisappearing()
@@ -28,26 +25,6 @@ public partial class SettingsHandlerPage : ContentPage
                 await contentPageViewModel.OnDisappearing();
             }
         });
-    }
-
-    private void setUpTabPages()
-    {
-        foreach (SettingsContentPage settingContentPages in _viewModel.SettingsContentPages)
-        {
-            var tabViewItem = new TabViewItem
-            {
-                Content = new ContentView
-                {
-                    Content = settingContentPages.Content,
-                    BindingContext = settingContentPages.ViewModel
-                },
-                BindingContext = settingContentPages.ViewModel,
-                HeaderFontSize = 14
-            };
-            tabViewItem.SetBinding(TabViewItem.HeaderTextProperty, nameof(SettingsContentPageViewModel.TabTitle));
-
-            this.tabView.Items.Add(tabViewItem);
-        }
     }
 }
 

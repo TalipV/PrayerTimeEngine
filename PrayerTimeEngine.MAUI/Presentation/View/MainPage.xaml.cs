@@ -1,5 +1,4 @@
-﻿using DevExpress.Maui.Editors;
-using MethodTimer;
+﻿using MethodTimer;
 using OnScreenSizeMarkup.Maui.Helpers;
 using PrayerTimeEngine.Core.Data.EntityFramework;
 using PrayerTimeEngine.Presentation.GraphicsView;
@@ -26,15 +25,6 @@ namespace PrayerTimeEngine
 
             setCustomSizes();
 
-            var asyncItemsSourceProvider = new AsyncItemsSourceProvider
-            {
-                RequestDelay = 1000,
-                CharacterCountThreshold = 4
-            };
-
-            asyncItemsSourceProvider.ItemsRequested += AsyncItemsSourceProvider_ItemsRequested;
-            autoCompleteSearch.ItemsSourceProvider = asyncItemsSourceProvider;
-
             this.lastUpdatedTextInfo.GestureRecognizers
                 .Add(
                     new TapGestureRecognizer
@@ -57,24 +47,12 @@ namespace PrayerTimeEngine
             await DisplayAlert("Info", text, "Ok");
         }
 
-        private void AsyncItemsSourceProvider_ItemsRequested(object sender, ItemsRequestEventArgs e)
-        {
-            Func<System.Collections.IEnumerable> func = 
-                () => {
-                    var placeSearchTask = Task.Run(async () => await this._viewModel.PerformPlaceSearch(e.Text));
-                    placeSearchTask.Wait();
-                    return placeSearchTask.Result;
-                };
-
-            Func<Task<System.Collections.IEnumerable>> funcx =
-                async () =>
-                {
-                    return await this._viewModel.PerformPlaceSearch(e.Text);
-                };
-        }
-
         private void setCustomSizes()
         {
+#if WINDOWS
+return;
+#endif
+
             // Large: Galaxy S22 Ultra, iPhone 14 Pro Max
             // Medium: Google Pixel 5
             // ************************
