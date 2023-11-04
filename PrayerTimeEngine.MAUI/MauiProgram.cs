@@ -121,6 +121,15 @@ public static class MauiProgram
                 {
                     //options.MaxLines = 1024;
                     options.Layout = new LoggingLayout();
+                })
+            // for the logs to be sharable as files through the UI
+            .AddStreamingFileLogger(
+                options =>
+                {
+                    options.RetainDays = 2;
+                    options.FolderPath = Path.Combine(
+                        FileSystem.CacheDirectory,
+                        "MetroLogs");
                 });
     }
 
