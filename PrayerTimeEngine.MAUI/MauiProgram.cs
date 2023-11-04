@@ -1,9 +1,11 @@
 ﻿using CommunityToolkit.Maui;
 using DevExpress.Maui;
+using MethodTimer;
 using MetroLog.MicrosoftExtensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using PrayerTimeEngine.Code.Presentation.View;
+using PrayerTimeEngine.Core.Common;
 using PrayerTimeEngine.Core.Data.EntityFramework;
 using PrayerTimeEngine.Core.Domain;
 using PrayerTimeEngine.Core.Domain.CalculationService.Interfaces;
@@ -49,9 +51,10 @@ namespace PrayerTimeEngine;
 
 public static class MauiProgram
 {
+    [Time]
     public static MauiApp CreateMauiApp()
     {
-        var builder = MauiApp.CreateBuilder();
+        MauiAppBuilder builder = MauiApp.CreateBuilder();
         builder
             .UseMauiApp<App>()
             .UseMauiCommunityToolkit()
@@ -65,7 +68,16 @@ public static class MauiProgram
         addLogging(builder);
         addDependencyInjectionServices(builder.Services);
 
-        return builder.Build();
+        MauiApp mauiApp = builder.Build();
+
+        mauiApp.Services.GetService<ConcurrentDataLoader>().InitiateConcurrentDataLoad();
+        MethodTimeLogger.logger = mauiApp.Services.GetService<ILogger<App>>();
+
+        // slightly slowls down startup
+        // DevExpress.Maui.Editors.Initializer.Init();
+        // DevExpress.Maui.Controls.Initializer.Init();
+
+        return mauiApp;
     }
 
     class LoggingLayout : MetroLog.Layouts.Layout

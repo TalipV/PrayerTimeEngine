@@ -13,8 +13,8 @@ namespace PrayerTimeEngine.Core.Domain
         {
             LoadAllProfilesTask = Task.Run(async () => 
             {
-                await dbContext.Database.MigrateAsync();
-                return await profileService.GetProfiles();
+                await dbContext.Database.MigrateAsync().ConfigureAwait(false);
+                return await profileService.GetProfiles().ConfigureAwait(false);
             });
         }
     }
