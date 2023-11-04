@@ -2,17 +2,8 @@
 
 namespace PrayerTimeEngine.Presentation.Service.SettingsContentPageFactory
 {
-    public class SettingsContentPageFactory
+    public class SettingsContentPageFactory(IServiceProvider serviceProvider)
     {
-        private IServiceProvider serviceProvider;
-
-        public SettingsContentPageFactory(
-            IServiceProvider serviceProvider
-        )
-        {
-            this.serviceProvider = serviceProvider;
-        }
-
         public SettingsContentPage Create()
         {
             // Use the service provider to create a new instance of SettingsContentPage
