@@ -50,8 +50,8 @@
 	</PropertyGroup>
 	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
 	  <IntermediateOutputPath></IntermediateOutputPath>
-	  <DebugSymbols></DebugSymbols>
-	  <DebugType></DebugType>
+    <DebugType>none</DebugType>
+    <DebugSymbols>false</DebugSymbols>
 	  <Optimize></Optimize>
 	  <OutputPath></OutputPath>
 	  <DefineConstants></DefineConstants>
