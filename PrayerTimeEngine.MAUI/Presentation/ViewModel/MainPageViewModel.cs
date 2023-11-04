@@ -24,17 +24,7 @@ using System.Windows.Input;
 namespace PrayerTimeEngine.Presentation.ViewModel
 {
     [AddINotifyPropertyChangedInterface]
-    public class MainPageViewModel: LogController
-    {
-        private readonly IPrayerTimeCalculationService prayerTimeCalculator;
-        private readonly ILocationService placeService;
-        private readonly IProfileService profileService;
-        private readonly INavigationService navigationService;
-        private readonly ILogger<MainPageViewModel> logger;
-        private readonly TimeTypeAttributeService timeTypeAttributeService;
-        private readonly ConcurrentDataLoader concurrentDataLoader;
-
-        public MainPageViewModel(
+    public class MainPageViewModel(
             IPrayerTimeCalculationService prayerTimeCalculator,
             ILocationService placeService,
             IProfileService profileService,
@@ -42,17 +32,8 @@ namespace PrayerTimeEngine.Presentation.ViewModel
             ILogger<MainPageViewModel> logger,
             TimeTypeAttributeService timeTypeAttributeService,
             ConcurrentDataLoader concurrentDataLoader
-        )
-        {
-            this.prayerTimeCalculator = prayerTimeCalculator;
-            this.placeService = placeService;
-            this.profileService = profileService;
-            this.navigationService = navigationService;
-            this.logger = logger;
-            this.timeTypeAttributeService = timeTypeAttributeService;
-            this.concurrentDataLoader = concurrentDataLoader;
-        }
-
+        ) : LogController
+    {
         #region properties
 
         public PrayerTime DisplayPrayerTime
