@@ -226,14 +226,14 @@ namespace PrayerTimeEngine.Presentation.ViewModel
         {
             ShowFajrGhalas = isCalculationShown(ETimeType.FajrGhalas);
             ShowFajrRedness = isCalculationShown(ETimeType.FajrKaraha);
-            ShowDuhaQuarter = isCalculationShown(ETimeType.DuhaQuarterOfDay);
+            ShowDuhaQuarter = true;// isCalculationShown(ETimeType.DuhaQuarterOfDay);
             ShowMithlayn = isCalculationShown(ETimeType.AsrMithlayn);
             ShowKaraha = isCalculationShown(ETimeType.AsrKaraha);
             ShowMaghribSufficientTime = isCalculationShown(ETimeType.MaghribSufficientTime);
             ShowIshtibaq = isCalculationShown(ETimeType.MaghribIshtibaq);
-            ShowOneThird = isCalculationShown(ETimeType.IshaFirstThird);
-            ShowTwoThird = isCalculationShown(ETimeType.IshaSecondThird);
-            ShowMidnight = isCalculationShown(ETimeType.IshaMidnight);
+            ShowOneThird = true;// isCalculationShown(ETimeType.IshaFirstThird);
+            ShowTwoThird = true;// isCalculationShown(ETimeType.IshaSecondThird);
+            ShowMidnight = true;// isCalculationShown(ETimeType.IshaMidnight);
 
             OnPropertyChanged();
         }
