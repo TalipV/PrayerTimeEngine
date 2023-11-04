@@ -10,9 +10,6 @@ public class MainActivity : MauiAppCompatActivity
     protected override void OnCreate(Bundle savedInstanceState)
     {
         base.OnCreate(savedInstanceState);
-
-        // Initialize SQLite
-        SQLitePCL.Batteries_V2.Init();
     }
 
 }
