@@ -136,6 +136,10 @@ public static class MauiProgram
 
     private static void addDependencyInjectionServices(IServiceCollection serviceCollection)
     {
+        // Assumptions:
+        // - Singleton instead of transient if problems with something like states or thread safety are not expected, and disposing is not necessary
+        // - Microsoft recommends explicit HttpClient instances without DI for MAUI
+
         serviceCollection.AddDbContext<AppDbContext>(options =>
         {
             string _databasePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "PrayerTimeEngineDB_ET.db");
@@ -150,63 +154,78 @@ public static class MauiProgram
 
         #region FaziletAPI
 
-        serviceCollection.AddTransient<FaziletPrayerTimeCalculator>();
+        serviceCollection.AddSingleton<FaziletPrayerTimeCalculator>();
         serviceCollection.AddSingleton<IFaziletDBAccess, FaziletDBAccess>();
-        serviceCollection.AddHttpClient<IFaziletApiService, FaziletApiService>(client =>
+        serviceCollection.AddSingleton<IFaziletApiService, FaziletApiService>(sp =>
         {
-            client.Timeout = TimeSpan.FromSeconds(20);
-            client.BaseAddress = new Uri("https://fazilettakvimi.com/api/cms/");
+            var httpClient = new HttpClient
+            {
+                Timeout = TimeSpan.FromSeconds(20),
+                BaseAddress = new Uri("https://fazilettakvimi.com/api/cms/")
+            };
+            return new FaziletApiService(httpClient);
         });
 
         #endregion FaziletAPI
 
         #region SemerkandAPI
 
-        serviceCollection.AddTransient<SemerkandPrayerTimeCalculator>();
+        serviceCollection.AddSingleton<SemerkandPrayerTimeCalculator>();
         serviceCollection.AddSingleton<ISemerkandDBAccess, SemerkandDBAccess>();
-        serviceCollection.AddHttpClient<ISemerkandApiService, SemerkandApiService>(client =>
+        serviceCollection.AddSingleton<ISemerkandApiService, SemerkandApiService>(sp =>
         {
-            client.Timeout = TimeSpan.FromSeconds(20);
+            var httpClient = new HttpClient
+            {
+                Timeout = TimeSpan.FromSeconds(20)
+            };
+            return new SemerkandApiService(httpClient);
         });
 
         #endregion SemerkandAPI
 
         #region MuwaqqitAPI
 
-        serviceCollection.AddTransient<MuwaqqitPrayerTimeCalculator>();
+        serviceCollection.AddSingleton<MuwaqqitPrayerTimeCalculator>();
         serviceCollection.AddSingleton<IMuwaqqitDBAccess, MuwaqqitDBAccess>();
-        serviceCollection.AddHttpClient<IMuwaqqitApiService, MuwaqqitApiService>(client =>
+        serviceCollection.AddSingleton<IMuwaqqitApiService, MuwaqqitApiService>(sp =>
         {
-            client.Timeout = TimeSpan.FromSeconds(20);
+            var httpClient = new HttpClient
+            {
+                Timeout = TimeSpan.FromSeconds(20)
+            };
+            return new MuwaqqitApiService(httpClient);
         });
 
         #endregion MuwaqqitAPI
 
-        serviceCollection.AddHttpClient<ILocationService, LocationService>(client =>
+        serviceCollection.AddSingleton<ILocationService, LocationService>(sp =>
         {
-            client.Timeout = TimeSpan.FromSeconds(20);
+            var httpClient = new HttpClient
+            {
+                Timeout = TimeSpan.FromSeconds(20)
+            };
+            return new LocationService(httpClient, sp.GetService<ILogger<LocationService>>());
         });
 
-        serviceCollection.AddTransient<IProfileService, ProfileService>();
-        serviceCollection.AddTransient<IProfileDBAccess, ProfileDBAccess>();
+        serviceCollection.AddSingleton<IProfileService, ProfileService>();
+        serviceCollection.AddSingleton<IProfileDBAccess, ProfileDBAccess>();
 
         addPresentationLayerServices(serviceCollection);
     }
 
     private static void addPresentationLayerServices(IServiceCollection serviceCollection)
     {
-        serviceCollection.AddTransient<INavigationService, NavigationService>();
+        serviceCollection.AddSingleton<INavigationService, NavigationService>();
 
-        serviceCollection.AddTransient<MainPage>();
-        serviceCollection.AddTransient<MainPageViewModel>();
+        serviceCollection.AddSingleton<MainPage>();
+        serviceCollection.AddSingleton<MainPageViewModel>();
 
         serviceCollection.AddTransient<SettingsHandlerPage>();
         serviceCollection.AddTransient<SettingsHandlerPageViewModel>();
+        serviceCollection.AddSingleton<SettingsContentPageFactory>();
 
         serviceCollection.AddTransient<SettingsContentPage>();
         serviceCollection.AddTransient<SettingsContentPageViewModel>();
-        serviceCollection.AddSingleton<SettingsContentPageFactory>();
-
         serviceCollection.AddTransient<MuwaqqitDegreeSettingConfigurationViewModel>();
     }
 }
