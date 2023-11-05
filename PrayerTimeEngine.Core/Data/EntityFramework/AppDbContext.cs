@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using NodaTime;
 using PrayerTimeEngine.Core.Common.Extension;
+using PrayerTimeEngine.Core.Data.EntityFramework.Configurations;
 using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Models;
 using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Models;
 using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Models;
@@ -27,7 +28,8 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
+            modelBuilder.ApplyConfiguration(new ProfileTimeConfigConfiguration());
+            modelBuilder.ApplyConfiguration(new ProfileLocationConfigConfiguration());
 
             configureNodaTimeProperties(modelBuilder, typeof(MuwaqqitPrayerTimes));
             configureNodaTimeProperties(modelBuilder, typeof(FaziletPrayerTimes));

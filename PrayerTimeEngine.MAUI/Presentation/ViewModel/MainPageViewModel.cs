@@ -18,7 +18,6 @@ using PrayerTimeEngine.Core.Domain.PlacesService.Interfaces;
 using PrayerTimeEngine.Core.Domain.PlacesService.Models.Common;
 using PrayerTimeEngine.Presentation.Service.Navigation;
 using PropertyChanged;
-using System;
 using System.Globalization;
 using System.Windows.Input;
 
