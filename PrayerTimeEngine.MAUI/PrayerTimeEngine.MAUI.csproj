@@ -47,7 +47,10 @@
 	  <Nullable></Nullable>
 	</PropertyGroup>
 	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-	  <IntermediateOutputPath></IntermediateOutputPath>
+    <RunAOTCompilation>True</RunAOTCompilation>
+    <AndroidEnableProfiledAot>false</AndroidEnableProfiledAot>
+    <EnableLLVM>true</EnableLLVM>
+    <IntermediateOutputPath></IntermediateOutputPath>
     <DebugType>none</DebugType>
     <DebugSymbols>false</DebugSymbols>
 	  <Optimize></Optimize>
