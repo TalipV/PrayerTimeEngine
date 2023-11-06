@@ -209,7 +209,7 @@ namespace PrayerTimeEngine.Core.Tests
             };
 
             // ACT
-            await profileService.UpdateLocationConfig(profile, newLocationName, newLocationDataByCalculationSource);
+            await profileService.UpdateLocationConfig(profile, newLocationName, newLocationDataByCalculationSource.Select(x => (x.Key, x.Value)).ToList());
 
             // ASSERT
             Assert.IsFalse(dbContext.ChangeTracker.HasChanges());
@@ -255,7 +255,7 @@ namespace PrayerTimeEngine.Core.Tests
             };
 
             // ACT
-            Assert.ThrowsAsync<Exception>(async () => await profileService.UpdateLocationConfig(profile, oldLocationName, newLocationDataByCalculationSource));
+            Assert.ThrowsAsync<Exception>(async () => await profileService.UpdateLocationConfig(profile, oldLocationName, newLocationDataByCalculationSource.Select(x => (x.Key, x.Value)).ToList()));
 
             // ASSERT
             Assert.IsFalse(dbContext.ChangeTracker.HasChanges());

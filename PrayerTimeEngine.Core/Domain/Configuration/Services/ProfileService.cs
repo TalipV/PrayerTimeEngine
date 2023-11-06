@@ -65,7 +65,7 @@ namespace PrayerTimeEngine.Core.Domain.Configuration.Services
         public async Task UpdateLocationConfig(
             Profile profile,
             string locationName,
-            Dictionary<ECalculationSource, BaseLocationData> locationDataByCalculationSource)
+            List<(ECalculationSource CalculationSource, BaseLocationData LocationData)> locationDataByCalculationSource)
         {
             await profileDBAccess.UpdateLocationConfig(profile, locationName, locationDataByCalculationSource);
         }

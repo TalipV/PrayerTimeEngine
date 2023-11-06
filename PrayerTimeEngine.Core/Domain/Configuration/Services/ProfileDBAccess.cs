@@ -39,7 +39,7 @@ namespace PrayerTimeEngine.Core.Domain.Configuration.Services
         public async Task UpdateLocationConfig(
             Profile profile,
             string locationName,
-            Dictionary<ECalculationSource, BaseLocationData> locationDataByCalculationSource)
+            List<(ECalculationSource CalculationSource, BaseLocationData LocationData)> locationDataByCalculationSource)
         {
             Profile trackedProfile = dbContext.Profiles.Find(profile.ID);
 
@@ -66,22 +66,22 @@ namespace PrayerTimeEngine.Core.Domain.Configuration.Services
             }
         }
 
-        public async Task SetNewLocationData(Profile profile, Dictionary<ECalculationSource, BaseLocationData> locationDataByCalculationSource)
+        public async Task SetNewLocationData(Profile profile, List<(ECalculationSource CalculationSource, BaseLocationData LocationData)> locationDataByCalculationSource)
         {
             // delete the old entries
             var currentLocationConfigs = profile.LocationConfigs.ToList();
             dbContext.ProfileLocations.RemoveRange(currentLocationConfigs);
             profile.LocationConfigs.Clear();
 
-            foreach (KeyValuePair<ECalculationSource, BaseLocationData> locationData in locationDataByCalculationSource)
+            foreach ((ECalculationSource calculationSource, BaseLocationData locationData) in locationDataByCalculationSource)
             {
                 var newLocationConfig =
                     new ProfileLocationConfig
                     {
-                        CalculationSource = locationData.Key,
+                        CalculationSource = calculationSource,
                         ProfileID = profile.ID,
                         Profile = profile,
-                        LocationData = locationData.Value
+                        LocationData = locationData
                     };
 
                 profile.LocationConfigs.Add(newLocationConfig);
