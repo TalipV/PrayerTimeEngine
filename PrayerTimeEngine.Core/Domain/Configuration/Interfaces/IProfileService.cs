@@ -13,6 +13,6 @@ namespace PrayerTimeEngine.Core.Domain.Configuration.Interfaces
         public void SetTimeConfig(Profile profile, ETimeType timeType, GenericSettingConfiguration settings);
 
         public BaseLocationData GetLocationConfig(Profile profile, ECalculationSource calculationSource);
-        public Task UpdateLocationConfig(Profile profile, string locationName, Dictionary<ECalculationSource, BaseLocationData> locationDataByCalculationSource);
+        public Task UpdateLocationConfig(Profile profile, string locationName, List<(ECalculationSource CalculationSource, BaseLocationData LocationData)> locationDataByCalculationSource);
     }
 }
