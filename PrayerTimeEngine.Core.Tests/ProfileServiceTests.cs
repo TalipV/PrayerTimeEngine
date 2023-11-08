@@ -37,7 +37,7 @@ namespace PrayerTimeEngine.Core.Tests
             ETimeType timeType = ETimeType.FajrStart;
 
             // ACT
-            GenericSettingConfiguration result = profileService.GetTimeConfig(profile, timeType, false);
+            GenericSettingConfiguration result = profileService.GetTimeConfig(profile, timeType);
 
             // ASSERT
             Assert.IsNotNull(result);
@@ -45,7 +45,7 @@ namespace PrayerTimeEngine.Core.Tests
         }
 
         [Test]
-        public async Task GetTimeConfig_NonExistingTimeConfig_CreateFalse_ShouldReturnNull()
+        public async Task GetTimeConfig_NonExistingTimeConfig_ShouldReturnNull()
         {
             // ARRANGE
             var dbContext = ServiceProvider.GetService<AppDbContext>();
@@ -58,85 +58,10 @@ namespace PrayerTimeEngine.Core.Tests
             profile.TimeConfigs.Remove(profile.TimeConfigs.First(x => x.TimeType == timeType));
 
             // ACT
-            GenericSettingConfiguration result = profileService.GetTimeConfig(profile, timeType, false);
+            GenericSettingConfiguration result = profileService.GetTimeConfig(profile, timeType);
 
             // ASSERT
             Assert.IsNull(result);
-        }
-
-        [Test]
-        public async Task GetTimeConfig_NonExistingTimeConfig_CreateTrue_ShouldCreateAndReturnConfig()
-        {
-            // ARRANGE
-            var dbContext = ServiceProvider.GetService<AppDbContext>();
-            var profileService = ServiceProvider.GetService<IProfileService>() as ProfileService;
-            
-            Profile profile = getTestProfile();
-            await dbContext.Profiles.AddAsync(profile);
-            ETimeType timeType = ETimeType.IshaEnd;
-
-            profile.TimeConfigs.Remove(profile.TimeConfigs.First(x => x.TimeType == timeType));
-
-            // ACT
-            GenericSettingConfiguration result = profileService.GetTimeConfig(profile, timeType, true);
-
-            // ASSERT
-            Assert.IsNotNull(result);
-            Assert.That(result.TimeType, Is.EqualTo(ETimeType.IshaEnd));
-        }
-
-        [Test]
-        public async Task SetTimeConfig_TimeConfigExists_ShouldUpdateConfig()
-        {
-            // ARRANGE
-            var dbContext = ServiceProvider.GetService<AppDbContext>();
-            var profileService = ServiceProvider.GetService<IProfileService>() as ProfileService;
-            
-            Profile profile = getTestProfile();
-            await dbContext.Profiles.AddAsync(profile);
-            ETimeType timeType = ETimeType.FajrStart;
-            var newSettings = 
-                new GenericSettingConfiguration 
-                { 
-                    TimeType = timeType, 
-                    Source = ECalculationSource.Semerkand 
-                };
-
-            // ACT
-            profileService.SetTimeConfig(profile, timeType, newSettings);
-            GenericSettingConfiguration updatedConfig = profileService.GetTimeConfig(profile, timeType, createIfNotExists: false);
-
-            // ASSERT
-            Assert.IsNotNull(updatedConfig);
-            Assert.That(updatedConfig.Source, Is.EqualTo(ECalculationSource.Semerkand));
-        }
-
-        [Test]
-        public async Task SetTimeConfig_TimeConfigDoesNotExist_ShouldCreateNewConfig()
-        {
-            // ARRANGE
-            var dbContext = ServiceProvider.GetService<AppDbContext>();
-            var profileService = ServiceProvider.GetService<IProfileService>() as ProfileService;
-            
-            Profile profile = getTestProfile();
-            await dbContext.Profiles.AddAsync(profile);
-            ETimeType timeType = ETimeType.IshaEnd;
-            GenericSettingConfiguration newSettings = 
-                new GenericSettingConfiguration 
-                { 
-                    TimeType = timeType, 
-                    Source = ECalculationSource.Fazilet 
-                };
-
-            profile.TimeConfigs.Remove(profile.TimeConfigs.First(x => x.TimeType == timeType));
-
-            // ACT
-            profileService.SetTimeConfig(profile, timeType, newSettings);
-            GenericSettingConfiguration newConfig = profileService.GetTimeConfig(profile, timeType, createIfNotExists: false);
-
-            // ASSERT
-            Assert.IsNotNull(newConfig);
-            Assert.That(newConfig.Source, Is.EqualTo(ECalculationSource.Fazilet));
         }
 
         [Test]
@@ -271,6 +196,39 @@ namespace PrayerTimeEngine.Core.Tests
             }
         }
 
+        [Test]
+        public async Task UpdateTimeConfig_SetNewValue_Success()
+        {
+            // ARRANGE
+            var dbContext = ServiceProvider.GetService<AppDbContext>();
+
+            var profileService = ServiceProvider.GetService<IProfileService>() as ProfileService;
+
+            await dbContext.Profiles.AddAsync(getTestProfile());
+            await dbContext.SaveChangesAsync();
+            Profile profile =
+                dbContext.Profiles
+                    .Include(x => x.LocationConfigs)
+                    .Include(x => x.TimeConfigs)
+                    .AsNoTracking()
+                    .Single();
+
+            // ACT
+            var newSemerkandConfig = 
+                new GenericSettingConfiguration 
+                { 
+                    Source = ECalculationSource.Semerkand, 
+                    TimeType = ETimeType.FajrStart
+                };
+
+            await profileService.UpdateTimeConfig(profile, ETimeType.FajrStart, newSemerkandConfig);
+
+            // ASSERT
+            Assert.IsFalse(dbContext.ChangeTracker.HasChanges());
+            
+            var fajrStartConfig = profileService.GetTimeConfig(profile, ETimeType.FajrStart);
+            Assert.That(fajrStartConfig.Source, Is.EqualTo(ECalculationSource.Semerkand));
+        }
 
         private static Profile getTestProfile()
         {

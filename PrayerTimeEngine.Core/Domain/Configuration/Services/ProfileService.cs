@@ -1,7 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage;
-using PrayerTimeEngine.Core.Common.Enum;
-using PrayerTimeEngine.Core.Data.EntityFramework;
+﻿using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Models;
 using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Models;
 using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Models;
@@ -33,28 +30,9 @@ namespace PrayerTimeEngine.Core.Domain.Configuration.Services
             await profileDBAccess.SaveProfile(profile).ConfigureAwait(false);
         }
 
-        public GenericSettingConfiguration GetTimeConfig(Profile profile, ETimeType timeType, bool createIfNotExists = false)
+        public GenericSettingConfiguration GetTimeConfig(Profile profile, ETimeType timeType)
         {
-            if (profile.TimeConfigs.FirstOrDefault(x => x.TimeType == timeType) is ProfileTimeConfig foundTimeConfig)
-            {
-                return foundTimeConfig.CalculationConfiguration;
-            }
-
-            if (!createIfNotExists)
-                return null;
-
-            ProfileTimeConfig missingTimeConfig = createNewTimeConfig(profile, timeType);
-            return missingTimeConfig.CalculationConfiguration;
-        }
-
-        public void SetTimeConfig(Profile profile, ETimeType timeType, GenericSettingConfiguration settings)
-        {
-            if (profile.TimeConfigs.FirstOrDefault(x => x.TimeType == timeType) is ProfileTimeConfig foundTimeConfig)
-            {
-                profile.TimeConfigs.Remove(foundTimeConfig);
-            }
-
-            createNewTimeConfig(profile, timeType, settings);
+            return profile.TimeConfigs.FirstOrDefault(x => x.TimeType == timeType)?.CalculationConfiguration;
         }
 
         public BaseLocationData GetLocationConfig(Profile profile, ECalculationSource calculationSource)
@@ -70,19 +48,9 @@ namespace PrayerTimeEngine.Core.Domain.Configuration.Services
             await profileDBAccess.UpdateLocationConfig(profile, locationName, locationDataByCalculationSource);
         }
 
-        private ProfileTimeConfig createNewTimeConfig(Profile profile, ETimeType timeType, GenericSettingConfiguration config = null)
+        public async Task UpdateTimeConfig(Profile profile, ETimeType timeType, GenericSettingConfiguration settings)
         {
-            var missingTimeConfig =
-                new ProfileTimeConfig
-                {
-                    TimeType = timeType,
-                    ProfileID = profile.ID,
-                    Profile = profile,
-                    CalculationConfiguration = config ?? new GenericSettingConfiguration { TimeType = timeType }
-                };
-
-            profile.TimeConfigs.Add(missingTimeConfig);
-            return missingTimeConfig;
+            await profileDBAccess.UpdateTimeConfig(profile, timeType, settings);
         }
 
         private static Profile getDefaultProfile()

@@ -5,7 +5,7 @@ namespace PrayerTimeEngine.Presentation.Service.Navigation
 {
     public interface INavigationService
     {
-        Task NavigateTo<TViewModel>(object parameter = null) where TViewModel : CustomBaseViewModel;
+        Task NavigateTo<TViewModel>(params object[] parameter) where TViewModel : CustomBaseViewModel;
         Task NavigateBack();
     }
 
@@ -28,7 +28,7 @@ namespace PrayerTimeEngine.Presentation.Service.Navigation
             _mapping.Add(typeof(SettingsHandlerPageViewModel), typeof(SettingsHandlerPage));
         }
 
-        public async Task NavigateTo<TViewModel>(object parameter = null) where TViewModel : CustomBaseViewModel
+        public async Task NavigateTo<TViewModel>(params object[] parameter) where TViewModel : CustomBaseViewModel
         {
             var targetType = _mapping[typeof(TViewModel)];
 
@@ -38,7 +38,7 @@ namespace PrayerTimeEngine.Presentation.Service.Navigation
 
                 if (page.BindingContext is TViewModel viewModel)
                 {
-                    await viewModel.Initialize(parameter);
+                    viewModel.Initialize(parameter);
                 }
 
                 await navigationPage.PushAsync(page);

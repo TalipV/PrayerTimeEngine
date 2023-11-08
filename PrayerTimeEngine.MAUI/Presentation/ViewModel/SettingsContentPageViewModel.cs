@@ -1,4 +1,5 @@
-﻿using PrayerTimeEngine.Core.Common.Enum;
+﻿using Microsoft.Extensions.Logging;
+using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Domain;
 using PrayerTimeEngine.Core.Domain.Configuration.Interfaces;
 using PrayerTimeEngine.Core.Domain.Configuration.Models;
@@ -72,7 +73,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
 
         #region public methods
 
-        public async Task Initialize(ETimeType timeType)
+        public void Initialize(Profile profile, ETimeType timeType)
         {
             TabTitle = $"{timeType}";
             TimeType = timeType;
@@ -82,8 +83,11 @@ namespace PrayerTimeEngine.Presentation.ViewModel
             CalculationSources = getCalculationSource();
             MinuteAdjustments = getMinuteAdjustmentSource();
 
-            Profile = (await profileService.GetProfiles())[0];
-            GenericSettingConfiguration calculationConfiguration = profileService.GetTimeConfig(Profile, TimeType, createIfNotExists: true);
+            Profile = profile;
+            GenericSettingConfiguration calculationConfiguration = 
+                profileService.GetTimeConfig(Profile, TimeType)
+                ?? new GenericSettingConfiguration { TimeType = TimeType };
+
             IsTimeShown = !IsTimeShownCheckBoxVisible || calculationConfiguration.IsTimeShown;
             SelectedCalculationSource = calculationConfiguration.Source;
             SelectedMinuteAdjustment = calculationConfiguration.MinuteAdjustment;
@@ -115,7 +119,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
         public async Task OnDisappearing()
         {
             GenericSettingConfiguration settings = getCurrentCalculationConfiguration();
-            await saveSettingsToProfile(Profile, settings);
+            await profileService.UpdateTimeConfig(Profile, TimeType, settings);
         }
 
         #endregion public methods
@@ -166,12 +170,6 @@ namespace PrayerTimeEngine.Presentation.ViewModel
             {
                 return Enumerable.Range(-15, 30).ToList();
             }
-        }
-
-        private async Task saveSettingsToProfile(Profile profile, GenericSettingConfiguration settings)
-        {
-            profileService.SetTimeConfig(profile, TimeType, settings);
-            await profileService.SaveProfile(profile);
         }
 
         #endregion private methods
