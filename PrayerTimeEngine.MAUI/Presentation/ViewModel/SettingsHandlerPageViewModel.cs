@@ -2,6 +2,7 @@
 using PrayerTimeEngine.Code.Presentation.View;
 using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Domain;
+using PrayerTimeEngine.Core.Domain.Configuration.Models;
 using PrayerTimeEngine.Presentation.Service.Navigation;
 using PrayerTimeEngine.Presentation.Service.SettingsContentPageFactory;
 using PropertyChanged;
@@ -13,7 +14,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
     /// </summary>
     public abstract class CustomBaseViewModel : BaseViewModel
     {
-        public abstract Task Initialize(object parameter);
+        public abstract void Initialize(params object[] parameter);
     }
 
     [AddINotifyPropertyChangedInterface]
@@ -36,9 +37,14 @@ namespace PrayerTimeEngine.Presentation.ViewModel
 
         #region public methods
 
-        public override async Task Initialize(object parameter)
+        public override void Initialize(params object[] parameter)
         {
-            if (parameter is not EPrayerType prayerTime)
+            if (parameter[0] is not Profile profile)
+            {
+                throw new ArgumentException($"{nameof(parameter)} is not an {nameof(EPrayerType)}");
+            }
+
+            if (parameter[1] is not EPrayerType prayerTime)
             {
                 throw new ArgumentException($"{nameof(parameter)} is not an {nameof(EPrayerType)}");
             }
@@ -47,7 +53,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
             {
                 SettingsContentPage settingsContentPage = settingsContentPageFactory.Create();
                 SettingsContentPageViewModel tabViewModel = settingsContentPage.BindingContext as SettingsContentPageViewModel;
-                await tabViewModel.Initialize(timeType);
+                tabViewModel.Initialize(profile, timeType);
                 SettingsContentPages.Add(settingsContentPage);
             }
 

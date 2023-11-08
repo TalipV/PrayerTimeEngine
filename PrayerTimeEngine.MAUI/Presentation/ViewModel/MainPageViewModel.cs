@@ -115,7 +115,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
                 {
                     if (!IsLoadingPrayerTimes)
                     {
-                        await navigationService.NavigateTo<SettingsHandlerPageViewModel>(prayerTime);
+                        await navigationService.NavigateTo<SettingsHandlerPageViewModel>(CurrentProfile, prayerTime);
                     }
                 });
 
@@ -256,7 +256,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
                     this.IsLoadingSelectedPlace = true;
 
                     CompletePlaceInfo completePlaceInfo = await placeService.GetTimezoneInfo(SelectedPlace);
-                    var locationDataByCalculationSource = new Dictionary<ECalculationSource, BaseLocationData>();
+                    var locationDataWithCalculationSource = new List<(ECalculationSource, BaseLocationData)>();
                     foreach (var calculationSource in Enum.GetValues<ECalculationSource>())
                     {
                         if (calculationSource == ECalculationSource.None)
@@ -267,10 +267,10 @@ namespace PrayerTimeEngine.Presentation.ViewModel
                                 .GetPrayerTimeCalculatorByCalculationSource(calculationSource)
                                 .GetLocationInfo(completePlaceInfo);
 
-                        locationDataByCalculationSource[calculationSource] = locationConfig;
+                        locationDataWithCalculationSource.Add((calculationSource, locationConfig));
                     }
 
-                    await profileService.UpdateLocationConfig(CurrentProfile, completePlaceInfo.DisplayText, locationDataByCalculationSource);
+                    await profileService.UpdateLocationConfig(CurrentProfile, completePlaceInfo.DisplayText, locationDataWithCalculationSource);
 
                     List<ECalculationSource> missingLocationInfo =
                         Enum.GetValues<ECalculationSource>()

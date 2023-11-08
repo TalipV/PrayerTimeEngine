@@ -87,7 +87,7 @@ public static class MauiProgram
         public override string GetFormattedString(MetroLog.LogWriteContext context, MetroLog.LogEventInfo info)
         {
             // temp fix, EF logs too much about its queries
-            if (info.Message.Contains("SELECT"))
+            if (info.Message.Contains("DbCommand"))
             {
                 return "";
             }

@@ -47,7 +47,7 @@ namespace PrayerTimeEngine.Core.Domain.Configuration.Services
             {
                 using (IDbContextTransaction transaction = await dbContext.Database.BeginTransactionAsync())
                 {
-                    await this.SetNewLocationData(trackedProfile, locationDataByCalculationSource);
+                    await this.setNewLocationData(trackedProfile, locationDataByCalculationSource);
                     trackedProfile.LocationName = locationName;
 
                     await this.SaveProfile(trackedProfile);
@@ -59,14 +59,37 @@ namespace PrayerTimeEngine.Core.Domain.Configuration.Services
                 dbContext.Entry(trackedProfile).State = EntityState.Detached;
 
                 await dbContext.Entry(profile).ReloadAsync();
+
                 foreach (var locationConfig in profile.LocationConfigs)
                     await dbContext.Entry(locationConfig).ReloadAsync();
+            }
+        }
+
+        public async Task UpdateTimeConfig(Profile profile, ETimeType timeType, GenericSettingConfiguration settings)
+        {
+            Profile trackedProfile = dbContext.Profiles.Find(profile.ID);
+
+            try
+            {
+                using (IDbContextTransaction transaction = await dbContext.Database.BeginTransactionAsync())
+                {
+                    this.setTimeConfig(profile, timeType, settings);
+                    await this.SaveProfile(profile);
+                    await transaction.CommitAsync();
+                }
+            }
+            finally
+            {
+                dbContext.Entry(trackedProfile).State = EntityState.Detached;
+
+                await dbContext.Entry(profile).ReloadAsync();
+
                 foreach (var timeConfig in profile.TimeConfigs)
                     await dbContext.Entry(timeConfig).ReloadAsync();
             }
         }
 
-        public async Task SetNewLocationData(Profile profile, List<(ECalculationSource CalculationSource, BaseLocationData LocationData)> locationDataByCalculationSource)
+        private async Task setNewLocationData(Profile profile, List<(ECalculationSource CalculationSource, BaseLocationData LocationData)> locationDataByCalculationSource)
         {
             // delete the old entries
             var currentLocationConfigs = profile.LocationConfigs.ToList();
@@ -88,6 +111,25 @@ namespace PrayerTimeEngine.Core.Domain.Configuration.Services
             }
             await dbContext.ProfileLocations.AddRangeAsync(profile.LocationConfigs);
             await dbContext.SaveChangesAsync();
+        }
+
+        private void setTimeConfig(Profile profile, ETimeType timeType, GenericSettingConfiguration settings)
+        {
+            if (profile.TimeConfigs.FirstOrDefault(x => x.TimeType == timeType) is ProfileTimeConfig foundTimeConfig)
+            {
+                profile.TimeConfigs.Remove(foundTimeConfig);
+            }
+
+            var newTimeConfig =
+                new ProfileTimeConfig
+                {
+                    TimeType = timeType,
+                    ProfileID = profile.ID,
+                    Profile = profile,
+                    CalculationConfiguration = settings
+                };
+
+            profile.TimeConfigs.Add(newTimeConfig);
         }
     }
 }
