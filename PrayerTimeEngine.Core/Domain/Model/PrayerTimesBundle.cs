@@ -1,6 +1,7 @@
 ﻿using NodaTime;
 using PrayerTimeEngine.Core.Common.Enum;
 using PropertyChanged;
+using System.Text.Json.Serialization;
 
 namespace PrayerTimeEngine.Core.Domain.Model
 {
@@ -13,10 +14,11 @@ namespace PrayerTimeEngine.Core.Domain.Model
                 new List<PrayerTime>
                 {
                     Fajr, Duha, Dhuhr, Asr, Maghrib, Isha
-                }.AsReadOnly();
+                };
         }
 
-        public IReadOnlyList<PrayerTime> AllPrayerTimes { get; init; }
+        [JsonIgnore]
+        public List<PrayerTime> AllPrayerTimes { get; init; }
 
         public FajrPrayerTime Fajr { get; private set; } = new();
         public DuhaPrayerTime Duha { get; private set; } = new();

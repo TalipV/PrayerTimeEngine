@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using NodaTime;
 using NodaTime.Extensions;
 using PrayerTimeEngine.Core.Common.Enum;
+using PrayerTimeEngine.Core.Data.Preferences;
 using PrayerTimeEngine.Core.Domain;
 using PrayerTimeEngine.Core.Domain.CalculationService.Interfaces;
 using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Models;
@@ -28,6 +29,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
             IPrayerTimeCalculationService prayerTimeCalculator,
             ILocationService placeService,
             IProfileService profileService,
+            PreferenceService preferenceService,
             INavigationService navigationService,
             ILogger<MainPageViewModel> logger,
             TimeTypeAttributeService timeTypeAttributeService,
@@ -53,15 +55,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
             }
         }
 
-        public Profile CurrentProfile
-        {
-            get
-            {
-                return Profiles?.FirstOrDefault();
-            }
-        }
-
-        public List<Profile> Profiles { get; private set; }
+        public Profile CurrentProfile { get; set; }
 
         public PrayerTimesBundle Prayers { get; private set; }
 
@@ -144,24 +138,33 @@ namespace PrayerTimeEngine.Presentation.ViewModel
             }
         }
 
-        private static bool _startUpTimeShown = false;
-
         [Time]
         public async Task OnPageLoaded()
         {
             try
             {
-                //Profiles = await profileService.GetProfiles();
-                Profiles = await concurrentDataLoader.LoadAllProfilesTask;
+                double time1 = 0;
+                double time2 = 0;
 
+                (Profile profile, PrayerTimesBundle prayerTimes) =
+                    await concurrentDataLoader.LoadAllProfilesFromJsonTask;
+
+                if (profile != null && prayerTimes != null)
+                {
+                    CurrentProfile = profile;
+                    Prayers = prayerTimes;
+                    showHideSpecificTimes();
+
+                    time1 = (DateTime.Now - MauiProgram.StartDateTime).TotalMilliseconds;
+                }
+
+                CurrentProfile = (await concurrentDataLoader.LoadAllProfilesFromDbTask).First();
                 await loadPrayerTimes();
                 showHideSpecificTimes();
 
-                if (!_startUpTimeShown)
-                {
-                    doToast($"{(DateTime.Now - MauiProgram.StartDateTime).TotalMilliseconds.ToString("N0")}ms to start!");
-                    _startUpTimeShown = true;
-                }
+                time2 = (DateTime.Now - MauiProgram.StartDateTime).TotalMilliseconds;
+
+                doToast($"{time1:N0}ms/{time2:N0}ms to start!");
             }
             catch (Exception exception)
             {
@@ -211,6 +214,8 @@ namespace PrayerTimeEngine.Presentation.ViewModel
 
                 LocalDate today = DateTime.Now.ToLocalDateTime().Date;
                 Prayers = await prayerTimeCalculator.ExecuteAsync(CurrentProfile, today);
+                preferenceService.SaveCurrentData(CurrentProfile, Prayers);
+
                 OnAfterLoadingPrayerTimes_EventTrigger.Invoke();
             }
             finally
