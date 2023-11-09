@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
-using PrayerTimeEngine.Core.Common.Enum;
+﻿using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Domain;
 using PrayerTimeEngine.Core.Domain.Configuration.Interfaces;
 using PrayerTimeEngine.Core.Domain.Configuration.Models;
