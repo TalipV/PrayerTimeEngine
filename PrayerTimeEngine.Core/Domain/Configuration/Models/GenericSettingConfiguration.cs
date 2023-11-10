@@ -12,5 +12,21 @@ namespace PrayerTimeEngine.Core.Domain.Configuration.Models
         public virtual ECalculationSource Source { get; init; } = ECalculationSource.None;
         public int MinuteAdjustment { get; set; } = 0;
         public bool IsTimeShown { get; set; } = true;
+
+        public override bool Equals(object obj)
+        {
+            if (obj is not GenericSettingConfiguration otherSettingConfig)
+                return false;
+
+            return this.TimeType == otherSettingConfig.TimeType
+                && this.Source == otherSettingConfig.Source
+                && this.MinuteAdjustment == otherSettingConfig.MinuteAdjustment
+                && this.IsTimeShown == otherSettingConfig.IsTimeShown;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(TimeType, Source, MinuteAdjustment, IsTimeShown);
+        }
     }
 }

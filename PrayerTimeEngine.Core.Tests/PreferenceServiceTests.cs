@@ -1,19 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Storage;
+﻿using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
-using NSubstitute.ExceptionExtensions;
 using NSubstitute.Extensions;
-using PrayerTimeEngine.Core.Common.Enum;
-using PrayerTimeEngine.Core.Data.EntityFramework;
 using PrayerTimeEngine.Core.Data.Preferences;
-using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Models;
-using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Models;
-using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Models;
-using PrayerTimeEngine.Core.Domain.Configuration.Interfaces;
 using PrayerTimeEngine.Core.Domain.Configuration.Models;
-using PrayerTimeEngine.Core.Domain.Configuration.Services;
 using PrayerTimeEngine.Core.Domain.Model;
 
 namespace PrayerTimeEngine.Core.Tests
@@ -27,197 +17,94 @@ namespace PrayerTimeEngine.Core.Tests
         }
 
         [Test]
-        public async Task GetTimeConfig_ExistingTimeConfig_ShouldReturnConfig()
+        public void PreferenceService_SetAndGetProfile_SameProfileAsBefore()
         {
             // ARRANGE
             PreferenceService preferenceService = ServiceProvider.GetService<PreferenceService>();
             IPreferenceAccess preferenceAccess = ServiceProvider.GetService<IPreferenceAccess>();
 
-            var profile = getTestProfile();
-            var prayerTimesBundle = getPrayerTimesBundle();
+            var profile = TestData.CreateNewTestProfile();
 
             // ACT
-            preferenceService.SaveCurrentData(profile, prayerTimesBundle);
-            string jsonValue = null;
-            preferenceAccess.SetValue(Arg.Any<string>(), Arg.Do<string>(x => jsonValue = x));
+            string jsonValueProfile = null;
+            preferenceAccess.SetValue(Arg.Is("Profile"), Arg.Do<string>(x => jsonValueProfile = x));
+            preferenceService.SaveCurrentData(profile, new PrayerTimesBundle());
+            preferenceAccess.Configure().GetValue("Profile", Arg.Any<string>()).Returns(jsonValueProfile);
+
+            var retrievedProfile = preferenceService.GetCurrentProfile();
 
             // ASSERT
-            ;
+            Assert.IsNotNull(retrievedProfile);
+            Assert.That(retrievedProfile, Is.EqualTo(profile));
+            Assert.IsTrue(equalsLocationConfigs(profile.LocationConfigs, retrievedProfile.LocationConfigs));
+            Assert.IsTrue(equalsTimeConfigs(profile.TimeConfigs, retrievedProfile.TimeConfigs));
         }
 
-        private PrayerTimesBundle getPrayerTimesBundle()
+        [Test]
+        public void PreferenceService_SetAndGetPrayerTimeBundle_SamePrayerTimeBundleAsBefore()
         {
-            return new PrayerTimesBundle();
+            // ARRANGE
+            PreferenceService preferenceService = ServiceProvider.GetService<PreferenceService>();
+            IPreferenceAccess preferenceAccess = ServiceProvider.GetService<IPreferenceAccess>();
+
+            var profile = new Profile() { ID = 1 };
+            var bundle = TestData.CreateNewTestPrayerTimesBundle();
+
+            // ACT
+            string jsonValuePrayerTimeBundle = null;
+            preferenceAccess.SetValue(Arg.Is("PrayerTimes_1"), Arg.Do<string>(x => jsonValuePrayerTimeBundle = x));
+            preferenceService.SaveCurrentData(profile, bundle);
+            preferenceAccess.Configure().GetValue("PrayerTimes_1", Arg.Any<string>()).Returns(jsonValuePrayerTimeBundle);
+
+            var retrievedBundle = preferenceService.GetCurrentData(profile);
+
+            // ASSERT
+            Assert.IsNotNull(retrievedBundle);
+            Assert.That(retrievedBundle, Is.EqualTo(bundle));
         }
 
-        private static Profile getTestProfile()
+        private bool equalsLocationConfigs(
+            ICollection<ProfileLocationConfig> profileLocationConfigs1, 
+            ICollection<ProfileLocationConfig> profileLocationConfigs2)
         {
-            Profile profile = new Profile
+            var array1 = profileLocationConfigs1.OrderBy(x => x.CalculationSource).ToArray();
+            var array2 = profileLocationConfigs2.OrderBy(x => x.CalculationSource).ToArray();
+
+            if (array1.Length != array2.Length)
+                return false;
+
+            for (int i = 0; i < array1.Length; i++)
             {
-                ID = 1,
-                Name = "Standard-Profil",
-                LocationName = "Innsbruck",
-                SequenceNo = 1,
-            };
+                ProfileLocationConfig locationConfig1 = array1[i];
+                ProfileLocationConfig locationConfig2 = array2[i];
 
-            profile.LocationConfigs =
-                new List<ProfileLocationConfig>
-                {
-                    new ProfileLocationConfig
-                    {
-                        CalculationSource = ECalculationSource.Muwaqqit,
-                        ProfileID = profile.ID,
-                        Profile = profile,
-                        LocationData = new MuwaqqitLocationData{ Latitude = 47.2803835M,Longitude = 11.41337M,TimezoneName = "Europe/Vienna" }
-                    },
-                    new ProfileLocationConfig
-                    {
-                        CalculationSource = ECalculationSource.Fazilet,
-                        ProfileID = profile.ID,
-                        Profile = profile,
-                        LocationData = new FaziletLocationData{ CountryName = "Avusturya",CityName = "Innsbruck" }
-                    },
-                    new ProfileLocationConfig
-                    {
-                        CalculationSource = ECalculationSource.Semerkand,
-                        ProfileID = profile.ID,
-                        Profile = profile,
-                        LocationData = new SemerkandLocationData{ CountryName = "Avusturya",CityName = "Innsbruck",TimezoneName = "Europe/Vienna" }
-                    },
-                };
+                if (!locationConfig1.Equals(locationConfig2))
+                    return false;
+            }
 
-            profile.TimeConfigs =
-                new List<ProfileTimeConfig>
-                {
-                    new ProfileTimeConfig
-                    {
-                        TimeType = ETimeType.FajrStart,
-                        ProfileID = profile.ID,
-                        Profile = profile,
-                        CalculationConfiguration = new GenericSettingConfiguration { Source = ECalculationSource.Fazilet, TimeType = ETimeType.FajrStart }
-                    },
-                    new ProfileTimeConfig
-                    {
-                        TimeType = ETimeType.FajrEnd,
-                        ProfileID = profile.ID,
-                        Profile = profile,
-                        CalculationConfiguration = new GenericSettingConfiguration { Source = ECalculationSource.Semerkand, TimeType = ETimeType.FajrEnd }
-                    },
-                    new ProfileTimeConfig
-                    {
-                        TimeType = ETimeType.FajrGhalas,
-                        ProfileID = profile.ID,
-                        Profile = profile,
-                        CalculationConfiguration = new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.FajrGhalas, Degree = -8.5 }
-                    },
-                    new ProfileTimeConfig
-                    {
-                        TimeType = ETimeType.FajrKaraha,
-                        ProfileID = profile.ID,
-                        Profile = profile,
-                        CalculationConfiguration = new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.FajrKaraha, Degree = -4.0 }
-                    },
-                    new ProfileTimeConfig
-                    {
-                        TimeType = ETimeType.DuhaStart,
-                        ProfileID = profile.ID,
-                        Profile = profile,
-                        CalculationConfiguration = new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.DuhaStart, Degree = 5.0 }
-                    },
-                    new ProfileTimeConfig
-                    {
-                        TimeType = ETimeType.DuhaEnd,
-                        ProfileID = profile.ID,
-                        Profile = profile,
-                        CalculationConfiguration = new GenericSettingConfiguration { TimeType = ETimeType.DuhaEnd, MinuteAdjustment = -25 }
-                    },
-                    new ProfileTimeConfig
-                    {
-                        TimeType = ETimeType.DhuhrStart,
-                        ProfileID = profile.ID,
-                        Profile = profile,
-                        CalculationConfiguration = new GenericSettingConfiguration { Source = ECalculationSource.Fazilet, TimeType = ETimeType.DhuhrStart }
-                    },
-                    new ProfileTimeConfig
-                    {
-                        TimeType = ETimeType.DhuhrEnd,
-                        ProfileID = profile.ID,
-                        Profile = profile,
-                        CalculationConfiguration = new GenericSettingConfiguration { Source = ECalculationSource.Muwaqqit, TimeType = ETimeType.DhuhrEnd }
-                    },
-                    new ProfileTimeConfig
-                    {
-                        TimeType = ETimeType.AsrStart,
-                        ProfileID = profile.ID,
-                        Profile = profile,
-                        CalculationConfiguration = new GenericSettingConfiguration { Source = ECalculationSource.Fazilet, TimeType = ETimeType.AsrStart }
-                    },
-                    new ProfileTimeConfig
-                    {
-                        TimeType = ETimeType.AsrEnd,
-                        ProfileID = profile.ID,
-                        Profile = profile,
-                        CalculationConfiguration = new GenericSettingConfiguration { Source = ECalculationSource.Muwaqqit, TimeType = ETimeType.AsrEnd }
-                    },
-                    new ProfileTimeConfig
-                    {
-                        TimeType = ETimeType.AsrMithlayn,
-                        ProfileID = profile.ID,
-                        Profile = profile,
-                        CalculationConfiguration = new GenericSettingConfiguration { Source = ECalculationSource.Muwaqqit, TimeType = ETimeType.AsrMithlayn }
-                    },
-                    new ProfileTimeConfig
-                    {
-                        TimeType = ETimeType.AsrKaraha,
-                        ProfileID = profile.ID,
-                        Profile = profile,
-                        CalculationConfiguration = new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.AsrKaraha, Degree = 5.0 }
-                    },
-                    new ProfileTimeConfig
-                    {
-                        TimeType = ETimeType.MaghribStart,
-                        ProfileID = profile.ID,
-                        Profile = profile,
-                        CalculationConfiguration = new GenericSettingConfiguration { Source = ECalculationSource.Fazilet, TimeType = ETimeType.MaghribStart }
-                    },
-                    new ProfileTimeConfig
-                    {
-                        TimeType = ETimeType.MaghribEnd,
-                        ProfileID = profile.ID,
-                        Profile = profile,
-                        CalculationConfiguration = new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.MaghribEnd, Degree = -15.0 }
-                    },
-                    new ProfileTimeConfig
-                    {
-                        TimeType = ETimeType.MaghribSufficientTime,
-                        ProfileID = profile.ID,
-                        Profile = profile,
-                        CalculationConfiguration = new GenericSettingConfiguration { TimeType = ETimeType.MaghribSufficientTime, MinuteAdjustment = 20 }
-                    },
-                    new ProfileTimeConfig
-                    {
-                        TimeType = ETimeType.MaghribIshtibaq,
-                        ProfileID = profile.ID,
-                        Profile = profile,
-                        CalculationConfiguration = new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.MaghribIshtibaq, Degree = -10.0 }
-                    },
-                    new ProfileTimeConfig
-                    {
-                        TimeType = ETimeType.IshaStart,
-                        ProfileID = profile.ID,
-                        Profile = profile,
-                        CalculationConfiguration = new GenericSettingConfiguration { Source = ECalculationSource.Fazilet, TimeType = ETimeType.IshaStart }
-                    },
-                    new ProfileTimeConfig
-                    {
-                        TimeType = ETimeType.IshaEnd,
-                        ProfileID = profile.ID,
-                        Profile = profile,
-                        CalculationConfiguration = new GenericSettingConfiguration { Source = ECalculationSource.Semerkand, TimeType = ETimeType.IshaEnd }
-                    }
-                };
+            return true;
+        }
 
-            return profile;
+        private bool equalsTimeConfigs(
+            ICollection<ProfileTimeConfig> profileTimeConfigs1,
+            ICollection<ProfileTimeConfig> profileTimeConfigs2)
+        {
+            var array1 = profileTimeConfigs1.OrderBy(x => x.TimeType).ToArray();
+            var array2 = profileTimeConfigs2.OrderBy(x => x.TimeType).ToArray();
+
+            if (array1.Length != array2.Length)
+                return false;
+
+            for (int i = 0; i < array1.Length; i++)
+            {
+                ProfileTimeConfig profileTimeConfig1 = array1[i];
+                ProfileTimeConfig profileTimeConfig2 = array2[i];
+
+                if (!profileTimeConfig1.Equals(profileTimeConfig2))
+                    return false;
+            }
+
+            return true;
         }
     }
 }

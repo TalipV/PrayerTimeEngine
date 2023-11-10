@@ -1,4 +1,5 @@
-﻿using PrayerTimeEngine.Core.Domain.Configuration.Models;
+﻿using PrayerTimeEngine.Core.Data.JsonConverter;
+using PrayerTimeEngine.Core.Domain.Configuration.Models;
 using PrayerTimeEngine.Core.Domain.Model;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -13,6 +14,7 @@ namespace PrayerTimeEngine.Core.Data.Preferences
         private static readonly JsonSerializerOptions _settings = new
             JsonSerializerOptions
             {
+                Converters = { new ZonedDateTimeConverter() },
                 ReferenceHandler = ReferenceHandler.Preserve,
                 WriteIndented = true
             };
@@ -23,7 +25,7 @@ namespace PrayerTimeEngine.Core.Data.Preferences
             preferenceAccess.SetValue(getPrayerPreferenceKey(profile), jsonDataPrayerTimeBundle);
 
             string jsonDataProfile = JsonSerializer.Serialize(profile, _settings);
-            preferenceAccess.SetValue(CURRENT_PROFILE_KEY_PREFIX, JsonSerializer.Serialize(profile, _settings));
+            preferenceAccess.SetValue(CURRENT_PROFILE_KEY_PREFIX, jsonDataProfile);
         }
 
         public PrayerTimesBundle GetCurrentData(Profile profile)
@@ -36,6 +38,7 @@ namespace PrayerTimeEngine.Core.Data.Preferences
 
             return JsonSerializer.Deserialize<PrayerTimesBundle>(jsonData, _settings);
         }
+
         public Profile GetCurrentProfile()
         {
             string key = CURRENT_PROFILE_KEY_PREFIX;
