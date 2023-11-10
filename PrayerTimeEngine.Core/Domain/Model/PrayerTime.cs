@@ -29,6 +29,22 @@ namespace PrayerTimeEngine.Core.Domain.Model
                 return $"{startTime} - {endTime}"; ;
             }
         }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is not PrayerTime otherTime)
+                return false;
+
+            return
+                this.Name == otherTime.Name
+                && this.Start == otherTime.Start
+                && this.End == otherTime.End;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Name, Start, End);
+        }
     }
 
     public class FajrPrayerTime : PrayerTime

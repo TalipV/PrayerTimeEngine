@@ -12,5 +12,21 @@ namespace PrayerTimeEngine.Core.Domain.Configuration.Models
 
         public ICollection<ProfileTimeConfig> TimeConfigs { get; set; }
         public ICollection<ProfileLocationConfig> LocationConfigs { get; set; }
+        public override bool Equals(object obj)
+        {
+            if (obj is not Profile otherProfile)
+                return false;
+
+            return
+                this.ID == otherProfile.ID
+                && this.SequenceNo == otherProfile.SequenceNo
+                && this.Name == otherProfile.Name
+                && this.LocationName == otherProfile.LocationName;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(ID, SequenceNo, Name, LocationName);
+        }
     }
 }

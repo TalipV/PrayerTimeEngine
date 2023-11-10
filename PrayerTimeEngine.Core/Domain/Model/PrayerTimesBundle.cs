@@ -14,18 +14,37 @@ namespace PrayerTimeEngine.Core.Domain.Model
                 new List<PrayerTime>
                 {
                     Fajr, Duha, Dhuhr, Asr, Maghrib, Isha
-                };
+                }.AsReadOnly();
         }
 
         [JsonIgnore]
-        public List<PrayerTime> AllPrayerTimes { get; init; }
+        public IReadOnlyList<PrayerTime> AllPrayerTimes { get; init; }
 
-        public FajrPrayerTime Fajr { get; private set; } = new();
-        public DuhaPrayerTime Duha { get; private set; } = new();
-        public DhuhrPrayerTime Dhuhr { get; private set; } = new();
-        public AsrPrayerTime Asr { get; private set; } = new();
-        public MaghribPrayerTime Maghrib { get; private set; } = new();
-        public IshaPrayerTime Isha { get; private set; } = new();
+        public FajrPrayerTime Fajr { get; init; } = new();
+        public DuhaPrayerTime Duha { get; init; } = new();
+        public DhuhrPrayerTime Dhuhr { get; init; } = new();
+        public AsrPrayerTime Asr { get; init; } = new();
+        public MaghribPrayerTime Maghrib { get; init; } = new();
+        public IshaPrayerTime Isha { get; init; } = new();
+
+        public override bool Equals(object obj)
+        {
+            if (obj is not PrayerTimesBundle otherPrayerTimeBundle)
+                return false;
+
+            return
+                this.Fajr.Equals(otherPrayerTimeBundle.Fajr)
+                && this.Duha.Equals(otherPrayerTimeBundle.Duha)
+                && this.Dhuhr.Equals(otherPrayerTimeBundle.Dhuhr)
+                && this.Asr.Equals(otherPrayerTimeBundle.Asr)
+                && this.Maghrib.Equals(otherPrayerTimeBundle.Maghrib)
+                && this.Isha.Equals(otherPrayerTimeBundle.Isha);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Fajr, Duha, Dhuhr, Asr, Maghrib, Isha);
+        }
 
         public void SetSpecificPrayerTimeDateTime(ETimeType timeType, ZonedDateTime? zonedDateTime)
         {

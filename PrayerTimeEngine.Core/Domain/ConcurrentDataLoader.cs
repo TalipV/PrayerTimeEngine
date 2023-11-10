@@ -30,6 +30,7 @@ namespace PrayerTimeEngine.Core.Domain
                 }
                 catch (Exception exc)
                 {
+                    // IGNORE
                 }
 
                 return (null, null);
