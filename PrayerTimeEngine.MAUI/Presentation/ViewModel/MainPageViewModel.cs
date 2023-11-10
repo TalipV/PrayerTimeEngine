@@ -143,15 +143,8 @@ namespace PrayerTimeEngine.Presentation.ViewModel
         {
             try
             {
-                double time1 = 0;
-                double time2 = 0;
-
-                time1 = await performanceLoad(time1).ConfigureAwait(false);
-
-                await Task.Yield();
-                await Task.Delay(1000);
-
-                //time2 = await regularLoad(time2);
+                double time1 = await performanceLoad().ConfigureAwait(false);
+                double time2 = await regularLoad().ConfigureAwait(false);
 
                 doToast($"{time1:N0}ms/{time2:N0}ms to start!");
             }
@@ -162,31 +155,29 @@ namespace PrayerTimeEngine.Presentation.ViewModel
             }
         }
 
-        private async Task<double> regularLoad(double time2)
+        [Time]
+        private async Task<double> regularLoad()
         {
             CurrentProfile = (await concurrentDataLoader.LoadAllProfilesFromDbTask).First();
             await loadPrayerTimes();
-            showHideSpecificTimes();
 
-            time2 = (DateTime.Now - MauiProgram.StartDateTime).TotalMilliseconds;
-            return time2;
+            showHideSpecificTimes();
+            return (DateTime.Now - MauiProgram.StartDateTime).TotalMilliseconds;
         }
 
-        private async Task<double> performanceLoad(double time1)
+        [Time]
+        private async Task<double> performanceLoad()
         {
-            (Profile profile, PrayerTimesBundle prayerTimes) =
-                await concurrentDataLoader.LoadAllProfilesFromJsonTask;
+            (Profile profile, PrayerTimesBundle prayerTimes) = await concurrentDataLoader.LoadAllProfilesFromJsonTask;
 
-            if (profile != null && prayerTimes != null)
-            {
-                CurrentProfile = profile;
-                Prayers = prayerTimes;
-                showHideSpecificTimes();
+            if (profile == null || prayerTimes == null)
+                return 0;
 
-                time1 = (DateTime.Now - MauiProgram.StartDateTime).TotalMilliseconds;
-            }
+            CurrentProfile = profile;
+            Prayers = prayerTimes;
 
-            return time1;
+            showHideSpecificTimes();
+            return (DateTime.Now - MauiProgram.StartDateTime).TotalMilliseconds;
         }
 
         #endregion public methods
@@ -216,7 +207,6 @@ namespace PrayerTimeEngine.Presentation.ViewModel
 
         private int isLoadPrayerTimesRunningInterlockedInt = 0;  // 0 for false, 1 for true
 
-        [Time]
         private async Task loadPrayerTimes()
         {
             if (CurrentProfile == null || Interlocked.CompareExchange(ref isLoadPrayerTimesRunningInterlockedInt, 1, 0) == 1)
@@ -227,11 +217,11 @@ namespace PrayerTimeEngine.Presentation.ViewModel
             try
             {
                 IsLoadingPrayerTimes = true;
-
                 LocalDate today = DateTime.Now.ToLocalDateTime().Date;
-                Prayers = await prayerTimeCalculator.ExecuteAsync(CurrentProfile, today);
-                preferenceService.SaveCurrentData(CurrentProfile, Prayers);
 
+                Prayers = await prayerTimeCalculator.ExecuteAsync(CurrentProfile, today);
+
+                preferenceService.SaveCurrentData(CurrentProfile, Prayers);
                 OnAfterLoadingPrayerTimes_EventTrigger.Invoke();
             }
             finally
