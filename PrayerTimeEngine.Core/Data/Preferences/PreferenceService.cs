@@ -19,9 +19,10 @@ namespace PrayerTimeEngine.Core.Data.Preferences
 
         public void SaveCurrentData(Profile profile, PrayerTimesBundle prayerTimesBundle)
         {
-            string jsonData = JsonSerializer.Serialize(prayerTimesBundle, _settings);
-            preferenceAccess.SetValue(getPrayerPreferenceKey(profile), jsonData);
+            string jsonDataPrayerTimeBundle = JsonSerializer.Serialize(prayerTimesBundle, _settings);
+            preferenceAccess.SetValue(getPrayerPreferenceKey(profile), jsonDataPrayerTimeBundle);
 
+            string jsonDataProfile = JsonSerializer.Serialize(profile, _settings);
             preferenceAccess.SetValue(CURRENT_PROFILE_KEY_PREFIX, JsonSerializer.Serialize(profile, _settings));
         }
 
