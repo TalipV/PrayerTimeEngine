@@ -8,17 +8,18 @@ namespace PrayerTimeEngine.Core.Domain.Model
     [AddINotifyPropertyChangedInterface]
     public class PrayerTimesBundle
     {
-        public PrayerTimesBundle()
-        {
-            AllPrayerTimes =
-                new List<PrayerTime>
-                {
-                    Fajr, Duha, Dhuhr, Asr, Maghrib, Isha
-                }.AsReadOnly();
-        }
 
         [JsonIgnore]
-        public IReadOnlyList<PrayerTime> AllPrayerTimes { get; init; }
+        public List<PrayerTime> AllPrayerTimes
+        {
+            get
+            {
+                return new List<PrayerTime>
+                {
+                    Fajr, Duha, Dhuhr, Asr, Maghrib, Isha
+                };
+            }
+        }
 
         public FajrPrayerTime Fajr { get; init; } = new();
         public DuhaPrayerTime Duha { get; init; } = new();
