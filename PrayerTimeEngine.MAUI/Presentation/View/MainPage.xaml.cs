@@ -59,17 +59,11 @@ namespace PrayerTimeEngine
 
         private void AsyncItemsSourceProvider_ItemsRequested(object sender, ItemsRequestEventArgs e)
         {
-            Func<System.Collections.IEnumerable> func = 
+            e.Request = 
                 () => {
                     var placeSearchTask = Task.Run(async () => await this._viewModel.PerformPlaceSearch(e.Text));
                     placeSearchTask.Wait();
                     return placeSearchTask.Result;
-                };
-
-            Func<Task<System.Collections.IEnumerable>> funcx =
-                async () =>
-                {
-                    return await this._viewModel.PerformPlaceSearch(e.Text);
                 };
         }
 
@@ -186,7 +180,7 @@ namespace PrayerTimeEngine
         {
             MainThread.BeginInvokeOnMainThread(() =>
             {
-                PrayerTimeGraphicView.DisplayPrayerTime = _viewModel.DisplayPrayerTime;
+                PrayerTimeGraphicView.DisplayPrayerTime = _viewModel.GetDisplayPrayerTime();
                 PrayerTimeGraphicViewBase.Invalidate();
             });
         }
