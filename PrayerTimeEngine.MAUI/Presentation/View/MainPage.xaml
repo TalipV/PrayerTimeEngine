@@ -22,7 +22,7 @@
 
             <Label
                 x:Name="lastUpdatedTextInfo"
-                Text="{Binding LastUpdated, StringFormat='{0:dd.MM, HH:mm:ss}'}"
+                Text="{Binding LastDataRefreshTimestamp, StringFormat='{0:dd.MM, HH:mm:ss}'}"
                 IsVisible="{Binding IsNotLoadingPrayerTimesOrSelectedPlace}" x:DataType="viewModel:MainPageViewModel"
                 
                 FontSize="10"
@@ -130,7 +130,7 @@
             Grid.Row="5"
             Grid.Column="0"
             Grid.ColumnSpan="2"
-            TextColor="Black" Text="{Binding Prayers.Fajr.DurationDisplayText}" x:DataType="viewModel:MainPageViewModel"
+            TextColor="Black" Text="{Binding PrayerTimeBundle.Fajr.DurationDisplayText}" x:DataType="viewModel:MainPageViewModel"
             
             HorizontalOptions="Start"
             VerticalOptions="Start" />
@@ -147,7 +147,7 @@
             x:Name="FajrSubtimeGhalasDisplayText"
             Grid.Row="6"
             Grid.Column="1"
-            TextColor="Black" Text="{Binding Prayers.Fajr.Ghalas, StringFormat='{0:HH:mm:ss}'}"
+            TextColor="Black" Text="{Binding PrayerTimeBundle.Fajr.Ghalas, StringFormat='{0:HH:mm:ss}'}"
             HorizontalOptions="Center"
             VerticalOptions="Center"
             IsVisible="{Binding ShowFajrGhalas}" x:DataType="viewModel:MainPageViewModel"/>
@@ -164,7 +164,7 @@
             x:Name="FajrSubtimeRednessDisplayText"
             Grid.Row="7"
             Grid.Column="1"
-            TextColor="Black" Text="{Binding Prayers.Fajr.Karaha, StringFormat='{0:HH:mm:ss}'}"
+            TextColor="Black" Text="{Binding PrayerTimeBundle.Fajr.Karaha, StringFormat='{0:HH:mm:ss}'}"
             HorizontalOptions="Center"
             VerticalOptions="Start"
             IsVisible="{Binding ShowFajrRedness}" x:DataType="viewModel:MainPageViewModel"/>
@@ -190,7 +190,7 @@
             Grid.Row="5"
             Grid.Column="3"
             Grid.ColumnSpan="2"
-            TextColor="Black" Text="{Binding Prayers.Duha.DurationDisplayText}" x:DataType="viewModel:MainPageViewModel"
+            TextColor="Black" Text="{Binding PrayerTimeBundle.Duha.DurationDisplayText}" x:DataType="viewModel:MainPageViewModel"
             
             HorizontalOptions="Start"
             VerticalOptions="Start"/>
@@ -201,16 +201,15 @@
             Grid.Column="3"
             TextColor="Black" Text="Quarter" 
             HorizontalOptions="Start"
-            VerticalOptions="Start" 
-            IsVisible="{Binding ShowDuhaQuarter}" x:DataType="viewModel:MainPageViewModel"/>
+            VerticalOptions="Start" x:DataType="viewModel:MainPageViewModel"/>
         <Label 
             x:Name="DuhaSubtimeQuarterDisplayText"
             Grid.Row="6"
             Grid.Column="4"
-            TextColor="Black" Text="{Binding Prayers.Duha.QuarterOfDay, StringFormat='{0:HH:mm:ss}'}"
+            TextColor="Black" Text="{Binding PrayerTimeBundle.Duha.QuarterOfDay, StringFormat='{0:HH:mm:ss}'}"
             HorizontalOptions="Center"
-            VerticalOptions="Start"
-            IsVisible="{Binding ShowDuhaQuarter}" x:DataType="viewModel:MainPageViewModel"/>
+            VerticalOptions="Start" 
+            x:DataType="viewModel:MainPageViewModel"/>
         
         <Label
             x:Name="DhuhrName"
@@ -232,7 +231,7 @@
             Grid.Row="9"
             Grid.Column="0"
             Grid.ColumnSpan="2"
-            TextColor="Black" Text="{Binding Prayers.Dhuhr.DurationDisplayText}" x:DataType="viewModel:MainPageViewModel"
+            TextColor="Black" Text="{Binding PrayerTimeBundle.Dhuhr.DurationDisplayText}" x:DataType="viewModel:MainPageViewModel"
             
             HorizontalOptions="Start"
             VerticalOptions="Start"/>
@@ -257,7 +256,7 @@
             Grid.Row="9"
             Grid.Column="3"            
             Grid.ColumnSpan="2"
-            TextColor="Black" Text="{Binding Prayers.Asr.DurationDisplayText}" x:DataType="viewModel:MainPageViewModel"
+            TextColor="Black" Text="{Binding PrayerTimeBundle.Asr.DurationDisplayText}" x:DataType="viewModel:MainPageViewModel"
             
             HorizontalOptions="Start"
             VerticalOptions="Center"/>
@@ -274,7 +273,7 @@
             Grid.Row="10"
             Grid.Column="4"
             TextColor="Black"
-            Text="{Binding Prayers.Asr.Mithlayn, StringFormat='{0:HH:mm:ss}'}" x:DataType="viewModel:MainPageViewModel"
+            Text="{Binding PrayerTimeBundle.Asr.Mithlayn, StringFormat='{0:HH:mm:ss}'}" x:DataType="viewModel:MainPageViewModel"
             HorizontalOptions="Center"
             VerticalOptions="Start" 
             IsVisible="{Binding ShowMithlayn}"/>
@@ -291,7 +290,7 @@
             Grid.Row="11"
             Grid.Column="4"
             TextColor="Black"
-            Text="{Binding Prayers.Asr.Karaha, StringFormat='{0:HH:mm:ss}'}" x:DataType="viewModel:MainPageViewModel"
+            Text="{Binding PrayerTimeBundle.Asr.Karaha, StringFormat='{0:HH:mm:ss}'}" x:DataType="viewModel:MainPageViewModel"
             HorizontalOptions="Center"
             VerticalOptions="Start" 
             IsVisible="{Binding ShowKaraha}"/>
@@ -316,7 +315,7 @@
             Grid.Row="13"
             Grid.Column="0"
             Grid.ColumnSpan="2"
-            TextColor="Black" Text="{Binding Prayers.Maghrib.DurationDisplayText}" x:DataType="viewModel:MainPageViewModel"
+            TextColor="Black" Text="{Binding PrayerTimeBundle.Maghrib.DurationDisplayText}" x:DataType="viewModel:MainPageViewModel"
             
             HorizontalOptions="Start"
             VerticalOptions="Start"/>
@@ -333,7 +332,7 @@
             x:Name="MaghribSubtimeSufficientDisplayText"
             Grid.Row="14"
             Grid.Column="1"
-            TextColor="Black" Text="{Binding Prayers.Maghrib.SufficientTime, StringFormat='{0:HH:mm:ss}'}" x:DataType="viewModel:MainPageViewModel"
+            TextColor="Black" Text="{Binding PrayerTimeBundle.Maghrib.SufficientTime, StringFormat='{0:HH:mm:ss}'}" x:DataType="viewModel:MainPageViewModel"
             HorizontalOptions="Center"
             VerticalOptions="Start" 
             IsVisible="{Binding ShowMaghribSufficientTime}"/>
@@ -350,7 +349,7 @@
             x:Name="MaghribSubtimeIshtibaqDisplayText"
             Grid.Row="15"
             Grid.Column="1"
-            TextColor="Black" Text="{Binding Prayers.Maghrib.Ishtibaq, StringFormat='{0:HH:mm:ss}'}" x:DataType="viewModel:MainPageViewModel"
+            TextColor="Black" Text="{Binding PrayerTimeBundle.Maghrib.Ishtibaq, StringFormat='{0:HH:mm:ss}'}" x:DataType="viewModel:MainPageViewModel"
             HorizontalOptions="Center"
             VerticalOptions="Start" 
             IsVisible="{Binding ShowIshtibaq}"/>
@@ -374,7 +373,7 @@
             Grid.Row="13"
             Grid.Column="3"
             Grid.ColumnSpan="2"
-            TextColor="Black" Text="{Binding Prayers.Isha.DurationDisplayText}" x:DataType="viewModel:MainPageViewModel"
+            TextColor="Black" Text="{Binding PrayerTimeBundle.Isha.DurationDisplayText}" x:DataType="viewModel:MainPageViewModel"
             
             HorizontalOptions="Start"
             VerticalOptions="Start"/>
@@ -386,15 +385,14 @@
             TextColor="Black" Text="1/3" 
             HorizontalOptions="Center"
             VerticalOptions="Start"  
-            IsVisible="{Binding ShowOneThird}" x:DataType="viewModel:MainPageViewModel"/>
+            x:DataType="viewModel:MainPageViewModel"/>
         <Label 
             x:Name="IshaSubtimeOneThirdDisplayText"
             Grid.Row="14"
             Grid.Column="4"
-            TextColor="Black" Text="{Binding Prayers.Isha.FirstThirdOfNight, StringFormat='{0:HH:mm:ss}'}" x:DataType="viewModel:MainPageViewModel"
+            TextColor="Black" Text="{Binding PrayerTimeBundle.Isha.FirstThirdOfNight, StringFormat='{0:HH:mm:ss}'}" x:DataType="viewModel:MainPageViewModel"
             HorizontalOptions="Center"
-            VerticalOptions="Start" 
-            IsVisible="{Binding ShowOneThird}"/>
+            VerticalOptions="Start" />
         <Label 
             x:Name="IshaSubtimeOneHalfName"
             Grid.Row="15"
@@ -402,15 +400,14 @@
             TextColor="Black" Text="1/2" 
             HorizontalOptions="Center"
             VerticalOptions="Start"  
-            IsVisible="{Binding ShowMidnight}" x:DataType="viewModel:MainPageViewModel"/>
+            x:DataType="viewModel:MainPageViewModel"/>
         <Label 
             x:Name="IshaSubtimeOneHalfDisplayText"
             Grid.Row="15"
             Grid.Column="4"
-            TextColor="Black" Text="{Binding Prayers.Isha.MiddleOfNight, StringFormat='{0:HH:mm:ss}'}" x:DataType="viewModel:MainPageViewModel"
+            TextColor="Black" Text="{Binding PrayerTimeBundle.Isha.MiddleOfNight, StringFormat='{0:HH:mm:ss}'}" x:DataType="viewModel:MainPageViewModel"
             HorizontalOptions="Center"
-            VerticalOptions="Start" 
-            IsVisible="{Binding ShowMidnight}"/>
+            VerticalOptions="Start" />
         <Label 
             x:Name="IshaSubtimeTwoThirdsName"
             Grid.Row="16"
@@ -418,15 +415,14 @@
             TextColor="Black" Text="2/3" 
             HorizontalOptions="Center"
             VerticalOptions="Start"  
-            IsVisible="{Binding ShowTwoThird}" x:DataType="viewModel:MainPageViewModel"/>
+            x:DataType="viewModel:MainPageViewModel"/>
         <Label 
             x:Name="IshaSubtimeTwoThirdsDisplayText"
             Grid.Row="16"
             Grid.Column="4"
-            TextColor="Black" Text="{Binding Prayers.Isha.SecondThirdOfNight, StringFormat='{0:HH:mm:ss}'}" x:DataType="viewModel:MainPageViewModel"
+            TextColor="Black" Text="{Binding PrayerTimeBundle.Isha.SecondThirdOfNight, StringFormat='{0:HH:mm:ss}'}" x:DataType="viewModel:MainPageViewModel"
             HorizontalOptions="Center"
-            VerticalOptions="Start"  
-            IsVisible="{Binding ShowTwoThird}"/>
+            VerticalOptions="Start"/>
 
         <GraphicsView 
             Grid.Row="17"

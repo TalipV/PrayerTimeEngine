@@ -9,7 +9,8 @@ using PrayerTimeEngine.Core.Domain.Model;
 namespace PrayerTimeEngine.Core.Domain.Configuration.Services
 {
     public class ProfileService(
-            IProfileDBAccess profileDBAccess
+            IProfileDBAccess profileDBAccess,
+            TimeTypeAttributeService timeTypeAttributeService
         ) : IProfileService
     {
         public async Task<List<Profile>> GetProfiles()
@@ -51,6 +52,67 @@ namespace PrayerTimeEngine.Core.Domain.Configuration.Services
         public async Task UpdateTimeConfig(Profile profile, ETimeType timeType, GenericSettingConfiguration settings)
         {
             await profileDBAccess.UpdateTimeConfig(profile, timeType, settings);
+        }
+
+        public string GetLocationDataDisplayText(Profile profile)
+        {
+            if (profile == null)
+                return string.Empty;
+
+            MuwaqqitLocationData muwaqqitLocationData = this.GetLocationConfig(profile, ECalculationSource.Muwaqqit) as MuwaqqitLocationData;
+            FaziletLocationData faziletLocationData = this.GetLocationConfig(profile, ECalculationSource.Fazilet) as FaziletLocationData;
+            SemerkandLocationData semerkandLocationData = this.GetLocationConfig(profile, ECalculationSource.Semerkand) as SemerkandLocationData;
+
+            return $"""
+                    Muwaqqit:
+                        - Coordinates:  
+                        ({muwaqqitLocationData?.Latitude} / {muwaqqitLocationData?.Longitude})
+                        - Timezone:     
+                        '{muwaqqitLocationData?.TimezoneName}'
+                    
+                    Fazilet:
+                        - Country 
+                        '{faziletLocationData?.CountryName}'
+                        - City 
+                        '{faziletLocationData?.CityName}'
+                    
+                    Semerkand:
+                        - Country 
+                        '{semerkandLocationData?.CountryName}'
+                        - City 
+                        '{semerkandLocationData?.CityName}'
+                    """;
+        }
+
+        public string GetPrayerTimeConfigDisplayText(Profile profile)
+        {
+            string outputText = string.Empty;
+
+            foreach (KeyValuePair<EPrayerType, List<ETimeType>> item in timeTypeAttributeService.PrayerTypeToTimeTypes)
+            {
+                EPrayerType prayerType = item.Key;
+                outputText += prayerType.ToString();
+
+                foreach (ETimeType timeType in item.Value)
+                {
+                    if (!timeTypeAttributeService.ConfigurableTypes.Contains(timeType))
+                        continue;
+
+                    GenericSettingConfiguration config = this.GetTimeConfig(profile, timeType);
+
+                    outputText += Environment.NewLine;
+                    outputText += $"- {timeType} mit {config.Source}";
+                    if (config is MuwaqqitDegreeCalculationConfiguration degreeConfig)
+                    {
+                        outputText += $" ({degreeConfig.Degree}°)";
+                    }
+                }
+
+                outputText += Environment.NewLine;
+                outputText += Environment.NewLine;
+            }
+
+            return outputText;
         }
 
         private static Profile getDefaultProfile()
