@@ -14,5 +14,8 @@ namespace PrayerTimeEngine.Core.Domain.Configuration.Interfaces
 
         public Task UpdateLocationConfig(Profile profile, string locationName, List<(ECalculationSource CalculationSource, BaseLocationData LocationData)> locationDataByCalculationSource);
         public Task UpdateTimeConfig(Profile profile, ETimeType timeType, GenericSettingConfiguration settings);
+
+        public string GetLocationDataDisplayText(Profile profile);
+        public string GetPrayerTimeConfigDisplayText(Profile profile);
     }
 }

@@ -20,17 +20,10 @@ namespace PrayerTimeEngine.Core.Domain
         {
             LoadAllProfilesFromJsonTask = Task.Run(() =>
             {
-                try
+                if (preferenceService.GetCurrentProfile() is Profile profile
+                    && preferenceService.GetCurrentData(profile) is PrayerTimesBundle prayerTimes)
                 {
-                    if (preferenceService.GetCurrentProfile() is Profile profile
-                        && preferenceService.GetCurrentData(profile) is PrayerTimesBundle prayerTimes)
-                    {
-                        return (profile, prayerTimes);
-                    }
-                }
-                catch (Exception exc)
-                {
-                    // IGNORE
+                    return (profile, prayerTimes);
                 }
 
                 return (null, null);
