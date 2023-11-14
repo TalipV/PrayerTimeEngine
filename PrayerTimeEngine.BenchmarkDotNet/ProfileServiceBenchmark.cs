@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using PrayerTimeEngine.Core.Data.EntityFramework;
 using System.Data.Common;
 using PrayerTimeEngine.Core.Domain.Configuration.Services;
+using PrayerTimeEngine.Core.Domain;
 
 namespace PrayerTimeEngine.BenchmarkDotNet
 {
@@ -25,7 +26,7 @@ namespace PrayerTimeEngine.BenchmarkDotNet
 
             _appDbContext = new AppDbContext(dbOptions);
             _profileDBAccess = new ProfileDBAccess(_appDbContext);
-            _profileService = new ProfileService(_profileDBAccess);
+            _profileService = new ProfileService(_profileDBAccess, new TimeTypeAttributeService());
 
             _sqlConnection = _appDbContext.Database.GetDbConnection();
             _appDbContext.Database.Migrate();
