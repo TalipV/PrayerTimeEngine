@@ -280,7 +280,7 @@ namespace PrayerTimeEngine.Core.Domain.Configuration.Services
                         ProfileID = profile.ID,
                         Profile = profile,
                         // ### keine Erfahrung, aber Sicherheitsabstand
-                        CalculationConfiguration = new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.MaghribEnd, Degree = -15.0 }
+                        CalculationConfiguration = new GenericSettingConfiguration { Source = ECalculationSource.Semerkand, TimeType = ETimeType.MaghribEnd }
                     },
                     new ProfileTimeConfig
                     {

@@ -33,7 +33,7 @@ namespace PrayerTimeEngine.Core.Tests
         [TearDown]
         public void TearDown() 
         {
-            _keepMemoryDbAliveDbConnection?.Close();
+            _keepMemoryDbAliveDbConnection?.Dispose();
             _keepMemoryDbAliveDbConnection = null;
 
             ServiceProvider?.Dispose();

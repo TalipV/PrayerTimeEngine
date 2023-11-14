@@ -9,9 +9,6 @@ using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Data.Preferences;
 using PrayerTimeEngine.Core.Domain;
 using PrayerTimeEngine.Core.Domain.CalculationService.Interfaces;
-using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Models;
-using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Models;
-using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Models;
 using PrayerTimeEngine.Core.Domain.Configuration.Interfaces;
 using PrayerTimeEngine.Core.Domain.Configuration.Models;
 using PrayerTimeEngine.Core.Domain.Model;
@@ -120,12 +117,19 @@ namespace PrayerTimeEngine.Presentation.ViewModel
                 double time1 = await performanceLoad().ConfigureAwait(false);
                 double time2 = await regularLoad().ConfigureAwait(false);
 
-                showToastMessage($"{time1:N0}ms/{time2:N0}ms to start!");
+                if (!MauiProgram.IsFullyInitialized)
+                {
+                    showToastMessage($"{time1:N0}ms/{time2:N0}ms to start!");
+                }
             }
             catch (Exception exception)
             {
                 logger.LogError(exception, "Error during page load");
                 showToastMessage(exception.Message);
+            }
+            finally
+            {
+                MauiProgram.IsFullyInitialized = true;
             }
         }
 
@@ -202,6 +206,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
                 PrayerTimeBundle = await prayerTimeCalculator.ExecuteAsync(CurrentProfile, today);
 
                 preferenceService.SaveCurrentData(CurrentProfile, PrayerTimeBundle);
+
                 OnAfterLoadingPrayerTimes_EventTrigger.Invoke();
             }
             finally

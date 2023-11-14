@@ -53,6 +53,9 @@ namespace PrayerTimeEngine;
 public static class MauiProgram
 {
     public static readonly DateTime StartDateTime = DateTime.Now;
+    public static IServiceProvider ServiceProvider { get; private set; }
+
+    public static bool IsFullyInitialized = false;
 
     [Time]
     public static MauiApp CreateMauiApp()
@@ -72,6 +75,7 @@ public static class MauiProgram
         addDependencyInjectionServices(builder.Services);
 
         MauiApp mauiApp = builder.Build();
+        ServiceProvider = mauiApp.Services;
 
         mauiApp.Services.GetService<ConcurrentDataLoader>().InitiateConcurrentDataLoad();
         MethodTimeLogger.logger = mauiApp.Services.GetService<ILogger<App>>();
