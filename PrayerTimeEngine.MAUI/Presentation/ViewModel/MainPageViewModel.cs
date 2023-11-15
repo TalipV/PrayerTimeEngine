@@ -14,6 +14,7 @@ using PrayerTimeEngine.Core.Domain.Configuration.Models;
 using PrayerTimeEngine.Core.Domain.Model;
 using PrayerTimeEngine.Core.Domain.PlacesService.Interfaces;
 using PrayerTimeEngine.Core.Domain.PlacesService.Models.Common;
+using PrayerTimeEngine.Platforms.Android.Permissions;
 using PrayerTimeEngine.Presentation.Service.Navigation;
 using PropertyChanged;
 using System.Globalization;
