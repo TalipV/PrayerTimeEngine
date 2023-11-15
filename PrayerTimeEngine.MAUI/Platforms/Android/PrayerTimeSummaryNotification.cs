@@ -1,6 +1,5 @@
 ﻿using Android.App;
 using Android.Content;
-using Android.Media;
 using Android.OS;
 using NodaTime;
 using NodaTime.Extensions;
@@ -8,7 +7,6 @@ using NodaTime.TimeZones;
 using PrayerTimeEngine.Core.Data.Preferences;
 using PrayerTimeEngine.Core.Domain.Configuration.Models;
 using PrayerTimeEngine.Core.Domain.Model;
-using System.Timers;
 
 namespace PrayerTimeEngine.Platforms.Android
 {
