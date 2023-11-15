@@ -73,7 +73,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
                 showToastMessage(exception.Message);
             }
 
-            return new List<BasicPlaceInfo>();
+            return [];
         }
 
         public ICommand GoToSettingsPageCommand
@@ -94,6 +94,11 @@ namespace PrayerTimeEngine.Presentation.ViewModel
 
         public async void OnActualAppearing()
         {
+            if (OperatingSystem.IsAndroidVersionAtLeast(33))
+            {
+                await Permissions.RequestAsync<PostNotifications>();
+            }
+
             try
             {
                 if (CurrentProfile == null)
@@ -108,6 +113,11 @@ namespace PrayerTimeEngine.Presentation.ViewModel
                 showToastMessage(exception.Message);
             }
         }
+
+        // TODO
+        // - PrayerTimeCalculationService bei jedem Laden den Cache aufsetzen lassen
+        // - Cache Invalidierung anhand von Equals/HashCode checks
+        // - Notification genauso Zeiten laden lassen
 
         [Time]
         public async Task OnPageLoaded()
