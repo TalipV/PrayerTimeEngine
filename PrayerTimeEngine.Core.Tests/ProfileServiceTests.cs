@@ -7,6 +7,7 @@ using NSubstitute.ExceptionExtensions;
 using NSubstitute.Extensions;
 using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Data.EntityFramework;
+using PrayerTimeEngine.Core.Domain;
 using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Models;
 using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Models;
 using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Models;
@@ -21,6 +22,7 @@ namespace PrayerTimeEngine.Core.Tests
     {
         protected override void ConfigureServiceProvider(ServiceCollection serviceCollection)
         {
+            serviceCollection.AddSingleton<TimeTypeAttributeService>();
             serviceCollection.AddSingleton<IProfileDBAccess, ProfileDBAccess>();
             serviceCollection.AddSingleton<IProfileService, ProfileService>();
         }
