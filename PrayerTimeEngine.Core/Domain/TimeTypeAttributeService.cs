@@ -9,7 +9,7 @@ namespace PrayerTimeEngine.Core.Domain
         public IDictionary<ETimeType, IReadOnlyList<ECalculationSource>> TimeTypeCompatibleSources { get; }
         public List<ETimeType> DegreeTypes { get; }
         public List<ETimeType> SimpleTypes { get; }
-        public List<ETimeType> NonSimpleTypes { get; }
+        public List<ETimeType> ComplexTypes { get; }
         public List<ETimeType> NotHideableTypes { get; }
         public List<ETimeType> ConfigurableSimpleTypes { get; }
         public List<ETimeType> ConfigurableTypes { get; }
@@ -20,7 +20,7 @@ namespace PrayerTimeEngine.Core.Domain
             TimeTypeCompatibleSources = new Dictionary<ETimeType, IReadOnlyList<ECalculationSource>>();
             DegreeTypes = new List<ETimeType>();
             SimpleTypes = new List<ETimeType>();
-            NonSimpleTypes = new List<ETimeType>();
+            ComplexTypes = new List<ETimeType>();
             NotHideableTypes = new List<ETimeType>();
             ConfigurableSimpleTypes = new List<ETimeType>();
             ConfigurableTypes = new List<ETimeType>();
@@ -66,7 +66,7 @@ namespace PrayerTimeEngine.Core.Domain
                 }
                 else
                 {
-                    NonSimpleTypes.Add(timeType);
+                    ComplexTypes.Add(timeType);
                     ConfigurableTypes.Add(timeType);
                 }
 

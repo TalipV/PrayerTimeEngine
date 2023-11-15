@@ -68,7 +68,7 @@ namespace PrayerTimeEngine.Core.Domain.PlacesService.Services
             HttpResponseMessage response = await httpClient.GetAsync(url).ConfigureAwait(false);
 
             if (response.StatusCode == HttpStatusCode.NotFound)
-                return new List<BasicPlaceInfo>();
+                return [];
 
             response.EnsureSuccessStatusCode();
             string jsonResult = await response.Content.ReadAsStringAsync().ConfigureAwait(false);

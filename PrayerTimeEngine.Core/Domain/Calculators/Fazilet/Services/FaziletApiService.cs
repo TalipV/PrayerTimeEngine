@@ -57,7 +57,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
 
         public async Task<List<FaziletPrayerTimes>> GetTimesByCityID(int cityID)
         {
-            List<FaziletPrayerTimes> prayerTimesList = new List<FaziletPrayerTimes>();
+            List<FaziletPrayerTimes> prayerTimesList = [];
 
             string url = string.Format(GET_TIMES_BY_CITY_URL, cityID);
             HttpResponseMessage response = await httpClient.GetAsync(url).ConfigureAwait(false);

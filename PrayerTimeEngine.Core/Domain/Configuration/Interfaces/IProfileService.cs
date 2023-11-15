@@ -17,5 +17,7 @@ namespace PrayerTimeEngine.Core.Domain.Configuration.Interfaces
 
         public string GetLocationDataDisplayText(Profile profile);
         public string GetPrayerTimeConfigDisplayText(Profile profile);
+
+        List<GenericSettingConfiguration> GetActiveComplexTimeConfigs(Profile profile);
     }
 }
