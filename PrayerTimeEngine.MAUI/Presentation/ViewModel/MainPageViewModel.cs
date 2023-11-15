@@ -114,8 +114,11 @@ namespace PrayerTimeEngine.Presentation.ViewModel
         {
             try
             {
-                double time1 = await performanceLoad().ConfigureAwait(false);
-                double time2 = await regularLoad().ConfigureAwait(false);
+                await performanceLoad().ConfigureAwait(false);
+                double time1 = (DateTime.Now - MauiProgram.StartDateTime).TotalMilliseconds;
+
+                await regularLoad().ConfigureAwait(false);
+                double time2 = (DateTime.Now - MauiProgram.StartDateTime).TotalMilliseconds;
 
                 if (!MauiProgram.IsFullyInitialized)
                 {
@@ -134,24 +137,20 @@ namespace PrayerTimeEngine.Presentation.ViewModel
         }
 
         [Time]
-        private async Task<double> regularLoad()
+        private async Task regularLoad()
         {
             CurrentProfile = (await concurrentDataLoader.LoadAllProfilesFromDbTask).First();
             await loadPrayerTimes();
 
             showHideSpecificTimes();
-            return (DateTime.Now - MauiProgram.StartDateTime).TotalMilliseconds;
         }
 
         [Time]
-        private async Task<double> performanceLoad()
+        private async Task performanceLoad()
         {
             try
             {
                 (Profile profile, PrayerTimesBundle prayerTimes) = await concurrentDataLoader.LoadAllProfilesFromJsonTask;
-
-                if (profile == null || prayerTimes == null)
-                    return 0;
 
                 CurrentProfile = profile;
                 PrayerTimeBundle = prayerTimes;
@@ -159,7 +158,6 @@ namespace PrayerTimeEngine.Presentation.ViewModel
             catch { /* IGNORE */ }
 
             showHideSpecificTimes();
-            return (DateTime.Now - MauiProgram.StartDateTime).TotalMilliseconds;
         }
 
         #endregion public methods
