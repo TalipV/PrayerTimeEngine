@@ -115,6 +115,20 @@ namespace PrayerTimeEngine.Core.Domain.Configuration.Services
             return outputText;
         }
 
+        public List<GenericSettingConfiguration> GetActiveComplexTimeConfigs(Profile profile)
+        {
+            return timeTypeAttributeService
+                .ComplexTypes
+                .Select(x => GetTimeConfig(profile, x))
+                .Where(config =>
+                    config is GenericSettingConfiguration
+                    {
+                        Source: not ECalculationSource.None,
+                        IsTimeShown: true
+                    })
+                .ToList();
+        }
+
         public bool EqualsFullProfile(Profile profile1, Profile profile2)
         {
             if (profile1 == null)

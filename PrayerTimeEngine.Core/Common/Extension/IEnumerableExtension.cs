@@ -4,7 +4,7 @@
     {
         public static List<T> ToSingleElementLst<T>(this T obj)
         {
-            return new List<T>() { obj };
+            return [obj];
         }
     }
 }

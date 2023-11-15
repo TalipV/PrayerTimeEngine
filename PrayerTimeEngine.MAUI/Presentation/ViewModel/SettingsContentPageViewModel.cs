@@ -149,7 +149,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
         {
             if (!timeTypeAttributeService.TimeTypeCompatibleSources.TryGetValue(TimeType, out IReadOnlyList<ECalculationSource> calculationSources))
             {
-                return new List<ECalculationSource>();
+                return [];
             }
 
             return calculationSources.ToList();
@@ -163,7 +163,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
             }
             else if(TimeType == ETimeType.MaghribSufficientTime)
             {
-                return new List<int>() { 15, 20, 25, 30, 35};
+                return [15, 20, 25, 30, 35];
             }
             else
             {

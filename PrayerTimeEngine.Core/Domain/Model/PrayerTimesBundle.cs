@@ -14,10 +14,7 @@ namespace PrayerTimeEngine.Core.Domain.Model
         {
             get
             {
-                return new List<PrayerTime>
-                {
-                    Fajr, Duha, Dhuhr, Asr, Maghrib, Isha
-                };
+                return [Fajr, Duha, Dhuhr, Asr, Maghrib, Isha];
             }
         }
 

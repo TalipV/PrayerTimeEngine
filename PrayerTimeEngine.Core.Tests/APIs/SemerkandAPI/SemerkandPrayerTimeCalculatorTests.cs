@@ -57,7 +57,7 @@ namespace PrayerTimeEngine.Core.Tests.API.SemerkandAPI
                         CityName = "Innsbruck",
                         TimezoneName = "Europe/Vienna"
                     },
-                    new List<GenericSettingConfiguration> { new GenericSettingConfiguration { TimeType = ETimeType.DhuhrStart, Source = ECalculationSource.Semerkand } }
+                    [new GenericSettingConfiguration { TimeType = ETimeType.DhuhrStart, Source = ECalculationSource.Semerkand }]
                 ).ConfigureAwait(false)).Single().Key;
 
             SemerkandPrayerTimes semerkandPrayerTimes = result as SemerkandPrayerTimes;
