@@ -115,6 +115,40 @@ namespace PrayerTimeEngine.Core.Domain.Configuration.Services
             return outputText;
         }
 
+        public bool EqualsFullProfile(Profile profile1, Profile profile2)
+        {
+            if (profile1 == null)
+                throw new ArgumentNullException(nameof(profile1));
+            if (profile2 == null)
+                throw new ArgumentNullException(nameof(profile2));
+
+            if (profile1.TimeConfigs.Count != profile2.TimeConfigs.Count)
+                return false;
+            if (profile1.LocationConfigs.Count != profile2.LocationConfigs.Count)
+                return false;
+
+            if (!profile1.Equals(profile2))
+                return false;
+
+            var profile1TimeConfigs = profile1.TimeConfigs.OrderBy(x => x.ID);
+            var profile2TimeConfigs = profile2.TimeConfigs.OrderBy(x => x.ID);
+            for(int i = 0; i < profile1.TimeConfigs.Count; i++)
+            {
+                if (!profile1TimeConfigs.ElementAt(i).Equals(profile2TimeConfigs.ElementAt(i)))
+                    return false;
+            }
+
+            var profile1LocationConfigs = profile1.LocationConfigs.OrderBy(x => x.ID);
+            var profile2LocationConfigs = profile2.LocationConfigs.OrderBy(x => x.ID);
+            for(int i = 0; i < profile1.LocationConfigs.Count; i++)
+            {
+                if (!profile1LocationConfigs.ElementAt(i).Equals(profile2LocationConfigs.ElementAt(i)))
+                    return false;
+            }
+
+            return true;
+        }
+
         private static Profile getDefaultProfile()
         {
             Profile profile = new Profile
