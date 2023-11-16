@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using PrayerTimeEngine.Core.Domain;
 using PrayerTimeEngine.Core.Domain.Configuration.Models;
 using System.Text.Json;
 

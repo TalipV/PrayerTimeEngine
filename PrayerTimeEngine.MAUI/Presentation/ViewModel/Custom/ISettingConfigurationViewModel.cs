@@ -1,4 +1,4 @@
-﻿using PrayerTimeEngine.Core.Domain.Configuration.Models;
+﻿using PrayerTimeEngine.Core.Domain;
 
 namespace PrayerTimeEngine.Presentation.ViewModel.Custom
 {

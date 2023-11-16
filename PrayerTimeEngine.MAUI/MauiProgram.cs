@@ -9,7 +9,7 @@ using PrayerTimeEngine.Core.Common;
 using PrayerTimeEngine.Core.Data.EntityFramework;
 using PrayerTimeEngine.Core.Data.Preferences;
 using PrayerTimeEngine.Core.Domain;
-using PrayerTimeEngine.Core.Domain.CalculationService.Interfaces;
+using PrayerTimeEngine.Core.Domain.CalculationManager;
 using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Interfaces;
 using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services;
 using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Interfaces;

@@ -2,7 +2,7 @@
 using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Models;
 
-namespace PrayerTimeEngine.Core.Domain.Configuration.Models
+namespace PrayerTimeEngine.Core.Domain
 {
     [JsonDerivedType(typeof(GenericSettingConfiguration), typeDiscriminator: "GenericConfig")]
     [JsonDerivedType(typeof(MuwaqqitDegreeCalculationConfiguration), typeDiscriminator: "MuwaqqitDegreeConfig")]
@@ -18,10 +18,10 @@ namespace PrayerTimeEngine.Core.Domain.Configuration.Models
             if (obj is not GenericSettingConfiguration otherSettingConfig)
                 return false;
 
-            return this.TimeType == otherSettingConfig.TimeType
-                && this.Source == otherSettingConfig.Source
-                && this.MinuteAdjustment == otherSettingConfig.MinuteAdjustment
-                && this.IsTimeShown == otherSettingConfig.IsTimeShown;
+            return TimeType == otherSettingConfig.TimeType
+                && Source == otherSettingConfig.Source
+                && MinuteAdjustment == otherSettingConfig.MinuteAdjustment
+                && IsTimeShown == otherSettingConfig.IsTimeShown;
         }
 
         public override int GetHashCode()
