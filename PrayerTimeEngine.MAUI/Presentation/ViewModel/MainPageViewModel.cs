@@ -125,14 +125,22 @@ namespace PrayerTimeEngine.Presentation.ViewModel
         {
             try
             {
-                await performanceLoad().ConfigureAwait(false);
-                double time1 = (DateTime.Now - MauiProgram.StartDateTime).TotalMilliseconds;
-
-                await regularLoad().ConfigureAwait(false);
-                double time2 = (DateTime.Now - MauiProgram.StartDateTime).TotalMilliseconds;
-
-                if (!MauiProgram.IsFullyInitialized)
+                if (MauiProgram.IsFullyInitialized)
                 {
+                    CurrentProfile = (await profileService.GetProfiles().ConfigureAwait(false)).First();
+                    await loadPrayerTimes();
+
+                    showHideSpecificTimes();
+                }
+                // only use this case for the first load after the process' start
+                else
+                {
+                    await performanceLoad().ConfigureAwait(false);
+                    double time1 = (DateTime.Now - MauiProgram.StartDateTime).TotalMilliseconds;
+
+                    await regularLoad().ConfigureAwait(false);
+                    double time2 = (DateTime.Now - MauiProgram.StartDateTime).TotalMilliseconds;
+
                     showToastMessage($"{time1:N0}ms/{time2:N0}ms to start!");
                 }
             }
