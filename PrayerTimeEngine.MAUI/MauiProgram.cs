@@ -153,7 +153,7 @@ public static class MauiProgram
             //options.LogTo(Console.WriteLine, LogLevel.Trace);
         }, ServiceLifetime.Transient);
 
-        serviceCollection.AddSingleton<IPrayerTimeCalculationService, PrayerTimeCalculationService>();
+        serviceCollection.AddSingleton<IPrayerTimeCalculationManager, PrayerTimeCalculationManager>();
         serviceCollection.AddSingleton<TimeTypeAttributeService>();
         serviceCollection.AddSingleton<ConcurrentDataLoader>();
 
