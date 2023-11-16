@@ -6,9 +6,9 @@ using PrayerTimeEngine.Core.Domain.Model;
 
 namespace PrayerTimeEngine.Core.Domain.CalculationService.Interfaces
 {
-    public interface IPrayerTimeCalculationService
+    public interface IPrayerTimeCalculationManager
     {
-        public Task<PrayerTimesBundle> ExecuteAsync(Profile profile, LocalDate date);
+        public Task<PrayerTimesBundle> CalculatePrayerTimesAsync(Profile profile, LocalDate date);
         public IPrayerTimeService GetPrayerTimeCalculatorByCalculationSource(ECalculationSource source);
     }
 }

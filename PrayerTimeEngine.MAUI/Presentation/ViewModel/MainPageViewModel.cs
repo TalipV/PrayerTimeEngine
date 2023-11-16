@@ -24,7 +24,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
 {
     [AddINotifyPropertyChangedInterface]
     public class MainPageViewModel(
-            IPrayerTimeCalculationService prayerTimeCalculator,
+            IPrayerTimeCalculationManager prayerTimeCalculator,
             ILocationService placeService,
             IProfileService profileService,
             PreferenceService preferenceService,
@@ -212,7 +212,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
                 IsLoadingPrayerTimes = true;
                 LocalDate today = DateTime.Now.ToLocalDateTime().Date;
 
-                PrayerTimeBundle = await prayerTimeCalculator.ExecuteAsync(CurrentProfile, today);
+                PrayerTimeBundle = await prayerTimeCalculator.CalculatePrayerTimesAsync(CurrentProfile, today);
 
                 preferenceService.SaveCurrentData(CurrentProfile, PrayerTimeBundle);
 

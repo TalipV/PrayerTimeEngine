@@ -10,22 +10,22 @@ using PrayerTimeEngine.Core.Domain.Configuration.Interfaces;
 using PrayerTimeEngine.Core.Domain.Configuration.Models;
 using PrayerTimeEngine.Core.Domain.Model;
 
-public class PrayerTimeCalculationService(
+public class PrayerTimeCalculationManager(
         IServiceProvider serviceProvider,
         IProfileService profileService
-    ) : IPrayerTimeCalculationService
+    ) : IPrayerTimeCalculationManager
 {
-    public async Task<PrayerTimesBundle> ExecuteAsync(Profile profile, LocalDate date)
+    public async Task<PrayerTimesBundle> CalculatePrayerTimesAsync(Profile profile, LocalDate date)
     {
-        PrayerTimesBundle prayerTimeEntity = new();
+        var prayerTimeEntity = new PrayerTimesBundle();
 
-        await handleComplexTypes(profile, date, prayerTimeEntity).ConfigureAwait(false);
-        handleSimpleTypes(profile, prayerTimeEntity);
+        await calculateComplexTypes(profile, date, prayerTimeEntity).ConfigureAwait(false);
+        calculateSimpleTypes(profile, prayerTimeEntity);
 
         return prayerTimeEntity;
     }
 
-    private async Task handleComplexTypes(Profile profile, LocalDate date, PrayerTimesBundle prayerTimeEntity)
+    private async Task calculateComplexTypes(Profile profile, LocalDate date, PrayerTimesBundle prayerTimeEntity)
     {
         List<GenericSettingConfiguration> configurations = profileService.GetActiveComplexTimeConfigs(profile);
 
@@ -36,14 +36,14 @@ public class PrayerTimeCalculationService(
             ECalculationSource calculationSource = calculationSourceConfigs.Key;
             List<GenericSettingConfiguration> configs = calculationSourceConfigs.ToList();
 
-            Task task = handleComplexTypesOfCalculationSource(profile, date, prayerTimeEntity, calculationSource, configs);
+            Task task = calculateComplexTypesOfCalculationSource(profile, date, prayerTimeEntity, calculationSource, configs);
             calculationTasks.Add(task);
         }
 
         await Task.WhenAll(calculationTasks).ConfigureAwait(false);
     }
 
-    private async Task handleComplexTypesOfCalculationSource(Profile profile, LocalDate date, PrayerTimesBundle prayerTimeEntity, ECalculationSource calculationSource, List<GenericSettingConfiguration> configs)
+    private async Task calculateComplexTypesOfCalculationSource(Profile profile, LocalDate date, PrayerTimesBundle prayerTimeEntity, ECalculationSource calculationSource, List<GenericSettingConfiguration> configs)
     {
         IPrayerTimeService calculationSourceCalculator = 
             GetPrayerTimeCalculatorByCalculationSource(calculationSource);
@@ -53,54 +53,28 @@ public class PrayerTimeCalculationService(
         BaseLocationData locationData = profileService.GetLocationConfig(profile, calculationSource);
 
         // CALCULATION
-        ILookup<ICalculationPrayerTimes, ETimeType> calculationPrayerTimes =
+        ILookup<ICalculationPrayerTimes, ETimeType> timeTypesByCalculationPrayerTimes =
             await calculationSourceCalculator.GetPrayerTimesAsync(date, locationData, configs).ConfigureAwait(false);
 
-        foreach (var calculationPrayerTimeKVP in calculationPrayerTimes)
+        foreach (IGrouping<ICalculationPrayerTimes, ETimeType> calculationPrayerTimeKVP in timeTypesByCalculationPrayerTimes)
         {
-            handleSingleCalculationPrayerTimes(prayerTimeEntity, configsByTimeType, calculationPrayerTimeKVP);
+            ICalculationPrayerTimes calculationPrayerTimes = calculationPrayerTimeKVP.Key;
+            List<ETimeType> associatedTimeTypes = calculationPrayerTimeKVP.ToList();
+
+            foreach (var timeType in associatedTimeTypes)
+            {
+                GenericSettingConfiguration config = configsByTimeType[timeType];
+                ZonedDateTime calculatedZonedDateTime =
+                    calculationPrayerTimes
+                        .GetZonedDateTimeForTimeType(timeType)
+                        .PlusMinutes(config.MinuteAdjustment);
+
+                prayerTimeEntity.SetSpecificPrayerTimeDateTime(timeType, calculatedZonedDateTime);
+            }
         }
     }
 
-    private static void handleSingleCalculationPrayerTimes(
-        PrayerTimesBundle prayerTimeEntity, 
-        Dictionary<ETimeType, GenericSettingConfiguration> configsByTimeType, 
-        IGrouping<ICalculationPrayerTimes, ETimeType> calculationPrayerTimeKVP)
-    {
-        ICalculationPrayerTimes calculationPrayerTimes = calculationPrayerTimeKVP.Key;
-        List<ETimeType> associatedTimeTypes = calculationPrayerTimeKVP.ToList();
-
-        foreach (var timeType in associatedTimeTypes)
-        {
-            GenericSettingConfiguration config = configsByTimeType[timeType];
-            ZonedDateTime calculatedZonedDateTime =
-                calculationPrayerTimes
-                    .GetZonedDateTimeForTimeType(timeType)
-                    .PlusMinutes(config.MinuteAdjustment);
-
-            prayerTimeEntity.SetSpecificPrayerTimeDateTime(timeType, calculatedZonedDateTime);
-        }
-    }
-
-    private static void throwIfConfigsHaveUnsupportedTimeTypes(
-        ECalculationSource calculationSource,
-        List<GenericSettingConfiguration> configs,
-        IPrayerTimeService timeCalculator)
-    {
-        List<ETimeType> unsupportedTimeTypes =
-            timeCalculator
-            .GetUnsupportedTimeTypes().Intersect(configs.Select(x => x.TimeType))
-            .ToList();
-
-        if (unsupportedTimeTypes.Count != 0)
-        {
-            throw new ArgumentException(
-                $"{timeCalculator.GetType().Name}[{calculationSource}] does not support the following values of {nameof(ETimeType)}: " +
-                string.Join(", ", unsupportedTimeTypes));
-        }
-    }
-
-    private void handleSimpleTypes(Profile profile, PrayerTimesBundle prayerTimeEntity)
+    private void calculateSimpleTypes(Profile profile, PrayerTimesBundle prayerTimeEntity)
     {
         if (prayerTimeEntity.Dhuhr?.Start != null
             && profileService.GetTimeConfig(profile, ETimeType.DuhaEnd) is GenericSettingConfiguration duhaConfig
@@ -153,16 +127,30 @@ public class PrayerTimeCalculationService(
 
     public IPrayerTimeService GetPrayerTimeCalculatorByCalculationSource(ECalculationSource source)
     {
-        switch (source)
+        return source switch
         {
-            case ECalculationSource.Fazilet:
-                return serviceProvider.GetRequiredService<FaziletPrayerTimeCalculator>();
-            case ECalculationSource.Semerkand:
-                return serviceProvider.GetRequiredService<SemerkandPrayerTimeCalculator>();
-            case ECalculationSource.Muwaqqit:
-                return serviceProvider.GetRequiredService<MuwaqqitPrayerTimeCalculator>();
-            default:
-                throw new NotImplementedException($"No calculator service implemented for source: {source}");
+            ECalculationSource.Fazilet => serviceProvider.GetRequiredService<FaziletPrayerTimeCalculator>(),
+            ECalculationSource.Semerkand => serviceProvider.GetRequiredService<SemerkandPrayerTimeCalculator>(),
+            ECalculationSource.Muwaqqit => serviceProvider.GetRequiredService<MuwaqqitPrayerTimeCalculator>(),
+            _ => throw new NotImplementedException($"No calculator service implemented for source: {source}"),
+        };
+    }
+
+    private static void throwIfConfigsHaveUnsupportedTimeTypes(
+        ECalculationSource calculationSource,
+        List<GenericSettingConfiguration> configs,
+        IPrayerTimeService timeCalculator)
+    {
+        List<ETimeType> unsupportedTimeTypes =
+            timeCalculator
+            .GetUnsupportedTimeTypes().Intersect(configs.Select(x => x.TimeType))
+            .ToList();
+
+        if (unsupportedTimeTypes.Count != 0)
+        {
+            throw new ArgumentException(
+                $"{timeCalculator.GetType().Name}[{calculationSource}] does not support the following values of {nameof(ETimeType)}: " +
+                string.Join(", ", unsupportedTimeTypes));
         }
     }
 }
