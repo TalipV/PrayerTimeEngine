@@ -1,6 +1,6 @@
 ﻿using NodaTime;
 using PrayerTimeEngine.Core.Common.Enum;
-using PrayerTimeEngine.Core.Domain.CalculationService.Interfaces;
+using PrayerTimeEngine.Core.Domain.Models;
 using System.ComponentModel.DataAnnotations;
 
 namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Models

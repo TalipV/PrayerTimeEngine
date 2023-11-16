@@ -1,7 +1,7 @@
 ﻿using NodaTime;
 using PrayerTimeEngine.Core.Common.Enum;
 
-namespace PrayerTimeEngine.Core.Domain.CalculationService.Interfaces
+namespace PrayerTimeEngine.Core.Domain.Models
 {
     public interface ICalculationPrayerTimes
     {

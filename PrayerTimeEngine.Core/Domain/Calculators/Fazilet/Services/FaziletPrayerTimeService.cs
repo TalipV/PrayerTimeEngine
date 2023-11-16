@@ -2,13 +2,12 @@
 using PrayerTimeEngine.Core.Domain.Model;
 using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Interfaces;
 using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Models;
-using PrayerTimeEngine.Core.Domain.Configuration.Models;
-using PrayerTimeEngine.Core.Domain.CalculationService.Interfaces;
 using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Domain.PlacesService.Interfaces;
 using NodaTime;
 using PrayerTimeEngine.Core.Domain.PlacesService.Models.Common;
 using AsyncKeyedLock;
+using PrayerTimeEngine.Core.Domain.Models;
 
 namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
 {

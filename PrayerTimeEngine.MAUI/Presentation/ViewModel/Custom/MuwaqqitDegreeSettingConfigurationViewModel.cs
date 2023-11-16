@@ -1,6 +1,6 @@
 ﻿using PrayerTimeEngine.Core.Common.Enum;
+using PrayerTimeEngine.Core.Domain;
 using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Models;
-using PrayerTimeEngine.Core.Domain.Configuration.Models;
 using PropertyChanged;
 
 namespace PrayerTimeEngine.Presentation.ViewModel.Custom

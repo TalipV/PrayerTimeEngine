@@ -8,7 +8,7 @@ using NodaTime.Extensions;
 using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Data.Preferences;
 using PrayerTimeEngine.Core.Domain;
-using PrayerTimeEngine.Core.Domain.CalculationService.Interfaces;
+using PrayerTimeEngine.Core.Domain.CalculationManager;
 using PrayerTimeEngine.Core.Domain.Configuration.Interfaces;
 using PrayerTimeEngine.Core.Domain.Configuration.Models;
 using PrayerTimeEngine.Core.Domain.Model;

@@ -1,7 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using NodaTime;
 using PrayerTimeEngine.Core.Common.Enum;
-using PrayerTimeEngine.Core.Domain.CalculationService.Interfaces;
+using PrayerTimeEngine.Core.Domain;
+using PrayerTimeEngine.Core.Domain.CalculationManager;
 using PrayerTimeEngine.Core.Domain.Calculators;
 using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services;
 using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services;
@@ -9,6 +10,7 @@ using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services;
 using PrayerTimeEngine.Core.Domain.Configuration.Interfaces;
 using PrayerTimeEngine.Core.Domain.Configuration.Models;
 using PrayerTimeEngine.Core.Domain.Model;
+using PrayerTimeEngine.Core.Domain.Models;
 
 public class PrayerTimeCalculationManager(
         IServiceProvider serviceProvider,
