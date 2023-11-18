@@ -22,7 +22,7 @@
 
             <Label
                 x:Name="lastUpdatedTextInfo"
-                Text="{Binding LastDataRefreshTimestamp, StringFormat='{0:dd.MM, HH:mm:ss}'}"
+                Text="{Binding PrayerTimeBundle.DataCalculationTimestamp, StringFormat='{0:dd.MM, HH:mm:ss}'}"
                 IsVisible="{Binding IsNotLoadingPrayerTimesOrSelectedPlace}" x:DataType="viewModel:MainPageViewModel"
                 
                 FontSize="10"

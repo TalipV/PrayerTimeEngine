@@ -7,7 +7,6 @@ using NodaTime;
 using NodaTime.Extensions;
 using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Data.Preferences;
-using PrayerTimeEngine.Core.Domain;
 using PrayerTimeEngine.Core.Domain.CalculationManager;
 using PrayerTimeEngine.Core.Domain.Configuration.Interfaces;
 using PrayerTimeEngine.Core.Domain.Configuration.Models;
@@ -29,12 +28,10 @@ namespace PrayerTimeEngine.Presentation.ViewModel
             IProfileService profileService,
             PreferenceService preferenceService,
             INavigationService navigationService,
-            ILogger<MainPageViewModel> logger,
-            ConcurrentDataLoader concurrentDataLoader
+            ILogger<MainPageViewModel> logger
         ) : LogController
     {
         #region properties
-        public ZonedDateTime? LastDataRefreshTimestamp { get; private set; }
         public Profile CurrentProfile { get; set; }
         public PrayerTimesBundle PrayerTimeBundle { get; private set; }
 
@@ -125,23 +122,16 @@ namespace PrayerTimeEngine.Presentation.ViewModel
         {
             try
             {
-                if (MauiProgram.IsFullyInitialized)
+                logger.LogInformation("OnPageLoaded-Start");
+                CurrentProfile ??= (await profileService.GetProfiles().ConfigureAwait(false)).First();
+
+                await loadPrayerTimes();
+                showHideSpecificTimes();
+
+                if (!MauiProgram.IsFullyInitialized)
                 {
-                    CurrentProfile = (await profileService.GetProfiles().ConfigureAwait(false)).First();
-                    await loadPrayerTimes();
-
-                    showHideSpecificTimes();
-                }
-                // only use this case for the first load after the process' start
-                else
-                {
-                    await performanceLoad().ConfigureAwait(false);
-                    double time1 = (DateTime.Now - MauiProgram.StartDateTime).TotalMilliseconds;
-
-                    await regularLoad().ConfigureAwait(false);
-                    double time2 = (DateTime.Now - MauiProgram.StartDateTime).TotalMilliseconds;
-
-                    showToastMessage($"{time1:N0}ms/{time2:N0}ms to start!");
+                    double startUpTimeMS = (DateTime.Now - MauiProgram.StartDateTime).TotalMilliseconds;
+                    showToastMessage($"{startUpTimeMS:N0}ms to start!");
                 }
             }
             catch (Exception exception)
@@ -153,30 +143,6 @@ namespace PrayerTimeEngine.Presentation.ViewModel
             {
                 MauiProgram.IsFullyInitialized = true;
             }
-        }
-
-        [Time]
-        private async Task regularLoad()
-        {
-            CurrentProfile = (await concurrentDataLoader.LoadAllProfilesFromDbTask).First();
-            await loadPrayerTimes();
-
-            showHideSpecificTimes();
-        }
-
-        [Time]
-        private async Task performanceLoad()
-        {
-            try
-            {
-                (Profile profile, PrayerTimesBundle prayerTimes) = await concurrentDataLoader.LoadAllProfilesFromJsonTask;
-
-                CurrentProfile = profile;
-                PrayerTimeBundle = prayerTimes;
-            }
-            catch { /* IGNORE */ }
-
-            showHideSpecificTimes();
         }
 
         #endregion public methods
@@ -230,12 +196,14 @@ namespace PrayerTimeEngine.Presentation.ViewModel
             {
                 IsLoadingPrayerTimes = false;
                 Interlocked.Exchange(ref isLoadPrayerTimesRunningInterlockedInt, 0);  // Reset the flag to allow future runs
-                LastDataRefreshTimestamp = SystemClock.Instance.GetCurrentInstant().InZone(DateTimeZoneProviders.Tzdb[TimeZoneInfo.Local.Id]);
             }
         }
 
         private void showHideSpecificTimes()
         {
+            if (CurrentProfile == null)
+                return;
+
             ShowFajrGhalas = isCalculationShown(ETimeType.FajrGhalas);
             ShowFajrRedness = isCalculationShown(ETimeType.FajrKaraha);
 

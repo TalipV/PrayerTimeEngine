@@ -20,7 +20,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
         private static readonly Func<AppDbContext, int, IAsyncEnumerable<FaziletCity>> compiledQuery_GetCitiesByCountryID =
             EF.CompileAsyncQuery(
                 (AppDbContext context, int countryId) =>
-                    context.FaziletCities.Where(x => x.CountryID == countryId));
+                    context.FaziletCities.AsNoTracking().Where(x => x.CountryID == countryId));
 
         public async Task<List<FaziletCity>> GetCitiesByCountryID(int countryId)
         {

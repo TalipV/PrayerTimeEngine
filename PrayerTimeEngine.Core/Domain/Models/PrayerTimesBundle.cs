@@ -8,6 +8,7 @@ namespace PrayerTimeEngine.Core.Domain.Model
     [AddINotifyPropertyChangedInterface]
     public class PrayerTimesBundle
     {
+        public ZonedDateTime? DataCalculationTimestamp { get; set; }
 
         [JsonIgnore]
         public List<PrayerTime> AllPrayerTimes

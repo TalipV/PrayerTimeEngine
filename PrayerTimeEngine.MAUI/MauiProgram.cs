@@ -77,7 +77,6 @@ public static class MauiProgram
         MauiApp mauiApp = builder.Build();
         ServiceProvider = mauiApp.Services;
 
-        mauiApp.Services.GetService<ConcurrentDataLoader>().InitiateConcurrentDataLoad();
         MethodTimeLogger.logger = mauiApp.Services.GetService<ILogger<App>>();
 
         // slightly slowls down startup
@@ -91,13 +90,7 @@ public static class MauiProgram
     {
         public override string GetFormattedString(MetroLog.LogWriteContext context, MetroLog.LogEventInfo info)
         {
-            // temp fix, EF logs too much about its queries
-            if (info.Message.Contains("DbCommand"))
-            {
-                return "";
-            }
-
-            string text = $"███ {info.TimeStamp:HH:mm:ss:fff}|{info.Level}|{info.Logger}|{info.Message}";
+            string text = $"███ {info.Level}|{info.TimeStamp:HH:mm:ss:fff}|{info.Logger}|{info.Message}";
 
             if (info.Exception != null)
             {
@@ -114,7 +107,8 @@ public static class MauiProgram
             .SetMinimumLevel(LogLevel.Trace)
             .AddFilter((loggerProviderFullName, loggerFullName, level) =>
             {
-                if (loggerFullName == "Microsoft.EntityFrameworkCore.Model")
+                // temp fix, EF logs too much about its queries
+                if (loggerFullName.StartsWith("Microsoft.EntityFrameworkCore"))
                 {
                     return false;
                 }
@@ -127,12 +121,16 @@ public static class MauiProgram
                 {
                     //options.MaxLines = 1024;
                     options.Layout = new LoggingLayout();
+                    //options.MinLevel = LogLevel.Trace;
+                    //options.MaxLevel = LogLevel.Error;
                 })
             // for the logs to be sharable as files through the UI
             .AddStreamingFileLogger(
                 options =>
                 {
                     options.RetainDays = 2;
+                    //options.MinLevel = LogLevel.Trace;
+                    //options.MaxLevel = LogLevel.Error;
                     options.FolderPath = Path.Combine(
                         FileSystem.CacheDirectory,
                         "MetroLogs");
@@ -149,13 +147,14 @@ public static class MauiProgram
         {
             string _databasePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "PrayerTimeEngineDB_ET.db");
             options.UseSqlite($"Data Source={_databasePath}", x => x.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery));
+            options.UseModel(AppDbContextModel.Instance);
+
             //options.ConfigureWarnings(x => x.Throw(RelationalEventId.MultipleCollectionIncludeWarning));
             //options.LogTo(Console.WriteLine, LogLevel.Trace);
         }, ServiceLifetime.Transient);
 
         serviceCollection.AddSingleton<IPrayerTimeCalculationManager, PrayerTimeCalculationManager>();
         serviceCollection.AddSingleton<TimeTypeAttributeService>();
-        serviceCollection.AddSingleton<ConcurrentDataLoader>();
 
         #region FaziletAPI
 

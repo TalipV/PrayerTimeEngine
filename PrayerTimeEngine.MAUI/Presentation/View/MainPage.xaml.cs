@@ -10,14 +10,12 @@ namespace PrayerTimeEngine
     public partial class MainPage : ContentPage
     {
         private readonly MainPageViewModel _viewModel;
-        private readonly AppDbContext _dbContext;
 
         [Time]
         public MainPage(MainPageViewModel viewModel, AppDbContext dbContext)
         {
             InitializeComponent();
             BindingContext = this._viewModel = viewModel;
-            this._dbContext = dbContext;
 
             viewModel.OnAfterLoadingPrayerTimes_EventTrigger += ViewModel_OnAfterLoadingPrayerTimes_EventTrigger;
             viewModel.IsShakeEnabled = true;

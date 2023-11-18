@@ -8,6 +8,11 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Configurations
 {
     public class ProfileTimeConfigConfiguration : IEntityTypeConfiguration<ProfileTimeConfig>
     {
+        public static readonly JsonSerializerOptions JsonOptions = new JsonSerializerOptions
+        {
+
+        };
+
         public void Configure(EntityTypeBuilder<ProfileTimeConfig> builder)
         {
             builder
@@ -18,8 +23,8 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Configurations
             builder
                 .Property(x => x.CalculationConfiguration)
                 .HasConversion(
-                    x => JsonSerializer.Serialize(x, (JsonSerializerOptions) null),
-                    x => JsonSerializer.Deserialize<GenericSettingConfiguration>(x, (JsonSerializerOptions)null)
+                    x => JsonSerializer.Serialize(x, JsonOptions),
+                    x => JsonSerializer.Deserialize<GenericSettingConfiguration>(x, JsonOptions)
                 );
         }
     }
