@@ -24,6 +24,9 @@ public class PrayerTimeCalculationManager(
         await calculateComplexTypes(profile, date, prayerTimeEntity).ConfigureAwait(false);
         calculateSimpleTypes(profile, prayerTimeEntity);
 
+        prayerTimeEntity.DataCalculationTimestamp = 
+            SystemClock.Instance.GetCurrentInstant().InZone(DateTimeZoneProviders.Tzdb[TimeZoneInfo.Local.Id]);
+
         return prayerTimeEntity;
     }
 

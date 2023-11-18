@@ -8,6 +8,11 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Configurations
 {
     public class ProfileLocationConfigConfiguration : IEntityTypeConfiguration<ProfileLocationConfig>
     {
+        public static readonly JsonSerializerOptions JsonOptions = new JsonSerializerOptions
+        {
+
+        };
+
         public void Configure(EntityTypeBuilder<ProfileLocationConfig> builder)
         {
             builder
@@ -18,8 +23,8 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Configurations
             builder
                 .Property(x => x.LocationData)
                 .HasConversion(
-                    x => JsonSerializer.Serialize(x, (JsonSerializerOptions) null),
-                    x => JsonSerializer.Deserialize<BaseLocationData>(x, (JsonSerializerOptions) null)
+                    x => JsonSerializer.Serialize(x, JsonOptions),
+                    x => JsonSerializer.Deserialize<BaseLocationData>(x, JsonOptions)
                 );
         }
     }
