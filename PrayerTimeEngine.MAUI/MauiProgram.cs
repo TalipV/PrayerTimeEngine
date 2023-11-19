@@ -159,52 +159,6 @@ public static class MauiProgram
         serviceCollection.AddSingleton<IPrayerTimeCalculationManager, PrayerTimeCalculationManager>();
         serviceCollection.AddSingleton<TimeTypeAttributeService>();
 
-        #region FaziletAPI
-
-        serviceCollection.AddSingleton<FaziletPrayerTimeCalculator>();
-        serviceCollection.AddSingleton<IFaziletDBAccess, FaziletDBAccess>();
-        serviceCollection.AddSingleton<IFaziletApiService, FaziletApiService>(sp =>
-        {
-            var httpClient = new HttpClient
-            {
-                Timeout = TimeSpan.FromSeconds(20),
-                BaseAddress = new Uri("https://fazilettakvimi.com/api/cms/")
-            };
-            return new FaziletApiService(httpClient);
-        });
-
-        #endregion FaziletAPI
-
-        #region SemerkandAPI
-
-        serviceCollection.AddSingleton<SemerkandPrayerTimeCalculator>();
-        serviceCollection.AddSingleton<ISemerkandDBAccess, SemerkandDBAccess>();
-        serviceCollection.AddSingleton<ISemerkandApiService, SemerkandApiService>(sp =>
-        {
-            var httpClient = new HttpClient
-            {
-                Timeout = TimeSpan.FromSeconds(20)
-            };
-            return new SemerkandApiService(httpClient);
-        });
-
-        #endregion SemerkandAPI
-
-        #region MuwaqqitAPI
-
-        serviceCollection.AddSingleton<MuwaqqitPrayerTimeCalculator>();
-        serviceCollection.AddSingleton<IMuwaqqitDBAccess, MuwaqqitDBAccess>();
-        serviceCollection.AddSingleton<IMuwaqqitApiService, MuwaqqitApiService>(sp =>
-        {
-            var httpClient = new HttpClient
-            {
-                Timeout = TimeSpan.FromSeconds(20)
-            };
-            return new MuwaqqitApiService(httpClient);
-        });
-
-        #endregion MuwaqqitAPI
-
         serviceCollection.AddSingleton<ILocationService, LocationService>(sp =>
         {
             var httpClient = new HttpClient
@@ -217,11 +171,52 @@ public static class MauiProgram
         serviceCollection.AddSingleton<IProfileService, ProfileService>();
         serviceCollection.AddSingleton<IProfileDBAccess, ProfileDBAccess>();
 
-        serviceCollection.AddSingleton<PreferenceService>();
-        serviceCollection.AddSingleton<IPreferenceAccess, PreferenceAccess>();
+        //serviceCollection.AddSingleton<PreferenceService>();
+        //serviceCollection.AddSingleton<IPreferenceAccess, PreferenceAccess>();
         serviceCollection.AddSingleton<PrayerTimeSummaryNotificationManager>();
 
+        addApiServices(serviceCollection);
         addPresentationLayerServices(serviceCollection);
+    }
+
+    private static void addApiServices(IServiceCollection serviceCollection)
+    {
+        // FAZILET
+        serviceCollection.AddSingleton<FaziletPrayerTimeCalculator>();
+        serviceCollection.AddSingleton<IFaziletDBAccess, FaziletDBAccess>();
+        serviceCollection.AddSingleton<IFaziletApiService, FaziletApiService>(sp =>
+        {
+            var httpClient = new HttpClient
+            {
+                Timeout = TimeSpan.FromSeconds(20),
+                BaseAddress = new Uri("https://fazilettakvimi.com/api/cms/")
+            };
+            return new FaziletApiService(httpClient);
+        });
+
+        // SEMERKAND
+        serviceCollection.AddSingleton<SemerkandPrayerTimeCalculator>();
+        serviceCollection.AddSingleton<ISemerkandDBAccess, SemerkandDBAccess>();
+        serviceCollection.AddSingleton<ISemerkandApiService, SemerkandApiService>(sp =>
+        {
+            var httpClient = new HttpClient
+            {
+                Timeout = TimeSpan.FromSeconds(20)
+            };
+            return new SemerkandApiService(httpClient);
+        });
+
+        // MUWAQQIT
+        serviceCollection.AddSingleton<MuwaqqitPrayerTimeCalculator>();
+        serviceCollection.AddSingleton<IMuwaqqitDBAccess, MuwaqqitDBAccess>();
+        serviceCollection.AddSingleton<IMuwaqqitApiService, MuwaqqitApiService>(sp =>
+        {
+            var httpClient = new HttpClient
+            {
+                Timeout = TimeSpan.FromSeconds(20)
+            };
+            return new MuwaqqitApiService(httpClient);
+        });
     }
 
     private static void addPresentationLayerServices(IServiceCollection serviceCollection)

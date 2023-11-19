@@ -4,7 +4,8 @@ using Android.OS;
 using NodaTime;
 using NodaTime.Extensions;
 using NodaTime.TimeZones;
-using PrayerTimeEngine.Core.Data.Preferences;
+using PrayerTimeEngine.Core.Domain.CalculationManager;
+using PrayerTimeEngine.Core.Domain.Configuration.Interfaces;
 using PrayerTimeEngine.Core.Domain.Configuration.Models;
 using PrayerTimeEngine.Core.Domain.Model;
 
@@ -18,14 +19,17 @@ namespace PrayerTimeEngine.Services
         private const int notificationId = 1000;
 
         private readonly System.Timers.Timer updateTimer;
-        private readonly PreferenceService _preferenceService;
+
+        private readonly IProfileService _profileService;
+        private readonly IPrayerTimeCalculationManager _prayerTimeCalculationManager;
 
         public PrayerTimeSummaryNotification()
         {
-            _preferenceService = MauiProgram.ServiceProvider.GetService<PreferenceService>();
+            _profileService = MauiProgram.ServiceProvider.GetService<IProfileService>();
+            _prayerTimeCalculationManager = MauiProgram.ServiceProvider.GetService<IPrayerTimeCalculationManager>();
 
             updateTimer = new System.Timers.Timer(TIMER_FREQUENCY_MS);
-            updateTimer.Elapsed += (sender, e) => UpdateNotification();
+            updateTimer.Elapsed += (sender, e) => Task.Run(UpdateNotification);
 
             // hack to make sure that the timer starts at a round second
             Task.Run(() =>
@@ -49,9 +53,9 @@ namespace PrayerTimeEngine.Services
             return StartCommandResult.Sticky;
         }
 
-        private void UpdateNotification()
+        private async Task UpdateNotification()
         {
-            var notificationBuilder = GetNotificationBuilder(getRemainingTimeText());
+            var notificationBuilder = GetNotificationBuilder(await getRemainingTimeText());
 
             var context = Android.App.Application.Context;
             var notificationManager = context.GetSystemService(NotificationService) as NotificationManager;
@@ -76,20 +80,35 @@ namespace PrayerTimeEngine.Services
             return notificationBuilder;
         }
 
-        private string getRemainingTimeText()
+        private LocalDate? _previousCalculationDate = null;
+        private Profile _previousProfile = null;
+        private PrayerTimesBundle _previousPrayerTimeBundle = null;
+
+        private async Task<string> getRemainingTimeText()
         {
             // potential for performance improvement
-
-            if (_preferenceService.GetCurrentProfile() is not Profile profile
-                || _preferenceService.GetCurrentData(profile) is not PrayerTimesBundle prayerTimeBundle)
-            {
-                return "-";
-            }
 
             var now = DateTime.Now
                 .ToLocalDateTime()
                 .InZone(DateTimeZoneProviders.Tzdb[TimeZoneInfo.Local.Id], Resolvers.StrictResolver);
 
+            Profile profile = (await _profileService.GetProfiles()).First();
+            PrayerTimesBundle prayerTimeBundle;
+
+            if (_previousCalculationDate == null || _previousProfile == null || _previousPrayerTimeBundle == null
+                || _previousCalculationDate != now.Date || !_profileService.EqualsFullProfile(_previousProfile, profile))
+            {
+                // recalculate
+                prayerTimeBundle = await _prayerTimeCalculationManager.CalculatePrayerTimesAsync(profile, now.Date);
+            }
+            else
+            {
+                // use cached values
+                _previousCalculationDate = now.Date;
+                _previousProfile = profile;
+                prayerTimeBundle = _previousPrayerTimeBundle;
+            }
+            
             ZonedDateTime? nextTime = null;
             string returnText = "-";
 
