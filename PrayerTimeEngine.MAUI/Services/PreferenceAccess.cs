@@ -1,6 +1,6 @@
 ﻿using PrayerTimeEngine.Core.Data.Preferences;
 
-namespace PrayerTimeEngine
+namespace PrayerTimeEngine.Services
 {
     public class PreferenceAccess : IPreferenceAccess
     {

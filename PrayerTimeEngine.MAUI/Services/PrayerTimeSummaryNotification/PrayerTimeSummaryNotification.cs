@@ -8,9 +8,9 @@ using PrayerTimeEngine.Core.Data.Preferences;
 using PrayerTimeEngine.Core.Domain.Configuration.Models;
 using PrayerTimeEngine.Core.Domain.Model;
 
-namespace PrayerTimeEngine.Platforms.Android
+namespace PrayerTimeEngine.Services
 {
-    [Service(ForegroundServiceType = global::Android.Content.PM.ForegroundService.TypeDataSync, Enabled = true)]
+    [Service(ForegroundServiceType = Android.Content.PM.ForegroundService.TypeDataSync, Enabled = true)]
     public class PrayerTimeSummaryNotification : Service
     {
         internal static string CHANNEL_ID = "prayer_time_channel";
@@ -28,7 +28,7 @@ namespace PrayerTimeEngine.Platforms.Android
             updateTimer.Elapsed += (sender, e) => UpdateNotification();
 
             // hack to make sure that the timer starts at a round second
-            Task.Run(() => 
+            Task.Run(() =>
             {
                 Thread.Sleep(1000 - DateTime.Now.Millisecond);
                 updateTimer.Start();
@@ -42,7 +42,7 @@ namespace PrayerTimeEngine.Platforms.Android
             var initialNotification = GetNotificationBuilder("Loading...").Build();
 
             if (OperatingSystem.IsAndroidVersionAtLeast(29))
-                StartForeground(notificationId, initialNotification, global::Android.Content.PM.ForegroundService.TypeDataSync);
+                StartForeground(notificationId, initialNotification, Android.Content.PM.ForegroundService.TypeDataSync);
             else
                 StartForeground(notificationId, initialNotification);
 
@@ -53,7 +53,7 @@ namespace PrayerTimeEngine.Platforms.Android
         {
             var notificationBuilder = GetNotificationBuilder(getRemainingTimeText());
 
-            var context = global::Android.App.Application.Context;
+            var context = Android.App.Application.Context;
             var notificationManager = context.GetSystemService(NotificationService) as NotificationManager;
             notificationManager.Notify(notificationId, notificationBuilder.Build());
         }
@@ -62,10 +62,10 @@ namespace PrayerTimeEngine.Platforms.Android
         {
             string title = "PrayerTimeEngine";
 
-            var context = global::Android.App.Application.Context;
+            var context = Android.App.Application.Context;
             Intent intent = context.PackageManager.GetLaunchIntentForPackage(context.PackageName);
             PendingIntent pendingIntent = PendingIntent.GetActivity(context, 0, intent, PendingIntentFlags.Immutable);
-            
+
             var notificationBuilder = new Notification.Builder(context, CHANNEL_ID)
                 .SetContentTitle(title)
                 .SetContentText(remainingTimeText)

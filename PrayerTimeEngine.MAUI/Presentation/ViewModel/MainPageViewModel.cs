@@ -2,10 +2,12 @@
 using CommunityToolkit.Maui.Core;
 using MethodTimer;
 using MetroLog.Maui;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using NodaTime;
 using NodaTime.Extensions;
 using PrayerTimeEngine.Core.Common.Enum;
+using PrayerTimeEngine.Core.Data.EntityFramework;
 using PrayerTimeEngine.Core.Data.Preferences;
 using PrayerTimeEngine.Core.Domain.CalculationManager;
 using PrayerTimeEngine.Core.Domain.Configuration.Interfaces;
@@ -13,8 +15,8 @@ using PrayerTimeEngine.Core.Domain.Configuration.Models;
 using PrayerTimeEngine.Core.Domain.Model;
 using PrayerTimeEngine.Core.Domain.PlacesService.Interfaces;
 using PrayerTimeEngine.Core.Domain.PlacesService.Models.Common;
-using PrayerTimeEngine.Platforms.Android.Permissions;
 using PrayerTimeEngine.Presentation.Service.Navigation;
+using PrayerTimeEngine.Services;
 using PropertyChanged;
 using System.Globalization;
 using System.Windows.Input;
@@ -28,6 +30,8 @@ namespace PrayerTimeEngine.Presentation.ViewModel
             IProfileService profileService,
             PreferenceService preferenceService,
             INavigationService navigationService,
+            AppDbContext appDbContext,
+            PrayerTimeSummaryNotificationManager prayerTimeSummaryNotificationManager,
             ILogger<MainPageViewModel> logger
         ) : LogController
     {
@@ -92,11 +96,6 @@ namespace PrayerTimeEngine.Presentation.ViewModel
 
         public async void OnActualAppearing()
         {
-            if (OperatingSystem.IsAndroidVersionAtLeast(33))
-            {
-                await Permissions.RequestAsync<PostNotifications>();
-            }
-
             try
             {
                 if (CurrentProfile == null)
@@ -122,6 +121,9 @@ namespace PrayerTimeEngine.Presentation.ViewModel
         {
             try
             {
+                if (!MauiProgram.IsFullyInitialized)
+                    await appDbContext.Database.MigrateAsync();
+
                 logger.LogInformation("OnPageLoaded-Start");
                 CurrentProfile ??= (await profileService.GetProfiles().ConfigureAwait(false)).First();
 
@@ -132,6 +134,8 @@ namespace PrayerTimeEngine.Presentation.ViewModel
                 {
                     double startUpTimeMS = (DateTime.Now - MauiProgram.StartDateTime).TotalMilliseconds;
                     showToastMessage($"{startUpTimeMS:N0}ms to start!");
+
+                    prayerTimeSummaryNotificationManager.TryStartPersistentNotification();
                 }
             }
             catch (Exception exception)
