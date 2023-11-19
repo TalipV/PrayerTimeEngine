@@ -14,7 +14,6 @@ namespace PrayerTimeEngine.Core.Domain.Configuration.Services
         ) : IProfileDBAccess
     {
 
-        [Time]
         public async Task<List<Profile>> GetProfiles()
         {
             return await dbContext.Profiles
