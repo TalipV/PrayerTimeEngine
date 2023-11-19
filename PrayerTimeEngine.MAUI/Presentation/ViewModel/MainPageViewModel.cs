@@ -8,7 +8,6 @@ using NodaTime;
 using NodaTime.Extensions;
 using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Data.EntityFramework;
-using PrayerTimeEngine.Core.Data.Preferences;
 using PrayerTimeEngine.Core.Domain.CalculationManager;
 using PrayerTimeEngine.Core.Domain.Configuration.Interfaces;
 using PrayerTimeEngine.Core.Domain.Configuration.Models;
@@ -28,7 +27,6 @@ namespace PrayerTimeEngine.Presentation.ViewModel
             IPrayerTimeCalculationManager prayerTimeCalculator,
             ILocationService placeService,
             IProfileService profileService,
-            PreferenceService preferenceService,
             INavigationService navigationService,
             AppDbContext appDbContext,
             PrayerTimeSummaryNotificationManager prayerTimeSummaryNotificationManager,
@@ -191,8 +189,6 @@ namespace PrayerTimeEngine.Presentation.ViewModel
                 LocalDate today = DateTime.Now.ToLocalDateTime().Date;
 
                 PrayerTimeBundle = await prayerTimeCalculator.CalculatePrayerTimesAsync(CurrentProfile, today);
-
-                preferenceService.SaveCurrentData(CurrentProfile, PrayerTimeBundle);
 
                 OnAfterLoadingPrayerTimes_EventTrigger.Invoke();
             }
