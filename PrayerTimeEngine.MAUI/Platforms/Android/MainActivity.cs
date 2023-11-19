@@ -1,20 +1,20 @@
 ﻿using Android.App;
-using Android.Content;
 using Android.Content.PM;
 using Android.OS;
+using PrayerTimeEngine.Services;
 
 namespace PrayerTimeEngine.Platforms.Android;
 
 [Activity(Theme = "@style/Maui.SplashTheme", MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation | ConfigChanges.UiMode | ConfigChanges.ScreenLayout | ConfigChanges.SmallestScreenSize | ConfigChanges.Density)]
 public class MainActivity : MauiAppCompatActivity
 {
-protected override void OnCreate(Bundle savedInstanceState)
+    public static MainActivity Instance = null;
+
+    protected override void OnCreate(Bundle savedInstanceState)
     {
+        Instance = this;
         base.OnCreate(savedInstanceState);
         createNotificationChannel();
-
-        Intent startIntent = new Intent(this, typeof(PrayerTimeSummaryNotification));
-        StartForegroundService(startIntent);
     }
 
     void createNotificationChannel()

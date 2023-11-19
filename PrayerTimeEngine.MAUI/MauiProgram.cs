@@ -151,7 +151,9 @@ public static class MauiProgram
 
             //options.ConfigureWarnings(x => x.Throw(RelationalEventId.MultipleCollectionIncludeWarning));
             //options.LogTo(Console.WriteLine, LogLevel.Trace);
-        }, ServiceLifetime.Transient);
+        },
+        contextLifetime: ServiceLifetime.Transient,
+        optionsLifetime: ServiceLifetime.Singleton);
 
         serviceCollection.AddSingleton<IPrayerTimeCalculationManager, PrayerTimeCalculationManager>();
         serviceCollection.AddSingleton<TimeTypeAttributeService>();
