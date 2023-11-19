@@ -24,6 +24,7 @@ using PrayerTimeEngine.Presentation.Service.Navigation;
 using PrayerTimeEngine.Presentation.Service.SettingsContentPageFactory;
 using PrayerTimeEngine.Presentation.ViewModel;
 using PrayerTimeEngine.Presentation.ViewModel.Custom;
+using PrayerTimeEngine.Services;
 using PrayerTimeEngine.Views;
 
 namespace PrayerTimeEngine;
@@ -218,6 +219,7 @@ public static class MauiProgram
 
         serviceCollection.AddSingleton<PreferenceService>();
         serviceCollection.AddSingleton<IPreferenceAccess, PreferenceAccess>();
+        serviceCollection.AddSingleton<PrayerTimeSummaryNotificationManager>();
 
         addPresentationLayerServices(serviceCollection);
     }
