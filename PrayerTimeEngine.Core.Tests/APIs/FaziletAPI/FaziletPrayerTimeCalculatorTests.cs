@@ -9,10 +9,10 @@ using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Models;
 using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services;
 using PrayerTimeEngine.Core.Domain.Models;
 using PrayerTimeEngine.Core.Domain.PlacesService.Interfaces;
-using PrayerTimeEngineUnitTests.Mocks;
+using PrayerTimeEngine.Core.Tests.TestModels;
 using System.Net;
 
-namespace PrayerTimeEngine.Core.Tests.API.FaziletAPI
+namespace PrayerTimeEngine.Core.Tests.APIs.FaziletAPI
 {
     public class FaziletPrayerTimeCalculatorTests : BaseTest
     {

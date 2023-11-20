@@ -9,10 +9,10 @@ using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Models;
 using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services;
 using PrayerTimeEngine.Core.Domain.Models;
 using PrayerTimeEngine.Core.Domain.PlacesService.Interfaces;
-using PrayerTimeEngineUnitTests.Mocks;
+using PrayerTimeEngine.Core.Tests.TestModels;
 using System.Net;
 
-namespace PrayerTimeEngine.Core.Tests.API.SemerkandAPI
+namespace PrayerTimeEngine.Core.Tests.APIs.SemerkandAPI
 {
     public class SemerkandPrayerTimeCalculatorTests : BaseTest
     {

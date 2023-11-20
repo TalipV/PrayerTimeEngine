@@ -7,7 +7,6 @@ using Microsoft.Extensions.Logging;
 using PrayerTimeEngine.Code.Presentation.View;
 using PrayerTimeEngine.Core.Common;
 using PrayerTimeEngine.Core.Data.EntityFramework;
-using PrayerTimeEngine.Core.Data.Preferences;
 using PrayerTimeEngine.Core.Domain;
 using PrayerTimeEngine.Core.Domain.CalculationManager;
 using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Interfaces;
