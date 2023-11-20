@@ -10,10 +10,10 @@ using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Models;
 using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services;
 using PrayerTimeEngine.Core.Domain.Models;
 using PrayerTimeEngine.Core.Domain.PlacesService.Interfaces;
-using PrayerTimeEngineUnitTests.Mocks;
+using PrayerTimeEngine.Core.Tests.TestModels;
 using System.Net;
 
-namespace PrayerTimeEngine.Core.Tests.API.MuwaqqitAPI
+namespace PrayerTimeEngine.Core.Tests.APIs.MuwaqqitAPI
 {
     public class MuwaqqitPrayerTimeCalculatorTests : BaseTest
     {

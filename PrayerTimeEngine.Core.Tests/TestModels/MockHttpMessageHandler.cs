@@ -1,9 +1,9 @@
 ﻿using System.Net;
 
-namespace PrayerTimeEngineUnitTests.Mocks
+namespace PrayerTimeEngine.Core.Tests.TestModels
 {
     public class MockHttpMessageHandler(
-            HttpStatusCode statusCode, 
+            HttpStatusCode statusCode,
             Dictionary<string, string> urlToContentMap
         ) : HttpMessageHandler
     {

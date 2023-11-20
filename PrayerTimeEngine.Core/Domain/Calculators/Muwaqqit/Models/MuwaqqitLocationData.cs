@@ -12,7 +12,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Models
 
         public override bool Equals(object obj)
         {
-            if (obj is not MuwaqqitLocationData otherLocationData)
+           if (obj is not MuwaqqitLocationData otherLocationData)
                 return false;
 
             return this.Longitude == otherLocationData.Longitude
