@@ -1,4 +1,3 @@
-using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NodaTime;
@@ -10,10 +9,10 @@ using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Models;
 using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services;
 using PrayerTimeEngine.Core.Domain.Models;
 using PrayerTimeEngine.Core.Domain.PlacesService.Interfaces;
-using PrayerTimeEngine.Core.Tests.TestModels;
+using PrayerTimeEngine.Core.Tests.Common;
 using System.Net;
 
-namespace PrayerTimeEngine.Core.Tests.APIs.MuwaqqitAPI
+namespace PrayerTimeEngine.Core.Tests.Integration.MuwaqqitAPI
 {
     public class MuwaqqitPrayerTimeCalculatorTests : BaseTest
     {
@@ -33,10 +32,10 @@ namespace PrayerTimeEngine.Core.Tests.APIs.MuwaqqitAPI
         {
             Dictionary<string, string> urlToContentMap = new Dictionary<string, string>()
             {
-                [@"https://www.muwaqqit.com/api2.json?d=2023-07-30&ln=11.41337&lt=47.2803835&tz=Europe%2fVienna&fa=-12&ia=3.5&isn=-8&ea=-12"] = File.ReadAllText(@"APIs\MuwaqqitAPI\TestData\Muwaqqit_TestPrayerTimeData_20230730_Innsbruck_Part1.txt"),
-                [@"https://www.muwaqqit.com/api2.json?d=2023-07-30&ln=11.41337&lt=47.2803835&tz=Europe%2fVienna&fa=-7.5&ia=4.5&isn=-12&ea=-15.5"] = File.ReadAllText(@"APIs\MuwaqqitAPI\TestData\Muwaqqit_TestPrayerTimeData_20230730_Innsbruck_Part2.txt"),
-                [@"https://www.muwaqqit.com/api2.json?d=2023-07-30&ln=11.41337&lt=47.2803835&tz=Europe%2fVienna&fa=-4.5&ia=-12&isn=-12&ea=-12"] = File.ReadAllText(@"APIs\MuwaqqitAPI\TestData\Muwaqqit_TestPrayerTimeData_20230730_Innsbruck_Part3.txt"),
-                [@"https://www.muwaqqit.com/api2.json?d=2023-07-30&ln=11.41337&lt=47.2803835&tz=Europe%2fVienna&fa=-15&ia=-12&isn=-12&ea=-12"] = File.ReadAllText(@"APIs\MuwaqqitAPI\TestData\Muwaqqit_TestPrayerTimeData_20230730_Innsbruck_Part4.txt"),
+                [@"https://www.muwaqqit.com/api2.json?d=2023-07-30&ln=11.41337&lt=47.2803835&tz=Europe%2fVienna&fa=-12&ia=3.5&isn=-8&ea=-12"] = File.ReadAllText(@$"{TEST_DATA_FILE_PATH}\MuwaqqitTestData\Muwaqqit_TestPrayerTimeData_20230730_Innsbruck_Part1.txt"),
+                [@"https://www.muwaqqit.com/api2.json?d=2023-07-30&ln=11.41337&lt=47.2803835&tz=Europe%2fVienna&fa=-7.5&ia=4.5&isn=-12&ea=-15.5"] = File.ReadAllText(@$"{TEST_DATA_FILE_PATH}\MuwaqqitTestData\Muwaqqit_TestPrayerTimeData_20230730_Innsbruck_Part2.txt"),
+                [@"https://www.muwaqqit.com/api2.json?d=2023-07-30&ln=11.41337&lt=47.2803835&tz=Europe%2fVienna&fa=-4.5&ia=-12&isn=-12&ea=-12"] = File.ReadAllText(@$"{TEST_DATA_FILE_PATH}\MuwaqqitTestData\Muwaqqit_TestPrayerTimeData_20230730_Innsbruck_Part3.txt"),
+                [@"https://www.muwaqqit.com/api2.json?d=2023-07-30&ln=11.41337&lt=47.2803835&tz=Europe%2fVienna&fa=-15&ia=-12&isn=-12&ea=-12"] = File.ReadAllText(@$"{TEST_DATA_FILE_PATH}\MuwaqqitTestData\Muwaqqit_TestPrayerTimeData_20230730_Innsbruck_Part4.txt"),
             };
 
             var mockHttpMessageHandler = new MockHttpMessageHandler(HttpStatusCode.OK, urlToContentMap);

@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
@@ -15,8 +14,9 @@ using PrayerTimeEngine.Core.Domain.Configuration.Interfaces;
 using PrayerTimeEngine.Core.Domain.Configuration.Models;
 using PrayerTimeEngine.Core.Domain.Configuration.Services;
 using PrayerTimeEngine.Core.Domain.Model;
+using PrayerTimeEngine.Core.Tests.Common;
 
-namespace PrayerTimeEngine.Core.Tests
+namespace PrayerTimeEngine.Core.Tests.Unit
 {
     public class ProfileServiceTests : BaseTest
     {
@@ -52,7 +52,7 @@ namespace PrayerTimeEngine.Core.Tests
             // ARRANGE
             var dbContext = ServiceProvider.GetService<AppDbContext>();
             var profileService = ServiceProvider.GetService<IProfileService>() as ProfileService;
-            
+
             Profile profile = TestData.CreateNewTestProfile();
             await dbContext.Profiles.AddAsync(profile);
             ETimeType timeType = ETimeType.IshaEnd;
@@ -91,7 +91,7 @@ namespace PrayerTimeEngine.Core.Tests
             // ARRANGE
             var dbContext = ServiceProvider.GetService<AppDbContext>();
             var profileService = ServiceProvider.GetService<IProfileService>() as ProfileService;
-            
+
             Profile profile = TestData.CreateNewTestProfile();
             await dbContext.Profiles.AddAsync(profile);
             ECalculationSource source = ECalculationSource.Muwaqqit;
@@ -117,7 +117,7 @@ namespace PrayerTimeEngine.Core.Tests
 
             // in the UI the data is loaded without tracking (i.e. intended for read only)
             // changes have to be made on separate entities with tracking to keep the mechanisms clean
-            Profile profile = 
+            Profile profile =
                 dbContext.Profiles
                     .Include(x => x.LocationConfigs)
                     .Include(x => x.TimeConfigs)
@@ -131,7 +131,7 @@ namespace PrayerTimeEngine.Core.Tests
             var newLocationDataByCalculationSource = new Dictionary<ECalculationSource, BaseLocationData>
             {
                 [ECalculationSource.Muwaqqit] = new MuwaqqitLocationData { Latitude = 50.9413M, Longitude = 6.9583M, TimezoneName = "Europe/Vienna" },
-                [ECalculationSource.Fazilet] = new FaziletLocationData  { CountryName = "Almanya", CityName = newLocationName },
+                [ECalculationSource.Fazilet] = new FaziletLocationData { CountryName = "Almanya", CityName = newLocationName },
                 [ECalculationSource.Semerkand] = new SemerkandLocationData { CountryName = "Almanya", CityName = newLocationName, TimezoneName = "Europe/Vienna" },
             };
 
@@ -172,7 +172,7 @@ namespace PrayerTimeEngine.Core.Tests
                     .AsNoTracking()
                     .Single();
 
-            string oldLocationName = profile.LocationName; 
+            string oldLocationName = profile.LocationName;
             var oldLocationDataByCalculationSource = profile.LocationConfigs.ToDictionary(x => x.CalculationSource, x => x.LocationData);
             var newLocationDataByCalculationSource = new Dictionary<ECalculationSource, BaseLocationData>
             {
@@ -216,10 +216,10 @@ namespace PrayerTimeEngine.Core.Tests
                     .Single();
 
             // ACT
-            var newSemerkandConfig = 
-                new GenericSettingConfiguration 
-                { 
-                    Source = ECalculationSource.Semerkand, 
+            var newSemerkandConfig =
+                new GenericSettingConfiguration
+                {
+                    Source = ECalculationSource.Semerkand,
                     TimeType = ETimeType.FajrStart
                 };
 
@@ -227,7 +227,7 @@ namespace PrayerTimeEngine.Core.Tests
 
             // ASSERT
             Assert.IsFalse(dbContext.ChangeTracker.HasChanges());
-            
+
             var fajrStartConfig = profileService.GetTimeConfig(profile, ETimeType.FajrStart);
             Assert.That(fajrStartConfig.Source, Is.EqualTo(ECalculationSource.Semerkand));
         }

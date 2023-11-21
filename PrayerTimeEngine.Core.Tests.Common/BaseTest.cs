@@ -1,16 +1,17 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using NSubstitute;
 using NSubstitute.Extensions;
 using PrayerTimeEngine.Core.Data.EntityFramework;
 using System.Data.Common;
 
-namespace PrayerTimeEngine.Core.Tests
+namespace PrayerTimeEngine.Core.Tests.Common
 {
     public abstract class BaseTest
     {
+        public static readonly string TEST_DATA_FILE_PATH = @$"{Directory.GetCurrentDirectory()}\TestData";
+
         private DbConnection _keepMemoryDbAliveDbConnection = null;
         public ServiceProvider ServiceProvider { get; set; }
 
@@ -31,7 +32,7 @@ namespace PrayerTimeEngine.Core.Tests
         protected virtual void ConfigureServiceProvider(ServiceCollection serviceCollection) { }
 
         [TearDown]
-        public void TearDown() 
+        public void TearDown()
         {
             _keepMemoryDbAliveDbConnection?.Dispose();
             _keepMemoryDbAliveDbConnection = null;
@@ -40,7 +41,7 @@ namespace PrayerTimeEngine.Core.Tests
             ServiceProvider = null;
         }
 
-        private void addMockableDbInstanceToServiceCollection(ServiceCollection serviceCollection) 
+        private void addMockableDbInstanceToServiceCollection(ServiceCollection serviceCollection)
         {
             var dbOptions = new DbContextOptionsBuilder()
                 .UseSqlite("Data Source=:memory:")
