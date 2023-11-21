@@ -1,6 +1,6 @@
 ﻿using System.Net;
 
-namespace PrayerTimeEngine.Core.Tests.TestModels
+namespace PrayerTimeEngine.Core.Tests.Common
 {
     public class MockHttpMessageHandler(
             HttpStatusCode statusCode,

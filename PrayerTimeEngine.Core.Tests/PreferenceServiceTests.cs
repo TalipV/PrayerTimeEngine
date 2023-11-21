@@ -1,12 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 using NSubstitute.Extensions;
 using PrayerTimeEngine.Core.Data.Preferences;
 using PrayerTimeEngine.Core.Domain.Configuration.Models;
 using PrayerTimeEngine.Core.Domain.Model;
+using PrayerTimeEngine.Core.Tests.Common;
 
-namespace PrayerTimeEngine.Core.Tests
+namespace PrayerTimeEngine.Core.Tests.Unit
 {
     public class PreferenceServiceTests : BaseTest
     {
@@ -64,7 +64,7 @@ namespace PrayerTimeEngine.Core.Tests
         }
 
         private bool equalsLocationConfigs(
-            ICollection<ProfileLocationConfig> profileLocationConfigs1, 
+            ICollection<ProfileLocationConfig> profileLocationConfigs1,
             ICollection<ProfileLocationConfig> profileLocationConfigs2)
         {
             var array1 = profileLocationConfigs1.OrderBy(x => x.CalculationSource).ToArray();

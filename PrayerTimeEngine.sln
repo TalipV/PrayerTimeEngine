@@ -7,9 +7,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PrayerTimeEngine.MAUI", "Pr
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PrayerTimeEngine.Core", "PrayerTimeEngine.Core\PrayerTimeEngine.Core.csproj", "{900682D9-A67A-4112-BA7E-88AECD351554}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PrayerTimeEngine.Core.Tests", "PrayerTimeEngine.Core.Tests\PrayerTimeEngine.Core.Tests.csproj", "{FB9E7882-87DF-4ED2-B871-00A55C04B1F6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PrayerTimeEngine.Core.Tests.Unit", "PrayerTimeEngine.Core.Tests\PrayerTimeEngine.Core.Tests.Unit.csproj", "{FB9E7882-87DF-4ED2-B871-00A55C04B1F6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PrayerTimeEngine.BenchmarkDotNet", "PrayerTimeEngine.BenchmarkDotNet\PrayerTimeEngine.BenchmarkDotNet.csproj", "{08538029-6CAC-45B7-AE29-172B60744EE6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PrayerTimeEngine.BenchmarkDotNet", "PrayerTimeEngine.BenchmarkDotNet\PrayerTimeEngine.BenchmarkDotNet.csproj", "{08538029-6CAC-45B7-AE29-172B60744EE6}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{5B6DA408-9B9D-48A2-85A7-41AE8C735FE9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PrayerTimeEngine.Core.Tests.Integration", "PrayerTimeEngine.Core.Tests.Integration\PrayerTimeEngine.Core.Tests.Integration.csproj", "{907C21C6-9E77-49D9-9F56-2DF4DF0CA44A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PrayerTimeEngine.Core.Tests.Common", "PrayerTimeEngine.Core.Tests.Common\PrayerTimeEngine.Core.Tests.Common.csproj", "{2FEF0F33-7B2E-47E2-AECE-D0049835AF67}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -53,9 +59,30 @@ Global
 		{08538029-6CAC-45B7-AE29-172B60744EE6}.Release|Any CPU.Build.0 = Release|Any CPU
 		{08538029-6CAC-45B7-AE29-172B60744EE6}.Release|x64.ActiveCfg = Release|Any CPU
 		{08538029-6CAC-45B7-AE29-172B60744EE6}.Release|x64.Build.0 = Release|Any CPU
+		{907C21C6-9E77-49D9-9F56-2DF4DF0CA44A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{907C21C6-9E77-49D9-9F56-2DF4DF0CA44A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{907C21C6-9E77-49D9-9F56-2DF4DF0CA44A}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{907C21C6-9E77-49D9-9F56-2DF4DF0CA44A}.Debug|x64.Build.0 = Debug|Any CPU
+		{907C21C6-9E77-49D9-9F56-2DF4DF0CA44A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{907C21C6-9E77-49D9-9F56-2DF4DF0CA44A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{907C21C6-9E77-49D9-9F56-2DF4DF0CA44A}.Release|x64.ActiveCfg = Release|Any CPU
+		{907C21C6-9E77-49D9-9F56-2DF4DF0CA44A}.Release|x64.Build.0 = Release|Any CPU
+		{2FEF0F33-7B2E-47E2-AECE-D0049835AF67}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2FEF0F33-7B2E-47E2-AECE-D0049835AF67}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2FEF0F33-7B2E-47E2-AECE-D0049835AF67}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{2FEF0F33-7B2E-47E2-AECE-D0049835AF67}.Debug|x64.Build.0 = Debug|Any CPU
+		{2FEF0F33-7B2E-47E2-AECE-D0049835AF67}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2FEF0F33-7B2E-47E2-AECE-D0049835AF67}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2FEF0F33-7B2E-47E2-AECE-D0049835AF67}.Release|x64.ActiveCfg = Release|Any CPU
+		{2FEF0F33-7B2E-47E2-AECE-D0049835AF67}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{FB9E7882-87DF-4ED2-B871-00A55C04B1F6} = {5B6DA408-9B9D-48A2-85A7-41AE8C735FE9}
+		{907C21C6-9E77-49D9-9F56-2DF4DF0CA44A} = {5B6DA408-9B9D-48A2-85A7-41AE8C735FE9}
+		{2FEF0F33-7B2E-47E2-AECE-D0049835AF67} = {5B6DA408-9B9D-48A2-85A7-41AE8C735FE9}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {61F7FB11-1E47-470C-91E2-47F8143E1572}

@@ -7,6 +7,7 @@ using PrayerTimeEngine.Core.Data.EntityFramework;
 using PrayerTimeEngine.Core.Domain;
 using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Models;
 using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services;
+using PrayerTimeEngine.Core.Tests.Integration.MuwaqqitAPI;
 using System.Data.Common;
 
 namespace PrayerTimeEngine.BenchmarkDotNet

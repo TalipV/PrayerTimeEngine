@@ -9,10 +9,10 @@ using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Models;
 using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services;
 using PrayerTimeEngine.Core.Domain.Models;
 using PrayerTimeEngine.Core.Domain.PlacesService.Interfaces;
-using PrayerTimeEngine.Core.Tests.TestModels;
+using PrayerTimeEngine.Core.Tests.Common;
 using System.Net;
 
-namespace PrayerTimeEngine.Core.Tests.APIs.SemerkandAPI
+namespace PrayerTimeEngine.Core.Tests.Integration.SemerkandAPI
 {
     public class SemerkandPrayerTimeCalculatorTests : BaseTest
     {
@@ -30,9 +30,9 @@ namespace PrayerTimeEngine.Core.Tests.APIs.SemerkandAPI
         {
             Dictionary<string, string> urlToContentMap = new Dictionary<string, string>()
             {
-                [$@"{SemerkandApiService.GET_COUNTRIES_URL}"] = File.ReadAllText(@"APIs\SemerkandAPI\TestData\Semerkand_TestCountriesData.txt"),
-                [$@"{SemerkandApiService.GET_CITIES_BY_COUNTRY_URL}"] = File.ReadAllText(@"APIs\SemerkandAPI\TestData\Semerkand_TestCityData_Austria.txt"),
-                [$@"{string.Format(SemerkandApiService.GET_TIMES_BY_CITY, "197", "2023")}"] = File.ReadAllText(@"APIs\SemerkandAPI\TestData\Semerkand_TestPrayerTimeData_20230729_Innsbruck.txt"),
+                [$@"{SemerkandApiService.GET_COUNTRIES_URL}"] = File.ReadAllText(@$"{TEST_DATA_FILE_PATH}\SemerkandTestData\Semerkand_TestCountriesData.txt"),
+                [$@"{SemerkandApiService.GET_CITIES_BY_COUNTRY_URL}"] = File.ReadAllText(@$"{TEST_DATA_FILE_PATH}\SemerkandTestData\Semerkand_TestCityData_Austria.txt"),
+                [$@"{string.Format(SemerkandApiService.GET_TIMES_BY_CITY, "197", "2023")}"] = File.ReadAllText(@$"{TEST_DATA_FILE_PATH}\SemerkandTestData\Semerkand_TestPrayerTimeData_20230729_Innsbruck.txt"),
             };
 
             var mockHttpMessageHandler = new MockHttpMessageHandler(HttpStatusCode.OK, urlToContentMap);

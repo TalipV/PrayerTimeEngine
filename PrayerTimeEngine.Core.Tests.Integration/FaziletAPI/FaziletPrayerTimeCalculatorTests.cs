@@ -9,10 +9,10 @@ using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Models;
 using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services;
 using PrayerTimeEngine.Core.Domain.Models;
 using PrayerTimeEngine.Core.Domain.PlacesService.Interfaces;
-using PrayerTimeEngine.Core.Tests.TestModels;
+using PrayerTimeEngine.Core.Tests.Common;
 using System.Net;
 
-namespace PrayerTimeEngine.Core.Tests.APIs.FaziletAPI
+namespace PrayerTimeEngine.Core.Tests.Integration.FaziletAPI
 {
     public class FaziletPrayerTimeCalculatorTests : BaseTest
     {
@@ -30,9 +30,9 @@ namespace PrayerTimeEngine.Core.Tests.APIs.FaziletAPI
             string dummyBaseURL = @"http://dummy.url.com";
             Dictionary<string, string> urlToContentMap = new Dictionary<string, string>()
             {
-                [$@"{dummyBaseURL}/{FaziletApiService.GET_COUNTRIES_URL}"] = File.ReadAllText(@"APIs\FaziletAPI\TestData\Fazilet_TestCountriesData.txt"),
-                [$@"{dummyBaseURL}/{FaziletApiService.GET_CITIES_BY_COUNTRY_URL}2"] = File.ReadAllText(@"APIs\FaziletAPI\TestData\Fazilet_TestCityData_Austria.txt"),
-                [$@"{dummyBaseURL}/{string.Format(FaziletApiService.GET_TIMES_BY_CITY_URL, "92")}"] = File.ReadAllText(@"APIs\FaziletAPI\TestData\Fazilet_TestPrayerTimeData_20230729_Innsbruck.txt"),
+                [$@"{dummyBaseURL}/{FaziletApiService.GET_COUNTRIES_URL}"] = File.ReadAllText(@$"{TEST_DATA_FILE_PATH}\FaziletTestData\Fazilet_TestCountriesData.txt"),
+                [$@"{dummyBaseURL}/{FaziletApiService.GET_CITIES_BY_COUNTRY_URL}2"] = File.ReadAllText(@$"{TEST_DATA_FILE_PATH}\FaziletTestData\Fazilet_TestCityData_Austria.txt"),
+                [$@"{dummyBaseURL}/{string.Format(FaziletApiService.GET_TIMES_BY_CITY_URL, "92")}"] = File.ReadAllText(@$"{TEST_DATA_FILE_PATH}\FaziletTestData\Fazilet_TestPrayerTimeData_20230729_Innsbruck.txt"),
             };
 
             var mockHttpMessageHandler = new MockHttpMessageHandler(HttpStatusCode.OK, urlToContentMap);

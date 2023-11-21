@@ -1,14 +1,14 @@
-﻿using NodaTime.TimeZones;
-using NodaTime;
+﻿using NodaTime;
+using NodaTime.TimeZones;
 using PrayerTimeEngine.Core.Common.Enum;
+using PrayerTimeEngine.Core.Domain;
 using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Models;
 using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Models;
 using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Models;
 using PrayerTimeEngine.Core.Domain.Configuration.Models;
 using PrayerTimeEngine.Core.Domain.Model;
-using PrayerTimeEngine.Core.Domain;
 
-namespace PrayerTimeEngine.Core.Tests
+namespace PrayerTimeEngine.Core.Tests.Common
 {
     public static class TestData
     {
