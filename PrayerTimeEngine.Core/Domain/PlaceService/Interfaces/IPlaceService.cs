@@ -2,7 +2,7 @@
 
 namespace PrayerTimeEngine.Core.Domain.PlacesService.Interfaces
 {
-    public interface ILocationService
+    public interface IPlaceService
     {
         Task<List<BasicPlaceInfo>> SearchPlacesAsync(string searchTerm, string language);
         Task<BasicPlaceInfo> GetPlaceBasedOnPlace(BasicPlaceInfo place, string languageIdentif);

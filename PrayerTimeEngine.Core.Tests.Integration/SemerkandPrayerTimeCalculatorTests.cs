@@ -12,13 +12,13 @@ using PrayerTimeEngine.Core.Domain.PlacesService.Interfaces;
 using PrayerTimeEngine.Core.Tests.Common;
 using System.Net;
 
-namespace PrayerTimeEngine.Core.Tests.Integration.SemerkandAPI
+namespace PrayerTimeEngine.Core.Tests.Integration
 {
     public class SemerkandPrayerTimeCalculatorTests : BaseTest
     {
         protected override void ConfigureServiceProvider(ServiceCollection serviceCollection)
         {
-            serviceCollection.AddSingleton(Substitute.For<ILocationService>());
+            serviceCollection.AddSingleton(Substitute.For<IPlaceService>());
 
             serviceCollection.AddSingleton<ISemerkandDBAccess, SemerkandDBAccess>();
             serviceCollection.AddSingleton<ISemerkandApiService>(getMockedSemerkandApiService());

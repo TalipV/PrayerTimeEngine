@@ -25,7 +25,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
     [AddINotifyPropertyChangedInterface]
     public class MainPageViewModel(
             IPrayerTimeCalculationManager prayerTimeCalculator,
-            ILocationService placeService,
+            IPlaceService placeService,
             IProfileService profileService,
             INavigationService navigationService,
             AppDbContext appDbContext,

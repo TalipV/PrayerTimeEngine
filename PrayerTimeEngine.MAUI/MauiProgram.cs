@@ -158,13 +158,13 @@ public static class MauiProgram
         serviceCollection.AddSingleton<IPrayerTimeCalculationManager, PrayerTimeCalculationManager>();
         serviceCollection.AddSingleton<TimeTypeAttributeService>();
 
-        serviceCollection.AddSingleton<ILocationService, LocationService>(sp =>
+        serviceCollection.AddSingleton<IPlaceService, PlaceService>(sp =>
         {
             var httpClient = new HttpClient
             {
                 Timeout = TimeSpan.FromSeconds(20)
             };
-            return new LocationService(httpClient, sp.GetService<ILogger<LocationService>>());
+            return new PlaceService(httpClient, sp.GetService<ILogger<PlaceService>>());
         });
 
         serviceCollection.AddSingleton<IProfileService, ProfileService>();

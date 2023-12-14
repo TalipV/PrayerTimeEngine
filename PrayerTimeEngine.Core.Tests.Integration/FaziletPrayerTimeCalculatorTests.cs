@@ -18,7 +18,7 @@ namespace PrayerTimeEngine.Core.Tests.Integration.FaziletAPI
     {
         protected override void ConfigureServiceProvider(ServiceCollection serviceCollection)
         {
-            serviceCollection.AddSingleton(Substitute.For<ILocationService>());
+            serviceCollection.AddSingleton(Substitute.For<IPlaceService>());
             serviceCollection.AddSingleton<IFaziletDBAccess, FaziletDBAccess>();
             serviceCollection.AddSingleton<IFaziletApiService>(getMockedFaziletApiService());
             serviceCollection.AddSingleton(Substitute.For<ILogger<FaziletPrayerTimeCalculator>>());
