@@ -14,7 +14,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
     public class FaziletPrayerTimeCalculator(
             IFaziletDBAccess faziletDBAccess,
             IFaziletApiService faziletApiService,
-            ILocationService placeService,
+            IPlaceService placeService,
             ILogger<FaziletPrayerTimeCalculator> logger
         ) : IPrayerTimeService
     {

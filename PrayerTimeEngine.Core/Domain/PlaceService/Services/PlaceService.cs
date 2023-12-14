@@ -9,10 +9,10 @@ using System.Text.Json;
 
 namespace PrayerTimeEngine.Core.Domain.PlacesService.Services
 {
-    public class LocationService(
+    public class PlaceService(
             HttpClient httpClient, 
-            ILogger<LocationService> logger
-        ) : ILocationService
+            ILogger<PlaceService> logger
+        ) : IPlaceService
     {
         private const string ACCESS_TOKEN = "pk.48863ca2d711d3a0ec7b118d88a24623";
         private const string BASE_URL = @"https://eu1.locationiq.com/v1/";

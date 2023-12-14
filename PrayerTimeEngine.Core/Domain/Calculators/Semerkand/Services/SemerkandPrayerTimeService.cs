@@ -14,7 +14,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
     public class SemerkandPrayerTimeCalculator(
             ISemerkandDBAccess semerkandDBAccess,
             ISemerkandApiService semerkandApiService,
-            ILocationService placeService,
+            IPlaceService placeService,
             ILogger<SemerkandPrayerTimeCalculator> logger
         ) : IPrayerTimeService
     {
