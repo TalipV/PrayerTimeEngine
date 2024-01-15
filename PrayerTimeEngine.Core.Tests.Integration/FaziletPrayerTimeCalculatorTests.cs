@@ -1,3 +1,4 @@
+using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NodaTime;
@@ -61,18 +62,18 @@ namespace PrayerTimeEngine.Core.Tests.Integration.FaziletAPI
             FaziletPrayerTimes faziletPrayerTimes = result as FaziletPrayerTimes;
 
             // ASSERT
-            Assert.IsNotNull(faziletPrayerTimes);
+            faziletPrayerTimes.Should().NotBeNull();
 
-            Assert.That(faziletPrayerTimes.Date, Is.EqualTo(new LocalDate(2023, 7, 29)));
-            Assert.That(faziletPrayerTimes.Imsak.LocalDateTime, Is.EqualTo(new LocalDateTime(2023, 7, 29, 03, 04, 0)));
-            Assert.That(faziletPrayerTimes.Fajr.LocalDateTime, Is.EqualTo(new LocalDateTime(2023, 7, 29, 03, 24, 0)));
-            Assert.That(faziletPrayerTimes.NextFajr.Value.LocalDateTime, Is.EqualTo(new LocalDateTime(2023, 7, 30, 03, 27, 0)));
+            faziletPrayerTimes.Date.Should().Be(new LocalDate(2023, 7, 29));
+            faziletPrayerTimes.Imsak.LocalDateTime.Should().Be(new LocalDateTime(2023, 7, 29, 03, 04, 0));
+            faziletPrayerTimes.Fajr.LocalDateTime.Should().Be(new LocalDateTime(2023, 7, 29, 03, 24, 0));
+            faziletPrayerTimes.NextFajr.Value.LocalDateTime.Should().Be(new LocalDateTime(2023, 7, 30, 03, 27, 0));
 
-            Assert.That(faziletPrayerTimes.Shuruq.LocalDateTime, Is.EqualTo(new LocalDateTime(2023, 7, 29, 05, 43, 0)));
-            Assert.That(faziletPrayerTimes.Dhuhr.LocalDateTime, Is.EqualTo(new LocalDateTime(2023, 7, 29, 13, 28, 0)));
-            Assert.That(faziletPrayerTimes.Asr.LocalDateTime, Is.EqualTo(new LocalDateTime(2023, 7, 29, 17, 31, 0)));
-            Assert.That(faziletPrayerTimes.Maghrib.LocalDateTime, Is.EqualTo(new LocalDateTime(2023, 7, 29, 21, 02, 0)));
-            Assert.That(faziletPrayerTimes.Isha.LocalDateTime, Is.EqualTo(new LocalDateTime(2023, 7, 29, 23, 11, 0)));
+            faziletPrayerTimes.Shuruq.LocalDateTime.Should().Be(new LocalDateTime(2023, 7, 29, 05, 43, 0));
+            faziletPrayerTimes.Dhuhr.LocalDateTime.Should().Be(new LocalDateTime(2023, 7, 29, 13, 28, 0));
+            faziletPrayerTimes.Asr.LocalDateTime.Should().Be(new LocalDateTime(2023, 7, 29, 17, 31, 0));
+            faziletPrayerTimes.Maghrib.LocalDateTime.Should().Be(new LocalDateTime(2023, 7, 29, 21, 02, 0));
+            faziletPrayerTimes.Isha.LocalDateTime.Should().Be(new LocalDateTime(2023, 7, 29, 23, 11, 0));
         }
     }
 }

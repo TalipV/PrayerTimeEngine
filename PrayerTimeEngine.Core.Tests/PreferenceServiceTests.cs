@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using FluentAssertions;
+using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 using NSubstitute.Extensions;
 using PrayerTimeEngine.Core.Data.Preferences;
@@ -34,10 +35,10 @@ namespace PrayerTimeEngine.Core.Tests.Unit
             var retrievedProfile = preferenceService.GetCurrentProfile();
 
             // ASSERT
-            Assert.IsNotNull(retrievedProfile);
-            Assert.That(retrievedProfile, Is.EqualTo(profile));
-            Assert.IsTrue(equalsLocationConfigs(profile.LocationConfigs, retrievedProfile.LocationConfigs));
-            Assert.IsTrue(equalsTimeConfigs(profile.TimeConfigs, retrievedProfile.TimeConfigs));
+            retrievedProfile.Should().NotBeNull();
+            retrievedProfile.Should().Be(profile);
+            equalsLocationConfigs(profile.LocationConfigs, retrievedProfile.LocationConfigs).Should().BeTrue();
+            equalsTimeConfigs(profile.TimeConfigs, retrievedProfile.TimeConfigs).Should().BeTrue();
         }
 
         [Test]
@@ -59,8 +60,8 @@ namespace PrayerTimeEngine.Core.Tests.Unit
             var retrievedBundle = preferenceService.GetCurrentData(profile);
 
             // ASSERT
-            Assert.IsNotNull(retrievedBundle);
-            Assert.That(retrievedBundle, Is.EqualTo(bundle));
+            retrievedBundle.Should().NotBeNull();
+            retrievedBundle.Should().Be(bundle);
         }
 
         private bool equalsLocationConfigs(

@@ -1,3 +1,4 @@
+using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NodaTime;
@@ -63,17 +64,17 @@ namespace PrayerTimeEngine.Core.Tests.Integration
             SemerkandPrayerTimes semerkandPrayerTimes = result as SemerkandPrayerTimes;
 
             // ASSERT
-            Assert.IsNotNull(semerkandPrayerTimes);
+            semerkandPrayerTimes.Should().NotBeNull();
 
-            Assert.That(semerkandPrayerTimes.Date, Is.EqualTo(new LocalDate(2023, 7, 29)));
-            Assert.That(semerkandPrayerTimes.Fajr.LocalDateTime, Is.EqualTo(new LocalDateTime(2023, 7, 29, 03, 15, 0)));
-            Assert.That(semerkandPrayerTimes.NextFajr.Value.LocalDateTime, Is.EqualTo(new LocalDateTime(2023, 7, 30, 03, 17, 0)));
+            semerkandPrayerTimes.Date.Should().Be(new LocalDate(2023, 7, 29));
+            semerkandPrayerTimes.Fajr.LocalDateTime.Should().Be(new LocalDateTime(2023, 7, 29, 03, 15, 0));
+            semerkandPrayerTimes.NextFajr.Value.LocalDateTime.Should().Be(new LocalDateTime(2023, 7, 30, 03, 17, 0));
 
-            Assert.That(semerkandPrayerTimes.Shuruq.LocalDateTime, Is.EqualTo(new LocalDateTime(2023, 7, 29, 05, 41, 0)));
-            Assert.That(semerkandPrayerTimes.Dhuhr.LocalDateTime, Is.EqualTo(new LocalDateTime(2023, 7, 29, 13, 26, 0)));
-            Assert.That(semerkandPrayerTimes.Asr.LocalDateTime, Is.EqualTo(new LocalDateTime(2023, 7, 29, 17, 30, 0)));
-            Assert.That(semerkandPrayerTimes.Maghrib.LocalDateTime, Is.EqualTo(new LocalDateTime(2023, 7, 29, 21, 00, 0)));
-            Assert.That(semerkandPrayerTimes.Isha.LocalDateTime, Is.EqualTo(new LocalDateTime(2023, 7, 29, 23, 02, 0)));
+            semerkandPrayerTimes.Shuruq.LocalDateTime.Should().Be(new LocalDateTime(2023, 7, 29, 05, 41, 0));
+            semerkandPrayerTimes.Dhuhr.LocalDateTime.Should().Be(new LocalDateTime(2023, 7, 29, 13, 26, 0));
+            semerkandPrayerTimes.Asr.LocalDateTime.Should().Be(new LocalDateTime(2023, 7, 29, 17, 30, 0));
+            semerkandPrayerTimes.Maghrib.LocalDateTime.Should().Be(new LocalDateTime(2023, 7, 29, 21, 00, 0));
+            semerkandPrayerTimes.Isha.LocalDateTime.Should().Be(new LocalDateTime(2023, 7, 29, 23, 02, 0));
         }
     }
 }

@@ -1,3 +1,4 @@
+using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NodaTime;
@@ -91,34 +92,30 @@ namespace PrayerTimeEngine.Core.Tests.Integration
                 .ToDictionary(x => x.Key, x => x.Value as MuwaqqitPrayerTimes);
 
             // ASSERT
-            Assert.That(timeTypeByCalculationPrayerTimes.Count, Is.EqualTo(16));
+            timeTypeByCalculationPrayerTimes.Should().HaveCount(16);
+            result.Select(x => x.Key.Date).Should().AllBeEquivalentTo(new LocalDate(2023, 7, 30));
 
-            foreach (ICalculationPrayerTimes item in result.Select(x => x.Key))
-            {
-                Assert.That(item.Date, Is.EqualTo(new LocalDate(2023, 7, 30)));
-            }
+            getMappedValue(ETimeType.FajrStart, timeTypeByCalculationPrayerTimes).Should().Be(new LocalDateTime(2023, 7, 30, 04, 27, 04));
+            getMappedValue(ETimeType.FajrEnd, timeTypeByCalculationPrayerTimes).Should().Be(new LocalDateTime(2023, 7, 30, 05, 49, 53));
+            getMappedValue(ETimeType.FajrGhalas, timeTypeByCalculationPrayerTimes).Should().Be(new LocalDateTime(2023, 7, 30, 05, 02, 27));
+            getMappedValue(ETimeType.FajrKaraha, timeTypeByCalculationPrayerTimes).Should().Be(new LocalDateTime(2023, 7, 30, 05, 20, 25));
 
-            Assert.That(getMappedValue(ETimeType.FajrStart, timeTypeByCalculationPrayerTimes), Is.EqualTo(new LocalDateTime(2023, 7, 30, 04, 27, 04)));
-            Assert.That(getMappedValue(ETimeType.FajrEnd, timeTypeByCalculationPrayerTimes), Is.EqualTo(new LocalDateTime(2023, 7, 30, 05, 49, 53)));
-            Assert.That(getMappedValue(ETimeType.FajrGhalas, timeTypeByCalculationPrayerTimes), Is.EqualTo(new LocalDateTime(2023, 7, 30, 05, 02, 27)));
-            Assert.That(getMappedValue(ETimeType.FajrKaraha, timeTypeByCalculationPrayerTimes), Is.EqualTo(new LocalDateTime(2023, 7, 30, 05, 20, 25)));
+            getMappedValue(ETimeType.DuhaStart, timeTypeByCalculationPrayerTimes).Should().Be(new LocalDateTime(2023, 7, 30, 06, 17, 04));
 
-            Assert.That(getMappedValue(ETimeType.DuhaStart, timeTypeByCalculationPrayerTimes), Is.EqualTo(new LocalDateTime(2023, 7, 30, 06, 17, 04)));
+            getMappedValue(ETimeType.DhuhrStart, timeTypeByCalculationPrayerTimes).Should().Be(new LocalDateTime(2023, 7, 30, 13, 21, 22));
+            getMappedValue(ETimeType.DhuhrEnd, timeTypeByCalculationPrayerTimes).Should().Be(new LocalDateTime(2023, 7, 30, 17, 25, 53));
 
-            Assert.That(getMappedValue(ETimeType.DhuhrStart, timeTypeByCalculationPrayerTimes), Is.EqualTo(new LocalDateTime(2023, 7, 30, 13, 21, 22)));
-            Assert.That(getMappedValue(ETimeType.DhuhrEnd, timeTypeByCalculationPrayerTimes), Is.EqualTo(new LocalDateTime(2023, 7, 30, 17, 25, 53)));
+            getMappedValue(ETimeType.AsrStart, timeTypeByCalculationPrayerTimes).Should().Be(new LocalDateTime(2023, 7, 30, 17, 25, 53));
+            getMappedValue(ETimeType.AsrEnd, timeTypeByCalculationPrayerTimes).Should().Be(new LocalDateTime(2023, 7, 30, 20, 50, 59));
+            getMappedValue(ETimeType.AsrMithlayn, timeTypeByCalculationPrayerTimes).Should().Be(new LocalDateTime(2023, 7, 30, 18, 33, 27));
+            getMappedValue(ETimeType.AsrKaraha, timeTypeByCalculationPrayerTimes).Should().Be(new LocalDateTime(2023, 7, 30, 20, 17, 15));
 
-            Assert.That(getMappedValue(ETimeType.AsrStart, timeTypeByCalculationPrayerTimes), Is.EqualTo(new LocalDateTime(2023, 7, 30, 17, 25, 53)));
-            Assert.That(getMappedValue(ETimeType.AsrEnd, timeTypeByCalculationPrayerTimes), Is.EqualTo(new LocalDateTime(2023, 7, 30, 20, 50, 59)));
-            Assert.That(getMappedValue(ETimeType.AsrMithlayn, timeTypeByCalculationPrayerTimes), Is.EqualTo(new LocalDateTime(2023, 7, 30, 18, 33, 27)));
-            Assert.That(getMappedValue(ETimeType.AsrKaraha, timeTypeByCalculationPrayerTimes), Is.EqualTo(new LocalDateTime(2023, 7, 30, 20, 17, 15)));
+            getMappedValue(ETimeType.MaghribStart, timeTypeByCalculationPrayerTimes).Should().Be(new LocalDateTime(2023, 7, 30, 20, 50, 59));
+            getMappedValue(ETimeType.MaghribEnd, timeTypeByCalculationPrayerTimes).Should().Be(new LocalDateTime(2023, 7, 30, 22, 13, 17));
+            getMappedValue(ETimeType.MaghribIshtibaq, timeTypeByCalculationPrayerTimes).Should().Be(new LocalDateTime(2023, 7, 30, 21, 41, 46));
 
-            Assert.That(getMappedValue(ETimeType.MaghribStart, timeTypeByCalculationPrayerTimes), Is.EqualTo(new LocalDateTime(2023, 7, 30, 20, 50, 59)));
-            Assert.That(getMappedValue(ETimeType.MaghribEnd, timeTypeByCalculationPrayerTimes), Is.EqualTo(new LocalDateTime(2023, 7, 30, 22, 13, 17)));
-            Assert.That(getMappedValue(ETimeType.MaghribIshtibaq, timeTypeByCalculationPrayerTimes), Is.EqualTo(new LocalDateTime(2023, 7, 30, 21, 41, 46)));
-
-            Assert.That(getMappedValue(ETimeType.IshaStart, timeTypeByCalculationPrayerTimes), Is.EqualTo(new LocalDateTime(2023, 7, 30, 22, 44, 14)));
-            Assert.That(getMappedValue(ETimeType.IshaEnd, timeTypeByCalculationPrayerTimes), Is.EqualTo(new LocalDateTime(2023, 7, 31, 04, 02, 30)));
+            getMappedValue(ETimeType.IshaStart, timeTypeByCalculationPrayerTimes).Should().Be(new LocalDateTime(2023, 7, 30, 22, 44, 14));
+            getMappedValue(ETimeType.IshaEnd, timeTypeByCalculationPrayerTimes).Should().Be(new LocalDateTime(2023, 7, 31, 04, 02, 30));
         }
 
         private LocalDateTime getMappedValue(ETimeType timeType, IDictionary<ETimeType, MuwaqqitPrayerTimes> timeTypeByCalculationPrayerTimes)
