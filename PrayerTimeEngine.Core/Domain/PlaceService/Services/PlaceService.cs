@@ -15,13 +15,13 @@ namespace PrayerTimeEngine.Core.Domain.PlacesService.Services
             ILogger<PlaceService> logger
         ) : IPlaceService
     {
-        private const string ACCESS_TOKEN = "pk.48863ca2d711d3a0ec7b118d88a24623";
+        private const string ACCESS_TOKEN = "pk.c515e4d0e2c522f5b06068b45574bb68";
         private const string BASE_URL = @"https://eu1.locationiq.com/v1/";
 
         private Instant? lastCooldownCheck;
 
         private const int MAX_RESULTS = 10;
-        private const string BASE_URL_TIMEZONE = "https://eu1.locationiq.com/v1/timezone?key=pk.48863ca2d711d3a0ec7b118d88a24623&lat=47.2803835&lon=11.41337";
+        private const string BASE_URL_TIMEZONE = $"https://eu1.locationiq.com/v1/timezone?key={ACCESS_TOKEN}&lat=47.2803835&lon=11.41337";
 
         public async Task<CompletePlaceInfo> GetTimezoneInfo(BasicPlaceInfo basicPlaceInfo)
         {
