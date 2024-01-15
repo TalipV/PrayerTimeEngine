@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using AsyncKeyedLock;
+using Microsoft.Extensions.Logging;
 using NodaTime;
 using PrayerTimeEngine.Core.Domain.PlacesService.Interfaces;
 using PrayerTimeEngine.Core.Domain.PlacesService.Models;
@@ -102,35 +103,35 @@ namespace PrayerTimeEngine.Core.Domain.PlacesService.Services
 
         // only allowed two calls per second
         private const int NECESSARY_COOL_DOWN_MS = 500;
-        private readonly SemaphoreSlim _semaphore = new(1, 1);
+        private readonly AsyncNonKeyedLocker _semaphore = new(1);
 
         private async Task ensureCooldown()
         {
-            await _semaphore.WaitAsync().ConfigureAwait(false);
-
-            try
+            using (await _semaphore.LockAsync().ConfigureAwait(false))
             {
-                if (lastCooldownCheck != null)
+                try
                 {
-                    Instant currentInstant = SystemClock.Instance.GetCurrentInstant();
-                    int millisecondsSinceLastCooldownCheck = (int)Math.Floor((currentInstant - lastCooldownCheck.Value).TotalMilliseconds);
-
-                    if (millisecondsSinceLastCooldownCheck < NECESSARY_COOL_DOWN_MS)
+                    if (lastCooldownCheck != null)
                     {
-                        await Task.Delay(NECESSARY_COOL_DOWN_MS - millisecondsSinceLastCooldownCheck).ConfigureAwait(false);
+                        Instant currentInstant = SystemClock.Instance.GetCurrentInstant();
+                        int millisecondsSinceLastCooldownCheck = (int)Math.Floor((currentInstant - lastCooldownCheck.Value).TotalMilliseconds);
+
+                        if (millisecondsSinceLastCooldownCheck < NECESSARY_COOL_DOWN_MS)
+                        {
+                            await Task.Delay(NECESSARY_COOL_DOWN_MS - millisecondsSinceLastCooldownCheck).ConfigureAwait(false);
+                        }
                     }
                 }
-            }
-            catch (Exception exception)
-            {
-                logger.LogError(exception, "Exception during cooldown logic");
-                await Task.Delay(NECESSARY_COOL_DOWN_MS).ConfigureAwait(false);
-            }
-            finally
-            {
-                lastCooldownCheck = SystemClock.Instance.GetCurrentInstant();
-                logger.LogDebug("Cooldown end at {Instant} ms", lastCooldownCheck.Value.ToUnixTimeMilliseconds());
-                _semaphore.Release();
+                catch (Exception exception)
+                {
+                    logger.LogError(exception, "Exception during cooldown logic");
+                    await Task.Delay(NECESSARY_COOL_DOWN_MS).ConfigureAwait(false);
+                }
+                finally
+                {
+                    lastCooldownCheck = SystemClock.Instance.GetCurrentInstant();
+                    logger.LogDebug("Cooldown end at {Instant} ms", lastCooldownCheck.Value.ToUnixTimeMilliseconds());
+                }
             }
         }
 
