@@ -97,14 +97,12 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
             }
         }
 
-        private readonly SemaphoreSlim semaphoreTryGetCityID = new(1, 1);
+        private readonly AsyncNonKeyedLocker semaphoreTryGetCityID = new(1);
 
         private async Task<(bool success, int cityID)> tryGetCityID(string cityName, int countryID)
         {
             // check-then-act has to be thread safe
-            await semaphoreTryGetCityID.WaitAsync().ConfigureAwait(false);
-
-            try
+            using (await semaphoreTryGetCityID.LockAsync().ConfigureAwait(false))
             {
                 // We only check if it is empty because a selection of countries missing is not expected.
                 if ((await faziletDBAccess.GetCitiesByCountryID(countryID).ConfigureAwait(false)).Count == 0)
@@ -116,10 +114,6 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
                     await faziletDBAccess.InsertCities(cities, countryID).ConfigureAwait(false);
                 }
             }
-            finally
-            {
-                semaphoreTryGetCityID.Release();
-            }
 
             if ((await faziletDBAccess.GetCitiesByCountryID(countryID).ConfigureAwait(false)).FirstOrDefault(x => x.Name == cityName)?.ID is int cityID)
                 return (true, cityID);
@@ -127,14 +121,12 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
                 return (false, -1);
         }
 
-        private SemaphoreSlim semaphoreTryGetCountryID = new SemaphoreSlim(1, 1);
+        private readonly AsyncNonKeyedLocker semaphoreTryGetCountryID = new(1);
 
         private async Task<(bool success, int countryID)> tryGetCountryID(string countryName)
         {
             // check-then-act has to be thread safe
-            await semaphoreTryGetCountryID.WaitAsync().ConfigureAwait(false);
-
-            try
+            using (await semaphoreTryGetCountryID.LockAsync().ConfigureAwait(false))
             {
                 // We only check if it is empty because a selection of countries missing is not expected.
                 if ((await faziletDBAccess.GetCountries().ConfigureAwait(false)).Count == 0)
@@ -145,10 +137,6 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
                     // save countries to db
                     await faziletDBAccess.InsertCountries(countries).ConfigureAwait(false);
                 }
-            }
-            finally
-            {
-                semaphoreTryGetCountryID.Release();
             }
 
             if ((await faziletDBAccess.GetCountries().ConfigureAwait(false)).FirstOrDefault(x => x.Name == countryName)?.ID is int countryID)
