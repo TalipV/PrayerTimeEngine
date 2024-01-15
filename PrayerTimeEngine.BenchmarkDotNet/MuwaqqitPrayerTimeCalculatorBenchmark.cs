@@ -7,7 +7,7 @@ using PrayerTimeEngine.Core.Data.EntityFramework;
 using PrayerTimeEngine.Core.Domain;
 using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Models;
 using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services;
-using PrayerTimeEngine.Core.Tests.Integration.MuwaqqitAPI;
+using PrayerTimeEngine.Core.Tests.Integration;
 using System.Data.Common;
 
 namespace PrayerTimeEngine.BenchmarkDotNet
@@ -18,7 +18,7 @@ namespace PrayerTimeEngine.BenchmarkDotNet
     {
         private static AppDbContext _appDbContext = null;
         private static MuwaqqitPrayerTimeCalculator _muwaqqitPrayerTimeCalculator = null;
-        private static List<GenericSettingConfiguration> _configs =
+        private static readonly List<GenericSettingConfiguration> _configs =
             new()
             {
                     new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.FajrStart, Degree = -12.0 },

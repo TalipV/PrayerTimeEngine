@@ -43,7 +43,10 @@ namespace PrayerTimeEngine.Services
 
         public override StartCommandResult OnStartCommand(Intent intent, StartCommandFlags flags, int startId)
         {
-            var initialNotification = GetNotificationBuilder("Loading...").Build();
+            var builder = GetNotificationBuilder();
+            builder.SetContentText("Loading...");
+
+            var initialNotification = builder.Build();
 
             if (OperatingSystem.IsAndroidVersionAtLeast(29))
                 StartForeground(notificationId, initialNotification, Android.Content.PM.ForegroundService.TypeDataSync);
@@ -55,29 +58,36 @@ namespace PrayerTimeEngine.Services
 
         private async Task UpdateNotification()
         {
-            var notificationBuilder = GetNotificationBuilder(await getRemainingTimeText());
+            var notificationBuilder = GetNotificationBuilder();
+            notificationBuilder.SetContentText(await getRemainingTimeText());
 
             var context = Android.App.Application.Context;
             var notificationManager = context.GetSystemService(NotificationService) as NotificationManager;
             notificationManager.Notify(notificationId, notificationBuilder.Build());
         }
 
-        private Notification.Builder GetNotificationBuilder(string remainingTimeText)
+        private Notification.Builder _notificationBuilder;
+
+        private Notification.Builder GetNotificationBuilder()
         {
-            string title = "PrayerTimeEngine";
+            if (_notificationBuilder == null)
+            {
+                string title = "PrayerTimeEngine";
 
-            var context = Android.App.Application.Context;
-            Intent intent = context.PackageManager.GetLaunchIntentForPackage(context.PackageName);
-            PendingIntent pendingIntent = PendingIntent.GetActivity(context, 0, intent, PendingIntentFlags.Immutable);
+                var context = Android.App.Application.Context;
+                Intent intent = context.PackageManager.GetLaunchIntentForPackage(context.PackageName);
+                PendingIntent pendingIntent = PendingIntent.GetActivity(context, 0, intent, PendingIntentFlags.Immutable);
 
-            var notificationBuilder = new Notification.Builder(context, CHANNEL_ID)
-                .SetContentTitle(title)
-                .SetContentText(remainingTimeText)
-                .SetContentIntent(pendingIntent)
-                .SetSmallIcon(_Microsoft.Android.Resource.Designer.ResourceConstant.Drawable.abc_text_select_handle_middle_mtrl)
-                .SetOngoing(true);
+                var notificationBuilder = new Notification.Builder(context, CHANNEL_ID)
+                    .SetContentTitle(title)
+                    .SetContentIntent(pendingIntent)
+                    .SetSmallIcon(_Microsoft.Android.Resource.Designer.ResourceConstant.Drawable.abc_text_select_handle_middle_mtrl)
+                    .SetOngoing(true);
 
-            return notificationBuilder;
+                _notificationBuilder = notificationBuilder;
+            }
+
+            return _notificationBuilder;
         }
 
         private LocalDate? _previousCalculationDate = null;
@@ -110,7 +120,7 @@ namespace PrayerTimeEngine.Services
             }
             
             ZonedDateTime? nextTime = null;
-            string returnText = "-";
+            string timeName = "-";
 
             foreach (PrayerTime prayerTime in prayerTimeBundle.AllPrayerTimes)
             {
@@ -122,7 +132,7 @@ namespace PrayerTimeEngine.Services
                     && (nextTime == null || prayerTime.End.Value.ToInstant() < nextTime.Value.ToInstant()))
                 {
                     nextTime = prayerTime.End;
-                    returnText = $"{(nextTime.Value - now).ToString("HH:mm:ss", null)} until {prayerTime.Name}-End ({nextTime.Value.ToString("HH:mm:ss", null)})";
+                    timeName = $"{prayerTime.Name}-End";
                 }
 
                 if (prayerTime.Start != null
@@ -130,14 +140,14 @@ namespace PrayerTimeEngine.Services
                     && (nextTime == null || prayerTime.Start.Value.ToInstant() < nextTime.Value.ToInstant()))
                 {
                     nextTime = prayerTime.Start;
-                    returnText = $"{(nextTime.Value - now).ToString("HH:mm:ss", null)} until {prayerTime.Name}-Start ({nextTime.Value.ToString("HH:mm:ss", null)})";
+                    timeName = $"{prayerTime.Name}-Start";
                 }
             }
 
             if (nextTime == null)
                 return "-";
 
-            return returnText;
+            return $"{(nextTime.Value - now).ToString("HH:mm:ss", null)} until {timeName} ({nextTime.Value.ToString("HH:mm:ss", null)})";
         }
     }
 }
