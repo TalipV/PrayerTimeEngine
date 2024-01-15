@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using FluentAssertions;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
@@ -42,8 +43,8 @@ namespace PrayerTimeEngine.Core.Tests.Unit
             GenericSettingConfiguration result = profileService.GetTimeConfig(profile, timeType);
 
             // ASSERT
-            Assert.IsNotNull(result);
-            Assert.That(result.TimeType, Is.EqualTo(ETimeType.FajrStart));
+            result.Should().NotBeNull();
+            result.TimeType.Should().Be(ETimeType.FajrStart);
         }
 
         [Test]
@@ -63,7 +64,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit
             GenericSettingConfiguration result = profileService.GetTimeConfig(profile, timeType);
 
             // ASSERT
-            Assert.IsNull(result);
+            result.Should().BeNull();
         }
 
         [Test]
@@ -81,8 +82,8 @@ namespace PrayerTimeEngine.Core.Tests.Unit
             MuwaqqitLocationData result = profileService.GetLocationConfig(profile, source) as MuwaqqitLocationData;
 
             // ASSERT
-            Assert.IsNotNull(result);
-            Assert.That(result.TimezoneName, Is.EqualTo("Europe/Vienna"));
+            result.Should().NotBeNull();
+            result.TimezoneName.Should().Be("Europe/Vienna");
         }
 
         [Test]
@@ -102,7 +103,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit
             BaseLocationData result = profileService.GetLocationConfig(profile, source);
 
             // ASSERT
-            Assert.IsNull(result);
+            result.Should().BeNull();
         }
 
         [Test]
@@ -139,15 +140,15 @@ namespace PrayerTimeEngine.Core.Tests.Unit
             await profileService.UpdateLocationConfig(profile, newLocationName, newLocationDataByCalculationSource.Select(x => (x.Key, x.Value)).ToList());
 
             // ASSERT
-            Assert.IsFalse(dbContext.ChangeTracker.HasChanges());
+            dbContext.ChangeTracker.HasChanges().Should().BeFalse();
 
-            Assert.That(profile.LocationName, Is.EqualTo(newLocationName));
+            profile.LocationName.Should().Be(newLocationName);
             foreach (var locationDataByCalculationSource in profile.LocationConfigs.ToDictionary(x => x.CalculationSource, x => x.LocationData))
             {
                 BaseLocationData newValue = newLocationDataByCalculationSource[locationDataByCalculationSource.Key];
                 BaseLocationData currentValue = locationDataByCalculationSource.Value;
 
-                Assert.That(currentValue, Is.EqualTo(newValue));
+                currentValue.Should().Be(newValue);
             }
         }
 
@@ -182,19 +183,21 @@ namespace PrayerTimeEngine.Core.Tests.Unit
             };
 
             // ACT
-            Assert.ThrowsAsync<Exception>(async () => await profileService.UpdateLocationConfig(profile, oldLocationName, newLocationDataByCalculationSource.Select(x => (x.Key, x.Value)).ToList()));
+            Func<Task> updateLocationConfigFunc = 
+                async () => await profileService.UpdateLocationConfig(profile, oldLocationName, newLocationDataByCalculationSource.Select(x => (x.Key, x.Value)).ToList());
 
             // ASSERT
-            Assert.IsFalse(dbContext.ChangeTracker.HasChanges());
+            await updateLocationConfigFunc.Should().ThrowAsync<Exception>();
+            dbContext.ChangeTracker.HasChanges().Should().BeFalse();
 
             // old values should still be in this profile instance
-            Assert.That(profile.LocationName, Is.EqualTo(oldLocationName));
+            profile.LocationName.Should().Be(oldLocationName);
             foreach (var locationDataByCalculationSource in profile.LocationConfigs.ToDictionary(x => x.CalculationSource, x => x.LocationData))
             {
                 BaseLocationData oldValue = oldLocationDataByCalculationSource[locationDataByCalculationSource.Key];
                 BaseLocationData currentValue = locationDataByCalculationSource.Value;
 
-                Assert.That(currentValue, Is.EqualTo(oldValue));
+                currentValue.Should().Be(oldValue);
             }
         }
 
@@ -226,10 +229,10 @@ namespace PrayerTimeEngine.Core.Tests.Unit
             await profileService.UpdateTimeConfig(profile, ETimeType.FajrStart, newSemerkandConfig);
 
             // ASSERT
-            Assert.IsFalse(dbContext.ChangeTracker.HasChanges());
+            dbContext.ChangeTracker.HasChanges().Should().BeFalse();
 
             var fajrStartConfig = profileService.GetTimeConfig(profile, ETimeType.FajrStart);
-            Assert.That(fajrStartConfig.Source, Is.EqualTo(ECalculationSource.Semerkand));
+            fajrStartConfig.Source.Should().Be(ECalculationSource.Semerkand);
         }
     }
 }
