@@ -8,17 +8,18 @@ using PrayerTimeEngine.Code.Presentation.View;
 using PrayerTimeEngine.Core.Common;
 using PrayerTimeEngine.Core.Data.EntityFramework;
 using PrayerTimeEngine.Core.Domain;
-using PrayerTimeEngine.Core.Domain.CalculationManager;
+using PrayerTimeEngine.Core.Domain.CalculationManagement;
+using PrayerTimeEngine.Core.Domain.Calculators;
 using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Interfaces;
 using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services;
 using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Interfaces;
 using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services;
 using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Interfaces;
 using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services;
-using PrayerTimeEngine.Core.Domain.Configuration.Interfaces;
-using PrayerTimeEngine.Core.Domain.Configuration.Services;
-using PrayerTimeEngine.Core.Domain.PlacesService.Interfaces;
-using PrayerTimeEngine.Core.Domain.PlacesService.Services;
+using PrayerTimeEngine.Core.Domain.PlaceManagement.Interfaces;
+using PrayerTimeEngine.Core.Domain.PlaceManagement.Services;
+using PrayerTimeEngine.Core.Domain.ProfileManagement.Interfaces;
+using PrayerTimeEngine.Core.Domain.ProfileManagement.Services;
 using PrayerTimeEngine.Presentation.Service.Navigation;
 using PrayerTimeEngine.Presentation.Service.SettingsContentPageFactory;
 using PrayerTimeEngine.Presentation.ViewModel;
@@ -154,7 +155,8 @@ public static class MauiProgram
         contextLifetime: ServiceLifetime.Transient,
         optionsLifetime: ServiceLifetime.Singleton);
 
-        serviceCollection.AddSingleton<IPrayerTimeCalculationManager, PrayerTimeCalculationManager>();
+        serviceCollection.AddSingleton<ICalculationManager, CalculationManager>();
+        serviceCollection.AddSingleton<IPrayerTimeServiceFactory, PrayerTimeServiceFactory>();
         serviceCollection.AddSingleton<TimeTypeAttributeService>();
 
         serviceCollection.AddSingleton<IPlaceService, PlaceService>(sp =>

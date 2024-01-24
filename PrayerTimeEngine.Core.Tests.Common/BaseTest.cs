@@ -8,51 +8,50 @@ using System.Data.Common;
 
 namespace PrayerTimeEngine.Core.Tests.Common
 {
-    public abstract class BaseTest
+    public abstract class BaseTest : IDisposable
     {
         public static readonly string TEST_DATA_FILE_PATH = @$"{Directory.GetCurrentDirectory()}\TestData";
 
+        private AppDbContext _testAppDbContext;
         private DbConnection _keepMemoryDbAliveDbConnection = null;
-        public ServiceProvider ServiceProvider { get; set; }
 
-        [SetUp]
-        public void SetUp()
+        protected ServiceProvider createServiceProvider(Action<ServiceCollection> configureServiceCollection)
         {
             var serviceCollection = new ServiceCollection();
-            addMockableDbInstanceToServiceCollection(serviceCollection);
-            ConfigureServiceProvider(serviceCollection);
-            ServiceProvider = serviceCollection.BuildServiceProvider();
+            configureServiceCollection(serviceCollection);
+            return serviceCollection.BuildServiceProvider();
+        }
 
-            var database = ServiceProvider.GetService<AppDbContext>().Database;
+        protected void SetUpTestDbContext(ServiceCollection serviceCollection)
+        {
+            _testAppDbContext = createTestAppDbContext();
+            var database = _testAppDbContext.Database;
             _keepMemoryDbAliveDbConnection = database.GetDbConnection();
             _keepMemoryDbAliveDbConnection.Open();
             database.EnsureCreated();
+            serviceCollection.AddSingleton(_testAppDbContext);
         }
 
-        protected virtual void ConfigureServiceProvider(ServiceCollection serviceCollection) { }
-
-        [TearDown]
-        public void TearDown()
-        {
-            _keepMemoryDbAliveDbConnection?.Dispose();
-            _keepMemoryDbAliveDbConnection = null;
-
-            ServiceProvider?.Dispose();
-            ServiceProvider = null;
-        }
-
-        private void addMockableDbInstanceToServiceCollection(ServiceCollection serviceCollection)
+        private AppDbContext createTestAppDbContext()
         {
             var dbOptions = new DbContextOptionsBuilder()
-                .UseSqlite("Data Source=:memory:")
-                //.LogTo(message => Debug.WriteLine(message), minimumLevel: LogLevel.Information)
+                .UseSqlite($"Data Source=:memory:")
                 .Options;
 
             var mockableDbContext = Substitute.ForPartsOf<AppDbContext>(dbOptions);
             var mockableDbContextDatabase = Substitute.ForPartsOf<DatabaseFacade>(mockableDbContext);
             mockableDbContext.Configure().Database.Returns(mockableDbContextDatabase);
 
-            serviceCollection.AddSingleton(mockableDbContext);
+            return mockableDbContext;
+        }
+
+        public void Dispose()
+        {
+            _keepMemoryDbAliveDbConnection?.Dispose();
+            _keepMemoryDbAliveDbConnection = null;
+
+            _testAppDbContext?.Dispose();
+            _testAppDbContext = null;
         }
     }
 }

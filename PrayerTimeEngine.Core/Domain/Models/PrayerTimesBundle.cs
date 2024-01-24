@@ -3,7 +3,7 @@ using PrayerTimeEngine.Core.Common.Enum;
 using PropertyChanged;
 using System.Text.Json.Serialization;
 
-namespace PrayerTimeEngine.Core.Domain.Model
+namespace PrayerTimeEngine.Core.Domain.Models
 {
     [AddINotifyPropertyChangedInterface]
     public class PrayerTimesBundle

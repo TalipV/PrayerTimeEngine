@@ -1,6 +1,6 @@
 ﻿using NodaTime;
 
-namespace PrayerTimeEngine.Core.Domain.Model
+namespace PrayerTimeEngine.Core.Domain.Models
 {
     public abstract class PrayerTime
     {

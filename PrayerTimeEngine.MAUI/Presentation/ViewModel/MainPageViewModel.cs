@@ -8,12 +8,13 @@ using NodaTime;
 using NodaTime.Extensions;
 using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Data.EntityFramework;
-using PrayerTimeEngine.Core.Domain.CalculationManager;
-using PrayerTimeEngine.Core.Domain.Configuration.Interfaces;
-using PrayerTimeEngine.Core.Domain.Configuration.Models;
-using PrayerTimeEngine.Core.Domain.Model;
-using PrayerTimeEngine.Core.Domain.PlacesService.Interfaces;
-using PrayerTimeEngine.Core.Domain.PlacesService.Models.Common;
+using PrayerTimeEngine.Core.Domain.CalculationManagement;
+using PrayerTimeEngine.Core.Domain.Calculators;
+using PrayerTimeEngine.Core.Domain.Models;
+using PrayerTimeEngine.Core.Domain.PlaceManagement.Interfaces;
+using PrayerTimeEngine.Core.Domain.PlaceManagement.Models.Common;
+using PrayerTimeEngine.Core.Domain.ProfileManagement.Interfaces;
+using PrayerTimeEngine.Core.Domain.ProfileManagement.Models;
 using PrayerTimeEngine.Presentation.Service.Navigation;
 using PrayerTimeEngine.Services;
 using PropertyChanged;
@@ -24,7 +25,8 @@ namespace PrayerTimeEngine.Presentation.ViewModel
 {
     [AddINotifyPropertyChangedInterface]
     public class MainPageViewModel(
-            IPrayerTimeCalculationManager prayerTimeCalculator,
+            ICalculationManager prayerTimeCalculator,
+            IPrayerTimeServiceFactory prayerTimeServiceFactory,
             IPlaceService placeService,
             IProfileService profileService,
             INavigationService navigationService,
@@ -187,8 +189,9 @@ namespace PrayerTimeEngine.Presentation.ViewModel
             {
                 IsLoadingPrayerTimes = true;
                 LocalDate today = DateTime.Now.ToLocalDateTime().Date;
+                DateTimeZone timeZoneInfo = DateTimeZoneProviders.Tzdb[TimeZoneInfo.Local.Id];
 
-                PrayerTimeBundle = await prayerTimeCalculator.CalculatePrayerTimesAsync(CurrentProfile, today);
+                PrayerTimeBundle = await prayerTimeCalculator.CalculatePrayerTimesAsync(CurrentProfile, today.AtStartOfDayInZone(timeZoneInfo));
 
                 OnAfterLoadingPrayerTimes_EventTrigger.Invoke();
             }
@@ -267,9 +270,8 @@ namespace PrayerTimeEngine.Presentation.ViewModel
             {
                 if (calculationSource == ECalculationSource.None)
                     continue;
-
                 BaseLocationData locationConfig =
-                    await prayerTimeCalculator
+                    await prayerTimeServiceFactory
                         .GetPrayerTimeCalculatorByCalculationSource(calculationSource)
                         .GetLocationInfo(completePlaceInfo);
 

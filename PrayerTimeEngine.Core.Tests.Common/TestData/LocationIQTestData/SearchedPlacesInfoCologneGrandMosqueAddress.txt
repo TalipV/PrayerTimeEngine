@@ -1,0 +1,62 @@
+[
+   {
+      "place_id":"322838467964",
+      "osm_id":"151467218",
+      "osm_type":"way",
+      "licence":"https:\/\/locationiq.com\/attribution",
+      "lat":"50.9457534",
+      "lon":"6.92839361",
+      "boundingbox":[
+         "50.9453165",
+         "50.9461423",
+         "6.9276633",
+         "6.9289357"
+      ],
+      "class":"amenity",
+      "type":"place_of_worship",
+      "display_name":"DITIB-Zentralmoschee, 160, Venloer Stra\u00dfe, Ehrenfeld, Cologne, North Rhine-Westphalia, 50823, Germany",
+      "display_place":"DITIB-Zentralmoschee",
+      "display_address":"160, Venloer Stra\u00dfe, Ehrenfeld, Cologne, North Rhine-Westphalia, 50823, Germany",
+      "address":{
+         "name":"DITIB-Zentralmoschee",
+         "house_number":"160",
+         "road":"Venloer Stra\u00dfe",
+         "suburb":"Ehrenfeld",
+         "city":"Cologne",
+         "state":"North Rhine-Westphalia",
+         "postcode":"50823",
+         "country":"Germany",
+         "country_code":"de"
+      }
+   },
+   {
+      "place_id":"323067974801",
+      "osm_id":"2603567246",
+      "osm_type":"node",
+      "licence":"https:\/\/locationiq.com\/attribution",
+      "lat":"50.9460574",
+      "lon":"6.9281253",
+      "boundingbox":[
+         "50.9460074",
+         "50.9461074",
+         "6.9280753",
+         "6.9281753"
+      ],
+      "class":"amenity",
+      "type":"parking_entrance",
+      "display_name":"160, Venloer Stra\u00dfe, Ehrenfeld, Cologne, North Rhine-Westphalia, 50823, Germany",
+      "display_place":"Venloer Stra\u00dfe",
+      "display_address":"160, Ehrenfeld, Cologne, North Rhine-Westphalia, 50823, Germany",
+      "address":{
+         "house_number":"160",
+         "road":"Venloer Stra\u00dfe",
+         "suburb":"Ehrenfeld",
+         "city":"Cologne",
+         "state":"North Rhine-Westphalia",
+         "postcode":"50823",
+         "country":"Germany",
+         "name":"Venloer Stra\u00dfe",
+         "country_code":"de"
+      }
+   }
+]

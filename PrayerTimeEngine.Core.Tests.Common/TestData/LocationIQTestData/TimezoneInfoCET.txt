@@ -1,0 +1,7 @@
+{
+    "timezone": {
+        "short_name": "CET",
+        "name": "Central European Time",
+        "offset_sec": 3600
+    }
+}
