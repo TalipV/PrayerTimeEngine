@@ -48,7 +48,7 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework
                 .HasForeignKey(x => x.CountryID);
         }
 
-        private void configureNodaTimeProperties(ModelBuilder modelBuilder, Type type)
+        private static void configureNodaTimeProperties(ModelBuilder modelBuilder, Type type)
         {
             foreach (PropertyInfo item in type.GetProperties())
             {
