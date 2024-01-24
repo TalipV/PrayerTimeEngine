@@ -79,7 +79,7 @@ public static class MauiProgram
 
         MethodTimeLogger.logger = mauiApp.Services.GetService<ILogger<App>>();
 
-        // slightly slowls down startup
+        // slightly slows down startup
         // DevExpress.Maui.Editors.Initializer.Init();
         // DevExpress.Maui.Controls.Initializer.Init();
 
@@ -145,8 +145,7 @@ public static class MauiProgram
 
         serviceCollection.AddDbContext<AppDbContext>(options =>
         {
-            string _databasePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "PrayerTimeEngineDB_ET.db");
-            options.UseSqlite($"Data Source={_databasePath}", x => x.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery));
+            options.UseSqlite($"Data Source={AppConfig.DATABASE_PATH}", x => x.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery));
             options.UseModel(AppDbContextModel.Instance);
 
             //options.ConfigureWarnings(x => x.Throw(RelationalEventId.MultipleCollectionIncludeWarning));

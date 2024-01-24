@@ -22,8 +22,10 @@ public class MainActivity : MauiAppCompatActivity
         string name = "Prayer Time Notifications";
         string description = "Updates and reminders for upcoming prayer times.";
 
-        var channel = new NotificationChannel(PrayerTimeSummaryNotification.CHANNEL_ID, name, NotificationImportance.Default);
-        channel.Description = description;
+        var channel = new NotificationChannel(PrayerTimeSummaryNotification.CHANNEL_ID, name, NotificationImportance.Default)
+        {
+            Description = description
+        };
         channel.SetSound(null, null);
         channel.EnableVibration(false);
 

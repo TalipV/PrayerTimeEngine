@@ -18,12 +18,12 @@ namespace PrayerTimeEngine.Core.Domain
         public TimeTypeAttributeService()
         {
             TimeTypeCompatibleSources = new Dictionary<ETimeType, IReadOnlyList<ECalculationSource>>();
-            DegreeTypes = new List<ETimeType>();
-            SimpleTypes = new List<ETimeType>();
-            ComplexTypes = new List<ETimeType>();
-            NotHideableTypes = new List<ETimeType>();
-            ConfigurableSimpleTypes = new List<ETimeType>();
-            ConfigurableTypes = new List<ETimeType>();
+            DegreeTypes = [];
+            SimpleTypes = [];
+            ComplexTypes = [];
+            NotHideableTypes = [];
+            ConfigurableSimpleTypes = [];
+            ConfigurableTypes = [];
             PrayerTypeToTimeTypes = new Dictionary<EPrayerType, List<ETimeType>>();
             Initialize();
         }
@@ -77,12 +77,13 @@ namespace PrayerTimeEngine.Core.Domain
 
                 foreach (var attr in timeTypeForPrayerTypeAttrs)
                 {
-                    if (!PrayerTypeToTimeTypes.ContainsKey(attr.PrayerTime))
+                    if (!PrayerTypeToTimeTypes.TryGetValue(attr.PrayerTime, out List<ETimeType> value))
                     {
-                        PrayerTypeToTimeTypes[attr.PrayerTime] = new List<ETimeType>();
+                        value = [];
+                        PrayerTypeToTimeTypes[attr.PrayerTime] = value;
                     }
 
-                    PrayerTypeToTimeTypes[attr.PrayerTime].Add(timeType);
+                    value.Add(timeType);
                 }
             }
         }
