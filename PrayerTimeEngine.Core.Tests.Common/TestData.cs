@@ -1,18 +1,17 @@
 ﻿using NodaTime;
 using NodaTime.TimeZones;
 using PrayerTimeEngine.Core.Common.Enum;
-using PrayerTimeEngine.Core.Domain;
 using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Models;
 using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Models;
 using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Models;
-using PrayerTimeEngine.Core.Domain.Configuration.Models;
-using PrayerTimeEngine.Core.Domain.Model;
+using PrayerTimeEngine.Core.Domain.Models;
+using PrayerTimeEngine.Core.Domain.ProfileManagement.Models;
 
 namespace PrayerTimeEngine.Core.Tests.Common
 {
     public static class TestData
     {
-        public static Profile CreateNewTestProfile()
+        public static Profile CreateNewCompleteTestProfile()
         {
             Profile profile = new Profile
             {

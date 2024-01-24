@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using PrayerTimeEngine.Core.Domain;
-using PrayerTimeEngine.Core.Domain.Configuration.Models;
+using PrayerTimeEngine.Core.Domain.Models;
+using PrayerTimeEngine.Core.Domain.ProfileManagement.Models;
 using System.Text.Json;
 
 namespace PrayerTimeEngine.Core.Data.EntityFramework.Configurations

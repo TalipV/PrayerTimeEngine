@@ -2,7 +2,7 @@
 using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Models;
 
-namespace PrayerTimeEngine.Core.Domain
+namespace PrayerTimeEngine.Core.Domain.Models
 {
     [JsonDerivedType(typeof(GenericSettingConfiguration), typeDiscriminator: "GenericConfig")]
     [JsonDerivedType(typeof(MuwaqqitDegreeCalculationConfiguration), typeDiscriminator: "MuwaqqitDegreeConfig")]

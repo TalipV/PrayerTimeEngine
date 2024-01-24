@@ -1,5 +1,5 @@
 ﻿using NodaTime;
-using PrayerTimeEngine.Core.Domain.Model;
+using PrayerTimeEngine.Core.Domain.Models;
 
 namespace PrayerTimeEngine.Presentation.GraphicsView
 {

@@ -1,13 +1,11 @@
 ﻿using BenchmarkDotNet.Attributes;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using NodaTime;
 using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Data.EntityFramework;
-using PrayerTimeEngine.Core.Domain;
 using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Models;
 using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services;
-using PrayerTimeEngine.Core.Tests.Integration;
+using PrayerTimeEngine.Core.Domain.Models;
 using System.Data.Common;
 
 namespace PrayerTimeEngine.BenchmarkDotNet
@@ -49,10 +47,10 @@ namespace PrayerTimeEngine.BenchmarkDotNet
         [GlobalSetup]
         public void Setup()
         {
-            var stuff = new MuwaqqitPrayerTimeCalculatorTests();
-            stuff.SetUp();
-            _appDbContext = stuff.ServiceProvider.GetService<AppDbContext>();
-            _muwaqqitPrayerTimeCalculator = stuff.ServiceProvider.GetService<MuwaqqitPrayerTimeCalculator>();
+            //var stuff = new MuwaqqitPrayerTimeCalculatorTests();
+            //stuff.SetUp();
+            //_appDbContext = stuff.ServiceProvider.GetService<AppDbContext>();
+            //_muwaqqitPrayerTimeCalculator = stuff.ServiceProvider.GetService<MuwaqqitPrayerTimeCalculator>();
         }
 
         private static DbConnection _sqlConnection;
@@ -79,7 +77,7 @@ namespace PrayerTimeEngine.BenchmarkDotNet
             for(int i = 0; i < 10; i++)
             {
                 var result = _muwaqqitPrayerTimeCalculator.GetPrayerTimesAsync(
-                    date: localDate,
+                    localDate,
                     locationData: _locationData,
                     configurations: _configs);
             }

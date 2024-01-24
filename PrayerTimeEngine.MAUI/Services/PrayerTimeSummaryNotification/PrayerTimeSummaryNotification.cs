@@ -4,10 +4,10 @@ using Android.OS;
 using NodaTime;
 using NodaTime.Extensions;
 using NodaTime.TimeZones;
-using PrayerTimeEngine.Core.Domain.CalculationManager;
-using PrayerTimeEngine.Core.Domain.Configuration.Interfaces;
-using PrayerTimeEngine.Core.Domain.Configuration.Models;
-using PrayerTimeEngine.Core.Domain.Model;
+using PrayerTimeEngine.Core.Domain.CalculationManagement;
+using PrayerTimeEngine.Core.Domain.Models;
+using PrayerTimeEngine.Core.Domain.ProfileManagement.Interfaces;
+using PrayerTimeEngine.Core.Domain.ProfileManagement.Models;
 
 namespace PrayerTimeEngine.Services
 {
@@ -21,12 +21,12 @@ namespace PrayerTimeEngine.Services
         private readonly System.Timers.Timer updateTimer;
 
         private readonly IProfileService _profileService;
-        private readonly IPrayerTimeCalculationManager _prayerTimeCalculationManager;
+        private readonly ICalculationManager _prayerTimeCalculationManager;
 
         public PrayerTimeSummaryNotification()
         {
             _profileService = MauiProgram.ServiceProvider.GetService<IProfileService>();
-            _prayerTimeCalculationManager = MauiProgram.ServiceProvider.GetService<IPrayerTimeCalculationManager>();
+            _prayerTimeCalculationManager = MauiProgram.ServiceProvider.GetService<ICalculationManager>();
 
             updateTimer = new System.Timers.Timer(TIMER_FREQUENCY_MS);
             updateTimer.Elapsed += (sender, e) => Task.Run(UpdateNotification);
@@ -109,7 +109,7 @@ namespace PrayerTimeEngine.Services
                 || _previousCalculationDate != now.Date || !_profileService.EqualsFullProfile(_previousProfile, profile))
             {
                 // recalculate
-                prayerTimeBundle = await _prayerTimeCalculationManager.CalculatePrayerTimesAsync(profile, now.Date);
+                prayerTimeBundle = await _prayerTimeCalculationManager.CalculatePrayerTimesAsync(profile, now);
             }
             else
             {

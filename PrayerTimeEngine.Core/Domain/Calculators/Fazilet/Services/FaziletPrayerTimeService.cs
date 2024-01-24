@@ -1,13 +1,12 @@
 ﻿using Microsoft.Extensions.Logging;
-using PrayerTimeEngine.Core.Domain.Model;
 using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Interfaces;
 using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Models;
 using PrayerTimeEngine.Core.Common.Enum;
-using PrayerTimeEngine.Core.Domain.PlacesService.Interfaces;
 using NodaTime;
-using PrayerTimeEngine.Core.Domain.PlacesService.Models.Common;
 using AsyncKeyedLock;
 using PrayerTimeEngine.Core.Domain.Models;
+using PrayerTimeEngine.Core.Domain.PlaceManagement.Models.Common;
+using PrayerTimeEngine.Core.Domain.PlaceManagement.Interfaces;
 
 namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
 {

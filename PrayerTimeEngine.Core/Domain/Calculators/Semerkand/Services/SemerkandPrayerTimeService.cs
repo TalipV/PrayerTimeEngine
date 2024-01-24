@@ -4,10 +4,9 @@ using NodaTime;
 using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Interfaces;
 using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Models;
-using PrayerTimeEngine.Core.Domain.Model;
 using PrayerTimeEngine.Core.Domain.Models;
-using PrayerTimeEngine.Core.Domain.PlacesService.Interfaces;
-using PrayerTimeEngine.Core.Domain.PlacesService.Models.Common;
+using PrayerTimeEngine.Core.Domain.PlaceManagement.Interfaces;
+using PrayerTimeEngine.Core.Domain.PlaceManagement.Models.Common;
 
 namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
 {

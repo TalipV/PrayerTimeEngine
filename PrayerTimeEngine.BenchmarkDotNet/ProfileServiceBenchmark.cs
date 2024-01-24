@@ -2,8 +2,8 @@
 using Microsoft.EntityFrameworkCore;
 using PrayerTimeEngine.Core.Data.EntityFramework;
 using System.Data.Common;
-using PrayerTimeEngine.Core.Domain.Configuration.Services;
 using PrayerTimeEngine.Core.Domain;
+using PrayerTimeEngine.Core.Domain.ProfileManagement.Services;
 
 namespace PrayerTimeEngine.BenchmarkDotNet
 {

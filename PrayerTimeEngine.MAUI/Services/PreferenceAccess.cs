@@ -1,4 +1,4 @@
-﻿using PrayerTimeEngine.Core.Data.Preferences;
+﻿using PrayerTimeEngine.Core.Data.PreferenceManager;
 
 namespace PrayerTimeEngine.Services
 {

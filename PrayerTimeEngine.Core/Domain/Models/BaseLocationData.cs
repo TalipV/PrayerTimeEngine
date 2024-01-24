@@ -4,7 +4,7 @@ using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Models;
 using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Models;
 using System.Text.Json.Serialization;
 
-namespace PrayerTimeEngine.Core.Domain.Model
+namespace PrayerTimeEngine.Core.Domain.Models
 {
     [JsonDerivedType(typeof(MuwaqqitLocationData), typeDiscriminator: "MuwaqqitLocationData")]
     [JsonDerivedType(typeof(SemerkandLocationData), typeDiscriminator: "SemerkandLocationData")]

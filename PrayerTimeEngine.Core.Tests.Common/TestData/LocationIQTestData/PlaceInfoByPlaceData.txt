@@ -1,0 +1,27 @@
+{
+   "place_id":"153657756",
+   "licence":"https:\/\/locationiq.com\/attribution",
+   "osm_type":"way",
+   "osm_id":"151467218",
+   "lat":"50.9457534",
+   "lon":"6.928393614248124",
+   "display_name":"DITIB-Zentralmoschee, 160, Venloer Stra\u00dfe, Ehrenfeld, K\u00f6ln, Nordrhein-Westfalen, 50823, Deutschland",
+   "address":{
+      "place_of_worship":"DITIB-Zentralmoschee",
+      "house_number":"160",
+      "road":"Venloer Stra\u00dfe",
+      "suburb":"Ehrenfeld",
+      "city_district":"Ehrenfeld",
+      "city":"K\u00f6ln",
+      "state":"Nordrhein-Westfalen",
+      "postcode":"50823",
+      "country":"Deutschland",
+      "country_code":"de"
+   },
+   "boundingbox":[
+      "50.9453165",
+      "50.9461423",
+      "6.9276633",
+      "6.9289357"
+   ]
+}

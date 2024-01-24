@@ -12,8 +12,9 @@ using Microsoft.EntityFrameworkCore.Storage.Json;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Data.EntityFramework.Configurations;
-using PrayerTimeEngine.Core.Domain;
-using PrayerTimeEngine.Core.Domain.Configuration.Models;
+using PrayerTimeEngine.Core.Domain.Models;
+using PrayerTimeEngine.Core.Domain.ProfileManagement.Models;
+
 
 #pragma warning disable 219, 612, 618
 #nullable disable
