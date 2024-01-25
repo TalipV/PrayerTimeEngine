@@ -41,7 +41,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services
             {
                 double fajrDegree, ishaDegree, ishtibaqDegree, asrKarahaDegree;
                 List<ETimeType> consumedTimeTypes =
-                    ConsumeDegreeValues(
+                    consumeDegreeValues(
                         toBeConsumedConfigurations,
                         out fajrDegree,
                         out ishaDegree,
@@ -49,7 +49,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services
                         out asrKarahaDegree);
 
                 MuwaqqitPrayerTimes muwaqqitPrayerTimes = await getPrayerTimesInternal(date, longitude, latitude, fajrDegree, ishaDegree, ishtibaqDegree, asrKarahaDegree, timezone).ConfigureAwait(false);
-                calculatedTimes[muwaqqitPrayerTimes] = consumedTimeTypes.ToList();
+                calculatedTimes[muwaqqitPrayerTimes] = consumedTimeTypes;
             }
 
             return calculatedTimes
@@ -57,7 +57,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services
                 .ToLookup(k => k.Key, k => k.Value);
         }
 
-        private List<ETimeType> ConsumeDegreeValues(
+        private List<ETimeType> consumeDegreeValues(
             List<GenericSettingConfiguration> muwaqqitConfigs,
             out double fajrDegree,
             out double ishaDegree,
