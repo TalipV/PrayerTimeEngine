@@ -15,6 +15,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators
                 ECalculationSource.Fazilet => serviceProvider.GetRequiredService<FaziletPrayerTimeCalculator>(),
                 ECalculationSource.Semerkand => serviceProvider.GetRequiredService<SemerkandPrayerTimeCalculator>(),
                 ECalculationSource.Muwaqqit => serviceProvider.GetRequiredService<MuwaqqitPrayerTimeCalculator>(),
+                ECalculationSource.None => throw new ArgumentException(message: $"'{nameof(ECalculationSource.None)}' is not a valid calculation source", paramName: nameof(source)),
                 _ => throw new NotImplementedException($"No calculator service implemented for source: {source}"),
             };
         }
