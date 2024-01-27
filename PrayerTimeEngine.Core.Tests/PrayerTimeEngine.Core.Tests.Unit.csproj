@@ -29,8 +29,4 @@
     <ProjectReference Include="..\PrayerTimeEngine.Core\PrayerTimeEngine.Core.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Domain\Calculators\" />
-  </ItemGroup>
-
 </Project>
