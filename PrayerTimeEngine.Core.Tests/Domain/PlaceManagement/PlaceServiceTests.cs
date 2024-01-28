@@ -29,7 +29,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.PlaceManagement
             // ARRANGE
             _mockHttpMessageHandler.HandleRequestFunc = (request) =>
             {
-                string searchedPlacesJsonTxtPath = $@"{TEST_DATA_FILE_PATH}\LocationIQTestData\SearchedPlacesInfoCologneGrandMosqueAddress.txt";
+                string searchedPlacesJsonTxtPath = Path.Combine(TEST_DATA_FILE_PATH, "LocationIQTestData", "SearchedPlacesInfoCologneGrandMosqueAddress.txt");
                 return new HttpResponseMessage(HttpStatusCode.OK)
                 {
                     Content = new StringContent(File.ReadAllText(searchedPlacesJsonTxtPath))
@@ -73,7 +73,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.PlaceManagement
             // ARRANGE
             _mockHttpMessageHandler.HandleRequestFunc = (request) =>
             {
-                string placeInfoByPlaceDataJsonPath = $@"{TEST_DATA_FILE_PATH}\LocationIQTestData\PlaceInfoByPlaceData.txt";
+                string placeInfoByPlaceDataJsonPath = Path.Combine(TEST_DATA_FILE_PATH, "LocationIQTestData", "PlaceInfoByPlaceData.txt");
                 return new HttpResponseMessage(HttpStatusCode.OK)
                 {
                     Content = new StringContent(File.ReadAllText(placeInfoByPlaceDataJsonPath))
@@ -121,7 +121,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.PlaceManagement
             // ARRANGE
             _mockHttpMessageHandler.HandleRequestFunc = (request) =>
             {
-                string timezoneJsonTxtPath = $@"{TEST_DATA_FILE_PATH}\LocationIQTestData\TimezoneInfoCET.txt";
+                string timezoneJsonTxtPath = Path.Combine(TEST_DATA_FILE_PATH, "LocationIQTestData", "TimezoneInfoCET.txt");
                 return new HttpResponseMessage(HttpStatusCode.OK)
                 {
                     Content = new StringContent(File.ReadAllText(timezoneJsonTxtPath))

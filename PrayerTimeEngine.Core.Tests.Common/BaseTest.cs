@@ -10,7 +10,7 @@ namespace PrayerTimeEngine.Core.Tests.Common
 {
     public abstract class BaseTest : IDisposable
     {
-        public static readonly string TEST_DATA_FILE_PATH = @$"{Directory.GetCurrentDirectory()}\TestData";
+        public static readonly string TEST_DATA_FILE_PATH = Path.Combine(Directory.GetCurrentDirectory(), "TestData");
 
         private AppDbContext _testAppDbContext;
         private DbConnection _keepMemoryDbAliveDbConnection = null;
