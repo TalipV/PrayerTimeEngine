@@ -19,8 +19,9 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
         public async Task<List<SemerkandCity>> GetCitiesByCountryID(int countryId)
         {
             return await dbContext
-                .SemerkandCities.AsNoTracking()
+                .SemerkandCities.AsNoTrackingWithIdentityResolution()
                 .Where(x => x.CountryID == countryId)
+                .Include(x => x.Country).ThenInclude(x => x.Cities)
                 .ToListAsync().ConfigureAwait(false);
         }
         public async Task<SemerkandPrayerTimes> GetTimesByDateAndCityID(LocalDate date, int cityId)

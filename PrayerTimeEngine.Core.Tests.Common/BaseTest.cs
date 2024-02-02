@@ -22,14 +22,20 @@ namespace PrayerTimeEngine.Core.Tests.Common
             return serviceCollection.BuildServiceProvider();
         }
 
-        protected void SetUpTestDbContext(ServiceCollection serviceCollection)
+        protected AppDbContext GetHandledDbContext()
         {
             _testAppDbContext = createTestAppDbContext();
             var database = _testAppDbContext.Database;
             _keepMemoryDbAliveDbConnection = database.GetDbConnection();
             _keepMemoryDbAliveDbConnection.Open();
             database.EnsureCreated();
-            serviceCollection.AddSingleton(_testAppDbContext);
+            
+            return _testAppDbContext;
+        }
+        
+        protected void SetUpTestDbContext(ServiceCollection serviceCollection)
+        {
+            serviceCollection.AddSingleton(GetHandledDbContext());
         }
 
         private AppDbContext createTestAppDbContext()
