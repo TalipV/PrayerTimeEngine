@@ -1,5 +1,6 @@
 ﻿using NodaTime;
 using PrayerTimeEngine.Core.Domain.Models;
+using PrayerTimeEngine.Services.SystemInfoService;
 
 namespace PrayerTimeEngine.Presentation.GraphicsView
 {
@@ -15,7 +16,7 @@ namespace PrayerTimeEngine.Presentation.GraphicsView
         private Color PrayerSubTimeBorderColor = Colors.BlueViolet;
         private Color PrayerSubTimeTextColor = Colors.Black;
 
-        private DateTimeZone _timeZone { get; } = DateTimeZoneProviders.Tzdb[TimeZoneInfo.Local.Id];
+        private DateTimeZone _timeZone { get; } = MauiProgram.ServiceProvider.GetService<ISystemInfoService>().GetSystemTimeZone();
 
         public PrayerTime DisplayPrayerTime { get; set; }
 
@@ -71,7 +72,7 @@ namespace PrayerTimeEngine.Presentation.GraphicsView
 
         private void drawCurrentTimeIndicator(ICanvas canvas, RectF baseRectangle)
         {
-            Instant currentInstant = SystemClock.Instance.GetCurrentInstant();
+            Instant currentInstant = MauiProgram.ServiceProvider.GetService<ISystemInfoService>().GetCurrentInstant();
 
             if (currentInstant < DisplayPrayerTime.Start.Value.ToInstant() || currentInstant > DisplayPrayerTime.End.Value.ToInstant())
             {

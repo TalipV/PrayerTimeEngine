@@ -2,12 +2,11 @@
 using Android.Content;
 using Android.OS;
 using NodaTime;
-using NodaTime.Extensions;
-using NodaTime.TimeZones;
 using PrayerTimeEngine.Core.Domain.CalculationManagement;
 using PrayerTimeEngine.Core.Domain.Models;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Interfaces;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Models;
+using PrayerTimeEngine.Services.SystemInfoService;
 
 namespace PrayerTimeEngine.Services
 {
@@ -98,9 +97,9 @@ namespace PrayerTimeEngine.Services
         {
             // potential for performance improvement
 
-            var now = DateTime.Now
-                .ToLocalDateTime()
-                .InZone(DateTimeZoneProviders.Tzdb[TimeZoneInfo.Local.Id], Resolvers.StrictResolver);
+            ZonedDateTime now = 
+                MauiProgram.ServiceProvider.GetService<ISystemInfoService>()
+                    .GetCurrentZonedDateTime();
 
             Profile profile = (await _profileService.GetProfiles()).First();
             PrayerTimesBundle prayerTimeBundle;
