@@ -135,9 +135,9 @@
 	</ItemGroup>
 
 	<ItemGroup Condition="'$(TargetFramework)' == 'net8.0-android'">
-    <PackageReference Include="DevExpress.Maui.Controls" Version="23.2.3">
+    <PackageReference Include="DevExpress.Maui.Controls" Version="23.2.4">
     </PackageReference>
-    <PackageReference Include="DevExpress.Maui.Editors" Version="23.2.3">
+    <PackageReference Include="DevExpress.Maui.Editors" Version="23.2.4">
     </PackageReference>
 	</ItemGroup>
 
