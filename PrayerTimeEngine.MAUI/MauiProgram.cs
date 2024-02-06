@@ -25,6 +25,7 @@ using PrayerTimeEngine.Presentation.Service.SettingsContentPageFactory;
 using PrayerTimeEngine.Presentation.ViewModel;
 using PrayerTimeEngine.Presentation.ViewModel.Custom;
 using PrayerTimeEngine.Services;
+using PrayerTimeEngine.Services.SystemInfoService;
 using PrayerTimeEngine.Views;
 
 namespace PrayerTimeEngine;
@@ -155,6 +156,7 @@ public static class MauiProgram
         contextLifetime: ServiceLifetime.Transient,
         optionsLifetime: ServiceLifetime.Singleton);
 
+        serviceCollection.AddSingleton<ISystemInfoService, SystemInfoService>();
         serviceCollection.AddSingleton<ICalculationManager, CalculationManager>();
         serviceCollection.AddSingleton<IPrayerTimeServiceFactory, PrayerTimeServiceFactory>();
         serviceCollection.AddSingleton<TimeTypeAttributeService>();

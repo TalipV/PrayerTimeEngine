@@ -57,12 +57,11 @@ namespace PrayerTimeEngine
 
         private void AsyncItemsSourceProvider_ItemsRequested(object sender, ItemsRequestEventArgs e)
         {
-            e.Request = 
-                () => {
-                    var placeSearchTask = Task.Run(async () => await this._viewModel.PerformPlaceSearch(e.Text));
-                    placeSearchTask.Wait();
-                    return placeSearchTask.Result;
-                };
+            // Task<IEnumerable> is required for the RequestAsync function but my method returns a Task<List<T>>
+            // Therefore we map the resulting List<T> in the task's continuation to IEnumerable
+            e.RequestAsync =
+                () => this._viewModel.PerformPlaceSearch(e.Text)
+                    .ContinueWith(task => (System.Collections.IEnumerable)task.Result);
         }
 
         private void setCustomSizes()

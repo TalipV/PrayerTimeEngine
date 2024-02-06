@@ -5,7 +5,6 @@ using MetroLog.Maui;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using NodaTime;
-using NodaTime.Extensions;
 using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Data.EntityFramework;
 using PrayerTimeEngine.Core.Domain.CalculationManagement;
@@ -17,14 +16,15 @@ using PrayerTimeEngine.Core.Domain.ProfileManagement.Interfaces;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Models;
 using PrayerTimeEngine.Presentation.Service.Navigation;
 using PrayerTimeEngine.Services;
+using PrayerTimeEngine.Services.SystemInfoService;
 using PropertyChanged;
-using System.Globalization;
 using System.Windows.Input;
 
 namespace PrayerTimeEngine.Presentation.ViewModel
 {
     [AddINotifyPropertyChangedInterface]
     public class MainPageViewModel(
+            ISystemInfoService _systemInfoService,
             ICalculationManager prayerTimeCalculator,
             IPrayerTimeServiceFactory prayerTimeServiceFactory,
             IPlaceService placeService,
@@ -36,6 +36,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
         ) : LogController
     {
         #region properties
+
         public Profile CurrentProfile { get; set; }
         public PrayerTimesBundle PrayerTimeBundle { get; private set; }
 
@@ -66,7 +67,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
         {
             try
             {
-                string languageCode = CultureInfo.CurrentCulture.TwoLetterISOLanguageName;
+                string languageCode = _systemInfoService.GetSystemCulture().TwoLetterISOLanguageName;
                 return await placeService.SearchPlacesAsync(searchText, languageCode);
             }
             catch (Exception exception)
@@ -188,10 +189,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
             try
             {
                 IsLoadingPrayerTimes = true;
-                LocalDate today = DateTime.Now.ToLocalDateTime().Date;
-                DateTimeZone timeZoneInfo = DateTimeZoneProviders.Tzdb[TimeZoneInfo.Local.Id];
-
-                PrayerTimeBundle = await prayerTimeCalculator.CalculatePrayerTimesAsync(CurrentProfile, today.AtStartOfDayInZone(timeZoneInfo));
+                PrayerTimeBundle = await prayerTimeCalculator.CalculatePrayerTimesAsync(CurrentProfile, _systemInfoService.GetCurrentZonedDateTime());
 
                 OnAfterLoadingPrayerTimes_EventTrigger.Invoke();
             }
@@ -270,6 +268,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
             {
                 if (calculationSource == ECalculationSource.None)
                     continue;
+
                 BaseLocationData locationConfig =
                     await prayerTimeServiceFactory
                         .GetPrayerTimeCalculatorByCalculationSource(calculationSource)
@@ -289,7 +288,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
                 return null;
             }
 
-            Instant currentInstant = SystemClock.Instance.GetCurrentInstant();
+            Instant currentInstant = _systemInfoService.GetCurrentInstant();
 
             return PrayerTimeBundle.AllPrayerTimes.FirstOrDefault(x => x.Start.Value.ToInstant() <= currentInstant && currentInstant <= x.End.Value.ToInstant())
                 ?? PrayerTimeBundle.AllPrayerTimes.OrderBy(x => x.Start.Value.ToInstant()).FirstOrDefault(x => x.Start.Value.ToInstant() > currentInstant);
