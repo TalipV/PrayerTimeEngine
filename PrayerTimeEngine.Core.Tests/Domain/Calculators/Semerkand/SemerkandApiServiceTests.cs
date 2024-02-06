@@ -1,14 +1,6 @@
-﻿using Microsoft.Extensions.Logging;
-using NSubstitute;
-using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services;
-using PrayerTimeEngine.Core.Domain.PlaceManagement.Services;
+﻿using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services;
 using PrayerTimeEngine.Core.Tests.Common;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 using FluentAssertions;
 using NodaTime;
 
