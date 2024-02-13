@@ -603,11 +603,11 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework
             RelationalModel.CreateColumnMapping(nextFajrColumn1, semerkandPrayerTimes.FindProperty("NextFajr")!, semerkandPrayerTimesTableMapping);
             RelationalModel.CreateColumnMapping(shuruqColumn1, semerkandPrayerTimes.FindProperty("Shuruq")!, semerkandPrayerTimesTableMapping);
 
-            var profile = FindEntityType("PrayerTimeEngine.Core.Domain.Configuration.Models.Profile")!;
+            var profile = FindEntityType("PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Profile")!;
 
             var defaultTableMappings6 = new List<TableMappingBase<ColumnMappingBase>>();
             profile.SetRuntimeAnnotation("Relational:DefaultMappings", defaultTableMappings6);
-            var prayerTimeEngineCoreDomainConfigurationModelsProfileTableBase = new TableBase("PrayerTimeEngine.Core.Domain.Configuration.Models.Profile", null, relationalModel);
+            var prayerTimeEngineCoreDomainConfigurationModelsProfileTableBase = new TableBase("PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Profile", null, relationalModel);
             var iDColumnBase6 = new ColumnBase<ColumnMappingBase>("ID", "INTEGER", prayerTimeEngineCoreDomainConfigurationModelsProfileTableBase);
             prayerTimeEngineCoreDomainConfigurationModelsProfileTableBase.Columns.Add("ID", iDColumnBase6);
             var locationNameColumnBase = new ColumnBase<ColumnMappingBase>("LocationName", "TEXT", prayerTimeEngineCoreDomainConfigurationModelsProfileTableBase)
@@ -622,7 +622,7 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework
             prayerTimeEngineCoreDomainConfigurationModelsProfileTableBase.Columns.Add("Name", nameColumnBase3);
             var sequenceNoColumnBase = new ColumnBase<ColumnMappingBase>("SequenceNo", "INTEGER", prayerTimeEngineCoreDomainConfigurationModelsProfileTableBase);
             prayerTimeEngineCoreDomainConfigurationModelsProfileTableBase.Columns.Add("SequenceNo", sequenceNoColumnBase);
-            relationalModel.DefaultTables.Add("PrayerTimeEngine.Core.Domain.Configuration.Models.Profile", prayerTimeEngineCoreDomainConfigurationModelsProfileTableBase);
+            relationalModel.DefaultTables.Add("PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Profile", prayerTimeEngineCoreDomainConfigurationModelsProfileTableBase);
             var prayerTimeEngineCoreDomainConfigurationModelsProfileMappingBase = new TableMappingBase<ColumnMappingBase>(profile, prayerTimeEngineCoreDomainConfigurationModelsProfileTableBase, true);
             prayerTimeEngineCoreDomainConfigurationModelsProfileTableBase.AddTypeMapping(prayerTimeEngineCoreDomainConfigurationModelsProfileMappingBase, false);
             defaultTableMappings6.Add(prayerTimeEngineCoreDomainConfigurationModelsProfileMappingBase);
@@ -651,7 +651,7 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework
             var pK_Profiles = new UniqueConstraint("PK_Profiles", profilesTable, new[] { iDColumn6 });
             profilesTable.PrimaryKey = pK_Profiles;
             var pK_ProfilesUc = RelationalModel.GetKey(this,
-                "PrayerTimeEngine.Core.Domain.Configuration.Models.Profile",
+                "PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Profile",
                 new[] { "ID" });
             pK_Profiles.MappedKeys.Add(pK_ProfilesUc);
             RelationalModel.GetOrCreateUniqueConstraints(pK_ProfilesUc).Add(pK_Profiles);
@@ -665,11 +665,11 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework
             RelationalModel.CreateColumnMapping(nameColumn3, profile.FindProperty("Name")!, profilesTableMapping);
             RelationalModel.CreateColumnMapping(sequenceNoColumn, profile.FindProperty("SequenceNo")!, profilesTableMapping);
 
-            var profileLocationConfig = FindEntityType("PrayerTimeEngine.Core.Domain.Configuration.Models.ProfileLocationConfig")!;
+            var profileLocationConfig = FindEntityType("PrayerTimeEngine.Core.Domain.ProfileManagement.Models.ProfileLocationConfig")!;
 
             var defaultTableMappings7 = new List<TableMappingBase<ColumnMappingBase>>();
             profileLocationConfig.SetRuntimeAnnotation("Relational:DefaultMappings", defaultTableMappings7);
-            var prayerTimeEngineCoreDomainConfigurationModelsProfileLocationConfigTableBase = new TableBase("PrayerTimeEngine.Core.Domain.Configuration.Models.ProfileLocationConfig", null, relationalModel);
+            var prayerTimeEngineCoreDomainConfigurationModelsProfileLocationConfigTableBase = new TableBase("PrayerTimeEngine.Core.Domain.ProfileManagement.Models.ProfileLocationConfig", null, relationalModel);
             var calculationSourceColumnBase = new ColumnBase<ColumnMappingBase>("CalculationSource", "INTEGER", prayerTimeEngineCoreDomainConfigurationModelsProfileLocationConfigTableBase);
             prayerTimeEngineCoreDomainConfigurationModelsProfileLocationConfigTableBase.Columns.Add("CalculationSource", calculationSourceColumnBase);
             var iDColumnBase7 = new ColumnBase<ColumnMappingBase>("ID", "INTEGER", prayerTimeEngineCoreDomainConfigurationModelsProfileLocationConfigTableBase);
@@ -681,7 +681,7 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework
             prayerTimeEngineCoreDomainConfigurationModelsProfileLocationConfigTableBase.Columns.Add("LocationData", locationDataColumnBase);
             var profileIDColumnBase = new ColumnBase<ColumnMappingBase>("ProfileID", "INTEGER", prayerTimeEngineCoreDomainConfigurationModelsProfileLocationConfigTableBase);
             prayerTimeEngineCoreDomainConfigurationModelsProfileLocationConfigTableBase.Columns.Add("ProfileID", profileIDColumnBase);
-            relationalModel.DefaultTables.Add("PrayerTimeEngine.Core.Domain.Configuration.Models.ProfileLocationConfig", prayerTimeEngineCoreDomainConfigurationModelsProfileLocationConfigTableBase);
+            relationalModel.DefaultTables.Add("PrayerTimeEngine.Core.Domain.ProfileManagement.Models.ProfileLocationConfig", prayerTimeEngineCoreDomainConfigurationModelsProfileLocationConfigTableBase);
             var prayerTimeEngineCoreDomainConfigurationModelsProfileLocationConfigMappingBase = new TableMappingBase<ColumnMappingBase>(profileLocationConfig, prayerTimeEngineCoreDomainConfigurationModelsProfileLocationConfigTableBase, true);
             prayerTimeEngineCoreDomainConfigurationModelsProfileLocationConfigTableBase.AddTypeMapping(prayerTimeEngineCoreDomainConfigurationModelsProfileLocationConfigMappingBase, false);
             defaultTableMappings7.Add(prayerTimeEngineCoreDomainConfigurationModelsProfileLocationConfigMappingBase);
@@ -707,7 +707,7 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework
             var pK_ProfileLocations = new UniqueConstraint("PK_ProfileLocations", profileLocationsTable, new[] { iDColumn7 });
             profileLocationsTable.PrimaryKey = pK_ProfileLocations;
             var pK_ProfileLocationsUc = RelationalModel.GetKey(this,
-                "PrayerTimeEngine.Core.Domain.Configuration.Models.ProfileLocationConfig",
+                "PrayerTimeEngine.Core.Domain.ProfileManagement.Models.ProfileLocationConfig",
                 new[] { "ID" });
             pK_ProfileLocations.MappedKeys.Add(pK_ProfileLocationsUc);
             RelationalModel.GetOrCreateUniqueConstraints(pK_ProfileLocationsUc).Add(pK_ProfileLocations);
@@ -715,7 +715,7 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework
             var iX_ProfileLocations_ProfileID = new TableIndex(
             "IX_ProfileLocations_ProfileID", profileLocationsTable, new[] { profileIDColumn }, false);
             var iX_ProfileLocations_ProfileIDIx = RelationalModel.GetIndex(this,
-                "PrayerTimeEngine.Core.Domain.Configuration.Models.ProfileLocationConfig",
+                "PrayerTimeEngine.Core.Domain.ProfileManagement.Models.ProfileLocationConfig",
                 new[] { "ProfileID" });
             iX_ProfileLocations_ProfileID.MappedIndexes.Add(iX_ProfileLocations_ProfileIDIx);
             RelationalModel.GetOrCreateTableIndexes(iX_ProfileLocations_ProfileIDIx).Add(iX_ProfileLocations_ProfileID);
@@ -729,11 +729,11 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework
             RelationalModel.CreateColumnMapping(locationDataColumn, profileLocationConfig.FindProperty("LocationData")!, profileLocationsTableMapping);
             RelationalModel.CreateColumnMapping(profileIDColumn, profileLocationConfig.FindProperty("ProfileID")!, profileLocationsTableMapping);
 
-            var profileTimeConfig = FindEntityType("PrayerTimeEngine.Core.Domain.Configuration.Models.ProfileTimeConfig")!;
+            var profileTimeConfig = FindEntityType("PrayerTimeEngine.Core.Domain.ProfileManagement.Models.ProfileTimeConfig")!;
 
             var defaultTableMappings8 = new List<TableMappingBase<ColumnMappingBase>>();
             profileTimeConfig.SetRuntimeAnnotation("Relational:DefaultMappings", defaultTableMappings8);
-            var prayerTimeEngineCoreDomainConfigurationModelsProfileTimeConfigTableBase = new TableBase("PrayerTimeEngine.Core.Domain.Configuration.Models.ProfileTimeConfig", null, relationalModel);
+            var prayerTimeEngineCoreDomainConfigurationModelsProfileTimeConfigTableBase = new TableBase("PrayerTimeEngine.Core.Domain.ProfileManagement.Models.ProfileTimeConfig", null, relationalModel);
             var calculationConfigurationColumnBase = new ColumnBase<ColumnMappingBase>("CalculationConfiguration", "TEXT", prayerTimeEngineCoreDomainConfigurationModelsProfileTimeConfigTableBase)
             {
                 IsNullable = true
@@ -745,7 +745,7 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework
             prayerTimeEngineCoreDomainConfigurationModelsProfileTimeConfigTableBase.Columns.Add("ProfileID", profileIDColumnBase0);
             var timeTypeColumnBase = new ColumnBase<ColumnMappingBase>("TimeType", "INTEGER", prayerTimeEngineCoreDomainConfigurationModelsProfileTimeConfigTableBase);
             prayerTimeEngineCoreDomainConfigurationModelsProfileTimeConfigTableBase.Columns.Add("TimeType", timeTypeColumnBase);
-            relationalModel.DefaultTables.Add("PrayerTimeEngine.Core.Domain.Configuration.Models.ProfileTimeConfig", prayerTimeEngineCoreDomainConfigurationModelsProfileTimeConfigTableBase);
+            relationalModel.DefaultTables.Add("PrayerTimeEngine.Core.Domain.ProfileManagement.Models.ProfileTimeConfig", prayerTimeEngineCoreDomainConfigurationModelsProfileTimeConfigTableBase);
             var prayerTimeEngineCoreDomainConfigurationModelsProfileTimeConfigMappingBase = new TableMappingBase<ColumnMappingBase>(profileTimeConfig, prayerTimeEngineCoreDomainConfigurationModelsProfileTimeConfigTableBase, true);
             prayerTimeEngineCoreDomainConfigurationModelsProfileTimeConfigTableBase.AddTypeMapping(prayerTimeEngineCoreDomainConfigurationModelsProfileTimeConfigMappingBase, false);
             defaultTableMappings8.Add(prayerTimeEngineCoreDomainConfigurationModelsProfileTimeConfigMappingBase);
@@ -771,7 +771,7 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework
             var pK_ProfileConfigs = new UniqueConstraint("PK_ProfileConfigs", profileConfigsTable, new[] { iDColumn8 });
             profileConfigsTable.PrimaryKey = pK_ProfileConfigs;
             var pK_ProfileConfigsUc = RelationalModel.GetKey(this,
-                "PrayerTimeEngine.Core.Domain.Configuration.Models.ProfileTimeConfig",
+                "PrayerTimeEngine.Core.Domain.ProfileManagement.Models.ProfileTimeConfig",
                 new[] { "ID" });
             pK_ProfileConfigs.MappedKeys.Add(pK_ProfileConfigsUc);
             RelationalModel.GetOrCreateUniqueConstraints(pK_ProfileConfigsUc).Add(pK_ProfileConfigs);
@@ -779,7 +779,7 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework
             var iX_ProfileConfigs_ProfileID = new TableIndex(
             "IX_ProfileConfigs_ProfileID", profileConfigsTable, new[] { profileIDColumn0 }, false);
             var iX_ProfileConfigs_ProfileIDIx = RelationalModel.GetIndex(this,
-                "PrayerTimeEngine.Core.Domain.Configuration.Models.ProfileTimeConfig",
+                "PrayerTimeEngine.Core.Domain.ProfileManagement.Models.ProfileTimeConfig",
                 new[] { "ProfileID" });
             iX_ProfileConfigs_ProfileID.MappedIndexes.Add(iX_ProfileConfigs_ProfileIDIx);
             RelationalModel.GetOrCreateTableIndexes(iX_ProfileConfigs_ProfileIDIx).Add(iX_ProfileConfigs_ProfileID);
@@ -810,9 +810,9 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework
                 new[] { profileIDColumn0 },
                 profilesTable.FindUniqueConstraint("PK_Profiles")!, ReferentialAction.Cascade);
             var fK_ProfileConfigs_Profiles_ProfileIDFk = RelationalModel.GetForeignKey(this,
-                "PrayerTimeEngine.Core.Domain.Configuration.Models.ProfileTimeConfig",
+                "PrayerTimeEngine.Core.Domain.ProfileManagement.Models.ProfileTimeConfig",
                 new[] { "ProfileID" },
-                "PrayerTimeEngine.Core.Domain.Configuration.Models.Profile",
+                "PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Profile",
                 new[] { "ID" });
             fK_ProfileConfigs_Profiles_ProfileID.MappedForeignKeys.Add(fK_ProfileConfigs_Profiles_ProfileIDFk);
             RelationalModel.GetOrCreateForeignKeyConstraints(fK_ProfileConfigs_Profiles_ProfileIDFk).Add(fK_ProfileConfigs_Profiles_ProfileID);
@@ -823,9 +823,9 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework
                 new[] { profileIDColumn },
                 profilesTable.FindUniqueConstraint("PK_Profiles")!, ReferentialAction.Cascade);
             var fK_ProfileLocations_Profiles_ProfileIDFk = RelationalModel.GetForeignKey(this,
-                "PrayerTimeEngine.Core.Domain.Configuration.Models.ProfileLocationConfig",
+                "PrayerTimeEngine.Core.Domain.ProfileManagement.Models.ProfileLocationConfig",
                 new[] { "ProfileID" },
-                "PrayerTimeEngine.Core.Domain.Configuration.Models.Profile",
+                "PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Profile",
                 new[] { "ID" });
             fK_ProfileLocations_Profiles_ProfileID.MappedForeignKeys.Add(fK_ProfileLocations_Profiles_ProfileIDFk);
             RelationalModel.GetOrCreateForeignKeyConstraints(fK_ProfileLocations_Profiles_ProfileIDFk).Add(fK_ProfileLocations_Profiles_ProfileID);

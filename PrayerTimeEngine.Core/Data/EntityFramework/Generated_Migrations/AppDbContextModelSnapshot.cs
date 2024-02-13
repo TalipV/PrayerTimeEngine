@@ -259,7 +259,7 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Migrations
                     b.ToTable("SemerkandPrayerTimes");
                 });
 
-            modelBuilder.Entity("PrayerTimeEngine.Core.Domain.Configuration.Models.Profile", b =>
+            modelBuilder.Entity("PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Profile", b =>
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
@@ -279,7 +279,7 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Migrations
                     b.ToTable("Profiles");
                 });
 
-            modelBuilder.Entity("PrayerTimeEngine.Core.Domain.Configuration.Models.ProfileLocationConfig", b =>
+            modelBuilder.Entity("PrayerTimeEngine.Core.Domain.ProfileManagement.Models.ProfileLocationConfig", b =>
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
@@ -301,7 +301,7 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Migrations
                     b.ToTable("ProfileLocations");
                 });
 
-            modelBuilder.Entity("PrayerTimeEngine.Core.Domain.Configuration.Models.ProfileTimeConfig", b =>
+            modelBuilder.Entity("PrayerTimeEngine.Core.Domain.ProfileManagement.Models.ProfileTimeConfig", b =>
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
@@ -345,9 +345,9 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Migrations
                     b.Navigation("Country");
                 });
 
-            modelBuilder.Entity("PrayerTimeEngine.Core.Domain.Configuration.Models.ProfileLocationConfig", b =>
+            modelBuilder.Entity("PrayerTimeEngine.Core.Domain.ProfileManagement.Models.ProfileLocationConfig", b =>
                 {
-                    b.HasOne("PrayerTimeEngine.Core.Domain.Configuration.Models.Profile", "Profile")
+                    b.HasOne("PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Profile", "Profile")
                         .WithMany("LocationConfigs")
                         .HasForeignKey("ProfileID")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -356,9 +356,9 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Migrations
                     b.Navigation("Profile");
                 });
 
-            modelBuilder.Entity("PrayerTimeEngine.Core.Domain.Configuration.Models.ProfileTimeConfig", b =>
+            modelBuilder.Entity("PrayerTimeEngine.Core.Domain.ProfileManagement.Models.ProfileTimeConfig", b =>
                 {
-                    b.HasOne("PrayerTimeEngine.Core.Domain.Configuration.Models.Profile", "Profile")
+                    b.HasOne("PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Profile", "Profile")
                         .WithMany("TimeConfigs")
                         .HasForeignKey("ProfileID")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -377,7 +377,7 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Migrations
                     b.Navigation("Cities");
                 });
 
-            modelBuilder.Entity("PrayerTimeEngine.Core.Domain.Configuration.Models.Profile", b =>
+            modelBuilder.Entity("PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Profile", b =>
                 {
                     b.Navigation("LocationConfigs");
 
