@@ -26,7 +26,7 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework
         public static RuntimeEntityType Create(RuntimeModel model, RuntimeEntityType baseEntityType = null)
         {
             var runtimeEntityType = model.AddEntityType(
-                "PrayerTimeEngine.Core.Domain.Configuration.Models.ProfileTimeConfig",
+                "PrayerTimeEngine.Core.Domain.ProfileManagement.Models.ProfileTimeConfig",
                 typeof(ProfileTimeConfig),
                 baseEntityType);
 
