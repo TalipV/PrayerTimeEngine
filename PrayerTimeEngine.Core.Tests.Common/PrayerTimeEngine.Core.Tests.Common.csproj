@@ -48,16 +48,16 @@
     <None Update="TestData\LocationIQTestData\TimezoneInfoCET.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="TestData\MuwaqqitTestData\Muwaqqit_TestPrayerTimeData_20230730_Innsbruck_Part1.txt">
+    <None Update="TestData\MuwaqqitTestData\Muwaqqit_TestPrayerTimeData_20230730_Innsbruck_Config1.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="TestData\MuwaqqitTestData\Muwaqqit_TestPrayerTimeData_20230730_Innsbruck_Part2.txt">
+    <None Update="TestData\MuwaqqitTestData\Muwaqqit_TestPrayerTimeData_20230730_Innsbruck_Config2.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="TestData\MuwaqqitTestData\Muwaqqit_TestPrayerTimeData_20230730_Innsbruck_Part3.txt">
+    <None Update="TestData\MuwaqqitTestData\Muwaqqit_TestPrayerTimeData_20230730_Innsbruck_Config3.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="TestData\MuwaqqitTestData\Muwaqqit_TestPrayerTimeData_20230730_Innsbruck_Part4.txt">
+    <None Update="TestData\MuwaqqitTestData\Muwaqqit_TestPrayerTimeData_20230730_Innsbruck_Config4.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="TestData\SemerkandTestData\Semerkand_TestCityData_Austria.txt">
