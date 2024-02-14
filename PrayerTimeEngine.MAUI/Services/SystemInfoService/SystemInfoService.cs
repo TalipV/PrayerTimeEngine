@@ -22,6 +22,9 @@ namespace PrayerTimeEngine.Services.SystemInfoService
 
         public DateTimeZone GetSystemTimeZone()
         {
+#if WINDOWS
+            return DateTimeZoneProviders.Bcl[TimeZoneInfo.Local.Id];
+#endif
             return DateTimeZoneProviders.Tzdb[TimeZoneInfo.Local.Id];
         }
     }
