@@ -1,4 +1,3 @@
-using DevExpress.Maui.Controls;
 using PrayerTimeEngine.Code.Presentation.View;
 using PrayerTimeEngine.Presentation.ViewModel;
 
@@ -32,22 +31,58 @@ public partial class SettingsHandlerPage : ContentPage
 
     private void setUpTabPages()
     {
+#if WINDOWS
+        //TabbedPage windowsTabBar = new TabbedPage
+        //{
+        //    Title = "Windows Tab View Placeholder"
+        //};
+
+        //// Assuming placeholderView is the ContentView where the tab should be added
+        //this.tabViewSection = windowsTabBar;
+
+        //foreach (SettingsContentPage settingContentPages in _viewModel.SettingsContentPages)
+        //{
+        //    ShellContent tab = new ShellContent
+        //    {
+        //        BindingContext = settingContentPages.ViewModel,
+        //    };
+
+        //    tab.SetBinding(Tab.TitleProperty, nameof(SettingsContentPageViewModel.TabTitle));
+
+        //    tab.Items.Add(settingContentPages);
+        //    windowsTabBar.Items.Add(tab);
+        //}
+#else
+        var tabView = new DevExpress.Maui.Controls.TabView()
+        {
+            HeaderPanelContentAlignment = DevExpress.Maui.Controls.HeaderContentAlignment.Start
+        };
+        this.tabViewSection.Content = tabView;
+
         foreach (SettingsContentPage settingContentPages in _viewModel.SettingsContentPages)
         {
-            var tabViewItem = new TabViewItem
-            {
-                Content = new ContentView
-                {
-                    Content = settingContentPages.Content,
-                    BindingContext = settingContentPages.ViewModel
-                },
-                BindingContext = settingContentPages.ViewModel,
-                HeaderFontSize = 14
-            };
-            tabViewItem.SetBinding(TabViewItem.HeaderTextProperty, nameof(SettingsContentPageViewModel.TabTitle));
-
-            this.tabView.Items.Add(tabViewItem);
+            addSettingsContentPageAsTab(tabView, settingContentPages);
         }
+#endif
     }
+
+#if !WINDOWS
+    private void addSettingsContentPageAsTab(DevExpress.Maui.Controls.TabView tabView, SettingsContentPage settingContentPages)
+    {
+        var tabViewItem = new DevExpress.Maui.Controls.TabViewItem
+        {
+            Content = new ContentView
+            {
+                Content = settingContentPages.Content,
+                BindingContext = settingContentPages.ViewModel
+            },
+            BindingContext = settingContentPages.ViewModel,
+            HeaderFontSize = 14
+        };
+
+        tabViewItem.SetBinding(DevExpress.Maui.Controls.TabViewItem.HeaderTextProperty, nameof(SettingsContentPageViewModel.TabTitle));
+        tabView.Items.Add(tabViewItem);
+    }
+#endif
 }
 

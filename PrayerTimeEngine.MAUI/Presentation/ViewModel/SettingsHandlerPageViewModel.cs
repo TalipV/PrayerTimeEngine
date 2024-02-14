@@ -41,12 +41,12 @@ namespace PrayerTimeEngine.Presentation.ViewModel
         {
             if (parameter[0] is not Profile profile)
             {
-                throw new ArgumentException($"{nameof(parameter)} is not an {nameof(EPrayerType)}");
+                throw new ArgumentException($"{nameof(parameter)}[0] is not a {nameof(Profile)}");
             }
 
             if (parameter[1] is not EPrayerType prayerTime)
             {
-                throw new ArgumentException($"{nameof(parameter)} is not an {nameof(EPrayerType)}");
+                throw new ArgumentException($"{nameof(parameter)}[1] is not an {nameof(EPrayerType)}");
             }
 
             foreach (ETimeType timeType in timeTypeAttributeService.PrayerTypeToTimeTypes[prayerTime].Intersect(timeTypeAttributeService.ConfigurableTypes))

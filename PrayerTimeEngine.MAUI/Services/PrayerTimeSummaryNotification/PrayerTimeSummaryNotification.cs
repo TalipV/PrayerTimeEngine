@@ -1,4 +1,5 @@
-﻿using Android.App;
+﻿#if ANDROID
+using Android.App;
 using Android.Content;
 using Android.OS;
 using NodaTime;
@@ -150,3 +151,4 @@ namespace PrayerTimeEngine.Services
         }
     }
 }
+#endif

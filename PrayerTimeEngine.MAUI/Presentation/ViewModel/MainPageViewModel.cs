@@ -31,7 +31,6 @@ namespace PrayerTimeEngine.Presentation.ViewModel
             IProfileService profileService,
             INavigationService navigationService,
             AppDbContext appDbContext,
-            PrayerTimeSummaryNotificationManager prayerTimeSummaryNotificationManager,
             ILogger<MainPageViewModel> logger
         ) : LogController
     {
@@ -136,7 +135,9 @@ namespace PrayerTimeEngine.Presentation.ViewModel
                     double startUpTimeMS = (DateTime.Now - MauiProgram.StartDateTime).TotalMilliseconds;
                     showToastMessage($"{startUpTimeMS:N0}ms to start!");
 
-                    prayerTimeSummaryNotificationManager.TryStartPersistentNotification();
+#if ANDROID
+                    MauiProgram.ServiceProvider.GetService<PrayerTimeSummaryNotificationManager>().TryStartPersistentNotification();
+#endif
                 }
             }
             catch (Exception exception)
@@ -150,7 +151,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
             }
         }
 
-        #endregion public methods
+#endregion public methods
 
         #region private methods
 
