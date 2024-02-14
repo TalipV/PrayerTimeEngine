@@ -17,6 +17,13 @@ public partial class App : Application
             MainPage.Navigation.PopModalAsync);
     }
 
+    protected override Window CreateWindow(IActivationState activationState)
+    {
+        var window = base.CreateWindow(activationState);
+        window.Width = 500;
+        return window;
+    }
+
     protected override void OnResume()
     {
         base.OnResume();
