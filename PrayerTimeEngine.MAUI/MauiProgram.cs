@@ -177,7 +177,9 @@ public static class MauiProgram
         //serviceCollection.AddSingleton<PreferenceService>();
         //serviceCollection.AddSingleton<IPreferenceAccess, PreferenceAccess>();
 
-
+#if ANDROID
+        serviceCollection.AddSingleton<Services.PrayerTimeSummaryNotificationManager>();
+#endif
 
         addApiServices(serviceCollection);
         addPresentationLayerServices(serviceCollection);
