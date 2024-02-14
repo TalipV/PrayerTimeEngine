@@ -1,4 +1,5 @@
-﻿using PrayerTimeEngine.Platforms.Android.Permissions;
+﻿#if ANDROID
+using PrayerTimeEngine.Platforms.Android.Permissions;
 using PrayerTimeEngine.Platforms.Android;
 using Microsoft.Extensions.Logging;
 
@@ -56,3 +57,4 @@ namespace PrayerTimeEngine.Services
         }
     }
 }
+#endif

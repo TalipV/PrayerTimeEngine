@@ -1,5 +1,4 @@
-﻿using DevExpress.Maui.Editors;
-using MethodTimer;
+﻿using MethodTimer;
 using OnScreenSizeMarkup.Maui.Helpers;
 using PrayerTimeEngine.Core.Data.EntityFramework;
 using PrayerTimeEngine.Presentation.GraphicsView;
@@ -12,7 +11,7 @@ namespace PrayerTimeEngine
         private readonly MainPageViewModel _viewModel;
 
         [Time]
-        public MainPage(MainPageViewModel viewModel, AppDbContext dbContext)
+        public MainPage(MainPageViewModel viewModel)
         {
             InitializeComponent();
             BindingContext = this._viewModel = viewModel;
@@ -24,14 +23,7 @@ namespace PrayerTimeEngine
 
             setCustomSizes();
 
-            var asyncItemsSourceProvider = new AsyncItemsSourceProvider
-            {
-                RequestDelay = 1000,
-                CharacterCountThreshold = 4
-            };
-
-            asyncItemsSourceProvider.ItemsRequested += AsyncItemsSourceProvider_ItemsRequested;
-            autoCompleteSearch.ItemsSourceProvider = asyncItemsSourceProvider;
+            setUpAutoCompletePlaceSearch();
 
             this.lastUpdatedTextInfo.GestureRecognizers
                 .Add(
@@ -53,15 +45,6 @@ namespace PrayerTimeEngine
         private async Task displayAlert(string text)
         {
             await DisplayAlert("Info", text, "Ok");
-        }
-
-        private void AsyncItemsSourceProvider_ItemsRequested(object sender, ItemsRequestEventArgs e)
-        {
-            // Task<IEnumerable> is required for the RequestAsync function but my method returns a Task<List<T>>
-            // Therefore we map the resulting List<T> in the task's continuation to IEnumerable
-            e.RequestAsync =
-                () => this._viewModel.PerformPlaceSearch(e.Text)
-                    .ContinueWith(task => (System.Collections.IEnumerable)task.Result);
         }
 
         private void setCustomSizes()
@@ -211,5 +194,46 @@ namespace PrayerTimeEngine
                 app.Resumed -= app_Resumed;
             }
         }
+
+        private void setUpAutoCompletePlaceSearch()
+        {
+#if !WINDOWS
+            var autoCompleteSearch = new DevExpress.Maui.Editors.AutoCompleteEdit()
+            {
+                TextColor = Colors.Black,
+                PlaceholderColor = Colors.Gray,
+
+                DisplayMember = "DisplayText",
+                PlaceholderText = "Ortseingabe",
+                NoResultsFoundText = "Not found",
+                ErrorText = "I am error text",
+                HasError = false,
+            };
+
+            autoCompleteSearch.SetBinding(DevExpress.Maui.Editors.AutoCompleteEdit.SelectedItemProperty, nameof(MainPageViewModel.SelectedPlace));
+
+            var asyncItemsSourceProvider = new DevExpress.Maui.Editors.AsyncItemsSourceProvider
+            {
+                RequestDelay = 1000,
+                CharacterCountThreshold = 4
+            };
+
+            asyncItemsSourceProvider.ItemsRequested += AsyncItemsSourceProvider_ItemsRequested;
+            autoCompleteSearch.ItemsSourceProvider = asyncItemsSourceProvider;
+
+            autoCompletEditPlaceHolder.Content = autoCompleteSearch;
+#endif
+        }
+
+#if !WINDOWS
+        private void AsyncItemsSourceProvider_ItemsRequested(object sender, DevExpress.Maui.Editors.ItemsRequestEventArgs e)
+        {
+            // Task<IEnumerable> is required for the RequestAsync function but my method returns a Task<List<T>>
+            // Therefore we map the resulting List<T> in the task's continuation to IEnumerable
+            e.RequestAsync =
+                () => this._viewModel.PerformPlaceSearch(e.Text)
+                    .ContinueWith(task => (System.Collections.IEnumerable)task.Result);
+        }
+#endif
     }
 }

@@ -1,5 +1,4 @@
 ﻿using CommunityToolkit.Maui;
-using DevExpress.Maui;
 using MethodTimer;
 using MetroLog.MicrosoftExtensions;
 using Microsoft.EntityFrameworkCore;
@@ -24,7 +23,6 @@ using PrayerTimeEngine.Presentation.Service.Navigation;
 using PrayerTimeEngine.Presentation.Service.SettingsContentPageFactory;
 using PrayerTimeEngine.Presentation.ViewModel;
 using PrayerTimeEngine.Presentation.ViewModel.Custom;
-using PrayerTimeEngine.Services;
 using PrayerTimeEngine.Services.SystemInfoService;
 using PrayerTimeEngine.Views;
 
@@ -66,12 +64,15 @@ public static class MauiProgram
         builder
             .UseMauiApp<App>()
             .UseMauiCommunityToolkit()
-            .UseDevExpress()
             .ConfigureFonts(fonts =>
             {
                 fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                 fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
             });
+
+#if !WINDOWS
+            DevExpress.Maui.MauiAppBuilderExtensions.UseDevExpress(builder);
+#endif
 
         addLogging(builder);
         addDependencyInjectionServices(builder.Services);
@@ -175,7 +176,8 @@ public static class MauiProgram
 
         //serviceCollection.AddSingleton<PreferenceService>();
         //serviceCollection.AddSingleton<IPreferenceAccess, PreferenceAccess>();
-        serviceCollection.AddSingleton<PrayerTimeSummaryNotificationManager>();
+
+
 
         addApiServices(serviceCollection);
         addPresentationLayerServices(serviceCollection);

@@ -3,8 +3,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:enum="clr-namespace:PrayerTimeEngine.Core.Common.Enum;assembly=PrayerTimeEngine.Core"
              xmlns:drawable="clr-namespace:PrayerTimeEngine.Presentation.GraphicsView"
-             xmlns:devExpressControls="clr-namespace:DevExpress.Maui.Controls;assembly=DevExpress.Maui.Controls"
-             xmlns:devExpressEditors="clr-namespace:DevExpress.Maui.Editors;assembly=DevExpress.Maui.Editors"
              xmlns:viewModel="clr-namespace:PrayerTimeEngine.Presentation.ViewModel;assembly=PrayerTimeEngine.MAUI"
              x:Class="PrayerTimeEngine.MainPage"
              BackgroundColor="#f3eae3">
@@ -91,24 +89,11 @@
             <ColumnDefinition Width="2*" />
         </Grid.ColumnDefinitions>
 
-        <devExpressEditors:AutoCompleteEdit
-            x:Name="autoCompleteSearch"
-            Grid.Row="0"
-            Grid.Column="0"
-            Grid.ColumnSpan="5"
-            VerticalOptions="Center"
-
-            TextColor="Black"
-            PlaceholderColor="Gray"
-            SelectedItem="{Binding SelectedPlace}" x:DataType="viewModel:MainPageViewModel"
-            
-            DisplayMember="DisplayText"
-            PlaceholderText="Ortseingabe"
-            NoResultsFoundText="Not found"
-            ErrorText="I am error text"
-            HasError="False">
-
-        </devExpressEditors:AutoCompleteEdit>
+        <ContentView x:Name="autoCompletEditPlaceHolder"             
+            Grid.Row = "0"
+            Grid.Column = "0"
+            Grid.ColumnSpan = "5"
+            VerticalOptions = "Center"/>
 
         <Label
             x:Name="FajrName"
