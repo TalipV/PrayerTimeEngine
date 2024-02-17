@@ -1,5 +1,4 @@
 ﻿using CommunityToolkit.Maui;
-using MethodTimer;
 using MetroLog.MicrosoftExtensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -58,7 +57,6 @@ public static class MauiProgram
 
     public static bool IsFullyInitialized = false;
 
-    [Time]
     public static MauiApp CreateMauiApp()
     {
         MauiAppBuilder builder = MauiApp.CreateBuilder();
