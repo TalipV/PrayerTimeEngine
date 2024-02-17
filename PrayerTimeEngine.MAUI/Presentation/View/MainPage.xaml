@@ -1,9 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:uraniumMaterial="clr-namespace:UraniumUI.Material.Controls;assembly=UraniumUI.Material"
              xmlns:enum="clr-namespace:PrayerTimeEngine.Core.Common.Enum;assembly=PrayerTimeEngine.Core"
              xmlns:drawable="clr-namespace:PrayerTimeEngine.Presentation.GraphicsView"
              xmlns:viewModel="clr-namespace:PrayerTimeEngine.Presentation.ViewModel;assembly=PrayerTimeEngine.MAUI"
+             x:DataType="viewModel:MainPageViewModel"
              x:Class="PrayerTimeEngine.MainPage"
              BackgroundColor="#f3eae3">
 
@@ -89,11 +91,17 @@
             <ColumnDefinition Width="2*" />
         </Grid.ColumnDefinitions>
 
-        <ContentView x:Name="autoCompletEditPlaceHolder"             
+        <uraniumMaterial:AutoCompleteTextField
             Grid.Row = "0"
             Grid.Column = "0"
             Grid.ColumnSpan = "5"
-            VerticalOptions = "Center"/>
+            x:Name="actf"
+            Title="Search"
+            AllowClear="true"
+            ItemsSource="{Binding FoundPlacesSelectionTexts}"
+            Text="{Binding PlaceSearchText}"
+            BackgroundColor="DarkSlateGray"
+            SelectedText="{Binding SelectedPlaceText}"/>
 
         <Label
             x:Name="FajrName"

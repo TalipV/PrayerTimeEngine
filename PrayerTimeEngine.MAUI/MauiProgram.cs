@@ -25,6 +25,7 @@ using PrayerTimeEngine.Presentation.ViewModel;
 using PrayerTimeEngine.Presentation.ViewModel.Custom;
 using PrayerTimeEngine.Services.SystemInfoService;
 using PrayerTimeEngine.Views;
+using UraniumUI;
 
 namespace PrayerTimeEngine;
 
@@ -64,15 +65,13 @@ public static class MauiProgram
         builder
             .UseMauiApp<App>()
             .UseMauiCommunityToolkit()
+            .UseUraniumUI()
+            .UseUraniumUIMaterial()
             .ConfigureFonts(fonts =>
             {
                 fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                 fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
             });
-
-#if !WINDOWS
-            DevExpress.Maui.MauiAppBuilderExtensions.UseDevExpress(builder);
-#endif
 
         addLogging(builder);
         addDependencyInjectionServices(builder.Services);
@@ -81,10 +80,6 @@ public static class MauiProgram
         ServiceProvider = mauiApp.Services;
 
         MethodTimeLogger.logger = mauiApp.Services.GetService<ILogger<App>>();
-
-        // slightly slows down startup
-        // DevExpress.Maui.Editors.Initializer.Init();
-        // DevExpress.Maui.Controls.Initializer.Init();
 
         return mauiApp;
     }
