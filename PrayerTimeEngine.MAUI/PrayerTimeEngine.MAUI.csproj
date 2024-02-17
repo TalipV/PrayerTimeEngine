@@ -98,6 +98,7 @@
 	</ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Debounce.Core" Version="1.0.0" />
     <PackageReference Include="MethodTimer.Fody" Version="3.2.2" PrivateAssets="All" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.2" />
     <PackageReference Include="NodaTime" Version="3.1.11" />
@@ -106,9 +107,10 @@
     <PackageReference Include="CommunityToolkit.Maui" Version="7.0.1" />
     <PackageReference Include="MetroLog.Maui" Version="2.1.0" />
     <PackageReference Include="OnScreenSizeMarkup.Maui" Version="2.0.8" />
-    <PackageReference Include="Microsoft.Maui.Controls" Version="8.0.6" />
-    <PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="8.0.6" />
+    <PackageReference Include="Microsoft.Maui.Controls" Version="8.0.7" />
+    <PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="8.0.7" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.0" />
+    <PackageReference Include="UraniumUI.Material" Version="2.7.4" />
   </ItemGroup>
 
 	<ItemGroup>
@@ -137,13 +139,6 @@
 	  <ProjectReference Include="..\PrayerTimeEngine.Core\PrayerTimeEngine.Core.csproj">
 	    <ReferenceSourceTarget>ProjectReference</ReferenceSourceTarget>
 	  </ProjectReference>
-	</ItemGroup>
-
-	<ItemGroup Condition="'$(TargetFramework)' == 'net8.0-android'">
-    <PackageReference Include="DevExpress.Maui.Controls" Version="23.2.4">
-    </PackageReference>
-    <PackageReference Include="DevExpress.Maui.Editors" Version="23.2.4">
-    </PackageReference>
 	</ItemGroup>
 
 </Project>

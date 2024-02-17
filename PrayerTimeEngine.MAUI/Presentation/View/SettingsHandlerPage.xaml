@@ -1,8 +1,8 @@
-<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:uraniumMaterial="clr-namespace:UraniumUI.Material.Controls;assembly=UraniumUI.Material"
              x:Class="PrayerTimeEngine.Views.SettingsHandlerPage">
-
+    
     <NavigationPage.TitleView>
         <Label
             Text="Configuration"
@@ -12,5 +12,8 @@
             VerticalTextAlignment="Center"/>
     </NavigationPage.TitleView>
 
-    <ContentView x:Name="tabViewSection"/>
+    <ContentPage.Content>
+        <uraniumMaterial:TabView x:Name="tabView" TabPlacement="Top">
+        </uraniumMaterial:TabView>
+    </ContentPage.Content>
 </ContentPage>

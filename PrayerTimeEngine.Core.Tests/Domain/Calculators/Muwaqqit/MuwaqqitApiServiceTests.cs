@@ -2,8 +2,6 @@
 using NodaTime;
 using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Models;
 using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services;
-using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Interfaces;
-using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services;
 using PrayerTimeEngine.Core.Tests.Common;
 using System.Net;
 

@@ -34,13 +34,19 @@ namespace PrayerTimeEngine.Presentation.ViewModel
             ILogger<MainPageViewModel> logger
         ) : LogController
     {
+        #region fields
+        
+        private Debounce.Core.Debouncer debouncer;
+
+        #endregion fields
+
         #region properties
 
         public Profile CurrentProfile { get; set; }
         public PrayerTimesBundle PrayerTimeBundle { get; private set; }
 
         [OnChangedMethod(nameof(onSelectedPlaceChanged))]
-        public BasicPlaceInfo SelectedPlace { get; set; }
+        public string SelectedPlaceText { get; set; }
 
 
         public bool IsLoadingPrayerTimesOrSelectedPlace => IsLoadingPrayerTimes || IsLoadingSelectedPlace;
@@ -56,27 +62,14 @@ namespace PrayerTimeEngine.Presentation.ViewModel
         public bool ShowIshtibaq { get; set; }
         public bool ShowMaghribSufficientTime { get; set; }
 
+        [OnChangedMethod(nameof(onPlaceSearchTextChanged))]
+        public string PlaceSearchText { get; set; }
+        public IEnumerable<BasicPlaceInfo> FoundPlaces { get; set; }
+        public IEnumerable<string> FoundPlacesSelectionTexts { get; set; }
+
         #endregion properties
 
         #region ICommand
-
-        public ICommand PerformSearch => new Command<string>(async query => await PerformPlaceSearch(query));
-
-        public async Task<List<BasicPlaceInfo>> PerformPlaceSearch(string searchText)
-        {
-            try
-            {
-                string languageCode = _systemInfoService.GetSystemCulture().TwoLetterISOLanguageName;
-                return await placeService.SearchPlacesAsync(searchText, languageCode);
-            }
-            catch (Exception exception)
-            {
-                logger.LogError(exception, "Error during place search");
-                showToastMessage(exception.Message);
-            }
-
-            return [];
-        }
 
         public ICommand GoToSettingsPageCommand
             => new Command<EPrayerType>(
@@ -93,6 +86,33 @@ namespace PrayerTimeEngine.Presentation.ViewModel
         #endregion ICommand
 
         #region public methods
+
+        public void onPlaceSearchTextChanged()
+        {
+            debouncer ??= new Debounce.Core.Debouncer(async () =>
+            {
+                FoundPlaces = await Task.Run(async () => await PerformPlaceSearch(PlaceSearchText));
+                FoundPlacesSelectionTexts = FoundPlaces.Select(x => x.DisplayText).Distinct().OrderBy(x => x).Take(7).ToList();
+            }, 500);
+
+            debouncer.Debounce();
+        }
+
+        public async Task<List<BasicPlaceInfo>> PerformPlaceSearch(string searchText)
+        {
+            try
+            {
+                string languageCode = _systemInfoService.GetSystemCulture().TwoLetterISOLanguageName;
+                return await placeService.SearchPlacesAsync(searchText, languageCode);
+            }
+            catch (Exception exception)
+            {
+                logger.LogError(exception, "Error during place search");
+                showToastMessage(exception.Message);
+            }
+
+            return [];
+        }
 
         public async void OnActualAppearing()
         {
@@ -225,6 +245,8 @@ namespace PrayerTimeEngine.Presentation.ViewModel
         {
             Task.Run(async () =>
             {
+                BasicPlaceInfo SelectedPlace = this.FoundPlaces.FirstOrDefault(x => x.DisplayText == this.SelectedPlaceText);
+
                 if (CurrentProfile == null || SelectedPlace == null)
                     return;
 
