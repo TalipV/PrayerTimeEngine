@@ -1,6 +1,5 @@
 ﻿using CommunityToolkit.Maui.Alerts;
 using CommunityToolkit.Maui.Core;
-using MethodTimer;
 using MetroLog.Maui;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -89,6 +88,11 @@ namespace PrayerTimeEngine.Presentation.ViewModel
 
         public void onPlaceSearchTextChanged()
         {
+            if (string.IsNullOrWhiteSpace(this.PlaceSearchText))
+            {
+                return;
+            }
+
             debouncer ??= new Debounce.Core.Debouncer(async () =>
             {
                 FoundPlaces = await Task.Run(async () => await PerformPlaceSearch(PlaceSearchText));
@@ -136,7 +140,6 @@ namespace PrayerTimeEngine.Presentation.ViewModel
         // - Cache Invalidierung anhand von Equals/HashCode checks
         // - Notification genauso Zeiten laden lassen
 
-        [Time]
         public async Task OnPageLoaded()
         {
             try
@@ -211,7 +214,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
             {
                 IsLoadingPrayerTimes = true;
                 PrayerTimeBundle = await prayerTimeCalculator.CalculatePrayerTimesAsync(CurrentProfile, _systemInfoService.GetCurrentZonedDateTime());
-
+                
                 OnAfterLoadingPrayerTimes_EventTrigger.Invoke();
             }
             finally

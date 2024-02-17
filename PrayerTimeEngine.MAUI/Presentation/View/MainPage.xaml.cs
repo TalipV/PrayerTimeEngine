@@ -1,5 +1,4 @@
-﻿using MethodTimer;
-using OnScreenSizeMarkup.Maui.Helpers;
+﻿using OnScreenSizeMarkup.Maui.Helpers;
 using PrayerTimeEngine.Presentation.GraphicsView;
 using PrayerTimeEngine.Presentation.ViewModel;
 
@@ -9,7 +8,6 @@ namespace PrayerTimeEngine
     {
         private readonly MainPageViewModel _viewModel;
 
-        [Time]
         public MainPage(MainPageViewModel viewModel)
         {
             // UraniumUI autocomplete control threw nullrefs
