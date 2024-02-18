@@ -17,5 +17,10 @@
         {
             return HashCode.Combine(base.GetHashCode(), Degree);
         }
+
+        public override string ToString()
+        {
+            return $"{base.ToString()}, Degree: {Degree}°";
+        }
     }
 }

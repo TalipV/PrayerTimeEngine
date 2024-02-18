@@ -24,6 +24,11 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Models
         {
             return HashCode.Combine(Longitude, Latitude, TimezoneName);
         }
+
+        public override string ToString()
+        {
+            return $"{Source}: {TimezoneName}, {Latitude}°/{Longitude}°";
+        }
     }
 }
 

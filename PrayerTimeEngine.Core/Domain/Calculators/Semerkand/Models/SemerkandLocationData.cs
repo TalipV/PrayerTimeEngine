@@ -24,6 +24,11 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Models
         {
             return HashCode.Combine(CountryName, CityName, TimezoneName);
         }
+
+        public override string ToString()
+        {
+            return $"{Source}: {CountryName}, {CityName}, Timezone: {TimezoneName}";
+        }
     }
 }
 

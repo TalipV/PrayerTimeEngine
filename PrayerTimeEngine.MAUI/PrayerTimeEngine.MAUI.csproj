@@ -114,6 +114,9 @@
   </ItemGroup>
 
 	<ItemGroup>
+	  <MauiXaml Update="Presentation\View\DatabaseTablesPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <MauiXaml Update="Presentation\View\SettingsHandlerPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
@@ -123,6 +126,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Compile Update="Presentation\View\DatabaseTablesPage.xaml.cs">
+	    <DependentUpon>DatabaseTablesPage.xaml</DependentUpon>
+	  </Compile>
 	  <Compile Update="Presentation\View\SettingsHandlerPage.xaml.cs">
 	    <DependentUpon>SettingsHandlerPage.xaml</DependentUpon>
 	  </Compile>
