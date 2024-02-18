@@ -20,7 +20,6 @@ namespace PrayerTimeEngine
             BindingContext = this._viewModel = viewModel;
 
             viewModel.OnAfterLoadingPrayerTimes_EventTrigger += ViewModel_OnAfterLoadingPrayerTimes_EventTrigger;
-            viewModel.IsShakeEnabled = true;
 
             this.Loaded += MainPage_Loaded;
 
@@ -44,7 +43,8 @@ namespace PrayerTimeEngine
                 "Zeiten-Konfiguration",
                 "Ortsdaten",
                 "DB-Tabellen zeigen",
-                "DB-File speichern");
+                "DB-File speichern",
+                "Logs anzeigen");
 
             switch (action)
             {
@@ -68,6 +68,9 @@ namespace PrayerTimeEngine
                             overwrite: true);
                     }
 
+                    break;
+                case "Logs anzeigen":
+                    this._viewModel.GoToLogsPageCommand.Execute(null);
                     break;
                 case "Cancel":
                     break;
