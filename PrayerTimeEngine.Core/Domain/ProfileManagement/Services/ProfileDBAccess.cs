@@ -12,7 +12,6 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Services
             AppDbContext dbContext
         ) : IProfileDBAccess
     {
-
         public async Task<List<Profile>> GetProfiles()
         {
             return await dbContext.Profiles
@@ -113,21 +112,16 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Services
 
         private void setTimeConfig(Profile profile, ETimeType timeType, GenericSettingConfiguration settings)
         {
-            if (profile.TimeConfigs.FirstOrDefault(x => x.TimeType == timeType) is ProfileTimeConfig foundTimeConfig)
+            if (profile.TimeConfigs.FirstOrDefault(x => x.TimeType == timeType) is not ProfileTimeConfig timeConfig)
             {
-                profile.TimeConfigs.Remove(foundTimeConfig);
+                timeConfig = new ProfileTimeConfig();
+                profile.TimeConfigs.Add(timeConfig);
             }
 
-            var newTimeConfig =
-                new ProfileTimeConfig
-                {
-                    TimeType = timeType,
-                    ProfileID = profile.ID,
-                    Profile = profile,
-                    CalculationConfiguration = settings
-                };
-
-            profile.TimeConfigs.Add(newTimeConfig);
+            timeConfig.TimeType = timeType;
+            timeConfig.ProfileID = profile.ID;
+            timeConfig.Profile = profile;
+            timeConfig.CalculationConfiguration = settings;
         }
     }
 }
