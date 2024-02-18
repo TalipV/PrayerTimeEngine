@@ -31,11 +31,9 @@ public partial class DatabaseTablesPage : ContentPage
             return;
 
         dataGrid.Columns.Clear();
-
-        Type type = list.First().GetType();
         dataGrid.ItemsSource = list;
 
-        foreach (PropertyInfo prop in type.GetProperties().Where(x => validTypes.Contains(x.PropertyType)))
+        foreach (PropertyInfo prop in list.First().GetType().GetProperties().Where(x => validTypes.Contains(x.PropertyType)))
         {
             var dataGridColumn = new DataGridColumn
             {
