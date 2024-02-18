@@ -5,8 +5,16 @@
              x:DataType="viewModel:DatabaseTablesPageViewModel"
              x:Class="PrayerTimeEngine.Views.DatabaseTablesPage">
 
-    <uraniumMaterial:TabView x:Name="tabView">
+    <NavigationPage.TitleView>
+        <Picker
+            ItemsSource="{Binding TableOptions}"
+            SelectedItem="{Binding SelectedTableOption}"/>
+    </NavigationPage.TitleView>
 
-    </uraniumMaterial:TabView>
+    <ScrollView Orientation="Both" Margin="10">
+        <uraniumMaterial:DataGrid x:Name="dataGrid">
+            
+        </uraniumMaterial:DataGrid>
+    </ScrollView>
 
 </ContentPage>

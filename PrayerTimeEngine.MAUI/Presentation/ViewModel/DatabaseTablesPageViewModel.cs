@@ -3,6 +3,7 @@ using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Models;
 using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Models;
 using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Models;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Models;
+using PropertyChanged;
 
 namespace PrayerTimeEngine.Presentation.ViewModel
 {
@@ -10,35 +11,40 @@ namespace PrayerTimeEngine.Presentation.ViewModel
             AppDbContext appDbContext
         ) : CustomBaseViewModel
     {
-        public List<FaziletCountry> FaziletCountries { get; private set; } = [];
-        public List<FaziletCity> FaziletCities { get; private set; } = [];
-        public List<FaziletPrayerTimes> FaziletPrayerTimes { get; private set; } = [];
-
-        public List<SemerkandCountry> SemerkandCountries { get; private set; } = [];
-        public List<SemerkandCity> SemerkandCities { get; private set; } = [];
-        public List<SemerkandPrayerTimes> SemerkandPrayerTimes { get; private set; } = [];
-
-        public List<MuwaqqitPrayerTimes> MuwaqqitPrayerTimes { get; private set; } = [];
-
-        public List<Profile> Profiles { get; private set; } = [];
-        public List<ProfileTimeConfig> ProfileTimeConfigs { get; private set; } = [];
-        public List<ProfileLocationConfig> ProfileLocationConfigs { get; private set; } = [];
+        private readonly Dictionary<string, List<object>> _dataDict = []; 
 
         public override void Initialize(params object[] parameter)
         {
-            FaziletCountries = appDbContext.FaziletCountries.ToList();
-            FaziletCities = appDbContext.FaziletCities.ToList();
-            FaziletPrayerTimes = appDbContext.FaziletPrayerTimes.ToList();
+            _dataDict[nameof(AppDbContext.FaziletCountries)] = appDbContext.FaziletCountries.ToList().OfType<object>().ToList();
+            _dataDict[nameof(AppDbContext.FaziletCities)] = appDbContext.FaziletCities.ToList().OfType<object>().ToList();
+            _dataDict[nameof(AppDbContext.FaziletPrayerTimes)] = appDbContext.FaziletPrayerTimes.ToList().OfType<object>().ToList();
+            _dataDict[nameof(AppDbContext.SemerkandCountries)] = appDbContext.SemerkandCountries.ToList().OfType<object>().ToList();
+            _dataDict[nameof(AppDbContext.SemerkandCities)] = appDbContext.SemerkandCities.ToList().OfType<object>().ToList();
+            _dataDict[nameof(AppDbContext.SemerkandPrayerTimes)] = appDbContext.SemerkandPrayerTimes.ToList().OfType<object>().ToList();
+            _dataDict[nameof(AppDbContext.MuwaqqitPrayerTimes)] = appDbContext.MuwaqqitPrayerTimes.ToList().OfType<object>().ToList();
+            _dataDict[nameof(AppDbContext.Profiles)] = appDbContext.Profiles.ToList().OfType<object>().ToList();
+            _dataDict[nameof(AppDbContext.ProfileConfigs)] = appDbContext.ProfileConfigs.ToList().OfType<object>().ToList();
+            _dataDict[nameof(AppDbContext.ProfileLocations)] = appDbContext.ProfileLocations.ToList().OfType<object>().ToList();
 
-            SemerkandCountries = appDbContext.SemerkandCountries.ToList();
-            SemerkandCities = appDbContext.SemerkandCities.ToList();
-            SemerkandPrayerTimes = appDbContext.SemerkandPrayerTimes.ToList();
+            TableOptions = _dataDict.Select(x => x.Key).ToList();
+            SelectedTableOption = TableOptions[0];
+        }
 
-            MuwaqqitPrayerTimes = appDbContext.MuwaqqitPrayerTimes.ToList();
+        public List<string> TableOptions { get; set; }
 
-            Profiles = appDbContext.Profiles.ToList();
-            ProfileTimeConfigs = appDbContext.ProfileConfigs.ToList();
-            ProfileLocationConfigs = appDbContext.ProfileLocations.ToList();
+        [OnChangedMethod(nameof(onSelectedTableOptionChanged))]
+        public string SelectedTableOption { get; set; }
+
+        public Action<List<object>> OnChangeSelectionAction { get; set; }
+
+        private void onSelectedTableOptionChanged()
+        {
+            if (string.IsNullOrWhiteSpace(this.SelectedTableOption) || !_dataDict.ContainsKey(this.SelectedTableOption))
+                return;
+
+            var list = _dataDict[this.SelectedTableOption];
+
+            OnChangeSelectionAction?.Invoke(list);
         }
     }
 }

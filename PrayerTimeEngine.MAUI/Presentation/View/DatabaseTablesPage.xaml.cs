@@ -1,7 +1,5 @@
 using NodaTime;
-using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Models;
-using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Models;
-using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Models;
+using PrayerTimeEngine.Core.Data.EntityFramework;
 using PrayerTimeEngine.Core.Domain.Models;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Models;
 using PrayerTimeEngine.Presentation.ViewModel;
@@ -12,34 +10,12 @@ namespace PrayerTimeEngine.Views;
 
 public partial class DatabaseTablesPage : ContentPage
 {
-    private DatabaseTablesPageViewModel ViewModel { get; }
-
     public DatabaseTablesPage(DatabaseTablesPageViewModel viewModel)
     {
         InitializeComponent();
-        BindingContext = ViewModel = viewModel;
+        BindingContext = viewModel;
 
-        this.Appearing += DatabaseTablesPage_Appearing;
-    }
-
-    private void DatabaseTablesPage_Appearing(object sender, EventArgs e)
-    {
-        PopulateTabViewWithItems(
-            [
-                (nameof(DatabaseTablesPageViewModel.Profiles), typeof(Profile)),
-                (nameof(DatabaseTablesPageViewModel.ProfileTimeConfigs), typeof(ProfileTimeConfig)),
-                (nameof(DatabaseTablesPageViewModel.ProfileLocationConfigs), typeof(ProfileLocationConfig)),
-
-                (nameof(DatabaseTablesPageViewModel.FaziletCountries), typeof(FaziletCountry)),
-                (nameof(DatabaseTablesPageViewModel.FaziletCities), typeof(FaziletCity)),
-                (nameof(DatabaseTablesPageViewModel.FaziletPrayerTimes), typeof(FaziletPrayerTimes)),
-                
-                (nameof(DatabaseTablesPageViewModel.SemerkandCountries), typeof(SemerkandCountry)),
-                (nameof(DatabaseTablesPageViewModel.SemerkandCities), typeof(SemerkandCity)),
-                (nameof(DatabaseTablesPageViewModel.SemerkandPrayerTimes), typeof(SemerkandPrayerTimes)),
-
-                (nameof(DatabaseTablesPageViewModel.MuwaqqitPrayerTimes), typeof(MuwaqqitPrayerTimes)),
-            ]);
+        viewModel.OnChangeSelectionAction = PopulateTabViewWithItems;
     }
 
     private readonly HashSet<Type> validTypes =
@@ -49,43 +25,24 @@ public partial class DatabaseTablesPage : ContentPage
         typeof(BaseLocationData),
     ];
 
-    public void PopulateTabViewWithItems(List<(string bindingPropertyName, Type type)> itemsLists)
+    public void PopulateTabViewWithItems(List<object> list)
     {
-        foreach ((string bindingPropertyName, Type type) in itemsLists)
+        if (list.Count == 0)
+            return;
+
+        dataGrid.Columns.Clear();
+
+        Type type = list.First().GetType();
+        dataGrid.ItemsSource = list;
+
+        foreach (PropertyInfo prop in type.GetProperties().Where(x => validTypes.Contains(x.PropertyType)))
         {
-            var dataGrid = new DataGrid
+            var dataGridColumn = new DataGridColumn
             {
-                BindingContext = this.ViewModel
+                Title = prop.Name,
+                Binding = new Binding(prop.Name)
             };
-            dataGrid.SetBinding(DataGrid.ItemsSourceProperty, bindingPropertyName);
-
-            var scrollView = new ScrollView
-            {
-                Orientation = ScrollOrientation.Both,
-                Margin = 10,
-                Content = dataGrid
-            };
-            tabView.Items.Add(new TabItem
-            {
-                Content = scrollView,
-                Title = bindingPropertyName,
-            });
-
-            var propertieInfos = 
-                type.GetProperties()
-                    .Where(x => validTypes.Contains(x.PropertyType))
-                    .Select((x, index) => (x, index))
-                    .ToList();
-
-            foreach ((PropertyInfo prop, int index) in propertieInfos)
-            {
-                var dataGridColumn = new DataGridColumn
-                {
-                    Title = prop.Name,
-                    Binding = new Binding(prop.Name)
-                };
-                dataGrid.Columns.Add(dataGridColumn);
-            }
+            dataGrid.Columns.Add(dataGridColumn);
         }
     }
 }
