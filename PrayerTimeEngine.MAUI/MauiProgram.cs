@@ -135,9 +135,7 @@ public static class MauiProgram
 
     private static void addDependencyInjectionServices(IServiceCollection serviceCollection)
     {
-        // Assumptions:
-        // - Singleton instead of transient if problems with something like states or thread safety are not expected, and disposing is not necessary
-        // - Microsoft recommends explicit HttpClient instances without DI for MAUI
+        // Note: Microsoft recommends explicit HttpClient instances without DI for MAUI
 
         serviceCollection.AddDbContext<AppDbContext>(options =>
         {
@@ -147,13 +145,15 @@ public static class MauiProgram
             //options.ConfigureWarnings(x => x.Throw(RelationalEventId.MultipleCollectionIncludeWarning));
             //options.LogTo(Console.WriteLine, LogLevel.Trace);
         },
-        contextLifetime: ServiceLifetime.Transient,
+        // Transient because (Microsoft) "A DbContext instance is designed to be used for a single unit-of-work. This means that the lifetime of a DbContext instance is usually very short."
+        contextLifetime: ServiceLifetime.Transient, 
         optionsLifetime: ServiceLifetime.Singleton);
 
         serviceCollection.AddSingleton<ISystemInfoService, SystemInfoService>();
-        serviceCollection.AddSingleton<ICalculationManager, CalculationManager>();
-        serviceCollection.AddSingleton<IPrayerTimeServiceFactory, PrayerTimeServiceFactory>();
         serviceCollection.AddSingleton<TimeTypeAttributeService>();
+
+        serviceCollection.AddTransient<ICalculationManager, CalculationManager>();
+        serviceCollection.AddTransient<IPrayerTimeServiceFactory, PrayerTimeServiceFactory>();
 
         serviceCollection.AddSingleton<IPlaceService, PlaceService>(sp =>
         {
@@ -220,14 +220,14 @@ public static class MauiProgram
 
     private static void addPresentationLayerServices(IServiceCollection serviceCollection)
     {
-        serviceCollection.AddSingleton<INavigationService, NavigationService>();
+        serviceCollection.AddTransient<INavigationService, NavigationService>();
 
-        serviceCollection.AddSingleton<MainPage>();
-        serviceCollection.AddSingleton<MainPageViewModel>();
+        serviceCollection.AddTransient<MainPage>();
+        serviceCollection.AddTransient<MainPageViewModel>();
 
         serviceCollection.AddTransient<SettingsHandlerPage>();
         serviceCollection.AddTransient<SettingsHandlerPageViewModel>();
-        serviceCollection.AddSingleton<SettingsContentPageFactory>();
+        serviceCollection.AddTransient<SettingsContentPageFactory>();
 
         serviceCollection.AddTransient<SettingsContentPage>();
         serviceCollection.AddTransient<SettingsContentPageViewModel>();
