@@ -1,4 +1,5 @@
-﻿using OnScreenSizeMarkup.Maui.Helpers;
+﻿using CommunityToolkit.Maui.Storage;
+using OnScreenSizeMarkup.Maui.Helpers;
 using PrayerTimeEngine.Presentation.GraphicsView;
 using PrayerTimeEngine.Presentation.ViewModel;
 
@@ -29,17 +30,49 @@ namespace PrayerTimeEngine
                 .Add(
                     new TapGestureRecognizer
                     {
-                        Command = new Command(async () => await displayAlert(this._viewModel.GetPrayerTimeConfigDisplayText())),
+                        Command = new Command(async () => await this.openOptionsMenu()),
                         NumberOfTapsRequired = 2,
                     });
+        }
 
-            this.currentProfileLocationName.GestureRecognizers
-                .Add(
-                    new TapGestureRecognizer
+        private async Task openOptionsMenu()
+        {
+            string action = await this.DisplayActionSheet(
+                title: "Options",
+                cancel: "Cancel",
+                destruction: null,
+                "Zeiten-Konfiguration",
+                "Ortsdaten",
+                "DB-Tabellen zeigen",
+                "DB-File speichern");
+
+            switch (action)
+            {
+                case "Zeiten-Konfiguration":
+                    await displayAlert(this._viewModel.GetPrayerTimeConfigDisplayText());
+                    break;
+                case "Ortsdaten":
+                    await displayAlert(this._viewModel.GetLocationDataDisplayText());
+                    break;
+                case "DB-Tabellen zeigen":
+                    await this._viewModel.ShowDatabaseTable();
+                    break;
+                case "DB-File speichern":
+                    FolderPickerResult folderPickerResult = await FolderPicker.PickAsync(CancellationToken.None);
+
+                    if (folderPickerResult.Folder != null)
                     {
-                        Command = new Command(async () => await displayAlert(this._viewModel.GetLocationDataDisplayText())),
-                        NumberOfTapsRequired = 2,
-                    });
+                        File.Copy(
+                            sourceFileName: Core.Common.AppConfig.DATABASE_PATH,
+                            destFileName: Path.Combine(folderPickerResult.Folder.Path, $"dbFile_{DateTime.Now:ddMMyyyy_HH_mm}.db"),
+                            overwrite: true);
+                    }
+
+                    break;
+                case "Cancel":
+                    break;
+            }
+
         }
 
         private async Task displayAlert(string text)

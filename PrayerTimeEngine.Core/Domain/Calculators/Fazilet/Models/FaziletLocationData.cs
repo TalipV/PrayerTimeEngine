@@ -23,5 +23,10 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Models
         {
             return HashCode.Combine(CountryName, CityName);
         }
+
+        public override string ToString()
+        {
+            return $"{Source}: {CountryName}, {CityName}";
+        }
     }
 }

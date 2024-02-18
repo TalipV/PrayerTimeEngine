@@ -28,5 +28,10 @@ namespace PrayerTimeEngine.Core.Domain.Models
         {
             return HashCode.Combine(TimeType, Source, MinuteAdjustment, IsTimeShown);
         }
+
+        public override string ToString()
+        {
+            return $"{TimeType}, {Source}, {MinuteAdjustment} min, Shown: {IsTimeShown}";
+        }
     }
 }

@@ -135,11 +135,6 @@ namespace PrayerTimeEngine.Presentation.ViewModel
             }
         }
 
-        // TODO
-        // - PrayerTimeCalculationService bei jedem Laden den Cache aufsetzen lassen
-        // - Cache Invalidierung anhand von Equals/HashCode checks
-        // - Notification genauso Zeiten laden lassen
-
         public async Task OnPageLoaded()
         {
             try
@@ -320,6 +315,11 @@ namespace PrayerTimeEngine.Presentation.ViewModel
                 ?? PrayerTimeBundle.AllPrayerTimes.OrderBy(x => x.Start.Value.ToInstant()).FirstOrDefault(x => x.Start.Value.ToInstant() > currentInstant);
         }
 
+        public async Task ShowDatabaseTable()
+        {
+            await navigationService.NavigateTo<DatabaseTablesPageViewModel>();
+        }
+
         public string GetPrayerTimeConfigDisplayText()
         {
             return profileService.GetPrayerTimeConfigDisplayText(CurrentProfile);
@@ -346,6 +346,6 @@ namespace PrayerTimeEngine.Presentation.ViewModel
             });
         }
 
-        #endregion private methods
-    }
+    #endregion private methods
+}
 }

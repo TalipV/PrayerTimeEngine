@@ -26,6 +26,7 @@ namespace PrayerTimeEngine.Presentation.Service.Navigation
         {
             _mapping.Add(typeof(MainPageViewModel), typeof(MainPage));
             _mapping.Add(typeof(SettingsHandlerPageViewModel), typeof(SettingsHandlerPage));
+            _mapping.Add(typeof(DatabaseTablesPageViewModel), typeof(DatabaseTablesPage));
         }
 
         public async Task NavigateTo<TViewModel>(params object[] parameter) where TViewModel : CustomBaseViewModel
