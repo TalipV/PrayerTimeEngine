@@ -1,3 +1,4 @@
+using MethodTimer;
 using PrayerTimeEngine.Code.Presentation.View;
 using PrayerTimeEngine.Presentation.ViewModel;
 using UraniumUI.Material.Controls;
@@ -21,13 +22,16 @@ public partial class SettingsHandlerPage : ContentPage
         base.OnDisappearing();
 
         // for ViewModel to handle setting saving
-        Task.Run(async () =>
+        Task.Run(onDisappearingForAllSettingContentPages);
+    }
+
+    [Time]
+    private async Task onDisappearingForAllSettingContentPages()
+    {
+        foreach (SettingsContentPageViewModel contentPageViewModel in _viewModel.SettingsContentPages.Select(x => x.ViewModel))
         {
-            foreach (SettingsContentPageViewModel contentPageViewModel in _viewModel.SettingsContentPages.Select(x => x.ViewModel))
-            {
-                await contentPageViewModel.OnDisappearing();
-            }
-        });
+            await contentPageViewModel.OnDisappearing();
+        }
     }
 
     private void setUpTabPages()
