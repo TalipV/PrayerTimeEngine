@@ -16,7 +16,7 @@ namespace PrayerTimeEngine.Presentation.GraphicsView
         private Color PrayerSubTimeBorderColor = Colors.BlueViolet;
         private Color PrayerSubTimeTextColor = Colors.Black;
 
-        private DateTimeZone _timeZone { get; } = MauiProgram.ServiceProvider.GetService<ISystemInfoService>().GetSystemTimeZone();
+        private DateTimeZone _timeZone { get; } = MauiProgram.ServiceProvider.GetRequiredService<ISystemInfoService>().GetSystemTimeZone();
 
         public PrayerTime DisplayPrayerTime { get; set; }
 
@@ -72,7 +72,7 @@ namespace PrayerTimeEngine.Presentation.GraphicsView
 
         private void drawCurrentTimeIndicator(ICanvas canvas, RectF baseRectangle)
         {
-            Instant currentInstant = MauiProgram.ServiceProvider.GetService<ISystemInfoService>().GetCurrentInstant();
+            Instant currentInstant = MauiProgram.ServiceProvider.GetRequiredService<ISystemInfoService>().GetCurrentInstant();
 
             if (currentInstant < DisplayPrayerTime.Start.Value.ToInstant() || currentInstant > DisplayPrayerTime.End.Value.ToInstant())
             {

@@ -8,11 +8,8 @@ using PrayerTimeEngine.Core.Data.EntityFramework;
 using PrayerTimeEngine.Core.Domain;
 using PrayerTimeEngine.Core.Domain.CalculationManagement;
 using PrayerTimeEngine.Core.Domain.Calculators;
-using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Interfaces;
 using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services;
-using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Interfaces;
 using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services;
-using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Interfaces;
 using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Interfaces;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Services;
@@ -77,7 +74,7 @@ public static class MauiProgram
         MauiApp mauiApp = builder.Build();
         ServiceProvider = mauiApp.Services;
 
-        MethodTimeLogger.logger = mauiApp.Services.GetService<ILogger<App>>();
+        MethodTimeLogger.logger = mauiApp.Services.GetRequiredService<ILogger<App>>();
 
         return mauiApp;
     }
@@ -133,6 +130,8 @@ public static class MauiProgram
                 });
     }
 
+    private const int HTTP_REQUEST_TIMEOUT_SECONDS = 20;
+
     private static void addDependencyInjectionServices(IServiceCollection serviceCollection)
     {
         // Note: Microsoft recommends explicit HttpClient instances without DI for MAUI
@@ -155,17 +154,23 @@ public static class MauiProgram
         serviceCollection.AddTransient<ICalculationManager, CalculationManager>();
         serviceCollection.AddTransient<IPrayerTimeServiceFactory, PrayerTimeServiceFactory>();
 
+        serviceCollection.AddTransient<IProfileService>(serviceProvider =>
+        {
+            AppDbContext appDbContext = serviceProvider.GetRequiredService<AppDbContext>();
+            ProfileDBAccess profileDBAccess = new ProfileDBAccess(appDbContext);
+            TimeTypeAttributeService timeTypeAttributeService = serviceProvider.GetRequiredService<TimeTypeAttributeService>();
+            return new ProfileService(profileDBAccess, timeTypeAttributeService);
+        });
+
+        // TODO: Make Transient but check if that leads to problems with the Async lock
         serviceCollection.AddSingleton<IPlaceService, PlaceService>(sp =>
         {
             var httpClient = new HttpClient
             {
-                Timeout = TimeSpan.FromSeconds(20)
+                Timeout = TimeSpan.FromSeconds(HTTP_REQUEST_TIMEOUT_SECONDS)
             };
-            return new PlaceService(httpClient, sp.GetService<ILogger<PlaceService>>());
+            return new PlaceService(httpClient, sp.GetRequiredService<ILogger<PlaceService>>());
         });
-
-        serviceCollection.AddSingleton<IProfileService, ProfileService>();
-        serviceCollection.AddSingleton<IProfileDBAccess, ProfileDBAccess>();
 
         //serviceCollection.AddSingleton<PreferenceService>();
         //serviceCollection.AddSingleton<IPreferenceAccess, PreferenceAccess>();
@@ -180,41 +185,53 @@ public static class MauiProgram
 
     private static void addApiServices(IServiceCollection serviceCollection)
     {
-        // FAZILET
-        serviceCollection.AddSingleton<FaziletPrayerTimeCalculator>();
-        serviceCollection.AddSingleton<IFaziletDBAccess, FaziletDBAccess>();
-        serviceCollection.AddSingleton<IFaziletApiService, FaziletApiService>(sp =>
+        // TODO: Make these Transient but check if that leads to problems with the Async lock
+
+        serviceCollection.AddSingleton<FaziletPrayerTimeCalculator>(serviceProvider =>
         {
-            var httpClient = new HttpClient
+            AppDbContext appDbContext = serviceProvider.GetRequiredService<AppDbContext>();
+            HttpClient httpClient = new HttpClient
             {
-                Timeout = TimeSpan.FromSeconds(20),
+                Timeout = TimeSpan.FromSeconds(HTTP_REQUEST_TIMEOUT_SECONDS),
                 BaseAddress = new Uri("https://fazilettakvimi.com/api/cms/")
             };
-            return new FaziletApiService(httpClient);
+
+            return new FaziletPrayerTimeCalculator(
+                new FaziletDBAccess(appDbContext),
+                new FaziletApiService(httpClient), 
+                serviceProvider.GetRequiredService<IPlaceService>(),
+                serviceProvider.GetRequiredService<ILogger<FaziletPrayerTimeCalculator>>());
         });
 
-        // SEMERKAND
-        serviceCollection.AddSingleton<SemerkandPrayerTimeCalculator>();
-        serviceCollection.AddSingleton<ISemerkandDBAccess, SemerkandDBAccess>();
-        serviceCollection.AddSingleton<ISemerkandApiService, SemerkandApiService>(sp =>
+        serviceCollection.AddSingleton<SemerkandPrayerTimeCalculator>(serviceProvider =>
         {
-            var httpClient = new HttpClient
+            AppDbContext appDbContext = serviceProvider.GetRequiredService<AppDbContext>();
+            HttpClient httpClient = new HttpClient
             {
-                Timeout = TimeSpan.FromSeconds(20)
+                Timeout = TimeSpan.FromSeconds(HTTP_REQUEST_TIMEOUT_SECONDS),
+                BaseAddress = new Uri("https://semerkandtakvimi.com/api/cms/")
             };
-            return new SemerkandApiService(httpClient);
+
+            return new SemerkandPrayerTimeCalculator(
+                new SemerkandDBAccess(appDbContext),
+                new SemerkandApiService(httpClient),
+                serviceProvider.GetRequiredService<IPlaceService>(),
+                serviceProvider.GetRequiredService<ILogger<SemerkandPrayerTimeCalculator>>());
         });
 
         // MUWAQQIT
-        serviceCollection.AddSingleton<MuwaqqitPrayerTimeCalculator>();
-        serviceCollection.AddSingleton<IMuwaqqitDBAccess, MuwaqqitDBAccess>();
-        serviceCollection.AddSingleton<IMuwaqqitApiService, MuwaqqitApiService>(sp =>
+        serviceCollection.AddSingleton<MuwaqqitPrayerTimeCalculator>(serviceProvider =>
         {
-            var httpClient = new HttpClient
+            AppDbContext appDbContext = serviceProvider.GetRequiredService<AppDbContext>();
+            HttpClient httpClient = new HttpClient
             {
-                Timeout = TimeSpan.FromSeconds(20)
+                Timeout = TimeSpan.FromSeconds(HTTP_REQUEST_TIMEOUT_SECONDS)
             };
-            return new MuwaqqitApiService(httpClient);
+
+            return new MuwaqqitPrayerTimeCalculator(
+                new MuwaqqitDBAccess(appDbContext),
+                new MuwaqqitApiService(httpClient),
+                serviceProvider.GetRequiredService<TimeTypeAttributeService>());
         });
     }
 
