@@ -25,8 +25,8 @@ namespace PrayerTimeEngine.Services
 
         public PrayerTimeSummaryNotification()
         {
-            _profileService = MauiProgram.ServiceProvider.GetService<IProfileService>();
-            _prayerTimeCalculationManager = MauiProgram.ServiceProvider.GetService<ICalculationManager>();
+            _profileService = MauiProgram.ServiceProvider.GetRequiredService<IProfileService>();
+            _prayerTimeCalculationManager = MauiProgram.ServiceProvider.GetRequiredService<ICalculationManager>();
 
             updateTimer = new System.Timers.Timer(TIMER_FREQUENCY_MS);
             updateTimer.Elapsed += (sender, e) => Task.Run(UpdateNotification);
@@ -99,7 +99,7 @@ namespace PrayerTimeEngine.Services
             // potential for performance improvement
 
             ZonedDateTime now = 
-                MauiProgram.ServiceProvider.GetService<ISystemInfoService>()
+                MauiProgram.ServiceProvider.GetRequiredService<ISystemInfoService>()
                     .GetCurrentZonedDateTime();
 
             Profile profile = (await _profileService.GetProfiles()).First();

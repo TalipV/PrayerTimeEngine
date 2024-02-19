@@ -1,7 +1,5 @@
 using NodaTime;
-using PrayerTimeEngine.Core.Data.EntityFramework;
 using PrayerTimeEngine.Core.Domain.Models;
-using PrayerTimeEngine.Core.Domain.ProfileManagement.Models;
 using PrayerTimeEngine.Presentation.ViewModel;
 using System.Reflection;
 using UraniumUI.Material.Controls;

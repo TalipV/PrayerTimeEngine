@@ -142,7 +142,6 @@ namespace PrayerTimeEngine.Presentation.ViewModel
                 if (!MauiProgram.IsFullyInitialized)
                     await appDbContext.Database.MigrateAsync();
 
-                logger.LogInformation("OnPageLoaded-Start");
                 CurrentProfile ??= (await profileService.GetProfiles().ConfigureAwait(false)).First();
 
                 await loadPrayerTimes();
@@ -154,7 +153,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
                     showToastMessage($"{startUpTimeMS:N0}ms to start!");
 
 #if ANDROID
-                    MauiProgram.ServiceProvider.GetService<PrayerTimeSummaryNotificationManager>().TryStartPersistentNotification();
+                    MauiProgram.ServiceProvider.GetRequiredService<PrayerTimeSummaryNotificationManager>().TryStartPersistentNotification();
 #endif
                 }
             }

@@ -1,8 +1,4 @@
 ﻿using PrayerTimeEngine.Core.Data.EntityFramework;
-using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Models;
-using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Models;
-using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Models;
-using PrayerTimeEngine.Core.Domain.ProfileManagement.Models;
 using PropertyChanged;
 
 namespace PrayerTimeEngine.Presentation.ViewModel
