@@ -48,7 +48,7 @@ namespace PrayerTimeEngine.Core.Tests.Integration.Domain.Calculators.Fazilet
         }
 
         [Fact]
-        public async Task FaziletPrayerTimeCalculator_GetPrayerTimesAsyncWithNormalInput_PrayerTimesForThatDay()
+        public async Task GetPrayerTimesAsync_NormalInput_PrayerTimesForThatDay()
         {
             // ARRANGE
             ServiceProvider serviceProvider = createServiceProvider(

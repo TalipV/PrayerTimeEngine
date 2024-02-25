@@ -48,6 +48,24 @@ namespace PrayerTimeEngine;
 // - Translation
 // - Check MVVM
 
+// TODO tests:
+// ### UNIT
+// # Semerkand
+// --- SemerkandPrayerTimeCalculator
+// --- SemerkandApiService
+// --- SemerkandDBAccess
+// # Fazilet
+// --- FaziletPrayerTimeCalculator
+// --- FaziletApiService
+// --- FaziletDBAccess
+// # Muwaqqit
+// --- MuwaqqitPrayerTimeCalculator
+// --- MuwaqqitApiService
+// --- MuwaqqitDBAccess
+// # ProfileDBAccess
+// # PreferenceService
+// # CalculationManager
+
 public static class MauiProgram
 {
     public static readonly DateTime StartDateTime = DateTime.Now;
