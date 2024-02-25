@@ -46,7 +46,7 @@ namespace PrayerTimeEngine.Core.Tests.Integration.Domain.Calculators.Muwaqqit
         }
 
         [Fact]
-        public async Task MuwaqqitPrayerTimeCalculator_GetPrayerTimesAsyncWithNormalInput_PrayerTimesForThatDay()
+        public async Task GetPrayerTimesAsync_NormalInput_PrayerTimesForThatDay()
         {
             // ARRANGE
             ServiceProvider serviceProvider = createServiceProvider(

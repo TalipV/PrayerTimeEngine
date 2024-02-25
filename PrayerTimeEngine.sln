@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PrayerTimeEngine.MAUI", "Pr
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PrayerTimeEngine.Core", "PrayerTimeEngine.Core\PrayerTimeEngine.Core.csproj", "{900682D9-A67A-4112-BA7E-88AECD351554}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PrayerTimeEngine.Core.Tests.Unit", "PrayerTimeEngine.Core.Tests\PrayerTimeEngine.Core.Tests.Unit.csproj", "{FB9E7882-87DF-4ED2-B871-00A55C04B1F6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PrayerTimeEngine.Core.Tests.Unit", "PrayerTimeEngine.Core.Tests.Unit\PrayerTimeEngine.Core.Tests.Unit.csproj", "{FB9E7882-87DF-4ED2-B871-00A55C04B1F6}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PrayerTimeEngine.BenchmarkDotNet", "PrayerTimeEngine.BenchmarkDotNet\PrayerTimeEngine.BenchmarkDotNet.csproj", "{08538029-6CAC-45B7-AE29-172B60744EE6}"
 EndProject
