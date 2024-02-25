@@ -13,6 +13,11 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Services
             TimeTypeAttributeService timeTypeAttributeService
         ) : IProfileService
     {
+        public async Task<Profile> GetUntrackedReferenceOfProfile(int profileID)
+        {
+            return await profileDBAccess.GetUntrackedReferenceOfProfile(profileID);
+        }
+
         public async Task<List<Profile>> GetProfiles()
         {
             List<Profile> profiles = await profileDBAccess.GetProfiles().ConfigureAwait(false);
@@ -233,7 +238,7 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Services
                         ProfileID = profile.ID,
                         Profile = profile,
                         // früheste Berechnung
-                        CalculationConfiguration = new GenericSettingConfiguration { Source = ECalculationSource.Semerkand, TimeType = ETimeType.FajrEnd }
+                        CalculationConfiguration = new GenericSettingConfiguration { Source = ECalculationSource.Semerkand, MinuteAdjustment = -5, TimeType = ETimeType.FajrEnd }
                     },
                     new ProfileTimeConfig
                     {
@@ -281,7 +286,7 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Services
                         ProfileID = profile.ID,
                         Profile = profile,
                         // früheste Berechnung
-                        CalculationConfiguration = new GenericSettingConfiguration { Source = ECalculationSource.Muwaqqit, TimeType = ETimeType.DhuhrEnd }
+                        CalculationConfiguration = new GenericSettingConfiguration { Source = ECalculationSource.Muwaqqit, MinuteAdjustment = -5, TimeType = ETimeType.DhuhrEnd }
                     },
                     new ProfileTimeConfig
                     {
@@ -297,7 +302,7 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Services
                         ProfileID = profile.ID,
                         Profile = profile,
                         // früheste Berechnung
-                        CalculationConfiguration = new GenericSettingConfiguration { Source = ECalculationSource.Muwaqqit, TimeType = ETimeType.AsrEnd }
+                        CalculationConfiguration = new GenericSettingConfiguration { Source = ECalculationSource.Muwaqqit, MinuteAdjustment = -5, TimeType = ETimeType.AsrEnd }
                     },
                     new ProfileTimeConfig
                     {
@@ -328,7 +333,7 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Services
                         ProfileID = profile.ID,
                         Profile = profile,
                         // ### keine Erfahrung, aber Sicherheitsabstand
-                        CalculationConfiguration = new GenericSettingConfiguration { Source = ECalculationSource.Semerkand, TimeType = ETimeType.MaghribEnd }
+                        CalculationConfiguration = new GenericSettingConfiguration { Source = ECalculationSource.Semerkand, MinuteAdjustment = -5, TimeType = ETimeType.MaghribEnd }
                     },
                     new ProfileTimeConfig
                     {

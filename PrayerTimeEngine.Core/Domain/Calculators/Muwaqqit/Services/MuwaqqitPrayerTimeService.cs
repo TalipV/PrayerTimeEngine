@@ -167,7 +167,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services
             return new HashSet<ETimeType>();
         }
 
-        private readonly AsyncKeyedLocker<(LocalDate date, decimal longitude, decimal latitude, double fajrDegree, double ishaDegree, double ishtibaqDegree, double asrKarahaDegree, string timezone)> getPrayerTimesLocker = new(o =>
+        private static readonly AsyncKeyedLocker<(LocalDate date, decimal longitude, decimal latitude, double fajrDegree, double ishaDegree, double ishtibaqDegree, double asrKarahaDegree, string timezone)> getPrayerTimesLocker = new(o =>
         {
             o.PoolSize = 20;
             o.PoolInitialFill = 1;

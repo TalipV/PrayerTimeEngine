@@ -12,6 +12,15 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Services
             AppDbContext dbContext
         ) : IProfileDBAccess
     {
+        public async Task<Profile> GetUntrackedReferenceOfProfile(int profileID)
+        {
+            return await dbContext.Profiles
+                .Include(x => x.TimeConfigs)
+                .Include(x => x.LocationConfigs)
+                .AsNoTracking()
+                .FirstAsync(x => x.ID == profileID).ConfigureAwait(false);
+        }
+
         public async Task<List<Profile>> GetProfiles()
         {
             return await dbContext.Profiles

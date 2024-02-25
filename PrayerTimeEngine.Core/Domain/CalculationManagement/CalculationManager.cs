@@ -4,6 +4,8 @@ using PrayerTimeEngine.Core.Domain.Calculators;
 using PrayerTimeEngine.Core.Domain.Models;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Interfaces;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Models;
+using System.Diagnostics;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace PrayerTimeEngine.Core.Domain.CalculationManagement
 {
@@ -12,12 +14,48 @@ namespace PrayerTimeEngine.Core.Domain.CalculationManagement
             IProfileService profileService
         ) : ICalculationManager
     {
-        public async Task<PrayerTimesBundle> CalculatePrayerTimesAsync(Profile profile, ZonedDateTime zoneDate)
+        private LocalDate? _cachedCalculationDate = null;
+        private Profile _cachedProfile = null;
+        private PrayerTimesBundle _cachedPrayerTimeBundle = null;
+
+        private bool tryGetCachedCalculation(
+            Profile profile, 
+            LocalDate date, 
+            out PrayerTimesBundle prayerTimeEntity)
+        {
+            // no cache
+            if (_cachedCalculationDate == null 
+                || _cachedProfile == null 
+                || _cachedPrayerTimeBundle == null)
+            {
+                prayerTimeEntity = null;
+                return false;
+            }
+
+            // wrong input params for cache
+            if (_cachedCalculationDate != date || !profileService.EqualsFullProfile(_cachedProfile, profile))
+            {
+                prayerTimeEntity = null;
+                return false;
+            }
+
+            prayerTimeEntity = _cachedPrayerTimeBundle;
+            return true;
+        }
+
+        public async Task<PrayerTimesBundle> CalculatePrayerTimesAsync(int profileID, ZonedDateTime zoneDate)
         {
             LocalDate date = zoneDate.Date;
             DateTimeZone zone = zoneDate.Zone;
+            Profile profile = await profileService.GetUntrackedReferenceOfProfile(profileID);
 
-            var prayerTimeEntity = new PrayerTimesBundle();
+            if (tryGetCachedCalculation(profile, date, out PrayerTimesBundle prayerTimeEntity))
+            {
+                prayerTimeEntity.DataCalculationTimestamp = SystemClock.Instance.GetCurrentInstant().InZone(zone);
+                return prayerTimeEntity;
+            }
+
+            prayerTimeEntity = new PrayerTimesBundle();
 
             await foreach ((ETimeType timeType, ZonedDateTime? zonedDateTime) in calculateComplexTypes(profile, date).ConfigureAwait(false))
             {
@@ -28,8 +66,11 @@ namespace PrayerTimeEngine.Core.Domain.CalculationManagement
             {
                 prayerTimeEntity.SetSpecificPrayerTimeDateTime(timeType, zonedDateTime);
             }
-            
+
             prayerTimeEntity.DataCalculationTimestamp = SystemClock.Instance.GetCurrentInstant().InZone(zone);
+            _cachedCalculationDate = date;
+            _cachedProfile = profile;
+            _cachedPrayerTimeBundle = prayerTimeEntity;
             return prayerTimeEntity;
         }
 

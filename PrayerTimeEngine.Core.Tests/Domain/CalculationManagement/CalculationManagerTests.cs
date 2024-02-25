@@ -34,8 +34,9 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.CalculationManagement
             // ARRANGE
             Profile profile = TestData.CreateNewCompleteTestProfile();
             ZonedDateTime zonedDate = new LocalDate(2024, 1, 1).AtStartOfDayInZone(DateTimeZone.Utc);
-            
+
             var muwaqqitLocationData = Substitute.ForPartsOf<BaseLocationData>();
+            _profileServiceMock.GetUntrackedReferenceOfProfile(Arg.Any<int>()).Returns(profile);
             _profileServiceMock.GetLocationConfig(Arg.Is(profile), Arg.Is(ECalculationSource.Muwaqqit)).Returns(muwaqqitLocationData);
 
             GenericSettingConfiguration muwaqqitConfig = new MuwaqqitDegreeCalculationConfiguration { Degree = 14, TimeType = ETimeType.FajrStart };
@@ -56,7 +57,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.CalculationManagement
             muwaqqitCalculation.GetZonedDateTimeForTimeType(Arg.Is(ETimeType.FajrStart)).Returns(zonedDate.PlusHours(4));
 
             // ACT
-            PrayerTimesBundle result = await _calculationManager.CalculatePrayerTimesAsync(profile, zonedDate);
+            PrayerTimesBundle result = await _calculationManager.CalculatePrayerTimesAsync(profile.ID, zonedDate);
 
             // ASSERT
             result.Should().NotBeNull();

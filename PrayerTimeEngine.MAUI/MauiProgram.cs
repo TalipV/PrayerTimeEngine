@@ -33,6 +33,7 @@ namespace PrayerTimeEngine;
 // - Fazilet/Semerkand country/city names which are unexpected (e.g. "Vienna (Wien)")
 // - Turkish location details for Fazilet/Semerkand not robust
 // - Exception for single calculation prevents all the other calculations
+// - Calculation relevant data like the Profile with its configs may change in the middle of the calculation process due to shared references
 
 // TODO:
 // - Performance
@@ -162,8 +163,7 @@ public static class MauiProgram
             return new ProfileService(profileDBAccess, timeTypeAttributeService);
         });
 
-        // TODO: Make Transient but check if that leads to problems with the Async lock
-        serviceCollection.AddSingleton<IPlaceService, PlaceService>(sp =>
+        serviceCollection.AddTransient<IPlaceService, PlaceService>(sp =>
         {
             var httpClient = new HttpClient
             {
@@ -185,9 +185,7 @@ public static class MauiProgram
 
     private static void addApiServices(IServiceCollection serviceCollection)
     {
-        // TODO: Make these Transient but check if that leads to problems with the Async lock
-
-        serviceCollection.AddSingleton<FaziletPrayerTimeCalculator>(serviceProvider =>
+        serviceCollection.AddTransient<FaziletPrayerTimeCalculator>(serviceProvider =>
         {
             AppDbContext appDbContext = serviceProvider.GetRequiredService<AppDbContext>();
             HttpClient httpClient = new HttpClient
@@ -203,7 +201,7 @@ public static class MauiProgram
                 serviceProvider.GetRequiredService<ILogger<FaziletPrayerTimeCalculator>>());
         });
 
-        serviceCollection.AddSingleton<SemerkandPrayerTimeCalculator>(serviceProvider =>
+        serviceCollection.AddTransient<SemerkandPrayerTimeCalculator>(serviceProvider =>
         {
             AppDbContext appDbContext = serviceProvider.GetRequiredService<AppDbContext>();
             HttpClient httpClient = new HttpClient
@@ -220,7 +218,7 @@ public static class MauiProgram
         });
 
         // MUWAQQIT
-        serviceCollection.AddSingleton<MuwaqqitPrayerTimeCalculator>(serviceProvider =>
+        serviceCollection.AddTransient<MuwaqqitPrayerTimeCalculator>(serviceProvider =>
         {
             AppDbContext appDbContext = serviceProvider.GetRequiredService<AppDbContext>();
             HttpClient httpClient = new HttpClient

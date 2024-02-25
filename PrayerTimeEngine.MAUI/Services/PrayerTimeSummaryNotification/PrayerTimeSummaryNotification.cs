@@ -90,10 +90,6 @@ namespace PrayerTimeEngine.Services
             return _notificationBuilder;
         }
 
-        private LocalDate? _cachedCalculationDate = null;
-        private Profile _cachedProfile = null;
-        private PrayerTimesBundle _cachedPrayerTimeBundle = null;
-
         private async Task<string> getRemainingTimeText()
         {
             // potential for performance improvement
@@ -103,20 +99,7 @@ namespace PrayerTimeEngine.Services
                     .GetCurrentZonedDateTime();
 
             Profile profile = (await _profileService.GetProfiles()).First();
-            PrayerTimesBundle prayerTimeBundle;
-
-            bool hasMissingCacheValues = _cachedCalculationDate == null || _cachedProfile == null || _cachedPrayerTimeBundle == null;
-
-            if (hasMissingCacheValues
-                || _cachedCalculationDate != now.Date || !_profileService.EqualsFullProfile(_cachedProfile, profile))
-            {
-                // recalculate
-                _cachedPrayerTimeBundle = await _prayerTimeCalculationManager.CalculatePrayerTimesAsync(profile, now);
-            }
-
-            prayerTimeBundle = _cachedPrayerTimeBundle;
-            _cachedCalculationDate = now.Date;
-            _cachedProfile = profile;
+            PrayerTimesBundle prayerTimeBundle = await _prayerTimeCalculationManager.CalculatePrayerTimesAsync(profile.ID, now);
 
             ZonedDateTime? nextTime = null;
             string timeName = "-";

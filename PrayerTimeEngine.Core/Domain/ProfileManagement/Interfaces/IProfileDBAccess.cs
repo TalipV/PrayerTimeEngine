@@ -7,6 +7,7 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Interfaces
     public interface IProfileDBAccess
     {
         public Task<List<Profile>> GetProfiles();
+        public Task<Profile> GetUntrackedReferenceOfProfile(int profileID);
         public Task SaveProfile(Profile profile);
 
         public Task UpdateLocationConfig(Profile profile, string locationName, List<(ECalculationSource CalculationSource, BaseLocationData LocationData)> locationDataByCalculationSource);
