@@ -71,7 +71,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
             return prayerTimes;
         }
 
-        private readonly AsyncKeyedLocker<(LocalDate date, int cityID)> getPrayerTimesLocker = new(o =>
+        private static readonly AsyncKeyedLocker<(LocalDate date, int cityID)> getPrayerTimesLocker = new(o =>
         {
             o.PoolSize = 20;
             o.PoolInitialFill = 1;
@@ -96,7 +96,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
             }
         }
 
-        private readonly AsyncNonKeyedLocker semaphoreTryGetCityID = new(1);
+        private static readonly AsyncNonKeyedLocker semaphoreTryGetCityID = new(1);
 
         private async Task<(bool success, int cityID)> tryGetCityID(string cityName, int countryID)
         {
@@ -120,7 +120,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
                 return (false, -1);
         }
 
-        private readonly AsyncNonKeyedLocker semaphoreTryGetCountryID = new(1);
+        private static readonly AsyncNonKeyedLocker semaphoreTryGetCountryID = new(1);
 
         private async Task<(bool success, int countryID)> tryGetCountryID(string countryName)
         {

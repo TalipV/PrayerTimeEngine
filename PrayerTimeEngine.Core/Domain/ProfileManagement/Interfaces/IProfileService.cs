@@ -20,5 +20,6 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Interfaces
 
         bool EqualsFullProfile(Profile profile1, Profile profile2);
         List<GenericSettingConfiguration> GetActiveComplexTimeConfigs(Profile profile);
+        Task<Profile> GetUntrackedReferenceOfProfile(int profileID);
     }
 }

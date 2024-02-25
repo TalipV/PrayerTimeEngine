@@ -2,6 +2,8 @@
 using OnScreenSizeMarkup.Maui.Helpers;
 using PrayerTimeEngine.Presentation.GraphicsView;
 using PrayerTimeEngine.Presentation.ViewModel;
+using UraniumUI.Controls;
+using UraniumUI.Material.Controls;
 
 namespace PrayerTimeEngine
 {
@@ -11,17 +13,10 @@ namespace PrayerTimeEngine
 
         public MainPage(MainPageViewModel viewModel)
         {
-            // UraniumUI autocomplete control threw nullrefs
-            // because of this
-            if (Application.Current == null)
-                Application.SetCurrentApplication(new Application());
-
             InitializeComponent();
             BindingContext = this._viewModel = viewModel;
 
             viewModel.OnAfterLoadingPrayerTimes_EventTrigger += ViewModel_OnAfterLoadingPrayerTimes_EventTrigger;
-
-            this.Loaded += MainPage_Loaded;
 
             setCustomSizes();
 
@@ -32,6 +27,26 @@ namespace PrayerTimeEngine
                         Command = new Command(async () => await this.openOptionsMenu()),
                         NumberOfTapsRequired = 2,
                     });
+
+            this.Loaded += MainPage_Loaded;
+        }
+
+        private void MainPage_Loaded(object sender, EventArgs e)
+        {
+            // BUG crashes the app on startup
+            return;
+
+            var autoCompleteTextField = new AutoCompleteTextField
+            {
+                Title = "Search",
+                BackgroundColor = Colors.DarkSlateGray,
+            };
+
+            autoCompleteTextField.SetBinding(AutoCompleteView.ItemsSourceProperty, nameof(_viewModel.FoundPlacesSelectionTexts));
+            autoCompleteTextField.SetBinding(AutoCompleteView.TextProperty, nameof(_viewModel.PlaceSearchText));
+            autoCompleteTextField.SetBinding(AutoCompleteView.SelectedTextProperty, nameof(_viewModel.SelectedPlaceText));
+
+            this.autoCompleteTextFieldPlaceHolder.Content = autoCompleteTextField;
         }
 
         private async Task openOptionsMenu()
@@ -187,14 +202,6 @@ namespace PrayerTimeEngine
             });
         }
 
-        private void MainPage_Loaded(object sender, EventArgs e)
-        {
-            // awaiting in the event might not block the UI thread
-            // but it (apparently) still will prevent the UI thread from finishing the code
-            // after this event trigger
-            Task.Run(_viewModel.OnPageLoaded);
-        }
-
         private void ViewModel_OnAfterLoadingPrayerTimes_EventTrigger()
         {
             MainThread.BeginInvokeOnMainThread(() =>
@@ -209,7 +216,7 @@ namespace PrayerTimeEngine
         /// </summary>
         private void app_Resumed()
         {
-            _viewModel.OnActualAppearing();
+            Task.Run(_viewModel.OnActualAppearing);
         }
 
         /// <summary>
@@ -223,7 +230,7 @@ namespace PrayerTimeEngine
                 app.Resumed += app_Resumed;
             }
 
-            _viewModel.OnActualAppearing();
+            Task.Run(_viewModel.OnActualAppearing);
         }
 
         protected override void OnDisappearing()

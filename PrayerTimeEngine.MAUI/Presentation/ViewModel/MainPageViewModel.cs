@@ -34,7 +34,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
         ) : LogController
     {
         #region fields
-        
+
         private Debounce.Core.Debouncer debouncer;
 
         #endregion fields
@@ -118,57 +118,12 @@ namespace PrayerTimeEngine.Presentation.ViewModel
             return [];
         }
 
-        public async void OnActualAppearing()
+        public async Task OnActualAppearing()
         {
-            try
-            {
-                if (CurrentProfile == null)
-                    return;
-
-                showHideSpecificTimes();
-                await loadPrayerTimes();
-            }
-            catch (Exception exception)
-            {
-                logger.LogError(exception, "Error during OnActualAppearing");
-                showToastMessage(exception.Message);
-            }
+            await refreshData();
         }
 
-        public async Task OnPageLoaded()
-        {
-            try
-            {
-                if (!MauiProgram.IsFullyInitialized)
-                    await appDbContext.Database.MigrateAsync();
-
-                CurrentProfile ??= (await profileService.GetProfiles().ConfigureAwait(false)).First();
-
-                await loadPrayerTimes();
-                showHideSpecificTimes();
-
-                if (!MauiProgram.IsFullyInitialized)
-                {
-                    double startUpTimeMS = (DateTime.Now - MauiProgram.StartDateTime).TotalMilliseconds;
-                    showToastMessage($"{startUpTimeMS:N0}ms to start!");
-
-#if ANDROID
-                    MauiProgram.ServiceProvider.GetRequiredService<PrayerTimeSummaryNotificationManager>().TryStartPersistentNotification();
-#endif
-                }
-            }
-            catch (Exception exception)
-            {
-                logger.LogError(exception, "Error during page load");
-                showToastMessage(exception.Message);
-            }
-            finally
-            {
-                MauiProgram.IsFullyInitialized = true;
-            }
-        }
-
-#endregion public methods
+        #endregion public methods
 
         #region private methods
 
@@ -197,40 +152,79 @@ namespace PrayerTimeEngine.Presentation.ViewModel
 
         private int isLoadPrayerTimesRunningInterlockedInt = 0;  // 0 for false, 1 for true
 
-        private async Task loadPrayerTimes()
+        private async Task refreshData()
         {
-            if (CurrentProfile == null || Interlocked.CompareExchange(ref isLoadPrayerTimesRunningInterlockedInt, 1, 0) == 1)
-            {
-                return;
-            }
-
             try
             {
-                IsLoadingPrayerTimes = true;
-                PrayerTimeBundle = await prayerTimeCalculator.CalculatePrayerTimesAsync(CurrentProfile, _systemInfoService.GetCurrentZonedDateTime());
-                
-                OnAfterLoadingPrayerTimes_EventTrigger.Invoke();
+                if (!MauiProgram.IsFullyInitialized)
+                    await onBeforeFirstLoad();
+
+                await showHideSpecificTimes();
+
+                if (CurrentProfile == null || Interlocked.CompareExchange(ref isLoadPrayerTimesRunningInterlockedInt, 1, 0) == 1)
+                {
+                    return;
+                }
+
+                try
+                {
+                    IsLoadingPrayerTimes = true;
+                    PrayerTimeBundle = await prayerTimeCalculator.CalculatePrayerTimesAsync(CurrentProfile.ID, _systemInfoService.GetCurrentZonedDateTime());
+                    OnAfterLoadingPrayerTimes_EventTrigger.Invoke();
+                }
+                finally
+                {
+                    IsLoadingPrayerTimes = false;
+                    Interlocked.Exchange(ref isLoadPrayerTimesRunningInterlockedInt, 0);  // Reset the flag to allow future runs
+                }
+
+                if (!MauiProgram.IsFullyInitialized)
+                {
+                    onAfterFirstLoad();
+                }
+            }
+            catch (Exception exception)
+            {
+                logger.LogError(exception, "Error during refreshData");
+                showToastMessage(exception?.Message);
             }
             finally
             {
-                IsLoadingPrayerTimes = false;
-                Interlocked.Exchange(ref isLoadPrayerTimesRunningInterlockedInt, 0);  // Reset the flag to allow future runs
+                MauiProgram.IsFullyInitialized = true;
             }
         }
 
-        private void showHideSpecificTimes()
+        private async Task onBeforeFirstLoad()
         {
-            if (CurrentProfile == null)
-                return;
+            await appDbContext.Database.MigrateAsync();
+            CurrentProfile ??= (await profileService.GetProfiles()).First();
+        }        
+        
+        private void onAfterFirstLoad()
+        {
+            double startUpTimeMS = (DateTime.Now - MauiProgram.StartDateTime).TotalMilliseconds;
+            showToastMessage($"{startUpTimeMS:N0}ms to start!");
+#if ANDROID
+            MauiProgram.ServiceProvider.GetRequiredService<PrayerTimeSummaryNotificationManager>().TryStartPersistentNotification();
+#endif
+        }
 
-            ShowFajrGhalas = isCalculationShown(ETimeType.FajrGhalas);
-            ShowFajrRedness = isCalculationShown(ETimeType.FajrKaraha);
+        private async Task showHideSpecificTimes()
+        {
+            await MainThread.InvokeOnMainThreadAsync(() =>
+            {
+                if (CurrentProfile == null)
+                    return;
 
-            ShowMithlayn = isCalculationShown(ETimeType.AsrMithlayn);
-            ShowKaraha = isCalculationShown(ETimeType.AsrKaraha);
+                ShowFajrGhalas = isCalculationShown(ETimeType.FajrGhalas);
+                ShowFajrRedness = isCalculationShown(ETimeType.FajrKaraha);
 
-            ShowMaghribSufficientTime = isCalculationShown(ETimeType.MaghribSufficientTime);
-            ShowIshtibaq = isCalculationShown(ETimeType.MaghribIshtibaq);
+                ShowMithlayn = isCalculationShown(ETimeType.AsrMithlayn);
+                ShowKaraha = isCalculationShown(ETimeType.AsrKaraha);
+
+                ShowMaghribSufficientTime = isCalculationShown(ETimeType.MaghribSufficientTime);
+                ShowIshtibaq = isCalculationShown(ETimeType.MaghribIshtibaq);
+            });
         }
 
         private bool isCalculationShown(ETimeType timeData)
@@ -276,7 +270,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
                     this.IsLoadingSelectedPlace = false;
                 }
 
-                await loadPrayerTimes();
+                await refreshData();
             });
         }
 
@@ -334,17 +328,14 @@ namespace PrayerTimeEngine.Presentation.ViewModel
         {
             MainThread.BeginInvokeOnMainThread(async () =>
             {
-                CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
-
-                ToastDuration duration = ToastDuration.Short;
-                double fontSize = 14;
-
-                var toast = Toast.Make(text, duration, fontSize);
-
-                await toast.Show(cancellationTokenSource.Token);
+                await Toast.Make(
+                        message: text, 
+                        duration: ToastDuration.Short, 
+                        textSize: 14)
+                    .Show(default);
             });
         }
 
-    #endregion private methods
-}
+#endregion private methods
+    }
 }
