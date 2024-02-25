@@ -33,18 +33,15 @@ namespace PrayerTimeEngine
 
         private void MainPage_Loaded(object sender, EventArgs e)
         {
-            // BUG crashes the app on startup
-            return;
-
             var autoCompleteTextField = new AutoCompleteTextField
             {
                 Title = "Search",
                 BackgroundColor = Colors.DarkSlateGray,
             };
 
-            autoCompleteTextField.SetBinding(AutoCompleteView.ItemsSourceProperty, nameof(_viewModel.FoundPlacesSelectionTexts));
-            autoCompleteTextField.SetBinding(AutoCompleteView.TextProperty, nameof(_viewModel.PlaceSearchText));
-            autoCompleteTextField.SetBinding(AutoCompleteView.SelectedTextProperty, nameof(_viewModel.SelectedPlaceText));
+            autoCompleteTextField.SetBinding(AutoCompleteTextField.ItemsSourceProperty, nameof(_viewModel.FoundPlacesSelectionTexts));
+            autoCompleteTextField.SetBinding(AutoCompleteTextField.TextProperty, nameof(_viewModel.PlaceSearchText));
+            autoCompleteTextField.SetBinding(AutoCompleteTextField.SelectedTextProperty, nameof(_viewModel.SelectedPlaceText));
 
             this.autoCompleteTextFieldPlaceHolder.Content = autoCompleteTextField;
         }
