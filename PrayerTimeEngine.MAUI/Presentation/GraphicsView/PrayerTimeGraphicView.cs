@@ -12,8 +12,7 @@ namespace PrayerTimeEngine.Presentation.GraphicsView
         private Color PrayerMainTextColor = Colors.Black;
         private Color CurrentTimeTextColor = Colors.Red;
 
-        private Color PrayerSubTimeBackgroundColor = Color.FromRgb(90, 187, 71);
-        private Color PrayerSubTimeBorderColor = Colors.BlueViolet;
+        private Color PrayerSubTimeBorderColor = Color.FromArgb("#f3eae3");
         private Color PrayerSubTimeTextColor = Colors.Black;
 
         private DateTimeZone _timeZone { get; } = MauiProgram.ServiceProvider.GetRequiredService<ISystemInfoService>().GetSystemTimeZone();
@@ -366,9 +365,7 @@ namespace PrayerTimeEngine.Presentation.GraphicsView
 
             if (innerSubtimeBackgroundRectangle.Height > 0)
             {
-                canvas.FillColor = PrayerSubTimeBackgroundColor;
-                canvas.DrawRoundedRectangle(innerSubtimeBackgroundRectangle, 0f);
-                canvas.FillColor = PrayerSubTimeBorderColor;
+                canvas.FillColor = canvas.FontColor = canvas.StrokeColor = PrayerSubTimeBorderColor;
                 canvas.DrawRectangle(innerSubtimeBackgroundRectangle);
 
                 if (innerSubtimeBackgroundRectangle.Height > 10)
