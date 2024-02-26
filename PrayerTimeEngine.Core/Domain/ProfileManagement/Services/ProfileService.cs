@@ -111,6 +111,11 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Services
                     {
                         outputText += $" ({degreeConfig.Degree}°)";
                     }
+
+                    if (config.MinuteAdjustment != 0)
+                    {
+                        outputText += $", {config.MinuteAdjustment:N0}min";
+                    }
                 }
 
                 outputText += Environment.NewLine;

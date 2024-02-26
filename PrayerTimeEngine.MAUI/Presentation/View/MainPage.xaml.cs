@@ -1,9 +1,8 @@
 ﻿using CommunityToolkit.Maui.Storage;
 using OnScreenSizeMarkup.Maui.Helpers;
+using PrayerTimeEngine.Core.Common;
 using PrayerTimeEngine.Presentation.GraphicsView;
 using PrayerTimeEngine.Presentation.ViewModel;
-using UraniumUI.Controls;
-using UraniumUI.Material.Controls;
 
 namespace PrayerTimeEngine
 {
@@ -27,23 +26,6 @@ namespace PrayerTimeEngine
                         Command = new Command(async () => await this.openOptionsMenu()),
                         NumberOfTapsRequired = 2,
                     });
-
-            this.Loaded += MainPage_Loaded;
-        }
-
-        private void MainPage_Loaded(object sender, EventArgs e)
-        {
-            var autoCompleteTextField = new AutoCompleteTextField
-            {
-                Title = "Search",
-                BackgroundColor = Colors.DarkSlateGray,
-            };
-
-            autoCompleteTextField.SetBinding(AutoCompleteTextField.ItemsSourceProperty, nameof(_viewModel.FoundPlacesSelectionTexts));
-            autoCompleteTextField.SetBinding(AutoCompleteTextField.TextProperty, nameof(_viewModel.PlaceSearchText));
-            autoCompleteTextField.SetBinding(AutoCompleteTextField.SelectedTextProperty, nameof(_viewModel.SelectedPlaceText));
-
-            this.autoCompleteTextFieldPlaceHolder.Content = autoCompleteTextField;
         }
 
         private async Task openOptionsMenu()
@@ -56,7 +38,8 @@ namespace PrayerTimeEngine
                 "Ortsdaten",
                 "DB-Tabellen zeigen",
                 "DB-File speichern",
-                "Logs anzeigen");
+                "Logs anzeigen",
+                "Reset");
 
             switch (action)
             {
@@ -83,6 +66,11 @@ namespace PrayerTimeEngine
                     break;
                 case "Logs anzeigen":
                     this._viewModel.GoToLogsPageCommand.Execute(null);
+                    break;
+                case "Reset":
+                    if (File.Exists(AppConfig.DATABASE_PATH))
+                        File.Delete(AppConfig.DATABASE_PATH);
+                    Application.Current.Quit();
                     break;
                 case "Cancel":
                     break;
