@@ -12,10 +12,10 @@ namespace PrayerTimeEngine.Platforms.Android.Permissions
                 if (!OperatingSystem.IsAndroidVersionAtLeast(33))
                     throw new NotImplementedException();
 
-                return new (string, bool)[]
-                {
-                        (Manifest.Permission.PostNotifications, true)
-                };
+                return
+                [
+                    (Manifest.Permission.PostNotifications, true)
+                ];
             }
         }
     }

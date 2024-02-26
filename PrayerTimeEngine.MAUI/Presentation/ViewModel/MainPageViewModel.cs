@@ -36,6 +36,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
         #region fields
 
         private Debounce.Core.Debouncer debouncer;
+        private bool _isSettingsPageOpening = false;
 
         #endregion fields
 
@@ -74,9 +75,19 @@ namespace PrayerTimeEngine.Presentation.ViewModel
             => new Command<EPrayerType>(
                 async (prayerTime) =>
                 {
-                    if (!IsLoadingPrayerTimes)
+                    if (IsLoadingPrayerTimes || _isSettingsPageOpening)
                     {
+                        return;
+                    }
+
+                    try
+                    {
+                        _isSettingsPageOpening = true;
                         await navigationService.NavigateTo<SettingsHandlerPageViewModel>(CurrentProfile, prayerTime);
+                    }
+                    finally
+                    {
+                        _isSettingsPageOpening = false;
                     }
                 });
 

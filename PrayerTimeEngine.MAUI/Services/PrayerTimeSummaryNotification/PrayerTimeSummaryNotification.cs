@@ -2,6 +2,8 @@
 using Android.App;
 using Android.Content;
 using Android.OS;
+using MetroLog;
+using Microsoft.Extensions.Logging;
 using NodaTime;
 using PrayerTimeEngine.Core.Domain.CalculationManagement;
 using PrayerTimeEngine.Core.Domain.Models;
@@ -14,7 +16,7 @@ namespace PrayerTimeEngine.Services
     [Service(ForegroundServiceType = Android.Content.PM.ForegroundService.TypeDataSync, Enabled = true)]
     public class PrayerTimeSummaryNotification : Service
     {
-        internal static string CHANNEL_ID = "prayer_time_channel";
+        internal const string CHANNEL_ID = "prayer_time_channel";
         private const int TIMER_FREQUENCY_MS = 1_000;
         private const int notificationId = 1000;
 
@@ -22,16 +24,18 @@ namespace PrayerTimeEngine.Services
 
         private readonly IProfileService _profileService;
         private readonly ICalculationManager _prayerTimeCalculationManager;
+        private readonly ILogger<PrayerTimeSummaryNotificationManager> _prayerTimeSummaryNotificationManager;
 
         public PrayerTimeSummaryNotification()
         {
             _profileService = MauiProgram.ServiceProvider.GetRequiredService<IProfileService>();
             _prayerTimeCalculationManager = MauiProgram.ServiceProvider.GetRequiredService<ICalculationManager>();
+            _prayerTimeSummaryNotificationManager = MauiProgram.ServiceProvider.GetRequiredService<ILogger<PrayerTimeSummaryNotificationManager>>();
 
             updateTimer = new System.Timers.Timer(TIMER_FREQUENCY_MS);
             updateTimer.Elapsed += (sender, e) => Task.Run(UpdateNotification);
 
-            // hack to make sure that the timer starts at a round second
+            // "hack" to make sure that the timer starts at a round second
             Task.Run(() =>
             {
                 Thread.Sleep(1000 - DateTime.Now.Millisecond);
@@ -48,12 +52,21 @@ namespace PrayerTimeEngine.Services
 
             var initialNotification = builder.Build();
 
-            if (OperatingSystem.IsAndroidVersionAtLeast(29))
-                StartForeground(notificationId, initialNotification, Android.Content.PM.ForegroundService.TypeDataSync);
-            else
-                StartForeground(notificationId, initialNotification);
+            try
+            {
+                _prayerTimeSummaryNotificationManager.LogInformation("Try start foreground service");
 
-            return StartCommandResult.Sticky;
+                if (OperatingSystem.IsAndroidVersionAtLeast(29))
+                    StartForeground(notificationId, initialNotification, Android.Content.PM.ForegroundService.TypeDataSync);
+                else
+                    StartForeground(notificationId, initialNotification);
+            }
+            catch (Exception ex)
+            {
+                _prayerTimeSummaryNotificationManager.LogError(ex, "Error during starting of foreground service");
+            }
+
+            return StartCommandResult.ContinuationMask;
         }
 
         private async Task UpdateNotification()

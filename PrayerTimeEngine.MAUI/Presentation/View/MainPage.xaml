@@ -4,6 +4,7 @@
              xmlns:enum="clr-namespace:PrayerTimeEngine.Core.Common.Enum;assembly=PrayerTimeEngine.Core"
              xmlns:drawable="clr-namespace:PrayerTimeEngine.Presentation.GraphicsView"
              xmlns:viewModel="clr-namespace:PrayerTimeEngine.Presentation.ViewModel;assembly=PrayerTimeEngine.MAUI"
+             xmlns:uranium="clr-namespace:UraniumUI.Material.Controls;assembly=UraniumUI.Material"
              x:DataType="viewModel:MainPageViewModel"
              x:Class="PrayerTimeEngine.MainPage"
              BackgroundColor="#f3eae3">
@@ -90,11 +91,15 @@
             <ColumnDefinition Width="2*" />
         </Grid.ColumnDefinitions>
 
-        <ContentView 
-            x:Name="autoCompleteTextFieldPlaceHolder"
+        <uranium:AutoCompleteTextField 
             Grid.Row = "0"
             Grid.Column = "0"
-            Grid.ColumnSpan = "5"/>
+            Grid.ColumnSpan = "5"
+            Title = "Search"
+            BackgroundColor="DarkSlateGray"
+            ItemsSource="{Binding FoundPlacesSelectionTexts}"
+            SelectedText="{Binding SelectedPlaceText}"
+            Text="{Binding PlaceSearchText}"/>
 
         <Label
             x:Name="FajrName"
