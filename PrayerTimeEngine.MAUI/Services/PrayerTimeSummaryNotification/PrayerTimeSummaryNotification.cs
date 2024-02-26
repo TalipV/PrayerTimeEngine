@@ -66,7 +66,7 @@ namespace PrayerTimeEngine.Services
                 _prayerTimeSummaryNotificationManager.LogError(ex, "Error during starting of foreground service");
             }
 
-            return StartCommandResult.ContinuationMask;
+            return StartCommandResult.Sticky;
         }
 
         private async Task UpdateNotification()
@@ -107,7 +107,7 @@ namespace PrayerTimeEngine.Services
         {
             // potential for performance improvement
 
-            ZonedDateTime now = 
+            ZonedDateTime now =
                 MauiProgram.ServiceProvider.GetRequiredService<ISystemInfoService>()
                     .GetCurrentZonedDateTime();
 
