@@ -1,7 +1,5 @@
 ﻿using BenchmarkDotNet.Attributes;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using NodaTime;
 using NSubstitute;
 using PrayerTimeEngine.Core.Common.Enum;
@@ -11,11 +9,9 @@ using PrayerTimeEngine.Core.Domain;
 using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Models;
 using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services;
 using PrayerTimeEngine.Core.Domain.Models;
-using PrayerTimeEngine.Core.Domain.PlaceManagement.Interfaces;
 using System.Data.Common;
 using PrayerTimeEngine.Core.Tests.Common;
 using System.Net;
-using Microsoft.EntityFrameworkCore.Infrastructure;
 using NSubstitute.Extensions;
 using System.Security;
 
@@ -59,83 +55,36 @@ namespace PrayerTimeEngine.BenchmarkDotNet
 
         #endregion data
 
-        private static DbConnection _dbContextKeepAliveSqlConnection;
-        protected AppDbContext createAppDbContextAndKeepAlive()
+
+        private MuwaqqitPrayerTimeCalculator getMuwaqqitPrayerTimeCalculator_DataFromDbStorage(
+            AppDbContext appDbContext)
         {
-            var dbOptions = new DbContextOptionsBuilder()
-                .UseSqlite($"Data Source=:memory:")
-                .Options;
-            var appDbContext = Substitute.ForPartsOf<AppDbContext>(dbOptions);
-            var mockableDbContextDatabase = Substitute.ForPartsOf<DatabaseFacade>(appDbContext);
-            appDbContext.Configure().Database.Returns(mockableDbContextDatabase);
-            var database = appDbContext.Database;
-            _dbContextKeepAliveSqlConnection = database.GetDbConnection();
-            _dbContextKeepAliveSqlConnection.Open();
-            database.EnsureCreated();
+            // to make sure that before the benchmark the data is gotten from the APIService and stored in the db
+            new MuwaqqitPrayerTimeCalculator(
+                    new MuwaqqitDBAccess(appDbContext),
+                    getPreparedMuwaqqitApiService(),
+                    new TimeTypeAttributeService()
+                ).GetPrayerTimesAsync(_localDate, _locationData, _configs).GetAwaiter().GetResult();
 
-            return appDbContext;
-        }
-
-        private MuwaqqitPrayerTimeCalculator getMuwaqqitPrayerTimeCalculator_DataFromDbStorage()
-        {
-            // setup basic stuff
-            var serviceCollection = new ServiceCollection();
-
-            serviceCollection.AddSingleton(Substitute.For<IPlaceService>());
-            serviceCollection.AddSingleton(Substitute.For<ILogger<MuwaqqitDBAccess>>());
-            serviceCollection.AddSingleton(Substitute.For<ILogger<MuwaqqitPrayerTimeCalculator>>());
-
-            serviceCollection.AddSingleton<TimeTypeAttributeService>();
-            serviceCollection.AddSingleton(createAppDbContextAndKeepAlive());
-            serviceCollection.AddSingleton<IMuwaqqitApiService>(getPreparedMuwaqqitApiService());
-            serviceCollection.AddSingleton<IMuwaqqitDBAccess, MuwaqqitDBAccess>();
-            serviceCollection.AddTransient<MuwaqqitPrayerTimeCalculator>();
-
-            // make sure that the data is gotten from the API service so that later it will only be retrieved from the DB
-            var muwaqqitPrayerTimeCalculator = serviceCollection.BuildServiceProvider().GetService<MuwaqqitPrayerTimeCalculator>();
-            muwaqqitPrayerTimeCalculator.GetPrayerTimesAsync(
-                _localDate,
-                _locationData,
-                _configs).GetAwaiter().GetResult();
-
-            // make sure the benchmark is correct by throwing exceptions when the api service is used
+            // throw exceptions when the calculator tries using the api
             IMuwaqqitApiService mockedMuwaqqitApiService = Substitute.For<IMuwaqqitApiService>();
-            mockedMuwaqqitApiService
-                .GetTimesAsync(
-                    date: Arg.Any<LocalDate>(),
-                    longitude: Arg.Any<decimal>(),
-                    latitude: Arg.Any<decimal>(),
-                    fajrDegree: Arg.Any<double>(),
-                    ishaDegree: Arg.Any<double>(),
-                    ishtibaqDegree: Arg.Any<double>(),
-                    asrKarahaDegree: Arg.Any<double>(),
-                    timezone: Arg.Any<string>())
-                .Returns(returnThis: (callInfo) =>
-                    {
-                        throw new SecurityException("Don't reach this!");
-                        return (MuwaqqitPrayerTimes)null;
-                    });
-            serviceCollection.AddSingleton(mockedMuwaqqitApiService);
+            mockedMuwaqqitApiService.ReturnsForAll<Task<MuwaqqitPrayerTimes>>((callInfo) => throw new SecurityException("Don't use this!"));
 
-            return serviceCollection.BuildServiceProvider().GetService<MuwaqqitPrayerTimeCalculator>();
+            return new MuwaqqitPrayerTimeCalculator(
+                    new MuwaqqitDBAccess(appDbContext),
+                    mockedMuwaqqitApiService,
+                    new TimeTypeAttributeService()
+                );
         }
 
         private MuwaqqitPrayerTimeCalculator getMuwaqqitPrayerTimeCalculator_DataFromApi()
         {
-            // setup basic stuff
-            var serviceCollection = new ServiceCollection();
-            serviceCollection.AddSingleton(Substitute.For<IPlaceService>());
-            serviceCollection.AddSingleton(Substitute.For<ILogger<MuwaqqitPrayerTimeCalculator>>());
-
-            serviceCollection.AddSingleton<TimeTypeAttributeService>();
-            serviceCollection.AddSingleton<IMuwaqqitApiService>(getPreparedMuwaqqitApiService());
-            serviceCollection.AddSingleton<MuwaqqitPrayerTimeCalculator>();
-
-            // make sure the benchmark is correct by returning null and empty from the db access
-            IMuwaqqitDBAccess mockedMuwaqqitDBAccess = Substitute.For<IMuwaqqitDBAccess>();
-            serviceCollection.AddSingleton(mockedMuwaqqitDBAccess);
-
-            return serviceCollection.BuildServiceProvider().GetService<MuwaqqitPrayerTimeCalculator>();
+            return new MuwaqqitPrayerTimeCalculator(
+                    // make sure the benchmark is correct by returning null and empty from the db access
+                    Substitute.For<IMuwaqqitDBAccess>(),
+                    getPreparedMuwaqqitApiService(),
+                    new TimeTypeAttributeService()
+                );
         }
 
         private static MuwaqqitApiService getPreparedMuwaqqitApiService()
@@ -166,10 +115,20 @@ namespace PrayerTimeEngine.BenchmarkDotNet
             return new MuwaqqitApiService(httpClient);
         }
 
+        private static DbConnection _dbContextKeepAliveSqlConnection;
+
         [GlobalSetup]
         public void Setup()
         {
-            _muwaqqitPrayerTimeCalculator_DataFromDbStorage = getMuwaqqitPrayerTimeCalculator_DataFromDbStorage();
+            var dbOptions = new DbContextOptionsBuilder()
+                .UseSqlite($"Data Source=:memory:")
+                .Options;
+            var appDbContext = new AppDbContext(dbOptions);
+            _dbContextKeepAliveSqlConnection = appDbContext.Database.GetDbConnection();
+            _dbContextKeepAliveSqlConnection.Open();
+            appDbContext.Database.EnsureCreated();
+
+            _muwaqqitPrayerTimeCalculator_DataFromDbStorage = getMuwaqqitPrayerTimeCalculator_DataFromDbStorage(appDbContext);
             _muwaqqitPrayerTimeCalculator_DataFromApi = getMuwaqqitPrayerTimeCalculator_DataFromApi();
         }
 
@@ -179,19 +138,29 @@ namespace PrayerTimeEngine.BenchmarkDotNet
         [Benchmark]
         public void MuwaqqitPrayerTimeCalculator_GetDataFromDb()
         {
-            _muwaqqitPrayerTimeCalculator_DataFromDbStorage.GetPrayerTimesAsync(
+            var result = _muwaqqitPrayerTimeCalculator_DataFromDbStorage.GetPrayerTimesAsync(
                 _localDate,
                 locationData: _locationData,
                 configurations: _configs).GetAwaiter().GetResult();
-        }        
+
+            if (result.SelectMany(x => x.ToList()).Count() != 16)
+            {
+                throw new Exception("No, no, no. Your benchmark is not working.");
+            }
+        }
         
         [Benchmark]
         public void MuwaqqitPrayerTimeCalculator_GetDataFromApi()
         {
-            _muwaqqitPrayerTimeCalculator_DataFromApi.GetPrayerTimesAsync(
+            var result = _muwaqqitPrayerTimeCalculator_DataFromApi.GetPrayerTimesAsync(
                 _localDate,
                 locationData: _locationData,
                 configurations: _configs).GetAwaiter().GetResult();
+
+            if (result.SelectMany(x => x.ToList()).Count() != 16)
+            {
+                throw new Exception("No, no, no. Your benchmark is not working.");
+            }
         }
     }
 
