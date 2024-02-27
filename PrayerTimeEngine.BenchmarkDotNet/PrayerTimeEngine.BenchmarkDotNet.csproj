@@ -13,7 +13,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\PrayerTimeEngine.Core.Tests.Integration\PrayerTimeEngine.Core.Tests.Integration.csproj" />
-    <ProjectReference Include="..\PrayerTimeEngine.Core.Tests\PrayerTimeEngine.Core.Tests.Unit.csproj" />
+    <ProjectReference Include="..\PrayerTimeEngine.Core.Tests.Unit\PrayerTimeEngine.Core.Tests.Unit.csproj" />
     <ProjectReference Include="..\PrayerTimeEngine.Core\PrayerTimeEngine.Core.csproj" />
   </ItemGroup>
 
