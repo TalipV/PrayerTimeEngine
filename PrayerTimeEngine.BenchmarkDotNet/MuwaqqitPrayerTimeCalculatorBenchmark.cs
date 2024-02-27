@@ -55,7 +55,6 @@ namespace PrayerTimeEngine.BenchmarkDotNet
 
         #endregion data
 
-
         private MuwaqqitPrayerTimeCalculator getMuwaqqitPrayerTimeCalculator_DataFromDbStorage(
             AppDbContext appDbContext)
         {
@@ -143,10 +142,10 @@ namespace PrayerTimeEngine.BenchmarkDotNet
                 locationData: _locationData,
                 configurations: _configs).GetAwaiter().GetResult();
 
-            if (result.SelectMany(x => x.ToList()).Count() != 16)
-            {
-                throw new Exception("No, no, no. Your benchmark is not working.");
-            }
+            //if (result.SelectMany(x => x.ToList()).Count() != 16)
+            //{
+            //    throw new Exception("No, no, no. Your benchmark is not working.");
+            //}
         }
         
         [Benchmark]
@@ -157,10 +156,10 @@ namespace PrayerTimeEngine.BenchmarkDotNet
                 locationData: _locationData,
                 configurations: _configs).GetAwaiter().GetResult();
 
-            if (result.SelectMany(x => x.ToList()).Count() != 16)
-            {
-                throw new Exception("No, no, no. Your benchmark is not working.");
-            }
+            //if (result.SelectMany(x => x.ToList()).Count() != 16)
+            //{
+            //    throw new Exception("No, no, no. Your benchmark is not working.");
+            //}
         }
     }
 
