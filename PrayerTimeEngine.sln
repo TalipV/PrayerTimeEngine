@@ -13,9 +13,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PrayerTimeEngine.BenchmarkD
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{5B6DA408-9B9D-48A2-85A7-41AE8C735FE9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PrayerTimeEngine.Core.Tests.Integration", "PrayerTimeEngine.Core.Tests.Integration\PrayerTimeEngine.Core.Tests.Integration.csproj", "{907C21C6-9E77-49D9-9F56-2DF4DF0CA44A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PrayerTimeEngine.Core.Tests.Integration", "PrayerTimeEngine.Core.Tests.Integration\PrayerTimeEngine.Core.Tests.Integration.csproj", "{907C21C6-9E77-49D9-9F56-2DF4DF0CA44A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PrayerTimeEngine.Core.Tests.Common", "PrayerTimeEngine.Core.Tests.Common\PrayerTimeEngine.Core.Tests.Common.csproj", "{2FEF0F33-7B2E-47E2-AECE-D0049835AF67}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PrayerTimeEngine.Core.Tests.Common", "PrayerTimeEngine.Core.Tests.Common\PrayerTimeEngine.Core.Tests.Common.csproj", "{2FEF0F33-7B2E-47E2-AECE-D0049835AF67}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

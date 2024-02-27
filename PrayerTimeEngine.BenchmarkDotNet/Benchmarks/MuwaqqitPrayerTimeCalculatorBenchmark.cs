@@ -15,7 +15,7 @@ using System.Net;
 using NSubstitute.Extensions;
 using System.Security;
 
-namespace PrayerTimeEngine.BenchmarkDotNet
+namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
 {
     [Config(typeof(BenchmarkConfig))]
     [MemoryDiagnoser]
@@ -147,7 +147,7 @@ namespace PrayerTimeEngine.BenchmarkDotNet
             //    throw new Exception("No, no, no. Your benchmark is not working.");
             //}
         }
-        
+
         [Benchmark]
         public void MuwaqqitPrayerTimeCalculator_GetDataFromApi()
         {

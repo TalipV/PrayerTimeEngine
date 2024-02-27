@@ -15,7 +15,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
             ISemerkandApiService semerkandApiService,
             IPlaceService placeService,
             ILogger<SemerkandPrayerTimeCalculator> logger
-        ) : IPrayerTimeService
+        ) : IPrayerTimeCalculator
     {
         public HashSet<ETimeType> GetUnsupportedTimeTypes()
         {

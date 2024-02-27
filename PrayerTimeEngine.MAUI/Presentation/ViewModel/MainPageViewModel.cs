@@ -25,7 +25,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
     public class MainPageViewModel(
             ISystemInfoService _systemInfoService,
             ICalculationManager prayerTimeCalculator,
-            IPrayerTimeServiceFactory prayerTimeServiceFactory,
+            IPrayerTimeCalculatorFactory prayerTimeServiceFactory,
             IPlaceService placeService,
             IProfileService profileService,
             INavigationService navigationService,
