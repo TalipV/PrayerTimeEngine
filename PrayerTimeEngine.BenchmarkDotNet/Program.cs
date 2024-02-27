@@ -6,7 +6,7 @@ namespace PrayerTimeEngine.BenchmarkDotNet
     {
         static void Main(string[] args)
         {
-            var summary = BenchmarkRunner.Run<ProfileServiceBenchmark>();
+            var summary = BenchmarkRunner.Run<MuwaqqitPrayerTimeCalculatorBenchmark>();
         }
     }
 }
