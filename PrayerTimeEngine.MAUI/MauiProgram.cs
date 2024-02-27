@@ -171,7 +171,7 @@ public static class MauiProgram
         serviceCollection.AddSingleton<TimeTypeAttributeService>();
 
         serviceCollection.AddTransient<ICalculationManager, CalculationManager>();
-        serviceCollection.AddTransient<IPrayerTimeServiceFactory, PrayerTimeServiceFactory>();
+        serviceCollection.AddTransient<IPrayerTimeCalculatorFactory, PrayerTimeCalculatorFactory>();
 
         serviceCollection.AddTransient<IProfileService>(serviceProvider =>
         {

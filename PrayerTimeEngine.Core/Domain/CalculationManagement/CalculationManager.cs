@@ -8,7 +8,7 @@ using PrayerTimeEngine.Core.Domain.ProfileManagement.Models;
 namespace PrayerTimeEngine.Core.Domain.CalculationManagement
 {
     public class CalculationManager(
-            IPrayerTimeServiceFactory prayerTimeServiceFactory,
+            IPrayerTimeCalculatorFactory prayerTimeServiceFactory,
             IProfileService profileService
         ) : ICalculationManager
     {
@@ -82,7 +82,7 @@ namespace PrayerTimeEngine.Core.Domain.CalculationManagement
                 List<GenericSettingConfiguration> configs = timeConfigsByCalcSource.ToList();
 
                 BaseLocationData locationData = profileService.GetLocationConfig(profile, calculationSource);
-                IPrayerTimeService calculationSourceCalculator = prayerTimeServiceFactory.GetPrayerTimeCalculatorByCalculationSource(calculationSource);
+                IPrayerTimeCalculator calculationSourceCalculator = prayerTimeServiceFactory.GetPrayerTimeCalculatorByCalculationSource(calculationSource);
                 throwIfConfigsHaveUnsupportedTimeTypes(calculationSourceCalculator, calculationSource, configs);
 
                 var asyncEnumerable = calculateComplexTypesForCalcSource(calculationSourceCalculator, date, locationData, configs);
@@ -99,7 +99,7 @@ namespace PrayerTimeEngine.Core.Domain.CalculationManagement
         }
 
         private async IAsyncEnumerable<(ETimeType, ZonedDateTime?)> calculateComplexTypesForCalcSource(
-            IPrayerTimeService calculationSourceCalculator, LocalDate date, 
+            IPrayerTimeCalculator calculationSourceCalculator, LocalDate date, 
             BaseLocationData locationData, List<GenericSettingConfiguration> configs)
         {
             var configsByTimeType = configs.ToDictionary(x => x.TimeType);
@@ -174,7 +174,7 @@ namespace PrayerTimeEngine.Core.Domain.CalculationManagement
         }
 
         private static void throwIfConfigsHaveUnsupportedTimeTypes(
-            IPrayerTimeService timeCalculator,
+            IPrayerTimeCalculator timeCalculator,
             ECalculationSource calculationSource,
             List<GenericSettingConfiguration> configs)
         {

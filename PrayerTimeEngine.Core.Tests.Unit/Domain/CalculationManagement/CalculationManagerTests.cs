@@ -14,13 +14,13 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.CalculationManagement
 {
     public class CalculationManagerTests : BaseTest
     {
-        private readonly IPrayerTimeServiceFactory _prayerTimeServiceFactoryMock;
+        private readonly IPrayerTimeCalculatorFactory _prayerTimeServiceFactoryMock;
         private readonly IProfileService _profileServiceMock;
         private readonly CalculationManager _calculationManager;
 
         public CalculationManagerTests()
         {
-            _prayerTimeServiceFactoryMock = Substitute.For<IPrayerTimeServiceFactory>();
+            _prayerTimeServiceFactoryMock = Substitute.For<IPrayerTimeCalculatorFactory>();
             _profileServiceMock = Substitute.For<IProfileService>();
             _calculationManager = new CalculationManager(_prayerTimeServiceFactoryMock, _profileServiceMock);
         }
@@ -40,7 +40,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.CalculationManagement
             _profileServiceMock.GetLocationConfig(Arg.Is(profile), Arg.Is(ECalculationSource.Muwaqqit)).Returns(muwaqqitLocationData);
 
             GenericSettingConfiguration muwaqqitConfig = new MuwaqqitDegreeCalculationConfiguration { Degree = 14, TimeType = ETimeType.FajrStart };
-            var muwaqqitPrayerTimeServiceMock = Substitute.For<IPrayerTimeService>();
+            var muwaqqitPrayerTimeServiceMock = Substitute.For<IPrayerTimeCalculator>();
             var muwaqqitCalculation = Substitute.For<ICalculationPrayerTimes>();
 
             _prayerTimeServiceFactoryMock.GetPrayerTimeCalculatorByCalculationSource(Arg.Is(ECalculationSource.Muwaqqit)).Returns(muwaqqitPrayerTimeServiceMock);

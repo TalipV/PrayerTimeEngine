@@ -12,7 +12,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services
             IMuwaqqitDBAccess muwaqqitDBAccess,
             IMuwaqqitApiService muwaqqitApiService,
             TimeTypeAttributeService timeTypeAttributeService
-        ) : IPrayerTimeService
+        ) : IPrayerTimeCalculator
     {
         public async Task<ILookup<ICalculationPrayerTimes, ETimeType>> GetPrayerTimesAsync(
             LocalDate date,

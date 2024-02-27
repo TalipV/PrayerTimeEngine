@@ -6,9 +6,9 @@ using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services;
 
 namespace PrayerTimeEngine.Core.Domain.Calculators
 {
-    public class PrayerTimeServiceFactory(IServiceProvider serviceProvider) : IPrayerTimeServiceFactory
+    public class PrayerTimeCalculatorFactory(IServiceProvider serviceProvider) : IPrayerTimeCalculatorFactory
     {
-        public IPrayerTimeService GetPrayerTimeCalculatorByCalculationSource(ECalculationSource source)
+        public IPrayerTimeCalculator GetPrayerTimeCalculatorByCalculationSource(ECalculationSource source)
         {
             return source switch
             {

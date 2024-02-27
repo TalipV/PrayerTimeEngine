@@ -15,7 +15,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
             IFaziletApiService faziletApiService,
             IPlaceService placeService,
             ILogger<FaziletPrayerTimeCalculator> logger
-        ) : IPrayerTimeService
+        ) : IPrayerTimeCalculator
     {
         public HashSet<ETimeType> GetUnsupportedTimeTypes()
         {

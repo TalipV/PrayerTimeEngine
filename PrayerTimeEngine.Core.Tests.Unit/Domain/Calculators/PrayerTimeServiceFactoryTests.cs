@@ -11,12 +11,12 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators
     public class PrayerTimeServiceFactoryTests
     {
         private readonly IServiceProvider serviceProviderMock;
-        private readonly PrayerTimeServiceFactory _prayerTimeServiceFactory;
+        private readonly PrayerTimeCalculatorFactory _prayerTimeServiceFactory;
 
         public PrayerTimeServiceFactoryTests()
         {
             serviceProviderMock = Substitute.For<IServiceProvider>();
-            _prayerTimeServiceFactory = new PrayerTimeServiceFactory(serviceProviderMock);
+            _prayerTimeServiceFactory = new PrayerTimeCalculatorFactory(serviceProviderMock);
         }
 
         #region GetPrayerTimeCalculatorByCalculationSource
