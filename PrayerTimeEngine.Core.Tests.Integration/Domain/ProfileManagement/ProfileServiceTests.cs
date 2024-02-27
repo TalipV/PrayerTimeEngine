@@ -17,7 +17,7 @@ using PrayerTimeEngine.Core.Domain.ProfileManagement.Interfaces;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Services;
 using PrayerTimeEngine.Core.Tests.Common;
 
-namespace PrayerTimeEngine.Core.Tests.Unit.Domain.ProfileManagement
+namespace PrayerTimeEngine.Core.Tests.Integration.Domain.ProfileManagement
 {
     public class ProfileServiceTests : BaseTest
     {
