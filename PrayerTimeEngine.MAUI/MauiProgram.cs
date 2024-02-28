@@ -40,6 +40,7 @@ namespace PrayerTimeEngine;
 // - Multiple profiles
 // - Decrease count of reloads (e.g. mere app switch shouldn't always require reload)
 // - CancellationTokens
+// - Transactions when saving country data and city data to prevent partial safes (or rethink the whole thing)
 
 // TODO late:
 // - Check for possibly unsafe concurrent actions (fast user interactions, app crashes and other special cases) 

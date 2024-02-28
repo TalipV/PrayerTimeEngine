@@ -13,7 +13,6 @@ using System.Data.Common;
 using PrayerTimeEngine.Core.Tests.Common;
 using System.Net;
 using NSubstitute.Extensions;
-using System.Security;
 
 namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
 {
@@ -67,7 +66,7 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
 
             // throw exceptions when the calculator tries using the api
             IMuwaqqitApiService mockedMuwaqqitApiService = Substitute.For<IMuwaqqitApiService>();
-            mockedMuwaqqitApiService.ReturnsForAll<Task<MuwaqqitPrayerTimes>>((callInfo) => throw new SecurityException("Don't use this!"));
+            mockedMuwaqqitApiService.ReturnsForAll<Task<MuwaqqitPrayerTimes>>((callInfo) => throw new Exception("Don't use this!"));
 
             return new MuwaqqitPrayerTimeCalculator(
                     new MuwaqqitDBAccess(appDbContext),
@@ -79,7 +78,7 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
         private MuwaqqitPrayerTimeCalculator getMuwaqqitPrayerTimeCalculator_DataFromApi()
         {
             return new MuwaqqitPrayerTimeCalculator(
-                    // make sure the benchmark is correct by returning null and empty from the db access
+                    // returns null per default
                     Substitute.For<IMuwaqqitDBAccess>(),
                     getPreparedMuwaqqitApiService(),
                     new TimeTypeAttributeService()

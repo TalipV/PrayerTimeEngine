@@ -10,12 +10,29 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
             AppDbContext dbContext
         ) : ISemerkandDBAccess
     {
+        public async Task<bool> HasCountryData()
+        {
+            return await dbContext
+                .SemerkandCountries
+                .AnyAsync().ConfigureAwait(false);
+        }
+
+        public async Task<int?> GetCountryIDByName(string countryName)
+        {
+            return await dbContext
+                .SemerkandCountries
+                .Where(x => x.Name == countryName)
+                .Select(x => (int?)x.ID)
+                .FirstOrDefaultAsync().ConfigureAwait(false);
+        }
+
         public async Task<List<SemerkandCountry>> GetCountries()
         {
             return await dbContext
                 .SemerkandCountries.AsNoTracking()
                 .ToListAsync().ConfigureAwait(false);
         }
+
         public async Task<List<SemerkandCity>> GetCitiesByCountryID(int countryId)
         {
             return await dbContext
@@ -24,6 +41,24 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
                 .Include(x => x.Country).ThenInclude(x => x.Cities)
                 .ToListAsync().ConfigureAwait(false);
         }
+
+        public async Task<bool> HasCityData(int countryID)
+        {
+            return await dbContext
+                .SemerkandCities
+                .Where(x => x.CountryID == countryID)
+                .AnyAsync().ConfigureAwait(false);
+        }
+
+        public async Task<int?> GetCityIDByName(int countryID, string cityName)
+        {
+            return await dbContext
+                .SemerkandCities
+                .Where(x => x.CountryID == countryID && x.Name == cityName)
+                .Select(x => (int?)x.ID)
+                .FirstOrDefaultAsync().ConfigureAwait(false);
+        }
+
         public async Task<SemerkandPrayerTimes> GetTimesByDateAndCityID(LocalDate date, int cityId)
         {
             return await dbContext

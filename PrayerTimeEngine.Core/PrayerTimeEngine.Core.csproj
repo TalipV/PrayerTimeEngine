@@ -13,10 +13,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
-      <_Parameter1>PrayerTimeEngine.Core.Tests.Unit</_Parameter1>
-      <_Parameter1>PrayerTimeEngine.Core.Tests.Integration</_Parameter1>
-    </AssemblyAttribute>
+    <InternalsVisibleTo Include="PrayerTimeEngine.Core.Tests.Unit" />
+    <InternalsVisibleTo Include="PrayerTimeEngine.Core.Tests.Integration" />
+    <InternalsVisibleTo Include="PrayerTimeEngine.BenchmarkDotNet" />
   </ItemGroup>
   
   <ItemGroup>

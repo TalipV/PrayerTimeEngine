@@ -104,21 +104,30 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
             // check-then-act has to be thread safe
             using (await semaphoreTryGetCityID.LockAsync().ConfigureAwait(false))
             {
-                // We only check if it is empty because a selection of countries missing is not expected.
-                if ((await faziletDBAccess.GetCitiesByCountryID(countryID).ConfigureAwait(false)).Count == 0)
+                int? cityID = await faziletDBAccess.GetCityIDByName(countryID, cityName);
+
+                // city found
+                if (cityID != null)
+                    return (true, cityID.Value);
+
+                // unknown city
+                if (await faziletDBAccess.HasCityData(countryID).ConfigureAwait(false))
                 {
-                    // load cities through HTTP request
-                    Dictionary<string, int> cities = await faziletApiService.GetCitiesByCountryID(countryID).ConfigureAwait(false);
-
-                    // save cities to db
-                    await faziletDBAccess.InsertCities(cities, countryID).ConfigureAwait(false);
+                    return (false, -1);
                 }
-            }
 
-            if ((await faziletDBAccess.GetCitiesByCountryID(countryID).ConfigureAwait(false)).FirstOrDefault(x => x.Name == cityName)?.ID is int cityID)
-                return (true, cityID);
-            else
+                // load cities through HTTP request and save them
+                Dictionary<string, int> cities = await faziletApiService.GetCitiesByCountryID(countryID).ConfigureAwait(false);
+                await faziletDBAccess.InsertCities(cities, countryID).ConfigureAwait(false);
+
+                if (cities.TryGetValue(cityName, out int returnValue))
+                {
+                    return (true, returnValue);
+                }
+
+                // there were no cities and loaded cities still didn't contain it
                 return (false, -1);
+            }
         }
 
         private static readonly AsyncNonKeyedLocker semaphoreTryGetCountryID = new(1);
@@ -128,21 +137,30 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
             // check-then-act has to be thread safe
             using (await semaphoreTryGetCountryID.LockAsync().ConfigureAwait(false))
             {
-                // We only check if it is empty because a selection of countries missing is not expected.
-                if ((await faziletDBAccess.GetCountries().ConfigureAwait(false)).Count == 0)
+                int? countryID = await faziletDBAccess.GetCountryIDByName(countryName);
+
+                // country found
+                if (countryID != null)
+                    return (true, countryID.Value);
+
+                // unknown country
+                if (await faziletDBAccess.HasCountryData().ConfigureAwait(false))
                 {
-                    // load countries through HTTP request
-                    Dictionary<string, int> countries = await faziletApiService.GetCountries().ConfigureAwait(false);
-
-                    // save countries to db
-                    await faziletDBAccess.InsertCountries(countries).ConfigureAwait(false);
+                    return (false, -1);
                 }
-            }
 
-            if ((await faziletDBAccess.GetCountries().ConfigureAwait(false)).FirstOrDefault(x => x.Name == countryName)?.ID is int countryID)
-                return (true, countryID);
-            else
+                // load countries through HTTP request and save them
+                Dictionary<string, int> countries = await faziletApiService.GetCountries().ConfigureAwait(false);
+                await faziletDBAccess.InsertCountries(countries).ConfigureAwait(false);
+
+                if (countries.TryGetValue(countryName, out int returnValue))
+                {
+                    return (true, returnValue);
+                }
+
+                // there were no countries and loaded countries still didn't contain it
                 return (false, -1);
+            }
         }
 
         public async Task<BaseLocationData> GetLocationInfo(CompletePlaceInfo place)
@@ -152,12 +170,12 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
 
             // if language is already turkish then use this place
 
-            var turkishPlaceInfo = 
-                new CompletePlaceInfo(await placeService.GetPlaceBasedOnPlace(place, "tr").ConfigureAwait(false)) 
-                { 
+            var turkishPlaceInfo =
+                new CompletePlaceInfo(await placeService.GetPlaceBasedOnPlace(place, "tr").ConfigureAwait(false))
+                {
                     TimezoneInfo = place.TimezoneInfo
                 };
-            
+
             string countryName = turkishPlaceInfo.Country;
             string cityName = turkishPlaceInfo.City;
 
