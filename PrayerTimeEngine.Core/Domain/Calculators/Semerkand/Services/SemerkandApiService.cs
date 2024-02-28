@@ -64,8 +64,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
 
         internal const string GET_TIMES_BY_CITY = @"http://semerkandtakvimi.semerkandmobile.com/salaattimes?cityId={0}&year={1}";
 
-        // UNUSED!!
-        private const int EXTENT_OF_DAYS_RETRIEVED = 5;
+        internal const int EXTENT_OF_DAYS_RETRIEVED = 5;
 
         public async Task<List<SemerkandPrayerTimes>> GetTimesByCityID(LocalDate date, string timezoneName, int cityID)
         {
@@ -83,12 +82,16 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
 
             JArray prayerTimesJArray = JArray.Parse(jsonPrayerTimesString);
 
-            List<SemerkandPrayerTimes> allPrayerTimes = new();
+            List<SemerkandPrayerTimes> prayerTimes = new();
 
             foreach (JObject prayerTimeJObject in prayerTimesJArray)
             {
                 int currentDayOfYear = (int)prayerTimeJObject["DayOfYear"];
                 LocalDate currentDate = new LocalDate(date.Year, 1, 1).PlusDays(currentDayOfYear - 1);
+
+                // ignore past and ignore what is after the necessary extent
+                if (currentDate < date || date.PlusDays(EXTENT_OF_DAYS_RETRIEVED - 1) < currentDate)
+                    continue;
 
                 SemerkandPrayerTimes prayerTime = new()
                 {
@@ -104,10 +107,10 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
                     Isha = getZonedDateTime(dateTimeZone, currentDate, (string)prayerTimeJObject["Isha"])
                 };
 
-                allPrayerTimes.Add(prayerTime);
+                prayerTimes.Add(prayerTime);
             }
 
-            return allPrayerTimes;
+            return prayerTimes;
         }
         
         private ZonedDateTime getZonedDateTime(DateTimeZone timezone, LocalDate date, string timeString)

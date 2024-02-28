@@ -17,6 +17,22 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
                 .ToListAsync().ConfigureAwait(false);
         }
 
+        public async Task<bool> HasCountryData()
+        {
+            return await dbContext
+                .FaziletCountries
+                .AnyAsync().ConfigureAwait(false);
+        }
+
+        public async Task<int?> GetCountryIDByName(string countryName)
+        {
+            return await dbContext
+                .FaziletCountries
+                .Where(x => x.Name == countryName)
+                .Select(x => (int?)x.ID)
+                .FirstOrDefaultAsync().ConfigureAwait(false);
+        }
+
         private static readonly Func<AppDbContext, int, IAsyncEnumerable<FaziletCity>> compiledQuery_GetCitiesByCountryID =
             EF.CompileAsyncQuery(
                 (AppDbContext context, int countryId) =>
@@ -33,6 +49,23 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
             }
 
             return returnLst;
+        }
+
+        public async Task<bool> HasCityData(int countryID)
+        {
+            return await dbContext
+                .FaziletCities
+                .Where(x => x.CountryID == countryID)
+                .AnyAsync().ConfigureAwait(false);
+        }
+
+        public async Task<int?> GetCityIDByName(int countryID, string cityName)
+        {
+            return await dbContext
+                .FaziletCities
+                .Where(x => x.CountryID == countryID && x.Name == cityName)
+                .Select(x => (int?)x.ID)
+                .FirstOrDefaultAsync().ConfigureAwait(false);
         }
 
         public async Task<FaziletPrayerTimes> GetTimesByDateAndCityID(LocalDate date, int cityId)

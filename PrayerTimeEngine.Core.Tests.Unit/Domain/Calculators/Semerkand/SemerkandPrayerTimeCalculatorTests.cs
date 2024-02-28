@@ -49,9 +49,9 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
                     new GenericSettingConfiguration { TimeType = ETimeType.FajrEnd, Source = ECalculationSource.Semerkand }
                 ];
 
-            _semerkandDBAccessMock.GetCountries().Returns([new SemerkandCountry { ID = 1, Name = "Deutschland" }]);
-            _semerkandDBAccessMock.GetCitiesByCountryID(Arg.Is(1)).Returns([new SemerkandCity { ID = 1, CountryID = 1, Name = "Berlin" }]);
-            
+            _semerkandDBAccessMock.GetCountryIDByName(Arg.Is("Deutschland")).Returns(1);
+            _semerkandDBAccessMock.GetCityIDByName(Arg.Is(1), Arg.Is("Berlin")).Returns(1);
+
             SemerkandPrayerTimes times = new SemerkandPrayerTimes
             {
                 CityID = 1,
@@ -81,9 +81,9 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
 
             _placeServiceMock.ReceivedCalls().Should().BeEmpty();
             _semerkandApiServiceMock.ReceivedCalls().Should().BeEmpty();
-            _semerkandDBAccessMock.ReceivedCalls().Should().HaveCount(6);
-            await _semerkandDBAccessMock.Received(2).GetCountries();
-            await _semerkandDBAccessMock.Received(2).GetCitiesByCountryID(Arg.Is(1));
+            _semerkandDBAccessMock.ReceivedCalls().Should().HaveCount(4);
+            await _semerkandDBAccessMock.Received(1).GetCountryIDByName(Arg.Is("Deutschland"));
+            await _semerkandDBAccessMock.Received(1).GetCityIDByName(Arg.Is(1), Arg.Is("Berlin"));
             await _semerkandDBAccessMock.Received(1).GetTimesByDateAndCityID(Arg.Is(date), Arg.Is(1));
             await _semerkandDBAccessMock.Received(1).GetTimesByDateAndCityID(Arg.Is(date.PlusDays(1)), Arg.Is(1));
         }
@@ -107,8 +107,8 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
             _placeServiceMock
                 .GetPlaceBasedOnPlace(Arg.Is(completePlaceInfo), Arg.Is("tr"))
                 .Returns(turkishBasicPlaceInfo);
-            _semerkandDBAccessMock.GetCountries().Returns([new SemerkandCountry { ID = 1, Name = "Avusturya" }]);
-            _semerkandDBAccessMock.GetCitiesByCountryID(Arg.Is(1)).Returns([new SemerkandCity { ID = 1, CountryID = 1, Name = "Innsbruck" }]);
+            _semerkandDBAccessMock.GetCountryIDByName(Arg.Is("Avusturya")).Returns(1);
+            _semerkandDBAccessMock.GetCityIDByName(Arg.Is(1), Arg.Is("Innsbruck")).Returns(1);
             
             // ACT
             var locationData = await _semerkandPrayerTimeCalculator.GetLocationInfo(completePlaceInfo) as SemerkandLocationData;

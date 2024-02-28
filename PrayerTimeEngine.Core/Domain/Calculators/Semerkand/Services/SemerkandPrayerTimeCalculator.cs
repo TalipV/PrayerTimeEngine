@@ -57,10 +57,9 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
         {
             string countryName = semerkandLocationData.CountryName;
             string cityName = semerkandLocationData.CityName;
-
-            if (await tryGetCountryID(countryName).ConfigureAwait(false) is (bool countrySuccess, int countryID) countryResult && !countrySuccess)
+            if (await tryGetCountryID(countryName).ConfigureAwait(false) is (bool countrySuccess, int countryID) && !countrySuccess)
                 throw new ArgumentException($"{nameof(countryName)} could not be found!");
-            if (await tryGetCityID(cityName, countryID).ConfigureAwait(false) is (bool citySuccess, int cityID) cityResult && !citySuccess)
+            if (await tryGetCityID(cityName, countryID).ConfigureAwait(false) is (bool citySuccess, int cityID) && !citySuccess)
                 throw new ArgumentException($"{nameof(cityName)} could not be found!");
 
             SemerkandPrayerTimes prayerTimes = await getPrayerTimesByDateAndCityID(date, semerkandLocationData.TimezoneName, cityID).ConfigureAwait(false)
@@ -103,21 +102,30 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
             // check-then-act has to be thread safe
             using (await semaphoreTryGetCityID.LockAsync().ConfigureAwait(false))
             {
-                // We only check if it is empty because a selection of countries missing is not expected.
-                if ((await semerkandDBAccess.GetCitiesByCountryID(countryID).ConfigureAwait(false)).Count == 0)
+                int? cityID = await semerkandDBAccess.GetCityIDByName(countryID, cityName);
+
+                // city found
+                if (cityID != null)
+                    return (true, cityID.Value);
+
+                // unknown city
+                if (await semerkandDBAccess.HasCityData(countryID).ConfigureAwait(false))
                 {
-                    // load cities through HTTP request
-                    Dictionary<string, int> cities = await semerkandApiService.GetCitiesByCountryID(countryID).ConfigureAwait(false);
-
-                    // save cities to db
-                    await semerkandDBAccess.InsertCities(cities, countryID).ConfigureAwait(false);
+                    return (false, -1);
                 }
-            }
 
-            if ((await semerkandDBAccess.GetCitiesByCountryID(countryID).ConfigureAwait(false)).FirstOrDefault(x => x.Name == cityName)?.ID is int cityID)
-                return (true, cityID);
-            else
+                // load cities through HTTP request and save them
+                Dictionary<string, int> cities = await semerkandApiService.GetCitiesByCountryID(countryID).ConfigureAwait(false);
+                await semerkandDBAccess.InsertCities(cities, countryID).ConfigureAwait(false);
+
+                if (cities.TryGetValue(cityName, out int returnValue))
+                {
+                    return (true, returnValue);
+                }
+
+                // there were no cities and loaded cities still didn't contain it
                 return (false, -1);
+            }
         }
 
         private static readonly AsyncNonKeyedLocker semaphoreTryGetCountryID = new(1);
@@ -127,21 +135,30 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
             // check-then-act has to be thread safe
             using (await semaphoreTryGetCountryID.LockAsync().ConfigureAwait(false))
             {
-                // We only check if it is empty because a selection of countries missing is not expected.
-                if ((await semerkandDBAccess.GetCountries().ConfigureAwait(false)).Count == 0)
+                int? countryID = await semerkandDBAccess.GetCountryIDByName(countryName);
+
+                // country found
+                if (countryID != null)
+                    return (true, countryID.Value);
+
+                // unknown country
+                if (await semerkandDBAccess.HasCountryData().ConfigureAwait(false))
                 {
-                    // load countries through HTTP request
-                    Dictionary<string, int> countries = await semerkandApiService.GetCountries().ConfigureAwait(false);
-
-                    // save countries to db
-                    await semerkandDBAccess.InsertCountries(countries).ConfigureAwait(false);
+                    return (false, -1);
                 }
-            }
 
-            if ((await semerkandDBAccess.GetCountries().ConfigureAwait(false)).FirstOrDefault(x => x.Name == countryName)?.ID is int countryID)
-                return (true, countryID);
-            else
+                // load countries through HTTP request and save them
+                Dictionary<string, int> countries = await semerkandApiService.GetCountries().ConfigureAwait(false);
+                await semerkandDBAccess.InsertCountries(countries).ConfigureAwait(false);
+
+                if (countries.TryGetValue(countryName, out int returnValue))
+                {
+                    return (true, returnValue);
+                }
+
+                // there were no countries and loaded countries still didn't contain it
                 return (false, -1);
+            }
         }
 
         public async Task<BaseLocationData> GetLocationInfo(CompletePlaceInfo place)

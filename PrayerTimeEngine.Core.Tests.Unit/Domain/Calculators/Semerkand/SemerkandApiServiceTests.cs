@@ -114,7 +114,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
                     197);
 
             // ASSERT
-            times.Should().HaveCount(365);
+            times.Should().HaveCount(SemerkandApiService.EXTENT_OF_DAYS_RETRIEVED);
             times.Should().AllSatisfy(time =>
             {
                 time.Should().NotBeNull();

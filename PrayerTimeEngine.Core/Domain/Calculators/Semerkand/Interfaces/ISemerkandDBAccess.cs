@@ -11,6 +11,10 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Interfaces
 
         public Task InsertCountries(Dictionary<string, int> countries);
         public Task InsertCities(Dictionary<string, int> cities, int countryId);
-        public Task InsertSemerkandPrayerTimes(LocalDate date, int cityID, SemerkandPrayerTimes faziletPrayerTimes);
+        public Task InsertSemerkandPrayerTimes(LocalDate date, int cityID, SemerkandPrayerTimes semerkandPrayerTimes);
+        public Task<int?> GetCityIDByName(int countryID, string cityName);
+        public Task<bool> HasCityData(int countryID);
+        public Task<bool> HasCountryData();
+        public Task<int?> GetCountryIDByName(string countryName);
     }
 }
