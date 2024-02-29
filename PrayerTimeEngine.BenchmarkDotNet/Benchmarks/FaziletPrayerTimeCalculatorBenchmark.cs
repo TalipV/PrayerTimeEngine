@@ -24,15 +24,15 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
     {
         #region data
 
-        private static readonly LocalDate _localDate = new LocalDate(2023, 7, 29);
+        private static readonly LocalDate _localDate = new(2023, 7, 29);
 
         private static readonly List<GenericSettingConfiguration> _configs =
             [
                 new GenericSettingConfiguration { TimeType = ETimeType.DhuhrStart, Source = ECalculationSource.Fazilet }
             ];
 
-        private static FaziletLocationData _locationData =
-            new FaziletLocationData
+        private static readonly FaziletLocationData _locationData =
+            new()
             {
                 CountryName = "Avusturya",
                 CityName = "Innsbruck"
@@ -40,7 +40,7 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
 
         #endregion data
 
-        private FaziletPrayerTimeCalculator getFaziletPrayerTimeCalculator_DataFromDbStorage(
+        private static FaziletPrayerTimeCalculator getFaziletPrayerTimeCalculator_DataFromDbStorage(
             AppDbContext appDbContext)
         {
             // to make sure that before the benchmark the data is gotten from the APIService and stored in the db
@@ -63,7 +63,7 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
                 );
         }
 
-        private FaziletPrayerTimeCalculator getFaziletPrayerTimeCalculator_DataFromApi()
+        private static FaziletPrayerTimeCalculator getFaziletPrayerTimeCalculator_DataFromApi()
         {
             // db doesn't return any data
             var faziletDbAccessMock = Substitute.For<IFaziletDBAccess>();
@@ -114,7 +114,7 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
         private static DbConnection _dbContextKeepAliveSqlConnection;
 
         [GlobalSetup]
-        public void Setup()
+        public static void Setup()
         {
             var dbOptions = new DbContextOptionsBuilder()
                 .UseSqlite($"Data Source=:memory:")
@@ -132,7 +132,7 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
         private static FaziletPrayerTimeCalculator _faziletPrayerTimeCalculator_DataFromApi = null;
 
         [Benchmark]
-        public void FaziletPrayerTimeCalculator_GetDataFromDb()
+        public static ILookup<ICalculationPrayerTimes, ETimeType> FaziletPrayerTimeCalculator_GetDataFromDb()
         {
             var result = _faziletPrayerTimeCalculator_DataFromDbStorage.GetPrayerTimesAsync(
                 _localDate,
@@ -143,10 +143,12 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
             {
                 throw new Exception("No, no, no. Your benchmark is not working.");
             }
+
+            return result;
         }
 
         [Benchmark]
-        public void FaziletPrayerTimeCalculator_GetDataFromApi()
+        public static ILookup<ICalculationPrayerTimes, ETimeType> FaziletPrayerTimeCalculator_GetDataFromApi()
         {
             var result = _faziletPrayerTimeCalculator_DataFromApi.GetPrayerTimesAsync(
                 _localDate,
@@ -157,6 +159,8 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
             {
                 throw new Exception("No, no, no. Your benchmark is not working.");
             }
+
+            return result;
         }
     }
 

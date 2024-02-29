@@ -14,7 +14,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
 
         public async Task<Dictionary<string, int>> GetCountries()
         {
-            Dictionary<string, int> countries = new();
+            Dictionary<string, int> countries = [];
 
             HttpResponseMessage response = await httpClient.GetAsync(GET_COUNTRIES_URL).ConfigureAwait(false);
             response.EnsureSuccessStatusCode();
@@ -22,7 +22,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
             string json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
             JObject jObject = JObject.Parse(json);
 
-            foreach (JObject country in (JArray)jObject["ulkeler"])
+            foreach (JObject country in ((JArray)jObject["ulkeler"]).Cast<JObject>())
             {
                 string countryName = (string)country["adi"];
                 int countryId = (int)country["id"];
@@ -36,14 +36,14 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
 
         public async Task<Dictionary<string, int>> GetCitiesByCountryID(int countryID)
         {
-            Dictionary<string, int> cities = new Dictionary<string, int>();
+            Dictionary<string, int> cities = [];
 
             HttpResponseMessage response = await httpClient.GetAsync(GET_CITIES_BY_COUNTRY_URL + countryID).ConfigureAwait(false);
             response.EnsureSuccessStatusCode();
 
             string json = await response.Content.ReadAsStringAsync();
 
-            foreach (JObject city in JArray.Parse(json))
+            foreach (JObject city in JArray.Parse(json).Cast<JObject>())
             {
                 string cityName = (string)city["adi"];
                 int cityId = (int)city["id"];
@@ -69,7 +69,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
             string timeZoneName = jObject.GetValue("bolge_saatdilimi").Value<string>();
             DateTimeZone timeZone = DateTimeZoneProviders.Tzdb[timeZoneName];
 
-            foreach (JObject timesJObject in timesJArray)
+            foreach (JObject timesJObject in timesJArray.Cast<JObject>())
             {
                 prayerTimesList.Add(
                     new FaziletPrayerTimes
@@ -90,7 +90,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
             return prayerTimesList;
         }
 
-        private ZonedDateTime getZonedDateTime(DateTimeZone timeZone, string timeStr)
+        private static ZonedDateTime getZonedDateTime(DateTimeZone timeZone, string timeStr)
         {
             Instant instant = 
                 InstantPattern.CreateWithInvariantCulture("MM/dd/yyyy HH:mm:ss")

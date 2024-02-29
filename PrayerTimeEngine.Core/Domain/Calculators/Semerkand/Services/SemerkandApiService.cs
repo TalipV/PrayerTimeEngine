@@ -19,7 +19,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
             response.EnsureSuccessStatusCode();
             string jsonCitiesString = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-            Dictionary<string, int> countriesByCountryID = new Dictionary<string, int>();
+            Dictionary<string, int> countriesByCountryID = [];
 
             foreach (JToken item in JArray.Parse(jsonCitiesString))
             {
@@ -38,16 +38,16 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
 
         public async Task<Dictionary<string, int>> GetCitiesByCountryID(int countryID)
         {
-            var content = new FormUrlEncodedContent(new[]
-            {
+            var content = new FormUrlEncodedContent(
+            [
                 new KeyValuePair<string, string>("id", countryID.ToString())
-            });
+            ]);
 
             HttpResponseMessage response = await httpClient.PostAsync(GET_CITIES_BY_COUNTRY_URL, content).ConfigureAwait(false);
             response.EnsureSuccessStatusCode();
             string jsonCitiesString = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-            Dictionary<string, int> citiesByCountryID = new Dictionary<string, int>();
+            Dictionary<string, int> citiesByCountryID = [];
 
             foreach (JToken item in JArray.Parse(jsonCitiesString))
             {
@@ -82,9 +82,9 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
 
             JArray prayerTimesJArray = JArray.Parse(jsonPrayerTimesString);
 
-            List<SemerkandPrayerTimes> prayerTimes = new();
+            List<SemerkandPrayerTimes> prayerTimes = [];
 
-            foreach (JObject prayerTimeJObject in prayerTimesJArray)
+            foreach (JObject prayerTimeJObject in prayerTimesJArray.Cast<JObject>())
             {
                 int currentDayOfYear = (int)prayerTimeJObject["DayOfYear"];
                 LocalDate currentDate = new LocalDate(date.Year, 1, 1).PlusDays(currentDayOfYear - 1);
@@ -113,7 +113,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
             return prayerTimes;
         }
         
-        private ZonedDateTime getZonedDateTime(DateTimeZone timezone, LocalDate date, string timeString)
+        private static ZonedDateTime getZonedDateTime(DateTimeZone timezone, LocalDate date, string timeString)
         {
             LocalTime time =
                 LocalTimePattern.CreateWithInvariantCulture("HH:mm")

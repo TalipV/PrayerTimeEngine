@@ -22,7 +22,7 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
     {
         #region data
 
-        private static readonly LocalDate _localDate = new LocalDate(2023, 7, 30);
+        private static readonly LocalDate _localDate = new(2023, 7, 30);
 
         private static readonly List<GenericSettingConfiguration> _configs =
             [
@@ -44,8 +44,8 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
                 new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.IshaEnd, Degree = -15.0 },
             ];
 
-        private static MuwaqqitLocationData _locationData =
-            new MuwaqqitLocationData
+        private static readonly MuwaqqitLocationData _locationData =
+            new()
             {
                 Latitude = 47.2803835M,
                 Longitude = 11.41337M,
@@ -54,7 +54,7 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
 
         #endregion data
 
-        private MuwaqqitPrayerTimeCalculator getMuwaqqitPrayerTimeCalculator_DataFromDbStorage(
+        private static MuwaqqitPrayerTimeCalculator getMuwaqqitPrayerTimeCalculator_DataFromDbStorage(
             AppDbContext appDbContext)
         {
             // to make sure that before the benchmark the data is gotten from the APIService and stored in the db
@@ -75,7 +75,7 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
                 );
         }
 
-        private MuwaqqitPrayerTimeCalculator getMuwaqqitPrayerTimeCalculator_DataFromApi()
+        private static MuwaqqitPrayerTimeCalculator getMuwaqqitPrayerTimeCalculator_DataFromApi()
         {
             return new MuwaqqitPrayerTimeCalculator(
                     // returns null per default
@@ -116,7 +116,7 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
         private static DbConnection _dbContextKeepAliveSqlConnection;
 
         [GlobalSetup]
-        public void Setup()
+        public static void Setup()
         {
             var dbOptions = new DbContextOptionsBuilder()
                 .UseSqlite($"Data Source=:memory:")
@@ -134,7 +134,7 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
         private static MuwaqqitPrayerTimeCalculator _muwaqqitPrayerTimeCalculator_DataFromApi = null;
 
         [Benchmark]
-        public void MuwaqqitPrayerTimeCalculator_GetDataFromDb()
+        public static ILookup<ICalculationPrayerTimes, ETimeType> MuwaqqitPrayerTimeCalculator_GetDataFromDb()
         {
             var result = _muwaqqitPrayerTimeCalculator_DataFromDbStorage.GetPrayerTimesAsync(
                 _localDate,
@@ -145,10 +145,12 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
             //{
             //    throw new Exception("No, no, no. Your benchmark is not working.");
             //}
+
+            return result;
         }
 
         [Benchmark]
-        public void MuwaqqitPrayerTimeCalculator_GetDataFromApi()
+        public static ILookup<ICalculationPrayerTimes, ETimeType> MuwaqqitPrayerTimeCalculator_GetDataFromApi()
         {
             var result = _muwaqqitPrayerTimeCalculator_DataFromApi.GetPrayerTimesAsync(
                 _localDate,
@@ -159,6 +161,8 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
             //{
             //    throw new Exception("No, no, no. Your benchmark is not working.");
             //}
+
+            return result;
         }
     }
 

@@ -41,7 +41,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
         public async Task GetPrayerTimesAsync_AllValuesFromDbCache_Success()
         {
             // ARRANGE
-            LocalDate date = new LocalDate(2024, 1, 1);
+            var date = new LocalDate(2024, 1, 1);
             ZonedDateTime dateInUtc = date.AtStartOfDayInZone(DateTimeZone.Utc);
             BaseLocationData locationData = new SemerkandLocationData { CityName = "Berlin", CountryName = "Deutschland", TimezoneName = "Europe/Vienna" };
             List<GenericSettingConfiguration> configurations = 
@@ -52,7 +52,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
             _semerkandDBAccessMock.GetCountryIDByName(Arg.Is("Deutschland")).Returns(1);
             _semerkandDBAccessMock.GetCityIDByName(Arg.Is(1), Arg.Is("Berlin")).Returns(1);
 
-            SemerkandPrayerTimes times = new SemerkandPrayerTimes
+            var times = new SemerkandPrayerTimes
             {
                 CityID = 1,
                 DayOfYear = 5,

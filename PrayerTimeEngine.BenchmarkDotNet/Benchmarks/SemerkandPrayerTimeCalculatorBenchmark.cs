@@ -24,15 +24,15 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
     {
         #region data
 
-        private static readonly LocalDate _localDate = new LocalDate(2023, 7, 29);
+        private static readonly LocalDate _localDate = new(2023, 7, 29);
 
         private static readonly List<GenericSettingConfiguration> _configs =
             [
                 new GenericSettingConfiguration { TimeType = ETimeType.DhuhrStart, Source = ECalculationSource.Semerkand }
             ];
 
-        private static SemerkandLocationData _locationData =
-            new SemerkandLocationData
+        private static readonly SemerkandLocationData _locationData =
+            new()
             {
                 CountryName = "Avusturya",
                 CityName = "Innsbruck",
@@ -41,7 +41,7 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
 
         #endregion data
 
-        private SemerkandPrayerTimeCalculator getSemerkandPrayerTimeCalculator_DataFromDbStorage(
+        private static SemerkandPrayerTimeCalculator getSemerkandPrayerTimeCalculator_DataFromDbStorage(
             AppDbContext appDbContext)
         {
             // to make sure that before the benchmark the data is gotten from the APIService and stored in the db
@@ -64,7 +64,7 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
                 );
         }
 
-        private SemerkandPrayerTimeCalculator getSemerkandPrayerTimeCalculator_DataFromApi()
+        private static SemerkandPrayerTimeCalculator getSemerkandPrayerTimeCalculator_DataFromApi()
         {
             // db doesn't return any data
             var semerkandDbAccessMock = Substitute.For<ISemerkandDBAccess>();
@@ -113,7 +113,7 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
         private static DbConnection _dbContextKeepAliveSqlConnection;
 
         [GlobalSetup]
-        public void Setup()
+        public static void Setup()
         {
             var dbOptions = new DbContextOptionsBuilder()
                 .UseSqlite($"Data Source=:memory:")
@@ -131,7 +131,7 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
         private static SemerkandPrayerTimeCalculator _semerkandPrayerTimeCalculator_DataFromApi = null;
 
         [Benchmark]
-        public void SemerkandPrayerTimeCalculator_GetDataFromDb()
+        public static ILookup<ICalculationPrayerTimes, ETimeType> SemerkandPrayerTimeCalculator_GetDataFromDb()
         {
             var result = _semerkandPrayerTimeCalculator_DataFromDbStorage.GetPrayerTimesAsync(
                 _localDate,
@@ -142,10 +142,12 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
             {
                 throw new Exception("No, no, no. Your benchmark is not working.");
             }
+
+            return result;
         }
 
         [Benchmark]
-        public void SemerkandPrayerTimeCalculator_GetDataFromApi()
+        public static ILookup<ICalculationPrayerTimes, ETimeType> SemerkandPrayerTimeCalculator_GetDataFromApi()
         {
             var result = _semerkandPrayerTimeCalculator_DataFromApi.GetPrayerTimesAsync(
                 _localDate,
@@ -156,6 +158,8 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
             {
                 throw new Exception("No, no, no. Your benchmark is not working.");
             }
+
+            return result;
         }
     }
 

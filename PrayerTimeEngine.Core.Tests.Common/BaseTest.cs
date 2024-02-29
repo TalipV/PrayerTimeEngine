@@ -15,11 +15,24 @@ namespace PrayerTimeEngine.Core.Tests.Common
         private AppDbContext _testAppDbContext;
         private DbConnection _keepMemoryDbAliveDbConnection = null;
 
-        protected ServiceProvider createServiceProvider(Action<ServiceCollection> configureServiceCollection)
+        protected static ServiceProvider createServiceProvider(Action<ServiceCollection> configureServiceCollection)
         {
             var serviceCollection = new ServiceCollection();
             configureServiceCollection(serviceCollection);
             return serviceCollection.BuildServiceProvider();
+        }
+
+        private static AppDbContext createTestAppDbContext()
+        {
+            var dbOptions = new DbContextOptionsBuilder()
+                .UseSqlite($"Data Source=:memory:")
+                .Options;
+
+            var mockableDbContext = Substitute.ForPartsOf<AppDbContext>(dbOptions);
+            var mockableDbContextDatabase = Substitute.ForPartsOf<DatabaseFacade>(mockableDbContext);
+            mockableDbContext.Configure().Database.Returns(mockableDbContextDatabase);
+
+            return mockableDbContext;
         }
 
         protected AppDbContext GetHandledDbContext()
@@ -31,24 +44,6 @@ namespace PrayerTimeEngine.Core.Tests.Common
             database.EnsureCreated();
             
             return _testAppDbContext;
-        }
-        
-        protected void SetUpTestDbContext(ServiceCollection serviceCollection)
-        {
-            serviceCollection.AddSingleton(GetHandledDbContext());
-        }
-
-        private AppDbContext createTestAppDbContext()
-        {
-            var dbOptions = new DbContextOptionsBuilder()
-                .UseSqlite($"Data Source=:memory:")
-                .Options;
-
-            var mockableDbContext = Substitute.ForPartsOf<AppDbContext>(dbOptions);
-            var mockableDbContextDatabase = Substitute.ForPartsOf<DatabaseFacade>(mockableDbContext);
-            mockableDbContext.Configure().Database.Returns(mockableDbContextDatabase);
-
-            return mockableDbContext;
         }
 
         public void Dispose()

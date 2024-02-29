@@ -176,9 +176,9 @@ public static class MauiProgram
 
         serviceCollection.AddTransient<IProfileService>(serviceProvider =>
         {
-            AppDbContext appDbContext = serviceProvider.GetRequiredService<AppDbContext>();
-            ProfileDBAccess profileDBAccess = new ProfileDBAccess(appDbContext);
-            TimeTypeAttributeService timeTypeAttributeService = serviceProvider.GetRequiredService<TimeTypeAttributeService>();
+            var appDbContext = serviceProvider.GetRequiredService<AppDbContext>();
+            var profileDBAccess = new ProfileDBAccess(appDbContext);
+            var timeTypeAttributeService = serviceProvider.GetRequiredService<TimeTypeAttributeService>();
             return new ProfileService(profileDBAccess, timeTypeAttributeService);
         });
 
@@ -207,7 +207,7 @@ public static class MauiProgram
         serviceCollection.AddTransient<FaziletPrayerTimeCalculator>(serviceProvider =>
         {
             AppDbContext appDbContext = serviceProvider.GetRequiredService<AppDbContext>();
-            HttpClient httpClient = new HttpClient
+            var httpClient = new HttpClient
             {
                 Timeout = TimeSpan.FromSeconds(HTTP_REQUEST_TIMEOUT_SECONDS),
                 BaseAddress = new Uri("https://fazilettakvimi.com/api/cms/")
@@ -223,7 +223,7 @@ public static class MauiProgram
         serviceCollection.AddTransient<SemerkandPrayerTimeCalculator>(serviceProvider =>
         {
             AppDbContext appDbContext = serviceProvider.GetRequiredService<AppDbContext>();
-            HttpClient httpClient = new HttpClient
+            var httpClient = new HttpClient
             {
                 Timeout = TimeSpan.FromSeconds(HTTP_REQUEST_TIMEOUT_SECONDS),
                 BaseAddress = new Uri("https://semerkandtakvimi.com/api/cms/")
@@ -240,7 +240,7 @@ public static class MauiProgram
         serviceCollection.AddTransient<MuwaqqitPrayerTimeCalculator>(serviceProvider =>
         {
             AppDbContext appDbContext = serviceProvider.GetRequiredService<AppDbContext>();
-            HttpClient httpClient = new HttpClient
+            var httpClient = new HttpClient
             {
                 Timeout = TimeSpan.FromSeconds(HTTP_REQUEST_TIMEOUT_SECONDS)
             };
