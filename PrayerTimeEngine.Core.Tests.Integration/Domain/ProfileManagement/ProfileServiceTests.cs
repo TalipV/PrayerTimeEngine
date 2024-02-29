@@ -28,7 +28,7 @@ namespace PrayerTimeEngine.Core.Tests.Integration.Domain.ProfileManagement
             ServiceProvider serviceProvider = createServiceProvider(
                 serviceCollection =>
                 {
-                    SetUpTestDbContext(serviceCollection);
+                    serviceCollection.AddSingleton(GetHandledDbContext());
                     serviceCollection.AddSingleton<TimeTypeAttributeService>();
                     serviceCollection.AddSingleton<IProfileDBAccess, ProfileDBAccess>();
                     serviceCollection.AddSingleton<IProfileService, ProfileService>();
@@ -83,7 +83,7 @@ namespace PrayerTimeEngine.Core.Tests.Integration.Domain.ProfileManagement
             ServiceProvider serviceProvider = createServiceProvider(
                 serviceCollection =>
                 {
-                    SetUpTestDbContext(serviceCollection);
+                    serviceCollection.AddSingleton(GetHandledDbContext());
                     serviceCollection.AddSingleton<TimeTypeAttributeService>();
                     serviceCollection.AddSingleton<IProfileDBAccess, ProfileDBAccess>();
                     serviceCollection.AddSingleton<IProfileService, ProfileService>();
@@ -141,7 +141,7 @@ namespace PrayerTimeEngine.Core.Tests.Integration.Domain.ProfileManagement
             ServiceProvider serviceProvider = createServiceProvider(
                 serviceCollection =>
                 {
-                    SetUpTestDbContext(serviceCollection);
+                    serviceCollection.AddSingleton(GetHandledDbContext());
                     serviceCollection.AddSingleton<TimeTypeAttributeService>();
                     serviceCollection.AddSingleton<IProfileDBAccess, ProfileDBAccess>();
                     serviceCollection.AddSingleton<IProfileService, ProfileService>();

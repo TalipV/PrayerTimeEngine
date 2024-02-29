@@ -52,7 +52,7 @@ namespace PrayerTimeEngine.Core.Tests.Integration.Domain.Calculators.Semerkand
             ServiceProvider serviceProvider = createServiceProvider(
                 configureServiceCollection: serviceCollection =>
                 {
-                    SetUpTestDbContext(serviceCollection);
+                    serviceCollection.AddSingleton(GetHandledDbContext());
                     serviceCollection.AddSingleton(Substitute.For<IPlaceService>());
 
                     serviceCollection.AddSingleton<ISemerkandDBAccess, SemerkandDBAccess>();

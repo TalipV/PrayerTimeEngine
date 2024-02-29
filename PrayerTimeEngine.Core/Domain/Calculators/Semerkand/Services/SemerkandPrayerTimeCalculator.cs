@@ -22,16 +22,15 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
             return _unsupportedTimeTypes;
         }
 
-        private HashSet<ETimeType> _unsupportedTimeTypes =
-            new HashSet<ETimeType>
-            {
+        private readonly HashSet<ETimeType> _unsupportedTimeTypes =
+            [
                 ETimeType.FajrGhalas,
                 ETimeType.FajrKaraha,
                 ETimeType.DuhaEnd,
                 ETimeType.AsrMithlayn,
                 ETimeType.AsrKaraha,
                 ETimeType.MaghribIshtibaq,
-            };
+            ];
 
         public async Task<ILookup<ICalculationPrayerTimes, ETimeType>> GetPrayerTimesAsync(
             LocalDate date,
@@ -163,8 +162,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
 
         public async Task<BaseLocationData> GetLocationInfo(CompletePlaceInfo place)
         {
-            if (place == null)
-                throw new ArgumentNullException(nameof(place));
+            ArgumentNullException.ThrowIfNull(place);
 
             // if language is already turkish then use this place
 

@@ -14,7 +14,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
         public SemerkandApiServiceTests()
         {
             _mockHttpMessageHandler = new MockHttpMessageHandler();
-            HttpClient httpClient = new HttpClient(_mockHttpMessageHandler);
+            var httpClient = new HttpClient(_mockHttpMessageHandler);
             _semerkandApiService = new SemerkandApiService(httpClient);
         }
 
@@ -88,7 +88,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
         public async Task GetTimesByCityID_ReadTestDataFileForCountries_RoughlyValidData()
         {
             // ARRANGE
-            LocalDate date = new LocalDate(2023, 7, 29);
+            var date = new LocalDate(2023, 7, 29);
             
             _mockHttpMessageHandler.HandleRequestFunc =
                 (request) =>

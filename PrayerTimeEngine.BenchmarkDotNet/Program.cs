@@ -1,15 +1,11 @@
 ﻿using BenchmarkDotNet.Running;
 using PrayerTimeEngine.BenchmarkDotNet.Benchmarks;
 
-namespace PrayerTimeEngine.BenchmarkDotNet
-{
-    internal class Program
-    {
-        static void Main(string[] args)
-        {
-            BenchmarkRunner.Run<SemerkandPrayerTimeCalculatorBenchmark>();
-            //BenchmarkRunner.Run<FaziletPrayerTimeCalculatorBenchmark>();
-            //BenchmarkRunner.Run<MuwaqqitPrayerTimeCalculatorBenchmark>();
-        }
-    }
-}
+Type[] types = 
+    [
+        typeof(SemerkandPrayerTimeCalculatorBenchmark),
+        typeof(FaziletPrayerTimeCalculatorBenchmark),
+        typeof(MuwaqqitPrayerTimeCalculatorBenchmark)
+    ];
+
+BenchmarkSwitcher.FromTypes(types).Run(args);

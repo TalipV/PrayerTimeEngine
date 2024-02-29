@@ -52,7 +52,7 @@ namespace PrayerTimeEngine.Core.Tests.Integration.Domain.Calculators.Muwaqqit
             ServiceProvider serviceProvider = createServiceProvider(
                 configureServiceCollection: serviceCollection =>
                 {
-                    SetUpTestDbContext(serviceCollection);
+                    serviceCollection.AddSingleton(GetHandledDbContext());
                     serviceCollection.AddSingleton(Substitute.For<IPlaceService>());
                     serviceCollection.AddSingleton<TimeTypeAttributeService>();
 
