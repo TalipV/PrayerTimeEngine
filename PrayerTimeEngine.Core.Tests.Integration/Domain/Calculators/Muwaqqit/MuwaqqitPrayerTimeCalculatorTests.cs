@@ -63,10 +63,9 @@ namespace PrayerTimeEngine.Core.Tests.Integration.Domain.Calculators.Muwaqqit
                     serviceCollection.AddSingleton<MuwaqqitPrayerTimeCalculator>();
                 });
 
-            LocalDate testDate = new LocalDate(2023, 7, 30);
+            var testDate = new LocalDate(2023, 7, 30);
             List<GenericSettingConfiguration> configs =
-                new()
-                {
+                [
                     new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.FajrStart, Degree = -12.0 },
                     new GenericSettingConfiguration { TimeType = ETimeType.FajrEnd, Source = ECalculationSource.Muwaqqit },
                     new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.FajrGhalas, Degree = -7.5 },
@@ -83,7 +82,7 @@ namespace PrayerTimeEngine.Core.Tests.Integration.Domain.Calculators.Muwaqqit
                     new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.MaghribIshtibaq, Degree = -8 },
                     new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.IshaStart, Degree = -15.5 },
                     new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.IshaEnd, Degree = -15.0 },
-                };
+                ];
 
             MuwaqqitPrayerTimeCalculator muwaqqitPrayerTimeCalculator = serviceProvider.GetService<MuwaqqitPrayerTimeCalculator>();
 
@@ -132,10 +131,9 @@ namespace PrayerTimeEngine.Core.Tests.Integration.Domain.Calculators.Muwaqqit
             getMappedValue(ETimeType.IshaEnd, timeTypeByCalculationPrayerTimes).Should().Be(new LocalDateTime(2023, 7, 31, 04, 02, 30));
         }
 
-        private LocalDateTime getMappedValue(ETimeType timeType, IDictionary<ETimeType, MuwaqqitPrayerTimes> timeTypeByCalculationPrayerTimes)
+        private static LocalDateTime getMappedValue(ETimeType timeType, IDictionary<ETimeType, MuwaqqitPrayerTimes> timeTypeByCalculationPrayerTimes)
         {
-            return
-                timeTypeByCalculationPrayerTimes[timeType]
+            return timeTypeByCalculationPrayerTimes[timeType]
                 .GetZonedDateTimeForTimeType(timeType)
                 .LocalDateTime;
         }

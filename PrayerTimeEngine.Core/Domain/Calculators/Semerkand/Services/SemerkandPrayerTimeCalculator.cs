@@ -44,7 +44,11 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
                 throw new Exception("Semerkand specific location information was not provided!");
             }
 
-            ICalculationPrayerTimes semerkandPrayerTimes = await getPrayerTimesInternal(date, semerkandLocationData).ConfigureAwait(false);
+            string countryName = semerkandLocationData.CountryName;
+            string cityName = semerkandLocationData.CityName;
+            string timezoneName = semerkandLocationData.TimezoneName;
+
+            ICalculationPrayerTimes semerkandPrayerTimes = await getPrayerTimesInternal(date, countryName, cityName, timezoneName).ConfigureAwait(false);
 
             // this single calculation entity applies to all the TimeTypes of the configurations
             return configurations
@@ -52,19 +56,17 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
                 .ToLookup(x => semerkandPrayerTimes, y => y);
         }
 
-        private async Task<SemerkandPrayerTimes> getPrayerTimesInternal(LocalDate date, SemerkandLocationData semerkandLocationData)
+        private async Task<SemerkandPrayerTimes> getPrayerTimesInternal(LocalDate date, string countryName, string cityName, string timezoneName)
         {
-            string countryName = semerkandLocationData.CountryName;
-            string cityName = semerkandLocationData.CityName;
             if (await tryGetCountryID(countryName).ConfigureAwait(false) is (bool countrySuccess, int countryID) && !countrySuccess)
                 throw new ArgumentException($"{nameof(countryName)} could not be found!");
             if (await tryGetCityID(cityName, countryID).ConfigureAwait(false) is (bool citySuccess, int cityID) && !citySuccess)
                 throw new ArgumentException($"{nameof(cityName)} could not be found!");
 
-            SemerkandPrayerTimes prayerTimes = await getPrayerTimesByDateAndCityID(date, semerkandLocationData.TimezoneName, cityID).ConfigureAwait(false)
+            SemerkandPrayerTimes prayerTimes = await getPrayerTimesByDateAndCityID(date, timezoneName, cityID).ConfigureAwait(false)
                 ?? throw new Exception($"Prayer times for the {date:D} could not be found for an unknown reason.");
 
-            prayerTimes.NextFajr = (await getPrayerTimesByDateAndCityID(date.PlusDays(1), semerkandLocationData.TimezoneName, cityID).ConfigureAwait(false))?.Fajr;
+            prayerTimes.NextFajr = (await getPrayerTimesByDateAndCityID(date.PlusDays(1), timezoneName, cityID).ConfigureAwait(false))?.Fajr;
 
             return prayerTimes;
         }
