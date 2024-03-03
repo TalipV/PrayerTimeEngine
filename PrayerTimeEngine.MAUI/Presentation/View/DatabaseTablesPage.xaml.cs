@@ -28,10 +28,15 @@ public partial class DatabaseTablesPage : ContentPage
         if (list.Count == 0)
             return;
 
+        dataGrid.ItemsSource = null;
         dataGrid.Columns.Clear();
-        dataGrid.ItemsSource = list;
 
-        foreach (PropertyInfo prop in list.First().GetType().GetProperties().Where(x => validTypes.Contains(x.PropertyType)))
+        List<PropertyInfo> propertyInfos = 
+            list.First().GetType().GetProperties()
+                .Where(x => validTypes.Contains(x.PropertyType))
+                .ToList();
+
+        foreach (PropertyInfo prop in propertyInfos)
         {
             var dataGridColumn = new DataGridColumn
             {
@@ -40,6 +45,8 @@ public partial class DatabaseTablesPage : ContentPage
             };
             dataGrid.Columns.Add(dataGridColumn);
         }
+
+        dataGrid.ItemsSource = list;
     }
 }
 

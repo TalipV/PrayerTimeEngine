@@ -1,4 +1,5 @@
-﻿using NodaTime;
+﻿using Microsoft.Extensions.Logging;
+using NodaTime;
 using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Domain.Calculators;
 using PrayerTimeEngine.Core.Domain.Models;
@@ -9,7 +10,8 @@ namespace PrayerTimeEngine.Core.Domain.CalculationManagement
 {
     public class CalculationManager(
             IPrayerTimeCalculatorFactory prayerTimeServiceFactory,
-            IProfileService profileService
+            IProfileService profileService,
+            ILogger<CalculationManager> logger
         ) : ICalculationManager
     {
         private LocalDate? _cachedCalculationDate = null;
@@ -99,13 +101,25 @@ namespace PrayerTimeEngine.Core.Domain.CalculationManagement
         }
 
         private async IAsyncEnumerable<(ETimeType, ZonedDateTime?)> calculateComplexTypesForCalcSource(
-            IPrayerTimeCalculator calculationSourceCalculator, LocalDate date, 
+            IPrayerTimeCalculator calculationSourceCalculator, LocalDate date,
             BaseLocationData locationData, List<GenericSettingConfiguration> configs)
         {
             var configsByTimeType = configs.ToDictionary(x => x.TimeType);
 
+            ILookup<ICalculationPrayerTimes, ETimeType> calculationResult;
+
+            try
+            {
+                calculationResult = await calculationSourceCalculator.GetPrayerTimesAsync(date, locationData, configs).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Error for {CalculatorName}", calculationSourceCalculator.GetType().Name);
+                yield break;
+            }
+
             // CALCULATION
-            foreach (var calculationPrayerTimeKVP in await calculationSourceCalculator.GetPrayerTimesAsync(date, locationData, configs).ConfigureAwait(false))
+            foreach (var calculationPrayerTimeKVP in calculationResult)
             {
                 ICalculationPrayerTimes calculationPrayerTimes = calculationPrayerTimeKVP.Key;
 
