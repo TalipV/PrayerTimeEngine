@@ -57,6 +57,11 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
 
         public async Task<List<FaziletPrayerTimes>> GetTimesByCityID(int cityID)
         {
+            // error case
+            // response.StatusCode = ServiceUnavailable (503)
+            // response.ReasonPhrase = "Service Unavailable"
+            // response.Content.ReadAsStringAsync() = "{"message":"Sistemlerimizde bakım çalışması yaptığımız için geçici olarak hizmet veremiyoruz. Anlayışınız için teşekkür ederiz."}"
+
             List<FaziletPrayerTimes> prayerTimesList = [];
 
             string url = string.Format(GET_TIMES_BY_CITY_URL, cityID);

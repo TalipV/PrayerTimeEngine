@@ -1,4 +1,5 @@
-﻿using PrayerTimeEngine.Core.Data.EntityFramework;
+﻿using Microsoft.EntityFrameworkCore;
+using PrayerTimeEngine.Core.Data.EntityFramework;
 using PropertyChanged;
 
 namespace PrayerTimeEngine.Presentation.ViewModel
@@ -11,16 +12,16 @@ namespace PrayerTimeEngine.Presentation.ViewModel
 
         public override void Initialize(params object[] parameter)
         {
-            _dataDict[nameof(AppDbContext.FaziletCountries)] = appDbContext.FaziletCountries.ToList().OfType<object>().ToList();
-            _dataDict[nameof(AppDbContext.FaziletCities)] = appDbContext.FaziletCities.ToList().OfType<object>().ToList();
-            _dataDict[nameof(AppDbContext.FaziletPrayerTimes)] = appDbContext.FaziletPrayerTimes.ToList().OfType<object>().ToList();
-            _dataDict[nameof(AppDbContext.SemerkandCountries)] = appDbContext.SemerkandCountries.ToList().OfType<object>().ToList();
-            _dataDict[nameof(AppDbContext.SemerkandCities)] = appDbContext.SemerkandCities.ToList().OfType<object>().ToList();
-            _dataDict[nameof(AppDbContext.SemerkandPrayerTimes)] = appDbContext.SemerkandPrayerTimes.ToList().OfType<object>().ToList();
-            _dataDict[nameof(AppDbContext.MuwaqqitPrayerTimes)] = appDbContext.MuwaqqitPrayerTimes.ToList().OfType<object>().ToList();
-            _dataDict[nameof(AppDbContext.Profiles)] = appDbContext.Profiles.ToList().OfType<object>().ToList();
-            _dataDict[nameof(AppDbContext.ProfileConfigs)] = appDbContext.ProfileConfigs.ToList().OfType<object>().ToList();
-            _dataDict[nameof(AppDbContext.ProfileLocations)] = appDbContext.ProfileLocations.ToList().OfType<object>().ToList();
+            _dataDict[nameof(AppDbContext.FaziletCountries)] = appDbContext.FaziletCountries.AsNoTracking().ToList().OfType<object>().ToList();
+            _dataDict[nameof(AppDbContext.FaziletCities)] = appDbContext.FaziletCities.AsNoTracking().ToList().OfType<object>().ToList();
+            _dataDict[nameof(AppDbContext.FaziletPrayerTimes)] = appDbContext.FaziletPrayerTimes.AsNoTracking().ToList().OfType<object>().ToList();
+            _dataDict[nameof(AppDbContext.SemerkandCountries)] = appDbContext.SemerkandCountries.AsNoTracking().ToList().OfType<object>().ToList();
+            _dataDict[nameof(AppDbContext.SemerkandCities)] = appDbContext.SemerkandCities.AsNoTracking().ToList().OfType<object>().ToList();
+            _dataDict[nameof(AppDbContext.SemerkandPrayerTimes)] = appDbContext.SemerkandPrayerTimes.AsNoTracking().ToList().OfType<object>().ToList();
+            _dataDict[nameof(AppDbContext.MuwaqqitPrayerTimes)] = appDbContext.MuwaqqitPrayerTimes.AsNoTracking().ToList().OfType<object>().ToList();
+            _dataDict[nameof(AppDbContext.Profiles)] = appDbContext.Profiles.AsNoTracking().ToList().OfType<object>().ToList();
+            _dataDict[nameof(AppDbContext.ProfileConfigs)] = appDbContext.ProfileConfigs.AsNoTracking().ToList().OfType<object>().ToList();
+            _dataDict[nameof(AppDbContext.ProfileLocations)] = appDbContext.ProfileLocations.AsNoTracking().ToList().OfType<object>().ToList();
 
             TableOptions = _dataDict.Select(x => x.Key).ToList();
             SelectedTableOption = TableOptions[0];

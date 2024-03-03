@@ -37,6 +37,7 @@ namespace PrayerTimeEngine;
 
 // TODO:
 // - Performance
+// - Proper error handling in calculators (e.g. checking response code at least for success, collect exceptions in CalculationManager result)
 // - Multiple profiles
 // - Decrease count of reloads (e.g. mere app switch shouldn't always require reload)
 // - CancellationTokens
