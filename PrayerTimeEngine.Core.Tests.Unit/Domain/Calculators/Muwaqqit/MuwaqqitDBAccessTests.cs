@@ -63,7 +63,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Muwaqqit
         }
 
         [Fact]
-        public async Task InsertMuwaqqitPrayerTimesAsync_InsertsNewTime()
+        public async Task InsertMuwaqqitPrayerTimesAsync_NewTime_TimeInDb()
         {
             // ARRANGE
             LocalDate date = new LocalDate(2023, 7, 31);

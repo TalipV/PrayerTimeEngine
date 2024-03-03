@@ -11,11 +11,11 @@ namespace PrayerTimeEngine.Core.Tests.Common
 {
     public static class TestData
     {
-        public static Profile CreateNewCompleteTestProfile()
+        public static Profile CreateNewCompleteTestProfile(int profileID = 1)
         {
             Profile profile = new Profile
             {
-                ID = 1,
+                ID = profileID,
                 Name = "Standard-Profil",
                 LocationName = "Innsbruck",
                 SequenceNo = 1,
