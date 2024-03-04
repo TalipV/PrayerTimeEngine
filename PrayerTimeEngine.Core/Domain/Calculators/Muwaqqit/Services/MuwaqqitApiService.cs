@@ -2,7 +2,6 @@
 using NodaTime.Text;
 using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Interfaces;
 using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Models;
-using System.Collections.Specialized;
 using System.Globalization;
 using System.Text.Json;
 using System.Web;
