@@ -66,8 +66,6 @@ namespace PrayerTimeEngine;
 // --- MuwaqqitPrayerTimeCalculator
 // --- MuwaqqitApiService
 // --- MuwaqqitDBAccess
-// # ProfileDBAccess
-// # PreferenceService
 // # CalculationManager
 
 public static class MauiProgram
@@ -193,9 +191,6 @@ public static class MauiProgram
             };
             return new PlaceService(httpClient, sp.GetRequiredService<ILogger<PlaceService>>());
         });
-
-        //serviceCollection.AddSingleton<PreferenceService>();
-        //serviceCollection.AddSingleton<IPreferenceAccess, PreferenceAccess>();
 
 #if ANDROID
         serviceCollection.AddSingleton<Services.PrayerTimeSummaryNotificationManager>();
