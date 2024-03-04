@@ -34,7 +34,7 @@ namespace PrayerTimeEngine.Core.Domain.CalculationManagement
             }
 
             // wrong input params for cache
-            if (_cachedCalculationDate != date || !profileService.EqualsFullProfile(_cachedProfile, profile))
+            if (_cachedCalculationDate != date || !_cachedProfile.Equals(profile))
             {
                 prayerTimeEntity = null;
                 return false;

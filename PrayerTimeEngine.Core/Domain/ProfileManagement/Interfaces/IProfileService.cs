@@ -18,7 +18,6 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Interfaces
         public string GetLocationDataDisplayText(Profile profile);
         public string GetPrayerTimeConfigDisplayText(Profile profile);
 
-        bool EqualsFullProfile(Profile profile1, Profile profile2);
         List<GenericSettingConfiguration> GetActiveComplexTimeConfigs(Profile profile);
         Task<Profile> GetUntrackedReferenceOfProfile(int profileID, CancellationToken cancellationToken);
     }

@@ -19,8 +19,7 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Models
             if (obj is not ProfileTimeConfig otherTimeConfig)
                 return false;
 
-            return
-                ID == otherTimeConfig.ID
+            return ID == otherTimeConfig.ID
                 && ProfileID == otherTimeConfig.ProfileID
                 && TimeType == otherTimeConfig.TimeType
                 && CalculationConfiguration.Equals(otherTimeConfig.CalculationConfiguration);
