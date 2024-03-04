@@ -1,8 +1,10 @@
 ﻿using MetroLog.Maui;
+using Microsoft.Maui;
+using Microsoft.Maui.Controls;
 
 namespace PrayerTimeEngine;
 
-public partial class App : Application
+public partial class App : Microsoft.Maui.Controls.Application
 {
     public event Action Resumed;
 
