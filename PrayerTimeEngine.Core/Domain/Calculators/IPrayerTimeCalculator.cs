@@ -7,8 +7,8 @@ namespace PrayerTimeEngine.Core.Domain.Calculators
 {
     public interface IPrayerTimeCalculator
     {
-        public Task<ILookup<ICalculationPrayerTimes, ETimeType>> GetPrayerTimesAsync(LocalDate date, BaseLocationData locationData, List<GenericSettingConfiguration> configurations);
+        public Task<ILookup<ICalculationPrayerTimes, ETimeType>> GetPrayerTimesAsync(LocalDate date, BaseLocationData locationData, List<GenericSettingConfiguration> configurations, CancellationToken cancellationToken);
         public HashSet<ETimeType> GetUnsupportedTimeTypes();
-        public Task<BaseLocationData> GetLocationInfo(CompletePlaceInfo place);
+        public Task<BaseLocationData> GetLocationInfo(CompletePlaceInfo place, CancellationToken cancellationToken);
     }
 }

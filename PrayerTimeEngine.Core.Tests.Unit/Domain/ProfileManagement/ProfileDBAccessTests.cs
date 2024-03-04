@@ -33,7 +33,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.ProfileManagement
             // ACT
             _appDbContext.ProfileLocations.Remove(profile3.LocationConfigs.First());
             _appDbContext.SaveChanges();
-            var profiles = await _profileDBAccess.GetProfiles();
+            var profiles = await _profileDBAccess.GetProfiles(default);
 
             profile3.LocationConfigs.Clear();
 

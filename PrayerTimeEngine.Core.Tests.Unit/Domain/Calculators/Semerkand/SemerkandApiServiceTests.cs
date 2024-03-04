@@ -39,7 +39,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
                 };
             
             // ACT
-            var countries = await _semerkandApiService.GetCountries();
+            var countries = await _semerkandApiService.GetCountries(default);
 
             // ASSERT
             countries.Should().HaveCount(206);
@@ -72,7 +72,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
                 };
             
             // ACT
-            var cities = await _semerkandApiService.GetCitiesByCountryID(1);
+            var cities = await _semerkandApiService.GetCitiesByCountryID(1, default);
 
             // ASSERT
             cities.Should().HaveCount(195);
@@ -109,9 +109,10 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
             // ACT
             var times = 
                 await _semerkandApiService.GetTimesByCityID(
-                    date, 
-                    "Europe/Vienna", 
-                    197);
+                    date: date,
+                    timezoneName: "Europe/Vienna",
+                    cityID: 197,
+                    cancellationToken: default);
 
             // ASSERT
             times.Should().HaveCount(SemerkandApiService.EXTENT_OF_DAYS_RETRIEVED);

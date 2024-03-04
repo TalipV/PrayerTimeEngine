@@ -23,9 +23,10 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services
             double ishaDegree,
             double ishtibaqDegree,
             double asrKarahaDegree,
-            string timezone)
+            string timezone,
+            CancellationToken cancellationToken)
         {
-            MuwaqqitPrayerTimes prayerTimes = null;
+            MuwaqqitPrayerTimes prayerTimes;
 
             UriBuilder builder = new UriBuilder(MUWAQQIT_API_URL);
             NameValueCollection query = HttpUtility.ParseQueryString(builder.Query);
@@ -44,10 +45,9 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services
 
             string url = builder.ToString();
 
-            HttpResponseMessage response = await httpClient.GetAsync(url).ConfigureAwait(false);
+            HttpResponseMessage response = await httpClient.GetAsync(url, cancellationToken).ConfigureAwait(false);
             response.EnsureSuccessStatusCode();
-
-            string jsonResponse = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            string jsonResponse = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
 
             // Parse the JSON response to the MuwaqqitJSONResponse object
             MuwaqqitJSONResponse muwaqqitResponse = JsonSerializer.Deserialize<MuwaqqitJSONResponse>(jsonResponse);

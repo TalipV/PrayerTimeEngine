@@ -97,7 +97,7 @@ namespace PrayerTimeEngine.Core.Tests.Integration.Domain.Calculators.Muwaqqit
                         TimezoneName = "Europe/Vienna"
                     },
                     configs
-                );
+                    , default);
 
             IDictionary<ETimeType, MuwaqqitPrayerTimes> timeTypeByCalculationPrayerTimes =
                 result

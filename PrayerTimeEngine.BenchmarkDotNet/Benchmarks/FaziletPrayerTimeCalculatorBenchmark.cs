@@ -49,7 +49,7 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
                     getPreparedFaziletApiService(),
                     Substitute.For<IPlaceService>(),
                     Substitute.For<ILogger<FaziletPrayerTimeCalculator>>()
-                ).GetPrayerTimesAsync(_localDate, _locationData, _configs).GetAwaiter().GetResult();
+                ).GetPrayerTimesAsync(_localDate, _locationData, _configs, default).GetAwaiter().GetResult();
 
             // throw exceptions when the calculator tries using the api
             IFaziletApiService mockedFaziletApiService = Substitute.For<IFaziletApiService>();
@@ -67,9 +67,9 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
         {
             // db doesn't return any data
             var faziletDbAccessMock = Substitute.For<IFaziletDBAccess>();
-            faziletDbAccessMock.GetCountries().Returns([]);
-            faziletDbAccessMock.GetCitiesByCountryID(Arg.Any<int>()).Returns([]);
-            faziletDbAccessMock.GetTimesByDateAndCityID(Arg.Any<LocalDate>(), Arg.Any<int>()).ReturnsNull<FaziletPrayerTimes>();
+            faziletDbAccessMock.GetCountries(Arg.Any<CancellationToken>()).Returns([]);
+            faziletDbAccessMock.GetCitiesByCountryID(Arg.Any<int>(), Arg.Any<CancellationToken>()).Returns([]);
+            faziletDbAccessMock.GetTimesByDateAndCityID(Arg.Any<LocalDate>(), Arg.Any<int>(), Arg.Any<CancellationToken>()).ReturnsNull<FaziletPrayerTimes>();
 
             return new FaziletPrayerTimeCalculator(
                     // returns null per default
@@ -137,7 +137,8 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
             var result = _faziletPrayerTimeCalculator_DataFromDbStorage.GetPrayerTimesAsync(
                 _localDate,
                 locationData: _locationData,
-                configurations: _configs).GetAwaiter().GetResult();
+                configurations: _configs, 
+                cancellationToken: default).GetAwaiter().GetResult();
 
             if (result.SelectMany(x => x.ToList()).Count() != 1)
             {
@@ -153,7 +154,8 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
             var result = _faziletPrayerTimeCalculator_DataFromApi.GetPrayerTimesAsync(
                 _localDate,
                 locationData: _locationData,
-                configurations: _configs).GetAwaiter().GetResult();
+                configurations: _configs, 
+                cancellationToken: default).GetAwaiter().GetResult();
 
             if (result.SelectMany(x => x.ToList()).Count() != 1)
             {

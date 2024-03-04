@@ -49,8 +49,8 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
                     new GenericSettingConfiguration { TimeType = ETimeType.FajrEnd, Source = ECalculationSource.Semerkand }
                 ];
 
-            _semerkandDBAccessMock.GetCountryIDByName(Arg.Is("Deutschland")).Returns(1);
-            _semerkandDBAccessMock.GetCityIDByName(Arg.Is(1), Arg.Is("Berlin")).Returns(1);
+            _semerkandDBAccessMock.GetCountryIDByName(Arg.Is("Deutschland"), Arg.Any<CancellationToken>()).Returns(1);
+            _semerkandDBAccessMock.GetCityIDByName(Arg.Is(1), Arg.Is("Berlin"), Arg.Any<CancellationToken>()).Returns(1);
 
             var times = new SemerkandPrayerTimes
             {
@@ -66,13 +66,14 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
             };
             
             _semerkandDBAccessMock.GetTimesByDateAndCityID(
-                Arg.Is<LocalDate>(x => x == date || x == date.PlusDays(1)), 
-                Arg.Any<int>())
+                Arg.Is<LocalDate>(x => x == date || x == date.PlusDays(1)),
+                Arg.Any<int>(), 
+                Arg.Any<CancellationToken>())
                 .Returns(times);
             
             // ACT
             var calculationResult = 
-                await _semerkandPrayerTimeCalculator.GetPrayerTimesAsync(date, locationData, configurations);
+                await _semerkandPrayerTimeCalculator.GetPrayerTimesAsync(date, locationData, configurations, default);
 
             // ASSERT
             calculationResult.Should().NotBeNull().And.HaveCount(1);
@@ -82,10 +83,10 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
             _placeServiceMock.ReceivedCalls().Should().BeEmpty();
             _semerkandApiServiceMock.ReceivedCalls().Should().BeEmpty();
             _semerkandDBAccessMock.ReceivedCalls().Should().HaveCount(4);
-            await _semerkandDBAccessMock.Received(1).GetCountryIDByName(Arg.Is("Deutschland"));
-            await _semerkandDBAccessMock.Received(1).GetCityIDByName(Arg.Is(1), Arg.Is("Berlin"));
-            await _semerkandDBAccessMock.Received(1).GetTimesByDateAndCityID(Arg.Is(date), Arg.Is(1));
-            await _semerkandDBAccessMock.Received(1).GetTimesByDateAndCityID(Arg.Is(date.PlusDays(1)), Arg.Is(1));
+            await _semerkandDBAccessMock.Received(1).GetCountryIDByName(Arg.Is("Deutschland"), Arg.Any<CancellationToken>());
+            await _semerkandDBAccessMock.Received(1).GetCityIDByName(Arg.Is(1), Arg.Is("Berlin"), Arg.Any<CancellationToken>());
+            await _semerkandDBAccessMock.Received(1).GetTimesByDateAndCityID(Arg.Is(date), Arg.Is(1), Arg.Any<CancellationToken>());
+            await _semerkandDBAccessMock.Received(1).GetTimesByDateAndCityID(Arg.Is(date.PlusDays(1)), Arg.Is(1), Arg.Any<CancellationToken>());
         }
 
         #endregion GetPrayerTimesAsync
@@ -105,13 +106,13 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
             var turkishBasicPlaceInfo = new BasicPlaceInfo("1", 1M, 1M, "de", "Avusturya", "Innsbruck", "", "6020", "Yol");;
             
             _placeServiceMock
-                .GetPlaceBasedOnPlace(Arg.Is(completePlaceInfo), Arg.Is("tr"))
+                .GetPlaceBasedOnPlace(Arg.Is(completePlaceInfo), Arg.Is("tr"), Arg.Any<CancellationToken>())
                 .Returns(turkishBasicPlaceInfo);
-            _semerkandDBAccessMock.GetCountryIDByName(Arg.Is("Avusturya")).Returns(1);
-            _semerkandDBAccessMock.GetCityIDByName(Arg.Is(1), Arg.Is("Innsbruck")).Returns(1);
-            
+            _semerkandDBAccessMock.GetCountryIDByName(Arg.Is("Avusturya"), Arg.Any<CancellationToken>()).Returns(1);
+            _semerkandDBAccessMock.GetCityIDByName(Arg.Is(1), Arg.Is("Innsbruck"), Arg.Any<CancellationToken>()).Returns(1);
+
             // ACT
-            var locationData = await _semerkandPrayerTimeCalculator.GetLocationInfo(completePlaceInfo) as SemerkandLocationData;
+            var locationData = await _semerkandPrayerTimeCalculator.GetLocationInfo(completePlaceInfo, default) as SemerkandLocationData;
 
             // ASSERT
             locationData.Should().NotBeNull();

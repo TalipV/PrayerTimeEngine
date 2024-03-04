@@ -32,7 +32,8 @@ namespace PrayerTimeEngine;
 // - No robust system for country and city (re)load from fazilet/semerkand API (e.g. failed city retrieval leads to no second try)
 // - Fazilet/Semerkand country/city names which are unexpected (e.g. "Vienna (Wien)")
 // - Turkish location details for Fazilet/Semerkand not robust
-// - Exception for single calculation prevents all the other calculations
+// - Exception for single calculation prevents all the other calculations (rough fix already done)
+// - Exception for single calculation only disables that calculation but subsequent calculations rely on cached values and don't retry
 // - Calculation relevant data like the Profile with its configs may change in the middle of the calculation process due to shared references
 
 // TODO:
@@ -42,6 +43,7 @@ namespace PrayerTimeEngine;
 // - Decrease count of reloads (e.g. mere app switch shouldn't always require reload)
 // - CancellationTokens
 // - Transactions when saving country data and city data to prevent partial safes (or rethink the whole thing)
+// - PlaceService and ProfileService with no or default CancellationToken?
 
 // TODO late:
 // - Check for possibly unsafe concurrent actions (fast user interactions, app crashes and other special cases) 

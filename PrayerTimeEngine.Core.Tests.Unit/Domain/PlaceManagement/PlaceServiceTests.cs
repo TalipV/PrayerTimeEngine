@@ -37,7 +37,11 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.PlaceManagement
             };
 
             // ACT
-            List<BasicPlaceInfo> result = await _placeService.SearchPlacesAsync(searchTerm: "Venloer Str. 160, 50823 Köln, Germany", language: "en");
+            List<BasicPlaceInfo> result = 
+                await _placeService.SearchPlacesAsync(
+                    searchTerm: "Venloer Str. 160, 50823 Köln, Germany", 
+                    language: "en",
+                    cancellationToken: default);
 
             // ASSERT
             result.Should().HaveCount(2);
@@ -94,7 +98,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.PlaceManagement
             );
 
             // ACT
-            BasicPlaceInfo result = await _placeService.GetPlaceBasedOnPlace(cologneCentralMosqueInfo, "de");
+            BasicPlaceInfo result = await _placeService.GetPlaceBasedOnPlace(cologneCentralMosqueInfo, "de", default);
 
             // ASSERT
             result.Should().NotBeNull();
@@ -131,7 +135,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.PlaceManagement
             BasicPlaceInfo somePlaceInfo = new BasicPlaceInfo("", 1M, 1M, "", "", "", "", "", "");
 
             // ACT
-            var result = await _placeService.GetTimezoneInfo(somePlaceInfo);
+            var result = await _placeService.GetTimezoneInfo(somePlaceInfo, default);
 
             // ASSERT
             result.TimezoneInfo.Should().NotBeNull();

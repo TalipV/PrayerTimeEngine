@@ -48,8 +48,8 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Fazilet
                     new GenericSettingConfiguration { TimeType = ETimeType.FajrEnd, Source = ECalculationSource.Fazilet }
                 ];
 
-            _faziletDBAccessMock.GetCountryIDByName(Arg.Is("Deutschland")).Returns(1);
-            _faziletDBAccessMock.GetCityIDByName(Arg.Is(1), Arg.Is("Berlin")).Returns(1);
+            _faziletDBAccessMock.GetCountryIDByName(Arg.Is("Deutschland"), Arg.Any<CancellationToken>()).Returns(1);
+            _faziletDBAccessMock.GetCityIDByName(Arg.Is(1), Arg.Is("Berlin"), Arg.Any<CancellationToken>()).Returns(1);
 
             var times = new FaziletPrayerTimes
             {
@@ -66,12 +66,13 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Fazilet
 
             _faziletDBAccessMock.GetTimesByDateAndCityID(
                 Arg.Is<LocalDate>(x => x == date || x == date.PlusDays(1)),
-                Arg.Any<int>())
+                Arg.Any<int>(), 
+                Arg.Any<CancellationToken>())
                 .Returns(times);
 
             // ACT
             var calculationResult =
-                await _faziletPrayerTimeCalculator.GetPrayerTimesAsync(date, locationData, configurations);
+                await _faziletPrayerTimeCalculator.GetPrayerTimesAsync(date, locationData, configurations, default);
 
             // ASSERT
             calculationResult.Should().NotBeNull().And.HaveCount(1);
@@ -81,10 +82,10 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Fazilet
             _placeServiceMock.ReceivedCalls().Should().BeEmpty();
             _faziletApiServiceMock.ReceivedCalls().Should().BeEmpty();
             _faziletDBAccessMock.ReceivedCalls().Should().HaveCount(4);
-            await _faziletDBAccessMock.Received(1).GetCountryIDByName(Arg.Is("Deutschland"));
-            await _faziletDBAccessMock.Received(1).GetCityIDByName(Arg.Is(1), Arg.Is("Berlin"));
-            await _faziletDBAccessMock.Received(1).GetTimesByDateAndCityID(Arg.Is(date), Arg.Is(1));
-            await _faziletDBAccessMock.Received(1).GetTimesByDateAndCityID(Arg.Is(date.PlusDays(1)), Arg.Is(1));
+            await _faziletDBAccessMock.Received(1).GetCountryIDByName(Arg.Is("Deutschland"), Arg.Any<CancellationToken>());
+            await _faziletDBAccessMock.Received(1).GetCityIDByName(Arg.Is(1), Arg.Is("Berlin"), Arg.Any<CancellationToken>());
+            await _faziletDBAccessMock.Received(1).GetTimesByDateAndCityID(Arg.Is(date), Arg.Is(1), Arg.Any<CancellationToken>());
+            await _faziletDBAccessMock.Received(1).GetTimesByDateAndCityID(Arg.Is(date.PlusDays(1)), Arg.Is(1), Arg.Any<CancellationToken>());
         }
 
         #endregion GetPrayerTimesAsync
@@ -104,13 +105,13 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Fazilet
             var turkishBasicPlaceInfo = new BasicPlaceInfo("1", 1M, 1M, "de", "Avusturya", "Innsbruck", "", "6020", "Yol"); ;
 
             _placeServiceMock
-                .GetPlaceBasedOnPlace(Arg.Is(completePlaceInfo), Arg.Is("tr"))
+                .GetPlaceBasedOnPlace(Arg.Is(completePlaceInfo), Arg.Is("tr"), Arg.Any<CancellationToken>())
                 .Returns(turkishBasicPlaceInfo);
-            _faziletDBAccessMock.GetCountryIDByName(Arg.Is("Avusturya")).Returns(1);
-            _faziletDBAccessMock.GetCityIDByName(Arg.Is(1), Arg.Is("Innsbruck")).Returns(1);
+            _faziletDBAccessMock.GetCountryIDByName(Arg.Is("Avusturya"), Arg.Any<CancellationToken>()).Returns(1);
+            _faziletDBAccessMock.GetCityIDByName(Arg.Is(1), Arg.Is("Innsbruck"), Arg.Any<CancellationToken>()).Returns(1);
 
             // ACT
-            var locationData = await _faziletPrayerTimeCalculator.GetLocationInfo(completePlaceInfo) as FaziletLocationData;
+            var locationData = await _faziletPrayerTimeCalculator.GetLocationInfo(completePlaceInfo, default) as FaziletLocationData;
 
             // ASSERT
             locationData.Should().NotBeNull();

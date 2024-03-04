@@ -75,11 +75,12 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Muwaqqit
                     ishaDegree: Arg.Any<double>(),
                     ishtibaqDegree: Arg.Any<double>(),
                     asrKarahaDegree: Arg.Any<double>(),
-                    timezone: Arg.Any<string>())
+                    timezone: Arg.Any<string>(),
+                    cancellationToken: Arg.Any<CancellationToken>())
                 .Returns(Task.FromResult(expectedPrayerTimes));
 
             // ACT
-            var result = await _muwaqqitPrayerTimeCalculator.GetPrayerTimesAsync(date, locationData, configurations);
+            var result = await _muwaqqitPrayerTimeCalculator.GetPrayerTimesAsync(date, locationData, configurations, default);
 
             // ASSERT
             Assert.Contains(ETimeType.FajrStart, result.SelectMany(r => r).ToList());

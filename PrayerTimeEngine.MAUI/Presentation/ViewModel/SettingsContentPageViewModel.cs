@@ -119,7 +119,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
         public async Task OnDisappearing()
         {
             GenericSettingConfiguration settings = getCurrentCalculationConfiguration();
-            await profileService.UpdateTimeConfig(Profile, TimeType, settings);
+            await profileService.UpdateTimeConfig(Profile, TimeType, settings, default);
         }
 
         #endregion public methods

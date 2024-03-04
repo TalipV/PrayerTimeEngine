@@ -5,6 +5,6 @@ namespace PrayerTimeEngine.Core.Domain.CalculationManagement
 {
     public interface ICalculationManager
     {
-        public Task<PrayerTimesBundle> CalculatePrayerTimesAsync(int profileID, ZonedDateTime zoneDate);
+        public Task<PrayerTimesBundle> CalculatePrayerTimesAsync(int profileID, ZonedDateTime zoneDate, CancellationToken cancellationToken);
     }
 }

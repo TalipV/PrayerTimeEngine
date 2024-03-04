@@ -17,7 +17,8 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services
         public async Task<ILookup<ICalculationPrayerTimes, ETimeType>> GetPrayerTimesAsync(
             LocalDate date,
             BaseLocationData locationData,
-            List<GenericSettingConfiguration> configurations)
+            List<GenericSettingConfiguration> configurations, 
+            CancellationToken cancellationToken)
         {
             // check configuration's calcultion sources?
 
@@ -48,7 +49,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services
                         out ishtibaqDegree,
                         out asrKarahaDegree);
 
-                MuwaqqitPrayerTimes muwaqqitPrayerTimes = await getPrayerTimesInternal(date, longitude, latitude, fajrDegree, ishaDegree, ishtibaqDegree, asrKarahaDegree, timezone).ConfigureAwait(false);
+                MuwaqqitPrayerTimes muwaqqitPrayerTimes = await getPrayerTimesInternal(date, longitude, latitude, fajrDegree, ishaDegree, ishtibaqDegree, asrKarahaDegree, timezone, cancellationToken).ConfigureAwait(false);
                 calculatedTimes[muwaqqitPrayerTimes] = consumedTimeTypes;
             }
 
@@ -181,25 +182,26 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services
             double ishaDegree,
             double ishtibaqDegree,
             double asrKarahaDegree,
-            string timezone)
+            string timezone,
+            CancellationToken cancellationToken)
         {
             var lockTuple = (date, longitude, latitude, fajrDegree, ishaDegree, ishtibaqDegree, asrKarahaDegree, timezone);
 
             using (await getPrayerTimesLocker.LockAsync(lockTuple).ConfigureAwait(false))
             {
-                MuwaqqitPrayerTimes prayerTimes = await muwaqqitDBAccess.GetTimesAsync(date, longitude, latitude, fajrDegree, ishaDegree, ishtibaqDegree, asrKarahaDegree).ConfigureAwait(false);
+                MuwaqqitPrayerTimes prayerTimes = await muwaqqitDBAccess.GetTimesAsync(date, longitude, latitude, fajrDegree, ishaDegree, ishtibaqDegree, asrKarahaDegree, cancellationToken).ConfigureAwait(false);
 
                 if (prayerTimes == null)
                 {
-                    prayerTimes = await muwaqqitApiService.GetTimesAsync(date, longitude, latitude, fajrDegree, ishaDegree, ishtibaqDegree, asrKarahaDegree, timezone).ConfigureAwait(false);
-                    await muwaqqitDBAccess.InsertMuwaqqitPrayerTimesAsync(prayerTimes).ConfigureAwait(false);
+                    prayerTimes = await muwaqqitApiService.GetTimesAsync(date, longitude, latitude, fajrDegree, ishaDegree, ishtibaqDegree, asrKarahaDegree, timezone, cancellationToken).ConfigureAwait(false);
+                    await muwaqqitDBAccess.InsertMuwaqqitPrayerTimesAsync(prayerTimes, cancellationToken).ConfigureAwait(false);
                 }
 
                 return prayerTimes;
             }
         }
 
-        public Task<BaseLocationData> GetLocationInfo(CompletePlaceInfo place)
+        public Task<BaseLocationData> GetLocationInfo(CompletePlaceInfo place, CancellationToken cancellationToken)
         {
             if (place == null)
                 throw new ArgumentNullException(nameof(place));

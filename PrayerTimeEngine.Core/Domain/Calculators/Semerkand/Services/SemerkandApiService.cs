@@ -12,12 +12,11 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
     {
         internal const string GET_COUNTRIES_URL = "http://semerkandtakvimi.semerkandmobile.com/countries?language=tr";
 
-        public async Task<Dictionary<string, int>> GetCountries()
+        public async Task<Dictionary<string, int>> GetCountries(CancellationToken cancellationToken)
         {
-            HttpResponseMessage response = await httpClient.GetAsync(GET_COUNTRIES_URL).ConfigureAwait(false);
-
+            HttpResponseMessage response = await httpClient.GetAsync(GET_COUNTRIES_URL, cancellationToken).ConfigureAwait(false);
             response.EnsureSuccessStatusCode();
-            string jsonCitiesString = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            string jsonCitiesString = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
 
             Dictionary<string, int> countriesByCountryID = [];
 
@@ -36,16 +35,16 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
 
         internal const string GET_CITIES_BY_COUNTRY_URL = "https://www.semerkandtakvimi.com/Home/CityList";
 
-        public async Task<Dictionary<string, int>> GetCitiesByCountryID(int countryID)
+        public async Task<Dictionary<string, int>> GetCitiesByCountryID(int countryID, CancellationToken cancellationToken)
         {
             var content = new FormUrlEncodedContent(
             [
                 new KeyValuePair<string, string>("id", countryID.ToString())
             ]);
 
-            HttpResponseMessage response = await httpClient.PostAsync(GET_CITIES_BY_COUNTRY_URL, content).ConfigureAwait(false);
+            HttpResponseMessage response = await httpClient.PostAsync(GET_CITIES_BY_COUNTRY_URL, content, cancellationToken).ConfigureAwait(false);
             response.EnsureSuccessStatusCode();
-            string jsonCitiesString = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            string jsonCitiesString = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
 
             Dictionary<string, int> citiesByCountryID = [];
 
@@ -66,14 +65,14 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
 
         internal const int EXTENT_OF_DAYS_RETRIEVED = 5;
 
-        public async Task<List<SemerkandPrayerTimes>> GetTimesByCityID(LocalDate date, string timezoneName, int cityID)
+        public async Task<List<SemerkandPrayerTimes>> GetTimesByCityID(LocalDate date, string timezoneName, int cityID, CancellationToken cancellationToken)
         {
             DateTimeZone dateTimeZone = DateTimeZoneProviders.Tzdb[timezoneName];
             string prayerTimesURL = string.Format(GET_TIMES_BY_CITY, cityID, date.Year);
 
-            HttpResponseMessage response = await httpClient.GetAsync(prayerTimesURL).ConfigureAwait(false);
+            HttpResponseMessage response = await httpClient.GetAsync(prayerTimesURL, cancellationToken).ConfigureAwait(false);
             response.EnsureSuccessStatusCode();
-            string jsonPrayerTimesString = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            string jsonPrayerTimesString = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
 
             // API adds "*" in front of 'Isha and Fajr to indicate some kind of special calculation,
             // which leads to problems with the automatic parsing of the string to the DateTime

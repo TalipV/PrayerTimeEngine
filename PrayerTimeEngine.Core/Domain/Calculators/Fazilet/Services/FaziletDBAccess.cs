@@ -10,27 +10,27 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
             AppDbContext dbContext
         ) : IFaziletDBAccess
     {
-        public async Task<List<FaziletCountry>> GetCountries()
+        public async Task<List<FaziletCountry>> GetCountries(CancellationToken cancellationToken)
         {
             return await dbContext
                 .FaziletCountries.AsNoTracking()
-                .ToListAsync().ConfigureAwait(false);
+                .ToListAsync(cancellationToken).ConfigureAwait(false);
         }
 
-        public async Task<bool> HasCountryData()
+        public async Task<bool> HasCountryData(CancellationToken cancellationToken)
         {
             return await dbContext
                 .FaziletCountries
-                .AnyAsync().ConfigureAwait(false);
+                .AnyAsync(cancellationToken).ConfigureAwait(false);
         }
 
-        public async Task<int?> GetCountryIDByName(string countryName)
+        public async Task<int?> GetCountryIDByName(string countryName, CancellationToken cancellationToken)
         {
             return await dbContext
                 .FaziletCountries
                 .Where(x => x.Name == countryName)
                 .Select(x => (int?)x.ID)
-                .FirstOrDefaultAsync().ConfigureAwait(false);
+                .FirstOrDefaultAsync(cancellationToken).ConfigureAwait(false);
         }
 
         private static readonly Func<AppDbContext, int, IAsyncEnumerable<FaziletCity>> compiledQuery_GetCitiesByCountryID =
@@ -39,11 +39,11 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
                     context.FaziletCities.AsNoTrackingWithIdentityResolution()
                 .Include(x => x.Country).ThenInclude(x => x.Cities).Where(x => x.CountryID == countryId));
 
-        public async Task<List<FaziletCity>> GetCitiesByCountryID(int countryId)
+        public async Task<List<FaziletCity>> GetCitiesByCountryID(int countryId, CancellationToken cancellationToken)
         {
             var returnLst = new List<FaziletCity>();
 
-            await foreach (var s in compiledQuery_GetCitiesByCountryID(dbContext, countryId))
+            await foreach (var s in compiledQuery_GetCitiesByCountryID(dbContext, countryId).WithCancellation(cancellationToken))
             {
                 returnLst.Add(s);
             }
@@ -51,67 +51,68 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
             return returnLst;
         }
 
-        public async Task<bool> HasCityData(int countryID)
+        public async Task<bool> HasCityData(int countryID, CancellationToken cancellationToken)
         {
             return await dbContext
                 .FaziletCities
                 .Where(x => x.CountryID == countryID)
-                .AnyAsync().ConfigureAwait(false);
+                .AnyAsync(cancellationToken).ConfigureAwait(false);
         }
 
-        public async Task<int?> GetCityIDByName(int countryID, string cityName)
+        public async Task<int?> GetCityIDByName(int countryID, string cityName, CancellationToken cancellationToken)
         {
             return await dbContext
                 .FaziletCities
                 .Where(x => x.CountryID == countryID && x.Name == cityName)
                 .Select(x => (int?)x.ID)
-                .FirstOrDefaultAsync().ConfigureAwait(false);
+                .FirstOrDefaultAsync(cancellationToken).ConfigureAwait(false);
         }
 
-        public async Task<FaziletPrayerTimes> GetTimesByDateAndCityID(LocalDate date, int cityId)
+        public async Task<FaziletPrayerTimes> GetTimesByDateAndCityID(LocalDate date, int cityId, CancellationToken cancellationToken)
         {
             return await dbContext
                 .FaziletPrayerTimes.AsNoTracking()
                 .Where(x => x.Date == date && x.CityID == cityId)
-                .FirstOrDefaultAsync().ConfigureAwait(false);
+                .FirstOrDefaultAsync(cancellationToken).ConfigureAwait(false);
         }
 
-        public async Task InsertCountry(int id, string name)
+        public async Task InsertCountry(int id, string name, CancellationToken cancellationToken)
         {
-            await dbContext.FaziletCountries.AddAsync(new FaziletCountry { ID = id, Name = name }).ConfigureAwait(false);
-            await dbContext.SaveChangesAsync().ConfigureAwait(false);
+            await dbContext.FaziletCountries.AddAsync(new FaziletCountry { ID = id, Name = name }, cancellationToken).ConfigureAwait(false);
+            await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
         }
-        public async Task InsertCity(int id, string name, int countryId)
+        public async Task InsertCity(int id, string name, int countryId, CancellationToken cancellationToken)
         {
-            await dbContext.FaziletCities.AddAsync(new FaziletCity { ID = id, Name = name, CountryID = countryId }).ConfigureAwait(false);
-            await dbContext.SaveChangesAsync().ConfigureAwait(false);
+            await dbContext.FaziletCities.AddAsync(new FaziletCity { ID = id, Name = name, CountryID = countryId }, cancellationToken).ConfigureAwait(false);
+            await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
         }
-        public async Task InsertFaziletPrayerTimesIfNotExists(LocalDate date, int cityID, FaziletPrayerTimes faziletPrayerTimes)
+        public async Task InsertFaziletPrayerTimesIfNotExists(LocalDate date, int cityID, FaziletPrayerTimes faziletPrayerTimes, CancellationToken cancellationToken)
         {
-            await dbContext.FaziletPrayerTimes.AddAsync(faziletPrayerTimes).ConfigureAwait(false);
-            await dbContext.SaveChangesAsync().ConfigureAwait(false);
+            await dbContext.FaziletPrayerTimes.AddAsync(faziletPrayerTimes, cancellationToken).ConfigureAwait(false);
+            await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
         }
 
-        public async Task InsertCountries(Dictionary<string, int> countries)
+        public async Task InsertCountries(Dictionary<string, int> countries, CancellationToken cancellationToken)
         {
             foreach (var item in countries)
             {
-                await InsertCountry(item.Value, item.Key).ConfigureAwait(false);
+                await InsertCountry(item.Value, item.Key, cancellationToken).ConfigureAwait(false);
             }
         }
 
-        public async Task InsertCities(Dictionary<string, int> cities, int countryId)
+        public async Task InsertCities(Dictionary<string, int> cities, int countryId, CancellationToken cancellationToken)
         {
             foreach (var item in cities)
             {
-                await InsertCity(item.Value, item.Key, countryId).ConfigureAwait(false);
+                await InsertCity(item.Value, item.Key, countryId, cancellationToken).ConfigureAwait(false);
             }
         }
 
-        public async Task DeleteAllTimes()
+        public async Task DeleteAllTimes(CancellationToken cancellationToken)
         {
-            dbContext.FaziletPrayerTimes.RemoveRange(await dbContext.FaziletPrayerTimes.ToListAsync().ConfigureAwait(false));
-            await dbContext.SaveChangesAsync().ConfigureAwait(false);
+            List<FaziletPrayerTimes> toBeRemovedTimes = await dbContext.FaziletPrayerTimes.ToListAsync(cancellationToken).ConfigureAwait(false);
+            dbContext.FaziletPrayerTimes.RemoveRange(toBeRemovedTimes);
+            await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
         }
     }
 }

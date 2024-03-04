@@ -5,6 +5,7 @@ using PrayerTimeEngine.Core.Domain.Calculators;
 using PrayerTimeEngine.Core.Domain.Models;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Interfaces;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Models;
+using System.Runtime.CompilerServices;
 
 namespace PrayerTimeEngine.Core.Domain.CalculationManagement
 {
@@ -43,11 +44,11 @@ namespace PrayerTimeEngine.Core.Domain.CalculationManagement
             return true;
         }
 
-        public async Task<PrayerTimesBundle> CalculatePrayerTimesAsync(int profileID, ZonedDateTime zoneDate)
+        public async Task<PrayerTimesBundle> CalculatePrayerTimesAsync(int profileID, ZonedDateTime zoneDate, CancellationToken cancellationToken)
         {
             LocalDate date = zoneDate.Date;
             DateTimeZone zone = zoneDate.Zone;
-            Profile profile = await profileService.GetUntrackedReferenceOfProfile(profileID);
+            Profile profile = await profileService.GetUntrackedReferenceOfProfile(profileID, cancellationToken);
 
             if (tryGetCachedCalculation(profile, date, out PrayerTimesBundle prayerTimeEntity))
             {
@@ -57,13 +58,15 @@ namespace PrayerTimeEngine.Core.Domain.CalculationManagement
 
             prayerTimeEntity = new PrayerTimesBundle();
 
-            await foreach ((ETimeType timeType, ZonedDateTime? zonedDateTime) in calculateComplexTypes(profile, date).ConfigureAwait(false))
+            await foreach ((ETimeType timeType, ZonedDateTime? zonedDateTime) in calculateComplexTypes(profile, date, cancellationToken).ConfigureAwait(false))
             {
+                cancellationToken.ThrowIfCancellationRequested();
                 prayerTimeEntity.SetSpecificPrayerTimeDateTime(timeType, zonedDateTime);
             }
 
             foreach ((ETimeType timeType, ZonedDateTime? zonedDateTime) in calculateSimpleTypes(profile, prayerTimeEntity))
             {
+                cancellationToken.ThrowIfCancellationRequested();
                 prayerTimeEntity.SetSpecificPrayerTimeDateTime(timeType, zonedDateTime);
             }
 
@@ -74,7 +77,10 @@ namespace PrayerTimeEngine.Core.Domain.CalculationManagement
             return prayerTimeEntity;
         }
 
-        private async IAsyncEnumerable<(ETimeType, ZonedDateTime?)> calculateComplexTypes(Profile profile, LocalDate date)
+        private async IAsyncEnumerable<(ETimeType, ZonedDateTime?)> calculateComplexTypes(
+            Profile profile, 
+            LocalDate date, 
+            [EnumeratorCancellation] CancellationToken cancellationToken)
         {
             var asyncEnumerables = new List<IAsyncEnumerable<(ETimeType, ZonedDateTime?)>>();
 
@@ -87,7 +93,8 @@ namespace PrayerTimeEngine.Core.Domain.CalculationManagement
                 IPrayerTimeCalculator calculationSourceCalculator = prayerTimeServiceFactory.GetPrayerTimeCalculatorByCalculationSource(calculationSource);
                 throwIfConfigsHaveUnsupportedTimeTypes(calculationSourceCalculator, calculationSource, configs);
 
-                var asyncEnumerable = calculateComplexTypesForCalcSource(calculationSourceCalculator, date, locationData, configs);
+                cancellationToken.ThrowIfCancellationRequested();
+                var asyncEnumerable = calculateComplexTypesForCalcSource(calculationSourceCalculator, date, locationData, configs, cancellationToken);
                 asyncEnumerables.Add(asyncEnumerable);
             }
 
@@ -102,7 +109,8 @@ namespace PrayerTimeEngine.Core.Domain.CalculationManagement
 
         private async IAsyncEnumerable<(ETimeType, ZonedDateTime?)> calculateComplexTypesForCalcSource(
             IPrayerTimeCalculator calculationSourceCalculator, LocalDate date,
-            BaseLocationData locationData, List<GenericSettingConfiguration> configs)
+            BaseLocationData locationData, List<GenericSettingConfiguration> configs, 
+            [EnumeratorCancellation] CancellationToken cancellationToken)
         {
             var configsByTimeType = configs.ToDictionary(x => x.TimeType);
 
@@ -110,7 +118,7 @@ namespace PrayerTimeEngine.Core.Domain.CalculationManagement
 
             try
             {
-                calculationResult = await calculationSourceCalculator.GetPrayerTimesAsync(date, locationData, configs).ConfigureAwait(false);
+                calculationResult = await calculationSourceCalculator.GetPrayerTimesAsync(date, locationData, configs, cancellationToken).ConfigureAwait(false);
             }
             catch (Exception ex)
             {

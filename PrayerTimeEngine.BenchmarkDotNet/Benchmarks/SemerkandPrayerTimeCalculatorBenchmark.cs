@@ -50,7 +50,7 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
                     getPreparedSemerkandApiService(),
                     Substitute.For<IPlaceService>(),
                     Substitute.For<ILogger<SemerkandPrayerTimeCalculator>>()
-                ).GetPrayerTimesAsync(_localDate, _locationData, _configs).GetAwaiter().GetResult();
+                ).GetPrayerTimesAsync(_localDate, _locationData, _configs, default).GetAwaiter().GetResult();
 
             // throw exceptions when the calculator tries using the api
             ISemerkandApiService mockedSemerkandApiService = Substitute.For<ISemerkandApiService>();
@@ -68,9 +68,9 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
         {
             // db doesn't return any data
             var semerkandDbAccessMock = Substitute.For<ISemerkandDBAccess>();
-            semerkandDbAccessMock.GetCountries().Returns([]);
-            semerkandDbAccessMock.GetCitiesByCountryID(Arg.Any<int>()).Returns([]);
-            semerkandDbAccessMock.GetTimesByDateAndCityID(Arg.Any<LocalDate>(), Arg.Any<int>()).ReturnsNull<SemerkandPrayerTimes>();
+            semerkandDbAccessMock.GetCountries(Arg.Any<CancellationToken>()).Returns([]);
+            semerkandDbAccessMock.GetCitiesByCountryID(Arg.Any<int>(), Arg.Any<CancellationToken>()).Returns([]);
+            semerkandDbAccessMock.GetTimesByDateAndCityID(Arg.Any<LocalDate>(), Arg.Any<int>(), Arg.Any<CancellationToken>()).ReturnsNull<SemerkandPrayerTimes>();
 
             return new SemerkandPrayerTimeCalculator(
                     // returns null per default
@@ -136,7 +136,8 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
             var result = _semerkandPrayerTimeCalculator_DataFromDbStorage.GetPrayerTimesAsync(
                 _localDate,
                 locationData: _locationData,
-                configurations: _configs).GetAwaiter().GetResult();
+                configurations: _configs, 
+                cancellationToken: default).GetAwaiter().GetResult();
 
             if (result.SelectMany(x => x.ToList()).Count() != 1)
             {
@@ -152,7 +153,8 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
             var result = _semerkandPrayerTimeCalculator_DataFromApi.GetPrayerTimesAsync(
                 _localDate,
                 locationData: _locationData,
-                configurations: _configs).GetAwaiter().GetResult();
+                configurations: _configs, 
+                cancellationToken: default).GetAwaiter().GetResult();
 
             if (result.SelectMany(x => x.ToList()).Count() != 1)
             {
