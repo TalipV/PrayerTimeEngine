@@ -16,7 +16,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.PlaceManagement
         public PlaceServiceTests()
         {
             _mockHttpMessageHandler = new MockHttpMessageHandler();
-            HttpClient httpClient = new HttpClient(_mockHttpMessageHandler);
+            var httpClient = new HttpClient(_mockHttpMessageHandler);
             _placeService = new PlaceService(httpClient, Substitute.For<ILogger<PlaceService>>());
         }
 
@@ -132,7 +132,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.PlaceManagement
                 };
             };
 
-            BasicPlaceInfo somePlaceInfo = new BasicPlaceInfo("", 1M, 1M, "", "", "", "", "", "");
+            var somePlaceInfo = new BasicPlaceInfo("", 1M, 1M, "", "", "", "", "", "");
 
             // ACT
             var result = await _placeService.GetTimezoneInfo(somePlaceInfo, default);

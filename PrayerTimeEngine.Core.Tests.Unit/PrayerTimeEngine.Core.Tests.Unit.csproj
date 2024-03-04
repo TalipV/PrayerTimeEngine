@@ -29,4 +29,8 @@
     <ProjectReference Include="..\PrayerTimeEngine.Core\PrayerTimeEngine.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Include="..\SharedGlobalSuppressions.cs" Link="Properties\SharedGlobalSuppressions.cs" />
+  </ItemGroup>
+
 </Project>

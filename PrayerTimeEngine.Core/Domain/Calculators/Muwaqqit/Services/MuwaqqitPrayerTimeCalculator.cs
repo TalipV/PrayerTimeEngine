@@ -34,20 +34,19 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services
             decimal latitude = muwaqqitLocationData.Latitude;
 
             List<ETimeType> toBeCalculatedTimeTypes = configurations.Select(x => x.TimeType).ToList();
-            Dictionary<ICalculationPrayerTimes, List<ETimeType>> calculatedTimes = new();
+            var calculatedTimes = new Dictionary<ICalculationPrayerTimes, List<ETimeType>>();
 
             var toBeConsumedConfigurations = configurations.ToList();
 
             while (toBeConsumedConfigurations.Count != 0)
             {
-                double fajrDegree, ishaDegree, ishtibaqDegree, asrKarahaDegree;
                 List<ETimeType> consumedTimeTypes =
                     consumeDegreeValues(
                         toBeConsumedConfigurations,
-                        out fajrDegree,
-                        out ishaDegree,
-                        out ishtibaqDegree,
-                        out asrKarahaDegree);
+                        out double fajrDegree,
+                        out double ishaDegree,
+                        out double ishtibaqDegree,
+                        out double asrKarahaDegree);
 
                 MuwaqqitPrayerTimes muwaqqitPrayerTimes = await getPrayerTimesInternal(date, longitude, latitude, fajrDegree, ishaDegree, ishtibaqDegree, asrKarahaDegree, timezone, cancellationToken).ConfigureAwait(false);
                 calculatedTimes[muwaqqitPrayerTimes] = consumedTimeTypes;
@@ -65,7 +64,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services
             out double ishtibaqDegree,
             out double asrKarahaDegree)
         {
-            List<ETimeType> consumedTimeTypes = new();
+            var consumedTimeTypes = new List<ETimeType>();
 
             double? calculatedFajrDegree = null;
             double? calculatedIshaDegree = null;
@@ -165,7 +164,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services
 
         public HashSet<ETimeType> GetUnsupportedTimeTypes()
         {
-            return new HashSet<ETimeType>();
+            return [];
         }
 
         private static readonly AsyncKeyedLocker<(LocalDate date, decimal longitude, decimal latitude, double fajrDegree, double ishaDegree, double ishtibaqDegree, double asrKarahaDegree, string timezone)> getPrayerTimesLocker = new(o =>
@@ -203,8 +202,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services
 
         public Task<BaseLocationData> GetLocationInfo(CompletePlaceInfo place, CancellationToken cancellationToken)
         {
-            if (place == null)
-                throw new ArgumentNullException(nameof(place));
+            ArgumentNullException.ThrowIfNull(place);
 
             return Task.FromResult<BaseLocationData>(new MuwaqqitLocationData
             {

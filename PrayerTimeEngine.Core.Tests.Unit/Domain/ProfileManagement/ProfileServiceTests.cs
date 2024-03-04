@@ -22,15 +22,13 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.ProfileManagement
             _profileService = new ProfileService(_profileDBAccessMock, new TimeTypeAttributeService());
         }
 
-        public static IEnumerable<object[]> configurableTimeTypeValues =>
-            new TimeTypeAttributeService()
-                .ConfigurableTypes
-                .Select(x => new object[] { x });
-        public static IEnumerable<object[]> calculationSourceValues =>
-            Enum.GetValues(typeof(ECalculationSource))
-                .OfType<ECalculationSource>()
-                .Where(x => x != ECalculationSource.None)
-                .Select(x => new object[] { x });
+        public static TheoryData<ETimeType> configurableTimeTypeValues => new(
+            values: new TimeTypeAttributeService().ConfigurableTypes);
+
+        public static TheoryData<ECalculationSource> calculationSourceValues => new(
+            values: Enum.GetValues(typeof(ECalculationSource))
+                    .OfType<ECalculationSource>()
+                    .Where(x => x != ECalculationSource.None));
 
         #region GetProfiles
 

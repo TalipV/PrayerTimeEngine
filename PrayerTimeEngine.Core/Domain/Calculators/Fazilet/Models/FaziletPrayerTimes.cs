@@ -24,37 +24,21 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Models
 
         public ZonedDateTime GetZonedDateTimeForTimeType(ETimeType timeType)
         {
-            switch (timeType)
+            return timeType switch
             {
-                case ETimeType.FajrStart:
-                    return Fajr;
-                case ETimeType.FajrEnd:
-                    return Shuruq;
-
-                case ETimeType.DuhaStart:
-                    return Shuruq;
-
-                case ETimeType.DhuhrStart:
-                    return Dhuhr;
-                case ETimeType.DhuhrEnd:
-                    return Asr;
-
-                case ETimeType.AsrStart:
-                    return Asr;
-                case ETimeType.AsrEnd:
-                    return Maghrib;
-
-                case ETimeType.MaghribStart:
-                    return Maghrib;
-                case ETimeType.MaghribEnd:
-                    return Isha;
-                case ETimeType.IshaStart:
-                    return Isha;
-                case ETimeType.IshaEnd:
-                    return NextFajr ?? new ZonedDateTime(Instant.MinValue, DateTimeZone.Utc);
-                default:
-                    throw new ArgumentException($"Invalid {nameof(timeType)} value: {timeType}.");
-            }
+                ETimeType.FajrStart => Fajr,
+                ETimeType.FajrEnd => Shuruq,
+                ETimeType.DuhaStart => Shuruq,
+                ETimeType.DhuhrStart => Dhuhr,
+                ETimeType.DhuhrEnd => Asr,
+                ETimeType.AsrStart => Asr,
+                ETimeType.AsrEnd => Maghrib,
+                ETimeType.MaghribStart => Maghrib,
+                ETimeType.MaghribEnd => Isha,
+                ETimeType.IshaStart => Isha,
+                ETimeType.IshaEnd => NextFajr ?? new ZonedDateTime(Instant.MinValue, DateTimeZone.Utc),
+                _ => throw new ArgumentException($"Invalid {nameof(timeType)} value: {timeType}."),
+            };
         }
     }
 }

@@ -141,10 +141,14 @@
 	  <Folder Include="Platforms\Android\Resources\xml\" />
 	</ItemGroup>
 
-	<ItemGroup>
-	  <ProjectReference Include="..\PrayerTimeEngine.Core\PrayerTimeEngine.Core.csproj">
-	    <ReferenceSourceTarget>ProjectReference</ReferenceSourceTarget>
-	  </ProjectReference>
-	</ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\SharedGlobalSuppressions.cs" Link="Properties\SharedGlobalSuppressions.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\PrayerTimeEngine.Core\PrayerTimeEngine.Core.csproj">
+      <ReferenceSourceTarget>ProjectReference</ReferenceSourceTarget>
+    </ProjectReference>
+  </ItemGroup>
 
 </Project>

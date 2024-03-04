@@ -22,7 +22,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Muwaqqit
         public async Task GetTimesAsync_ExistingTime_ReturnsCorrectTime()
         {
             // ARRANGE
-            LocalDate date = new LocalDate(2023, 7, 30);
+            var date = new LocalDate(2023, 7, 30);
             var muwaqqitTime = new MuwaqqitPrayerTimes
             {
                 Date = date,
@@ -67,7 +67,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Muwaqqit
         public async Task InsertMuwaqqitPrayerTimesAsync_NewTime_TimeInDb()
         {
             // ARRANGE
-            LocalDate date = new LocalDate(2023, 7, 31);
+            var date = new LocalDate(2023, 7, 31);
             var newMuwaqqitTime = new MuwaqqitPrayerTimes
             {
                 Date = date,

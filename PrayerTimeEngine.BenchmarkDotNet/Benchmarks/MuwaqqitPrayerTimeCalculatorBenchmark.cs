@@ -87,25 +87,24 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
 
         private static MuwaqqitApiService getPreparedMuwaqqitApiService()
         {
-            Func<HttpRequestMessage, HttpResponseMessage> handleRequestFunc =
-                (request) =>
-                {
-                    string responseText =
-                        request.RequestUri.AbsoluteUri switch
-                        {
-                            @"https://www.muwaqqit.com/api2.json?d=2023-07-30&ln=11.41337&lt=47.2803835&tz=Europe%2fVienna&fa=-12&ia=3.5&isn=-8&ea=-12" => File.ReadAllText(Path.Combine(BaseTest.TEST_DATA_FILE_PATH, "MuwaqqitTestData", "Muwaqqit_TestPrayerTimeData_20230730_Innsbruck_Config1.txt")),
-                            @"https://www.muwaqqit.com/api2.json?d=2023-07-30&ln=11.41337&lt=47.2803835&tz=Europe%2fVienna&fa=-7.5&ia=4.5&isn=-12&ea=-15.5" => File.ReadAllText(Path.Combine(BaseTest.TEST_DATA_FILE_PATH, "MuwaqqitTestData", "Muwaqqit_TestPrayerTimeData_20230730_Innsbruck_Config2.txt")),
-                            @"https://www.muwaqqit.com/api2.json?d=2023-07-30&ln=11.41337&lt=47.2803835&tz=Europe%2fVienna&fa=-4.5&ia=-12&isn=-12&ea=-12" => File.ReadAllText(Path.Combine(BaseTest.TEST_DATA_FILE_PATH, "MuwaqqitTestData", "Muwaqqit_TestPrayerTimeData_20230730_Innsbruck_Config3.txt")),
-                            @"https://www.muwaqqit.com/api2.json?d=2023-07-30&ln=11.41337&lt=47.2803835&tz=Europe%2fVienna&fa=-15&ia=-12&isn=-12&ea=-12" => File.ReadAllText(Path.Combine(BaseTest.TEST_DATA_FILE_PATH, "MuwaqqitTestData", "Muwaqqit_TestPrayerTimeData_20230730_Innsbruck_Config4.txt")),
-                            _ => throw new Exception($"No response registered for URL: {request.RequestUri.AbsoluteUri}")
-                        };
-
-                    return new HttpResponseMessage
+            static HttpResponseMessage handleRequestFunc(HttpRequestMessage request)
+            {
+                string responseText =
+                    request.RequestUri.AbsoluteUri switch
                     {
-                        StatusCode = HttpStatusCode.OK,
-                        Content = new StringContent(responseText)
+                        @"https://www.muwaqqit.com/api2.json?d=2023-07-30&ln=11.41337&lt=47.2803835&tz=Europe%2fVienna&fa=-12&ia=3.5&isn=-8&ea=-12" => File.ReadAllText(Path.Combine(BaseTest.TEST_DATA_FILE_PATH, "MuwaqqitTestData", "Muwaqqit_TestPrayerTimeData_20230730_Innsbruck_Config1.txt")),
+                        @"https://www.muwaqqit.com/api2.json?d=2023-07-30&ln=11.41337&lt=47.2803835&tz=Europe%2fVienna&fa=-7.5&ia=4.5&isn=-12&ea=-15.5" => File.ReadAllText(Path.Combine(BaseTest.TEST_DATA_FILE_PATH, "MuwaqqitTestData", "Muwaqqit_TestPrayerTimeData_20230730_Innsbruck_Config2.txt")),
+                        @"https://www.muwaqqit.com/api2.json?d=2023-07-30&ln=11.41337&lt=47.2803835&tz=Europe%2fVienna&fa=-4.5&ia=-12&isn=-12&ea=-12" => File.ReadAllText(Path.Combine(BaseTest.TEST_DATA_FILE_PATH, "MuwaqqitTestData", "Muwaqqit_TestPrayerTimeData_20230730_Innsbruck_Config3.txt")),
+                        @"https://www.muwaqqit.com/api2.json?d=2023-07-30&ln=11.41337&lt=47.2803835&tz=Europe%2fVienna&fa=-15&ia=-12&isn=-12&ea=-12" => File.ReadAllText(Path.Combine(BaseTest.TEST_DATA_FILE_PATH, "MuwaqqitTestData", "Muwaqqit_TestPrayerTimeData_20230730_Innsbruck_Config4.txt")),
+                        _ => throw new Exception($"No response registered for URL: {request.RequestUri.AbsoluteUri}")
                     };
+
+                return new HttpResponseMessage
+                {
+                    StatusCode = HttpStatusCode.OK,
+                    Content = new StringContent(responseText)
                 };
+            }
 
             var mockHttpMessageHandler = new MockHttpMessageHandler(handleRequestFunc);
             var httpClient = new HttpClient(mockHttpMessageHandler);

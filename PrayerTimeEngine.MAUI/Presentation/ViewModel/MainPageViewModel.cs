@@ -48,13 +48,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
         [OnChangedMethod(nameof(onSelectedPlaceChanged))]
         public string SelectedPlaceText { get; set; }
 
-        public bool IsLoadingPrayerTimes
-        {
-            get
-            {
-                return Interlocked.Read(ref isLoadPrayerTimesRunningInterlockedInt) == 1;
-            }
-        }
+        public bool IsLoadingPrayerTimes { get; set; }
 
         public bool IsLoadingPrayerTimesOrSelectedPlace => IsLoadingPrayerTimes || IsLoadingSelectedPlace;
         public bool IsNotLoadingPrayerTimesOrSelectedPlace => !IsLoadingPrayerTimesOrSelectedPlace;
@@ -141,6 +135,10 @@ namespace PrayerTimeEngine.Presentation.ViewModel
                 string languageCode = _systemInfoService.GetSystemCulture().TwoLetterISOLanguageName;
                 return await placeService.SearchPlacesAsync(searchText, languageCode, placeSearchCancellationTokenSource.Token);
             }
+            catch (OperationCanceledException)
+            {
+                logger.LogInformation("Place search was canceled.");
+            }
             catch (Exception exception)
             {
                 logger.LogError(exception, "Error during place search");
@@ -205,6 +203,8 @@ namespace PrayerTimeEngine.Presentation.ViewModel
                         return;
                     }
 
+                    this.IsLoadingPrayerTimes = true;
+
                     await showHideSpecificTimes();
 
                     loadingTimesCancellationTokenSource?.Cancel();
@@ -216,12 +216,17 @@ namespace PrayerTimeEngine.Presentation.ViewModel
                 finally
                 {
                     Interlocked.Exchange(ref isLoadPrayerTimesRunningInterlockedInt, 0);  // Reset the flag to allow future runs
+                    this.IsLoadingPrayerTimes = false;
                 }
 
                 if (!MauiProgram.IsFullyInitialized)
                 {
                     onAfterFirstLoad();
                 }
+            }
+            catch (OperationCanceledException)
+            {
+                logger.LogInformation("Loading times was canceled.");
             }
             catch (Exception exception)
             {

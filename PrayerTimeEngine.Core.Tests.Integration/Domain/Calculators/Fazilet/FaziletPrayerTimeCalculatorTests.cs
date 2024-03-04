@@ -20,26 +20,25 @@ namespace PrayerTimeEngine.Core.Tests.Integration.Domain.Calculators.Fazilet
         {
             string dummyBaseURL = @"http://dummy.url.com";
 
-            Func<HttpRequestMessage, HttpResponseMessage> handleRequestFunc =
-                (request) =>
+            HttpResponseMessage handleRequestFunc(HttpRequestMessage request)
+            {
+                string responseText;
+
+                if (request.RequestUri.AbsoluteUri == $@"{dummyBaseURL}/{FaziletApiService.GET_COUNTRIES_URL}")
+                    responseText = File.ReadAllText(Path.Combine(TEST_DATA_FILE_PATH, "FaziletTestData", "Fazilet_TestCountriesData.txt"));
+                else if (request.RequestUri.AbsoluteUri == $@"{dummyBaseURL}/{FaziletApiService.GET_CITIES_BY_COUNTRY_URL}2")
+                    responseText = File.ReadAllText(Path.Combine(TEST_DATA_FILE_PATH, "FaziletTestData", "Fazilet_TestCityData_Austria.txt"));
+                else if (request.RequestUri.AbsoluteUri == $@"{dummyBaseURL}/{string.Format(FaziletApiService.GET_TIMES_BY_CITY_URL, "92")}")
+                    responseText = File.ReadAllText(Path.Combine(TEST_DATA_FILE_PATH, "FaziletTestData", "Fazilet_TestPrayerTimeData_20230729_Innsbruck.txt"));
+                else
+                    throw new Exception($"No response registered for URL: {request.RequestUri.AbsoluteUri}");
+
+                return new HttpResponseMessage
                 {
-                    string responseText;
-
-                    if (request.RequestUri.AbsoluteUri == $@"{dummyBaseURL}/{FaziletApiService.GET_COUNTRIES_URL}")
-                        responseText = File.ReadAllText(Path.Combine(TEST_DATA_FILE_PATH, "FaziletTestData", "Fazilet_TestCountriesData.txt"));
-                    else if (request.RequestUri.AbsoluteUri == $@"{dummyBaseURL}/{FaziletApiService.GET_CITIES_BY_COUNTRY_URL}2")
-                        responseText = File.ReadAllText(Path.Combine(TEST_DATA_FILE_PATH, "FaziletTestData", "Fazilet_TestCityData_Austria.txt"));
-                    else if (request.RequestUri.AbsoluteUri == $@"{dummyBaseURL}/{string.Format(FaziletApiService.GET_TIMES_BY_CITY_URL, "92")}")
-                        responseText = File.ReadAllText(Path.Combine(TEST_DATA_FILE_PATH, "FaziletTestData", "Fazilet_TestPrayerTimeData_20230729_Innsbruck.txt"));
-                    else
-                        throw new Exception($"No response registered for URL: {request.RequestUri.AbsoluteUri}");
-
-                    return new HttpResponseMessage
-                    {
-                        StatusCode = HttpStatusCode.OK,
-                        Content = new StringContent(responseText)
-                    };
+                    StatusCode = HttpStatusCode.OK,
+                    Content = new StringContent(responseText)
                 };
+            }
 
             var mockHttpMessageHandler = new MockHttpMessageHandler(handleRequestFunc);
             var httpClient = new HttpClient(mockHttpMessageHandler) { BaseAddress = new Uri(dummyBaseURL) };

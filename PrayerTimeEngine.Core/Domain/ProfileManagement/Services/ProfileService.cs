@@ -142,10 +142,8 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Services
 
         public bool EqualsFullProfile(Profile profile1, Profile profile2)
         {
-            if (profile1 == null)
-                throw new ArgumentNullException(nameof(profile1));
-            if (profile2 == null)
-                throw new ArgumentNullException(nameof(profile2));
+            ArgumentNullException.ThrowIfNull(profile1);
+            ArgumentNullException.ThrowIfNull(profile2);
 
             if (profile1.TimeConfigs.Count != profile2.TimeConfigs.Count)
                 return false;
@@ -176,7 +174,7 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Services
 
         private static Profile getDefaultProfile()
         {
-            Profile profile = new Profile
+            var profile = new Profile
             {
                 ID = 1,
                 Name = "Standard-Profil",
@@ -185,9 +183,8 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Services
             };
 
             profile.LocationConfigs =
-                new List<ProfileLocationConfig>
-                {
-                    new ProfileLocationConfig
+                [
+                    new()
                     {
                         CalculationSource = ECalculationSource.Muwaqqit,
                         ProfileID = profile.ID,
@@ -200,7 +197,7 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Services
                                 TimezoneName = "Europe/Vienna"
                             }
                     },
-                    new ProfileLocationConfig
+                    new()
                     {
                         CalculationSource = ECalculationSource.Fazilet,
                         ProfileID = profile.ID,
@@ -212,7 +209,7 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Services
                                 CityName = "Innsbruck"
                             }
                     },
-                    new ProfileLocationConfig
+                    new()
                     {
                         CalculationSource = ECalculationSource.Semerkand,
                         ProfileID = profile.ID,
@@ -225,12 +222,11 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Services
                                 TimezoneName = "Europe/Vienna"
                             }
                     },
-                };
+                ];
 
             profile.TimeConfigs =
-                new List<ProfileTimeConfig>
-                {
-                    new ProfileTimeConfig
+                [
+                    new()
                     {
                         TimeType = ETimeType.FajrStart,
                         ProfileID = profile.ID,
@@ -238,7 +234,7 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Services
                         // späteste Berechnung
                         CalculationConfiguration = new GenericSettingConfiguration { Source = ECalculationSource.Fazilet, TimeType = ETimeType.FajrStart }
                     },
-                    new ProfileTimeConfig
+                    new()
                     {
                         TimeType = ETimeType.FajrEnd,
                         ProfileID = profile.ID,
@@ -246,7 +242,7 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Services
                         // früheste Berechnung
                         CalculationConfiguration = new GenericSettingConfiguration { Source = ECalculationSource.Semerkand, MinuteAdjustment = -5, TimeType = ETimeType.FajrEnd }
                     },
-                    new ProfileTimeConfig
+                    new()
                     {
                         TimeType = ETimeType.FajrGhalas,
                         ProfileID = profile.ID,
@@ -254,7 +250,7 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Services
                         // Grobe Einschätzung anhand von Sichtung  
                         CalculationConfiguration = new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.FajrGhalas, Degree = -8.5 }
                     },
-                    new ProfileTimeConfig
+                    new()
                     {
                         TimeType = ETimeType.FajrKaraha,
                         ProfileID = profile.ID,
@@ -262,7 +258,7 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Services
                         // ### keine Erfahrung
                         CalculationConfiguration = new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.FajrKaraha, Degree = -4.0 }
                     },
-                    new ProfileTimeConfig
+                    new()
                     {
                         TimeType = ETimeType.DuhaStart,
                         ProfileID = profile.ID,
@@ -270,7 +266,7 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Services
                         // von Gebetszeiten-Hoca, späteste
                         CalculationConfiguration = new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.DuhaStart, Degree = 5.0 }
                     },
-                    new ProfileTimeConfig
+                    new()
                     {
                         TimeType = ETimeType.DuhaEnd,
                         ProfileID = profile.ID,
@@ -278,7 +274,7 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Services
                         // ### keine Erfahrung
                         CalculationConfiguration = new GenericSettingConfiguration { TimeType = ETimeType.DuhaEnd, MinuteAdjustment = -25 }
                     },
-                    new ProfileTimeConfig
+                    new()
                     {
                         TimeType = ETimeType.DhuhrStart,
                         ProfileID = profile.ID,
@@ -286,7 +282,7 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Services
                         // späteste Berechnung
                         CalculationConfiguration = new GenericSettingConfiguration { Source = ECalculationSource.Fazilet, TimeType = ETimeType.DhuhrStart }
                     },
-                    new ProfileTimeConfig
+                    new()
                     {
                         TimeType = ETimeType.DhuhrEnd,
                         ProfileID = profile.ID,
@@ -294,7 +290,7 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Services
                         // früheste Berechnung
                         CalculationConfiguration = new GenericSettingConfiguration { Source = ECalculationSource.Muwaqqit, MinuteAdjustment = -5, TimeType = ETimeType.DhuhrEnd }
                     },
-                    new ProfileTimeConfig
+                    new()
                     {
                         TimeType = ETimeType.AsrStart,
                         ProfileID = profile.ID,
@@ -302,7 +298,7 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Services
                         // späteste Berechnung
                         CalculationConfiguration = new GenericSettingConfiguration { Source = ECalculationSource.Fazilet, TimeType = ETimeType.AsrStart }
                     },
-                    new ProfileTimeConfig
+                    new()
                     {
                         TimeType = ETimeType.AsrEnd,
                         ProfileID = profile.ID,
@@ -310,14 +306,14 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Services
                         // früheste Berechnung
                         CalculationConfiguration = new GenericSettingConfiguration { Source = ECalculationSource.Muwaqqit, MinuteAdjustment = -5, TimeType = ETimeType.AsrEnd }
                     },
-                    new ProfileTimeConfig
+                    new()
                     {
                         TimeType = ETimeType.AsrMithlayn,
                         ProfileID = profile.ID,
                         Profile = profile,
                         CalculationConfiguration = new GenericSettingConfiguration { Source = ECalculationSource.Muwaqqit, TimeType = ETimeType.AsrMithlayn }
                     },
-                    new ProfileTimeConfig
+                    new()
                     {
                         TimeType = ETimeType.AsrKaraha,
                         ProfileID = profile.ID,
@@ -325,7 +321,7 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Services
                         // von Gebetszeiten-Hoca, früheste
                         CalculationConfiguration = new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.AsrKaraha, Degree = 5.0 }
                     },
-                    new ProfileTimeConfig
+                    new()
                     {
                         TimeType = ETimeType.MaghribStart,
                         ProfileID = profile.ID,
@@ -333,7 +329,7 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Services
                         // späteste Berechnung
                         CalculationConfiguration = new GenericSettingConfiguration { Source = ECalculationSource.Fazilet, TimeType = ETimeType.MaghribStart }
                     },
-                    new ProfileTimeConfig
+                    new()
                     {
                         TimeType = ETimeType.MaghribEnd,
                         ProfileID = profile.ID,
@@ -341,14 +337,14 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Services
                         // ### keine Erfahrung, aber Sicherheitsabstand
                         CalculationConfiguration = new GenericSettingConfiguration { Source = ECalculationSource.Semerkand, MinuteAdjustment = -5, TimeType = ETimeType.MaghribEnd }
                     },
-                    new ProfileTimeConfig
+                    new()
                     {
                         TimeType = ETimeType.MaghribSufficientTime,
                         ProfileID = profile.ID,
                         Profile = profile,
                         CalculationConfiguration = new GenericSettingConfiguration { TimeType = ETimeType.MaghribSufficientTime, MinuteAdjustment = 20 }
                     },
-                    new ProfileTimeConfig
+                    new()
                     {
                         TimeType = ETimeType.MaghribIshtibaq,
                         ProfileID = profile.ID,
@@ -356,7 +352,7 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Services
                         // von Gebetszeiten-Hoca
                         CalculationConfiguration = new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.MaghribIshtibaq, Degree = -10.0 }
                     },
-                    new ProfileTimeConfig
+                    new()
                     {
                         TimeType = ETimeType.IshaStart,
                         ProfileID = profile.ID,
@@ -364,7 +360,7 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Services
                         // späteste Berechnung
                         CalculationConfiguration = new GenericSettingConfiguration { Source = ECalculationSource.Fazilet, TimeType = ETimeType.IshaStart }
                     },
-                    new ProfileTimeConfig
+                    new()
                     {
                         TimeType = ETimeType.IshaEnd,
                         ProfileID = profile.ID,
@@ -372,7 +368,7 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Services
                         // früheste Berechnung
                         CalculationConfiguration = new GenericSettingConfiguration { Source = ECalculationSource.Semerkand, TimeType = ETimeType.IshaEnd }
                     }
-                };
+                ];
 
             return profile;
         }

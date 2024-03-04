@@ -14,7 +14,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Fazilet
         public FaziletApiServiceTests()
         {
             _mockHttpMessageHandler = new MockHttpMessageHandler();
-            HttpClient httpClient = new HttpClient(_mockHttpMessageHandler) { BaseAddress = new Uri("https://test.com/") };
+            var httpClient = new HttpClient(_mockHttpMessageHandler) { BaseAddress = new Uri("https://test.com/") };
             _faziletApiService = new FaziletApiService(httpClient);
         }
 
@@ -88,7 +88,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Fazilet
         public async Task GetTimesByCityID_ReadTestDataFileForCountries_RoughlyValidData()
         {
             // ARRANGE
-            LocalDate date = new LocalDate(2023, 7, 29);
+            var date = new LocalDate(2023, 7, 29);
 
             _mockHttpMessageHandler.HandleRequestFunc =
                 (request) =>

@@ -34,41 +34,23 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Models
 
         public ZonedDateTime GetZonedDateTimeForTimeType(ETimeType timeType)
         {
-            switch (timeType)
+            return timeType switch
             {
-                case ETimeType.FajrStart:
-                case ETimeType.FajrGhalas:
-                case ETimeType.FajrKaraha:
-                    return Fajr;
-                case ETimeType.FajrEnd:
-                    return Shuruq;
-                case ETimeType.DuhaStart:
-                    return Duha;
-                case ETimeType.DhuhrStart:
-                case ETimeType.DuhaEnd:
-                    return Dhuhr;
-                case ETimeType.DhuhrEnd:
-                    return Asr;
-                case ETimeType.AsrStart:
-                    return Asr;
-                case ETimeType.AsrEnd:
-                    return Maghrib;
-                case ETimeType.AsrMithlayn:
-                    return AsrMithlayn;
-                case ETimeType.AsrKaraha:
-                    return AsrKaraha;
-                case ETimeType.MaghribStart:
-                    return Maghrib;
-                case ETimeType.MaghribIshtibaq:
-                    return Ishtibaq;
-                case ETimeType.MaghribEnd:
-                case ETimeType.IshaStart:
-                    return Isha;
-                case ETimeType.IshaEnd:
-                    return NextFajr;
-                default:
-                    throw new ArgumentException($"Invalid {nameof(timeType)} value: {timeType}.");
-            }
+                ETimeType.FajrStart or ETimeType.FajrGhalas or ETimeType.FajrKaraha => Fajr,
+                ETimeType.FajrEnd => Shuruq,
+                ETimeType.DuhaStart => Duha,
+                ETimeType.DhuhrStart or ETimeType.DuhaEnd => Dhuhr,
+                ETimeType.DhuhrEnd => Asr,
+                ETimeType.AsrStart => Asr,
+                ETimeType.AsrEnd => Maghrib,
+                ETimeType.AsrMithlayn => AsrMithlayn,
+                ETimeType.AsrKaraha => AsrKaraha,
+                ETimeType.MaghribStart => Maghrib,
+                ETimeType.MaghribIshtibaq => Ishtibaq,
+                ETimeType.MaghribEnd or ETimeType.IshaStart => Isha,
+                ETimeType.IshaEnd => NextFajr,
+                _ => throw new ArgumentException($"Invalid {nameof(timeType)} value: {timeType}."),
+            };
         }
     }
 }

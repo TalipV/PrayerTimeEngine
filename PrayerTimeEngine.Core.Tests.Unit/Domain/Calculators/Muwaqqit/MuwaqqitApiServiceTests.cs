@@ -15,7 +15,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Muwaqqit
         public MuwaqqitApiServiceTests()
         {
             _mockHttpMessageHandler = new MockHttpMessageHandler();
-            HttpClient httpClient = new HttpClient(_mockHttpMessageHandler);
+            var httpClient = new HttpClient(_mockHttpMessageHandler);
             _muwaqqitApiService = new MuwaqqitApiService(httpClient);
         }
 
@@ -23,7 +23,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Muwaqqit
         public async Task GetTimesAsync_X_X()
         {
             // ARRANGE
-            LocalDate date = new LocalDate(2023, 7, 29);
+            var date = new LocalDate(2023, 7, 29);
             DateTimeZone europeTimeZone = DateTimeZoneProviders.Tzdb["Europe/Vienna"];
 
             _mockHttpMessageHandler.HandleRequestFunc =

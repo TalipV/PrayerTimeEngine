@@ -28,8 +28,8 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services
         {
             MuwaqqitPrayerTimes prayerTimes;
 
-            UriBuilder builder = new UriBuilder(MUWAQQIT_API_URL);
-            NameValueCollection query = HttpUtility.ParseQueryString(builder.Query);
+            var builder = new UriBuilder(MUWAQQIT_API_URL);
+            var query = HttpUtility.ParseQueryString(builder.Query);
 
             query["d"] = date.ToString("yyyy-MM-dd", null);
             query["ln"] = longitude.ToString(CultureInfo.InvariantCulture);
@@ -81,7 +81,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services
             return prayerTimes;
         }
 
-        private LocalDate getLocalDate(string zonedDateTimeString)
+        private static LocalDate getLocalDate(string zonedDateTimeString)
         {
             OffsetDateTimePattern.CreateWithInvariantCulture("yyyy-MM-dd HH:mm:ss.FFFFFFFo<G>")
                 .Parse(zonedDateTimeString)
@@ -91,7 +91,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services
             return localDateTime.Date;
         }
 
-        private ZonedDateTime getZonedDateTime(string zonedDateTimeString, DateTimeZone dateTimeZone)
+        private static ZonedDateTime getZonedDateTime(string zonedDateTimeString, DateTimeZone dateTimeZone)
         {
             OffsetDateTimePattern.CreateWithInvariantCulture("yyyy-MM-dd HH:mm:ss.FFFFFFFo<G>")
                 .Parse(zonedDateTimeString)
