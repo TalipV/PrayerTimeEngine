@@ -61,7 +61,7 @@ namespace PrayerTimeEngine.Core.Tests.Integration.Domain.ProfileManagement
             };
 
             // ACT
-            await profileService.UpdateLocationConfig(profile, newLocationName, newLocationDataByCalculationSource.Select(x => (x.Key, x.Value)).ToList());
+            await profileService.UpdateLocationConfig(profile, newLocationName, newLocationDataByCalculationSource.Select(x => (x.Key, x.Value)).ToList(), default);
 
             // ASSERT
             dbContext.ChangeTracker.HasChanges().Should().BeFalse();
@@ -117,7 +117,12 @@ namespace PrayerTimeEngine.Core.Tests.Integration.Domain.ProfileManagement
 
             // ACT
             Func<Task> updateLocationConfigFunc =
-                async () => await profileService.UpdateLocationConfig(profile, oldLocationName, newLocationDataByCalculationSource.Select(x => (x.Key, x.Value)).ToList());
+                async () => 
+                    await profileService.UpdateLocationConfig(
+                        profile: profile,
+                        locationName: oldLocationName,
+                        locationDataByCalculationSource: newLocationDataByCalculationSource.Select(x => (x.Key, x.Value)).ToList(),
+                        cancellationToken: default);
 
             // ASSERT
             await updateLocationConfigFunc.Should().ThrowAsync<Exception>();
@@ -167,7 +172,7 @@ namespace PrayerTimeEngine.Core.Tests.Integration.Domain.ProfileManagement
                     TimeType = ETimeType.FajrStart
                 };
 
-            await profileService.UpdateTimeConfig(profile, ETimeType.FajrStart, newSemerkandConfig);
+            await profileService.UpdateTimeConfig(profile, ETimeType.FajrStart, newSemerkandConfig, default);
 
             // ASSERT
             dbContext.ChangeTracker.HasChanges().Should().BeFalse();

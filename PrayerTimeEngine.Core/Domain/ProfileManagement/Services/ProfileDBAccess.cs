@@ -12,76 +12,77 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Services
             AppDbContext dbContext
         ) : IProfileDBAccess
     {
-        public async Task<Profile> GetUntrackedReferenceOfProfile(int profileID)
+        public async Task<Profile> GetUntrackedReferenceOfProfile(int profileID, CancellationToken cancellationToken)
         {
             return await dbContext.Profiles
                 .Include(x => x.TimeConfigs)
                 .Include(x => x.LocationConfigs)
                 .AsNoTracking()
-                .FirstAsync(x => x.ID == profileID).ConfigureAwait(false);
+                .FirstAsync(x => x.ID == profileID, cancellationToken).ConfigureAwait(false);
         }
 
-        public async Task<List<Profile>> GetProfiles()
+        public async Task<List<Profile>> GetProfiles(CancellationToken cancellationToken)
         {
             return await dbContext.Profiles
                 .Include(x => x.TimeConfigs)
                 .Include(x => x.LocationConfigs)
                 .AsNoTracking()
-                .ToListAsync().ConfigureAwait(false);
+                .ToListAsync(cancellationToken).ConfigureAwait(false);
         }
 
-        public async Task SaveProfile(Profile profile)
+        public async Task SaveProfile(Profile profile, CancellationToken cancellationToken)
         {
-            if (await dbContext.Profiles.FindAsync(profile.ID) is Profile foundProfile)
+            if (await dbContext.Profiles.FindAsync(profile.ID, cancellationToken) is Profile foundProfile)
             {
                 dbContext.Profiles.Remove(foundProfile);
-                await dbContext.SaveChangesAsync().ConfigureAwait(false);
+                await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
             }
 
-            await dbContext.Profiles.AddAsync(profile).ConfigureAwait(false);
-            await dbContext.SaveChangesAsync().ConfigureAwait(false);
+            await dbContext.Profiles.AddAsync(profile, cancellationToken).ConfigureAwait(false);
+            await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
         }
 
         public async Task UpdateLocationConfig(
             Profile profile,
             string locationName,
-            List<(ECalculationSource CalculationSource, BaseLocationData LocationData)> locationDataByCalculationSource)
+            List<(ECalculationSource CalculationSource, BaseLocationData LocationData)> locationDataByCalculationSource,
+            CancellationToken cancellationToken)
         {
-            Profile trackedProfile = dbContext.Profiles.Find(profile.ID);
+            Profile trackedProfile = await dbContext.Profiles.FindAsync(profile.ID, cancellationToken).ConfigureAwait(false);
 
             try
             {
-                using (IDbContextTransaction transaction = await dbContext.Database.BeginTransactionAsync())
+                using (IDbContextTransaction transaction = await dbContext.Database.BeginTransactionAsync(cancellationToken))
                 {
-                    await setNewLocationData(trackedProfile, locationDataByCalculationSource);
+                    await setNewLocationData(trackedProfile, locationDataByCalculationSource, cancellationToken);
                     trackedProfile.LocationName = locationName;
 
-                    await SaveProfile(trackedProfile);
-                    await transaction.CommitAsync();
+                    await SaveProfile(trackedProfile, cancellationToken);
+                    await transaction.CommitAsync(cancellationToken);
                 }
             }
             finally
             {
                 dbContext.Entry(trackedProfile).State = EntityState.Detached;
 
-                await dbContext.Entry(profile).ReloadAsync();
+                await dbContext.Entry(profile).ReloadAsync(cancellationToken);
 
                 foreach (var locationConfig in profile.LocationConfigs)
-                    await dbContext.Entry(locationConfig).ReloadAsync();
+                    await dbContext.Entry(locationConfig).ReloadAsync(cancellationToken);
             }
         }
 
-        public async Task UpdateTimeConfig(Profile profile, ETimeType timeType, GenericSettingConfiguration settings)
+        public async Task UpdateTimeConfig(Profile profile, ETimeType timeType, GenericSettingConfiguration settings, CancellationToken cancellationToken)
         {
-            Profile trackedProfile = dbContext.Profiles.Find(profile.ID);
+            Profile trackedProfile = await dbContext.Profiles.FindAsync(profile.ID, cancellationToken).ConfigureAwait(false);
 
             try
             {
-                using (IDbContextTransaction transaction = await dbContext.Database.BeginTransactionAsync())
+                using (IDbContextTransaction transaction = await dbContext.Database.BeginTransactionAsync(cancellationToken))
                 {
                     setTimeConfig(profile, timeType, settings);
-                    await SaveProfile(profile);
-                    await transaction.CommitAsync();
+                    await SaveProfile(profile, cancellationToken);
+                    await transaction.CommitAsync(cancellationToken);
                 }
             }
             finally
@@ -95,7 +96,10 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Services
             }
         }
 
-        private async Task setNewLocationData(Profile profile, List<(ECalculationSource CalculationSource, BaseLocationData LocationData)> locationDataByCalculationSource)
+        private async Task setNewLocationData(
+            Profile profile, 
+            List<(ECalculationSource CalculationSource, BaseLocationData LocationData)> locationDataByCalculationSource,
+            CancellationToken cancellationToken)
         {
             // delete the old entries
             var currentLocationConfigs = profile.LocationConfigs.ToList();
@@ -115,11 +119,13 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Services
 
                 profile.LocationConfigs.Add(newLocationConfig);
             }
-            await dbContext.ProfileLocations.AddRangeAsync(profile.LocationConfigs);
-            await dbContext.SaveChangesAsync();
+            await dbContext.ProfileLocations.AddRangeAsync(profile.LocationConfigs, cancellationToken);
+            await dbContext.SaveChangesAsync(cancellationToken);
         }
 
-        private void setTimeConfig(Profile profile, ETimeType timeType, GenericSettingConfiguration settings)
+        private void setTimeConfig(
+            Profile profile, ETimeType timeType, 
+            GenericSettingConfiguration settings)
         {
             if (profile.TimeConfigs.FirstOrDefault(x => x.TimeType == timeType) is not ProfileTimeConfig timeConfig)
             {

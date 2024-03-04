@@ -10,6 +10,7 @@ using PrayerTimeEngine.Core.Domain.Models;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Interfaces;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Models;
 using PrayerTimeEngine.Services.SystemInfoService;
+using System.Threading;
 
 namespace PrayerTimeEngine.Services
 {
@@ -18,6 +19,7 @@ namespace PrayerTimeEngine.Services
     {
         internal const string CHANNEL_ID = "prayer_time_channel";
         private const int TIMER_FREQUENCY_MS = 1_000;
+        private const int MAXIMUM_UPDATE_WAITING_DURATION_MS = 5_000;
         private const int notificationId = 1000;
 
         private readonly System.Timers.Timer updateTimer;
@@ -69,14 +71,39 @@ namespace PrayerTimeEngine.Services
             return StartCommandResult.Sticky;
         }
 
+        private const int trueInt = 1;
+        private const int falseInt = 0;
+        private int isUpdateInProgress = 0;
+
         private async Task UpdateNotification()
         {
-            var notificationBuilder = GetNotificationBuilder();
-            notificationBuilder.SetContentText(await getRemainingTimeText());
+            // when isUpdateInProgress equals comparand (i.e. it equals "not in progress" then set it to value (i.e. to "in progress").
+            // Always return the previous value of isUpdateInProgress
+            // This is thread safer than checking and then writing in two steps
+            if (Interlocked.CompareExchange(ref isUpdateInProgress, value: trueInt, comparand: falseInt) == trueInt)
+            {
+                // The previous value was "in progress"
+                return;
+            }
 
-            var context = Android.App.Application.Context;
-            var notificationManager = context.GetSystemService(NotificationService) as NotificationManager;
-            notificationManager.Notify(notificationId, notificationBuilder.Build());
+            // wait 5 seconds at max
+            using (var cancellationTokenSource = new CancellationTokenSource(delay: TimeSpan.FromMilliseconds(MAXIMUM_UPDATE_WAITING_DURATION_MS)))
+            {
+                try
+                {
+                    var notificationBuilder = GetNotificationBuilder();
+                    notificationBuilder.SetContentText(await getRemainingTimeText(cancellationTokenSource.Token));
+
+                    var context = Android.App.Application.Context;
+                    var notificationManager = context.GetSystemService(NotificationService) as NotificationManager;
+                    notificationManager.Notify(notificationId, notificationBuilder.Build());
+                }
+                finally
+                {
+                    // Reset isUpdateInProgress to allow for new updates
+                    Interlocked.Exchange(ref isUpdateInProgress, falseInt);
+                }
+            }
         }
 
         private Notification.Builder _notificationBuilder;
@@ -103,7 +130,7 @@ namespace PrayerTimeEngine.Services
             return _notificationBuilder;
         }
 
-        private async Task<string> getRemainingTimeText()
+        private async Task<string> getRemainingTimeText(CancellationToken cancellationToken)
         {
             // potential for performance improvement
 
@@ -111,8 +138,8 @@ namespace PrayerTimeEngine.Services
                 MauiProgram.ServiceProvider.GetRequiredService<ISystemInfoService>()
                     .GetCurrentZonedDateTime();
 
-            Profile profile = (await _profileService.GetProfiles()).First();
-            PrayerTimesBundle prayerTimeBundle = await _prayerTimeCalculationManager.CalculatePrayerTimesAsync(profile.ID, now);
+            Profile profile = (await _profileService.GetProfiles(cancellationToken)).First();
+            PrayerTimesBundle prayerTimeBundle = await _prayerTimeCalculationManager.CalculatePrayerTimesAsync(profile.ID, now, cancellationToken);
 
             ZonedDateTime? nextTime = null;
             string timeName = "-";

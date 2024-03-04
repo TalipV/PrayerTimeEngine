@@ -56,7 +56,8 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Muwaqqit
                 muwaqqitTime.FajrDegree,
                 muwaqqitTime.IshaDegree,
                 muwaqqitTime.IshtibaqDegree,
-                muwaqqitTime.AsrKarahaDegree);
+                muwaqqitTime.AsrKarahaDegree, 
+                default);
 
             // ASSERT
             retrievedTime.Should().BeEquivalentTo(muwaqqitTime, options => options.IgnoringCyclicReferences());
@@ -90,7 +91,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Muwaqqit
             };
 
             // ACT
-            await _muwaqqitDBAccess.InsertMuwaqqitPrayerTimesAsync(newMuwaqqitTime);
+            await _muwaqqitDBAccess.InsertMuwaqqitPrayerTimesAsync(newMuwaqqitTime, default);
 
             // ASSERT
             var insertedTime = await _appDbContext.MuwaqqitPrayerTimes.FindAsync(newMuwaqqitTime.ID);

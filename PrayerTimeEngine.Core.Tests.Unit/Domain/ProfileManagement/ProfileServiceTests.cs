@@ -39,10 +39,10 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.ProfileManagement
         public async Task GetProfiles_NoProfilesInDb_ReturnDefaultProfile()
         {
             // ARRANGE
-            _profileDBAccessMock.GetProfiles().Returns([]);
+            _profileDBAccessMock.GetProfiles(Arg.Any<CancellationToken>()).Returns([]);
 
             // ACT
-            List<Profile> profiles = await _profileService.GetProfiles();
+            List<Profile> profiles = await _profileService.GetProfiles(default);
 
             // ASSERT
             profiles.Should().HaveCount(1);
@@ -58,10 +58,10 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.ProfileManagement
             var profile1 = TestData.CreateNewCompleteTestProfile();
             var profile2 = TestData.CreateNewCompleteTestProfile();
             var profile3 = TestData.CreateNewCompleteTestProfile();
-            _profileDBAccessMock.GetProfiles().Returns([profile1, profile2, profile3]);
+            _profileDBAccessMock.GetProfiles(Arg.Any<CancellationToken>()).Returns([profile1, profile2, profile3]);
 
             // ACT
-            List<Profile> profiles = await _profileService.GetProfiles();
+            List<Profile> profiles = await _profileService.GetProfiles(default);
 
             // ASSERT
             profiles.Should().HaveCount(3);
@@ -82,11 +82,11 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.ProfileManagement
             var profile = TestData.CreateNewCompleteTestProfile();
 
             // ACT
-            await _profileService.SaveProfile(profile);
+            await _profileService.SaveProfile(profile, default);
 
             // ASSERT
-            _profileDBAccessMock.ReceivedWithAnyArgs(1).Awaiting(x => x.SaveProfile(default));
-            _profileDBAccessMock.Received(1).Awaiting(x => x.SaveProfile(Arg.Is(profile)));
+            _profileDBAccessMock.ReceivedWithAnyArgs(1).Awaiting(x => x.SaveProfile(default, default));
+            _profileDBAccessMock.Received(1).Awaiting(x => x.SaveProfile(Arg.Is(profile), Arg.Any<CancellationToken>()));
         }
 
         #endregion SaveProfile
@@ -176,11 +176,11 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.ProfileManagement
             List<(ECalculationSource, BaseLocationData)> locationData = [(ECalculationSource.Muwaqqit, Substitute.ForPartsOf<BaseLocationData>())];
 
             // ACT
-            await _profileService.UpdateLocationConfig(profile, locationName, locationData);
+            await _profileService.UpdateLocationConfig(profile, locationName, locationData, default);
 
             // ASSERT
-            _profileDBAccessMock.ReceivedWithAnyArgs(1).Awaiting(x => x.UpdateLocationConfig(default, default, default));
-            _profileDBAccessMock.Received(1).Awaiting(x => x.UpdateLocationConfig(Arg.Is(profile), Arg.Is(locationName), Arg.Is(locationData)));
+            _profileDBAccessMock.ReceivedWithAnyArgs(1).Awaiting(x => x.UpdateLocationConfig(default, default, default, default));
+            _profileDBAccessMock.Received(1).Awaiting(x => x.UpdateLocationConfig(Arg.Is(profile), Arg.Is(locationName), Arg.Is(locationData), Arg.Any<CancellationToken>()));
         }
 
         #endregion UpdateLocationConfig
@@ -196,11 +196,11 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.ProfileManagement
             var setting = new GenericSettingConfiguration { TimeType = ETimeType.FajrStart };
 
             // ACT
-            await _profileService.UpdateTimeConfig(profile, ETimeType.FajrStart, setting);
+            await _profileService.UpdateTimeConfig(profile, ETimeType.FajrStart, setting, default);
 
             // ASSERT
-            _profileDBAccessMock.ReceivedWithAnyArgs(1).Awaiting(x => x.UpdateTimeConfig(default, default, default));
-            _profileDBAccessMock.Received(1).Awaiting(x => x.UpdateTimeConfig(Arg.Is(profile), Arg.Is(ETimeType.FajrStart), Arg.Is(setting)));
+            _profileDBAccessMock.ReceivedWithAnyArgs(1).Awaiting(x => x.UpdateTimeConfig(default, default, default, default));
+            _profileDBAccessMock.Received(1).Awaiting(x => x.UpdateTimeConfig(Arg.Is(profile), Arg.Is(ETimeType.FajrStart), Arg.Is(setting), Arg.Any<CancellationToken>()));
         }
 
         #endregion UpdateTimeConfig

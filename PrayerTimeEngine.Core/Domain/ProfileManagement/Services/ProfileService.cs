@@ -13,27 +13,27 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Services
             TimeTypeAttributeService timeTypeAttributeService
         ) : IProfileService
     {
-        public async Task<Profile> GetUntrackedReferenceOfProfile(int profileID)
+        public async Task<Profile> GetUntrackedReferenceOfProfile(int profileID, CancellationToken cancellationToken)
         {
-            return await profileDBAccess.GetUntrackedReferenceOfProfile(profileID);
+            return await profileDBAccess.GetUntrackedReferenceOfProfile(profileID, cancellationToken);
         }
 
-        public async Task<List<Profile>> GetProfiles()
+        public async Task<List<Profile>> GetProfiles(CancellationToken cancellationToken)
         {
-            List<Profile> profiles = await profileDBAccess.GetProfiles().ConfigureAwait(false);
+            List<Profile> profiles = await profileDBAccess.GetProfiles(cancellationToken).ConfigureAwait(false);
 
             if (profiles.Count == 0)
             {
                 profiles.Add(getDefaultProfile());
-                await SaveProfile(profiles[0]);
+                await SaveProfile(profiles[0], cancellationToken);
             }
 
             return profiles;
         }
 
-        public async Task SaveProfile(Profile profile)
+        public async Task SaveProfile(Profile profile, CancellationToken cancellationToken)
         {
-            await profileDBAccess.SaveProfile(profile).ConfigureAwait(false);
+            await profileDBAccess.SaveProfile(profile, cancellationToken).ConfigureAwait(false);
         }
 
         public GenericSettingConfiguration GetTimeConfig(Profile profile, ETimeType timeType)
@@ -49,14 +49,15 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Services
         public async Task UpdateLocationConfig(
             Profile profile,
             string locationName,
-            List<(ECalculationSource CalculationSource, BaseLocationData LocationData)> locationDataByCalculationSource)
+            List<(ECalculationSource CalculationSource, BaseLocationData LocationData)> locationDataByCalculationSource,
+            CancellationToken cancellationToken)
         {
-            await profileDBAccess.UpdateLocationConfig(profile, locationName, locationDataByCalculationSource);
+            await profileDBAccess.UpdateLocationConfig(profile, locationName, locationDataByCalculationSource, cancellationToken);
         }
 
-        public async Task UpdateTimeConfig(Profile profile, ETimeType timeType, GenericSettingConfiguration settings)
+        public async Task UpdateTimeConfig(Profile profile, ETimeType timeType, GenericSettingConfiguration settings, CancellationToken cancellationToken)
         {
-            await profileDBAccess.UpdateTimeConfig(profile, timeType, settings);
+            await profileDBAccess.UpdateTimeConfig(profile, timeType, settings, cancellationToken);
         }
 
         public string GetLocationDataDisplayText(Profile profile)

@@ -48,12 +48,18 @@ namespace PrayerTimeEngine.Presentation.ViewModel
         [OnChangedMethod(nameof(onSelectedPlaceChanged))]
         public string SelectedPlaceText { get; set; }
 
+        public bool IsLoadingPrayerTimes
+        {
+            get
+            {
+                return Interlocked.Read(ref isLoadPrayerTimesRunningInterlockedInt) == 1;
+            }
+        }
 
         public bool IsLoadingPrayerTimesOrSelectedPlace => IsLoadingPrayerTimes || IsLoadingSelectedPlace;
         public bool IsNotLoadingPrayerTimesOrSelectedPlace => !IsLoadingPrayerTimesOrSelectedPlace;
 
         public bool IsLoadingSelectedPlace { get; set; }
-        public bool IsLoadingPrayerTimes { get; set; }
 
         public bool ShowFajrGhalas { get; set; }
         public bool ShowFajrRedness { get; set; }
@@ -75,10 +81,14 @@ namespace PrayerTimeEngine.Presentation.ViewModel
             => new Command<EPrayerType>(
                 async (prayerTime) =>
                 {
-                    if (IsLoadingPrayerTimes || _isSettingsPageOpening)
+                    if (_isSettingsPageOpening)
                     {
                         return;
                     }
+
+                    // stop loading times and stop loading places
+                    loadingTimesCancellationTokenSource?.Cancel();
+                    placeSearchCancellationTokenSource?.Cancel();
 
                     try
                     {
@@ -113,17 +123,32 @@ namespace PrayerTimeEngine.Presentation.ViewModel
             debouncer.Debounce();
         }
 
+
+        private CancellationTokenSource placeSearchCancellationTokenSource;
+
         public async Task<List<BasicPlaceInfo>> PerformPlaceSearch(string searchText)
         {
             try
             {
+                // I know... the whole ViewModel is not ideal --> TODO
+                await MainThread.InvokeOnMainThreadAsync(() =>
+                {
+                    placeSearchCancellationTokenSource?.Cancel();
+                    placeSearchCancellationTokenSource?.Dispose();
+                    placeSearchCancellationTokenSource = new CancellationTokenSource();
+                });
+
                 string languageCode = _systemInfoService.GetSystemCulture().TwoLetterISOLanguageName;
-                return await placeService.SearchPlacesAsync(searchText, languageCode);
+                return await placeService.SearchPlacesAsync(searchText, languageCode, placeSearchCancellationTokenSource.Token);
             }
             catch (Exception exception)
             {
                 logger.LogError(exception, "Error during place search");
                 showToastMessage(exception.Message);
+            }
+            finally
+            {
+                placeSearchCancellationTokenSource?.Dispose();
             }
 
             return [];
@@ -161,7 +186,10 @@ namespace PrayerTimeEngine.Presentation.ViewModel
             // reload prayer times for new profile
         }
 
-        private int isLoadPrayerTimesRunningInterlockedInt = 0;  // 0 for false, 1 for true
+        // concurrent loading is prevent in that subsequent loading requests are ignored when a previous one is currently running
+        // but that one can be cancelled by things like leaving the page
+        private long isLoadPrayerTimesRunningInterlockedInt = 0;  // 0 for false, 1 for true
+        private CancellationTokenSource loadingTimesCancellationTokenSource;
 
         private async Task refreshData()
         {
@@ -170,22 +198,23 @@ namespace PrayerTimeEngine.Presentation.ViewModel
                 if (!MauiProgram.IsFullyInitialized)
                     await onBeforeFirstLoad();
 
-                await showHideSpecificTimes();
-
-                if (CurrentProfile == null || Interlocked.CompareExchange(ref isLoadPrayerTimesRunningInterlockedInt, 1, 0) == 1)
-                {
-                    return;
-                }
-
                 try
                 {
-                    IsLoadingPrayerTimes = true;
-                    PrayerTimeBundle = await prayerTimeCalculator.CalculatePrayerTimesAsync(CurrentProfile.ID, _systemInfoService.GetCurrentZonedDateTime());
-                    OnAfterLoadingPrayerTimes_EventTrigger.Invoke();
+                    if (CurrentProfile == null || Interlocked.CompareExchange(ref isLoadPrayerTimesRunningInterlockedInt, 1, 0) == 1)
+                    {
+                        return;
+                    }
+
+                    await showHideSpecificTimes();
+
+                    loadingTimesCancellationTokenSource?.Cancel();
+                    loadingTimesCancellationTokenSource?.Dispose();
+                    loadingTimesCancellationTokenSource = new CancellationTokenSource();
+                    PrayerTimeBundle = await prayerTimeCalculator.CalculatePrayerTimesAsync(CurrentProfile.ID, _systemInfoService.GetCurrentZonedDateTime(), loadingTimesCancellationTokenSource.Token);
+                    OnAfterLoadingPrayerTimes_EventTrigger?.Invoke();
                 }
                 finally
                 {
-                    IsLoadingPrayerTimes = false;
                     Interlocked.Exchange(ref isLoadPrayerTimesRunningInterlockedInt, 0);  // Reset the flag to allow future runs
                 }
 
@@ -208,7 +237,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
         private async Task onBeforeFirstLoad()
         {
             await appDbContext.Database.MigrateAsync();
-            CurrentProfile ??= (await profileService.GetProfiles()).First();
+            CurrentProfile ??= (await profileService.GetProfiles(cancellationToken: default)).First();
         }        
         
         private void onAfterFirstLoad()
@@ -256,10 +285,10 @@ namespace PrayerTimeEngine.Presentation.ViewModel
                 {
                     this.IsLoadingSelectedPlace = true;
 
-                    CompletePlaceInfo completePlaceInfo = await placeService.GetTimezoneInfo(SelectedPlace);
-                    var locationDataWithCalculationSource = await getCalculationSourceWithLocationData(completePlaceInfo);
+                    CompletePlaceInfo completePlaceInfo = await placeService.GetTimezoneInfo(SelectedPlace, cancellationToken: default);
+                    var locationDataWithCalculationSource = await getCalculationSourceWithLocationData(completePlaceInfo, cancellationToken: default);
 
-                    await profileService.UpdateLocationConfig(CurrentProfile, SelectedPlace.DisplayText, locationDataWithCalculationSource);
+                    await profileService.UpdateLocationConfig(CurrentProfile, SelectedPlace.DisplayText, locationDataWithCalculationSource, cancellationToken: default);
 
                     List<ECalculationSource> missingLocationInfo =
                         Enum.GetValues<ECalculationSource>()
@@ -285,7 +314,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
             });
         }
 
-        private async Task<List<(ECalculationSource, BaseLocationData)>> getCalculationSourceWithLocationData(CompletePlaceInfo completePlaceInfo)
+        private async Task<List<(ECalculationSource, BaseLocationData)>> getCalculationSourceWithLocationData(CompletePlaceInfo completePlaceInfo, CancellationToken cancellationToken)
         {
             var locationDataWithCalculationSource = new List<(ECalculationSource, BaseLocationData)>();
 
@@ -297,7 +326,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
                 BaseLocationData locationConfig =
                     await prayerTimeServiceFactory
                         .GetPrayerTimeCalculatorByCalculationSource(calculationSource)
-                        .GetLocationInfo(completePlaceInfo);
+                        .GetLocationInfo(completePlaceInfo, cancellationToken);
 
                 locationDataWithCalculationSource.Add((calculationSource, locationConfig));
             }
@@ -343,10 +372,10 @@ namespace PrayerTimeEngine.Presentation.ViewModel
                         message: text, 
                         duration: ToastDuration.Short, 
                         textSize: 14)
-                    .Show(default);
+                    .Show();
             });
         }
 
-#endregion private methods
+        #endregion private methods
     }
 }

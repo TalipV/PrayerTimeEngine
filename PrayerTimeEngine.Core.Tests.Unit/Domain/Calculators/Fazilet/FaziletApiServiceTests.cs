@@ -39,7 +39,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Fazilet
                 };
 
             // ACT
-            var countries = await _faziletApiService.GetCountries();
+            var countries = await _faziletApiService.GetCountries(default);
 
             // ASSERT
             countries.Should().HaveCount(208);
@@ -72,7 +72,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Fazilet
                 };
 
             // ACT
-            var cities = await _faziletApiService.GetCitiesByCountryID(1);
+            var cities = await _faziletApiService.GetCitiesByCountryID(1, default);
 
             // ASSERT
             cities.Should().HaveCount(161);
@@ -107,7 +107,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Fazilet
                 };
 
             // ACT
-            var times = await _faziletApiService.GetTimesByCityID(197);
+            var times = await _faziletApiService.GetTimesByCityID(197, default);
 
             // ASSERT
             LocalDate assertDate = date.PlusDays(-1);

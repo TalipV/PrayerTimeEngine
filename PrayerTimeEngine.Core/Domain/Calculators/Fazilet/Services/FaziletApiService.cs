@@ -12,14 +12,14 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
     {
         internal const string GET_COUNTRIES_URL = "daily?districtId=232&lang=1";
 
-        public async Task<Dictionary<string, int>> GetCountries()
+        public async Task<Dictionary<string, int>> GetCountries(CancellationToken cancellationToken)
         {
             Dictionary<string, int> countries = [];
 
-            HttpResponseMessage response = await httpClient.GetAsync(GET_COUNTRIES_URL).ConfigureAwait(false);
+            HttpResponseMessage response = await httpClient.GetAsync(GET_COUNTRIES_URL, cancellationToken).ConfigureAwait(false);
             response.EnsureSuccessStatusCode();
 
-            string json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            string json = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
             JObject jObject = JObject.Parse(json);
 
             foreach (JObject country in ((JArray)jObject["ulkeler"]).Cast<JObject>())
@@ -34,14 +34,14 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
 
         internal const string GET_CITIES_BY_COUNTRY_URL = "cities-by-country?districtId=";
 
-        public async Task<Dictionary<string, int>> GetCitiesByCountryID(int countryID)
+        public async Task<Dictionary<string, int>> GetCitiesByCountryID(int countryID, CancellationToken cancellationToken)
         {
             Dictionary<string, int> cities = [];
 
-            HttpResponseMessage response = await httpClient.GetAsync(GET_CITIES_BY_COUNTRY_URL + countryID).ConfigureAwait(false);
+            HttpResponseMessage response = await httpClient.GetAsync(GET_CITIES_BY_COUNTRY_URL + countryID, cancellationToken).ConfigureAwait(false);
             response.EnsureSuccessStatusCode();
 
-            string json = await response.Content.ReadAsStringAsync();
+            string json = await response.Content.ReadAsStringAsync(cancellationToken);
 
             foreach (JObject city in JArray.Parse(json).Cast<JObject>())
             {
@@ -55,7 +55,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
 
         internal const string GET_TIMES_BY_CITY_URL = "daily?districtId={0}&lang=2";
 
-        public async Task<List<FaziletPrayerTimes>> GetTimesByCityID(int cityID)
+        public async Task<List<FaziletPrayerTimes>> GetTimesByCityID(int cityID, CancellationToken cancellationToken)
         {
             // error case
             // response.StatusCode = ServiceUnavailable (503)
@@ -65,9 +65,9 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
             List<FaziletPrayerTimes> prayerTimesList = [];
 
             string url = string.Format(GET_TIMES_BY_CITY_URL, cityID);
-            HttpResponseMessage response = await httpClient.GetAsync(url).ConfigureAwait(false);
+            HttpResponseMessage response = await httpClient.GetAsync(url, cancellationToken).ConfigureAwait(false);
 
-            string json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            string json = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
             JObject jObject = JObject.Parse(json);
             JArray timesJArray = (JArray)jObject["vakitler"];
 

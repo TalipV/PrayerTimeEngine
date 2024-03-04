@@ -62,7 +62,7 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
                     new MuwaqqitDBAccess(appDbContext),
                     getPreparedMuwaqqitApiService(),
                     new TimeTypeAttributeService()
-                ).GetPrayerTimesAsync(_localDate, _locationData, _configs).GetAwaiter().GetResult();
+                ).GetPrayerTimesAsync(_localDate, _locationData, _configs, default).GetAwaiter().GetResult();
 
             // throw exceptions when the calculator tries using the api
             IMuwaqqitApiService mockedMuwaqqitApiService = Substitute.For<IMuwaqqitApiService>();
@@ -139,7 +139,8 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
             var result = _muwaqqitPrayerTimeCalculator_DataFromDbStorage.GetPrayerTimesAsync(
                 _localDate,
                 locationData: _locationData,
-                configurations: _configs).GetAwaiter().GetResult();
+                configurations: _configs, 
+                cancellationToken: default).GetAwaiter().GetResult();
 
             //if (result.SelectMany(x => x.ToList()).Count() != 16)
             //{
@@ -155,7 +156,8 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
             var result = _muwaqqitPrayerTimeCalculator_DataFromApi.GetPrayerTimesAsync(
                 _localDate,
                 locationData: _locationData,
-                configurations: _configs).GetAwaiter().GetResult();
+                configurations: _configs, 
+                cancellationToken: default).GetAwaiter().GetResult();
 
             //if (result.SelectMany(x => x.ToList()).Count() != 16)
             //{

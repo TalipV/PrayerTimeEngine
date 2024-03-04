@@ -51,7 +51,8 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Muwaqqit
                 ishaDegree: 1,
                 ishtibaqDegree: 1,
                 asrKarahaDegree: 1,
-                timezone: europeTimeZone.Id);
+                timezone: europeTimeZone.Id,
+                cancellationToken: default);
 
             // ASSERT
             time.Should().NotBeNull();

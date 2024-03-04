@@ -25,7 +25,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
             // ARRANGE
             
             // ACT
-            var countries = await _semerkandDBAccess.GetCountries();
+            var countries = await _semerkandDBAccess.GetCountries(default);
             
             // ASSERT
             countries.Should().BeEmpty();
@@ -42,7 +42,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
             await _appDbContext.SaveChangesAsync();
             
             // ACT
-            var countries = await _semerkandDBAccess.GetCountries();
+            var countries = await _semerkandDBAccess.GetCountries(default);
             
             // ASSERT
             countries.Should().HaveCount(2);
@@ -66,7 +66,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
             await _appDbContext.SaveChangesAsync();
             
             // ACT
-            var germanCities = await _semerkandDBAccess.GetCitiesByCountryID(germany.ID);
+            var germanCities = await _semerkandDBAccess.GetCitiesByCountryID(germany.ID, default);
 
             // ASSERT
             germanCities.Should().HaveCount(2);
@@ -89,7 +89,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
             await _appDbContext.SaveChangesAsync();
             
             // ACT
-            var germanCities = await _semerkandDBAccess.GetCitiesByCountryID(germany.ID);
+            var germanCities = await _semerkandDBAccess.GetCitiesByCountryID(germany.ID, default);
 
             // ASSERT
             germanCities.Should().BeEmpty();
@@ -107,7 +107,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
             await _appDbContext.SaveChangesAsync();
             
             // ACT
-            var cities = await _semerkandDBAccess.GetCitiesByCountryID(2);
+            var cities = await _semerkandDBAccess.GetCitiesByCountryID(2, default);
 
             // ASSERT
             cities.Should().BeEmpty();
@@ -169,7 +169,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
             await _appDbContext.SaveChangesAsync();
             
             // ACT
-            var times = await _semerkandDBAccess.GetTimesByDateAndCityID(date, gerCity1.ID);
+            var times = await _semerkandDBAccess.GetTimesByDateAndCityID(date, gerCity1.ID, default);
 
             // ASSERT
             times.Should()
@@ -233,7 +233,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
             await _appDbContext.SaveChangesAsync();
             
             // ACT
-            var times = await _semerkandDBAccess.GetTimesByDateAndCityID(date, 5);
+            var times = await _semerkandDBAccess.GetTimesByDateAndCityID(date, 5, default);
 
             // ASSERT
             times.Should().BeNull();
@@ -252,7 +252,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
                 
             // ACT
             await _semerkandDBAccess.InsertCountries(
-                newCountries.ToDictionary(x => x.Name, x => x.ID));
+                newCountries.ToDictionary(x => x.Name, x => x.ID), default);
 
             // ASSERT
             foreach (var newCountry in newCountries)
@@ -283,8 +283,8 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
             };
 
             // ACT
-            await _semerkandDBAccess.InsertCities(gerCities.ToDictionary(x => x.Name, x => x.ID), 1);
-            await _semerkandDBAccess.InsertCities(autCities.ToDictionary(x => x.Name, x => x.ID), 2);
+            await _semerkandDBAccess.InsertCities(gerCities.ToDictionary(x => x.Name, x => x.ID), 1, default);
+            await _semerkandDBAccess.InsertCities(autCities.ToDictionary(x => x.Name, x => x.ID), 2, default);
 
             // ASSERT
             foreach (var newCity in gerCities.Concat(autCities))
@@ -357,9 +357,9 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
             };
             
             // ACT
-            await _semerkandDBAccess.InsertSemerkandPrayerTimes(date, 1, time1);
-            await _semerkandDBAccess.InsertSemerkandPrayerTimes(date, 2, time2);
-            await _semerkandDBAccess.InsertSemerkandPrayerTimes(date, 1, time3);
+            await _semerkandDBAccess.InsertSemerkandPrayerTimes(date, 1, time1, default);
+            await _semerkandDBAccess.InsertSemerkandPrayerTimes(date, 2, time2, default);
+            await _semerkandDBAccess.InsertSemerkandPrayerTimes(date, 1, time3, default);
 
             // ASSERT
             (await _appDbContext.SemerkandPrayerTimes.FindAsync(time1.ID)).Should().BeEquivalentTo(time1);
