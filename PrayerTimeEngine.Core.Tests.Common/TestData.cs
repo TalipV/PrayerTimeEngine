@@ -13,7 +13,7 @@ namespace PrayerTimeEngine.Core.Tests.Common
     {
         public static Profile CreateNewCompleteTestProfile(int profileID = 1)
         {
-            Profile profile = new Profile
+            var profile = new Profile
             {
                 ID = profileID,
                 Name = "Standard-Profil",
@@ -22,161 +22,159 @@ namespace PrayerTimeEngine.Core.Tests.Common
             };
 
             profile.LocationConfigs =
-                new List<ProfileLocationConfig>
-                {
-                    new ProfileLocationConfig
+                [
+                    new()
                     {
                         CalculationSource = ECalculationSource.Muwaqqit,
                         ProfileID = profile.ID,
                         Profile = profile,
                         LocationData = new MuwaqqitLocationData{ Latitude = 47.2803835M,Longitude = 11.41337M,TimezoneName = "Europe/Vienna" }
                     },
-                    new ProfileLocationConfig
+                    new()
                     {
                         CalculationSource = ECalculationSource.Fazilet,
                         ProfileID = profile.ID,
                         Profile = profile,
                         LocationData = new FaziletLocationData{ CountryName = "Avusturya",CityName = "Innsbruck" }
                     },
-                    new ProfileLocationConfig
+                    new()
                     {
                         CalculationSource = ECalculationSource.Semerkand,
                         ProfileID = profile.ID,
                         Profile = profile,
                         LocationData = new SemerkandLocationData{ CountryName = "Avusturya",CityName = "Innsbruck",TimezoneName = "Europe/Vienna" }
                     },
-                };
+                ];
 
             profile.TimeConfigs =
-                new List<ProfileTimeConfig>
-                {
-                    new ProfileTimeConfig
+                [
+                    new()
                     {
                         TimeType = ETimeType.FajrStart,
                         ProfileID = profile.ID,
                         Profile = profile,
                         CalculationConfiguration = new GenericSettingConfiguration { Source = ECalculationSource.Fazilet, TimeType = ETimeType.FajrStart }
                     },
-                    new ProfileTimeConfig
+                    new()
                     {
                         TimeType = ETimeType.FajrEnd,
                         ProfileID = profile.ID,
                         Profile = profile,
                         CalculationConfiguration = new GenericSettingConfiguration { Source = ECalculationSource.Semerkand, TimeType = ETimeType.FajrEnd }
                     },
-                    new ProfileTimeConfig
+                    new()
                     {
                         TimeType = ETimeType.FajrGhalas,
                         ProfileID = profile.ID,
                         Profile = profile,
                         CalculationConfiguration = new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.FajrGhalas, Degree = -8.5 }
                     },
-                    new ProfileTimeConfig
+                    new()
                     {
                         TimeType = ETimeType.FajrKaraha,
                         ProfileID = profile.ID,
                         Profile = profile,
                         CalculationConfiguration = new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.FajrKaraha, Degree = -4.0 }
                     },
-                    new ProfileTimeConfig
+                    new()
                     {
                         TimeType = ETimeType.DuhaStart,
                         ProfileID = profile.ID,
                         Profile = profile,
                         CalculationConfiguration = new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.DuhaStart, Degree = 5.0 }
                     },
-                    new ProfileTimeConfig
+                    new()
                     {
                         TimeType = ETimeType.DuhaEnd,
                         ProfileID = profile.ID,
                         Profile = profile,
                         CalculationConfiguration = new GenericSettingConfiguration { TimeType = ETimeType.DuhaEnd, MinuteAdjustment = -25 }
                     },
-                    new ProfileTimeConfig
+                    new()
                     {
                         TimeType = ETimeType.DhuhrStart,
                         ProfileID = profile.ID,
                         Profile = profile,
                         CalculationConfiguration = new GenericSettingConfiguration { Source = ECalculationSource.Fazilet, TimeType = ETimeType.DhuhrStart }
                     },
-                    new ProfileTimeConfig
+                    new()
                     {
                         TimeType = ETimeType.DhuhrEnd,
                         ProfileID = profile.ID,
                         Profile = profile,
                         CalculationConfiguration = new GenericSettingConfiguration { Source = ECalculationSource.Muwaqqit, TimeType = ETimeType.DhuhrEnd }
                     },
-                    new ProfileTimeConfig
+                    new()
                     {
                         TimeType = ETimeType.AsrStart,
                         ProfileID = profile.ID,
                         Profile = profile,
                         CalculationConfiguration = new GenericSettingConfiguration { Source = ECalculationSource.Fazilet, TimeType = ETimeType.AsrStart }
                     },
-                    new ProfileTimeConfig
+                    new()
                     {
                         TimeType = ETimeType.AsrEnd,
                         ProfileID = profile.ID,
                         Profile = profile,
                         CalculationConfiguration = new GenericSettingConfiguration { Source = ECalculationSource.Muwaqqit, TimeType = ETimeType.AsrEnd }
                     },
-                    new ProfileTimeConfig
+                    new()
                     {
                         TimeType = ETimeType.AsrMithlayn,
                         ProfileID = profile.ID,
                         Profile = profile,
                         CalculationConfiguration = new GenericSettingConfiguration { Source = ECalculationSource.Muwaqqit, TimeType = ETimeType.AsrMithlayn }
                     },
-                    new ProfileTimeConfig
+                    new()
                     {
                         TimeType = ETimeType.AsrKaraha,
                         ProfileID = profile.ID,
                         Profile = profile,
                         CalculationConfiguration = new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.AsrKaraha, Degree = 5.0 }
                     },
-                    new ProfileTimeConfig
+                    new()
                     {
                         TimeType = ETimeType.MaghribStart,
                         ProfileID = profile.ID,
                         Profile = profile,
                         CalculationConfiguration = new GenericSettingConfiguration { Source = ECalculationSource.Fazilet, TimeType = ETimeType.MaghribStart }
                     },
-                    new ProfileTimeConfig
+                    new()
                     {
                         TimeType = ETimeType.MaghribEnd,
                         ProfileID = profile.ID,
                         Profile = profile,
                         CalculationConfiguration = new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.MaghribEnd, Degree = -15.0 }
                     },
-                    new ProfileTimeConfig
+                    new()
                     {
                         TimeType = ETimeType.MaghribSufficientTime,
                         ProfileID = profile.ID,
                         Profile = profile,
                         CalculationConfiguration = new GenericSettingConfiguration { TimeType = ETimeType.MaghribSufficientTime, MinuteAdjustment = 20 }
                     },
-                    new ProfileTimeConfig
+                    new()
                     {
                         TimeType = ETimeType.MaghribIshtibaq,
                         ProfileID = profile.ID,
                         Profile = profile,
                         CalculationConfiguration = new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.MaghribIshtibaq, Degree = -10.0 }
                     },
-                    new ProfileTimeConfig
+                    new()
                     {
                         TimeType = ETimeType.IshaStart,
                         ProfileID = profile.ID,
                         Profile = profile,
                         CalculationConfiguration = new GenericSettingConfiguration { Source = ECalculationSource.Fazilet, TimeType = ETimeType.IshaStart }
                     },
-                    new ProfileTimeConfig
+                    new()
                     {
                         TimeType = ETimeType.IshaEnd,
                         ProfileID = profile.ID,
                         Profile = profile,
                         CalculationConfiguration = new GenericSettingConfiguration { Source = ECalculationSource.Semerkand, TimeType = ETimeType.IshaEnd }
                     }
-                };
+                ];
 
             return profile;
         }

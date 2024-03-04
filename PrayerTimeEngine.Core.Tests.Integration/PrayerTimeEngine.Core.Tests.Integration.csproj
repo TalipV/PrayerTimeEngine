@@ -10,6 +10,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Data\**" />
+    <EmbeddedResource Remove="Data\**" />
+    <None Remove="Data\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="FluentAssertions" Version="6.12.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.9.0" />
     <PackageReference Include="NodaTime" Version="3.1.11" />
@@ -32,7 +38,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Data\PreferenceManager\" />
     <Folder Include="Domain\CalculationManager\" />
     <Folder Include="Domain\PlaceManagement\" />
   </ItemGroup>
