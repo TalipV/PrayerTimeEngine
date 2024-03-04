@@ -239,60 +239,6 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.ProfileManagement
 
         #endregion GetPrayerTimeConfigDisplayText
 
-        #region EqualsFullProfile
-
-        [Fact]
-        [Trait("Method", "EqualsFullProfile")]
-        public void EqualsFullProfile_SameProfiles_ReturnsTrue()
-        {            
-            // ARRANGE
-            var profile1 = TestData.CreateNewCompleteTestProfile();
-            var profile2 = TestData.CreateNewCompleteTestProfile();
-
-            // ACT
-            bool result = _profileService.EqualsFullProfile(profile1, profile2);
-
-            // ASSERT
-            result.Should().BeTrue();
-        }
-
-        [Fact]
-        [Trait("Method", "EqualsFullProfile")]
-        public void EqualsFullProfile_SameProfilesExceptForNames_ReturnsFalse()
-        {            
-            // ARRANGE
-            var profile1 = TestData.CreateNewCompleteTestProfile();
-            var profile2 = TestData.CreateNewCompleteTestProfile();
-            profile1.Name = "Test 1";
-            profile2.Name = "Test 2";
-
-            // ACT
-            bool result = _profileService.EqualsFullProfile(profile1, profile2);
-
-            // ASSERT
-            result.Should().BeFalse();
-        }
-
-        [Fact]
-        [Trait("Method", "EqualsFullProfile")]
-        public void EqualsFullProfile_SameProfilesExceptForTimeConfigDegree_ReturnsFalse()
-        {            
-            // ARRANGE
-            var profile1 = TestData.CreateNewCompleteTestProfile();
-            var profile2 = TestData.CreateNewCompleteTestProfile();
-            
-            var degreeTimeConfig = profile1.TimeConfigs.First(x => x.CalculationConfiguration is MuwaqqitDegreeCalculationConfiguration);
-            degreeTimeConfig.CalculationConfiguration = new MuwaqqitDegreeCalculationConfiguration { Degree = 99, TimeType = ETimeType.FajrStart };
-
-            // ACT
-            bool result = _profileService.EqualsFullProfile(profile1, profile2);
-
-            // ASSERT
-            result.Should().BeFalse();
-        }
-
-        #endregion EqualsFullProfile
-
         #region GetActiveComplexTimeConfigs
 
         [Fact]

@@ -35,8 +35,7 @@ namespace PrayerTimeEngine.Core.Domain.Models
             if (obj is not PrayerTime otherTime)
                 return false;
 
-            return
-                this.Name == otherTime.Name
+            return this.Name == otherTime.Name
                 && this.Start == otherTime.Start
                 && this.End == otherTime.End;
         }

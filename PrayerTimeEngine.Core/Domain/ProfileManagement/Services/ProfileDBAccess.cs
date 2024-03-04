@@ -18,7 +18,7 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Services
                 .Include(x => x.TimeConfigs)
                 .Include(x => x.LocationConfigs)
                 .AsNoTracking()
-                .FirstAsync(x => x.ID == profileID, cancellationToken).ConfigureAwait(false);
+                .FirstOrDefaultAsync(x => x.ID == profileID, cancellationToken).ConfigureAwait(false);
         }
 
         public async Task<List<Profile>> GetProfiles(CancellationToken cancellationToken)

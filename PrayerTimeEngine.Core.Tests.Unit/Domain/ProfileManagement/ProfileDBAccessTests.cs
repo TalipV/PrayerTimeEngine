@@ -4,6 +4,11 @@ using PrayerTimeEngine.Core.Tests.Common;
 using FluentAssertions;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Models;
 using FluentAssertions.Equivalency;
+using Microsoft.EntityFrameworkCore;
+using PrayerTimeEngine.Core.Common.Enum;
+using PrayerTimeEngine.Core.Domain.Models;
+using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Models;
+using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Models;
 
 namespace PrayerTimeEngine.Core.Tests.Unit.Domain.ProfileManagement
 {
@@ -19,7 +24,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.ProfileManagement
         }
 
         [Fact]
-        public async Task GetProfiles_X_X()
+        public async Task GetProfiles_SavedThreeDifferentProfiles_RetrievedNormally()
         {
             // ARRANGE
             var profile1 = TestData.CreateNewCompleteTestProfile(profileID: 1);
@@ -31,84 +36,99 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.ProfileManagement
             await _appDbContext.SaveChangesAsync();
 
             // ACT
-            _appDbContext.ProfileLocations.Remove(profile3.LocationConfigs.First());
-            _appDbContext.SaveChanges();
             var profiles = await _profileDBAccess.GetProfiles(default);
-
-            profile3.LocationConfigs.Clear();
 
             // ASSERT
             profiles.Should().NotBeNull().And.HaveCount(3);
-            profiles.FirstOrDefault(x => x.ID == 1).Should().BeEquivalentTo(profile1, config: NewMethod());
-            profiles.FirstOrDefault(x => x.ID == 2).Should().BeEquivalentTo(profile2, config: NewMethod());
-            profiles.FirstOrDefault(x => x.ID == 3).Should().BeEquivalentTo(profile3, config: NewMethod());
-        }
-
-        private static Func<EquivalencyAssertionOptions<Profile>, EquivalencyAssertionOptions<Profile>> NewMethod()
-        {
-            return options =>
-            {
-                options.IncludingAllDeclaredProperties();
-                options.IncludingAllRuntimeProperties();
-                options.IncludingFields();
-                options.IncludingInternalFields();
-                options.IncludingInternalProperties();
-                options.IncludingNestedObjects();
-                options.IncludingProperties();
-
-                options.Including(x => x.LocationConfigs);
-                options.Including(x => x.TimeConfigs);
-
-                options.WithStrictOrdering();
-
-                options.AllowingInfiniteRecursion();
-
-                return options;
-            };
+            profiles.FirstOrDefault(x => x.ID == 1).Should().BeEquivalentTo(profile1);
+            profiles.FirstOrDefault(x => x.ID == 2).Should().BeEquivalentTo(profile2);
+            profiles.FirstOrDefault(x => x.ID == 3).Should().BeEquivalentTo(profile3);
         }
 
         [Fact]
-        public async Task GetUntrackedReferenceOfProfile_X_X()
+        public async Task GetUntrackedReferenceOfProfile_ExistingProfile_ProfileRetrieved()
         {
             // ARRANGE
+            var profile = TestData.CreateNewCompleteTestProfile();
+            await _appDbContext.Profiles.AddAsync(profile);
+            await _appDbContext.SaveChangesAsync();
 
             // ACT
-            //var profile = await _profileDBAccess.GetUntrackedReferenceOfProfile();
+            var untracktedProfile = await _profileDBAccess.GetUntrackedReferenceOfProfile(profile.ID, default);
 
             // ASSERT
+            profile.Should().BeEquivalentTo(untracktedProfile);
+            ReferenceEquals(profile, untracktedProfile).Should().BeFalse(because: "they should be equal but not exactly the same");
+            _appDbContext.Entry(untracktedProfile).State.Should().Be(Microsoft.EntityFrameworkCore.EntityState.Detached);
+        }        
+        
+        [Fact]
+        public async Task GetUntrackedReferenceOfProfile_NonExistingProfile_NothingReturned()
+        {
+            // ARRANGE
+            // ACT
+            var untracktedProfile = await _profileDBAccess.GetUntrackedReferenceOfProfile(500, default);
+
+            // ASSERT
+            untracktedProfile.Should().BeNull();
         }
 
         [Fact]
         public async Task SaveProfile_X_X()
         {
             // ARRANGE
+            var profile = TestData.CreateNewCompleteTestProfile();
 
             // ACT
-            //await _profileDBAccess.SaveProfile();
+            await _profileDBAccess.SaveProfile(profile, default);
 
             // ASSERT
+            _appDbContext.Profiles.SingleOrDefault().Should().BeEquivalentTo(profile);
         }
 
         [Fact]
         public async Task UpdateLocationConfig_X_X()
         {
             // ARRANGE
+            var profile = TestData.CreateNewCompleteTestProfile();
+            await _appDbContext.Profiles.AddAsync(profile);
+            await _appDbContext.SaveChangesAsync();
+
+            List<(ECalculationSource CalculationSource, BaseLocationData LocationData)> values =
+                [
+                    (ECalculationSource.Fazilet, new FaziletLocationData { CountryName = "DeutschlandYeah", CityName = "BerlinYeah" })
+                ];
 
             // ACT
-            //await _profileDBAccess.UpdateLocationConfig();
+            await _profileDBAccess.UpdateLocationConfig(profile, "Berlin", values, default);
 
             // ASSERT
+            profile.LocationConfigs.Should().HaveCount(1);
+            profile.LocationConfigs.First().LocationData.Should().Be(values[0].LocationData);
         }
 
         [Fact]
         public async Task UpdateTimeConfig_X_X()
         {
             // ARRANGE
+            var profile = TestData.CreateNewCompleteTestProfile();
+            await _appDbContext.Profiles.AddAsync(profile);
+            await _appDbContext.SaveChangesAsync();
+
+            var genericSettingConfiguration = new GenericSettingConfiguration
+            {
+                Source = ECalculationSource.Muwaqqit,
+                TimeType = ETimeType.FajrEnd,
+                MinuteAdjustment = 11,
+                IsTimeShown = false
+            };
 
             // ACT
-            //await _profileDBAccess.UpdateTimeConfig();
+            await _profileDBAccess.UpdateTimeConfig(profile, ETimeType.FajrEnd, genericSettingConfiguration, default);
 
             // ASSERT
+            profile.TimeConfigs.Should().Contain(x => x.CalculationConfiguration.Equals(genericSettingConfiguration));
+            profile.TimeConfigs.First(x => x.CalculationConfiguration.Equals(genericSettingConfiguration)).CalculationConfiguration.Should().BeEquivalentTo(genericSettingConfiguration);
         }
     }
 }

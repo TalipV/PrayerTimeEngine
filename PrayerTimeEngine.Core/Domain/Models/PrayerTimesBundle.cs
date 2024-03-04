@@ -31,8 +31,7 @@ namespace PrayerTimeEngine.Core.Domain.Models
             if (obj is not PrayerTimesBundle otherPrayerTimeBundle)
                 return false;
 
-            return
-                this.Fajr.Equals(otherPrayerTimeBundle.Fajr)
+            return this.Fajr.Equals(otherPrayerTimeBundle.Fajr)
                 && this.Duha.Equals(otherPrayerTimeBundle.Duha)
                 && this.Dhuhr.Equals(otherPrayerTimeBundle.Dhuhr)
                 && this.Asr.Equals(otherPrayerTimeBundle.Asr)

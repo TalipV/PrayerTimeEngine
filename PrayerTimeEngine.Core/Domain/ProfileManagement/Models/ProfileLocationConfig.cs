@@ -18,8 +18,7 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Models
             if (obj is not ProfileLocationConfig otherLocationConfig)
                 return false;
 
-            return
-                ID == otherLocationConfig.ID
+            return ID == otherLocationConfig.ID
                 && ProfileID == otherLocationConfig.ProfileID
                 && CalculationSource == otherLocationConfig.CalculationSource
                 && LocationData.Equals(otherLocationConfig.LocationData);
