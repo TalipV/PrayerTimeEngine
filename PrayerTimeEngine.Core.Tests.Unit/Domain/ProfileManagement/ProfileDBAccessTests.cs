@@ -2,12 +2,8 @@
 using PrayerTimeEngine.Core.Data.EntityFramework;
 using PrayerTimeEngine.Core.Tests.Common;
 using FluentAssertions;
-using PrayerTimeEngine.Core.Domain.ProfileManagement.Models;
-using FluentAssertions.Equivalency;
-using Microsoft.EntityFrameworkCore;
 using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Domain.Models;
-using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Models;
 using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Models;
 
 namespace PrayerTimeEngine.Core.Tests.Unit.Domain.ProfileManagement
@@ -23,7 +19,10 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.ProfileManagement
             _profileDBAccess = new ProfileDBAccess(_appDbContext);
         }
 
+        #region GetProfiles
+
         [Fact]
+        [Trait("Method", "GetProfiles")]
         public async Task GetProfiles_SavedThreeDifferentProfiles_RetrievedNormally()
         {
             // ARRANGE
@@ -45,7 +44,12 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.ProfileManagement
             profiles.FirstOrDefault(x => x.ID == 3).Should().BeEquivalentTo(profile3);
         }
 
+        #endregion GetProfiles
+
+        #region GetUntrackedReferenceOfProfile
+
         [Fact]
+        [Trait("Method", "GetUntrackedReferenceOfProfile")]
         public async Task GetUntrackedReferenceOfProfile_ExistingProfile_ProfileRetrieved()
         {
             // ARRANGE
@@ -63,6 +67,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.ProfileManagement
         }        
         
         [Fact]
+        [Trait("Method", "GetUntrackedReferenceOfProfile")]
         public async Task GetUntrackedReferenceOfProfile_NonExistingProfile_NothingReturned()
         {
             // ARRANGE
@@ -73,8 +78,13 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.ProfileManagement
             untracktedProfile.Should().BeNull();
         }
 
+        #endregion GetUntrackedReferenceOfProfile
+
+        #region SaveProfile
+
         [Fact]
-        public async Task SaveProfile_X_X()
+        [Trait("Method", "SaveProfile")]
+        public async Task SaveProfile_BasicProfile_SavedInDb()
         {
             // ARRANGE
             var profile = TestData.CreateNewCompleteTestProfile();
@@ -86,8 +96,13 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.ProfileManagement
             _appDbContext.Profiles.SingleOrDefault().Should().BeEquivalentTo(profile);
         }
 
+        #endregion SaveProfile
+
+        #region UpdateLocationConfig
+
         [Fact]
-        public async Task UpdateLocationConfig_X_X()
+        [Trait("Method", "UpdateLocationConfig")]
+        public async Task UpdateLocationConfig_SingleLocation_OnlySingleLocationInProfile()
         {
             // ARRANGE
             var profile = TestData.CreateNewCompleteTestProfile();
@@ -107,8 +122,13 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.ProfileManagement
             profile.LocationConfigs.First().LocationData.Should().Be(values[0].LocationData);
         }
 
+        #endregion UpdateLocationConfig
+
+        #region UpdateTimeConfig
+
         [Fact]
-        public async Task UpdateTimeConfig_X_X()
+        [Trait("Method", "UpdateTimeConfig")]
+        public async Task UpdateTimeConfig_SingleUpdate_UpdatedAsExpected()
         {
             // ARRANGE
             var profile = TestData.CreateNewCompleteTestProfile();
@@ -130,5 +150,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.ProfileManagement
             profile.TimeConfigs.Should().Contain(x => x.CalculationConfiguration.Equals(genericSettingConfiguration));
             profile.TimeConfigs.First(x => x.CalculationConfiguration.Equals(genericSettingConfiguration)).CalculationConfiguration.Should().BeEquivalentTo(genericSettingConfiguration);
         }
+
+        #endregion UpdateTimeConfig
     }
 }
