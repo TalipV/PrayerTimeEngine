@@ -38,11 +38,14 @@ public partial class DatabaseTablesPage : ContentPage
 
         foreach (PropertyInfo prop in propertyInfos)
         {
+            // TODO FIX... someday
+#pragma warning disable CS0618 // Type or member is obsolete
             var dataGridColumn = new DataGridColumn
             {
                 Title = prop.Name,
                 Binding = new Binding(prop.Name)
             };
+#pragma warning restore CS0618 // Type or member is obsolete
             dataGrid.Columns.Add(dataGridColumn);
         }
 

@@ -70,5 +70,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-
+  
+  <ItemGroup>
+    <Compile Include="..\SharedGlobalSuppressions.cs" Link="Properties\SharedGlobalSuppressions.cs" />
+  </ItemGroup>
+  
 </Project>

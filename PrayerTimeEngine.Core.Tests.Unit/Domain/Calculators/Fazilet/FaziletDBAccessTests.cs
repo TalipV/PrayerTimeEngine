@@ -59,8 +59,8 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Fazilet
             var gerCity1 = new FaziletCity { CountryID = germany.ID, Name = "Berlin", Country = germany };
             var gerCity2 = new FaziletCity { CountryID = germany.ID, Name = "Hamburg", Country = germany };
             var autCity1 = new FaziletCity { CountryID = austria.ID, Name = "Wien", Country = austria };
-            germany.Cities = new List<FaziletCity> { gerCity1, gerCity2 };
-            austria.Cities = new List<FaziletCity> { autCity1 };
+            germany.Cities = [gerCity1, gerCity2];
+            austria.Cities = [autCity1];
             await _appDbContext.FaziletCountries.AddAsync(germany);
             await _appDbContext.FaziletCountries.AddAsync(austria);
             await _appDbContext.SaveChangesAsync();
@@ -102,7 +102,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Fazilet
             var germany = new FaziletCountry { ID = 1, Name = "Deutschland" };
             var gerCity1 = new FaziletCity { CountryID = germany.ID, Name = "Berlin", Country = germany };
             var gerCity2 = new FaziletCity { CountryID = germany.ID, Name = "Hamburg", Country = germany };
-            germany.Cities = new List<FaziletCity> { gerCity1, gerCity2 };
+            germany.Cities = [gerCity1, gerCity2];
             await _appDbContext.FaziletCountries.AddAsync(germany);
             await _appDbContext.SaveChangesAsync();
 
@@ -117,14 +117,14 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Fazilet
         public async Task GetTimesByDateAndCityID_DifferentCitiesAndTimes_FindCorrectOne()
         {
             // ARRANGE
-            LocalDate date = new LocalDate(2023, 1, 5);
+            var date = new LocalDate(2023, 1, 5);
             ZonedDateTime dateInUTC = date.AtStartOfDayInZone(DateTimeZone.Utc);
             var germany = new FaziletCountry { ID = 1, Name = "Deutschland" };
             var gerCity1 = new FaziletCity { ID = 1, CountryID = germany.ID, Name = "Berlin", Country = germany };
             var gerCity2 = new FaziletCity { ID = 2, CountryID = germany.ID, Name = "Hamburg", Country = germany };
-            germany.Cities = new List<FaziletCity> { gerCity1, gerCity2 };
+            germany.Cities = [gerCity1, gerCity2];
 
-            FaziletPrayerTimes city1Times1 = new FaziletPrayerTimes
+            var city1Times1 = new FaziletPrayerTimes
             {
                 CityID = gerCity1.ID,
                 Date = date,
@@ -137,7 +137,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Fazilet
                 Isha = dateInUTC.PlusHours(20),
             };
 
-            FaziletPrayerTimes city1Times2 = new FaziletPrayerTimes
+            var city1Times2 = new FaziletPrayerTimes
             {
                 CityID = gerCity1.ID,
                 Date = date.PlusDays(1),
@@ -150,7 +150,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Fazilet
                 Isha = dateInUTC.PlusHours(24 + 23),
             };
 
-            FaziletPrayerTimes city2Times1 = new FaziletPrayerTimes
+            var city2Times1 = new FaziletPrayerTimes
             {
                 CityID = gerCity2.ID,
                 Date = date,
@@ -181,14 +181,14 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Fazilet
         public async Task GetTimesByDateAndCityID_FindForUnknownCity_ReturnsNull()
         {
             // ARRANGE
-            LocalDate date = new LocalDate(2023, 1, 5);
+            var date = new LocalDate(2023, 1, 5);
             ZonedDateTime dateInUTC = date.AtStartOfDayInZone(DateTimeZone.Utc);
             var germany = new FaziletCountry { ID = 1, Name = "Deutschland" };
             var gerCity1 = new FaziletCity { ID = 1, CountryID = germany.ID, Name = "Berlin", Country = germany };
             var gerCity2 = new FaziletCity { ID = 2, CountryID = germany.ID, Name = "Hamburg", Country = germany };
-            germany.Cities = new List<FaziletCity> { gerCity1, gerCity2 };
+            germany.Cities = [gerCity1, gerCity2];
 
-            FaziletPrayerTimes city1Times1 = new FaziletPrayerTimes
+            var city1Times1 = new FaziletPrayerTimes
             {
                 CityID = gerCity1.ID,
                 Date = date,
@@ -201,7 +201,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Fazilet
                 Isha = dateInUTC.PlusHours(20),
             };
 
-            FaziletPrayerTimes city1Times2 = new FaziletPrayerTimes
+            var city1Times2 = new FaziletPrayerTimes
             {
                 CityID = gerCity1.ID,
                 Date = date.PlusDays(1),
@@ -214,7 +214,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Fazilet
                 Isha = dateInUTC.PlusHours(24 + 23),
             };
 
-            FaziletPrayerTimes city2Times1 = new FaziletPrayerTimes
+            var city2Times1 = new FaziletPrayerTimes
             {
                 CityID = gerCity2.ID,
                 Date = date,
@@ -229,6 +229,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Fazilet
 
             await _appDbContext.FaziletCountries.AddAsync(germany);
             await _appDbContext.FaziletPrayerTimes.AddAsync(city1Times1);
+            await _appDbContext.FaziletPrayerTimes.AddAsync(city1Times2);
             await _appDbContext.FaziletPrayerTimes.AddAsync(city2Times1);
             await _appDbContext.SaveChangesAsync();
 
@@ -273,15 +274,15 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Fazilet
             await _appDbContext.FaziletCountries.AddAsync(austria);
             await _appDbContext.SaveChangesAsync();
 
-            var gerCities = new List<FaziletCity>
-            {
+            List<FaziletCity> gerCities =
+            [
                 new FaziletCity { ID = 1, CountryID = 1, Name = "Berlin", Country = germany },
                 new FaziletCity { ID = 2, CountryID = 1, Name = "Köln", Country = germany }
-            };
-            var autCities = new List<FaziletCity>
-            {
+            ];
+            List<FaziletCity> autCities =
+            [
                 new FaziletCity { ID = 3, CountryID = 2, Name = "Wien", Country = austria }
-            };
+            ];
 
             // ACT
             await _faziletDBAccess.InsertCities(gerCities.ToDictionary(x => x.Name, x => x.ID), 1, default);
@@ -302,19 +303,19 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Fazilet
         public async Task InsertFaziletPrayerTimes_InsertThreeNewTimes_AllThreeInserted()
         {
             // ARRANGE
-            LocalDate date = new LocalDate(2023, 1, 1);
+            var date = new LocalDate(2023, 1, 1);
             ZonedDateTime dateInUTC = date.AtStartOfDayInZone(DateTimeZone.Utc);
             var germany = new FaziletCountry { ID = 1, Name = "Deutschland" };
-            germany.Cities = new List<FaziletCity>
-        {
-            new FaziletCity { ID = 1, CountryID = 1, Name = "Berlin", Country = germany },
-            new FaziletCity { ID = 2, CountryID = 1, Name = "Köln", Country = germany }
-        };
+            germany.Cities =
+            [
+                new FaziletCity { ID = 1, CountryID = 1, Name = "Berlin", Country = germany },
+                new FaziletCity { ID = 2, CountryID = 1, Name = "Köln", Country = germany }
+            ];
             var austria = new FaziletCountry { ID = 2, Name = "Österreich" };
-            austria.Cities = new List<FaziletCity>
-        {
-            new FaziletCity { ID = 3, CountryID = 2, Name = "Wien", Country = austria }
-        };
+            austria.Cities =
+            [
+                new FaziletCity { ID = 3, CountryID = 2, Name = "Wien", Country = austria }
+            ];
 
             await _appDbContext.FaziletCountries.AddAsync(germany);
             await _appDbContext.FaziletCountries.AddAsync(austria);

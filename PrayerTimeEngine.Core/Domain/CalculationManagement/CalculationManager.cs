@@ -87,7 +87,7 @@ namespace PrayerTimeEngine.Core.Domain.CalculationManagement
             foreach (var timeConfigsByCalcSource in profileService.GetActiveComplexTimeConfigs(profile).GroupBy(x => x.Source))
             {
                 ECalculationSource calculationSource = timeConfigsByCalcSource.Key;
-                List<GenericSettingConfiguration> configs = timeConfigsByCalcSource.ToList();
+                List<GenericSettingConfiguration> configs = [.. timeConfigsByCalcSource];
 
                 BaseLocationData locationData = profileService.GetLocationConfig(profile, calculationSource);
                 IPrayerTimeCalculator calculationSourceCalculator = prayerTimeServiceFactory.GetPrayerTimeCalculatorByCalculationSource(calculationSource);

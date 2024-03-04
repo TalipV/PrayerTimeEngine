@@ -85,9 +85,11 @@ namespace PrayerTimeEngine
 
         private void setCustomSizes()
         {
-#if WINDOWS
-            return;
-#endif
+            if (OperatingSystem.IsWindows())
+            {
+                return;
+            }
+
             // Large: Galaxy S22 Ultra, iPhone 14 Pro Max
             // Medium: Google Pixel 5
             // ************************

@@ -153,7 +153,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
                 return [];
             }
 
-            return calculationSources.ToList();
+            return [.. calculationSources];
         }
 
         private List<int> getMinuteAdjustmentSource()

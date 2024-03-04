@@ -59,8 +59,8 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
             var gerCity1 = new SemerkandCity { CountryID = germany.ID, Name = "Berlin", Country = germany};
             var gerCity2 = new SemerkandCity { CountryID = germany.ID, Name = "Hamburg", Country = germany};
             var autCity1 = new SemerkandCity { CountryID = austria.ID, Name = "Wien", Country = austria};
-            germany.Cities = new List<SemerkandCity> { gerCity1, gerCity2 };
-            austria.Cities = new List<SemerkandCity> { autCity1 };
+            germany.Cities = [gerCity1, gerCity2];
+            austria.Cities = [autCity1];
             await _appDbContext.SemerkandCountries.AddAsync(germany);
             await _appDbContext.SemerkandCountries.AddAsync(austria);
             await _appDbContext.SaveChangesAsync();
@@ -102,7 +102,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
             var germany = new SemerkandCountry { ID = 1, Name = "Deutschland" };
             var gerCity1 = new SemerkandCity { CountryID = germany.ID, Name = "Berlin", Country = germany};
             var gerCity2 = new SemerkandCity { CountryID = germany.ID, Name = "Hamburg", Country = germany};
-            germany.Cities = new List<SemerkandCity> { gerCity1, gerCity2 };
+            germany.Cities = [gerCity1, gerCity2];
             await _appDbContext.SemerkandCountries.AddAsync(germany);
             await _appDbContext.SaveChangesAsync();
             
@@ -117,14 +117,14 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
         public async Task GetTimesByDateAndCityID_DifferentCitiesAndTimes_FindCorrectOne()
         {
             // ARRANGE
-            LocalDate date = new LocalDate(2023, 1, 5);
+            var date = new LocalDate(2023, 1, 5);
             ZonedDateTime dateInUTC = date.AtStartOfDayInZone(DateTimeZone.Utc);
             var germany = new SemerkandCountry { ID = 1, Name = "Deutschland" };
             var gerCity1 = new SemerkandCity { ID = 1, CountryID = germany.ID, Name = "Berlin", Country = germany};
             var gerCity2 = new SemerkandCity { ID = 2, CountryID = germany.ID, Name = "Hamburg", Country = germany};
-            germany.Cities = new List<SemerkandCity> { gerCity1, gerCity2 };
+            germany.Cities = [gerCity1, gerCity2];
 
-            SemerkandPrayerTimes city1Times1 = new SemerkandPrayerTimes
+            var city1Times1 = new SemerkandPrayerTimes
             {
                 CityID = gerCity1.ID,
                 DayOfYear = 5,
@@ -137,7 +137,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
                 Isha = dateInUTC.PlusHours(20),
             };
             
-            SemerkandPrayerTimes city1Times2 = new SemerkandPrayerTimes
+            var city1Times2 = new SemerkandPrayerTimes
             {
                 CityID = gerCity1.ID,
                 DayOfYear = 6,
@@ -150,7 +150,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
                 Isha = dateInUTC.PlusHours(24 + 23),
             };
             
-            SemerkandPrayerTimes city2Times1 = new SemerkandPrayerTimes
+            var city2Times1 = new SemerkandPrayerTimes
             {
                 CityID = gerCity2.ID,
                 DayOfYear = 5,
@@ -181,14 +181,14 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
         public async Task GetTimesByDateAndCityID_FindForUnknownCity_ReturnsNull()
         {
             // ARRANGE
-            LocalDate date = new LocalDate(2023, 1, 5);
+            var date = new LocalDate(2023, 1, 5);
             ZonedDateTime dateInUTC = date.AtStartOfDayInZone(DateTimeZone.Utc);
             var germany = new SemerkandCountry { ID = 1, Name = "Deutschland" };
             var gerCity1 = new SemerkandCity { ID = 1, CountryID = germany.ID, Name = "Berlin", Country = germany};
             var gerCity2 = new SemerkandCity { ID = 2, CountryID = germany.ID, Name = "Hamburg", Country = germany};
-            germany.Cities = new List<SemerkandCity> { gerCity1, gerCity2 };
+            germany.Cities = [gerCity1, gerCity2];
 
-            SemerkandPrayerTimes city1Times1 = new SemerkandPrayerTimes
+            var city1Times1 = new SemerkandPrayerTimes
             {
                 CityID = gerCity1.ID,
                 DayOfYear = 5,
@@ -200,8 +200,8 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
                 Maghrib = dateInUTC.PlusHours(18),
                 Isha = dateInUTC.PlusHours(20),
             };
-            
-            SemerkandPrayerTimes city1Times2 = new SemerkandPrayerTimes
+
+            var city1Times2 = new SemerkandPrayerTimes
             {
                 CityID = gerCity1.ID,
                 DayOfYear = 6,
@@ -214,7 +214,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
                 Isha = dateInUTC.PlusHours(24 + 23),
             };
             
-            SemerkandPrayerTimes city2Times1 = new SemerkandPrayerTimes
+            var city2Times1 = new SemerkandPrayerTimes
             {
                 CityID = gerCity2.ID,
                 DayOfYear = 5,
@@ -229,6 +229,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
             
             await _appDbContext.SemerkandCountries.AddAsync(germany);
             await _appDbContext.SemerkandPrayerTimes.AddAsync(city1Times1);
+            await _appDbContext.SemerkandPrayerTimes.AddAsync(city1Times2);
             await _appDbContext.SemerkandPrayerTimes.AddAsync(city2Times1);
             await _appDbContext.SaveChangesAsync();
             
@@ -272,15 +273,15 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
             await _appDbContext.SemerkandCountries.AddAsync(austria);
             await _appDbContext.SaveChangesAsync();
 
-            var gerCities = new List<SemerkandCity>
-            {
+            List<SemerkandCity> gerCities =
+            [
                 new SemerkandCity { ID = 1, CountryID = 1, Name = "Berlin", Country = germany },
                 new SemerkandCity { ID = 2, CountryID = 1, Name = "Köln", Country = germany }
-            };
-            var autCities = new List<SemerkandCity>
-            {
+            ];
+            List<SemerkandCity> autCities =
+            [
                 new SemerkandCity { ID = 3, CountryID = 2, Name = "Wien", Country = austria }
-            };
+            ];
 
             // ACT
             await _semerkandDBAccess.InsertCities(gerCities.ToDictionary(x => x.Name, x => x.ID), 1, default);
@@ -301,19 +302,30 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
         public async Task InsertSemerkandPrayerTimes_InsertThreeNewTimes_AllThreeInserted()
         {
             // ARRANGE
-            LocalDate date = new LocalDate(2023, 1, 1);
+            var date = new LocalDate(2023, 1, 1);
             ZonedDateTime dateInUTC = date.AtStartOfDayInZone(DateTimeZone.Utc);
-            var germany = new SemerkandCountry { ID = 1, Name = "Deutschland" };
-            germany.Cities = new List<SemerkandCity>
-            {
-                new SemerkandCity { ID = 1, CountryID = 1, Name = "Berlin", Country = germany },
-                new SemerkandCity { ID = 2, CountryID = 1, Name = "Köln", Country = germany }
-            };
-            var austria = new SemerkandCountry { ID = 2, Name = "Österreich" };
-            austria.Cities = new List<SemerkandCity>
-            {
-                new SemerkandCity { ID = 3, CountryID = 2, Name = "Wien", Country = austria }
-            };
+            var germany = 
+                new SemerkandCountry 
+                { 
+                    ID = 1, 
+                    Name = "Deutschland"
+                };
+            germany.Cities =
+                [
+                    new SemerkandCity { ID = 1, CountryID = 1, Name = "Berlin", Country = germany },
+                    new SemerkandCity { ID = 2, CountryID = 1, Name = "Köln", Country = germany }
+                ];
+
+            var austria = 
+                new SemerkandCountry 
+                { 
+                    ID = 2, 
+                    Name = "Österreich"
+                };
+            austria.Cities =
+                [
+                    new SemerkandCity { ID = 3, CountryID = 2, Name = "Wien", Country = austria }
+                ];
 
             await _appDbContext.SemerkandCountries.AddAsync(germany);
             await _appDbContext.SemerkandCountries.AddAsync(austria);

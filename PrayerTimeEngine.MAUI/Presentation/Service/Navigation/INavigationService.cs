@@ -17,7 +17,7 @@ namespace PrayerTimeEngine.Presentation.Service.Navigation
         public NavigationService(IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
-            _mapping = new Dictionary<Type, Type>();
+            _mapping = [];
 
             CreatePageViewModelMappings();
         }
