@@ -1,8 +1,8 @@
-﻿using Newtonsoft.Json.Linq;
-using NodaTime;
+﻿using NodaTime;
 using NodaTime.Text;
 using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Interfaces;
 using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Models;
+using System.Text.Json;
 
 namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
 {
@@ -19,13 +19,13 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
             HttpResponseMessage response = await httpClient.GetAsync(GET_COUNTRIES_URL, cancellationToken).ConfigureAwait(false);
             response.EnsureSuccessStatusCode();
 
-            string json = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
-            JObject jObject = JObject.Parse(json);
+            Stream jsonStream = await response.Content.ReadAsStreamAsync(cancellationToken);
+            JsonElement mainJson = (await JsonDocument.ParseAsync(jsonStream, cancellationToken: cancellationToken)).RootElement;
 
-            foreach (JObject country in ((JArray)jObject["ulkeler"]).Cast<JObject>())
+            foreach (JsonElement countryJson in mainJson.GetProperty("ulkeler").EnumerateArray())
             {
-                string countryName = (string)country["adi"];
-                int countryId = (int)country["id"];
+                string countryName = countryJson.GetProperty("adi").GetString();
+                int countryId = countryJson.GetProperty("id").GetInt32();
                 countries.Add(countryName, countryId);
             }
 
@@ -41,12 +41,13 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
             HttpResponseMessage response = await httpClient.GetAsync(GET_CITIES_BY_COUNTRY_URL + countryID, cancellationToken).ConfigureAwait(false);
             response.EnsureSuccessStatusCode();
 
-            string json = await response.Content.ReadAsStringAsync(cancellationToken);
+            Stream jsonStream = await response.Content.ReadAsStreamAsync(cancellationToken);
+            JsonElement mainJson = (await JsonDocument.ParseAsync(jsonStream, cancellationToken: cancellationToken)).RootElement;
 
-            foreach (JObject city in JArray.Parse(json).Cast<JObject>())
+            foreach (JsonElement cityJson in mainJson.EnumerateArray())
             {
-                string cityName = (string)city["adi"];
-                int cityId = (int)city["id"];
+                string cityName = cityJson.GetProperty("adi").GetString();
+                int cityId = cityJson.GetProperty("id").GetInt32();
                 cities.Add(cityName, cityId);
             }
 
@@ -67,27 +68,26 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
             string url = string.Format(GET_TIMES_BY_CITY_URL, cityID);
             HttpResponseMessage response = await httpClient.GetAsync(url, cancellationToken).ConfigureAwait(false);
 
-            string json = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
-            JObject jObject = JObject.Parse(json);
-            JArray timesJArray = (JArray)jObject["vakitler"];
+            Stream jsonStream = await response.Content.ReadAsStreamAsync(cancellationToken);
+            JsonElement mainJson = (await JsonDocument.ParseAsync(jsonStream, cancellationToken: cancellationToken)).RootElement;
 
-            string timeZoneName = jObject.GetValue("bolge_saatdilimi").Value<string>();
+            string timeZoneName = mainJson.GetProperty("bolge_saatdilimi").GetString();
             DateTimeZone timeZone = DateTimeZoneProviders.Tzdb[timeZoneName];
 
-            foreach (JObject timesJObject in timesJArray.Cast<JObject>())
+            foreach (JsonElement timesJson in mainJson.GetProperty("vakitler").EnumerateArray())
             {
                 prayerTimesList.Add(
                     new FaziletPrayerTimes
                     {
                         CityID = cityID,
-                        Imsak = getZonedDateTime(timeZone, (string)timesJObject["imsak"][0]["tarih"]),
-                        Fajr = getZonedDateTime(timeZone, (string)timesJObject["sabah"][0]["tarih"]),
-                        Shuruq = getZonedDateTime(timeZone, (string)timesJObject["gunes"][0]["tarih"]),
-                        Dhuhr = getZonedDateTime(timeZone, (string)timesJObject["ogle"][0]["tarih"]),
-                        Asr = getZonedDateTime(timeZone, (string)timesJObject["ikindi"][0]["tarih"]),
-                        Maghrib = getZonedDateTime(timeZone, (string)timesJObject["aksam"][0]["tarih"]),
-                        Isha = getZonedDateTime(timeZone, (string)timesJObject["yatsi"][0]["tarih"]),
-                        Date = getZonedDateTime(timeZone, (string)timesJObject["ogle"][0]["tarih"]).Date
+                        Imsak = getZonedDateTime(timeZone, timesJson.GetProperty("imsak").EnumerateArray().First().GetProperty("tarih").GetString()),
+                        Fajr = getZonedDateTime(timeZone, timesJson.GetProperty("sabah").EnumerateArray().First().GetProperty("tarih").GetString()),
+                        Shuruq = getZonedDateTime(timeZone, timesJson.GetProperty("gunes").EnumerateArray().First().GetProperty("tarih").GetString()),
+                        Dhuhr = getZonedDateTime(timeZone, timesJson.GetProperty("ogle").EnumerateArray().First().GetProperty("tarih").GetString()),
+                        Asr = getZonedDateTime(timeZone, timesJson.GetProperty("ikindi").EnumerateArray().First().GetProperty("tarih").GetString()),
+                        Maghrib = getZonedDateTime(timeZone, timesJson.GetProperty("aksam").EnumerateArray().First().GetProperty("tarih").GetString()),
+                        Isha = getZonedDateTime(timeZone, timesJson.GetProperty("yatsi").EnumerateArray().First().GetProperty("tarih").GetString()),
+                        Date = getZonedDateTime(timeZone, timesJson.GetProperty("ogle").EnumerateArray().First().GetProperty("tarih").GetString()).Date
                     }
                 );
             }
@@ -97,11 +97,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
 
         private static ZonedDateTime getZonedDateTime(DateTimeZone timeZone, string timeStr)
         {
-            Instant instant = 
-                InstantPattern.CreateWithInvariantCulture("MM/dd/yyyy HH:mm:ss")
-                .Parse(timeStr)
-                .Value;
-
+            Instant instant = InstantPattern.ExtendedIso.Parse(timeStr).Value;
             return instant.InZone(timeZone);
         }
     }
