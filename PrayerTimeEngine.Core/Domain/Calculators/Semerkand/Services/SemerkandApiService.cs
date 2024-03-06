@@ -1,8 +1,8 @@
-﻿using Newtonsoft.Json.Linq;
-using NodaTime;
+﻿using NodaTime;
 using NodaTime.Text;
 using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Interfaces;
 using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Models;
+using System.Text.Json;
 
 namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
 {
@@ -14,18 +14,18 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
 
         public async Task<Dictionary<string, int>> GetCountries(CancellationToken cancellationToken)
         {
-            HttpResponseMessage response = await httpClient.GetAsync(GET_COUNTRIES_URL, cancellationToken).ConfigureAwait(false);
-            response.EnsureSuccessStatusCode();
-            string jsonCitiesString = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
-
             Dictionary<string, int> countriesByCountryID = [];
 
-            foreach (JToken item in JArray.Parse(jsonCitiesString))
-            {
-                var cityJSON = JObject.Parse(item.ToString());
+            HttpResponseMessage response = await httpClient.GetAsync(GET_COUNTRIES_URL, cancellationToken).ConfigureAwait(false);
+            response.EnsureSuccessStatusCode();
 
-                int id = cityJSON["Id"].Value<int>();
-                string name = cityJSON["Name"].Value<string>();
+            Stream jsonStream = await response.Content.ReadAsStreamAsync(cancellationToken);
+            JsonElement mainJson = (await JsonDocument.ParseAsync(jsonStream, cancellationToken: cancellationToken)).RootElement;
+
+            foreach (JsonElement item in mainJson.EnumerateArray())
+            {
+                int id = item.GetProperty("Id").GetInt32();
+                string name = item.GetProperty("Name").GetString();
 
                 countriesByCountryID[name] = id;
             }
@@ -37,6 +37,8 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
 
         public async Task<Dictionary<string, int>> GetCitiesByCountryID(int countryID, CancellationToken cancellationToken)
         {
+            Dictionary<string, int> citiesByCountryID = [];
+
             var content = new FormUrlEncodedContent(
             [
                 new KeyValuePair<string, string>("id", countryID.ToString())
@@ -44,16 +46,14 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
 
             HttpResponseMessage response = await httpClient.PostAsync(GET_CITIES_BY_COUNTRY_URL, content, cancellationToken).ConfigureAwait(false);
             response.EnsureSuccessStatusCode();
-            string jsonCitiesString = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+            
+            Stream jsonStream = await response.Content.ReadAsStreamAsync(cancellationToken);
+            JsonElement mainJson = (await JsonDocument.ParseAsync(jsonStream, cancellationToken: cancellationToken)).RootElement;
 
-            Dictionary<string, int> citiesByCountryID = [];
-
-            foreach (JToken item in JArray.Parse(jsonCitiesString))
+            foreach (JsonElement item in mainJson.EnumerateArray())
             {
-                var cityJSON = JObject.Parse(item.ToString());
-
-                int id = cityJSON["Id"].Value<int>();
-                string name = cityJSON["Name"].Value<string>();
+                int id = item.GetProperty("Id").GetInt32();
+                string name = item.GetProperty("Name").GetString();
 
                 citiesByCountryID[name] = id;
             }
@@ -67,6 +67,8 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
 
         public async Task<List<SemerkandPrayerTimes>> GetTimesByCityID(LocalDate date, string timezoneName, int cityID, CancellationToken cancellationToken)
         {
+            List<SemerkandPrayerTimes> prayerTimes = [];
+
             DateTimeZone dateTimeZone = DateTimeZoneProviders.Tzdb[timezoneName];
             string prayerTimesURL = string.Format(GET_TIMES_BY_CITY, cityID, date.Year);
 
@@ -79,13 +81,12 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
             // e.g. "*23:54" instead of "23:54"
             jsonPrayerTimesString = jsonPrayerTimesString.Replace("*", "");
 
-            JArray prayerTimesJArray = JArray.Parse(jsonPrayerTimesString);
+            Stream jsonStream = await response.Content.ReadAsStreamAsync(cancellationToken);
+            JsonElement mainJson = (await JsonDocument.ParseAsync(jsonStream, cancellationToken: cancellationToken)).RootElement;
 
-            List<SemerkandPrayerTimes> prayerTimes = [];
-
-            foreach (JObject prayerTimeJObject in prayerTimesJArray.Cast<JObject>())
+            foreach (JsonElement prayerTimeJson in mainJson.EnumerateArray())
             {
-                int currentDayOfYear = (int)prayerTimeJObject["DayOfYear"];
+                int currentDayOfYear = prayerTimeJson.GetProperty("DayOfYear").GetInt32();
                 LocalDate currentDate = new LocalDate(date.Year, 1, 1).PlusDays(currentDayOfYear - 1);
 
                 // ignore past and ignore what is after the necessary extent
@@ -98,12 +99,12 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
                     CityID = cityID,
                     Date = currentDate,
 
-                    Fajr = getZonedDateTime(dateTimeZone, currentDate, (string)prayerTimeJObject["Fajr"]),
-                    Shuruq = getZonedDateTime(dateTimeZone, currentDate, (string)prayerTimeJObject["Tulu"]),
-                    Dhuhr = getZonedDateTime(dateTimeZone, currentDate, (string)prayerTimeJObject["Zuhr"]),
-                    Asr = getZonedDateTime(dateTimeZone, currentDate, (string)prayerTimeJObject["Asr"]),
-                    Maghrib = getZonedDateTime(dateTimeZone, currentDate, (string)prayerTimeJObject["Maghrib"]),
-                    Isha = getZonedDateTime(dateTimeZone, currentDate, (string)prayerTimeJObject["Isha"])
+                    Fajr = getZonedDateTime(dateTimeZone, currentDate, prayerTimeJson.GetProperty("Fajr").GetString()),
+                    Shuruq = getZonedDateTime(dateTimeZone, currentDate, prayerTimeJson.GetProperty("Tulu").GetString()),
+                    Dhuhr = getZonedDateTime(dateTimeZone, currentDate, prayerTimeJson.GetProperty("Zuhr").GetString()),
+                    Asr = getZonedDateTime(dateTimeZone, currentDate, prayerTimeJson.GetProperty("Asr").GetString()),
+                    Maghrib = getZonedDateTime(dateTimeZone, currentDate, prayerTimeJson.GetProperty("Maghrib").GetString()),
+                    Isha = getZonedDateTime(dateTimeZone, currentDate, prayerTimeJson.GetProperty("Isha").GetString())
                 };
 
                 prayerTimes.Add(prayerTime);
