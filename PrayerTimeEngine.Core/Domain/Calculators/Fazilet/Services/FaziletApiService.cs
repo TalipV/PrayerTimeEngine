@@ -16,13 +16,12 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
         {
             Dictionary<string, int> countries = [];
 
-            HttpResponseMessage response = await httpClient.GetAsync(GET_COUNTRIES_URL, cancellationToken).ConfigureAwait(false);
+            using HttpResponseMessage response = await httpClient.GetAsync(GET_COUNTRIES_URL, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
             response.EnsureSuccessStatusCode();
+            using Stream jsonStream = await response.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
+            using JsonDocument jsonDocument = await JsonDocument.ParseAsync(jsonStream, cancellationToken: cancellationToken).ConfigureAwait(false);
 
-            Stream jsonStream = await response.Content.ReadAsStreamAsync(cancellationToken);
-            JsonElement mainJson = (await JsonDocument.ParseAsync(jsonStream, cancellationToken: cancellationToken)).RootElement;
-
-            foreach (JsonElement countryJson in mainJson.GetProperty("ulkeler").EnumerateArray())
+            foreach (JsonElement countryJson in jsonDocument.RootElement.GetProperty("ulkeler").EnumerateArray())
             {
                 string countryName = countryJson.GetProperty("adi").GetString();
                 int countryId = countryJson.GetProperty("id").GetInt32();
@@ -38,13 +37,11 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
         {
             Dictionary<string, int> cities = [];
 
-            HttpResponseMessage response = await httpClient.GetAsync(GET_CITIES_BY_COUNTRY_URL + countryID, cancellationToken).ConfigureAwait(false);
+            using HttpResponseMessage response = await httpClient.GetAsync(GET_CITIES_BY_COUNTRY_URL + countryID, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
             response.EnsureSuccessStatusCode();
+            using Stream jsonStream = await response.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
 
-            Stream jsonStream = await response.Content.ReadAsStreamAsync(cancellationToken);
-            JsonElement mainJson = (await JsonDocument.ParseAsync(jsonStream, cancellationToken: cancellationToken)).RootElement;
-
-            foreach (JsonElement cityJson in mainJson.EnumerateArray())
+            await foreach (JsonElement cityJson in JsonSerializer.DeserializeAsyncEnumerable<JsonElement>(jsonStream, cancellationToken: cancellationToken))
             {
                 string cityName = cityJson.GetProperty("adi").GetString();
                 int cityId = cityJson.GetProperty("id").GetInt32();
@@ -66,10 +63,10 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
             List<FaziletPrayerTimes> prayerTimesList = [];
 
             string url = string.Format(GET_TIMES_BY_CITY_URL, cityID);
-            HttpResponseMessage response = await httpClient.GetAsync(url, cancellationToken).ConfigureAwait(false);
-
-            Stream jsonStream = await response.Content.ReadAsStreamAsync(cancellationToken);
-            JsonElement mainJson = (await JsonDocument.ParseAsync(jsonStream, cancellationToken: cancellationToken)).RootElement;
+            using HttpResponseMessage response = await httpClient.GetAsync(url, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+            using Stream jsonStream = await response.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
+            using JsonDocument jsonDocument = await JsonDocument.ParseAsync(jsonStream, cancellationToken: cancellationToken).ConfigureAwait(false);
+            JsonElement mainJson = jsonDocument.RootElement;
 
             string timeZoneName = mainJson.GetProperty("bolge_saatdilimi").GetString();
             DateTimeZone timeZone = DateTimeZoneProviders.Tzdb[timeZoneName];

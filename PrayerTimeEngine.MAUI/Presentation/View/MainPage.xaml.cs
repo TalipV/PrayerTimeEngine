@@ -105,7 +105,7 @@ namespace PrayerTimeEngine
             }.ForEach(label =>
             {
                 label.FontSize =
-                    OnScreenSizeHelpers.OnScreenSize<double>(
+                    OnScreenSizeHelpers.Instance.GetScreenSizeValue<double>(
                         defaultSize: 99,
                         extraLarge: 99,
                         large: 25,
@@ -122,7 +122,7 @@ namespace PrayerTimeEngine
             }.ForEach(label =>
             {
                 label.FontSize =
-                    OnScreenSizeHelpers.OnScreenSize<double>(
+                    OnScreenSizeHelpers.Instance.GetScreenSizeValue<double>(
                         defaultSize: 99,
                         extraLarge: 99,
                         large: 24,
@@ -139,7 +139,7 @@ namespace PrayerTimeEngine
             }.ForEach(label =>
             {
                 label.FontSize =
-                    OnScreenSizeHelpers.OnScreenSize<double>(
+                    OnScreenSizeHelpers.Instance.GetScreenSizeValue<double>(
                         defaultSize: 99,
                         extraLarge: 99,
                         large: 18,
@@ -159,7 +159,7 @@ namespace PrayerTimeEngine
             }.ForEach(label =>
             {
                 label.FontSize =
-                    OnScreenSizeHelpers.OnScreenSize<double>(
+                    OnScreenSizeHelpers.Instance.GetScreenSizeValue<double>(
                         defaultSize: 99,
                         extraLarge: 99,
                         large: 14,
@@ -179,7 +179,7 @@ namespace PrayerTimeEngine
             }.ForEach(label =>
             {
                 label.FontSize =
-                    OnScreenSizeHelpers.OnScreenSize<double>(
+                    OnScreenSizeHelpers.Instance.GetScreenSizeValue<double>(
                         defaultSize: 99,
                         extraLarge: 99,
                         large: 14,

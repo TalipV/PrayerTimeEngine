@@ -89,20 +89,20 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
         {
             static HttpResponseMessage handleRequestFunc(HttpRequestMessage request)
             {
-                string responseText =
+                Stream responseStream =
                     request.RequestUri.AbsoluteUri switch
                     {
-                        @"https://www.muwaqqit.com/api2.json?d=2023-07-30&ln=11.41337&lt=47.2803835&tz=Europe%2fVienna&fa=-12&ia=3.5&isn=-8&ea=-12" => File.ReadAllText(Path.Combine(BaseTest.TEST_DATA_FILE_PATH, "MuwaqqitTestData", "Muwaqqit_TestPrayerTimeData_20230730_Innsbruck_Config1.txt")),
-                        @"https://www.muwaqqit.com/api2.json?d=2023-07-30&ln=11.41337&lt=47.2803835&tz=Europe%2fVienna&fa=-7.5&ia=4.5&isn=-12&ea=-15.5" => File.ReadAllText(Path.Combine(BaseTest.TEST_DATA_FILE_PATH, "MuwaqqitTestData", "Muwaqqit_TestPrayerTimeData_20230730_Innsbruck_Config2.txt")),
-                        @"https://www.muwaqqit.com/api2.json?d=2023-07-30&ln=11.41337&lt=47.2803835&tz=Europe%2fVienna&fa=-4.5&ia=-12&isn=-12&ea=-12" => File.ReadAllText(Path.Combine(BaseTest.TEST_DATA_FILE_PATH, "MuwaqqitTestData", "Muwaqqit_TestPrayerTimeData_20230730_Innsbruck_Config3.txt")),
-                        @"https://www.muwaqqit.com/api2.json?d=2023-07-30&ln=11.41337&lt=47.2803835&tz=Europe%2fVienna&fa=-15&ia=-12&isn=-12&ea=-12" => File.ReadAllText(Path.Combine(BaseTest.TEST_DATA_FILE_PATH, "MuwaqqitTestData", "Muwaqqit_TestPrayerTimeData_20230730_Innsbruck_Config4.txt")),
+                        @"https://www.muwaqqit.com/api2.json?d=2023-07-30&ln=11.41337&lt=47.2803835&tz=Europe%2fVienna&fa=-12&ia=3.5&isn=-8&ea=-12" => File.OpenRead(Path.Combine(BaseTest.MUWAQQIT_TEST_DATA_FILE_PATH, "Muwaqqit_TestPrayerTimeData_20230730_Innsbruck_Config1.txt")),
+                        @"https://www.muwaqqit.com/api2.json?d=2023-07-30&ln=11.41337&lt=47.2803835&tz=Europe%2fVienna&fa=-7.5&ia=4.5&isn=-12&ea=-15.5" => File.OpenRead(Path.Combine(BaseTest.MUWAQQIT_TEST_DATA_FILE_PATH, "Muwaqqit_TestPrayerTimeData_20230730_Innsbruck_Config2.txt")),
+                        @"https://www.muwaqqit.com/api2.json?d=2023-07-30&ln=11.41337&lt=47.2803835&tz=Europe%2fVienna&fa=-4.5&ia=-12&isn=-12&ea=-12" => File.OpenRead(Path.Combine(BaseTest.MUWAQQIT_TEST_DATA_FILE_PATH, "Muwaqqit_TestPrayerTimeData_20230730_Innsbruck_Config3.txt")),
+                        @"https://www.muwaqqit.com/api2.json?d=2023-07-30&ln=11.41337&lt=47.2803835&tz=Europe%2fVienna&fa=-15&ia=-12&isn=-12&ea=-12" => File.OpenRead(Path.Combine(BaseTest.MUWAQQIT_TEST_DATA_FILE_PATH, "Muwaqqit_TestPrayerTimeData_20230730_Innsbruck_Config4.txt")),
                         _ => throw new Exception($"No response registered for URL: {request.RequestUri.AbsoluteUri}")
                     };
 
                 return new HttpResponseMessage
                 {
                     StatusCode = HttpStatusCode.OK,
-                    Content = new StringContent(responseText)
+                    Content = new StreamContent(responseStream)
                 };
             }
 
@@ -132,8 +132,9 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
         private static MuwaqqitPrayerTimeCalculator _muwaqqitPrayerTimeCalculator_DataFromDbStorage = null;
         private static MuwaqqitPrayerTimeCalculator _muwaqqitPrayerTimeCalculator_DataFromApi = null;
 
+#pragma warning disable CA1822 // Mark members as static
         [Benchmark]
-        public static ILookup<ICalculationPrayerTimes, ETimeType> MuwaqqitPrayerTimeCalculator_GetDataFromDb()
+        public ILookup<ICalculationPrayerTimes, ETimeType> MuwaqqitPrayerTimeCalculator_GetDataFromDb()
         {
             var result = _muwaqqitPrayerTimeCalculator_DataFromDbStorage.GetPrayerTimesAsync(
                 _localDate,
@@ -150,7 +151,7 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
         }
 
         [Benchmark]
-        public static ILookup<ICalculationPrayerTimes, ETimeType> MuwaqqitPrayerTimeCalculator_GetDataFromApi()
+        public ILookup<ICalculationPrayerTimes, ETimeType> MuwaqqitPrayerTimeCalculator_GetDataFromApi()
         {
             var result = _muwaqqitPrayerTimeCalculator_DataFromApi.GetPrayerTimesAsync(
                 _localDate,
@@ -165,6 +166,7 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
 
             return result;
         }
+#pragma warning restore CA1822 // Mark members as static
     }
 
 }
