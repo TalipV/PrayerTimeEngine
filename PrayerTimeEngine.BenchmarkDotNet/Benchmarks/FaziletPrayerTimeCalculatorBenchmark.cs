@@ -19,7 +19,7 @@ using NSubstitute.ReturnsExtensions;
 namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
 {
     [Config(typeof(BenchmarkConfig))]
-    [MemoryDiagnoser]
+    [MemoryDiagnoser(false)]
     public class FaziletPrayerTimeCalculatorBenchmark
     {
         #region data
@@ -86,21 +86,21 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
 
             HttpResponseMessage handleRequestFunc(HttpRequestMessage request)
             {
-                string responseText;
+                Stream responseStream;
 
                 if (request.RequestUri.AbsoluteUri == $@"{dummyBaseURL}/{FaziletApiService.GET_COUNTRIES_URL}")
-                    responseText = File.ReadAllText(Path.Combine(BaseTest.TEST_DATA_FILE_PATH, "FaziletTestData", "Fazilet_TestCountriesData.txt"));
+                    responseStream = File.OpenRead(Path.Combine(BaseTest.FAZILET_TEST_DATA_FILE_PATH, "Fazilet_TestCountriesData.txt"));
                 else if (request.RequestUri.AbsoluteUri == $@"{dummyBaseURL}/{FaziletApiService.GET_CITIES_BY_COUNTRY_URL}2")
-                    responseText = File.ReadAllText(Path.Combine(BaseTest.TEST_DATA_FILE_PATH, "FaziletTestData", "Fazilet_TestCityData_Austria.txt"));
+                    responseStream = File.OpenRead(Path.Combine(BaseTest.FAZILET_TEST_DATA_FILE_PATH, "Fazilet_TestCityData_Austria.txt"));
                 else if (request.RequestUri.AbsoluteUri == $@"{dummyBaseURL}/{string.Format(FaziletApiService.GET_TIMES_BY_CITY_URL, "92")}")
-                    responseText = File.ReadAllText(Path.Combine(BaseTest.TEST_DATA_FILE_PATH, "FaziletTestData", "Fazilet_TestPrayerTimeData_20230729_Innsbruck.txt"));
+                    responseStream = File.OpenRead(Path.Combine(BaseTest.FAZILET_TEST_DATA_FILE_PATH, "Fazilet_TestPrayerTimeData_20230729_Innsbruck.txt"));
                 else
                     throw new Exception($"No response registered for URL: {request.RequestUri.AbsoluteUri}");
 
                 return new HttpResponseMessage
                 {
                     StatusCode = HttpStatusCode.OK,
-                    Content = new StringContent(responseText)
+                    Content = new StreamContent(responseStream)
                 };
             }
 
@@ -130,8 +130,9 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
         private static FaziletPrayerTimeCalculator _faziletPrayerTimeCalculator_DataFromDbStorage = null;
         private static FaziletPrayerTimeCalculator _faziletPrayerTimeCalculator_DataFromApi = null;
 
+#pragma warning disable CA1822 // Mark members as static
         [Benchmark]
-        public static ILookup<ICalculationPrayerTimes, ETimeType> FaziletPrayerTimeCalculator_GetDataFromDb()
+        public ILookup<ICalculationPrayerTimes, ETimeType> FaziletPrayerTimeCalculator_GetDataFromDb()
         {
             var result = _faziletPrayerTimeCalculator_DataFromDbStorage.GetPrayerTimesAsync(
                 _localDate,
@@ -148,7 +149,7 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
         }
 
         [Benchmark]
-        public static ILookup<ICalculationPrayerTimes, ETimeType> FaziletPrayerTimeCalculator_GetDataFromApi()
+        public ILookup<ICalculationPrayerTimes, ETimeType> FaziletPrayerTimeCalculator_GetDataFromApi()
         {
             var result = _faziletPrayerTimeCalculator_DataFromApi.GetPrayerTimesAsync(
                 _localDate,
@@ -163,6 +164,7 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
 
             return result;
         }
+#pragma warning restore CA1822 // Mark members as static
     }
 
 }

@@ -8,7 +8,7 @@ namespace PrayerTimeEngine.BenchmarkDotNet
     {
         public BenchmarkConfig()
         {
-            AddJob(Job.MediumRun.WithToolchain(InProcessNoEmitToolchain.Instance)); 
+            AddJob(Job.MediumRun);
             //this.WithOption(ConfigOptions.DisableOptimizationsValidator, true);
         }
     }

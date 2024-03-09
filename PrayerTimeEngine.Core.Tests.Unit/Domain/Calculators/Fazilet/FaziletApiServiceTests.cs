@@ -25,16 +25,12 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Fazilet
             _mockHttpMessageHandler.HandleRequestFunc =
                 (request) =>
                 {
-                    string responseText =
-                        File.ReadAllText(
-                            Path.Combine(
-                                TEST_DATA_FILE_PATH,
-                                "FaziletTestData",
-                                "Fazilet_TestCountriesData.txt"));
+                    Stream responseStream = File.OpenRead(Path.Combine(FAZILET_TEST_DATA_FILE_PATH, "Fazilet_TestCountriesData.txt"));
+
                     return new HttpResponseMessage
                     {
                         StatusCode = HttpStatusCode.OK,
-                        Content = new StringContent(responseText)
+                        Content = new StreamContent(responseStream)
                     };
                 };
 
@@ -58,16 +54,12 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Fazilet
             _mockHttpMessageHandler.HandleRequestFunc =
                 (request) =>
                 {
-                    string responseText =
-                        File.ReadAllText(
-                            Path.Combine(
-                                TEST_DATA_FILE_PATH,
-                                "FaziletTestData",
-                                "Fazilet_TestCityData_Austria.txt"));
+                    Stream responseStream = File.OpenRead(Path.Combine(FAZILET_TEST_DATA_FILE_PATH, "Fazilet_TestCityData_Austria.txt"));
+
                     return new HttpResponseMessage
                     {
                         StatusCode = HttpStatusCode.OK,
-                        Content = new StringContent(responseText)
+                        Content = new StreamContent(responseStream)
                     };
                 };
 
@@ -93,16 +85,12 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Fazilet
             _mockHttpMessageHandler.HandleRequestFunc =
                 (request) =>
                 {
-                    string responseText =
-                        File.ReadAllText(
-                            Path.Combine(
-                                TEST_DATA_FILE_PATH,
-                                "FaziletTestData",
-                                "Fazilet_TestPrayerTimeData_20230729_Innsbruck.txt"));
+                    Stream responseStream = File.OpenRead(Path.Combine(FAZILET_TEST_DATA_FILE_PATH, "Fazilet_TestPrayerTimeData_20230729_Innsbruck.txt"));
+
                     return new HttpResponseMessage
                     {
                         StatusCode = HttpStatusCode.OK,
-                        Content = new StringContent(responseText)
+                        Content = new StreamContent(responseStream)
                     };
                 };
 

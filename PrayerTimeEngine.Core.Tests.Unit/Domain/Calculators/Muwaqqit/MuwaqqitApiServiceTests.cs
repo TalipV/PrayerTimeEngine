@@ -29,16 +29,12 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Muwaqqit
             _mockHttpMessageHandler.HandleRequestFunc =
                 (request) =>
                 {
-                    string responseText =
-                        File.ReadAllText(
-                            Path.Combine(
-                                TEST_DATA_FILE_PATH,
-                                "MuwaqqitTestData",
-                                "Muwaqqit_TestPrayerTimeData_20230730_Innsbruck_Config1.txt"));
+                    Stream responseStream = File.OpenRead(Path.Combine(MUWAQQIT_TEST_DATA_FILE_PATH, "Muwaqqit_TestPrayerTimeData_20230730_Innsbruck_Config1.txt"));
+
                     return new HttpResponseMessage
                     {
                         StatusCode = HttpStatusCode.OK,
-                        Content = new StringContent(responseText)
+                        Content = new StreamContent(responseStream)
                     };
                 };
 

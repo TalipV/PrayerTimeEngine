@@ -85,21 +85,21 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
         {
             static HttpResponseMessage handleRequestFunc(HttpRequestMessage request)
             {
-                string responseText;
+                Stream responseStream;
 
-                if (request.RequestUri.AbsoluteUri == $@"{SemerkandApiService.GET_COUNTRIES_URL}")
-                    responseText = File.ReadAllText(Path.Combine(BaseTest.TEST_DATA_FILE_PATH, "SemerkandTestData", "Semerkand_TestCountriesData.txt"));
-                else if (request.RequestUri.AbsoluteUri == $@"{SemerkandApiService.GET_CITIES_BY_COUNTRY_URL}")
-                    responseText = File.ReadAllText(Path.Combine(BaseTest.TEST_DATA_FILE_PATH, "SemerkandTestData", "Semerkand_TestCityData_Austria.txt"));
-                else if (request.RequestUri.AbsoluteUri == $@"{string.Format(SemerkandApiService.GET_TIMES_BY_CITY, "197", "2023")}")
-                    responseText = File.ReadAllText(Path.Combine(BaseTest.TEST_DATA_FILE_PATH, "SemerkandTestData", "Semerkand_TestPrayerTimeData_20230729_Innsbruck.txt"));
+                if (request.RequestUri.AbsoluteUri == SemerkandApiService.GET_COUNTRIES_URL)
+                    responseStream = File.OpenRead(Path.Combine(BaseTest.SEMERKAND_TEST_DATA_FILE_PATH, "Semerkand_TestCountriesData.txt"));
+                else if (request.RequestUri.AbsoluteUri == SemerkandApiService.GET_CITIES_BY_COUNTRY_URL)
+                    responseStream = File.OpenRead(Path.Combine(BaseTest.SEMERKAND_TEST_DATA_FILE_PATH, "Semerkand_TestCityData_Austria.txt"));
+                else if (request.RequestUri.AbsoluteUri == string.Format(SemerkandApiService.GET_TIMES_BY_CITY, "197", "2023"))
+                    responseStream = File.OpenRead(Path.Combine(BaseTest.SEMERKAND_TEST_DATA_FILE_PATH, "Semerkand_TestPrayerTimeData_20230729_Innsbruck.txt"));
                 else
                     throw new Exception($"No response registered for URL: {request.RequestUri.AbsoluteUri}");
 
                 return new HttpResponseMessage
                 {
                     StatusCode = HttpStatusCode.OK,
-                    Content = new StringContent(responseText)
+                    Content = new StreamContent(responseStream)
                 };
             }
 
@@ -129,8 +129,9 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
         private static SemerkandPrayerTimeCalculator _semerkandPrayerTimeCalculator_DataFromDbStorage = null;
         private static SemerkandPrayerTimeCalculator _semerkandPrayerTimeCalculator_DataFromApi = null;
 
+#pragma warning disable CA1822 // Mark members as static
         [Benchmark]
-        public static ILookup<ICalculationPrayerTimes, ETimeType> SemerkandPrayerTimeCalculator_GetDataFromDb()
+        public ILookup<ICalculationPrayerTimes, ETimeType> SemerkandPrayerTimeCalculator_GetDataFromDb()
         {
             var result = _semerkandPrayerTimeCalculator_DataFromDbStorage.GetPrayerTimesAsync(
                 _localDate,
@@ -147,7 +148,7 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
         }
 
         [Benchmark]
-        public static ILookup<ICalculationPrayerTimes, ETimeType> SemerkandPrayerTimeCalculator_GetDataFromApi()
+        public ILookup<ICalculationPrayerTimes, ETimeType> SemerkandPrayerTimeCalculator_GetDataFromApi()
         {
             var result = _semerkandPrayerTimeCalculator_DataFromApi.GetPrayerTimesAsync(
                 _localDate,
@@ -162,6 +163,7 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
 
             return result;
         }
+#pragma warning restore CA1822 // Mark members as static
     }
 
 }

@@ -25,16 +25,12 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
             _mockHttpMessageHandler.HandleRequestFunc =
                 (request) =>
                 {
-                    string responseText = 
-                        File.ReadAllText(
-                            Path.Combine(
-                                TEST_DATA_FILE_PATH, 
-                                "SemerkandTestData",
-                                "Semerkand_TestCountriesData.txt"));
+                    Stream responseStream = File.OpenRead(Path.Combine(SEMERKAND_TEST_DATA_FILE_PATH, "Semerkand_TestCountriesData.txt"));
+
                     return new HttpResponseMessage
                     {
                         StatusCode = HttpStatusCode.OK,
-                        Content = new StringContent(responseText)
+                        Content = new StreamContent(responseStream)
                     };
                 };
             
@@ -58,16 +54,12 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
             _mockHttpMessageHandler.HandleRequestFunc =
                 (request) =>
                 {
-                    string responseText = 
-                        File.ReadAllText(
-                            Path.Combine(
-                                TEST_DATA_FILE_PATH, 
-                                "SemerkandTestData",
-                                "Semerkand_TestCityData_Austria.txt"));
+                    Stream responseStream = File.OpenRead(Path.Combine(SEMERKAND_TEST_DATA_FILE_PATH, "Semerkand_TestCityData_Austria.txt"));
+
                     return new HttpResponseMessage
                     {
                         StatusCode = HttpStatusCode.OK,
-                        Content = new StringContent(responseText)
+                        Content = new StreamContent(responseStream)
                     };
                 };
             
@@ -93,16 +85,12 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
             _mockHttpMessageHandler.HandleRequestFunc =
                 (request) =>
                 {
-                    string responseText = 
-                        File.ReadAllText(
-                            Path.Combine(
-                                TEST_DATA_FILE_PATH, 
-                                "SemerkandTestData",
-                                "Semerkand_TestPrayerTimeData_20230729_Innsbruck.txt"));
+                    Stream responseStream = File.OpenRead(Path.Combine(SEMERKAND_TEST_DATA_FILE_PATH, "Semerkand_TestPrayerTimeData_20230729_Innsbruck.txt"));
+
                     return new HttpResponseMessage
                     {
                         StatusCode = HttpStatusCode.OK,
-                        Content = new StringContent(responseText)
+                        Content = new StreamContent(responseStream)
                     };
                 };
             

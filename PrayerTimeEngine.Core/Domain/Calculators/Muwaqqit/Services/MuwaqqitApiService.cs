@@ -44,12 +44,10 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services
 
             string url = builder.ToString();
 
-            HttpResponseMessage response = await httpClient.GetAsync(url, cancellationToken).ConfigureAwait(false);
+            using HttpResponseMessage response = await httpClient.GetAsync(url, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
             response.EnsureSuccessStatusCode();
-            string jsonResponse = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
-
-            // Parse the JSON response to the MuwaqqitJSONResponse object
-            MuwaqqitJSONResponse muwaqqitResponse = JsonSerializer.Deserialize<MuwaqqitJSONResponse>(jsonResponse);
+            using Stream stream = await response.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
+            MuwaqqitJSONResponse muwaqqitResponse = await JsonSerializer.DeserializeAsync<MuwaqqitJSONResponse>(stream, cancellationToken: cancellationToken).ConfigureAwait(false);
 
             DateTimeZone dateTimeZone = DateTimeZoneProviders.Tzdb[timezone];
 

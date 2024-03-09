@@ -16,13 +16,11 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
         {
             Dictionary<string, int> countriesByCountryID = [];
 
-            HttpResponseMessage response = await httpClient.GetAsync(GET_COUNTRIES_URL, cancellationToken).ConfigureAwait(false);
+            using HttpResponseMessage response = await httpClient.GetAsync(GET_COUNTRIES_URL, cancellationToken).ConfigureAwait(false);
             response.EnsureSuccessStatusCode();
+            using Stream jsonStream = await response.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
 
-            Stream jsonStream = await response.Content.ReadAsStreamAsync(cancellationToken);
-            JsonElement mainJson = (await JsonDocument.ParseAsync(jsonStream, cancellationToken: cancellationToken)).RootElement;
-
-            foreach (JsonElement item in mainJson.EnumerateArray())
+            await foreach (JsonElement item in JsonSerializer.DeserializeAsyncEnumerable<JsonElement>(jsonStream, cancellationToken: cancellationToken).ConfigureAwait(false))
             {
                 int id = item.GetProperty("Id").GetInt32();
                 string name = item.GetProperty("Name").GetString();
@@ -44,13 +42,11 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
                 new KeyValuePair<string, string>("id", countryID.ToString())
             ]);
 
-            HttpResponseMessage response = await httpClient.PostAsync(GET_CITIES_BY_COUNTRY_URL, content, cancellationToken).ConfigureAwait(false);
+            using HttpResponseMessage response = await httpClient.PostAsync(GET_CITIES_BY_COUNTRY_URL, content, cancellationToken).ConfigureAwait(false);
             response.EnsureSuccessStatusCode();
-            
-            Stream jsonStream = await response.Content.ReadAsStreamAsync(cancellationToken);
-            JsonElement mainJson = (await JsonDocument.ParseAsync(jsonStream, cancellationToken: cancellationToken)).RootElement;
+            Stream jsonStream = await response.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
 
-            foreach (JsonElement item in mainJson.EnumerateArray())
+            await foreach (JsonElement item in JsonSerializer.DeserializeAsyncEnumerable<JsonElement>(jsonStream, cancellationToken: cancellationToken).ConfigureAwait(false))
             {
                 int id = item.GetProperty("Id").GetInt32();
                 string name = item.GetProperty("Name").GetString();
@@ -74,37 +70,31 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
 
             HttpResponseMessage response = await httpClient.GetAsync(prayerTimesURL, cancellationToken).ConfigureAwait(false);
             response.EnsureSuccessStatusCode();
-            string jsonPrayerTimesString = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+            Stream jsonStream = await response.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
 
-            // API adds "*" in front of 'Isha and Fajr to indicate some kind of special calculation,
-            // which leads to problems with the automatic parsing of the string to the DateTime
-            // e.g. "*23:54" instead of "23:54"
-            jsonPrayerTimesString = jsonPrayerTimesString.Replace("*", "");
+            var firstDayOfYear = new LocalDate(date.Year, 1, 1);
 
-            Stream jsonStream = await response.Content.ReadAsStreamAsync(cancellationToken);
-            JsonElement mainJson = (await JsonDocument.ParseAsync(jsonStream, cancellationToken: cancellationToken)).RootElement;
-
-            foreach (JsonElement prayerTimeJson in mainJson.EnumerateArray())
+            await foreach (JsonElement prayerTimeJson in JsonSerializer.DeserializeAsyncEnumerable<JsonElement>(jsonStream, cancellationToken: cancellationToken).ConfigureAwait(false))
             {
-                int currentDayOfYear = prayerTimeJson.GetProperty("DayOfYear").GetInt32();
-                LocalDate currentDate = new LocalDate(date.Year, 1, 1).PlusDays(currentDayOfYear - 1);
+                int dayOfYear = prayerTimeJson.GetProperty("DayOfYear").GetInt32();
+                LocalDate prayerTimeDate = firstDayOfYear.PlusDays(dayOfYear - 1);
 
                 // ignore past and ignore what is after the necessary extent
-                if (currentDate < date || date.PlusDays(EXTENT_OF_DAYS_RETRIEVED - 1) < currentDate)
+                if (prayerTimeDate < date || date.PlusDays(EXTENT_OF_DAYS_RETRIEVED - 1) < prayerTimeDate)
                     continue;
 
                 SemerkandPrayerTimes prayerTime = new()
                 {
-                    DayOfYear = currentDayOfYear,
+                    DayOfYear = dayOfYear,
                     CityID = cityID,
-                    Date = currentDate,
+                    Date = prayerTimeDate,
 
-                    Fajr = getZonedDateTime(dateTimeZone, currentDate, prayerTimeJson.GetProperty("Fajr").GetString()),
-                    Shuruq = getZonedDateTime(dateTimeZone, currentDate, prayerTimeJson.GetProperty("Tulu").GetString()),
-                    Dhuhr = getZonedDateTime(dateTimeZone, currentDate, prayerTimeJson.GetProperty("Zuhr").GetString()),
-                    Asr = getZonedDateTime(dateTimeZone, currentDate, prayerTimeJson.GetProperty("Asr").GetString()),
-                    Maghrib = getZonedDateTime(dateTimeZone, currentDate, prayerTimeJson.GetProperty("Maghrib").GetString()),
-                    Isha = getZonedDateTime(dateTimeZone, currentDate, prayerTimeJson.GetProperty("Isha").GetString())
+                    Fajr = getZonedDateTime(dateTimeZone, prayerTimeDate, prayerTimeJson.GetProperty("Fajr").GetString()),
+                    Shuruq = getZonedDateTime(dateTimeZone, prayerTimeDate, prayerTimeJson.GetProperty("Tulu").GetString()),
+                    Dhuhr = getZonedDateTime(dateTimeZone, prayerTimeDate, prayerTimeJson.GetProperty("Zuhr").GetString()),
+                    Asr = getZonedDateTime(dateTimeZone, prayerTimeDate, prayerTimeJson.GetProperty("Asr").GetString()),
+                    Maghrib = getZonedDateTime(dateTimeZone, prayerTimeDate, prayerTimeJson.GetProperty("Maghrib").GetString()),
+                    Isha = getZonedDateTime(dateTimeZone, prayerTimeDate, prayerTimeJson.GetProperty("Isha").GetString())
                 };
 
                 prayerTimes.Add(prayerTime);
@@ -115,9 +105,13 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
         
         private static ZonedDateTime getZonedDateTime(DateTimeZone timezone, LocalDate date, string timeString)
         {
+            // API adds "*" in front of 'Isha and Fajr to indicate some kind of special calculation,
+            // which leads to problems with the automatic parsing of the string to the DateTime
+            // e.g. "*23:54" instead of "23:54"
+
             LocalTime time =
                 LocalTimePattern.CreateWithInvariantCulture("HH:mm")
-                .Parse(timeString)
+                .Parse(timeString.Replace("*", ""))
                 .Value;
 
             // InZoneStrictly throws an exception if the time is inacceptable,

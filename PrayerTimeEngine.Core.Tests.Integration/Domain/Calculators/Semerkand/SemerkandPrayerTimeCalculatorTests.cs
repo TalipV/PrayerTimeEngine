@@ -20,21 +20,21 @@ namespace PrayerTimeEngine.Core.Tests.Integration.Domain.Calculators.Semerkand
         {
             static HttpResponseMessage handleRequestFunc(HttpRequestMessage request)
             {
-                string responseText;
+                Stream responseStream;
 
-                if (request.RequestUri.AbsoluteUri == $@"{SemerkandApiService.GET_COUNTRIES_URL}")
-                    responseText = File.ReadAllText(Path.Combine(TEST_DATA_FILE_PATH, "SemerkandTestData", "Semerkand_TestCountriesData.txt"));
-                else if (request.RequestUri.AbsoluteUri == $@"{SemerkandApiService.GET_CITIES_BY_COUNTRY_URL}")
-                    responseText = File.ReadAllText(Path.Combine(TEST_DATA_FILE_PATH, "SemerkandTestData", "Semerkand_TestCityData_Austria.txt"));
-                else if (request.RequestUri.AbsoluteUri == $@"{string.Format(SemerkandApiService.GET_TIMES_BY_CITY, "197", "2023")}")
-                    responseText = File.ReadAllText(Path.Combine(TEST_DATA_FILE_PATH, "SemerkandTestData", "Semerkand_TestPrayerTimeData_20230729_Innsbruck.txt"));
+                if (request.RequestUri.AbsoluteUri == SemerkandApiService.GET_COUNTRIES_URL)
+                    responseStream = File.OpenRead(Path.Combine(SEMERKAND_TEST_DATA_FILE_PATH, "Semerkand_TestCountriesData.txt"));
+                else if (request.RequestUri.AbsoluteUri == SemerkandApiService.GET_CITIES_BY_COUNTRY_URL)
+                    responseStream = File.OpenRead(Path.Combine(SEMERKAND_TEST_DATA_FILE_PATH, "Semerkand_TestCityData_Austria.txt"));
+                else if (request.RequestUri.AbsoluteUri == string.Format(SemerkandApiService.GET_TIMES_BY_CITY, "197", "2023"))
+                    responseStream = File.OpenRead(Path.Combine(SEMERKAND_TEST_DATA_FILE_PATH, "Semerkand_TestPrayerTimeData_20230729_Innsbruck.txt"));
                 else
                     throw new Exception($"No response registered for URL: {request.RequestUri.AbsoluteUri}");
 
                 return new HttpResponseMessage
                 {
                     StatusCode = HttpStatusCode.OK,
-                    Content = new StringContent(responseText)
+                    Content = new StreamContent(responseStream)
                 };
             }
 
