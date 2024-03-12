@@ -5,6 +5,7 @@ using FluentAssertions;
 using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Domain.Models;
 using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Models;
+using PrayerTimeEngine.Core.Tests.Common.TestData;
 
 namespace PrayerTimeEngine.Core.Tests.Unit.Domain.ProfileManagement
 {
@@ -26,9 +27,9 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.ProfileManagement
         public async Task GetProfiles_SavedThreeDifferentProfiles_RetrievedNormally()
         {
             // ARRANGE
-            var profile1 = TestData.CreateNewCompleteTestProfile(profileID: 1);
-            var profile2 = TestData.CreateNewCompleteTestProfile(profileID: 2);
-            var profile3 = TestData.CreateNewCompleteTestProfile(profileID: 3);
+            var profile1 = TestDataHelper.CreateNewCompleteTestProfile(profileID: 1);
+            var profile2 = TestDataHelper.CreateNewCompleteTestProfile(profileID: 2);
+            var profile3 = TestDataHelper.CreateNewCompleteTestProfile(profileID: 3);
             await _appDbContext.Profiles.AddAsync(profile1);
             await _appDbContext.Profiles.AddAsync(profile2);
             await _appDbContext.Profiles.AddAsync(profile3);
@@ -53,7 +54,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.ProfileManagement
         public async Task GetUntrackedReferenceOfProfile_ExistingProfile_ProfileRetrieved()
         {
             // ARRANGE
-            var profile = TestData.CreateNewCompleteTestProfile();
+            var profile = TestDataHelper.CreateNewCompleteTestProfile();
             await _appDbContext.Profiles.AddAsync(profile);
             await _appDbContext.SaveChangesAsync();
 
@@ -87,7 +88,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.ProfileManagement
         public async Task SaveProfile_BasicProfile_SavedInDb()
         {
             // ARRANGE
-            var profile = TestData.CreateNewCompleteTestProfile();
+            var profile = TestDataHelper.CreateNewCompleteTestProfile();
 
             // ACT
             await _profileDBAccess.SaveProfile(profile, default);
@@ -105,7 +106,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.ProfileManagement
         public async Task UpdateLocationConfig_SingleLocation_OnlySingleLocationInProfile()
         {
             // ARRANGE
-            var profile = TestData.CreateNewCompleteTestProfile();
+            var profile = TestDataHelper.CreateNewCompleteTestProfile();
             await _appDbContext.Profiles.AddAsync(profile);
             await _appDbContext.SaveChangesAsync();
 
@@ -131,7 +132,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.ProfileManagement
         public async Task UpdateTimeConfig_SingleUpdate_UpdatedAsExpected()
         {
             // ARRANGE
-            var profile = TestData.CreateNewCompleteTestProfile();
+            var profile = TestDataHelper.CreateNewCompleteTestProfile();
             await _appDbContext.Profiles.AddAsync(profile);
             await _appDbContext.SaveChangesAsync();
 

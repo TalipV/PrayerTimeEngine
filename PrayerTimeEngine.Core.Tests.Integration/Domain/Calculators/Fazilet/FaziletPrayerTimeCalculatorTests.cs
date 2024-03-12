@@ -10,42 +10,12 @@ using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services;
 using PrayerTimeEngine.Core.Domain.Models;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Interfaces;
 using PrayerTimeEngine.Core.Tests.Common;
-using System.Net;
+using PrayerTimeEngine.Core.Tests.Common.TestData;
 
 namespace PrayerTimeEngine.Core.Tests.Integration.Domain.Calculators.Fazilet
 {
     public class FaziletPrayerTimeCalculatorTests : BaseTest
     {
-        private static FaziletApiService getMockedFaziletApiService()
-        {
-            string dummyBaseURL = @"http://dummy.url.com";
-
-            HttpResponseMessage handleRequestFunc(HttpRequestMessage request)
-            {
-                Stream responseStream;
-
-                if (request.RequestUri.AbsoluteUri == $@"{dummyBaseURL}/{FaziletApiService.GET_COUNTRIES_URL}")
-                    responseStream = File.OpenRead(Path.Combine(FAZILET_TEST_DATA_FILE_PATH, "Fazilet_TestCountriesData.txt"));
-                else if (request.RequestUri.AbsoluteUri == $@"{dummyBaseURL}/{FaziletApiService.GET_CITIES_BY_COUNTRY_URL}2")
-                    responseStream = File.OpenRead(Path.Combine(FAZILET_TEST_DATA_FILE_PATH, "Fazilet_TestCityData_Austria.txt"));
-                else if (request.RequestUri.AbsoluteUri == $@"{dummyBaseURL}/{string.Format(FaziletApiService.GET_TIMES_BY_CITY_URL, "92")}")
-                    responseStream = File.OpenRead(Path.Combine(FAZILET_TEST_DATA_FILE_PATH, "Fazilet_TestPrayerTimeData_20230729_Innsbruck.txt"));
-                else
-                    throw new Exception($"No response registered for URL: {request.RequestUri.AbsoluteUri}");
-
-                return new HttpResponseMessage
-                {
-                    StatusCode = HttpStatusCode.OK,
-                    Content = new StreamContent(responseStream)
-                };
-            }
-
-            var mockHttpMessageHandler = new MockHttpMessageHandler(handleRequestFunc);
-            var httpClient = new HttpClient(mockHttpMessageHandler) { BaseAddress = new Uri(dummyBaseURL) };
-
-            return new FaziletApiService(httpClient);
-        }
-
         [Fact]
         public async Task GetPrayerTimesAsync_NormalInput_PrayerTimesForThatDay()
         {
@@ -56,36 +26,51 @@ namespace PrayerTimeEngine.Core.Tests.Integration.Domain.Calculators.Fazilet
                     serviceCollection.AddSingleton(GetHandledDbContext());
                     serviceCollection.AddSingleton(Substitute.For<IPlaceService>());
                     serviceCollection.AddSingleton<IFaziletDBAccess, FaziletDBAccess>();
-                    serviceCollection.AddSingleton<IFaziletApiService>(getMockedFaziletApiService());
+                    serviceCollection.AddSingleton<IFaziletApiService>(SubstitutionHelper.GetMockedFaziletApiService());
                     serviceCollection.AddSingleton(Substitute.For<ILogger<FaziletPrayerTimeCalculator>>());
                     serviceCollection.AddSingleton<FaziletPrayerTimeCalculator>();
                 });
             FaziletPrayerTimeCalculator faziletPrayerTimeCalculator = serviceProvider.GetService<FaziletPrayerTimeCalculator>();
 
+            List<GenericSettingConfiguration> configs =
+                [
+                    new GenericSettingConfiguration { TimeType = ETimeType.FajrStart, Source = ECalculationSource.Fazilet },
+                    new GenericSettingConfiguration { TimeType = ETimeType.FajrEnd, Source = ECalculationSource.Fazilet },
+                    new GenericSettingConfiguration { TimeType = ETimeType.DhuhrStart, Source = ECalculationSource.Fazilet },
+                    new GenericSettingConfiguration { TimeType = ETimeType.DhuhrEnd, Source = ECalculationSource.Fazilet },
+                    new GenericSettingConfiguration { TimeType = ETimeType.AsrStart, Source = ECalculationSource.Fazilet },
+                    new GenericSettingConfiguration { TimeType = ETimeType.AsrEnd, Source = ECalculationSource.Fazilet },
+                    new GenericSettingConfiguration { TimeType = ETimeType.MaghribStart, Source = ECalculationSource.Fazilet },
+                    new GenericSettingConfiguration { TimeType = ETimeType.MaghribEnd, Source = ECalculationSource.Fazilet },
+                    new GenericSettingConfiguration { TimeType = ETimeType.IshaStart, Source = ECalculationSource.Fazilet },
+                    new GenericSettingConfiguration { TimeType = ETimeType.IshaEnd, Source = ECalculationSource.Fazilet },
+                ];
+
             // ACT
-            ICalculationPrayerTimes result =
-                (await faziletPrayerTimeCalculator.GetPrayerTimesAsync(
+            List<(ETimeType TimeType, ZonedDateTime ZonedDateTime)> result =
+                await faziletPrayerTimeCalculator.GetPrayerTimesAsync(
                     new LocalDate(2023, 7, 29),
                     new FaziletLocationData { CountryName = "Avusturya", CityName = "Innsbruck" },
-                    [new GenericSettingConfiguration { TimeType = ETimeType.DhuhrStart, Source = ECalculationSource.Fazilet }], 
-                    default))
-                .Single().Key;
-
-            FaziletPrayerTimes faziletPrayerTimes = result as FaziletPrayerTimes;
+                    configs, 
+                    default);
 
             // ASSERT
-            faziletPrayerTimes.Should().NotBeNull();
+            result.Should().NotBeNull();
 
-            faziletPrayerTimes.Date.Should().Be(new LocalDate(2023, 7, 29));
-            faziletPrayerTimes.Imsak.LocalDateTime.Should().Be(new LocalDateTime(2023, 7, 29, 03, 04, 0));
-            faziletPrayerTimes.Fajr.LocalDateTime.Should().Be(new LocalDateTime(2023, 7, 29, 03, 24, 0));
-            faziletPrayerTimes.NextFajr.Value.LocalDateTime.Should().Be(new LocalDateTime(2023, 7, 30, 03, 27, 0));
-
-            faziletPrayerTimes.Shuruq.LocalDateTime.Should().Be(new LocalDateTime(2023, 7, 29, 05, 43, 0));
-            faziletPrayerTimes.Dhuhr.LocalDateTime.Should().Be(new LocalDateTime(2023, 7, 29, 13, 28, 0));
-            faziletPrayerTimes.Asr.LocalDateTime.Should().Be(new LocalDateTime(2023, 7, 29, 17, 31, 0));
-            faziletPrayerTimes.Maghrib.LocalDateTime.Should().Be(new LocalDateTime(2023, 7, 29, 21, 02, 0));
-            faziletPrayerTimes.Isha.LocalDateTime.Should().Be(new LocalDateTime(2023, 7, 29, 23, 11, 0));
+            result.FirstOrDefault(x => x.TimeType == ETimeType.FajrStart).ZonedDateTime.LocalDateTime.Should().Be(new LocalDateTime(2023, 7, 29, 03, 24, 0));
+            result.FirstOrDefault(x => x.TimeType == ETimeType.FajrEnd).ZonedDateTime.LocalDateTime.Should().Be(new LocalDateTime(2023, 7, 29, 05, 43, 0));
+            
+            result.FirstOrDefault(x => x.TimeType == ETimeType.DhuhrStart).ZonedDateTime.LocalDateTime.Should().Be(new LocalDateTime(2023, 7, 29, 13, 28, 0));
+            result.FirstOrDefault(x => x.TimeType == ETimeType.DhuhrEnd).ZonedDateTime.LocalDateTime.Should().Be(new LocalDateTime(2023, 7, 29, 17, 31, 0));
+            
+            result.FirstOrDefault(x => x.TimeType == ETimeType.AsrStart).ZonedDateTime.LocalDateTime.Should().Be(new LocalDateTime(2023, 7, 29, 17, 31, 0));
+            result.FirstOrDefault(x => x.TimeType == ETimeType.AsrEnd).ZonedDateTime.LocalDateTime.Should().Be(new LocalDateTime(2023, 7, 29, 21, 02, 0));
+            
+            result.FirstOrDefault(x => x.TimeType == ETimeType.MaghribStart).ZonedDateTime.LocalDateTime.Should().Be(new LocalDateTime(2023, 7, 29, 21, 02, 0));
+            result.FirstOrDefault(x => x.TimeType == ETimeType.MaghribEnd).ZonedDateTime.LocalDateTime.Should().Be(new LocalDateTime(2023, 7, 29, 23, 11, 0));
+            
+            result.FirstOrDefault(x => x.TimeType == ETimeType.IshaStart).ZonedDateTime.LocalDateTime.Should().Be(new LocalDateTime(2023, 7, 29, 23, 11, 0));
+            result.FirstOrDefault(x => x.TimeType == ETimeType.IshaEnd).ZonedDateTime.LocalDateTime.Should().Be(new LocalDateTime(2023, 7, 30, 03, 27, 0));
         }
     }
 }

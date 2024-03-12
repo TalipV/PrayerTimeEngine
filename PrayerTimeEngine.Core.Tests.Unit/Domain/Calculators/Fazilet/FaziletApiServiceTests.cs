@@ -2,6 +2,7 @@
 using NodaTime;
 using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services;
 using PrayerTimeEngine.Core.Tests.Common;
+using PrayerTimeEngine.Core.Tests.Common.TestData;
 using System.Net;
 
 namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Fazilet
@@ -25,7 +26,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Fazilet
             _mockHttpMessageHandler.HandleRequestFunc =
                 (request) =>
                 {
-                    Stream responseStream = File.OpenRead(Path.Combine(FAZILET_TEST_DATA_FILE_PATH, "Fazilet_TestCountriesData.txt"));
+                    Stream responseStream = File.OpenRead(Path.Combine(TestDataHelper.FAZILET_TEST_DATA_FILE_PATH, "Fazilet_TestCountriesData.txt"));
 
                     return new HttpResponseMessage
                     {
@@ -54,7 +55,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Fazilet
             _mockHttpMessageHandler.HandleRequestFunc =
                 (request) =>
                 {
-                    Stream responseStream = File.OpenRead(Path.Combine(FAZILET_TEST_DATA_FILE_PATH, "Fazilet_TestCityData_Austria.txt"));
+                    Stream responseStream = File.OpenRead(Path.Combine(TestDataHelper.FAZILET_TEST_DATA_FILE_PATH, "Fazilet_TestCityData_Austria.txt"));
 
                     return new HttpResponseMessage
                     {
@@ -85,7 +86,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Fazilet
             _mockHttpMessageHandler.HandleRequestFunc =
                 (request) =>
                 {
-                    Stream responseStream = File.OpenRead(Path.Combine(FAZILET_TEST_DATA_FILE_PATH, "Fazilet_TestPrayerTimeData_20230729_Innsbruck.txt"));
+                    Stream responseStream = File.OpenRead(Path.Combine(TestDataHelper.FAZILET_TEST_DATA_FILE_PATH, "Fazilet_TestPrayerTimeData_20230729_Innsbruck.txt"));
 
                     return new HttpResponseMessage
                     {

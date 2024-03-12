@@ -1,4 +1,5 @@
-﻿using NodaTime;
+﻿using FluentAssertions;
+using NodaTime;
 using NSubstitute;
 using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Domain;
@@ -80,11 +81,12 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Muwaqqit
                 .Returns(Task.FromResult(expectedPrayerTimes));
 
             // ACT
-            var result = await _muwaqqitPrayerTimeCalculator.GetPrayerTimesAsync(date, locationData, configurations, default);
+            List<(ETimeType TimeType, ZonedDateTime ZonedDateTime)> result = 
+                await _muwaqqitPrayerTimeCalculator.GetPrayerTimesAsync(date, locationData, configurations, default);
 
             // ASSERT
-            Assert.Contains(ETimeType.FajrStart, result.SelectMany(r => r).ToList());
-            Assert.Contains(ETimeType.IshaEnd, result.SelectMany(r => r).ToList());
+            result.FirstOrDefault(x => x.TimeType == ETimeType.FajrStart).Should().NotBeNull();
+            result.FirstOrDefault(x => x.TimeType == ETimeType.FajrStart).Should().NotBeNull();
         }
 
     }

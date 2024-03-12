@@ -10,6 +10,7 @@ using FluentAssertions;
 using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Models;
 using Microsoft.Extensions.Logging;
+using PrayerTimeEngine.Core.Tests.Common.TestData;
 
 namespace PrayerTimeEngine.Core.Tests.Unit.Domain.CalculationManagement
 {
@@ -33,7 +34,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.CalculationManagement
         public async Task CalculatePrayerTimesAsync_OneComplexCalculation_CalculatedSuccessfully()
         {
             // ARRANGE
-            Profile profile = TestData.CreateNewCompleteTestProfile();
+            Profile profile = TestDataHelper.CreateNewCompleteTestProfile();
             ZonedDateTime zonedDate = new LocalDate(2024, 1, 1).AtStartOfDayInZone(DateTimeZone.Utc);
 
             var muwaqqitLocationData = Substitute.ForPartsOf<BaseLocationData>();
@@ -42,11 +43,14 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.CalculationManagement
 
             GenericSettingConfiguration muwaqqitConfig = new MuwaqqitDegreeCalculationConfiguration { Degree = 14, TimeType = ETimeType.FajrStart };
             var muwaqqitPrayerTimeServiceMock = Substitute.For<IPrayerTimeCalculator>();
-            var muwaqqitCalculation = Substitute.For<ICalculationPrayerTimes>();
 
             _prayerTimeServiceFactoryMock.GetPrayerTimeCalculatorByCalculationSource(Arg.Is(ECalculationSource.Muwaqqit)).Returns(muwaqqitPrayerTimeServiceMock);
 
-            var muwaqqitReturnValue = new[] { muwaqqitCalculation }.ToLookup(x => x, x => ETimeType.FajrStart);
+            List<(ETimeType, ZonedDateTime)> muwaqqitReturnValue =
+                [
+                    (ETimeType.FajrStart, zonedDate.PlusHours(4)),
+                ];
+
             muwaqqitPrayerTimeServiceMock.GetPrayerTimesAsync(
                     Arg.Is(zonedDate.Date),
                     Arg.Is(muwaqqitLocationData),
@@ -56,7 +60,6 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.CalculationManagement
 
             _profileServiceMock.GetActiveComplexTimeConfigs(Arg.Is(profile)).Returns([muwaqqitConfig]);
             muwaqqitPrayerTimeServiceMock.GetUnsupportedTimeTypes().Returns([]);
-            muwaqqitCalculation.GetZonedDateTimeForTimeType(Arg.Is(ETimeType.FajrStart)).Returns(zonedDate.PlusHours(4));
 
             // ACT
             PrayerTimesBundle result = await _calculationManager.CalculatePrayerTimesAsync(profile.ID, zonedDate, default);

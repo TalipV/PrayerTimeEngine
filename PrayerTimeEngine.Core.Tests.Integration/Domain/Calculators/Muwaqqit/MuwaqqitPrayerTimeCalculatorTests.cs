@@ -11,39 +11,12 @@ using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services;
 using PrayerTimeEngine.Core.Domain.Models;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Interfaces;
 using PrayerTimeEngine.Core.Tests.Common;
-using System.Net;
+using PrayerTimeEngine.Core.Tests.Common.TestData;
 
 namespace PrayerTimeEngine.Core.Tests.Integration.Domain.Calculators.Muwaqqit
 {
     public class MuwaqqitPrayerTimeCalculatorTests : BaseTest
     {
-        private static MuwaqqitApiService getMockedMuwaqqitApiService()
-        {
-            static HttpResponseMessage handleRequestFunc(HttpRequestMessage request)
-            {
-                Stream responseStream =
-                    request.RequestUri.AbsoluteUri switch
-                    {
-                        @"https://www.muwaqqit.com/api2.json?d=2023-07-30&ln=11.41337&lt=47.2803835&tz=Europe%2fVienna&fa=-12&ia=3.5&isn=-8&ea=-12" => File.OpenRead(Path.Combine(MUWAQQIT_TEST_DATA_FILE_PATH, "Muwaqqit_TestPrayerTimeData_20230730_Innsbruck_Config1.txt")),
-                        @"https://www.muwaqqit.com/api2.json?d=2023-07-30&ln=11.41337&lt=47.2803835&tz=Europe%2fVienna&fa=-7.5&ia=4.5&isn=-12&ea=-15.5" => File.OpenRead(Path.Combine(MUWAQQIT_TEST_DATA_FILE_PATH, "Muwaqqit_TestPrayerTimeData_20230730_Innsbruck_Config2.txt")),
-                        @"https://www.muwaqqit.com/api2.json?d=2023-07-30&ln=11.41337&lt=47.2803835&tz=Europe%2fVienna&fa=-4.5&ia=-12&isn=-12&ea=-12" => File.OpenRead(Path.Combine(MUWAQQIT_TEST_DATA_FILE_PATH, "Muwaqqit_TestPrayerTimeData_20230730_Innsbruck_Config3.txt")),
-                        @"https://www.muwaqqit.com/api2.json?d=2023-07-30&ln=11.41337&lt=47.2803835&tz=Europe%2fVienna&fa=-15&ia=-12&isn=-12&ea=-12" => File.OpenRead(Path.Combine(MUWAQQIT_TEST_DATA_FILE_PATH, "Muwaqqit_TestPrayerTimeData_20230730_Innsbruck_Config4.txt")),
-                        _ => throw new Exception($"No response registered for URL: {request.RequestUri.AbsoluteUri}")
-                    };
-
-                return new HttpResponseMessage
-                {
-                    StatusCode = HttpStatusCode.OK,
-                    Content = new StreamContent(responseStream)
-                };
-            }
-
-            var mockHttpMessageHandler = new MockHttpMessageHandler(handleRequestFunc);
-            var httpClient = new HttpClient(mockHttpMessageHandler);
-
-            return new MuwaqqitApiService(httpClient);
-        }
-
         [Fact]
         public async Task GetPrayerTimesAsync_NormalInput_PrayerTimesForThatDay()
         {
@@ -57,7 +30,7 @@ namespace PrayerTimeEngine.Core.Tests.Integration.Domain.Calculators.Muwaqqit
 
                     serviceCollection.AddSingleton(Substitute.For<ILogger<MuwaqqitDBAccess>>());
                     serviceCollection.AddSingleton<IMuwaqqitDBAccess, MuwaqqitDBAccess>();
-                    serviceCollection.AddSingleton<IMuwaqqitApiService>(getMockedMuwaqqitApiService());
+                    serviceCollection.AddSingleton<IMuwaqqitApiService>(SubstitutionHelper.GetMockedMuwaqqitApiService());
                     serviceCollection.AddSingleton(Substitute.For<ILogger<MuwaqqitPrayerTimeCalculator>>());
                     serviceCollection.AddSingleton<MuwaqqitPrayerTimeCalculator>();
                 });
@@ -86,7 +59,7 @@ namespace PrayerTimeEngine.Core.Tests.Integration.Domain.Calculators.Muwaqqit
             MuwaqqitPrayerTimeCalculator muwaqqitPrayerTimeCalculator = serviceProvider.GetService<MuwaqqitPrayerTimeCalculator>();
 
             // ACT
-            ILookup<ICalculationPrayerTimes, ETimeType> result =
+            List<(ETimeType TimeType, ZonedDateTime ZonedDateTime)> result =
                 await muwaqqitPrayerTimeCalculator.GetPrayerTimesAsync(
                     testDate,
                     new MuwaqqitLocationData
@@ -98,43 +71,29 @@ namespace PrayerTimeEngine.Core.Tests.Integration.Domain.Calculators.Muwaqqit
                     configs
                     , default);
 
-            IDictionary<ETimeType, MuwaqqitPrayerTimes> timeTypeByCalculationPrayerTimes =
-                result
-                .SelectMany(pair => pair.Select(value => new { Key = value, Value = pair.Key }))
-                .ToDictionary(x => x.Key, x => x.Value as MuwaqqitPrayerTimes);
-
             // ASSERT
-            timeTypeByCalculationPrayerTimes.Should().HaveCount(16);
-            result.Select(x => x.Key.Date).Should().AllBeEquivalentTo(new LocalDate(2023, 7, 30));
-
-            getMappedValue(ETimeType.FajrStart, timeTypeByCalculationPrayerTimes).Should().Be(new LocalDateTime(2023, 7, 30, 04, 27, 04));
-            getMappedValue(ETimeType.FajrEnd, timeTypeByCalculationPrayerTimes).Should().Be(new LocalDateTime(2023, 7, 30, 05, 49, 53));
-            getMappedValue(ETimeType.FajrGhalas, timeTypeByCalculationPrayerTimes).Should().Be(new LocalDateTime(2023, 7, 30, 05, 02, 27));
-            getMappedValue(ETimeType.FajrKaraha, timeTypeByCalculationPrayerTimes).Should().Be(new LocalDateTime(2023, 7, 30, 05, 20, 25));
-
-            getMappedValue(ETimeType.DuhaStart, timeTypeByCalculationPrayerTimes).Should().Be(new LocalDateTime(2023, 7, 30, 06, 17, 04));
-
-            getMappedValue(ETimeType.DhuhrStart, timeTypeByCalculationPrayerTimes).Should().Be(new LocalDateTime(2023, 7, 30, 13, 21, 22));
-            getMappedValue(ETimeType.DhuhrEnd, timeTypeByCalculationPrayerTimes).Should().Be(new LocalDateTime(2023, 7, 30, 17, 25, 53));
-
-            getMappedValue(ETimeType.AsrStart, timeTypeByCalculationPrayerTimes).Should().Be(new LocalDateTime(2023, 7, 30, 17, 25, 53));
-            getMappedValue(ETimeType.AsrEnd, timeTypeByCalculationPrayerTimes).Should().Be(new LocalDateTime(2023, 7, 30, 20, 50, 59));
-            getMappedValue(ETimeType.AsrMithlayn, timeTypeByCalculationPrayerTimes).Should().Be(new LocalDateTime(2023, 7, 30, 18, 33, 27));
-            getMappedValue(ETimeType.AsrKaraha, timeTypeByCalculationPrayerTimes).Should().Be(new LocalDateTime(2023, 7, 30, 20, 17, 15));
-
-            getMappedValue(ETimeType.MaghribStart, timeTypeByCalculationPrayerTimes).Should().Be(new LocalDateTime(2023, 7, 30, 20, 50, 59));
-            getMappedValue(ETimeType.MaghribEnd, timeTypeByCalculationPrayerTimes).Should().Be(new LocalDateTime(2023, 7, 30, 22, 13, 17));
-            getMappedValue(ETimeType.MaghribIshtibaq, timeTypeByCalculationPrayerTimes).Should().Be(new LocalDateTime(2023, 7, 30, 21, 41, 46));
-
-            getMappedValue(ETimeType.IshaStart, timeTypeByCalculationPrayerTimes).Should().Be(new LocalDateTime(2023, 7, 30, 22, 44, 14));
-            getMappedValue(ETimeType.IshaEnd, timeTypeByCalculationPrayerTimes).Should().Be(new LocalDateTime(2023, 7, 31, 04, 02, 30));
-        }
-
-        private static LocalDateTime getMappedValue(ETimeType timeType, IDictionary<ETimeType, MuwaqqitPrayerTimes> timeTypeByCalculationPrayerTimes)
-        {
-            return timeTypeByCalculationPrayerTimes[timeType]
-                .GetZonedDateTimeForTimeType(timeType)
-                .LocalDateTime;
+            result.FirstOrDefault(x => x.TimeType == ETimeType.FajrStart).ZonedDateTime.LocalDateTime.Should().Be(new LocalDateTime(2023, 7, 30, 04, 27, 04));
+            result.FirstOrDefault(x => x.TimeType == ETimeType.FajrEnd).ZonedDateTime.LocalDateTime.Should().Be(new LocalDateTime(2023, 7, 30, 05, 49, 53));
+            result.FirstOrDefault(x => x.TimeType == ETimeType.FajrGhalas).ZonedDateTime.LocalDateTime.Should().Be(new LocalDateTime(2023, 7, 30, 05, 02, 27));
+            result.FirstOrDefault(x => x.TimeType == ETimeType.FajrKaraha).ZonedDateTime.LocalDateTime.Should().Be(new LocalDateTime(2023, 7, 30, 05, 20, 25));
+            
+            result.FirstOrDefault(x => x.TimeType == ETimeType.DuhaStart).ZonedDateTime.LocalDateTime.Should().Be(new LocalDateTime(2023, 7, 30, 06, 17, 04));
+           
+            result.FirstOrDefault(x => x.TimeType == ETimeType.DhuhrStart).ZonedDateTime.LocalDateTime.Should().Be(new LocalDateTime(2023, 7, 30, 13, 21, 22));
+            result.FirstOrDefault(x => x.TimeType == ETimeType.DhuhrEnd).ZonedDateTime.LocalDateTime.Should().Be(new LocalDateTime(2023, 7, 30, 17, 25, 53));
+            
+            result.FirstOrDefault(x => x.TimeType == ETimeType.AsrStart).ZonedDateTime.LocalDateTime.Should().Be(new LocalDateTime(2023, 7, 30, 17, 25, 53));
+            result.FirstOrDefault(x => x.TimeType == ETimeType.AsrEnd).ZonedDateTime.LocalDateTime.Should().Be(new LocalDateTime(2023, 7, 30, 20, 50, 59));
+            result.FirstOrDefault(x => x.TimeType == ETimeType.AsrMithlayn).ZonedDateTime.LocalDateTime.Should().Be(new LocalDateTime(2023, 7, 30, 18, 33, 27));
+            result.FirstOrDefault(x => x.TimeType == ETimeType.AsrKaraha).ZonedDateTime.LocalDateTime.Should().Be(new LocalDateTime(2023, 7, 30, 20, 17, 15));
+            
+            result.FirstOrDefault(x => x.TimeType == ETimeType.MaghribStart).ZonedDateTime.LocalDateTime.Should().Be(new LocalDateTime(2023, 7, 30, 20, 50, 59));
+            result.FirstOrDefault(x => x.TimeType == ETimeType.MaghribEnd).ZonedDateTime.LocalDateTime.Should().Be(new LocalDateTime(2023, 7, 30, 22, 13, 17));
+            result.FirstOrDefault(x => x.TimeType == ETimeType.MaghribIshtibaq).ZonedDateTime.LocalDateTime.Should().Be(new LocalDateTime(2023, 7, 30, 21, 41, 46));
+            
+            result.FirstOrDefault(x => x.TimeType == ETimeType.IshaStart).ZonedDateTime.LocalDateTime.Should().Be(new LocalDateTime(2023, 7, 30, 22, 44, 14));
+            result.FirstOrDefault(x => x.TimeType == ETimeType.IshaStart).ZonedDateTime.LocalDateTime.Should().Be(new LocalDateTime(2023, 7, 30, 22, 44, 14));
+            result.FirstOrDefault(x => x.TimeType == ETimeType.IshaEnd).ZonedDateTime.LocalDateTime.Should().Be(new LocalDateTime(2023, 7, 31, 04, 02, 30));
         }
     }
 }

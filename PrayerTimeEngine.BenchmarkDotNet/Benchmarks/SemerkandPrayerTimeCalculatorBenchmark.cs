@@ -9,12 +9,11 @@ using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Models;
 using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services;
 using PrayerTimeEngine.Core.Domain.Models;
 using System.Data.Common;
-using PrayerTimeEngine.Core.Tests.Common;
-using System.Net;
 using NSubstitute.Extensions;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Interfaces;
 using Microsoft.Extensions.Logging;
 using NSubstitute.ReturnsExtensions;
+using PrayerTimeEngine.Core.Tests.Common.TestData;
 
 namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
 {
@@ -47,7 +46,7 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
             // to make sure that before the benchmark the data is gotten from the APIService and stored in the db
             new SemerkandPrayerTimeCalculator(
                     new SemerkandDBAccess(appDbContext),
-                    getPreparedSemerkandApiService(),
+                    SubstitutionHelper.GetMockedSemerkandApiService(),
                     Substitute.For<IPlaceService>(),
                     Substitute.For<ILogger<SemerkandPrayerTimeCalculator>>()
                 ).GetPrayerTimesAsync(_localDate, _locationData, _configs, default).GetAwaiter().GetResult();
@@ -75,38 +74,10 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
             return new SemerkandPrayerTimeCalculator(
                     // returns null per default
                     semerkandDbAccessMock,
-                    getPreparedSemerkandApiService(),
+                    SubstitutionHelper.GetMockedSemerkandApiService(),
                     Substitute.For<IPlaceService>(),
                     Substitute.For<ILogger<SemerkandPrayerTimeCalculator>>()
                 );
-        }
-
-        private static SemerkandApiService getPreparedSemerkandApiService()
-        {
-            static HttpResponseMessage handleRequestFunc(HttpRequestMessage request)
-            {
-                Stream responseStream;
-
-                if (request.RequestUri.AbsoluteUri == SemerkandApiService.GET_COUNTRIES_URL)
-                    responseStream = File.OpenRead(Path.Combine(BaseTest.SEMERKAND_TEST_DATA_FILE_PATH, "Semerkand_TestCountriesData.txt"));
-                else if (request.RequestUri.AbsoluteUri == SemerkandApiService.GET_CITIES_BY_COUNTRY_URL)
-                    responseStream = File.OpenRead(Path.Combine(BaseTest.SEMERKAND_TEST_DATA_FILE_PATH, "Semerkand_TestCityData_Austria.txt"));
-                else if (request.RequestUri.AbsoluteUri == string.Format(SemerkandApiService.GET_TIMES_BY_CITY, "197", "2023"))
-                    responseStream = File.OpenRead(Path.Combine(BaseTest.SEMERKAND_TEST_DATA_FILE_PATH, "Semerkand_TestPrayerTimeData_20230729_Innsbruck.txt"));
-                else
-                    throw new Exception($"No response registered for URL: {request.RequestUri.AbsoluteUri}");
-
-                return new HttpResponseMessage
-                {
-                    StatusCode = HttpStatusCode.OK,
-                    Content = new StreamContent(responseStream)
-                };
-            }
-
-            var mockHttpMessageHandler = new MockHttpMessageHandler(handleRequestFunc);
-            var httpClient = new HttpClient(mockHttpMessageHandler);
-
-            return new SemerkandApiService(httpClient);
         }
 
         private static DbConnection _dbContextKeepAliveSqlConnection;

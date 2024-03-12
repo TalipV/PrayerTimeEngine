@@ -5,6 +5,7 @@ using PrayerTimeEngine.Core.Domain.PlaceManagement.Services;
 using PrayerTimeEngine.Core.Tests.Common;
 using System.Net;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Models.Common;
+using PrayerTimeEngine.Core.Tests.Common.TestData;
 
 namespace PrayerTimeEngine.Core.Tests.Unit.Domain.PlaceManagement
 {
@@ -29,7 +30,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.PlaceManagement
             // ARRANGE
             _mockHttpMessageHandler.HandleRequestFunc = (request) =>
             {
-                Stream responseStream = File.OpenRead(Path.Combine(LOCATIONIQ_TEST_DATA_FILE_PATH, "SearchedPlacesInfoCologneGrandMosqueAddress.txt"));
+                Stream responseStream = File.OpenRead(Path.Combine(TestDataHelper.LOCATIONIQ_TEST_DATA_FILE_PATH, "SearchedPlacesInfoCologneGrandMosqueAddress.txt"));
 
                 return new HttpResponseMessage
                 {
@@ -79,7 +80,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.PlaceManagement
             // ARRANGE
             _mockHttpMessageHandler.HandleRequestFunc = (request) =>
             {
-                Stream responseStream = File.OpenRead(Path.Combine(LOCATIONIQ_TEST_DATA_FILE_PATH, "PlaceInfoByPlaceData.txt"));
+                Stream responseStream = File.OpenRead(Path.Combine(TestDataHelper.LOCATIONIQ_TEST_DATA_FILE_PATH, "PlaceInfoByPlaceData.txt"));
 
                 return new HttpResponseMessage
                 {
@@ -129,7 +130,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.PlaceManagement
             // ARRANGE
             _mockHttpMessageHandler.HandleRequestFunc = (request) =>
             {
-                Stream responseStream = File.OpenRead(Path.Combine(LOCATIONIQ_TEST_DATA_FILE_PATH, "TimezoneInfoCET.txt"));
+                Stream responseStream = File.OpenRead(Path.Combine(TestDataHelper.LOCATIONIQ_TEST_DATA_FILE_PATH, "TimezoneInfoCET.txt"));
 
                 return new HttpResponseMessage
                 {

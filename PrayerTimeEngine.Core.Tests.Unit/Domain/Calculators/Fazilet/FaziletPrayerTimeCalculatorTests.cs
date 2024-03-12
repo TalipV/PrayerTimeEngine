@@ -71,13 +71,12 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Fazilet
                 .Returns(times);
 
             // ACT
-            var calculationResult =
+            List<(ETimeType TimeType, ZonedDateTime ZonedDateTime)> calculationResult =
                 await _faziletPrayerTimeCalculator.GetPrayerTimesAsync(date, locationData, configurations, default);
 
             // ASSERT
             calculationResult.Should().NotBeNull().And.HaveCount(1);
-            calculationResult.First().Should().HaveCount(1);
-            calculationResult.First().Key.Should().BeEquivalentTo(times);
+            calculationResult.First().Should().BeEquivalentTo((ETimeType.FajrEnd, times.Shuruq));
 
             _placeServiceMock.ReceivedCalls().Should().BeEmpty();
             _faziletApiServiceMock.ReceivedCalls().Should().BeEmpty();

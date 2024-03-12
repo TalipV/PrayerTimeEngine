@@ -5,7 +5,6 @@ using PrayerTimeEngine.Core.Domain.PlaceManagement.Interfaces;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Models;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Models.Common;
 using System.Globalization;
-using System.Net;
 using System.Text.Json;
 
 namespace PrayerTimeEngine.Core.Domain.PlaceManagement.Services
@@ -33,7 +32,7 @@ namespace PrayerTimeEngine.Core.Domain.PlaceManagement.Services
                     $"&lon={basicPlaceInfo.Longitude.ToString(CultureInfo.InvariantCulture)}";
 
             await ensureCooldown(cancellationToken).ConfigureAwait(false);
-            HttpResponseMessage response = await httpClient.GetAsync(url, cancellationToken).ConfigureAwait(false);
+            using HttpResponseMessage response = await httpClient.GetAsync(url, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
             response.EnsureSuccessStatusCode();
             string jsonResult = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
 
@@ -64,19 +63,14 @@ namespace PrayerTimeEngine.Core.Domain.PlaceManagement.Services
                     $"&q={searchTerm}";
 
             await ensureCooldown(cancellationToken).ConfigureAwait(false);
-            HttpResponseMessage response = await httpClient.GetAsync(url, cancellationToken).ConfigureAwait(false);
-
-            if (response.StatusCode == HttpStatusCode.NotFound)
-                return [];
-
+            using HttpResponseMessage response = await httpClient.GetAsync(url, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
             response.EnsureSuccessStatusCode();
-            string jsonResult = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+            Stream stream = await response.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
 
-            return
-                JsonSerializer.Deserialize<List<LocationIQPlace>>(jsonResult)
-                    .Select(x => getlocationIQPlace(x, language))
-                    .Where(x => !string.IsNullOrWhiteSpace(x.City) && !string.IsNullOrWhiteSpace(x.Country))
-                    .ToList();
+            return JsonSerializer.Deserialize<List<LocationIQPlace>>(stream)
+                .Select(x => getlocationIQPlace(x, language))
+                .Where(x => !string.IsNullOrWhiteSpace(x.City) && !string.IsNullOrWhiteSpace(x.Country))
+                .ToList();
         }
 
         public async Task<BasicPlaceInfo> GetPlaceBasedOnPlace(BasicPlaceInfo place, string languageIdentif, CancellationToken cancellationToken)
@@ -91,7 +85,7 @@ namespace PrayerTimeEngine.Core.Domain.PlaceManagement.Services
                 $"&osm_id={place.ID}";
 
             await ensureCooldown(cancellationToken).ConfigureAwait(false);
-            HttpResponseMessage response = await httpClient.GetAsync(url, cancellationToken).ConfigureAwait(false);
+            using HttpResponseMessage response = await httpClient.GetAsync(url, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
 
             response.EnsureSuccessStatusCode();
 

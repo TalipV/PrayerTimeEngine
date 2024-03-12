@@ -9,12 +9,11 @@ using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Models;
 using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services;
 using PrayerTimeEngine.Core.Domain.Models;
 using System.Data.Common;
-using PrayerTimeEngine.Core.Tests.Common;
-using System.Net;
 using NSubstitute.Extensions;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Interfaces;
 using Microsoft.Extensions.Logging;
 using NSubstitute.ReturnsExtensions;
+using PrayerTimeEngine.Core.Tests.Common.TestData;
 
 namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
 {
@@ -46,7 +45,7 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
             // to make sure that before the benchmark the data is gotten from the APIService and stored in the db
             new FaziletPrayerTimeCalculator(
                     new FaziletDBAccess(appDbContext),
-                    getPreparedFaziletApiService(),
+                    SubstitutionHelper.GetMockedFaziletApiService(),
                     Substitute.For<IPlaceService>(),
                     Substitute.For<ILogger<FaziletPrayerTimeCalculator>>()
                 ).GetPrayerTimesAsync(_localDate, _locationData, _configs, default).GetAwaiter().GetResult();
@@ -74,40 +73,10 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
             return new FaziletPrayerTimeCalculator(
                     // returns null per default
                     faziletDbAccessMock,
-                    getPreparedFaziletApiService(),
+                    SubstitutionHelper.GetMockedFaziletApiService(),
                     Substitute.For<IPlaceService>(),
                     Substitute.For<ILogger<FaziletPrayerTimeCalculator>>()
                 );
-        }
-
-        private static FaziletApiService getPreparedFaziletApiService()
-        {
-            string dummyBaseURL = @"http://dummy.url.com";
-
-            HttpResponseMessage handleRequestFunc(HttpRequestMessage request)
-            {
-                Stream responseStream;
-
-                if (request.RequestUri.AbsoluteUri == $@"{dummyBaseURL}/{FaziletApiService.GET_COUNTRIES_URL}")
-                    responseStream = File.OpenRead(Path.Combine(BaseTest.FAZILET_TEST_DATA_FILE_PATH, "Fazilet_TestCountriesData.txt"));
-                else if (request.RequestUri.AbsoluteUri == $@"{dummyBaseURL}/{FaziletApiService.GET_CITIES_BY_COUNTRY_URL}2")
-                    responseStream = File.OpenRead(Path.Combine(BaseTest.FAZILET_TEST_DATA_FILE_PATH, "Fazilet_TestCityData_Austria.txt"));
-                else if (request.RequestUri.AbsoluteUri == $@"{dummyBaseURL}/{string.Format(FaziletApiService.GET_TIMES_BY_CITY_URL, "92")}")
-                    responseStream = File.OpenRead(Path.Combine(BaseTest.FAZILET_TEST_DATA_FILE_PATH, "Fazilet_TestPrayerTimeData_20230729_Innsbruck.txt"));
-                else
-                    throw new Exception($"No response registered for URL: {request.RequestUri.AbsoluteUri}");
-
-                return new HttpResponseMessage
-                {
-                    StatusCode = HttpStatusCode.OK,
-                    Content = new StreamContent(responseStream)
-                };
-            }
-
-            var mockHttpMessageHandler = new MockHttpMessageHandler(handleRequestFunc);
-            var httpClient = new HttpClient(mockHttpMessageHandler) { BaseAddress = new Uri(dummyBaseURL) };
-
-            return new FaziletApiService(httpClient);
         }
 
         private static DbConnection _dbContextKeepAliveSqlConnection;
