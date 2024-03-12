@@ -101,7 +101,7 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
 
 #pragma warning disable CA1822 // Mark members as static
         [Benchmark]
-        public ILookup<ICalculationPrayerTimes, ETimeType> FaziletPrayerTimeCalculator_GetDataFromDb()
+        public List<(ETimeType TimeType, ZonedDateTime ZonedDateTime)> FaziletPrayerTimeCalculator_GetDataFromDb()
         {
             var result = _faziletPrayerTimeCalculator_DataFromDbStorage.GetPrayerTimesAsync(
                 _localDate,
@@ -109,7 +109,7 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
                 configurations: _configs, 
                 cancellationToken: default).GetAwaiter().GetResult();
 
-            if (result.SelectMany(x => x.ToList()).Count() != 1)
+            if (result.Count != 1)
             {
                 throw new Exception("No, no, no. Your benchmark is not working.");
             }
@@ -118,7 +118,7 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
         }
 
         [Benchmark]
-        public ILookup<ICalculationPrayerTimes, ETimeType> FaziletPrayerTimeCalculator_GetDataFromApi()
+        public List<(ETimeType TimeType, ZonedDateTime ZonedDateTime)> FaziletPrayerTimeCalculator_GetDataFromApi()
         {
             var result = _faziletPrayerTimeCalculator_DataFromApi.GetPrayerTimesAsync(
                 _localDate,
@@ -126,7 +126,7 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
                 configurations: _configs, 
                 cancellationToken: default).GetAwaiter().GetResult();
 
-            if (result.SelectMany(x => x.ToList()).Count() != 1)
+            if (result.Count != 1)
             {
                 throw new Exception("No, no, no. Your benchmark is not working.");
             }
