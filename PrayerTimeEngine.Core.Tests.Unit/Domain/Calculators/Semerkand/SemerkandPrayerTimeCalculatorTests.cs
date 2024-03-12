@@ -95,7 +95,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
             // ARRANGE
             var date = new LocalDate(2024, 1, 1);
             ZonedDateTime dateInUtc = date.AtStartOfDayInZone(DateTimeZone.Utc);
-            SemerkandLocationData locationData = new SemerkandLocationData { CityName = "Berlin", CountryName = "Deutschland", TimezoneName = "Europe/Vienna" };
+            var locationData = new SemerkandLocationData { CityName = "Berlin", CountryName = "Deutschland", TimezoneName = "Europe/Vienna" };
             List<GenericSettingConfiguration> configurations =
                 [
                     new GenericSettingConfiguration { TimeType = ETimeType.FajrEnd, Source = ECalculationSource.Semerkand }
@@ -150,7 +150,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
             // ARRANGE
             var date = new LocalDate(2024, 1, 1);
             ZonedDateTime dateInUtc = date.AtStartOfDayInZone(DateTimeZone.Utc);
-            SemerkandLocationData locationData = new SemerkandLocationData { CityName = "Berlin", CountryName = "Deutschland", TimezoneName = "Europe/Vienna" };
+            var locationData = new SemerkandLocationData { CityName = "Berlin", CountryName = "Deutschland", TimezoneName = "Europe/Vienna" };
             List<GenericSettingConfiguration> configurations =
                 [
                     new GenericSettingConfiguration { TimeType = ETimeType.FajrEnd, Source = ECalculationSource.Semerkand }

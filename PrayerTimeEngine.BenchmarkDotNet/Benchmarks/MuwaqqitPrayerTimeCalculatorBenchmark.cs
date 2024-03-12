@@ -106,7 +106,7 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
 
 #pragma warning disable CA1822 // Mark members as static
         [Benchmark]
-        public ILookup<ICalculationPrayerTimes, ETimeType> MuwaqqitPrayerTimeCalculator_GetDataFromDb()
+        public List<(ETimeType TimeType, ZonedDateTime ZonedDateTime)> MuwaqqitPrayerTimeCalculator_GetDataFromDb()
         {
             var result = _muwaqqitPrayerTimeCalculator_DataFromDbStorage.GetPrayerTimesAsync(
                 _localDate,
@@ -114,16 +114,16 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
                 configurations: _configs, 
                 cancellationToken: default).GetAwaiter().GetResult();
 
-            //if (result.SelectMany(x => x.ToList()).Count() != 16)
-            //{
-            //    throw new Exception("No, no, no. Your benchmark is not working.");
-            //}
+            if (result.Count != 16)
+            {
+                throw new Exception("No, no, no. Your benchmark is not working.");
+            }
 
             return result;
         }
 
         [Benchmark]
-        public ILookup<ICalculationPrayerTimes, ETimeType> MuwaqqitPrayerTimeCalculator_GetDataFromApi()
+        public List<(ETimeType TimeType, ZonedDateTime ZonedDateTime)> MuwaqqitPrayerTimeCalculator_GetDataFromApi()
         {
             var result = _muwaqqitPrayerTimeCalculator_DataFromApi.GetPrayerTimesAsync(
                 _localDate,
@@ -131,10 +131,10 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
                 configurations: _configs, 
                 cancellationToken: default).GetAwaiter().GetResult();
 
-            //if (result.SelectMany(x => x.ToList()).Count() != 16)
-            //{
-            //    throw new Exception("No, no, no. Your benchmark is not working.");
-            //}
+            if (result.Count != 16)
+            {
+                throw new Exception("No, no, no. Your benchmark is not working.");
+            }
 
             return result;
         }
