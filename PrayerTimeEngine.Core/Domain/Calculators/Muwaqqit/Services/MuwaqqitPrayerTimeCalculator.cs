@@ -14,7 +14,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services
             TimeTypeAttributeService timeTypeAttributeService
         ) : IPrayerTimeCalculator
     {
-        public async Task<ILookup<ICalculationPrayerTimes, ETimeType>> GetPrayerTimesAsync(
+        public async Task<List<(ETimeType TimeType, ZonedDateTime ZonedDateTime)>> GetPrayerTimesAsync(
             LocalDate date,
             BaseLocationData locationData,
             List<GenericSettingConfiguration> configurations, 
@@ -53,8 +53,14 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services
             }
 
             return calculatedTimes
-                .SelectMany(kv => kv.Value.Select(t => new { kv.Key, Value = t }))
-                .ToLookup(k => k.Key, k => k.Value);
+                .SelectMany(x =>
+                {
+                    ICalculationPrayerTimes muwaqqitPrayerTimes = x.Key;
+                    List<ETimeType> timeTypes = x.Value;
+
+                    return timeTypes.Select(timeType => (timeType, muwaqqitPrayerTimes.GetZonedDateTimeForTimeType(timeType)));
+                })
+                .ToList();
         }
 
         private List<ETimeType> consumeDegreeValues(

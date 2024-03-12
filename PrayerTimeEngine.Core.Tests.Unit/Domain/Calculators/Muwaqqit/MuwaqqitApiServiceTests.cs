@@ -3,6 +3,7 @@ using NodaTime;
 using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Models;
 using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services;
 using PrayerTimeEngine.Core.Tests.Common;
+using PrayerTimeEngine.Core.Tests.Common.TestData;
 using System.Net;
 
 namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Muwaqqit
@@ -20,7 +21,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Muwaqqit
         }
 
         [Fact]
-        public async Task GetTimesAsync_X_X()
+        public async Task GetTimesAsync_IrrelevantInput_MockedHttpResults()
         {
             // ARRANGE
             var date = new LocalDate(2023, 7, 29);
@@ -29,7 +30,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Muwaqqit
             _mockHttpMessageHandler.HandleRequestFunc =
                 (request) =>
                 {
-                    Stream responseStream = File.OpenRead(Path.Combine(MUWAQQIT_TEST_DATA_FILE_PATH, "Muwaqqit_TestPrayerTimeData_20230730_Innsbruck_Config1.txt"));
+                    Stream responseStream = File.OpenRead(Path.Combine(TestDataHelper.MUWAQQIT_TEST_DATA_FILE_PATH, "Muwaqqit_TestPrayerTimeData_20230730_Innsbruck_Config1.txt"));
 
                     return new HttpResponseMessage
                     {
@@ -63,17 +64,17 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Muwaqqit
             time.Longitude.Should().Be(11.41337M);
             time.InsertInstant.Should().BeNull();
 
-            time.Asr.Should().Be(new ZonedDateTime(Instant.FromUtc(2023, 7, 30, 15, 25, 53), europeTimeZone));
-            time.AsrKaraha.Should().Be(new ZonedDateTime(Instant.FromUtc(2023, 7, 30, 18, 23, 53), europeTimeZone));
-            time.AsrMithlayn.Should().Be(new ZonedDateTime(Instant.FromUtc(2023, 7, 30, 16, 33, 27), europeTimeZone));
-            time.Dhuhr.Should().Be(new ZonedDateTime(Instant.FromUtc(2023, 7, 30, 11, 21, 22), europeTimeZone));
-            time.Duha.Should().Be(new ZonedDateTime(Instant.FromUtc(2023, 7, 30, 4, 17, 04), europeTimeZone));
-            time.Fajr.Should().Be(new ZonedDateTime(Instant.FromUtc(2023, 7, 30, 2, 27, 04), europeTimeZone));
-            time.Isha.Should().Be(new ZonedDateTime(Instant.FromUtc(2023, 7, 30, 20, 13, 17), europeTimeZone));
-            time.Ishtibaq.Should().Be(new ZonedDateTime(Instant.FromUtc(2023, 7, 30, 19, 41, 46), europeTimeZone));
-            time.Maghrib.Should().Be(new ZonedDateTime(Instant.FromUtc(2023, 7, 30, 18, 50, 59), europeTimeZone));
-            time.NextFajr.Should().Be(new ZonedDateTime(Instant.FromUtc(2023, 7, 31, 2, 28, 47), europeTimeZone));
-            time.Shuruq.Should().Be(new ZonedDateTime(Instant.FromUtc(2023, 7, 30, 3, 49, 53), europeTimeZone));
+            time.Asr           .Should().Be(new LocalDateTime(2023, 7, 30, 17, 25, 53).InZoneStrictly(europeTimeZone));
+            time.AsrKaraha     .Should().Be(new LocalDateTime(2023, 7, 30, 20, 23, 53).InZoneStrictly(europeTimeZone));
+            time.AsrMithlayn   .Should().Be(new LocalDateTime(2023, 7, 30, 18, 33, 27).InZoneStrictly(europeTimeZone));
+            time.Dhuhr         .Should().Be(new LocalDateTime(2023, 7, 30, 13, 21, 22).InZoneStrictly(europeTimeZone));
+            time.Duha          .Should().Be(new LocalDateTime(2023, 7, 30, 06, 17, 04).InZoneStrictly(europeTimeZone));
+            time.Fajr          .Should().Be(new LocalDateTime(2023, 7, 30, 04, 27, 04).InZoneStrictly(europeTimeZone));
+            time.Isha          .Should().Be(new LocalDateTime(2023, 7, 30, 22, 13, 17).InZoneStrictly(europeTimeZone));
+            time.Ishtibaq      .Should().Be(new LocalDateTime(2023, 7, 30, 21, 41, 46).InZoneStrictly(europeTimeZone));
+            time.Maghrib       .Should().Be(new LocalDateTime(2023, 7, 30, 20, 50, 59).InZoneStrictly(europeTimeZone));
+            time.NextFajr      .Should().Be(new LocalDateTime(2023, 7, 31, 04, 28, 47).InZoneStrictly(europeTimeZone));
+            time.Shuruq        .Should().Be(new LocalDateTime(2023, 7, 30, 05, 49, 53).InZoneStrictly(europeTimeZone));
         }
     }
 }

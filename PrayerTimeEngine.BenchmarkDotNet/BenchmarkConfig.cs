@@ -1,6 +1,5 @@
 ﻿using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Jobs;
-using BenchmarkDotNet.Toolchains.InProcess.NoEmit;
 
 namespace PrayerTimeEngine.BenchmarkDotNet
 {

@@ -10,9 +10,8 @@ using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Models;
 using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services;
 using PrayerTimeEngine.Core.Domain.Models;
 using System.Data.Common;
-using PrayerTimeEngine.Core.Tests.Common;
-using System.Net;
 using NSubstitute.Extensions;
+using PrayerTimeEngine.Core.Tests.Common.TestData;
 
 namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
 {
@@ -60,7 +59,7 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
             // to make sure that before the benchmark the data is gotten from the APIService and stored in the db
             new MuwaqqitPrayerTimeCalculator(
                     new MuwaqqitDBAccess(appDbContext),
-                    getPreparedMuwaqqitApiService(),
+                    SubstitutionHelper.GetMockedMuwaqqitApiService(),
                     new TimeTypeAttributeService()
                 ).GetPrayerTimesAsync(_localDate, _locationData, _configs, default).GetAwaiter().GetResult();
 
@@ -80,36 +79,9 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
             return new MuwaqqitPrayerTimeCalculator(
                     // returns null per default
                     Substitute.For<IMuwaqqitDBAccess>(),
-                    getPreparedMuwaqqitApiService(),
+                    SubstitutionHelper.GetMockedMuwaqqitApiService(),
                     new TimeTypeAttributeService()
                 );
-        }
-
-        private static MuwaqqitApiService getPreparedMuwaqqitApiService()
-        {
-            static HttpResponseMessage handleRequestFunc(HttpRequestMessage request)
-            {
-                Stream responseStream =
-                    request.RequestUri.AbsoluteUri switch
-                    {
-                        @"https://www.muwaqqit.com/api2.json?d=2023-07-30&ln=11.41337&lt=47.2803835&tz=Europe%2fVienna&fa=-12&ia=3.5&isn=-8&ea=-12" => File.OpenRead(Path.Combine(BaseTest.MUWAQQIT_TEST_DATA_FILE_PATH, "Muwaqqit_TestPrayerTimeData_20230730_Innsbruck_Config1.txt")),
-                        @"https://www.muwaqqit.com/api2.json?d=2023-07-30&ln=11.41337&lt=47.2803835&tz=Europe%2fVienna&fa=-7.5&ia=4.5&isn=-12&ea=-15.5" => File.OpenRead(Path.Combine(BaseTest.MUWAQQIT_TEST_DATA_FILE_PATH, "Muwaqqit_TestPrayerTimeData_20230730_Innsbruck_Config2.txt")),
-                        @"https://www.muwaqqit.com/api2.json?d=2023-07-30&ln=11.41337&lt=47.2803835&tz=Europe%2fVienna&fa=-4.5&ia=-12&isn=-12&ea=-12" => File.OpenRead(Path.Combine(BaseTest.MUWAQQIT_TEST_DATA_FILE_PATH, "Muwaqqit_TestPrayerTimeData_20230730_Innsbruck_Config3.txt")),
-                        @"https://www.muwaqqit.com/api2.json?d=2023-07-30&ln=11.41337&lt=47.2803835&tz=Europe%2fVienna&fa=-15&ia=-12&isn=-12&ea=-12" => File.OpenRead(Path.Combine(BaseTest.MUWAQQIT_TEST_DATA_FILE_PATH, "Muwaqqit_TestPrayerTimeData_20230730_Innsbruck_Config4.txt")),
-                        _ => throw new Exception($"No response registered for URL: {request.RequestUri.AbsoluteUri}")
-                    };
-
-                return new HttpResponseMessage
-                {
-                    StatusCode = HttpStatusCode.OK,
-                    Content = new StreamContent(responseStream)
-                };
-            }
-
-            var mockHttpMessageHandler = new MockHttpMessageHandler(handleRequestFunc);
-            var httpClient = new HttpClient(mockHttpMessageHandler);
-
-            return new MuwaqqitApiService(httpClient);
         }
 
         private static DbConnection _dbContextKeepAliveSqlConnection;

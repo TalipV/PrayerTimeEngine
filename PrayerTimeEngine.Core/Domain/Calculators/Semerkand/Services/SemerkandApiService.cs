@@ -16,7 +16,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
         {
             Dictionary<string, int> countriesByCountryID = [];
 
-            using HttpResponseMessage response = await httpClient.GetAsync(GET_COUNTRIES_URL, cancellationToken).ConfigureAwait(false);
+            using HttpResponseMessage response = await httpClient.GetAsync(GET_COUNTRIES_URL, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
             response.EnsureSuccessStatusCode();
             using Stream jsonStream = await response.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
 
@@ -68,7 +68,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
             DateTimeZone dateTimeZone = DateTimeZoneProviders.Tzdb[timezoneName];
             string prayerTimesURL = string.Format(GET_TIMES_BY_CITY, cityID, date.Year);
 
-            HttpResponseMessage response = await httpClient.GetAsync(prayerTimesURL, cancellationToken).ConfigureAwait(false);
+            using HttpResponseMessage response = await httpClient.GetAsync(prayerTimesURL, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
             response.EnsureSuccessStatusCode();
             Stream jsonStream = await response.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
 

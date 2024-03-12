@@ -3,6 +3,7 @@ using PrayerTimeEngine.Core.Tests.Common;
 using System.Net;
 using FluentAssertions;
 using NodaTime;
+using PrayerTimeEngine.Core.Tests.Common.TestData;
 
 namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
 {
@@ -25,7 +26,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
             _mockHttpMessageHandler.HandleRequestFunc =
                 (request) =>
                 {
-                    Stream responseStream = File.OpenRead(Path.Combine(SEMERKAND_TEST_DATA_FILE_PATH, "Semerkand_TestCountriesData.txt"));
+                    Stream responseStream = File.OpenRead(Path.Combine(TestDataHelper.SEMERKAND_TEST_DATA_FILE_PATH, "Semerkand_TestCountriesData.txt"));
 
                     return new HttpResponseMessage
                     {
@@ -54,7 +55,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
             _mockHttpMessageHandler.HandleRequestFunc =
                 (request) =>
                 {
-                    Stream responseStream = File.OpenRead(Path.Combine(SEMERKAND_TEST_DATA_FILE_PATH, "Semerkand_TestCityData_Austria.txt"));
+                    Stream responseStream = File.OpenRead(Path.Combine(TestDataHelper.SEMERKAND_TEST_DATA_FILE_PATH, "Semerkand_TestCityData_Austria.txt"));
 
                     return new HttpResponseMessage
                     {
@@ -85,7 +86,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
             _mockHttpMessageHandler.HandleRequestFunc =
                 (request) =>
                 {
-                    Stream responseStream = File.OpenRead(Path.Combine(SEMERKAND_TEST_DATA_FILE_PATH, "Semerkand_TestPrayerTimeData_20230729_Innsbruck.txt"));
+                    Stream responseStream = File.OpenRead(Path.Combine(TestDataHelper.SEMERKAND_TEST_DATA_FILE_PATH, "Semerkand_TestPrayerTimeData_20230729_Innsbruck.txt"));
 
                     return new HttpResponseMessage
                     {

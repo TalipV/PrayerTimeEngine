@@ -26,13 +26,14 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
             [
                 ETimeType.FajrGhalas,
                 ETimeType.FajrKaraha,
+                ETimeType.DuhaStart,
                 ETimeType.DuhaEnd,
                 ETimeType.AsrMithlayn,
                 ETimeType.AsrKaraha,
                 ETimeType.MaghribIshtibaq,
             ];
 
-        public async Task<ILookup<ICalculationPrayerTimes, ETimeType>> GetPrayerTimesAsync(
+        public async Task<List<(ETimeType TimeType, ZonedDateTime ZonedDateTime)>> GetPrayerTimesAsync(
             LocalDate date,
             BaseLocationData locationData,
             List<GenericSettingConfiguration> configurations, 
@@ -50,10 +51,9 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
 
             ICalculationPrayerTimes faziletPrayerTimes = await getPrayerTimesInternal(date, countryName, cityName, cancellationToken).ConfigureAwait(false);
 
-            // this single calculation entity applies to all the TimeTypes of the configurations
             return configurations
-                .Select(x => x.TimeType)
-                .ToLookup(x => faziletPrayerTimes, y => y);
+                .Select(x => (x.TimeType, faziletPrayerTimes.GetZonedDateTimeForTimeType(x.TimeType)))
+                .ToList();
         }
 
         private async Task<FaziletPrayerTimes> getPrayerTimesInternal(LocalDate date, string countryName, string cityName, CancellationToken cancellationToken)

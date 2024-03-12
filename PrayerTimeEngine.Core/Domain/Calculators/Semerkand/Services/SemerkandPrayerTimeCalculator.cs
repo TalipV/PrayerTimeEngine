@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using NodaTime;
 using PrayerTimeEngine.Core.Common.Enum;
+using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Models;
 using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Interfaces;
 using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Models;
 using PrayerTimeEngine.Core.Domain.Models;
@@ -26,13 +27,14 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
             [
                 ETimeType.FajrGhalas,
                 ETimeType.FajrKaraha,
+                ETimeType.DuhaStart,
                 ETimeType.DuhaEnd,
                 ETimeType.AsrMithlayn,
                 ETimeType.AsrKaraha,
                 ETimeType.MaghribIshtibaq,
             ];
 
-        public async Task<ILookup<ICalculationPrayerTimes, ETimeType>> GetPrayerTimesAsync(
+        public async Task<List<(ETimeType TimeType, ZonedDateTime ZonedDateTime)>> GetPrayerTimesAsync(
             LocalDate date,
             BaseLocationData locationData,
             List<GenericSettingConfiguration> configurations, 
@@ -50,11 +52,10 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
             string timezoneName = semerkandLocationData.TimezoneName;
 
             ICalculationPrayerTimes semerkandPrayerTimes = await getPrayerTimesInternal(date, countryName, cityName, timezoneName, cancellationToken).ConfigureAwait(false);
-
-            // this single calculation entity applies to all the TimeTypes of the configurations
+            
             return configurations
-            .Select(x => x.TimeType)
-                .ToLookup(x => semerkandPrayerTimes, y => y);
+                .Select(x => (x.TimeType, semerkandPrayerTimes.GetZonedDateTimeForTimeType(x.TimeType)))
+                .ToList();
         }
 
         private async Task<SemerkandPrayerTimes> getPrayerTimesInternal(LocalDate date, string countryName, string cityName, string timezoneName, CancellationToken cancellationToken)

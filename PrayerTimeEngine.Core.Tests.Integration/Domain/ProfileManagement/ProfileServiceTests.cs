@@ -16,6 +16,7 @@ using PrayerTimeEngine.Core.Domain.Models;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Interfaces;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Services;
 using PrayerTimeEngine.Core.Tests.Common;
+using PrayerTimeEngine.Core.Tests.Common.TestData;
 
 namespace PrayerTimeEngine.Core.Tests.Integration.Domain.ProfileManagement
 {
@@ -37,7 +38,7 @@ namespace PrayerTimeEngine.Core.Tests.Integration.Domain.ProfileManagement
             var dbContext = serviceProvider.GetService<AppDbContext>();
             var profileService = serviceProvider.GetService<IProfileService>() as ProfileService;
 
-            await dbContext.Profiles.AddAsync(TestData.CreateNewCompleteTestProfile());
+            await dbContext.Profiles.AddAsync(TestDataHelper.CreateNewCompleteTestProfile());
             await dbContext.SaveChangesAsync();
 
             // in the UI the data is loaded without tracking (i.e. intended for read only)
@@ -97,7 +98,7 @@ namespace PrayerTimeEngine.Core.Tests.Integration.Domain.ProfileManagement
 
             var profileService = serviceProvider.GetService<IProfileService>() as ProfileService;
 
-            await dbContext.Profiles.AddAsync(TestData.CreateNewCompleteTestProfile());
+            await dbContext.Profiles.AddAsync(TestDataHelper.CreateNewCompleteTestProfile());
             await dbContext.SaveChangesAsync();
             var profile =
                 dbContext.Profiles
@@ -155,7 +156,7 @@ namespace PrayerTimeEngine.Core.Tests.Integration.Domain.ProfileManagement
             var dbContext = serviceProvider.GetService<AppDbContext>();
             var profileService = serviceProvider.GetService<IProfileService>() as ProfileService;
 
-            await dbContext.Profiles.AddAsync(TestData.CreateNewCompleteTestProfile());
+            await dbContext.Profiles.AddAsync(TestDataHelper.CreateNewCompleteTestProfile());
             await dbContext.SaveChangesAsync();
             var profile =
                 dbContext.Profiles

@@ -7,10 +7,18 @@ using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Models;
 using PrayerTimeEngine.Core.Domain.Models;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Models;
 
-namespace PrayerTimeEngine.Core.Tests.Common
+namespace PrayerTimeEngine.Core.Tests.Common.TestData
 {
-    public static class TestData
+    public static class TestDataHelper
     {
+        private static readonly string BASE_TEST_DATA_FILE_PATH = Path.Combine(Directory.GetCurrentDirectory(), "TestData");
+
+        public static readonly string FAZILET_TEST_DATA_FILE_PATH = Path.Combine(BASE_TEST_DATA_FILE_PATH, "FaziletTestData");
+        public static readonly string SEMERKAND_TEST_DATA_FILE_PATH = Path.Combine(BASE_TEST_DATA_FILE_PATH, "SemerkandTestData");
+        public static readonly string MUWAQQIT_TEST_DATA_FILE_PATH = Path.Combine(BASE_TEST_DATA_FILE_PATH, "MuwaqqitTestData");
+
+        public static readonly string LOCATIONIQ_TEST_DATA_FILE_PATH = Path.Combine(BASE_TEST_DATA_FILE_PATH, "LocationIQTestData");
+
         public static Profile CreateNewCompleteTestProfile(int profileID = 1)
         {
             var profile = new Profile
