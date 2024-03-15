@@ -1,4 +1,4 @@
-using NodaTime;
+﻿using NodaTime;
 using PrayerTimeEngine.Core.Domain.Models;
 using PrayerTimeEngine.Presentation.ViewModel;
 using System.Reflection;
@@ -8,10 +8,23 @@ namespace PrayerTimeEngine.Views;
 
 public partial class DatabaseTablesPage : ContentPage
 {
+    private readonly DataGrid _dataGrid;
+
     public DatabaseTablesPage(DatabaseTablesPageViewModel viewModel)
     {
-        InitializeComponent();
-        BindingContext = viewModel;
+        this.BindingContext = viewModel;
+
+        var picker = new Picker();
+        picker.SetBinding(Picker.ItemsSourceProperty, "TableOptions");
+        picker.SetBinding(Picker.SelectedItemProperty, "SelectedTableOption");
+        NavigationPage.SetTitleView(this, picker);
+
+        Content = new ScrollView
+        {
+            Orientation = ScrollOrientation.Both,
+            Margin = new Thickness(10),
+            Content = _dataGrid = new DataGrid()
+        };
 
         viewModel.OnChangeSelectionAction = PopulateTabViewWithItems;
     }
@@ -28,10 +41,10 @@ public partial class DatabaseTablesPage : ContentPage
         if (list.Count == 0)
             return;
 
-        dataGrid.ItemsSource = null;
-        dataGrid.Columns.Clear();
+        _dataGrid.ItemsSource = null;
+        _dataGrid.Columns.Clear();
 
-        List<PropertyInfo> propertyInfos = 
+        List<PropertyInfo> propertyInfos =
             list.First().GetType().GetProperties()
                 .Where(x => validTypes.Contains(x.PropertyType))
                 .ToList();
@@ -46,10 +59,10 @@ public partial class DatabaseTablesPage : ContentPage
                 Binding = new Binding(prop.Name)
             };
 #pragma warning restore CS0618 // Type or member is obsolete
-            dataGrid.Columns.Add(dataGridColumn);
+            _dataGrid.Columns.Add(dataGridColumn);
         }
 
-        dataGrid.ItemsSource = list;
+        _dataGrid.ItemsSource = list;
     }
 }
 
