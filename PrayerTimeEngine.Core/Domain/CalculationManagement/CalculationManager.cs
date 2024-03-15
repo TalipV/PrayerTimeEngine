@@ -57,10 +57,15 @@ namespace PrayerTimeEngine.Core.Domain.CalculationManagement
 
             prayerTimeEntity = new PrayerTimesBundle();
 
-            var complexTypeCalculations = await calculateComplexTypes(profile, date, cancellationToken).ConfigureAwait(false);
-            var simpleTypeCalculations = calculateSimpleTypes(profile, prayerTimeEntity).ToList();
+            var complexTypeCalculations = 
+                await calculateInternal(profile, date, cancellationToken).ConfigureAwait(false);
 
-            var allCalculations = complexTypeCalculations.Select(x => (x.TimeType, (ZonedDateTime?)x.ZonedDateTime)).Concat(simpleTypeCalculations);
+            var allCalculations = 
+                complexTypeCalculations
+                    .Select(x => (x.TimeType, (ZonedDateTime?)x.ZonedDateTime))
+                    // left as (non-list) IEnumerable because it has to run after
+                    // the complex calculations landed in prayerTimeEntity
+                    .Concat(calculateSimpleTypes(profile, prayerTimeEntity));
 
             foreach ((ETimeType timeType, ZonedDateTime? zonedDateTime) in allCalculations)
             {
@@ -75,7 +80,7 @@ namespace PrayerTimeEngine.Core.Domain.CalculationManagement
             return prayerTimeEntity;
         }
 
-        private async Task<List<(ETimeType TimeType, ZonedDateTime ZonedDateTime)>> calculateComplexTypes(
+        private async Task<List<(ETimeType TimeType, ZonedDateTime ZonedDateTime)>> calculateInternal(
             Profile profile,
             LocalDate date,
             CancellationToken cancellationToken)

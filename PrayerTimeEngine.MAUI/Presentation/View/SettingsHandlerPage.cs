@@ -1,4 +1,4 @@
-using MethodTimer;
+﻿using MethodTimer;
 using PrayerTimeEngine.Code.Presentation.View;
 using PrayerTimeEngine.Presentation.ViewModel;
 using UraniumUI.Material.Controls;
@@ -8,10 +8,24 @@ namespace PrayerTimeEngine.Views;
 public partial class SettingsHandlerPage : ContentPage
 {
     private readonly SettingsHandlerPageViewModel _viewModel;
+    private readonly TabView _tabView;
 
     public SettingsHandlerPage(SettingsHandlerPageViewModel viewModel)
     {
-        InitializeComponent();
+        NavigationPage.SetTitleView(this, new Label
+        {
+            Text = "Configuration",
+            FontAttributes = FontAttributes.Bold,
+            FontSize = 20,
+            HorizontalTextAlignment = TextAlignment.Center,
+            VerticalTextAlignment = TextAlignment.Center
+        });
+
+        Content = _tabView = new TabView
+        {
+            TabPlacement = TabViewTabPlacement.Top
+        };
+
         BindingContext = _viewModel = viewModel;
 
         viewModel.Initialized += setUpTabPages;
@@ -49,7 +63,7 @@ public partial class SettingsHandlerPage : ContentPage
             };
 
             tabItem.SetBinding(TabItem.TitleProperty, nameof(settingContentPages.ViewModel.TabTitle));
-            tabView.Items.Add(tabItem);
+            _tabView.Items.Add(tabItem);
         }
     }
 }

@@ -6,14 +6,14 @@ namespace PrayerTimeEngine.Presentation.GraphicsView
 {
     public class PrayerTimeGraphicView : IDrawable
     {
-        private Color MainBackgroundColor = Color.FromRgba(35, 41, 53, 255);
-        private Color PrayerTimeColor = Colors.LightGray;
+        //private readonly Color MainBackgroundColor = Color.FromRgba(35, 41, 53, 255);
+        private readonly Color PrayerTimeColor = Colors.LightGray;
 
-        private Color PrayerMainTextColor = Colors.Black;
-        private Color CurrentTimeTextColor = Colors.Red;
+        private readonly Color PrayerMainTextColor = Colors.Black;
+        private readonly Color CurrentTimeTextColor = Colors.Red;
 
-        private Color PrayerSubTimeBorderColor = Color.FromArgb("#f3eae3");
-        private Color PrayerSubTimeTextColor = Colors.Black;
+        private readonly Color PrayerSubTimeBorderColor = Color.FromArgb("#f3eae3");
+        private readonly Color PrayerSubTimeTextColor = Colors.Black;
 
         private DateTimeZone _timeZone { get; } = MauiProgram.ServiceProvider.GetRequiredService<ISystemInfoService>().GetSystemTimeZone();
 
@@ -33,7 +33,7 @@ namespace PrayerTimeEngine.Presentation.GraphicsView
 
         private void drawInternal(ICanvas canvas, RectF fullRectangle)
         {
-            RectF mainGraphicRectangle =
+            var mainGraphicRectangle =
                 new RectF(
                     x: 40,
                     y: 40,
@@ -82,7 +82,7 @@ namespace PrayerTimeEngine.Presentation.GraphicsView
 
             float relativePos = getRelativeDepthByInstant(currentInstant, baseRectangle);
 
-            RectF indicatorRectangle =
+            var indicatorRectangle =
                 new RectF(
                     x: baseRectangle.X,
                     y: baseRectangle.Y + relativePos,
@@ -355,7 +355,7 @@ namespace PrayerTimeEngine.Presentation.GraphicsView
             float topPos = innerBackgroundRectangle.Top + getRelativeDepthByInstant(startDateTime, innerBackgroundRectangle);
             float height = getRelativeDepthByInstant(endDateTime, innerBackgroundRectangle) - getRelativeDepthByInstant(startDateTime, innerBackgroundRectangle);
 
-            RectF innerSubtimeBackgroundRectangle =
+            var innerSubtimeBackgroundRectangle =
                 new RectF(
                     x: leftPos,
                     y: topPos,
