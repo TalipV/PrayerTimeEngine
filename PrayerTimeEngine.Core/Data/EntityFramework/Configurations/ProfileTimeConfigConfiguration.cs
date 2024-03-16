@@ -8,7 +8,7 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Configurations
 {
     public class ProfileTimeConfigConfiguration : IEntityTypeConfiguration<ProfileTimeConfig>
     {
-        public static readonly JsonSerializerOptions JsonOptions = new JsonSerializerOptions
+        public static readonly JsonSerializerOptions JsonOptions = new()
         {
 
         };

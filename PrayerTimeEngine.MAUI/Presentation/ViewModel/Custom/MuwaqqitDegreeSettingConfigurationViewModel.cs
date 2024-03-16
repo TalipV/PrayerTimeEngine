@@ -45,8 +45,10 @@ namespace PrayerTimeEngine.Presentation.ViewModel.Custom
 
                 stackLayout.Children.Add(new Label { Text = "Degree" });
 
-                Picker picker = new Picker();
-                picker.ItemsSource = DegreeItemsSource.ToList();
+                var picker = new Picker
+                {
+                    ItemsSource = DegreeItemsSource.ToList()
+                };
                 picker.SetBinding(Picker.SelectedItemProperty, new Binding(nameof(SelectedDegree)));
                 stackLayout.Children.Add(picker);
             }
@@ -65,7 +67,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel.Custom
             SelectedDegree = muwaqqitConfig.Degree;
         }
 
-        private IReadOnlyCollection<double> getItemSource(ETimeType timeType)
+        private static IReadOnlyCollection<double> getItemSource(ETimeType timeType)
         {
             if (timeType == ETimeType.DuhaStart || timeType == ETimeType.AsrKaraha)
             {

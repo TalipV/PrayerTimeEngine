@@ -28,15 +28,32 @@ public partial class SettingsHandlerPage : ContentPage
 
         BindingContext = _viewModel = viewModel;
 
-        viewModel.Initialized += setUpTabPages;
+        viewModel.Initialized += () =>
+        {
+            foreach (SettingsContentPage settingContentPages in _viewModel.SettingsContentPages)
+            {
+                var tabItem = new TabItem
+                {
+                    Content = new ContentView
+                    {
+                        Content = settingContentPages.Content,
+                        BindingContext = settingContentPages.ViewModel
+                    },
+                    BindingContext = settingContentPages.ViewModel,
+                };
+
+                tabItem.SetBinding(TabItem.TitleProperty, nameof(settingContentPages.ViewModel.TabTitle));
+                _tabView.Items.Add(tabItem);
+            }
+        };
     }
 
-    protected override void OnDisappearing()
+    protected override async void OnDisappearing()
     {
         base.OnDisappearing();
 
         // for ViewModel to handle setting saving
-        Task.Run(onDisappearingForAllSettingContentPages);
+        await onDisappearingForAllSettingContentPages();
     }
 
     [Time]
@@ -45,25 +62,6 @@ public partial class SettingsHandlerPage : ContentPage
         foreach (SettingsContentPageViewModel contentPageViewModel in _viewModel.SettingsContentPages.Select(x => x.ViewModel))
         {
             await contentPageViewModel.OnDisappearing();
-        }
-    }
-
-    private void setUpTabPages()
-    {
-        foreach (SettingsContentPage settingContentPages in _viewModel.SettingsContentPages)
-        {
-            var tabItem = new TabItem
-            {
-                Content = new ContentView
-                {
-                    Content = settingContentPages.Content,
-                    BindingContext = settingContentPages.ViewModel
-                },
-                BindingContext = settingContentPages.ViewModel,
-            };
-
-            tabItem.SetBinding(TabItem.TitleProperty, nameof(settingContentPages.ViewModel.TabTitle));
-            _tabView.Items.Add(tabItem);
         }
     }
 }

@@ -161,13 +161,13 @@ namespace PrayerTimeEngine.Presentation.ViewModel
 
         #region private methods
 
+#pragma warning disable CA1822 // Mark members as static
         private void createNewProfile()
         {
             // create new profile with SequenceNo = profiles.Select(x => x.SequenceNo).Max();
 
             // switch to this new profile
         }
-
         private void deleteCurrentProfile()
         {
             // don't allow if it is the only profile
@@ -176,13 +176,13 @@ namespace PrayerTimeEngine.Presentation.ViewModel
 
             // switch to profil before it or alternatively after it
         }
-
         private void switchProfile()
         {
             // set CurrentProfile to new value
 
             // reload prayer times for new profile
         }
+#pragma warning restore CA1822 // Mark members as static
 
         // concurrent loading is prevent in that subsequent loading requests are ignored when a previous one is currently running
         // but that one can be cancelled by things like leaving the page
@@ -245,7 +245,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
             CurrentProfile ??= (await profileService.GetProfiles(cancellationToken: default)).First();
         }        
         
-        private void onAfterFirstLoad()
+        private static void onAfterFirstLoad()
         {
             double startUpTimeMS = (DateTime.Now - MauiProgram.StartDateTime).TotalMilliseconds;
             showToastMessage($"{startUpTimeMS:N0}ms to start!");

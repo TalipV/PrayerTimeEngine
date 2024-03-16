@@ -31,7 +31,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
 
         #region properties
 
-        public List<SettingsContentPage> SettingsContentPages = new();
+        public List<SettingsContentPage> SettingsContentPages = [];
 
         #endregion properties
 
