@@ -36,12 +36,13 @@ namespace PrayerTimeEngine.Presentation.ViewModel
 
         private void onSelectedTableOptionChanged()
         {
-            if (string.IsNullOrWhiteSpace(this.SelectedTableOption) || !_dataDict.ContainsKey(this.SelectedTableOption))
+            if (string.IsNullOrWhiteSpace(this.SelectedTableOption))
                 return;
 
-            var list = _dataDict[this.SelectedTableOption];
+            if (!_dataDict.TryGetValue(this.SelectedTableOption, out List<object> value))
+                return;
 
-            OnChangeSelectionAction?.Invoke(list);
+            OnChangeSelectionAction?.Invoke(value);
         }
     }
 }

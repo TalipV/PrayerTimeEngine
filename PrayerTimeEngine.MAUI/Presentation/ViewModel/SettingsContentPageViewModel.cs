@@ -128,10 +128,12 @@ namespace PrayerTimeEngine.Presentation.ViewModel
 
         private GenericSettingConfiguration getCurrentCalculationConfiguration()
         {
-            return
-                CustomSettingConfigurationViewModel?
-                    .BuildSetting(SelectedMinuteAdjustment, IsTimeShown)
-                        ?? getGeneralCalculationConfiguration();
+            if (CustomSettingConfigurationViewModel != null)
+            {
+                return CustomSettingConfigurationViewModel.BuildSetting(SelectedMinuteAdjustment, IsTimeShown);
+            }
+
+            return getGeneralCalculationConfiguration();
         }
 
         private GenericSettingConfiguration getGeneralCalculationConfiguration()

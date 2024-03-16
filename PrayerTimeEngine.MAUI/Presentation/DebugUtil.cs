@@ -9,11 +9,13 @@ namespace PrayerTimeEngine.Presentation
         public static string GetScreenSizeCategoryName()
         {
             Type helpersType = typeof(OnScreenSizeHelpers);// Fetch screen diagonal from OnScreenSizeHelpers with no parameters
-            MethodInfo getDiagonalMethod = helpersType?.GetMethod("GetScreenDiagonalInches",
-                                                                 BindingFlags.Static | BindingFlags.NonPublic,
-                                                                 null,
-                                                                 new Type[] { },
-                                                                 null);
+            MethodInfo getDiagonalMethod = 
+                helpersType?
+                    .GetMethod("GetScreenDiagonalInches",
+                        bindingAttr: BindingFlags.Static | BindingFlags.NonPublic,
+                        binder: null,
+                        types: [],
+                        modifiers: null);
 
             double screenDiagonalInches = (double)getDiagonalMethod?.Invoke(null, null);
 
@@ -27,7 +29,7 @@ namespace PrayerTimeEngine.Presentation
             // 3. Call GetCategoryByDiagonalSize method on Categorizer
             Type categorizerType = categorizerInstance.GetType();
             MethodInfo getCategoryMethod = categorizerType.GetMethod("GetCategoryByDiagonalSize");
-            object[] parameters = new object[] { Manager.Current.Mappings, screenDiagonalInches };
+            object[] parameters = [Manager.Current.Mappings, screenDiagonalInches];
             string result = getCategoryMethod?.Invoke(categorizerInstance, parameters)?.ToString() ?? "NOT FOUND";
 
             return result;
