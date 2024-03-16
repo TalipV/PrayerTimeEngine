@@ -49,6 +49,7 @@ namespace PrayerTimeEngine;
 // - CancellationTokens
 // - Transactions when saving country data and city data to prevent partial safes (or rethink the whole thing)
 // - PlaceService and ProfileService with no or default CancellationToken?
+// - delete old db cache data from time to time
 
 // TODO late:
 // - Check for possibly unsafe concurrent actions (fast user interactions, app crashes and other special cases) 
@@ -78,7 +79,7 @@ public static class MauiProgram
     public static readonly DateTime StartDateTime = DateTime.Now;
     public static IServiceProvider ServiceProvider { get; private set; }
 
-    public static bool IsFullyInitialized = false;
+    public static bool IsFullyInitialized { get; set; } = false;
 
     public static MauiApp CreateMauiApp()
     {
