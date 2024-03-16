@@ -28,31 +28,43 @@ namespace PrayerTimeEngine
                     });
         }
 
+        private const string _optionsText = "Optionen";
+        private const string _showTimeConfigsOverviewText = "Überblick: Zeiten-Konfiguration";
+        private const string _showLocationConfigsOverviewText = "Überblick: Ortsdaten";
+        private const string _showLogsText = "Logs anzeigen";
+        private const string _showDbTablesText = "DB-Tabellen anzeigen";
+        private const string _saveDbFileText = "DB-Datei speichern";
+        private const string _resetAppText = "App-Daten zurücksetzen";
+        private const string _cancelText = "Abbrechen";
+
         private async Task openOptionsMenu()
         {
             string action = await this.DisplayActionSheet(
-                title: "Options",
-                cancel: "Cancel",
+                title: _optionsText,
+                cancel: "Abbrechen",
                 destruction: null,
-                "Zeiten-Konfiguration",
-                "Ortsdaten",
-                "DB-Tabellen zeigen",
-                "DB-File speichern",
-                "Logs anzeigen",
-                "Reset");
+                _showTimeConfigsOverviewText,
+                _showLocationConfigsOverviewText,
+                _showLogsText,
+                _showDbTablesText,
+                _saveDbFileText,
+                _resetAppText);
 
             switch (action)
             {
-                case "Zeiten-Konfiguration":
-                    await displayAlert(this._viewModel.GetPrayerTimeConfigDisplayText());
+                case _showTimeConfigsOverviewText:
+                    await DisplayAlert("Info", this._viewModel.GetPrayerTimeConfigDisplayText(), "Ok");
                     break;
-                case "Ortsdaten":
-                    await displayAlert(this._viewModel.GetLocationDataDisplayText());
+                case _showLocationConfigsOverviewText:
+                    await DisplayAlert("Info", this._viewModel.GetLocationDataDisplayText(), "Ok");
                     break;
-                case "DB-Tabellen zeigen":
+                case _showLogsText:
+                    this._viewModel.GoToLogsPageCommand.Execute(null);
+                    break;
+                case _showDbTablesText:
                     await this._viewModel.ShowDatabaseTable();
                     break;
-                case "DB-File speichern":
+                case _saveDbFileText:
                     FolderPickerResult folderPickerResult = await FolderPicker.PickAsync(CancellationToken.None);
 
                     if (folderPickerResult.Folder != null)
@@ -64,23 +76,18 @@ namespace PrayerTimeEngine
                     }
 
                     break;
-                case "Logs anzeigen":
-                    this._viewModel.GoToLogsPageCommand.Execute(null);
-                    break;
-                case "Reset":
+                case _resetAppText:
+                    if (!await DisplayAlert("Bestätigung", "Daten wirklich zurücksetzen?", "Ja", "Abbrechen"))
+                        break;
+
                     if (File.Exists(AppConfig.DATABASE_PATH))
                         File.Delete(AppConfig.DATABASE_PATH);
                     Application.Current.Quit();
                     break;
-                case "Cancel":
+                case _cancelText:
                     break;
             }
 
-        }
-
-        private async Task displayAlert(string text)
-        {
-            await DisplayAlert("Info", text, "Ok");
         }
 
         private void setCustomSizes()
