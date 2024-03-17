@@ -12,7 +12,7 @@ using PrayerTimeEngine.Core.Domain.Models;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Interfaces;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Models.Common;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Interfaces;
-using PrayerTimeEngine.Core.Domain.ProfileManagement.Models;
+using PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
 using PrayerTimeEngine.Presentation.Service.Navigation;
 using PrayerTimeEngine.Services;
 using PrayerTimeEngine.Services.SystemInfoService;

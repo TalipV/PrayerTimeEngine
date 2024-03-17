@@ -1,6 +1,6 @@
 ﻿using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Domain.Models;
-using PrayerTimeEngine.Core.Domain.ProfileManagement.Models;
+using PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
 
 namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Interfaces
 {

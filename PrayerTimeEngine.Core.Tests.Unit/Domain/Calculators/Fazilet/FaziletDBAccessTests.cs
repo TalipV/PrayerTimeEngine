@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using NodaTime;
 using PrayerTimeEngine.Core.Data.EntityFramework;
-using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Models;
+using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Models.Entities;
 using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services;
 using PrayerTimeEngine.Core.Tests.Common;
 

@@ -2,7 +2,7 @@
 using NodaTime;
 using PrayerTimeEngine.Core.Data.EntityFramework;
 using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Interfaces;
-using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Models;
+using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Models.Entities;
 
 namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services
 {

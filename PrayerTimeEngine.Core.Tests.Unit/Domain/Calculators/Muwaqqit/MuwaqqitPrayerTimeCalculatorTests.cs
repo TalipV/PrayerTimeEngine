@@ -5,6 +5,7 @@ using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Domain;
 using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Interfaces;
 using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Models;
+using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Models.Entities;
 using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services;
 using PrayerTimeEngine.Core.Domain.Models;
 using PrayerTimeEngine.Core.Tests.Common;

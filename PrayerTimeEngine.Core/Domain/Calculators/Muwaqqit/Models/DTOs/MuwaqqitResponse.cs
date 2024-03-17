@@ -1,4 +1,4 @@
-﻿namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Models
+﻿namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Models.DTOs
 {
     public class MuwaqqitJSONResponse
     {

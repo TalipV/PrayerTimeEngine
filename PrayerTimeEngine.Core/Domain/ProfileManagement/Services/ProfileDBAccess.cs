@@ -4,7 +4,7 @@ using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Data.EntityFramework;
 using PrayerTimeEngine.Core.Domain.Models;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Interfaces;
-using PrayerTimeEngine.Core.Domain.ProfileManagement.Models;
+using PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
 
 namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Services
 {

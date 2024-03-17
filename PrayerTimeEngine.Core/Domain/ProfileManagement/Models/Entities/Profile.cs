@@ -1,7 +1,7 @@
-﻿using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Models;
+﻿using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Models.Entities;
 using PropertyChanged;
 
-namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Models
+namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities
 {
     [AddINotifyPropertyChangedInterface]
     public class Profile
@@ -30,7 +30,7 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Models
 
             // compare TimeConfigs irrespective of order
             var otherTimeConfigs = otherProfile.TimeConfigs.ToList();
-            foreach (ProfileTimeConfig timeConfig in this.TimeConfigs)
+            foreach (ProfileTimeConfig timeConfig in TimeConfigs)
             {
                 if (otherTimeConfigs.FirstOrDefault(x => x.Equals(timeConfig)) is ProfileTimeConfig match)
                     otherTimeConfigs.Remove(match);
@@ -42,7 +42,7 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Models
 
             // compare LocationConfigs irrespective of order
             var otherLocationConfigs = otherProfile.LocationConfigs.ToList();
-            foreach (var locationConfig in this.LocationConfigs)
+            foreach (var locationConfig in LocationConfigs)
             {
                 if (otherLocationConfigs.FirstOrDefault(x => x.Equals(locationConfig)) is ProfileLocationConfig match)
                     otherLocationConfigs.Remove(match);

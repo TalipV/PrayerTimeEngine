@@ -12,6 +12,7 @@ using PrayerTimeEngine.Core.Domain.Models;
 using System.Data.Common;
 using NSubstitute.Extensions;
 using PrayerTimeEngine.Core.Tests.Common.TestData;
+using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Models.Entities;
 
 namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
 {

@@ -1,4 +1,4 @@
-﻿using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Models;
+﻿using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Models.Entities;
 
 namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Interfaces
 {

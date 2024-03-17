@@ -2,7 +2,7 @@
 using PrayerTimeEngine.Code.Presentation.View;
 using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Domain;
-using PrayerTimeEngine.Core.Domain.ProfileManagement.Models;
+using PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
 using PrayerTimeEngine.Presentation.Service.Navigation;
 using PrayerTimeEngine.Presentation.Service.SettingsContentPageFactory;
 using PropertyChanged;

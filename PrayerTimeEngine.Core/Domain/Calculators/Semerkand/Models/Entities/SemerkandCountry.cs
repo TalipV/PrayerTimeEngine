@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Models
+namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Models.Entities
 {
     public class SemerkandCountry
     {

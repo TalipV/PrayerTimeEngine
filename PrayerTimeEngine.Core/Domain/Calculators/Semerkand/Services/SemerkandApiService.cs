@@ -1,7 +1,7 @@
 ﻿using NodaTime;
 using NodaTime.Text;
 using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Interfaces;
-using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Models;
+using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Models.Entities;
 using System.Text.Json;
 
 namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services

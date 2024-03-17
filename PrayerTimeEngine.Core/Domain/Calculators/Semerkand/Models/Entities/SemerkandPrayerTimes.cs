@@ -3,7 +3,7 @@ using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Domain.Models;
 using System.ComponentModel.DataAnnotations;
 
-namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Models
+namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Models.Entities
 {
     public class SemerkandPrayerTimes : ICalculationPrayerTimes
     {

@@ -7,6 +7,7 @@ using AsyncKeyedLock;
 using PrayerTimeEngine.Core.Domain.Models;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Models.Common;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Interfaces;
+using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Models.Entities;
 
 namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
 {

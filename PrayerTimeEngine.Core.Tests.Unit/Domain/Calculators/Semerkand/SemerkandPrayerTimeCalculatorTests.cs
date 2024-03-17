@@ -12,6 +12,7 @@ using NSubstitute.ReceivedExtensions;
 using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Tests.Common;
 using NSubstitute.ReturnsExtensions;
+using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Models.Entities;
 
 namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
 {

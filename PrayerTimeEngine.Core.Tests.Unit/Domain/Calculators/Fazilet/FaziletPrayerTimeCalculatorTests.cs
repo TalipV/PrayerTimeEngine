@@ -5,6 +5,7 @@ using NSubstitute;
 using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Interfaces;
 using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Models;
+using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Models.Entities;
 using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services;
 using PrayerTimeEngine.Core.Domain.Models;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Interfaces;
