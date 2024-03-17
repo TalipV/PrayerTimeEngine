@@ -53,7 +53,7 @@ public partial class SettingsHandlerPage : ContentPage
         base.OnDisappearing();
 
         // for ViewModel to handle setting saving
-        await onDisappearingForAllSettingContentPages();
+        await onDisappearingForAllSettingContentPages().ConfigureAwait(false);
     }
 
     [Time]
@@ -61,7 +61,7 @@ public partial class SettingsHandlerPage : ContentPage
     {
         foreach (SettingsContentPageViewModel contentPageViewModel in _viewModel.SettingsContentPages.Select(x => x.ViewModel))
         {
-            await contentPageViewModel.OnDisappearing();
+            await contentPageViewModel.OnDisappearing().ConfigureAwait(false);
         }
     }
 }

@@ -10,6 +10,9 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
             HttpClient httpClient
         ) : IFaziletApiService
     {
+        // https://fazilettakvimi.com/api/cms/monthly-times?districtId=3478
+        // Nur für Ramadan?
+
         internal const string GET_COUNTRIES_URL = "daily?districtId=232&lang=1";
 
         public async Task<Dictionary<string, int>> GetCountries(CancellationToken cancellationToken)
@@ -41,7 +44,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
             response.EnsureSuccessStatusCode();
             using Stream jsonStream = await response.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
 
-            await foreach (JsonElement cityJson in JsonSerializer.DeserializeAsyncEnumerable<JsonElement>(jsonStream, cancellationToken: cancellationToken))
+            await foreach (JsonElement cityJson in JsonSerializer.DeserializeAsyncEnumerable<JsonElement>(jsonStream, cancellationToken: cancellationToken).ConfigureAwait(false))
             {
                 string cityName = cityJson.GetProperty("adi").GetString();
                 int cityId = cityJson.GetProperty("id").GetInt32();

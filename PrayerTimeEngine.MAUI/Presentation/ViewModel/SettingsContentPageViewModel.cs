@@ -116,10 +116,10 @@ namespace PrayerTimeEngine.Presentation.ViewModel
             OnInitializeCustomUI_EventTrigger.Invoke();
         }
 
-        public async Task OnDisappearing()
+        public Task OnDisappearing()
         {
             GenericSettingConfiguration settings = getCurrentCalculationConfiguration();
-            await profileService.UpdateTimeConfig(Profile, TimeType, settings, default);
+            return profileService.UpdateTimeConfig(Profile, TimeType, settings, default);
         }
 
         #endregion public methods

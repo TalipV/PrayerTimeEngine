@@ -74,12 +74,13 @@ public partial class SettingsContentPage : ContentPage
         ViewModel = viewModel;
         BindingContext = ViewModel;
 
-        ViewModel.OnInitializeCustomUI_EventTrigger += () => onInitializeCustomUI_EventTrigger();
+        ViewModel.OnInitializeCustomUI_EventTrigger += onInitializeCustomUI_EventTrigger;
         ViewModel.OnViewModelInitialize_EventTrigger += onViewModelInitialize_EventTrigger;
     }
 
     private void onViewModelInitialize_EventTrigger()
     {
+        ViewModel.OnViewModelInitialize_EventTrigger -= onViewModelInitialize_EventTrigger;
         addDataBindings();
     }
 

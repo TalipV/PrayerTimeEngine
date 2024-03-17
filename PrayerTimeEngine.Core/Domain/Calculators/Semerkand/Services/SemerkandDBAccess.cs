@@ -10,61 +10,61 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
             AppDbContext dbContext
         ) : ISemerkandDBAccess
     {
-        public async Task<bool> HasCountryData(CancellationToken cancellationToken)
+        public Task<bool> HasCountryData(CancellationToken cancellationToken)
         {
-            return await dbContext
+            return dbContext
                 .SemerkandCountries
-                .AnyAsync(cancellationToken).ConfigureAwait(false);
+                .AnyAsync(cancellationToken);
         }
 
-        public async Task<int?> GetCountryIDByName(string countryName, CancellationToken cancellationToken)
+        public Task<int?> GetCountryIDByName(string countryName, CancellationToken cancellationToken)
         {
-            return await dbContext
+            return dbContext
                 .SemerkandCountries
                 .Where(x => x.Name == countryName)
                 .Select(x => (int?)x.ID)
-                .FirstOrDefaultAsync(cancellationToken).ConfigureAwait(false);
+                .FirstOrDefaultAsync(cancellationToken);
         }
 
-        public async Task<List<SemerkandCountry>> GetCountries(CancellationToken cancellationToken)
+        public Task<List<SemerkandCountry>> GetCountries(CancellationToken cancellationToken)
         {
-            return await dbContext
+            return dbContext
                 .SemerkandCountries.AsNoTracking()
-                .ToListAsync(cancellationToken).ConfigureAwait(false);
+                .ToListAsync(cancellationToken);
         }
 
-        public async Task<List<SemerkandCity>> GetCitiesByCountryID(int countryId, CancellationToken cancellationToken)
+        public Task<List<SemerkandCity>> GetCitiesByCountryID(int countryId, CancellationToken cancellationToken)
         {
-            return await dbContext
+            return dbContext
                 .SemerkandCities.AsNoTrackingWithIdentityResolution()
                 .Where(x => x.CountryID == countryId)
                 .Include(x => x.Country).ThenInclude(x => x.Cities)
-                .ToListAsync(cancellationToken).ConfigureAwait(false);
+                .ToListAsync(cancellationToken);
         }
 
-        public async Task<bool> HasCityData(int countryID, CancellationToken cancellationToken)
+        public Task<bool> HasCityData(int countryID, CancellationToken cancellationToken)
         {
-            return await dbContext
+            return dbContext
                 .SemerkandCities
                 .Where(x => x.CountryID == countryID)
-                .AnyAsync(cancellationToken).ConfigureAwait(false);
+                .AnyAsync(cancellationToken);
         }
 
-        public async Task<int?> GetCityIDByName(int countryID, string cityName, CancellationToken cancellationToken)
+        public Task<int?> GetCityIDByName(int countryID, string cityName, CancellationToken cancellationToken)
         {
-            return await dbContext
+            return dbContext
                 .SemerkandCities
                 .Where(x => x.CountryID == countryID && x.Name == cityName)
                 .Select(x => (int?)x.ID)
-                .FirstOrDefaultAsync(cancellationToken).ConfigureAwait(false);
+                .FirstOrDefaultAsync(cancellationToken);
         }
 
-        public async Task<SemerkandPrayerTimes> GetTimesByDateAndCityID(LocalDate date, int cityId, CancellationToken cancellationToken)
+        public Task<SemerkandPrayerTimes> GetTimesByDateAndCityID(LocalDate date, int cityId, CancellationToken cancellationToken)
         {
-            return await dbContext
+            return dbContext
                 .SemerkandPrayerTimes.AsNoTracking()
                 .Where(x => x.Date == date && x.CityID == cityId)
-                .FirstOrDefaultAsync(cancellationToken).ConfigureAwait(false);
+                .FirstOrDefaultAsync(cancellationToken);
         }
 
         public async Task InsertCountry(int id, string name, CancellationToken cancellationToken)

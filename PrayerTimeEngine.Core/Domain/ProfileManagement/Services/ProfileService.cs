@@ -5,6 +5,7 @@ using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Models;
 using PrayerTimeEngine.Core.Domain.Models;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Interfaces;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Models;
+using System.Text;
 
 namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Services
 {
@@ -13,9 +14,9 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Services
             TimeTypeAttributeService timeTypeAttributeService
         ) : IProfileService
     {
-        public async Task<Profile> GetUntrackedReferenceOfProfile(int profileID, CancellationToken cancellationToken)
+        public Task<Profile> GetUntrackedReferenceOfProfile(int profileID, CancellationToken cancellationToken)
         {
-            return await profileDBAccess.GetUntrackedReferenceOfProfile(profileID, cancellationToken);
+            return profileDBAccess.GetUntrackedReferenceOfProfile(profileID, cancellationToken);
         }
 
         public async Task<List<Profile>> GetProfiles(CancellationToken cancellationToken)
@@ -25,15 +26,15 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Services
             if (profiles.Count == 0)
             {
                 profiles.Add(getDefaultProfile());
-                await SaveProfile(profiles[0], cancellationToken);
+                await SaveProfile(profiles[0], cancellationToken).ConfigureAwait(false);
             }
 
             return profiles;
         }
 
-        public async Task SaveProfile(Profile profile, CancellationToken cancellationToken)
+        public Task SaveProfile(Profile profile, CancellationToken cancellationToken)
         {
-            await profileDBAccess.SaveProfile(profile, cancellationToken).ConfigureAwait(false);
+            return profileDBAccess.SaveProfile(profile, cancellationToken);
         }
 
         public GenericSettingConfiguration GetTimeConfig(Profile profile, ETimeType timeType)
@@ -46,18 +47,18 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Services
             return profile.LocationConfigs.FirstOrDefault(x => x.CalculationSource == calculationSource)?.LocationData;
         }
 
-        public async Task UpdateLocationConfig(
+        public Task UpdateLocationConfig(
             Profile profile,
             string locationName,
             List<(ECalculationSource CalculationSource, BaseLocationData LocationData)> locationDataByCalculationSource,
             CancellationToken cancellationToken)
         {
-            await profileDBAccess.UpdateLocationConfig(profile, locationName, locationDataByCalculationSource, cancellationToken);
+            return profileDBAccess.UpdateLocationConfig(profile, locationName, locationDataByCalculationSource, cancellationToken);
         }
 
-        public async Task UpdateTimeConfig(Profile profile, ETimeType timeType, GenericSettingConfiguration settings, CancellationToken cancellationToken)
+        public Task UpdateTimeConfig(Profile profile, ETimeType timeType, GenericSettingConfiguration settings, CancellationToken cancellationToken)
         {
-            await profileDBAccess.UpdateTimeConfig(profile, timeType, settings, cancellationToken);
+            return profileDBAccess.UpdateTimeConfig(profile, timeType, settings, cancellationToken);
         }
 
         public string GetLocationDataDisplayText(Profile profile)
@@ -92,12 +93,12 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Services
 
         public string GetPrayerTimeConfigDisplayText(Profile profile)
         {
-            string outputText = string.Empty;
+            var outputText = new StringBuilder();
 
             foreach (KeyValuePair<EPrayerType, List<ETimeType>> item in timeTypeAttributeService.PrayerTypeToTimeTypes)
             {
                 EPrayerType prayerType = item.Key;
-                outputText += prayerType.ToString();
+                outputText.Append(prayerType.ToString());
 
                 foreach (ETimeType timeType in item.Value)
                 {
@@ -106,24 +107,23 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Services
 
                     GenericSettingConfiguration config = GetTimeConfig(profile, timeType);
 
-                    outputText += Environment.NewLine;
-                    outputText += $"- {timeType} mit {config.Source}";
+                    outputText.AppendLine($"- {timeType} mit {config.Source}");
                     if (config is MuwaqqitDegreeCalculationConfiguration degreeConfig)
                     {
-                        outputText += $" ({degreeConfig.Degree}°)";
+                        outputText.Append($" ({degreeConfig.Degree}°)");
                     }
 
                     if (config.MinuteAdjustment != 0)
                     {
-                        outputText += $", {config.MinuteAdjustment:N0}min";
+                        outputText.Append($", {config.MinuteAdjustment:N0}min");
                     }
                 }
 
-                outputText += Environment.NewLine;
-                outputText += Environment.NewLine;
+                outputText.AppendLine();
+                outputText.AppendLine();
             }
 
-            return outputText;
+            return outputText.ToString();
         }
 
         public List<GenericSettingConfiguration> GetActiveComplexTimeConfigs(Profile profile)

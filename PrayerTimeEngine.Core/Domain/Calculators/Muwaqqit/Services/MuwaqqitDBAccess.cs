@@ -10,14 +10,14 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services
             AppDbContext dbContext
         ) : IMuwaqqitDBAccess
     {
-        public async Task<List<MuwaqqitPrayerTimes>> GetAllTimes(CancellationToken cancellationToken)
+        public Task<List<MuwaqqitPrayerTimes>> GetAllTimes(CancellationToken cancellationToken)
         {
-            return await dbContext
+            return dbContext
                 .MuwaqqitPrayerTimes.AsNoTracking()
-                .ToListAsync(cancellationToken).ConfigureAwait(false);
+                .ToListAsync(cancellationToken);
         }
 
-        public async Task<MuwaqqitPrayerTimes> GetTimesAsync(
+        public Task<MuwaqqitPrayerTimes> GetTimesAsync(
             LocalDate date,
             decimal longitude,
             decimal latitude,
@@ -26,7 +26,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services
             double ishtibaqDegree,
             double asrKarahaDegree, CancellationToken cancellationToken)
         {
-            return await dbContext
+            return dbContext
                 .MuwaqqitPrayerTimes.AsNoTracking()
                 .Where(x => 
                     x.Date == date
@@ -36,7 +36,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services
                     && x.IshaDegree == ishaDegree
                     && x.IshtibaqDegree == ishtibaqDegree
                     && x.AsrKarahaDegree == asrKarahaDegree)
-                .FirstOrDefaultAsync(cancellationToken).ConfigureAwait(false);
+                .FirstOrDefaultAsync(cancellationToken);
         }
 
         public async Task InsertMuwaqqitPrayerTimesAsync(MuwaqqitPrayerTimes prayerTimes, CancellationToken cancellationToken)

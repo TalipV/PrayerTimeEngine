@@ -47,7 +47,7 @@ namespace PrayerTimeEngine.Core.Domain.CalculationManagement
         {
             LocalDate date = zoneDate.Date;
             DateTimeZone zone = zoneDate.Zone;
-            Profile profile = await profileService.GetUntrackedReferenceOfProfile(profileID, cancellationToken);
+            Profile profile = await profileService.GetUntrackedReferenceOfProfile(profileID, cancellationToken).ConfigureAwait(false);
 
             if (tryGetCachedCalculation(profile, date, out PrayerTimesBundle prayerTimeEntity))
             {
@@ -122,7 +122,7 @@ namespace PrayerTimeEngine.Core.Domain.CalculationManagement
                 }
             }
 
-            return (await Task.WhenAll(calculatorTasks)).SelectMany(x => x).ToList();
+            return (await Task.WhenAll(calculatorTasks).ConfigureAwait(false)).SelectMany(x => x).ToList();
         }
 
         private IEnumerable<(ETimeType, ZonedDateTime?)> calculateSimpleTypes(Profile profile, PrayerTimesBundle prayerTimeEntity)

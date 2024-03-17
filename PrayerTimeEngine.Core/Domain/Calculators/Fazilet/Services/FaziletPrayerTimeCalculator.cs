@@ -58,9 +58,9 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
 
         private async Task<FaziletPrayerTimes> getPrayerTimesInternal(LocalDate date, string countryName, string cityName, CancellationToken cancellationToken)
         {
-            if (await tryGetCountryID(countryName, cancellationToken) is (bool countrySuccess, int countryID) && !countrySuccess)
+            if (await tryGetCountryID(countryName, cancellationToken).ConfigureAwait(false) is (bool countrySuccess, int countryID) && !countrySuccess)
                 throw new ArgumentException($"{nameof(countryName)} could not be found!");
-            if (await tryGetCityID(cityName, countryID, cancellationToken) is (bool citySuccess, int cityID) && !citySuccess)
+            if (await tryGetCityID(cityName, countryID, cancellationToken).ConfigureAwait(false) is (bool citySuccess, int cityID) && !citySuccess)
                 throw new ArgumentException($"{nameof(cityName)} could not be found!");
 
             FaziletPrayerTimes prayerTimes = await getPrayerTimesByDateAndCityID(date, cityID, cancellationToken).ConfigureAwait(false)
@@ -89,7 +89,12 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
                 if (prayerTimes == null)
                 {
                     List<FaziletPrayerTimes> prayerTimesLst = await faziletApiService.GetTimesByCityID(cityID, cancellationToken).ConfigureAwait(false);
-                    prayerTimesLst.ForEach(async x => await faziletDBAccess.InsertFaziletPrayerTimesIfNotExists(x.Date, cityID, x, cancellationToken).ConfigureAwait(false));
+
+                    foreach (var times in prayerTimesLst)
+                    {
+                        await faziletDBAccess.InsertFaziletPrayerTimesIfNotExists(times.Date, cityID, times, cancellationToken).ConfigureAwait(false);
+                    }
+
                     prayerTimes = prayerTimesLst.FirstOrDefault(x => x.Date == date);
                 }
 
@@ -104,7 +109,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
             // check-then-act has to be thread safe
             using (await semaphoreTryGetCityID.LockAsync(cancellationToken).ConfigureAwait(false))
             {
-                int? cityID = await faziletDBAccess.GetCityIDByName(countryID, cityName, cancellationToken);
+                int? cityID = await faziletDBAccess.GetCityIDByName(countryID, cityName, cancellationToken).ConfigureAwait(false);
 
                 // city found
                 if (cityID != null)
@@ -137,7 +142,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
             // check-then-act has to be thread safe
             using (await semaphoreTryGetCountryID.LockAsync(cancellationToken).ConfigureAwait(false))
             {
-                int? countryID = await faziletDBAccess.GetCountryIDByName(countryName, cancellationToken);
+                int? countryID = await faziletDBAccess.GetCountryIDByName(countryName, cancellationToken).ConfigureAwait(false);
 
                 // country found
                 if (countryID != null)

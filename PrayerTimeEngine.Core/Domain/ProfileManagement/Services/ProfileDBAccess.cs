@@ -12,27 +12,27 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Services
             AppDbContext dbContext
         ) : IProfileDBAccess
     {
-        public async Task<Profile> GetUntrackedReferenceOfProfile(int profileID, CancellationToken cancellationToken)
+        public Task<Profile> GetUntrackedReferenceOfProfile(int profileID, CancellationToken cancellationToken)
         {
-            return await dbContext.Profiles
+            return dbContext.Profiles
                 .Include(x => x.TimeConfigs)
                 .Include(x => x.LocationConfigs)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(x => x.ID == profileID, cancellationToken).ConfigureAwait(false);
+                .FirstOrDefaultAsync(x => x.ID == profileID, cancellationToken);
         }
 
-        public async Task<List<Profile>> GetProfiles(CancellationToken cancellationToken)
+        public Task<List<Profile>> GetProfiles(CancellationToken cancellationToken)
         {
-            return await dbContext.Profiles
+            return dbContext.Profiles
                 .Include(x => x.TimeConfigs)
                 .Include(x => x.LocationConfigs)
                 .AsNoTracking()
-                .ToListAsync(cancellationToken).ConfigureAwait(false);
+                .ToListAsync(cancellationToken);
         }
 
         public async Task SaveProfile(Profile profile, CancellationToken cancellationToken)
         {
-            if (await dbContext.Profiles.FindAsync(keyValues: [profile.ID], cancellationToken) is Profile foundProfile)
+            if (await dbContext.Profiles.FindAsync(keyValues: [profile.ID], cancellationToken).ConfigureAwait(false) is Profile foundProfile)
             {
                 dbContext.Profiles.Remove(foundProfile);
                 await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
@@ -52,23 +52,23 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Services
 
             try
             {
-                using (IDbContextTransaction transaction = await dbContext.Database.BeginTransactionAsync(cancellationToken))
+                using (IDbContextTransaction transaction = await dbContext.Database.BeginTransactionAsync(cancellationToken).ConfigureAwait(false))
                 {
-                    await setNewLocationData(trackedProfile, locationDataByCalculationSource, cancellationToken);
+                    await setNewLocationData(trackedProfile, locationDataByCalculationSource, cancellationToken).ConfigureAwait(false);
                     trackedProfile.LocationName = locationName;
 
-                    await SaveProfile(trackedProfile, cancellationToken);
-                    await transaction.CommitAsync(cancellationToken);
+                    await SaveProfile(trackedProfile, cancellationToken).ConfigureAwait(false);
+                    await transaction.CommitAsync(cancellationToken).ConfigureAwait(false);
                 }
             }
             finally
             {
                 dbContext.Entry(trackedProfile).State = EntityState.Detached;
 
-                await dbContext.Entry(profile).ReloadAsync(CancellationToken.None);
+                await dbContext.Entry(profile).ReloadAsync(CancellationToken.None).ConfigureAwait(false);
 
                 foreach (var locationConfig in profile.LocationConfigs)
-                    await dbContext.Entry(locationConfig).ReloadAsync(CancellationToken.None);
+                    await dbContext.Entry(locationConfig).ReloadAsync(CancellationToken.None).ConfigureAwait(false);
             }
         }
 
@@ -78,21 +78,21 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Services
 
             try
             {
-                using (IDbContextTransaction transaction = await dbContext.Database.BeginTransactionAsync(cancellationToken))
+                using (IDbContextTransaction transaction = await dbContext.Database.BeginTransactionAsync(cancellationToken).ConfigureAwait(false))
                 {
                     setTimeConfig(profile, timeType, settings);
-                    await SaveProfile(profile, cancellationToken);
-                    await transaction.CommitAsync(cancellationToken);
+                    await SaveProfile(profile, cancellationToken).ConfigureAwait(false);
+                    await transaction.CommitAsync(cancellationToken).ConfigureAwait(false);
                 }
             }
             finally
             {
                 dbContext.Entry(trackedProfile).State = EntityState.Detached;
 
-                await dbContext.Entry(profile).ReloadAsync(CancellationToken.None);
+                await dbContext.Entry(profile).ReloadAsync(CancellationToken.None).ConfigureAwait(false);
 
                 foreach (var timeConfig in profile.TimeConfigs)
-                    await dbContext.Entry(timeConfig).ReloadAsync(CancellationToken.None);
+                    await dbContext.Entry(timeConfig).ReloadAsync(CancellationToken.None).ConfigureAwait(false);
             }
         }
 
@@ -119,8 +119,8 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Services
 
                 profile.LocationConfigs.Add(newLocationConfig);
             }
-            await dbContext.ProfileLocations.AddRangeAsync(profile.LocationConfigs, cancellationToken);
-            await dbContext.SaveChangesAsync(cancellationToken);
+            await dbContext.ProfileLocations.AddRangeAsync(profile.LocationConfigs, cancellationToken).ConfigureAwait(false);
+            await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
         }
 
         private static void setTimeConfig(

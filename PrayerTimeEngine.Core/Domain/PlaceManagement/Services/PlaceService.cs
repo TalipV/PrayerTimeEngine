@@ -127,7 +127,7 @@ namespace PrayerTimeEngine.Core.Domain.PlaceManagement.Services
             }
         }
 
-        private BasicPlaceInfo getlocationIQPlace(LocationIQPlace locationIQPlace, string languageCode)
+        private static BasicPlaceInfo getlocationIQPlace(LocationIQPlace locationIQPlace, string languageCode)
         {
             return new BasicPlaceInfo(
                 id: locationIQPlace.osm_id,

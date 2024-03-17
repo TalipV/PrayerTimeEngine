@@ -1,16 +1,14 @@
-﻿#if ANDROID
-using PrayerTimeEngine.Platforms.Android.Permissions;
-using PrayerTimeEngine.Platforms.Android;
+﻿#if !WINDOWS
 using Microsoft.Extensions.Logging;
 
 namespace PrayerTimeEngine.Services
 {
-    public class PrayerTimeSummaryNotificationManager
-        (
+    public class PrayerTimeSummaryNotificationManager(
+            IDispatcher dispatcher,
             ILogger<PrayerTimeSummaryNotificationManager> logger
         )
     {
-        public async void TryStartPersistentNotification()
+        public async Task TryStartPersistentNotification()
         {
             try
             {
@@ -29,28 +27,30 @@ namespace PrayerTimeEngine.Services
             }
         }
 
+#if ANDROID
         private async Task tryStartPersistentNotification_Android()
         {
             bool permissionGranted = true;
 
             if (OperatingSystem.IsAndroidVersionAtLeast(33))
             {
-                await MainThread.InvokeOnMainThreadAsync(async () =>
+                await dispatcher.DispatchAsync(async () =>
                 {
-                    await Permissions.RequestAsync<PostNotifications>();
+                    await Permissions.RequestAsync<Platforms.Android.Permissions.PostNotifications>();
                 });
 
-                permissionGranted = await Permissions.CheckStatusAsync<PostNotifications>() == PermissionStatus.Granted;
+                permissionGranted = await Permissions.CheckStatusAsync<Platforms.Android.Permissions.PostNotifications>() == PermissionStatus.Granted;
             }
 
             if (permissionGranted)
             {
                 var startIntent = new Android.Content.Intent(global::Android.App.Application.Context, typeof(PrayerTimeSummaryNotification));
-                MainActivity.Instance.StartForegroundService(startIntent);
+                Platforms.Android.MainActivity.Instance.StartForegroundService(startIntent);
             }
         }
+#endif
 
-        private Task tryStartPersistentNotification_iOS()
+        private static Task tryStartPersistentNotification_iOS()
         {
             // TODO
             return Task.CompletedTask;
