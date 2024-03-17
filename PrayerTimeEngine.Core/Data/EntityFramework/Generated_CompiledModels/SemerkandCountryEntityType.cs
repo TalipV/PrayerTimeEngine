@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Sqlite.Storage.Internal;
 using Microsoft.EntityFrameworkCore.Storage;
-using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Models;
+using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Models.Entities;
 
 #pragma warning disable 219, 612, 618
 #nullable disable
@@ -17,7 +17,7 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework
         public static RuntimeEntityType Create(RuntimeModel model, RuntimeEntityType baseEntityType = null)
         {
             var runtimeEntityType = model.AddEntityType(
-                "PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Models.SemerkandCountry",
+                "PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Models.Entities.SemerkandCountry",
                 typeof(SemerkandCountry),
                 baseEntityType);
 

@@ -3,7 +3,7 @@ using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Domain.Models;
 using System.ComponentModel.DataAnnotations;
 
-namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Models
+namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Models.Entities
 {
     public class MuwaqqitPrayerTimes : ICalculationPrayerTimes
     {

@@ -2,7 +2,7 @@
 using NodaTime;
 using PrayerTimeEngine.Core.Data.EntityFramework;
 using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Interfaces;
-using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Models;
+using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Models.Entities;
 
 namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
 {

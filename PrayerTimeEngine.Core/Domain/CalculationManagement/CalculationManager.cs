@@ -4,7 +4,7 @@ using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Domain.Calculators;
 using PrayerTimeEngine.Core.Domain.Models;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Interfaces;
-using PrayerTimeEngine.Core.Domain.ProfileManagement.Models;
+using PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
 
 namespace PrayerTimeEngine.Core.Domain.CalculationManagement
 {
@@ -103,9 +103,9 @@ namespace PrayerTimeEngine.Core.Domain.CalculationManagement
                             .ContinueWith(task =>
                             {
                                 if (!task.IsCompletedSuccessfully)
-                                    return task.Result;
+                                    return task.GetAwaiter().GetResult();
 
-                                return task.Result
+                                return task.GetAwaiter().GetResult()
                                     .Select(calculation =>
                                     {
                                         GenericSettingConfiguration config = configs.First(config => config.TimeType == calculation.TimeType);

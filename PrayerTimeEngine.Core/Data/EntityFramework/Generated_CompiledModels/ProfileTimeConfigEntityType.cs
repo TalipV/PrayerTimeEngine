@@ -13,7 +13,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Data.EntityFramework.Configurations;
 using PrayerTimeEngine.Core.Domain.Models;
-using PrayerTimeEngine.Core.Domain.ProfileManagement.Models;
+using PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
 
 
 #pragma warning disable 219, 612, 618
@@ -26,7 +26,7 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework
         public static RuntimeEntityType Create(RuntimeModel model, RuntimeEntityType baseEntityType = null)
         {
             var runtimeEntityType = model.AddEntityType(
-                "PrayerTimeEngine.Core.Domain.ProfileManagement.Models.ProfileTimeConfig",
+                "PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities.ProfileTimeConfig",
                 typeof(ProfileTimeConfig),
                 baseEntityType);
 

@@ -14,6 +14,7 @@ using PrayerTimeEngine.Core.Domain.PlaceManagement.Interfaces;
 using Microsoft.Extensions.Logging;
 using NSubstitute.ReturnsExtensions;
 using PrayerTimeEngine.Core.Tests.Common.TestData;
+using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Models.Entities;
 
 namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
 {

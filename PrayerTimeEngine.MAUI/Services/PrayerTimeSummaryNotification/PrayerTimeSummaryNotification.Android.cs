@@ -1,15 +1,13 @@
 ﻿using Android.App;
 using Android.Content;
 using Android.OS;
-using MetroLog;
 using Microsoft.Extensions.Logging;
 using NodaTime;
 using PrayerTimeEngine.Core.Domain.CalculationManagement;
 using PrayerTimeEngine.Core.Domain.Models;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Interfaces;
-using PrayerTimeEngine.Core.Domain.ProfileManagement.Models;
+using PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
 using PrayerTimeEngine.Services.SystemInfoService;
-using System.Threading;
 
 namespace PrayerTimeEngine.Services
 {

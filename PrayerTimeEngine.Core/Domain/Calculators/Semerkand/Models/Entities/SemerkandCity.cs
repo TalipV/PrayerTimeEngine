@@ -1,14 +1,14 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Models
+namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Models.Entities
 {
-    public class FaziletCity
+    public class SemerkandCity
     {
         [Key]
         public int ID { get; set; }
         public string Name { get; set; }
 
         public int CountryID { get; set; }
-        public FaziletCountry Country { get; set; }
+        public SemerkandCountry Country { get; set; }
     }
 }

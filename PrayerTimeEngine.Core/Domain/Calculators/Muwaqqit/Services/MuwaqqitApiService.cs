@@ -1,7 +1,8 @@
 ﻿using NodaTime;
 using NodaTime.Text;
 using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Interfaces;
-using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Models;
+using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Models.DTOs;
+using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Models.Entities;
 using System.Globalization;
 using System.Text.Json;
 using System.Web;

@@ -2,10 +2,10 @@
 using NodaTime;
 using PrayerTimeEngine.Core.Common.Extension;
 using PrayerTimeEngine.Core.Data.EntityFramework.Configurations;
-using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Models;
-using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Models;
-using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Models;
-using PrayerTimeEngine.Core.Domain.ProfileManagement.Models;
+using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Models.Entities;
+using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Models.Entities;
+using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Models.Entities;
+using PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
 using System.Reflection;
 
 namespace PrayerTimeEngine.Core.Data.EntityFramework

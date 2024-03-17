@@ -1,7 +1,7 @@
 ﻿using NodaTime;
 using NodaTime.Text;
 using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Interfaces;
-using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Models;
+using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Models.Entities;
 using System.Text.Json;
 
 namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services

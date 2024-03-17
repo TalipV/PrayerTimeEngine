@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Sqlite.Storage.Internal;
 using Microsoft.EntityFrameworkCore.Storage;
-using PrayerTimeEngine.Core.Domain.ProfileManagement.Models;
+using PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
 
 
 #pragma warning disable 219, 612, 618
@@ -18,7 +18,7 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework
         public static RuntimeEntityType Create(RuntimeModel model, RuntimeEntityType baseEntityType = null)
         {
             var runtimeEntityType = model.AddEntityType(
-                "PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Profile",
+                "PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities.Profile",
                 typeof(Profile),
                 baseEntityType);
 

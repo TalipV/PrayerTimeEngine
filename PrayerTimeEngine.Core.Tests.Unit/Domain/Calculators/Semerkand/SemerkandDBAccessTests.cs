@@ -3,8 +3,8 @@ using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using NodaTime;
-using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Models;
 using PrayerTimeEngine.Core.Tests.Common;
+using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Models.Entities;
 
 namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
 {

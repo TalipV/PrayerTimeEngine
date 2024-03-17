@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.Json;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NodaTime;
 using PrayerTimeEngine.Core.Common.Extension;
-using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Models;
+using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Models.Entities;
 
 #pragma warning disable 219, 612, 618
 #nullable disable
@@ -21,7 +21,7 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework
         public static RuntimeEntityType Create(RuntimeModel model, RuntimeEntityType baseEntityType = null)
         {
             var runtimeEntityType = model.AddEntityType(
-                "PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Models.MuwaqqitPrayerTimes",
+                "PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Models.Entities.MuwaqqitPrayerTimes",
                 typeof(MuwaqqitPrayerTimes),
                 baseEntityType);
 

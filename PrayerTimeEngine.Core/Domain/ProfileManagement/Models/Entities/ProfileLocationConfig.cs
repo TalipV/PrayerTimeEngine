@@ -2,7 +2,7 @@
 using PrayerTimeEngine.Core.Domain.Models;
 using System.ComponentModel.DataAnnotations;
 
-namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Models
+namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities
 {
     public class ProfileLocationConfig
     {

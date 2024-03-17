@@ -4,13 +4,13 @@ using PrayerTimeEngine.Core.Domain.ProfileManagement.Interfaces;
 using NSubstitute;
 using PrayerTimeEngine.Core.Domain.Calculators;
 using NodaTime;
-using PrayerTimeEngine.Core.Domain.ProfileManagement.Models;
 using PrayerTimeEngine.Core.Domain.Models;
 using FluentAssertions;
 using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Models;
 using Microsoft.Extensions.Logging;
 using PrayerTimeEngine.Core.Tests.Common.TestData;
+using PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
 
 namespace PrayerTimeEngine.Core.Tests.Unit.Domain.CalculationManagement
 {
