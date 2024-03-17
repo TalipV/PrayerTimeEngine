@@ -1,9 +1,10 @@
 ﻿using FluentAssertions;
 using NodaTime;
+using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Interfaces;
 using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Models.Entities;
-using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services;
 using PrayerTimeEngine.Core.Tests.Common;
 using PrayerTimeEngine.Core.Tests.Common.TestData;
+using Refit;
 using System.Net;
 
 namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Muwaqqit
@@ -11,13 +12,16 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Muwaqqit
     public class MuwaqqitApiServiceTests : BaseTest
     {
         private readonly MockHttpMessageHandler _mockHttpMessageHandler;
-        private readonly MuwaqqitApiService _muwaqqitApiService;
+        private readonly IMuwaqqitApiService _muwaqqitApiService;
 
         public MuwaqqitApiServiceTests()
         {
             _mockHttpMessageHandler = new MockHttpMessageHandler();
-            var httpClient = new HttpClient(_mockHttpMessageHandler);
-            _muwaqqitApiService = new MuwaqqitApiService(httpClient);
+            var httpClient = new HttpClient(_mockHttpMessageHandler)
+            {
+                BaseAddress = new Uri(@"https://www.muwaqqit.com/")
+            };
+            _muwaqqitApiService = RestService.For<IMuwaqqitApiService>(httpClient);
         }
 
         [Fact]
@@ -40,26 +44,27 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Muwaqqit
                 };
 
             // ACT
-            MuwaqqitPrayerTimes time = await _muwaqqitApiService.GetTimesAsync(
-                date: date,
+            var response = await _muwaqqitApiService.GetTimesAsync(
+                date: date.ToString("yyyy-MM-dd", null),
                 longitude: 1M,
                 latitude: 1M,
-                fajrDegree: 1,
-                ishaDegree: 1,
-                ishtibaqDegree: 1,
-                asrKarahaDegree: 1,
                 timezone: europeTimeZone.Id,
+                fajrDegree: -12,
+                ishaDegree: -12,
+                ishtibaqDegree: -8,
+                asrKarahaDegree: 3.5,
                 cancellationToken: default);
+            MuwaqqitPrayerTimes time = response.ToMuwaqqitPrayerTimes();
 
             // ASSERT
             time.Should().NotBeNull();
 
             time.ID.Should().Be(0);
             time.Date.Should().Be(new LocalDate(2023, 7, 30));
-            time.FajrDegree.Should().Be(1);
-            time.AsrKarahaDegree.Should().Be(1);
-            time.IshtibaqDegree.Should().Be(1);
-            time.IshaDegree.Should().Be(1);
+            time.FajrDegree.Should().Be(-12);
+            time.AsrKarahaDegree.Should().Be(3.5);
+            time.IshtibaqDegree.Should().Be(-8);
+            time.IshaDegree.Should().Be(-12);
             time.Latitude.Should().Be(47.2803835M);
             time.Longitude.Should().Be(11.41337M);
             time.InsertInstant.Should().BeNull();

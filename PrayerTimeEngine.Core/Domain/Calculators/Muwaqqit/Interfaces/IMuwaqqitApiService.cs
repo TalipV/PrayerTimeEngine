@@ -1,10 +1,20 @@
-﻿using NodaTime;
-using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Models.Entities;
+﻿using Refit;
+using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Models.DTOs;
 
 namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Interfaces
 {
     public interface IMuwaqqitApiService
     {
-        Task<MuwaqqitPrayerTimes> GetTimesAsync(LocalDate date, decimal longitude, decimal latitude, double fajrDegree, double ishaDegree, double ishtibaqDegree, double asrKarahaDegree, string timezone, CancellationToken cancellationToken);
+        [Get("/api2.json")]
+        Task<MuwaqqitPrayerTimesResponseDTO> GetTimesAsync(
+            [AliasAs("d")] string date,
+            [AliasAs("ln")] decimal longitude,
+            [AliasAs("lt")] decimal latitude,
+            [AliasAs("tz")] string timezone,
+            [AliasAs("fa")] double fajrDegree,
+            [AliasAs("ia")] double asrKarahaDegree,
+            [AliasAs("isn")] double ishtibaqDegree,
+            [AliasAs("ea")] double ishaDegree,
+            CancellationToken cancellationToken);
     }
 }
