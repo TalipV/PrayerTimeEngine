@@ -13,6 +13,7 @@ using PrayerTimeEngine.Core.Domain;
 using PrayerTimeEngine.Core.Domain.CalculationManagement;
 using PrayerTimeEngine.Core.Domain.Calculators;
 using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services;
+using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Interfaces;
 using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services;
 using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Interfaces;
@@ -25,6 +26,7 @@ using PrayerTimeEngine.Presentation.ViewModel;
 using PrayerTimeEngine.Presentation.ViewModel.Custom;
 using PrayerTimeEngine.Services.SystemInfoService;
 using PrayerTimeEngine.Views;
+using Refit;
 using System.Text;
 using UraniumUI;
 
@@ -256,12 +258,13 @@ public static class MauiProgram
             AppDbContext appDbContext = serviceProvider.GetRequiredService<AppDbContext>();
             var httpClient = new HttpClient
             {
-                Timeout = TimeSpan.FromSeconds(HTTP_REQUEST_TIMEOUT_SECONDS)
+                Timeout = TimeSpan.FromSeconds(HTTP_REQUEST_TIMEOUT_SECONDS),
+                BaseAddress = new Uri(@"https://www.muwaqqit.com/")
             };
 
             return new MuwaqqitPrayerTimeCalculator(
                 new MuwaqqitDBAccess(appDbContext),
-                new MuwaqqitApiService(httpClient),
+                RestService.For<IMuwaqqitApiService>(httpClient),
                 serviceProvider.GetRequiredService<TimeTypeAttributeService>());
         });
     }
