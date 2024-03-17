@@ -89,7 +89,12 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
                 if (prayerTimes == null)
                 {
                     List<SemerkandPrayerTimes> prayerTimesLst = await semerkandApiService.GetTimesByCityID(date, timezone, cityID, cancellationToken).ConfigureAwait(false);
-                    prayerTimesLst.ForEach(async x => await semerkandDBAccess.InsertSemerkandPrayerTimes(x.Date, cityID, x, cancellationToken).ConfigureAwait(false));
+
+                    foreach (var times in prayerTimesLst)
+                    {
+                        await semerkandDBAccess.InsertSemerkandPrayerTimes(times.Date, cityID, times, cancellationToken).ConfigureAwait(false);
+                    }
+
                     prayerTimes = prayerTimesLst.FirstOrDefault(x => x.Date == date);
                 }
 
@@ -104,7 +109,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
             // check-then-act has to be thread safe
             using (await semaphoreTryGetCityID.LockAsync().ConfigureAwait(false))
             {
-                int? cityID = await semerkandDBAccess.GetCityIDByName(countryID, cityName, cancellationToken);
+                int? cityID = await semerkandDBAccess.GetCityIDByName(countryID, cityName, cancellationToken).ConfigureAwait(false);
 
                 // city found
                 if (cityID != null)
@@ -137,7 +142,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
             // check-then-act has to be thread safe
             using (await semaphoreTryGetCountryID.LockAsync(cancellationToken).ConfigureAwait(false))
             {
-                int? countryID = await semerkandDBAccess.GetCountryIDByName(countryName, cancellationToken);
+                int? countryID = await semerkandDBAccess.GetCountryIDByName(countryName, cancellationToken).ConfigureAwait(false);
 
                 // country found
                 if (countryID != null)

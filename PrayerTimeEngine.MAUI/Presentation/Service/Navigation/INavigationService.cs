@@ -42,7 +42,7 @@ namespace PrayerTimeEngine.Presentation.Service.Navigation
                     viewModel.Initialize(parameter);
                 }
 
-                await navigationPage.PushAsync(page);
+                await navigationPage.PushAsync(page).ConfigureAwait(false);
             }
             else
             {
@@ -55,7 +55,7 @@ namespace PrayerTimeEngine.Presentation.Service.Navigation
         {
             if (Application.Current.MainPage is NavigationPage navigationPage)
             {
-                await navigationPage.PopAsync();
+                await navigationPage.PopAsync().ConfigureAwait(false);
             }
         }
     }

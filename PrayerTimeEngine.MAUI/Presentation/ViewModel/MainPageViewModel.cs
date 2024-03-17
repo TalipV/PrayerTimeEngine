@@ -23,6 +23,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
 {
     [AddINotifyPropertyChangedInterface]
     public class MainPageViewModel(
+            IDispatcher dispatcher,
             ISystemInfoService _systemInfoService,
             ICalculationManager prayerTimeCalculator,
             IPrayerTimeCalculatorFactory prayerTimeServiceFactory,
@@ -110,7 +111,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
 
             debouncer ??= new Debounce.Core.Debouncer(async () =>
             {
-                FoundPlaces = await Task.Run(async () => await PerformPlaceSearch(PlaceSearchText));
+                FoundPlaces = await PerformPlaceSearch(PlaceSearchText);
                 FoundPlacesSelectionTexts = FoundPlaces.Select(x => x.DisplayText).Distinct().OrderBy(x => x).Take(7).ToList();
             }, 500);
 
@@ -125,7 +126,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
             try
             {
                 // I know... the whole ViewModel is not ideal --> TODO
-                await MainThread.InvokeOnMainThreadAsync(() =>
+                await dispatcher.DispatchAsync(() =>
                 {
                     placeSearchCancellationTokenSource?.Cancel();
                     placeSearchCancellationTokenSource?.Dispose();
@@ -245,18 +246,23 @@ namespace PrayerTimeEngine.Presentation.ViewModel
             CurrentProfile ??= (await profileService.GetProfiles(cancellationToken: default)).First();
         }        
         
-        private static void onAfterFirstLoad()
+        private void onAfterFirstLoad()
         {
             double startUpTimeMS = (DateTime.Now - MauiProgram.StartDateTime).TotalMilliseconds;
             showToastMessage($"{startUpTimeMS:N0}ms to start!");
 #if ANDROID
-            MauiProgram.ServiceProvider.GetRequiredService<PrayerTimeSummaryNotificationManager>().TryStartPersistentNotification();
+            dispatcher.Dispatch(
+                async () =>
+                {
+                    var notificationManager = MauiProgram.ServiceProvider.GetRequiredService<PrayerTimeSummaryNotificationManager>();
+                    await notificationManager.TryStartPersistentNotification();
+                });
 #endif
         }
 
         private async Task showHideSpecificTimes()
         {
-            await MainThread.InvokeOnMainThreadAsync(() =>
+            await dispatcher.DispatchAsync(() =>
             {
                 if (CurrentProfile == null)
                     return;
@@ -369,9 +375,9 @@ namespace PrayerTimeEngine.Presentation.ViewModel
         }
 
         // TODO REFACTOR
-        private static void showToastMessage(string text)
+        private void showToastMessage(string text)
         {
-            MainThread.BeginInvokeOnMainThread(async () =>
+            dispatcher.Dispatch(async () =>
             {
                 await Toast.Make(
                         message: text, 

@@ -57,6 +57,9 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
             return citiesByCountryID;
         }
 
+        // returns the times for the specified time and the subsequent 30 days
+        // https://www.semerkandtakvimi.com/Home/CityTimeList?City=32&Year=2024&Day=76
+
         internal const string GET_TIMES_BY_CITY = @"http://semerkandtakvimi.semerkandmobile.com/salaattimes?cityId={0}&year={1}";
 
         internal const int EXTENT_OF_DAYS_RETRIEVED = 5;

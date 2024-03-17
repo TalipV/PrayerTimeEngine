@@ -8,11 +8,13 @@ namespace PrayerTimeEngine
 {
     public partial class MainPage : ContentPage
     {
+        private readonly IDispatcher _dispatcher;
         private readonly MainPageViewModel _viewModel;
 
-        public MainPage(MainPageViewModel viewModel)
+        public MainPage(IDispatcher dispatcher, MainPageViewModel viewModel)
         {
             InitializeComponent();
+            _dispatcher = dispatcher;
             BindingContext = this._viewModel = viewModel;
 
             viewModel.OnAfterLoadingPrayerTimes_EventTrigger += ViewModel_OnAfterLoadingPrayerTimes_EventTrigger;
@@ -23,7 +25,7 @@ namespace PrayerTimeEngine
                 .Add(
                     new TapGestureRecognizer
                     {
-                        Command = new Command(async () => await this.openOptionsMenu()),
+                        Command = new Command(async () => await this.openOptionsMenu().ConfigureAwait(false)),
                         NumberOfTapsRequired = 2,
                     });
         }
@@ -198,7 +200,7 @@ namespace PrayerTimeEngine
 
         private void ViewModel_OnAfterLoadingPrayerTimes_EventTrigger()
         {
-            MainThread.BeginInvokeOnMainThread(() =>
+            _dispatcher.Dispatch(() =>
             {
                 PrayerTimeGraphicView.DisplayPrayerTime = _viewModel.GetDisplayPrayerTime();
                 PrayerTimeGraphicViewBase.Invalidate();

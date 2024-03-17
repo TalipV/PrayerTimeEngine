@@ -25,54 +25,64 @@ using PrayerTimeEngine.Presentation.ViewModel;
 using PrayerTimeEngine.Presentation.ViewModel.Custom;
 using PrayerTimeEngine.Services.SystemInfoService;
 using PrayerTimeEngine.Views;
+using System.Text;
 using UraniumUI;
 
 namespace PrayerTimeEngine;
 
-// dotnet publish -c release -f net7.0-android -p:false
+// weak event manager?
 
-// BUGS:
-// - Next Fajr (value and for graphic) & Last 'Isha (for graphic)
-// - No robust system for country and city (re)load from fazilet/semerkand API (e.g. failed city retrieval leads to no second try)
-// - Fazilet/Semerkand country/city names which are unexpected (e.g. "Vienna (Wien)")
-// - Turkish location details for Fazilet/Semerkand not robust
-// - Exception for single calculation prevents all the other calculations (rough fix already done)
-// - Exception for single calculation only disables that calculation but subsequent calculations rely on cached values and don't retry
-// - Calculation relevant data like the Profile with its configs may change in the middle of the calculation process due to shared references
 
-// TODO:
-// - Performance
-// - JsonElement.ValueKind checks in API services
-// - Proper error handling in calculators (e.g. checking response code at least for success, collect exceptions in CalculationManager result)
-// - Multiple profiles
-// - Decrease count of reloads (e.g. mere app switch shouldn't always require reload)
-// - CancellationTokens
-// - Transactions when saving country data and city data to prevent partial safes (or rethink the whole thing)
-// - PlaceService and ProfileService with no or default CancellationToken?
-// - delete old db cache data from time to time
+/* CLI commands cheatsheet
+ * dotnet publish -c release -f net7.0-android -p:false
+ */
 
-// TODO late:
-// - Check for possibly unsafe concurrent actions (fast user interactions, app crashes and other special cases) 
-// - Logging
-// - Comments
-// - Translation
-// - Check MVVM
+/* BUGS:
+ * - Next Fajr (value and for graphic) & Last 'Isha (for graphic)
+ * - No robust system for country and city (re)load from fazilet/semerkand API (e.g. failed city retrieval leads to no second try)
+ * - Fazilet/Semerkand country/city names which are unexpected (e.g. "Vienna (Wien)")
+ * - Turkish location details for Fazilet/Semerkand not robust
+ * - Exception for single calculation prevents all the other calculations (rough fix already done)
+ * - Exception for single calculation only disables that calculation but subsequent calculations rely on cached values and don't retry
+ * - Calculation relevant data like the Profile with its configs may change in the middle of the calculation process due to shared references
+ */
 
-// TODO tests:
-// ### UNIT
-// # Semerkand
-// --- SemerkandPrayerTimeCalculator
-// --- SemerkandApiService
-// --- SemerkandDBAccess
-// # Fazilet
-// --- FaziletPrayerTimeCalculator
-// --- FaziletApiService
-// --- FaziletDBAccess
-// # Muwaqqit
-// --- MuwaqqitPrayerTimeCalculator
-// --- MuwaqqitApiService
-// --- MuwaqqitDBAccess
-// # CalculationManager
+/* TODO general:
+ * - Performance
+ * - JsonElement.ValueKind checks in API services
+ * - Proper error handling in calculators (e.g. checking response code at least for success, collect exceptions in CalculationManager result)
+ * - Multiple profiles
+ * - Decrease count of reloads (e.g. mere app switch shouldn't always require reload)
+ * - CancellationTokens
+ * - Transactions when saving country data and city data to prevent partial safes (or rethink the whole thing)
+ * - PlaceService and ProfileService with no or default CancellationToken?
+ * - delete old db cache data from time to time
+ */
+
+/* TODO late:
+ * - Check for possibly unsafe concurrent actions (fast user interactions, app crashes and other special cases) 
+ * - Logging
+ * - Comments
+ * - Translation
+ * - Check MVVM
+ */
+
+/* TODO tests:
+ * ### UNIT
+ * # Semerkand
+ * --- SemerkandPrayerTimeCalculator
+ * --- SemerkandApiService
+ * --- SemerkandDBAccess
+ * # Fazilet
+ * --- FaziletPrayerTimeCalculator
+ * --- FaziletApiService
+ * --- FaziletDBAccess
+ * # Muwaqqit
+ * --- MuwaqqitPrayerTimeCalculator
+ * --- MuwaqqitApiService
+ * --- MuwaqqitDBAccess
+ * # CalculationManager
+ */
 
 public static class MauiProgram
 {
@@ -110,14 +120,14 @@ public static class MauiProgram
     {
         public override string GetFormattedString(MetroLog.LogWriteContext context, MetroLog.LogEventInfo info)
         {
-            string text = $"███ {info.Level}|{info.TimeStamp:HH:mm:ss:fff}|{info.Logger}|{info.Message}";
+            var text = new StringBuilder($"███ {info.Level}|{info.TimeStamp:HH:mm:ss:fff}|{info.Logger}|{info.Message}");
 
             if (info.Exception != null)
             {
-                text += $"|Exception:'{info.Exception.Message}' AT '{info.Exception.StackTrace}'";
+                text.Append($"|Exception:'{info.Exception.Message}' AT '{info.Exception.StackTrace}'");
             }
 
-            return text;
+            return text.ToString();
         }
     }
 
