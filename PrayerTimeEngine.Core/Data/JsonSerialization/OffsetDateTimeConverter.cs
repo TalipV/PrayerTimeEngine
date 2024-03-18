@@ -23,7 +23,7 @@ namespace PrayerTimeEngine.Core.Data.JsonSerialization
 
         public override void Write(Utf8JsonWriter writer, OffsetDateTime value, JsonSerializerOptions options)
         {
-            string offsetDateTimeString = OffsetDateTimePattern.ExtendedIso.Format(value);
+            string offsetDateTimeString = OffsetDateTimePattern.GeneralIso.Format(value);
             writer.WriteStringValue(offsetDateTimeString);
         }
     }

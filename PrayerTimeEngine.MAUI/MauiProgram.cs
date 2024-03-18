@@ -47,6 +47,8 @@ namespace PrayerTimeEngine;
  * - Exception for single calculation prevents all the other calculations (rough fix already done)
  * - Exception for single calculation only disables that calculation but subsequent calculations rely on cached values and don't retry
  * - Calculation relevant data like the Profile with its configs may change in the middle of the calculation process due to shared references
+ * - Semerkand sometimes puts "*" in the json for their times which is not handled in the app (e.g. "*23:54")
+ * - Semerkand sometimes has countries and cities with duplicate names
  */
 
 /* TODO general:

@@ -1,12 +1,12 @@
 ﻿using NodaTime;
-using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Models.Entities;
+using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Models.DTOs;
 
 namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Interfaces
 {
     public interface ISemerkandApiService
     {
-        public Task<Dictionary<string, int>> GetCountries(CancellationToken cancellationToken);
-        public Task<Dictionary<string, int>> GetCitiesByCountryID(int countryID, CancellationToken cancellationToken);
-        public Task<List<SemerkandPrayerTimes>> GetTimesByCityID(LocalDate date, string timezone, int cityID, CancellationToken cancellationToken);
+        Task<List<SemerkandCountryResponseDTO>> GetCountries(CancellationToken cancellationToken);
+        Task<List<SemerkandCityResponseDTO>> GetCitiesByCountryID(int countryID, CancellationToken cancellationToken);
+        Task<List<SemerkandPrayerTimesResponseDTO>> GetTimesByCityID(LocalDate date, int cityID, CancellationToken cancellationToken);
     }
 }

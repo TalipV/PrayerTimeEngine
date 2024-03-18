@@ -4,6 +4,7 @@ using NodaTime;
 using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Interfaces;
 using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Models;
+using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Models.DTOs;
 using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Models.Entities;
 using PrayerTimeEngine.Core.Domain.Models;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Interfaces;
@@ -79,6 +80,8 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
             o.PoolInitialFill = 1;
         });
 
+        internal const int EXTENT_OF_DAYS_RETRIEVED = 5;
+
         private async Task<SemerkandPrayerTimes> getPrayerTimesByDateAndCityID(LocalDate date, string timezone, int cityID, CancellationToken cancellationToken)
         {
             var lockTuple = (date, cityID);
@@ -89,8 +92,17 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
 
                 if (prayerTimes == null)
                 {
-                    List<SemerkandPrayerTimes> prayerTimesLst = await semerkandApiService.GetTimesByCityID(date, timezone, cityID, cancellationToken).ConfigureAwait(false);
+                    DateTimeZone dateTimeZone = DateTimeZoneProviders.Tzdb[timezone];
+                    List<SemerkandPrayerTimesResponseDTO> timesResponseDTOs = await semerkandApiService.GetTimesByCityID(date, cityID, cancellationToken).ConfigureAwait(false);
 
+                    LocalDate firstDayOfYear = new LocalDate(date.Year, 1, 1);
+                    
+                    List<SemerkandPrayerTimes> prayerTimesLst = 
+                        timesResponseDTOs
+                            .Select(x => x.ToSemerkandPrayerTimes(cityID, dateTimeZone, firstDayOfYear))
+                            .Where(x => date <= x.Date && x.Date < date.PlusDays(EXTENT_OF_DAYS_RETRIEVED))
+                            .ToList();
+                    
                     foreach (var times in prayerTimesLst)
                     {
                         await semerkandDBAccess.InsertSemerkandPrayerTimes(times.Date, cityID, times, cancellationToken).ConfigureAwait(false);
@@ -123,7 +135,8 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
                 }
 
                 // load cities through HTTP request and save them
-                Dictionary<string, int> cities = await semerkandApiService.GetCitiesByCountryID(countryID, cancellationToken).ConfigureAwait(false);
+                var cityResponseDTOs = await semerkandApiService.GetCitiesByCountryID(countryID, cancellationToken).ConfigureAwait(false);
+                Dictionary<string, int> cities = cityResponseDTOs.DistinctBy(x => x.Name).ToDictionary(x => x.Name, x => x.ID);
                 await semerkandDBAccess.InsertCities(cities, countryID, cancellationToken).ConfigureAwait(false);
 
                 if (cities.TryGetValue(cityName, out int returnValue))
@@ -156,7 +169,8 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
                 }
 
                 // load countries through HTTP request and save them
-                Dictionary<string, int> countries = await semerkandApiService.GetCountries(cancellationToken).ConfigureAwait(false);
+                var countryResponseDTOs = await semerkandApiService.GetCountries(cancellationToken).ConfigureAwait(false);
+                Dictionary<string, int> countries = countryResponseDTOs.DistinctBy(x => x.Name).ToDictionary(x => x.Name, x => x.ID);
                 await semerkandDBAccess.InsertCountries(countries, cancellationToken).ConfigureAwait(false);
 
                 if (countries.TryGetValue(countryName, out int returnValue))
