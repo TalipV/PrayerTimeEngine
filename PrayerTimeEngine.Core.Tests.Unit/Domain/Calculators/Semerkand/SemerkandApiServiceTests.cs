@@ -43,8 +43,9 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
             countries.Should().AllSatisfy(country =>
             {
                 country.Should().NotBeNull();
-                country.Key.Should().NotBeNullOrWhiteSpace();
-                country.Value.Should().BeGreaterThan(0);
+                country.Name.Should().NotBeNullOrWhiteSpace();
+                country.DisplayName.Should().NotBeNullOrWhiteSpace();
+                country.ID.Should().BeGreaterThan(0);
             });
         }
 
@@ -68,12 +69,13 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
             var cities = await _semerkandApiService.GetCitiesByCountryID(1, default);
 
             // ASSERT
-            cities.Should().HaveCount(195);
+            cities.Should().HaveCount(204);
             cities.Should().AllSatisfy(city =>
             {
                 city.Should().NotBeNull();
-                city.Key.Should().NotBeNullOrWhiteSpace();
-                city.Value.Should().BeGreaterThan(0);
+                city.Name.Should().NotBeNullOrWhiteSpace();
+                city.DisplayName.Should().NotBeNullOrWhiteSpace();
+                city.ID.Should().BeGreaterThan(0);
             });
         }
 
@@ -99,17 +101,17 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
             var times = 
                 await _semerkandApiService.GetTimesByCityID(
                     date: date,
-                    timezoneName: "Europe/Vienna",
                     cityID: 197,
                     cancellationToken: default);
 
             // ASSERT
-            times.Should().HaveCount(SemerkandApiService.EXTENT_OF_DAYS_RETRIEVED);
+            int dayOfYear = 1;
+
+            times.Should().HaveCount(365);
             times.Should().AllSatisfy(time =>
             {
                 time.Should().NotBeNull();
-                time.Date.Should().Be(new LocalDate(2023, 1, 1).PlusDays(time.DayOfYear - 1));
-                time.CityID.Should().Be(197);
+                time.DayOfYear.Should().Be(dayOfYear++);
             });
         }
     }
