@@ -12,6 +12,7 @@ using PrayerTimeEngine.Core.Data.EntityFramework;
 using PrayerTimeEngine.Core.Domain;
 using PrayerTimeEngine.Core.Domain.CalculationManagement;
 using PrayerTimeEngine.Core.Domain.Calculators;
+using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Interfaces;
 using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services;
 using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Interfaces;
 using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services;
@@ -233,7 +234,7 @@ public static class MauiProgram
 
             return new FaziletPrayerTimeCalculator(
                 new FaziletDBAccess(appDbContext),
-                new FaziletApiService(httpClient), 
+                RestService.For<IFaziletApiService>(httpClient), 
                 serviceProvider.GetRequiredService<IPlaceService>(),
                 serviceProvider.GetRequiredService<ILogger<FaziletPrayerTimeCalculator>>());
         });

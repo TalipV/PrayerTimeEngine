@@ -1,8 +1,10 @@
 ﻿using FluentAssertions;
 using NodaTime;
+using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Interfaces;
 using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services;
 using PrayerTimeEngine.Core.Tests.Common;
 using PrayerTimeEngine.Core.Tests.Common.TestData;
+using Refit;
 using System.Net;
 
 namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Fazilet
@@ -10,13 +12,13 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Fazilet
     public class FaziletApiServiceTests : BaseTest
     {
         private readonly MockHttpMessageHandler _mockHttpMessageHandler;
-        private readonly FaziletApiService _faziletApiService;
+        private readonly IFaziletApiService _faziletApiService;
 
         public FaziletApiServiceTests()
         {
             _mockHttpMessageHandler = new MockHttpMessageHandler();
             var httpClient = new HttpClient(_mockHttpMessageHandler) { BaseAddress = new Uri("https://test.com/") };
-            _faziletApiService = new FaziletApiService(httpClient);
+            _faziletApiService = RestService.For<IFaziletApiService>(httpClient);
         }
 
         [Fact]
