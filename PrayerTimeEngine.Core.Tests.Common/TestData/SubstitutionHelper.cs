@@ -1,4 +1,5 @@
-﻿using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services;
+﻿using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Interfaces;
+using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services;
 using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Interfaces;
 using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services;
 using Refit;
@@ -66,19 +67,19 @@ namespace PrayerTimeEngine.Core.Tests.Common.TestData
             return RestService.For<IMuwaqqitApiService>(httpClient);
         }
 
-        public static FaziletApiService GetMockedFaziletApiService()
+        public static IFaziletApiService GetMockedFaziletApiService()
         {
-            string dummyBaseURL = @"http://dummy.url.com";
+            string baseURL = @"https://fazilettakvimi.com/api/cms";
 
             HttpResponseMessage handleRequestFunc(HttpRequestMessage request)
             {
                 Stream responseStream;
 
-                if (request.RequestUri.AbsoluteUri == $@"{dummyBaseURL}/{FaziletApiService.GET_COUNTRIES_URL}")
+                if (request.RequestUri.AbsoluteUri == $@"{baseURL}/daily?lang=1&districtId=232")
                     responseStream = File.OpenRead(Path.Combine(TestDataHelper.FAZILET_TEST_DATA_FILE_PATH, "Fazilet_TestCountriesData.txt"));
-                else if (request.RequestUri.AbsoluteUri == $@"{dummyBaseURL}/{FaziletApiService.GET_CITIES_BY_COUNTRY_URL}2")
+                else if (request.RequestUri.AbsoluteUri == $@"{baseURL}/cities-by-country?districtId=2")
                     responseStream = File.OpenRead(Path.Combine(TestDataHelper.FAZILET_TEST_DATA_FILE_PATH, "Fazilet_TestCityData_Austria.txt"));
-                else if (request.RequestUri.AbsoluteUri == $@"{dummyBaseURL}/{string.Format(FaziletApiService.GET_TIMES_BY_CITY_URL, "92")}")
+                else if (request.RequestUri.AbsoluteUri == $@"{baseURL}/daily?lang=2&districtId=92")
                     responseStream = File.OpenRead(Path.Combine(TestDataHelper.FAZILET_TEST_DATA_FILE_PATH, "Fazilet_TestPrayerTimeData_20230729_Innsbruck.txt"));
                 else
                     throw new Exception($"No response registered for URL: {request.RequestUri.AbsoluteUri}");
@@ -91,9 +92,9 @@ namespace PrayerTimeEngine.Core.Tests.Common.TestData
             }
 
             var mockHttpMessageHandler = new MockHttpMessageHandler(handleRequestFunc);
-            var httpClient = new HttpClient(mockHttpMessageHandler) { BaseAddress = new Uri(dummyBaseURL) };
+            var httpClient = new HttpClient(mockHttpMessageHandler) { BaseAddress = new Uri(baseURL) };
 
-            return new FaziletApiService(httpClient);
+            return RestService.For<IFaziletApiService>(httpClient);
         }
     }
 }
