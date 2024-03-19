@@ -12,7 +12,7 @@ namespace PrayerTimeEngine.Core.Data.JsonSerialization
 
         public override LocalTime Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
-            string timeString = reader.GetString();
+            string timeString = reader.GetString().Replace("*", "");
 
             if (LongTimePattern.Parse(timeString).TryGetValue(LocalTime.MinValue, out LocalTime parsedLocalTime))
             {

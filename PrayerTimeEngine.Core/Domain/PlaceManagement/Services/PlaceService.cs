@@ -13,9 +13,6 @@ namespace PrayerTimeEngine.Core.Domain.PlaceManagement.Services
             ILogger<PlaceService> logger
         ) : IPlaceService
     {
-
-        private Instant? lastCooldownCheck;
-
         public async Task<CompletePlaceInfo> GetTimezoneInfo(BasicPlaceInfo basicPlaceInfo, CancellationToken cancellationToken)
         {
             await ensureCooldown(cancellationToken).ConfigureAwait(false);
@@ -53,6 +50,8 @@ namespace PrayerTimeEngine.Core.Domain.PlaceManagement.Services
 
         public async Task<BasicPlaceInfo> GetPlaceBasedOnPlace(BasicPlaceInfo inputPlace, string language, CancellationToken cancellationToken)
         {
+            await ensureCooldown(cancellationToken).ConfigureAwait(false);
+
             var place = await locationIQApiService.GetSpecificPlaceAsync(
                     language,
                     inputPlace.Latitude,
@@ -65,7 +64,8 @@ namespace PrayerTimeEngine.Core.Domain.PlaceManagement.Services
 
         // only allowed two calls per second
         private const int NECESSARY_COOL_DOWN_MS = 500;
-        private readonly AsyncNonKeyedLocker _semaphore = new(1);
+        private static readonly AsyncNonKeyedLocker _semaphore = new(1);
+        private static Instant? lastCooldownCheck;
 
         private async Task ensureCooldown(CancellationToken cancellationToken)
         {
