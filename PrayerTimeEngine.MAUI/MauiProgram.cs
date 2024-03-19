@@ -208,9 +208,13 @@ public static class MauiProgram
         {
             var httpClient = new HttpClient
             {
+                BaseAddress = new Uri("https://eu1.locationiq.com/v1/"),
                 Timeout = TimeSpan.FromSeconds(HTTP_REQUEST_TIMEOUT_SECONDS)
             };
-            return new PlaceService(httpClient, sp.GetRequiredService<ILogger<PlaceService>>());
+
+            return new PlaceService(
+                RestService.For<ILocationIQApiService>(httpClient), 
+                sp.GetRequiredService<ILogger<PlaceService>>());
         });
 
 #if ANDROID

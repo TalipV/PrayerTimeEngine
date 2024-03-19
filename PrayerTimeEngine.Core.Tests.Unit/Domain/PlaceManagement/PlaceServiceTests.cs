@@ -4,8 +4,9 @@ using NSubstitute;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Services;
 using PrayerTimeEngine.Core.Tests.Common;
 using System.Net;
-using PrayerTimeEngine.Core.Domain.PlaceManagement.Models.Common;
 using PrayerTimeEngine.Core.Tests.Common.TestData;
+using PrayerTimeEngine.Core.Domain.PlaceManagement.Models;
+using Refit;
 
 namespace PrayerTimeEngine.Core.Tests.Unit.Domain.PlaceManagement
 {
@@ -17,8 +18,13 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.PlaceManagement
         public PlaceServiceTests()
         {
             _mockHttpMessageHandler = new MockHttpMessageHandler();
-            var httpClient = new HttpClient(_mockHttpMessageHandler);
-            _placeService = new PlaceService(httpClient, Substitute.For<ILogger<PlaceService>>());
+            var httpClient = new HttpClient(_mockHttpMessageHandler)
+            {
+                BaseAddress = new Uri("https://eu1.locationiq.com/v1/")
+            };
+            _placeService = new PlaceService(
+                RestService.For<ILocationIQApiService>(httpClient), 
+                Substitute.For<ILogger<PlaceService>>());
         }
 
         #region SearchPlacesAsync

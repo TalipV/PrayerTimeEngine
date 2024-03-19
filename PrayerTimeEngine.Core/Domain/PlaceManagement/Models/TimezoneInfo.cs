@@ -1,4 +1,4 @@
-﻿namespace PrayerTimeEngine.Core.Domain.PlaceManagement.Models.Common
+﻿namespace PrayerTimeEngine.Core.Domain.PlaceManagement.Models
 {
     public class TimezoneInfo
     {
