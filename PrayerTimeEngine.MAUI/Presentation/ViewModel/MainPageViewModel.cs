@@ -119,22 +119,22 @@ namespace PrayerTimeEngine.Presentation.ViewModel
         }
 
 
+        private readonly object placeSearchLockObj = new object();
         private CancellationTokenSource placeSearchCancellationTokenSource;
 
         public async Task<List<BasicPlaceInfo>> PerformPlaceSearch(string searchText)
         {
+            var localCts = new CancellationTokenSource();
+            lock (placeSearchLockObj)
+            {
+                placeSearchCancellationTokenSource?.Cancel();
+                placeSearchCancellationTokenSource = localCts;
+            }
+
             try
             {
-                // I know... the whole ViewModel is not ideal --> TODO
-                await dispatcher.DispatchAsync(() =>
-                {
-                    placeSearchCancellationTokenSource?.Cancel();
-                    placeSearchCancellationTokenSource?.Dispose();
-                    placeSearchCancellationTokenSource = new CancellationTokenSource();
-                });
-
                 string languageCode = _systemInfoService.GetSystemCulture().TwoLetterISOLanguageName;
-                return await placeService.SearchPlacesAsync(searchText, languageCode, placeSearchCancellationTokenSource.Token);
+                return await placeService.SearchPlacesAsync(searchText, languageCode, localCts.Token);
             }
             catch (OperationCanceledException)
             {
@@ -147,7 +147,14 @@ namespace PrayerTimeEngine.Presentation.ViewModel
             }
             finally
             {
-                placeSearchCancellationTokenSource?.Dispose();
+                lock (placeSearchLockObj)
+                {
+                    if (placeSearchCancellationTokenSource == localCts)
+                    {
+                        placeSearchCancellationTokenSource = null;
+                    }
+                    localCts.Dispose();
+                }
             }
 
             return [];
