@@ -1,5 +1,4 @@
 ﻿using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Interfaces;
-using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services;
 using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Interfaces;
 using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services;
 using Refit;

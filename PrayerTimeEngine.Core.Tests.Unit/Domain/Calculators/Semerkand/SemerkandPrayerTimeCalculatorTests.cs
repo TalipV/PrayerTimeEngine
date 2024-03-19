@@ -6,7 +6,6 @@ using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Models;
 using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services;
 using PrayerTimeEngine.Core.Domain.Models;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Interfaces;
-using PrayerTimeEngine.Core.Domain.PlaceManagement.Models.Common;
 using FluentAssertions;
 using NSubstitute.ReceivedExtensions;
 using PrayerTimeEngine.Core.Common.Enum;
@@ -14,6 +13,7 @@ using PrayerTimeEngine.Core.Tests.Common;
 using NSubstitute.ReturnsExtensions;
 using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Models.Entities;
 using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Models.DTOs;
+using PrayerTimeEngine.Core.Domain.PlaceManagement.Models;
 
 namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
 {

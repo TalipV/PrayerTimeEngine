@@ -4,8 +4,8 @@ using PrayerTimeEngine.Core.Common.Enum;
 using NodaTime;
 using AsyncKeyedLock;
 using PrayerTimeEngine.Core.Domain.Models;
-using PrayerTimeEngine.Core.Domain.PlaceManagement.Models.Common;
 using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Models.Entities;
+using PrayerTimeEngine.Core.Domain.PlaceManagement.Models;
 
 namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services
 {

@@ -10,7 +10,7 @@ using PrayerTimeEngine.Core.Domain.CalculationManagement;
 using PrayerTimeEngine.Core.Domain.Calculators;
 using PrayerTimeEngine.Core.Domain.Models;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Interfaces;
-using PrayerTimeEngine.Core.Domain.PlaceManagement.Models.Common;
+using PrayerTimeEngine.Core.Domain.PlaceManagement.Models;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Interfaces;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
 using PrayerTimeEngine.Presentation.Service.Navigation;
