@@ -36,15 +36,15 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Fazilet
                 };
 
             // ACT
-            var countries = await _faziletApiService.GetCountries(default);
+            var countries = (await _faziletApiService.GetCountries(default)).Countries;
 
             // ASSERT
             countries.Should().HaveCount(208);
             countries.Should().AllSatisfy(country =>
             {
                 country.Should().NotBeNull();
-                country.Key.Should().NotBeNullOrWhiteSpace();
-                country.Value.Should().BeGreaterThan(0);
+                country.Name.Should().NotBeNullOrWhiteSpace();
+                country.ID.Should().BeGreaterThan(0);
             });
         }
 
@@ -72,8 +72,8 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Fazilet
             cities.Should().AllSatisfy(city =>
             {
                 city.Should().NotBeNull();
-                city.Key.Should().NotBeNullOrWhiteSpace();
-                city.Value.Should().BeGreaterThan(0);
+                city.Name.Should().NotBeNullOrWhiteSpace();
+                city.ID.Should().BeGreaterThan(0);
             });
         }
 
@@ -100,13 +100,11 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Fazilet
 
             // ASSERT
             LocalDate assertDate = date.PlusDays(-1);
-            times.Should().HaveCount(3);
-            times.Should().AllSatisfy(time =>
+            times.PrayerTimes.Should().HaveCount(3);
+            times.PrayerTimes.Should().AllSatisfy(time =>
             {
                 time.Should().NotBeNull();
                 time.Date.Should().Be(assertDate);
-                time.CityID.Should().Be(197);
-
                 assertDate = assertDate.PlusDays(1);
             });
         }

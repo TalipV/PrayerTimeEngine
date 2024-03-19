@@ -89,7 +89,9 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
 
                 if (prayerTimes == null)
                 {
-                    List<FaziletPrayerTimes> prayerTimesLst = await faziletApiService.GetTimesByCityID(cityID, cancellationToken).ConfigureAwait(false);
+                    var prayerTimesResponseDTO = await faziletApiService.GetTimesByCityID(cityID, cancellationToken).ConfigureAwait(false);
+                    var timeZone = prayerTimesResponseDTO.Timezone;
+                    var prayerTimesLst = prayerTimesResponseDTO.PrayerTimes.Select(x => x.ToFaziletPrayerTimes(cityID, timeZone)).ToList();
 
                     foreach (var times in prayerTimesLst)
                     {
@@ -123,10 +125,11 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
                 }
 
                 // load cities through HTTP request and save them
-                Dictionary<string, int> cities = await faziletApiService.GetCitiesByCountryID(countryID, cancellationToken).ConfigureAwait(false);
-                await faziletDBAccess.InsertCities(cities, countryID, cancellationToken).ConfigureAwait(false);
+                var cityDTOs = await faziletApiService.GetCitiesByCountryID(countryID, cancellationToken).ConfigureAwait(false);
+                var citiesDict = cityDTOs.ToDictionary(x => x.Name, x => x.ID);
+                await faziletDBAccess.InsertCities(citiesDict, countryID, cancellationToken).ConfigureAwait(false);
 
-                if (cities.TryGetValue(cityName, out int returnValue))
+                if (citiesDict.TryGetValue(cityName, out int returnValue))
                 {
                     return (true, returnValue);
                 }
@@ -155,11 +158,12 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
                     return (false, -1);
                 }
 
-                // load countries through HTTP request and save them
-                Dictionary<string, int> countries = await faziletApiService.GetCountries(cancellationToken).ConfigureAwait(false);
-                await faziletDBAccess.InsertCountries(countries, cancellationToken).ConfigureAwait(false);
+                var countriesDTOs = (await faziletApiService.GetCountries(cancellationToken).ConfigureAwait(false)).Countries;
+                var countriesDict = countriesDTOs.ToDictionary(x => x.Name, x => x.ID);
 
-                if (countries.TryGetValue(countryName, out int returnValue))
+                await faziletDBAccess.InsertCountries(countriesDict, cancellationToken).ConfigureAwait(false);
+
+                if (countriesDict.TryGetValue(countryName, out int returnValue))
                 {
                     return (true, returnValue);
                 }
