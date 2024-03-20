@@ -16,6 +16,7 @@ using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Interfaces;
 using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services;
 using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Interfaces;
 using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services;
+using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Interfaces;
 using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Interfaces;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Services;
@@ -249,12 +250,12 @@ public static class MauiProgram
             var httpClient = new HttpClient
             {
                 Timeout = TimeSpan.FromSeconds(HTTP_REQUEST_TIMEOUT_SECONDS),
-                BaseAddress = new Uri("https://semerkandtakvimi.com/api/cms/")
+                BaseAddress = new Uri("https://semerkandtakvimi.semerkandmobile.com/")
             };
 
             return new SemerkandPrayerTimeCalculator(
                 new SemerkandDBAccess(appDbContext),
-                new SemerkandApiService(httpClient),
+                RestService.For<ISemerkandApiService>(httpClient),
                 serviceProvider.GetRequiredService<IPlaceService>(),
                 serviceProvider.GetRequiredService<ILogger<SemerkandPrayerTimeCalculator>>());
         });

@@ -1,5 +1,6 @@
 ﻿using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Interfaces;
 using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Interfaces;
+using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Interfaces;
 using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services;
 using Refit;
 using System.Net;
@@ -8,17 +9,17 @@ namespace PrayerTimeEngine.Core.Tests.Common.TestData
 {
     public class SubstitutionHelper
     {
-        public static SemerkandApiService GetMockedSemerkandApiService()
+        public static ISemerkandApiService GetMockedSemerkandApiService()
         {
             static HttpResponseMessage handleRequestFunc(HttpRequestMessage request)
             {
                 Stream responseStream;
 
-                if (request.RequestUri.AbsoluteUri == SemerkandApiService.GET_COUNTRIES_URL)
+                if (request.RequestUri.AbsoluteUri == "https://semerkandtakvimi.semerkandmobile.com/countries?language=tr")
                     responseStream = File.OpenRead(Path.Combine(TestDataHelper.SEMERKAND_TEST_DATA_FILE_PATH, "Semerkand_TestCountriesData.txt"));
-                else if (request.RequestUri.AbsoluteUri == SemerkandApiService.GET_CITIES_BY_COUNTRY_URL)
+                else if (request.RequestUri.AbsoluteUri == "https://semerkandtakvimi.semerkandmobile.com/cities?countryID=3")
                     responseStream = File.OpenRead(Path.Combine(TestDataHelper.SEMERKAND_TEST_DATA_FILE_PATH, "Semerkand_TestCityData_Austria.txt"));
-                else if (request.RequestUri.AbsoluteUri == string.Format(SemerkandApiService.GET_TIMES_BY_CITY, "197", "2023"))
+                else if (request.RequestUri.AbsoluteUri == "https://semerkandtakvimi.semerkandmobile.com/salaattimes?year=2023&cityId=197")
                     responseStream = File.OpenRead(Path.Combine(TestDataHelper.SEMERKAND_TEST_DATA_FILE_PATH, "Semerkand_TestPrayerTimeData_20230729_Innsbruck.txt"));
                 else
                     throw new Exception($"No response registered for URL: {request.RequestUri.AbsoluteUri}");
@@ -31,9 +32,9 @@ namespace PrayerTimeEngine.Core.Tests.Common.TestData
             }
 
             var mockHttpMessageHandler = new MockHttpMessageHandler(handleRequestFunc);
-            var httpClient = new HttpClient(mockHttpMessageHandler);
+            var httpClient = new HttpClient(mockHttpMessageHandler) { BaseAddress = new Uri("https://semerkandtakvimi.semerkandmobile.com/") };
 
-            return new SemerkandApiService(httpClient);
+            return RestService.For<ISemerkandApiService>(httpClient);
         }
 
         public static IMuwaqqitApiService GetMockedMuwaqqitApiService()

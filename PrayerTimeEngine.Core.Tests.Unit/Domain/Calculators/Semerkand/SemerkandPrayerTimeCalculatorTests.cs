@@ -125,7 +125,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
             };
 
             _semerkandApiServiceMock.GetTimesByCityID(
-                    Arg.Is<LocalDate>(x => x == date || x == date.PlusDays(1)),
+                    Arg.Is<int>(x => x == date.Year || x == date.PlusDays(1).Year),
                     Arg.Is(1),
                     Arg.Any<CancellationToken>())
                 .Returns([semerkandPrayerTimesDTO]);
@@ -143,7 +143,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
             _semerkandDBAccessMock.ReceivedCalls().Should().HaveCount(9);
             await _semerkandApiServiceMock.Received(1).GetCountries(Arg.Any<CancellationToken>());
             await _semerkandApiServiceMock.Received(1).GetCitiesByCountryID(Arg.Is(1), Arg.Any<CancellationToken>());
-            await _semerkandApiServiceMock.Received(1).GetTimesByCityID(Arg.Is(date), Arg.Is(1), Arg.Any<CancellationToken>());
+            await _semerkandApiServiceMock.Received(1).GetTimesByCityID(Arg.Is(date.Year), Arg.Is(1), Arg.Any<CancellationToken>());
         }
 
         [Fact]
@@ -177,7 +177,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
             };
 
             _semerkandApiServiceMock.GetTimesByCityID(
-                    date: Arg.Is(date),
+                    year: Arg.Is(date.Year),
                     cityID: Arg.Is(1),
                     cancellationToken: Arg.Any<CancellationToken>())
                 .Returns([semerkandPrayerTimesDTO1]);
@@ -194,7 +194,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
             };
 
             _semerkandApiServiceMock.GetTimesByCityID(
-                    date: Arg.Is(date.PlusDays(1)),
+                    year: Arg.Is(date.PlusDays(1).Year),
                     cityID: Arg.Is(1),
                     cancellationToken: Arg.Any<CancellationToken>())
                 .Returns([semerkandPrayerTimesDTO2]);
@@ -222,8 +222,8 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
             _semerkandApiServiceMock.ReceivedCalls().Should().HaveCount(2);
             await _semerkandApiServiceMock.Received(0).GetCountries(Arg.Any<CancellationToken>());
             await _semerkandApiServiceMock.Received(0).GetCitiesByCountryID(Arg.Is(1), Arg.Any<CancellationToken>());
-            await _semerkandApiServiceMock.Received(1).GetTimesByCityID(Arg.Is(date), Arg.Is(1), Arg.Any<CancellationToken>());
-            await _semerkandApiServiceMock.Received(1).GetTimesByCityID(Arg.Is(date.PlusDays(1)), Arg.Is(1), Arg.Any<CancellationToken>());
+            await _semerkandApiServiceMock.Received(1).GetTimesByCityID(Arg.Is(date.Year), Arg.Is(1), Arg.Any<CancellationToken>());
+            await _semerkandApiServiceMock.Received(1).GetTimesByCityID(Arg.Is(date.PlusDays(1).Year), Arg.Is(1), Arg.Any<CancellationToken>());
         }
 
         #endregion GetPrayerTimesAsync

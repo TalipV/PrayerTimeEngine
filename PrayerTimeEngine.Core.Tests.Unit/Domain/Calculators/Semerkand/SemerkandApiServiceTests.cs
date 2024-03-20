@@ -4,19 +4,21 @@ using System.Net;
 using FluentAssertions;
 using NodaTime;
 using PrayerTimeEngine.Core.Tests.Common.TestData;
+using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Interfaces;
+using Refit;
 
 namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
 {
     public class SemerkandApiServiceTests : BaseTest
     {
         private readonly MockHttpMessageHandler _mockHttpMessageHandler;
-        private readonly SemerkandApiService _semerkandApiService;
+        private readonly ISemerkandApiService _semerkandApiService;
 
         public SemerkandApiServiceTests()
         {
             _mockHttpMessageHandler = new MockHttpMessageHandler();
             var httpClient = new HttpClient(_mockHttpMessageHandler);
-            _semerkandApiService = new SemerkandApiService(httpClient);
+            _semerkandApiService = RestService.For<ISemerkandApiService>(httpClient);
         }
 
         [Fact]
@@ -100,7 +102,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
             // ACT
             var times = 
                 await _semerkandApiService.GetTimesByCityID(
-                    date: date,
+                    year: date.Year,
                     cityID: 197,
                     cancellationToken: default);
 
