@@ -59,10 +59,8 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
 
         private async Task<FaziletPrayerTimes> getPrayerTimesInternal(LocalDate date, string countryName, string cityName, CancellationToken cancellationToken)
         {
-            if (await tryGetCountryID(countryName, cancellationToken).ConfigureAwait(false) is (bool countrySuccess, int countryID) && !countrySuccess)
-                throw new ArgumentException($"{nameof(countryName)} could not be found!");
-            if (await tryGetCityID(cityName, countryID, cancellationToken).ConfigureAwait(false) is (bool citySuccess, int cityID) && !citySuccess)
-                throw new ArgumentException($"{nameof(cityName)} could not be found!");
+            int countryID = await getCountryID(countryName, throwIfNotFound: true, cancellationToken).ConfigureAwait(false);
+            int cityID = await getCityID(cityName, countryID, throwIfNotFound: true, cancellationToken).ConfigureAwait(false);
 
             FaziletPrayerTimes prayerTimes = await getPrayerTimesByDateAndCityID(date, cityID, cancellationToken).ConfigureAwait(false)
                 ?? throw new Exception($"Prayer times for the {date:D} could not be found for an unknown reason.");
@@ -107,7 +105,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
 
         private static readonly AsyncNonKeyedLocker semaphoreTryGetCityID = new(1);
 
-        private async Task<(bool success, int cityID)> tryGetCityID(string cityName, int countryID, CancellationToken cancellationToken)
+        private async Task<int> getCityID(string cityName, int countryID, bool throwIfNotFound,  CancellationToken cancellationToken)
         {
             // check-then-act has to be thread safe
             using (await semaphoreTryGetCityID.LockAsync(cancellationToken).ConfigureAwait(false))
@@ -116,12 +114,14 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
 
                 // city found
                 if (cityID != null)
-                    return (true, cityID.Value);
+                    return cityID.Value;
 
                 // unknown city
                 if (await faziletDBAccess.HasCityData(countryID, cancellationToken).ConfigureAwait(false))
                 {
-                    return (false, -1);
+                    return throwIfNotFound
+                        ? throw new ArgumentException($"{nameof(cityName)} could not be found!")
+                        : -1;
                 }
 
                 // load cities through HTTP request and save them
@@ -131,17 +131,19 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
 
                 if (citiesDict.TryGetValue(cityName, out int returnValue))
                 {
-                    return (true, returnValue);
+                    return returnValue;
                 }
 
                 // there were no cities and loaded cities still didn't contain it
-                return (false, -1);
+                return throwIfNotFound
+                    ? throw new ArgumentException($"{nameof(cityName)} could not be found!")
+                    : -1;
             }
         }
 
         private static readonly AsyncNonKeyedLocker semaphoreTryGetCountryID = new(1);
 
-        private async Task<(bool success, int countryID)> tryGetCountryID(string countryName, CancellationToken cancellationToken)
+        private async Task<int> getCountryID(string countryName, bool throwIfNotFound, CancellationToken cancellationToken)
         {
             // check-then-act has to be thread safe
             using (await semaphoreTryGetCountryID.LockAsync(cancellationToken).ConfigureAwait(false))
@@ -150,12 +152,14 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
 
                 // country found
                 if (countryID != null)
-                    return (true, countryID.Value);
+                    return countryID.Value;
 
                 // unknown country
                 if (await faziletDBAccess.HasCountryData(cancellationToken).ConfigureAwait(false))
                 {
-                    return (false, -1);
+                    return throwIfNotFound 
+                        ? throw new ArgumentException($"{nameof(countryName)} could not be found!") 
+                        : - 1;
                 }
 
                 var countriesDTOs = (await faziletApiService.GetCountries(cancellationToken).ConfigureAwait(false)).Countries;
@@ -165,11 +169,13 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
 
                 if (countriesDict.TryGetValue(countryName, out int returnValue))
                 {
-                    return (true, returnValue);
+                    return returnValue;
                 }
 
                 // there were no countries and loaded countries still didn't contain it
-                return (false, -1);
+                return throwIfNotFound
+                    ? throw new ArgumentException($"{nameof(countryName)} could not be found!")
+                    : -1;
             }
         }
 
@@ -192,11 +198,11 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
             countryName = countryName.Replace("İ", "I");
             cityName = cityName.Replace("İ", "I");
 
-            var (success, countryID) = await tryGetCountryID(countryName, cancellationToken).ConfigureAwait(false);
-
             logger.LogDebug("Fazilet search location: {Country}, {City}", countryName, cityName);
 
-            if (success && (await tryGetCityID(cityName, countryID, cancellationToken).ConfigureAwait(false)).success)
+            int countryID = await getCountryID(countryName, throwIfNotFound: false, cancellationToken).ConfigureAwait(false);
+            if (countryID != -1 
+                && (await getCityID(cityName, countryID, throwIfNotFound: false, cancellationToken).ConfigureAwait(false)) != -1)
             {
                 logger.LogDebug("Fazilet found location: {Country}, {City}", countryName, cityName);
 
