@@ -359,9 +359,9 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Fazilet
             };
 
             // ACT
-            await _faziletDBAccess.InsertFaziletPrayerTimesIfNotExists(date, 1, time1, default);
-            await _faziletDBAccess.InsertFaziletPrayerTimesIfNotExists(date, 2, time2, default);
-            await _faziletDBAccess.InsertFaziletPrayerTimesIfNotExists(date, 1, time3, default);
+            await _faziletDBAccess.InsertFaziletPrayerTimes(date, 1, time1, default);
+            await _faziletDBAccess.InsertFaziletPrayerTimes(date, 2, time2, default);
+            await _faziletDBAccess.InsertFaziletPrayerTimes(date, 1, time3, default);
 
             // ASSERT
             (await _appDbContext.FaziletPrayerTimes.FindAsync(time1.ID)).Should().BeEquivalentTo(time1);

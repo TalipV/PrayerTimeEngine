@@ -55,11 +55,8 @@ namespace PrayerTimeEngine;
 
 /* TODO general:
  * - Performance
- * - JsonElement.ValueKind checks in API services
- * - Proper error handling in calculators (e.g. checking response code at least for success, collect exceptions in CalculationManager result)
  * - Multiple profiles
  * - Decrease count of reloads (e.g. mere app switch shouldn't always require reload)
- * - CancellationTokens
  * - Transactions when saving country data and city data to prevent partial safes (or rethink the whole thing)
  * - PlaceService and ProfileService with no or default CancellationToken?
  * - delete old db cache data from time to time

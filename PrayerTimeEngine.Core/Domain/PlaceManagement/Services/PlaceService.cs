@@ -1,4 +1,5 @@
 ﻿using AsyncKeyedLock;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using NodaTime;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Interfaces;
@@ -13,6 +14,8 @@ namespace PrayerTimeEngine.Core.Domain.PlaceManagement.Services
             ILogger<PlaceService> logger
         ) : IPlaceService
     {
+        private const string _apiKey = "pk.5fdf59f9c3682abc89749e42d1f68d8d";
+
         public async Task<CompletePlaceInfo> GetTimezoneInfo(BasicPlaceInfo basicPlaceInfo, CancellationToken cancellationToken)
         {
             await ensureCooldown(cancellationToken).ConfigureAwait(false);
@@ -20,7 +23,8 @@ namespace PrayerTimeEngine.Core.Domain.PlaceManagement.Services
             LocationIQTimezoneResponseDTO locationIQTimezone = 
                 await locationIQApiService.GetTimezoneAsync(
                     basicPlaceInfo.Latitude, 
-                    basicPlaceInfo.Longitude, 
+                    basicPlaceInfo.Longitude,
+                    _apiKey,
                     cancellationToken).ConfigureAwait(false);
 
             return new CompletePlaceInfo(basicPlaceInfo)
@@ -41,6 +45,7 @@ namespace PrayerTimeEngine.Core.Domain.PlaceManagement.Services
             var places = await locationIQApiService.GetPlacesAsync(
                     language,
                     searchTerm,
+                    _apiKey,
                     cancellationToken).ConfigureAwait(false);
 
             return places.Select(x => getlocationIQPlace(x, language))
@@ -57,6 +62,7 @@ namespace PrayerTimeEngine.Core.Domain.PlaceManagement.Services
                     inputPlace.Latitude,
                     inputPlace.Longitude,
                     inputPlace.ID,
+                    _apiKey,
                     cancellationToken).ConfigureAwait(false);
 
             return getlocationIQPlace(place, language);

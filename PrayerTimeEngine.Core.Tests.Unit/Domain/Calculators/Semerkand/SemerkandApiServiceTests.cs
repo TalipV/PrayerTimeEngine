@@ -1,5 +1,4 @@
-﻿using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services;
-using PrayerTimeEngine.Core.Tests.Common;
+﻿using PrayerTimeEngine.Core.Tests.Common;
 using System.Net;
 using FluentAssertions;
 using NodaTime;

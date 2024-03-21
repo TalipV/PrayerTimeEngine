@@ -1,5 +1,6 @@
 ﻿using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Jobs;
+using BenchmarkDotNet.Toolchains.InProcess.NoEmit;
 
 namespace PrayerTimeEngine.BenchmarkDotNet
 {
@@ -7,7 +8,8 @@ namespace PrayerTimeEngine.BenchmarkDotNet
     {
         public BenchmarkConfig()
         {
-            AddJob(Job.MediumRun);
+            AddJob(Job.MediumRun
+                .WithToolchain(InProcessNoEmitToolchain.Instance));
             //this.WithOption(ConfigOptions.DisableOptimizationsValidator, true);
         }
     }
