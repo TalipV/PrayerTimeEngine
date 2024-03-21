@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using NodaTime;
 using PrayerTimeEngine.Core.Tests.Common;
 using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Models.Entities;
+using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Models.DTOs;
 
 namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
 {
@@ -244,16 +245,15 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
         public async Task InsertCountries_InsertThreeNewCountries_AllThreeInserted()
         {
             // ARRANGE
-            List<SemerkandCountry> newCountries = 
+            List<SemerkandCountryResponseDTO> newCountries = 
             [
-                new SemerkandCountry { ID = 1, Name = "Deutschland"},
-                new SemerkandCountry { ID = 2, Name = "Österreich"},
-                new SemerkandCountry { ID = 3, Name = "Schweiz"},
+                new SemerkandCountryResponseDTO { ID = 1, Name = "Deutschland"},
+                new SemerkandCountryResponseDTO { ID = 2, Name = "Österreich"},
+                new SemerkandCountryResponseDTO { ID = 3, Name = "Schweiz"},
             ];
                 
             // ACT
-            await _semerkandDBAccess.InsertCountries(
-                newCountries.ToDictionary(x => x.Name, x => x.ID), default);
+            await _semerkandDBAccess.InsertCountries(newCountries, default);
 
             // ASSERT
             foreach (var newCountry in newCountries)
@@ -273,19 +273,19 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
             await _appDbContext.SemerkandCountries.AddAsync(austria);
             await _appDbContext.SaveChangesAsync();
 
-            List<SemerkandCity> gerCities =
+            List<SemerkandCityResponseDTO> gerCities =
             [
-                new SemerkandCity { ID = 1, CountryID = 1, Name = "Berlin", Country = germany },
-                new SemerkandCity { ID = 2, CountryID = 1, Name = "Köln", Country = germany }
+                new SemerkandCityResponseDTO { ID = 1, Name = "Berlin"},
+                new SemerkandCityResponseDTO { ID = 2, Name = "Köln"}
             ];
-            List<SemerkandCity> autCities =
+            List<SemerkandCityResponseDTO> autCities =
             [
-                new SemerkandCity { ID = 3, CountryID = 2, Name = "Wien", Country = austria }
+                new SemerkandCityResponseDTO { ID = 3, Name = "Wien"}
             ];
 
             // ACT
-            await _semerkandDBAccess.InsertCities(gerCities.ToDictionary(x => x.Name, x => x.ID), 1, default);
-            await _semerkandDBAccess.InsertCities(autCities.ToDictionary(x => x.Name, x => x.ID), 2, default);
+            await _semerkandDBAccess.InsertCities(gerCities, 1, default);
+            await _semerkandDBAccess.InsertCities(autCities, 2, default);
 
             // ASSERT
             foreach (var newCity in gerCities.Concat(autCities))

@@ -2,6 +2,7 @@
 using NodaTime;
 using PrayerTimeEngine.Core.Data.EntityFramework;
 using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Interfaces;
+using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Models.DTOs;
 using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Models.Entities;
 
 namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
@@ -85,19 +86,19 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
             await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
         }
 
-        public async Task InsertCountries(Dictionary<string, int> countries, CancellationToken cancellationToken)
+        public async Task InsertCountries(List<SemerkandCountryResponseDTO> countries, CancellationToken cancellationToken)
         {
-            foreach (var item in countries)
+            foreach (var country in countries)
             {
-                await InsertCountry(item.Value, item.Key, cancellationToken).ConfigureAwait(false);
+                await InsertCountry(country.ID, country.Name, cancellationToken).ConfigureAwait(false);
             }
         }
 
-        public async Task InsertCities(Dictionary<string, int> cities, int countryId, CancellationToken cancellationToken)
+        public async Task InsertCities(List<SemerkandCityResponseDTO> cities, int countryId, CancellationToken cancellationToken)
         {
-            foreach (var item in cities)
+            foreach (var city in cities)
             {
-                await InsertCity(item.Value, item.Key, countryId, cancellationToken).ConfigureAwait(false);
+                await InsertCity(city.ID, city.Name, countryId, cancellationToken).ConfigureAwait(false);
             }
         }
 

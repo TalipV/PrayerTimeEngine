@@ -93,7 +93,9 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
 
                     foreach (var times in prayerTimesLst)
                     {
-                        await faziletDBAccess.InsertFaziletPrayerTimesIfNotExists(times.Date, cityID, times, cancellationToken).ConfigureAwait(false);
+                        await faziletDBAccess.InsertFaziletPrayerTimes(
+                            times.Date, cityID, times, 
+                            cancellationToken).ConfigureAwait(false);
                     }
 
                     prayerTimes = prayerTimesLst.FirstOrDefault(x => x.Date == date);

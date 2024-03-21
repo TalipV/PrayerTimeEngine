@@ -83,7 +83,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
 
                     // stop loading times and stop loading places
                     loadingTimesCancellationTokenSource?.Cancel();
-                    placeSearchCancellationTokenSource?.Cancel();
+                    _placeSearchCancellationTokenSource?.Cancel();
 
                     try
                     {
@@ -118,23 +118,19 @@ namespace PrayerTimeEngine.Presentation.ViewModel
             debouncer.Debounce();
         }
 
-
-        private readonly object placeSearchLockObj = new object();
-        private CancellationTokenSource placeSearchCancellationTokenSource;
+        private CancellationTokenSource _placeSearchCancellationTokenSource;
 
         public async Task<List<BasicPlaceInfo>> PerformPlaceSearch(string searchText)
         {
-            var localCts = new CancellationTokenSource();
-            lock (placeSearchLockObj)
-            {
-                placeSearchCancellationTokenSource?.Cancel();
-                placeSearchCancellationTokenSource = localCts;
-            }
-
+            var currentTokenSource = new CancellationTokenSource();
             try
             {
+                // cancel a previous request, if there is one
+                _placeSearchCancellationTokenSource?.Cancel();
+                _placeSearchCancellationTokenSource = currentTokenSource;
+
                 string languageCode = _systemInfoService.GetSystemCulture().TwoLetterISOLanguageName;
-                return await placeService.SearchPlacesAsync(searchText, languageCode, localCts.Token);
+                return await placeService.SearchPlacesAsync(searchText, languageCode, currentTokenSource.Token);
             }
             catch (OperationCanceledException)
             {
@@ -147,14 +143,10 @@ namespace PrayerTimeEngine.Presentation.ViewModel
             }
             finally
             {
-                lock (placeSearchLockObj)
-                {
-                    if (placeSearchCancellationTokenSource == localCts)
-                    {
-                        placeSearchCancellationTokenSource = null;
-                    }
-                    localCts.Dispose();
-                }
+                currentTokenSource?.Dispose();
+
+                if (_placeSearchCancellationTokenSource == currentTokenSource)
+                    _placeSearchCancellationTokenSource = null;
             }
 
             return [];

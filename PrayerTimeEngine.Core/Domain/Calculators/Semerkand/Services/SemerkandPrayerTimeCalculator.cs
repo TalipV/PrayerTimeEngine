@@ -64,7 +64,12 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
             int countryID = await getCountryID(countryName, throwIfNotFound: true, cancellationToken).ConfigureAwait(false);
             int cityID = await getCityID(cityName, countryID, throwIfNotFound: true, cancellationToken).ConfigureAwait(false);
 
-            SemerkandPrayerTimes prayerTimes = await getPrayerTimesByDateAndCityID(date, timezoneName, cityID, cancellationToken).ConfigureAwait(false)
+            SemerkandPrayerTimes prayerTimes = 
+                await getPrayerTimesByDateAndCityID(
+                    date, 
+                    timezoneName, 
+                    cityID, 
+                    cancellationToken).ConfigureAwait(false)
                 ?? throw new Exception($"Prayer times for the {date:D} could not be found for an unknown reason.");
 
             prayerTimes.NextFajr = (await getPrayerTimesByDateAndCityID(date.PlusDays(1), timezoneName, cityID, cancellationToken).ConfigureAwait(false))?.Fajr;
@@ -86,14 +91,22 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
 
             using (await getPrayerTimesLocker.LockAsync(lockTuple).ConfigureAwait(false))
             {
-                SemerkandPrayerTimes prayerTimes = await semerkandDBAccess.GetTimesByDateAndCityID(date, cityID, cancellationToken).ConfigureAwait(false);
+                SemerkandPrayerTimes prayerTimes = 
+                    await semerkandDBAccess.GetTimesByDateAndCityID(
+                        date, 
+                        cityID, 
+                        cancellationToken).ConfigureAwait(false);
 
                 if (prayerTimes == null)
                 {
-                    DateTimeZone dateTimeZone = DateTimeZoneProviders.Tzdb[timezone];
-                    List<SemerkandPrayerTimesResponseDTO> timesResponseDTOs = await semerkandApiService.GetTimesByCityID(cityID, date.Year, cancellationToken).ConfigureAwait(false);
+                    List<SemerkandPrayerTimesResponseDTO> timesResponseDTOs = 
+                        await semerkandApiService.GetTimesByCityID(
+                            cityID, 
+                            date.Year, 
+                            cancellationToken).ConfigureAwait(false);
 
-                    LocalDate firstDayOfYear = new LocalDate(date.Year, 1, 1);
+                    var dateTimeZone = DateTimeZoneProviders.Tzdb[timezone];
+                    var firstDayOfYear = new LocalDate(date.Year, 1, 1);
                     
                     List<SemerkandPrayerTimes> prayerTimesLst = 
                         timesResponseDTOs
@@ -103,7 +116,9 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
                     
                     foreach (var times in prayerTimesLst)
                     {
-                        await semerkandDBAccess.InsertSemerkandPrayerTimes(times.Date, cityID, times, cancellationToken).ConfigureAwait(false);
+                        await semerkandDBAccess.InsertSemerkandPrayerTimes(
+                            times.Date, cityID, times, 
+                            cancellationToken).ConfigureAwait(false);
                     }
 
                     prayerTimes = prayerTimesLst.FirstOrDefault(x => x.Date == date);
@@ -136,18 +151,12 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
 
                 // load cities through HTTP request and save them
                 var cityResponseDTOs = await semerkandApiService.GetCitiesByCountryID(countryID, cancellationToken).ConfigureAwait(false);
-                Dictionary<string, int> cities = cityResponseDTOs.DistinctBy(x => x.Name).ToDictionary(x => x.Name, x => x.ID);
-                await semerkandDBAccess.InsertCities(cities, countryID, cancellationToken).ConfigureAwait(false);
+                await semerkandDBAccess.InsertCities(cityResponseDTOs, countryID, cancellationToken).ConfigureAwait(false);
 
-                if (cities.TryGetValue(cityName, out int returnValue))
-                {
-                    return returnValue;
-                }
-
-                // there were no cities and loaded cities still didn't contain it
-                return throwIfNotFound
+                return cityResponseDTOs.FirstOrDefault(x => x.Name == cityName)?.ID
+                    ?? (throwIfNotFound
                     ? throw new ArgumentException($"{nameof(cityName)} could not be found!")
-                    : -1;
+                    : -1);
             }
         }
 
@@ -174,18 +183,12 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
 
                 // load countries through HTTP request and save them
                 var countryResponseDTOs = await semerkandApiService.GetCountries(cancellationToken).ConfigureAwait(false);
-                Dictionary<string, int> countries = countryResponseDTOs.DistinctBy(x => x.Name).ToDictionary(x => x.Name, x => x.ID);
-                await semerkandDBAccess.InsertCountries(countries, cancellationToken).ConfigureAwait(false);
+                await semerkandDBAccess.InsertCountries(countryResponseDTOs, cancellationToken).ConfigureAwait(false);
 
-                if (countries.TryGetValue(countryName, out int returnValue))
-                {
-                    return returnValue;
-                }
-
-                // there were no countries and loaded countries still didn't contain it
-                return throwIfNotFound
+                return countryResponseDTOs.FirstOrDefault(x => x.Name == countryName)?.ID
+                    ?? (throwIfNotFound
                     ? throw new ArgumentException($"{nameof(countryName)} could not be found!")
-                    : -1;
+                    : -1);
             }
         }
 
