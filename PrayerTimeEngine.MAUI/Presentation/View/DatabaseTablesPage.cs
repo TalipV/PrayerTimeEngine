@@ -4,7 +4,7 @@ using PrayerTimeEngine.Presentation.ViewModel;
 using System.Reflection;
 using UraniumUI.Material.Controls;
 
-namespace PrayerTimeEngine.Views;
+namespace PrayerTimeEngine.Presentation.View;
 
 public partial class DatabaseTablesPage : ContentPage
 {
@@ -12,7 +12,7 @@ public partial class DatabaseTablesPage : ContentPage
 
     public DatabaseTablesPage(DatabaseTablesPageViewModel viewModel)
     {
-        this.BindingContext = viewModel;
+        BindingContext = viewModel;
 
         var picker = new Picker();
         picker.SetBinding(Picker.ItemsSourceProperty, "TableOptions");

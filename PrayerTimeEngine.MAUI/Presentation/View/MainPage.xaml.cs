@@ -1,6 +1,5 @@
 ﻿using CommunityToolkit.Maui.Storage;
 using OnScreenSizeMarkup.Maui.Helpers;
-using PrayerTimeEngine.Core.Common;
 using PrayerTimeEngine.Presentation.GraphicsView;
 using PrayerTimeEngine.Presentation.ViewModel;
 
@@ -72,7 +71,7 @@ namespace PrayerTimeEngine
                     if (folderPickerResult.Folder != null)
                     {
                         File.Copy(
-                            sourceFileName: Core.Common.AppConfig.DATABASE_PATH,
+                            sourceFileName: AppConfig.DATABASE_PATH,
                             destFileName: Path.Combine(folderPickerResult.Folder.Path, $"dbFile_{DateTime.Now:ddMMyyyy_HH_mm}.db"),
                             overwrite: true);
                     }
