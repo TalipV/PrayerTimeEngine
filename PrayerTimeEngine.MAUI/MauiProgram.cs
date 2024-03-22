@@ -1,12 +1,7 @@
 ﻿using CommunityToolkit.Maui;
 using MetroLog.MicrosoftExtensions;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Maui.Controls.Hosting;
-using Microsoft.Maui.Hosting;
-using Microsoft.Maui.Storage;
-using PrayerTimeEngine.Code.Presentation.View;
 using PrayerTimeEngine.Core.Common;
 using PrayerTimeEngine.Core.Data.EntityFramework;
 using PrayerTimeEngine.Core.Domain;
@@ -24,10 +19,10 @@ using PrayerTimeEngine.Core.Domain.ProfileManagement.Interfaces;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Services;
 using PrayerTimeEngine.Presentation.Service.Navigation;
 using PrayerTimeEngine.Presentation.Service.SettingsContentPageFactory;
+using PrayerTimeEngine.Presentation.View;
 using PrayerTimeEngine.Presentation.ViewModel;
 using PrayerTimeEngine.Presentation.ViewModel.Custom;
 using PrayerTimeEngine.Services.SystemInfoService;
-using PrayerTimeEngine.Views;
 using Refit;
 using System.Text;
 using UraniumUI;
@@ -178,8 +173,9 @@ public static class MauiProgram
 
         serviceCollection.AddDbContext<AppDbContext>(options =>
         {
-            options.UseSqlite($"Data Source={AppConfig.DATABASE_PATH}", x => x.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery));
             options.UseModel(AppDbContextModel.Instance);
+            options.UseSqlite($"Data Source={AppConfig.DATABASE_PATH}",
+                sqlLiteConfig => sqlLiteConfig.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery));
 
             //options.ConfigureWarnings(x => x.Throw(RelationalEventId.MultipleCollectionIncludeWarning));
             //options.LogTo(Console.WriteLine, LogLevel.Trace);

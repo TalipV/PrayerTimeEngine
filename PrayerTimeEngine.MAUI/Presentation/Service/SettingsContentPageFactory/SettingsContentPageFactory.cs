@@ -1,4 +1,4 @@
-﻿using PrayerTimeEngine.Code.Presentation.View;
+﻿using PrayerTimeEngine.Presentation.View;
 
 namespace PrayerTimeEngine.Presentation.Service.SettingsContentPageFactory
 {

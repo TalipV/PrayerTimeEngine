@@ -1,9 +1,8 @@
 ﻿using MethodTimer;
-using PrayerTimeEngine.Code.Presentation.View;
 using PrayerTimeEngine.Presentation.ViewModel;
 using UraniumUI.Material.Controls;
 
-namespace PrayerTimeEngine.Views;
+namespace PrayerTimeEngine.Presentation.View;
 
 public partial class SettingsHandlerPage : ContentPage
 {
