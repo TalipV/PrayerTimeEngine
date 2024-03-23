@@ -2,7 +2,6 @@
 using MetroLog.MicrosoftExtensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using PrayerTimeEngine.Code.Presentation.View;
 using PrayerTimeEngine.Core.Common;
 using PrayerTimeEngine.Core.Data.EntityFramework;
 using PrayerTimeEngine.Core.Domain;
@@ -20,6 +19,7 @@ using PrayerTimeEngine.Core.Domain.ProfileManagement.Interfaces;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Services;
 using PrayerTimeEngine.Presentation.Service.Navigation;
 using PrayerTimeEngine.Presentation.Service.SettingsContentPageFactory;
+using PrayerTimeEngine.Presentation.View;
 using PrayerTimeEngine.Presentation.ViewModel;
 using PrayerTimeEngine.Presentation.ViewModel.Custom;
 using PrayerTimeEngine.Services.SystemInfoService;

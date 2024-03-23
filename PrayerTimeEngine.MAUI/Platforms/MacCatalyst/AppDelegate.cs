@@ -1,4 +1,6 @@
-﻿namespace PrayerTimeEngine.Platforms.MacCatalyst;
+﻿using Foundation;
+
+namespace PrayerTimeEngine.Platforms.MacCatalyst;
 
 [Register("AppDelegate")]
 public class AppDelegate : MauiUIApplicationDelegate
