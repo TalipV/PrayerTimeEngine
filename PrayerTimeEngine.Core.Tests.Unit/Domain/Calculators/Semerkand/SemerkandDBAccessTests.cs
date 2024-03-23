@@ -274,12 +274,12 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
 
             List<SemerkandCity> gerCities =
             [
-                new SemerkandCity { ID = 1, Name = "Berlin"},
-                new SemerkandCity { ID = 2, Name = "Köln"}
+                new SemerkandCity { ID = 1, Name = "Berlin", CountryID = 1 },
+                new SemerkandCity { ID = 2, Name = "Köln", CountryID = 1 }
             ];
             List<SemerkandCity> autCities =
             [
-                new SemerkandCity { ID = 3, Name = "Wien"}
+                new SemerkandCity { ID = 3, Name = "Wien", CountryID = 2 }
             ];
 
             // ACT
