@@ -132,10 +132,10 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
 
                 // load cities through HTTP request and save them
                 var cityDTOs = await faziletApiService.GetCitiesByCountryID(countryID, cancellationToken).ConfigureAwait(false);
-                var citiesDict = cityDTOs.ToDictionary(x => x.Name, x => x.ID);
-                await faziletDBAccess.InsertCities(citiesDict, countryID, cancellationToken).ConfigureAwait(false);
+                var cities = cityDTOs.Select(x => new FaziletCity { Name = x.Name, ID = x.ID, CountryID = countryID });
+                await faziletDBAccess.InsertCities(cities, cancellationToken).ConfigureAwait(false);
 
-                if (citiesDict.TryGetValue(cityName, out int returnValue))
+                if (cities.FirstOrDefault(x => x.Name == cityName)?.ID is int returnValue)
                 {
                     return returnValue;
                 }
@@ -169,11 +169,11 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
                 }
 
                 var countriesDTOs = (await faziletApiService.GetCountries(cancellationToken).ConfigureAwait(false)).Countries;
-                var countriesDict = countriesDTOs.ToDictionary(x => x.Name, x => x.ID);
+                var countries = countriesDTOs.Select(x => new FaziletCountry { Name = x.Name, ID = x.ID });
 
-                await faziletDBAccess.InsertCountries(countriesDict, cancellationToken).ConfigureAwait(false);
+                await faziletDBAccess.InsertCountries(countries, cancellationToken).ConfigureAwait(false);
 
-                if (countriesDict.TryGetValue(countryName, out int returnValue))
+                if (countries.FirstOrDefault(x => x.Name == countryName)?.ID is int returnValue)
                 {
                     return returnValue;
                 }
