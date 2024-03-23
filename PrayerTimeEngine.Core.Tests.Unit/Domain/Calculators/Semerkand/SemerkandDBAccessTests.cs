@@ -5,7 +5,6 @@ using Microsoft.EntityFrameworkCore;
 using NodaTime;
 using PrayerTimeEngine.Core.Tests.Common;
 using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Models.Entities;
-using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Models.DTOs;
 
 namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
 {

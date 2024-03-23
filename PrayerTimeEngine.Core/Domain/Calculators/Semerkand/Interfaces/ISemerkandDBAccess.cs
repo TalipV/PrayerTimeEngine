@@ -1,5 +1,4 @@
 ﻿using NodaTime;
-using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Models.DTOs;
 using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Models.Entities;
 
 namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Interfaces
