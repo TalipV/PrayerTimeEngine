@@ -1,6 +1,5 @@
 ﻿using CommunityToolkit.Maui.Storage;
 using OnScreenSizeMarkup.Maui.Helpers;
-using PrayerTimeEngine.Core.Common;
 using PrayerTimeEngine.Presentation.GraphicsView;
 using PrayerTimeEngine.Presentation.ViewModel;
 

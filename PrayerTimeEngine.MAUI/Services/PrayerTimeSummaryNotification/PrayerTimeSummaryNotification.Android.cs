@@ -9,7 +9,7 @@ using PrayerTimeEngine.Core.Domain.ProfileManagement.Interfaces;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
 using PrayerTimeEngine.Services.SystemInfoService;
 
-namespace PrayerTimeEngine.Services
+namespace PrayerTimeEngine.Services.PrayerTimeSummaryNotification
 {
     [Service(ForegroundServiceType = Android.Content.PM.ForegroundService.TypeDataSync, Enabled = true)]
     public class PrayerTimeSummaryNotification : Service
