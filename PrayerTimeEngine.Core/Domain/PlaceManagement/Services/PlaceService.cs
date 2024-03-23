@@ -1,5 +1,4 @@
 ﻿using AsyncKeyedLock;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using NodaTime;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Interfaces;

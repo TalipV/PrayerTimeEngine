@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
-using PrayerTimeEngine.Core.Domain.PlaceManagement.Models.DTOs;
+﻿using PrayerTimeEngine.Core.Domain.PlaceManagement.Models.DTOs;
 using Refit;
 
 namespace PrayerTimeEngine.Core.Domain.PlaceManagement.Services

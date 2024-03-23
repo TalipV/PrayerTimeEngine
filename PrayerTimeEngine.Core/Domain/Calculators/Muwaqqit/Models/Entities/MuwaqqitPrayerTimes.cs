@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Models.Entities
 {
-    public class MuwaqqitPrayerTimes : ICalculationPrayerTimes
+    public class MuwaqqitPrayerTimes : IPrayerTimes
     {
         [Key]
         public int ID { get; set; }

@@ -113,7 +113,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
             {
                 FoundPlaces = await PerformPlaceSearch(PlaceSearchText);
                 FoundPlacesSelectionTexts = FoundPlaces.Select(x => x.DisplayText).Distinct().OrderBy(x => x).Take(7).ToList();
-            }, 500);
+            }, intervalMs: 750);
 
             debouncer.Debounce();
         }

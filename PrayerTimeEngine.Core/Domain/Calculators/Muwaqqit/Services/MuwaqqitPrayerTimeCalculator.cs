@@ -35,7 +35,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services
             decimal latitude = muwaqqitLocationData.Latitude;
 
             List<ETimeType> toBeCalculatedTimeTypes = configurations.Select(x => x.TimeType).ToList();
-            var calculatedTimes = new Dictionary<ICalculationPrayerTimes, List<ETimeType>>();
+            var calculatedTimes = new Dictionary<MuwaqqitPrayerTimes, List<ETimeType>>();
 
             var toBeConsumedConfigurations = configurations.ToList();
 
@@ -56,7 +56,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services
             return calculatedTimes
                 .SelectMany(x =>
                 {
-                    ICalculationPrayerTimes muwaqqitPrayerTimes = x.Key;
+                    MuwaqqitPrayerTimes muwaqqitPrayerTimes = x.Key;
                     List<ETimeType> timeTypes = x.Value;
 
                     return timeTypes.Select(timeType => (timeType, muwaqqitPrayerTimes.GetZonedDateTimeForTimeType(timeType)));
