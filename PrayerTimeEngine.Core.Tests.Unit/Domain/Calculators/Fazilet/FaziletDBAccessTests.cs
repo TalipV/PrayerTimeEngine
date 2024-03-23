@@ -252,9 +252,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Fazilet
             ];
 
             // ACT
-            await _faziletDBAccess.InsertCountries(
-                newCountries.ToDictionary(x => x.Name, x => x.ID), 
-                default);
+            await _faziletDBAccess.InsertCountries(newCountries, default);
 
             // ASSERT
             foreach (var newCountry in newCountries)
@@ -285,8 +283,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Fazilet
             ];
 
             // ACT
-            await _faziletDBAccess.InsertCities(gerCities.ToDictionary(x => x.Name, x => x.ID), 1, default);
-            await _faziletDBAccess.InsertCities(autCities.ToDictionary(x => x.Name, x => x.ID), 2, default);
+            await _faziletDBAccess.InsertCities([..gerCities, ..autCities], default);
 
             // ASSERT
             foreach (var newCity in gerCities.Concat(autCities))
