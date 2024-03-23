@@ -50,7 +50,11 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
             string countryName = faziletLocationData.CountryName;
             string cityName = faziletLocationData.CityName;
 
-            ICalculationPrayerTimes faziletPrayerTimes = await getPrayerTimesInternal(date, countryName, cityName, cancellationToken).ConfigureAwait(false);
+            FaziletPrayerTimes faziletPrayerTimes = 
+                await getPrayerTimesInternal(
+                    date, 
+                    countryName, 
+                    cityName, cancellationToken).ConfigureAwait(false);
 
             return configurations
                 .Select(x => (x.TimeType, faziletPrayerTimes.GetZonedDateTimeForTimeType(x.TimeType)))

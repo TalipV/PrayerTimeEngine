@@ -52,7 +52,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
             string cityName = semerkandLocationData.CityName;
             string timezoneName = semerkandLocationData.TimezoneName;
 
-            ICalculationPrayerTimes semerkandPrayerTimes = await getPrayerTimesInternal(date, countryName, cityName, timezoneName, cancellationToken).ConfigureAwait(false);
+            SemerkandPrayerTimes semerkandPrayerTimes = await getPrayerTimesInternal(date, countryName, cityName, timezoneName, cancellationToken).ConfigureAwait(false);
             
             return configurations
                 .Select(x => (x.TimeType, semerkandPrayerTimes.GetZonedDateTimeForTimeType(x.TimeType)))

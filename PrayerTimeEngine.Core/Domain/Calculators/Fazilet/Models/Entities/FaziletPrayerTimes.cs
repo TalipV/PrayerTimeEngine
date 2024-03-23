@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Models.Entities
 {
-    public class FaziletPrayerTimes : ICalculationPrayerTimes
+    public class FaziletPrayerTimes : IPrayerTimes
     {
         [Key]
         public int ID { get; set; }
@@ -14,13 +14,13 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Models.Entities
         public required int CityID { get; set; }
 
         public required ZonedDateTime Imsak { get; set; }
-        public ZonedDateTime? NextFajr { get; set; }
         public required ZonedDateTime Fajr { get; set; }
         public required ZonedDateTime Shuruq { get; set; }
         public required ZonedDateTime Dhuhr { get; set; }
         public required ZonedDateTime Asr { get; set; }
         public required ZonedDateTime Maghrib { get; set; }
         public required ZonedDateTime Isha { get; set; }
+        public ZonedDateTime? NextFajr { get; set; }
 
         public ZonedDateTime GetZonedDateTimeForTimeType(ETimeType timeType)
         {

@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Models.Entities
 {
-    public class SemerkandPrayerTimes : ICalculationPrayerTimes
+    public class SemerkandPrayerTimes : IPrayerTimes
     {
         [Key]
         public int ID { get; set; }
@@ -16,7 +16,6 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Models.Entities
         public required LocalDate Date { get; set; }
 
         public required ZonedDateTime Fajr { get; set; }
-        public ZonedDateTime? NextFajr { get; set; }
 
         public required ZonedDateTime Shuruq { get; set; }
 
@@ -27,41 +26,25 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Models.Entities
         public required ZonedDateTime Maghrib { get; set; }
 
         public required ZonedDateTime Isha { get; set; }
+        public ZonedDateTime? NextFajr { get; set; }
 
         public ZonedDateTime GetZonedDateTimeForTimeType(ETimeType timeType)
         {
-            switch (timeType)
+            return timeType switch
             {
-                case ETimeType.FajrStart:
-                    return Fajr;
-                case ETimeType.FajrEnd:
-                    return Shuruq;
-
-                case ETimeType.DuhaStart:
-                    return Shuruq;
-
-                case ETimeType.DhuhrStart:
-                    return Dhuhr;
-                case ETimeType.DhuhrEnd:
-                    return Asr;
-
-                case ETimeType.AsrStart:
-                    return Asr;
-                case ETimeType.AsrEnd:
-                    return Maghrib;
-
-                case ETimeType.MaghribStart:
-                    return Maghrib;
-                case ETimeType.MaghribEnd:
-                    return Isha;
-
-                case ETimeType.IshaStart:
-                    return Isha;
-                case ETimeType.IshaEnd:
-                    return NextFajr ?? new ZonedDateTime(Instant.MinValue, DateTimeZone.Utc);
-                default:
-                    throw new ArgumentException($"Invalid {nameof(timeType)} value: {timeType}.");
-            }
+                ETimeType.FajrStart => Fajr,
+                ETimeType.FajrEnd => Shuruq,
+                ETimeType.DuhaStart => Shuruq,
+                ETimeType.DhuhrStart => Dhuhr,
+                ETimeType.DhuhrEnd => Asr,
+                ETimeType.AsrStart => Asr,
+                ETimeType.AsrEnd => Maghrib,
+                ETimeType.MaghribStart => Maghrib,
+                ETimeType.MaghribEnd => Isha,
+                ETimeType.IshaStart => Isha,
+                ETimeType.IshaEnd => NextFajr ?? new ZonedDateTime(Instant.MinValue, DateTimeZone.Utc),
+                _ => throw new ArgumentException($"Invalid {nameof(timeType)} value: {timeType}."),
+            };
         }
     }
 }

@@ -1,9 +1,8 @@
 ﻿using NodaTime;
-using PrayerTimeEngine.Core.Common.Enum;
 
 namespace PrayerTimeEngine.Core.Domain.Models
 {
-    public interface ICalculationPrayerTimes
+    public interface IPrayerTimes
     {
         public LocalDate Date { get; }
 
@@ -13,7 +12,5 @@ namespace PrayerTimeEngine.Core.Domain.Models
         public ZonedDateTime Asr { get; }
         public ZonedDateTime Maghrib { get; }
         public ZonedDateTime Isha { get; }
-
-        ZonedDateTime GetZonedDateTimeForTimeType(ETimeType timeType);
     }
 }
