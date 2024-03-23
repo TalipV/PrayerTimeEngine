@@ -245,11 +245,11 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
         public async Task InsertCountries_InsertThreeNewCountries_AllThreeInserted()
         {
             // ARRANGE
-            List<SemerkandCountryResponseDTO> newCountries = 
+            List<SemerkandCountry> newCountries = 
             [
-                new SemerkandCountryResponseDTO { ID = 1, Name = "Deutschland"},
-                new SemerkandCountryResponseDTO { ID = 2, Name = "Österreich"},
-                new SemerkandCountryResponseDTO { ID = 3, Name = "Schweiz"},
+                new SemerkandCountry { ID = 1, Name = "Deutschland"},
+                new SemerkandCountry { ID = 2, Name = "Österreich"},
+                new SemerkandCountry { ID = 3, Name = "Schweiz"},
             ];
                 
             // ACT
@@ -273,19 +273,19 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
             await _appDbContext.SemerkandCountries.AddAsync(austria);
             await _appDbContext.SaveChangesAsync();
 
-            List<SemerkandCityResponseDTO> gerCities =
+            List<SemerkandCity> gerCities =
             [
-                new SemerkandCityResponseDTO { ID = 1, Name = "Berlin"},
-                new SemerkandCityResponseDTO { ID = 2, Name = "Köln"}
+                new SemerkandCity { ID = 1, Name = "Berlin"},
+                new SemerkandCity { ID = 2, Name = "Köln"}
             ];
-            List<SemerkandCityResponseDTO> autCities =
+            List<SemerkandCity> autCities =
             [
-                new SemerkandCityResponseDTO { ID = 3, Name = "Wien"}
+                new SemerkandCity { ID = 3, Name = "Wien"}
             ];
 
             // ACT
-            await _semerkandDBAccess.InsertCities(gerCities, 1, default);
-            await _semerkandDBAccess.InsertCities(autCities, 2, default);
+            await _semerkandDBAccess.InsertCities(gerCities, default);
+            await _semerkandDBAccess.InsertCities(autCities, default);
 
             // ASSERT
             foreach (var newCity in gerCities.Concat(autCities))

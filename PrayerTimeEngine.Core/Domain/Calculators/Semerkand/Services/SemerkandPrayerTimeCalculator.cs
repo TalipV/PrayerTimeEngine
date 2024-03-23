@@ -151,7 +151,8 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
 
                 // load cities through HTTP request and save them
                 var cityResponseDTOs = await semerkandApiService.GetCitiesByCountryID(countryID, cancellationToken).ConfigureAwait(false);
-                await semerkandDBAccess.InsertCities(cityResponseDTOs, countryID, cancellationToken).ConfigureAwait(false);
+                var cities = cityResponseDTOs.Select(x => new SemerkandCity { ID = x.ID, Name = x.Name, CountryID = countryID });
+                await semerkandDBAccess.InsertCities(cities, cancellationToken).ConfigureAwait(false);
 
                 return cityResponseDTOs.FirstOrDefault(x => x.Name == cityName)?.ID
                     ?? (throwIfNotFound
@@ -182,8 +183,9 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
                 }
 
                 // load countries through HTTP request and save them
-                var countryResponseDTOs = await semerkandApiService.GetCountries(cancellationToken).ConfigureAwait(false);
-                await semerkandDBAccess.InsertCountries(countryResponseDTOs, cancellationToken).ConfigureAwait(false);
+                var countryResponseDTOs = await semerkandApiService.GetCountries(cancellationToken).ConfigureAwait(false); 
+                var countries = countryResponseDTOs.Select(x => new SemerkandCountry { ID = x.ID, Name = x.Name });
+                await semerkandDBAccess.InsertCountries(countries, cancellationToken).ConfigureAwait(false);
 
                 return countryResponseDTOs.FirstOrDefault(x => x.Name == countryName)?.ID
                     ?? (throwIfNotFound

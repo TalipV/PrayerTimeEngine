@@ -16,7 +16,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
         public SemerkandApiServiceTests()
         {
             _mockHttpMessageHandler = new MockHttpMessageHandler();
-            var httpClient = new HttpClient(_mockHttpMessageHandler);
+            var httpClient = new HttpClient(_mockHttpMessageHandler) { BaseAddress = new Uri("https://semerkandtakvimi.semerkandmobile.com/") };
             _semerkandApiService = RestService.For<ISemerkandApiService>(httpClient);
         }
 
