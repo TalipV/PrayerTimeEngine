@@ -2,6 +2,7 @@
 using MetroLog.MicrosoftExtensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Plugin.Maui.DebugRainbows;
 using PrayerTimeEngine.Core.Common;
 using PrayerTimeEngine.Core.Data.EntityFramework;
 using PrayerTimeEngine.Core.Domain;
@@ -97,6 +98,7 @@ public static class MauiProgram
             .UseMauiCommunityToolkit()
             .UseUraniumUI()
             .UseUraniumUIMaterial()
+            .UseDebugRainbows(new DebugRainbowsOptions { ShowRainbows = false })
             .ConfigureFonts(fonts =>
             {
                 fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
