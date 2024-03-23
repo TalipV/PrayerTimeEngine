@@ -1,7 +1,7 @@
 ﻿using Android.App;
 using Android.Content.PM;
 using Android.OS;
-using PrayerTimeEngine.Services;
+using PrayerTimeEngine.Services.PrayerTimeSummaryNotification;
 
 namespace PrayerTimeEngine.Platforms.Android;
 

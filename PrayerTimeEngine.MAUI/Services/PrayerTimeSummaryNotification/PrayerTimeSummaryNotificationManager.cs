@@ -1,5 +1,6 @@
 ﻿#if !WINDOWS
 using Microsoft.Extensions.Logging;
+using PrayerTimeEngine.Services.PrayerTimeSummaryNotification;
 
 namespace PrayerTimeEngine.Services
 {
