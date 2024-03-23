@@ -2,7 +2,6 @@
 using NodaTime;
 using PrayerTimeEngine.Core.Data.EntityFramework;
 using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Interfaces;
-using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Models.DTOs;
 using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Models.Entities;
 
 namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
