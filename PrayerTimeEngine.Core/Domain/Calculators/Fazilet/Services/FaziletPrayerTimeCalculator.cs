@@ -89,7 +89,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
             {
                 FaziletPrayerTimes prayerTimes = await faziletDBAccess.GetTimesByDateAndCityID(date, cityID, cancellationToken).ConfigureAwait(false);
 
-                if (prayerTimes == null)
+                if (prayerTimes is null)
                 {
                     var prayerTimesResponseDTO = await faziletApiService.GetTimesByCityID(cityID, cancellationToken).ConfigureAwait(false);
                     var timeZone = prayerTimesResponseDTO.Timezone;

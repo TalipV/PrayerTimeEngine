@@ -12,7 +12,7 @@ namespace PrayerTimeEngine.Core.Domain.Models
         {
             get
             {
-                if (Start == null || End == null)
+                if (Start is null || End is null)
                     return null;
 
                 return Start.Value.ToInstant() - End.Value.ToInstant();

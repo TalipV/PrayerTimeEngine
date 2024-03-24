@@ -63,7 +63,7 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Services
 
         public string GetLocationDataDisplayText(Profile profile)
         {
-            if (profile == null)
+            if (profile is null)
                 return string.Empty;
 
             MuwaqqitLocationData muwaqqitLocationData = GetLocationConfig(profile, ECalculationSource.Muwaqqit) as MuwaqqitLocationData;
