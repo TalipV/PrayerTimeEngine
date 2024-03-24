@@ -36,7 +36,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel.Custom
 
         public IView GetUI()
         {
-            if (stackLayout == null)
+            if (stackLayout is null)
             {
                 stackLayout = new StackLayout
                 {

@@ -102,7 +102,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services
                     case ETimeType.FajrStart:
                     case ETimeType.FajrGhalas:
                     case ETimeType.FajrKaraha:
-                        if (calculatedFajrDegree == null)
+                        if (calculatedFajrDegree is null)
                         {
                             calculatedFajrDegree = degreeValue;
                             muwaqqitConfigs.Remove(muwaqqitConfig);
@@ -117,7 +117,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services
 
                     case ETimeType.MaghribEnd:
                     case ETimeType.IshaStart:
-                        if (calculatedIshaDegree == null)
+                        if (calculatedIshaDegree is null)
                         {
                             calculatedIshaDegree = degreeValue;
                             muwaqqitConfigs.Remove(muwaqqitConfig);
@@ -131,7 +131,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services
                         break;
 
                     case ETimeType.MaghribIshtibaq:
-                        if (calculatedIshtibaqDegree == null)
+                        if (calculatedIshtibaqDegree is null)
                         {
                             calculatedIshtibaqDegree = degreeValue;
                             muwaqqitConfigs.Remove(muwaqqitConfig);
@@ -146,7 +146,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services
 
                     case ETimeType.DuhaStart:
                     case ETimeType.AsrKaraha:
-                        if (calculatedAsrKarahaDegree == null)
+                        if (calculatedAsrKarahaDegree is null)
                         {
                             calculatedAsrKarahaDegree = degreeValue;
                             muwaqqitConfigs.Remove(muwaqqitConfig);
@@ -197,7 +197,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services
             {
                 MuwaqqitPrayerTimes prayerTimes = await muwaqqitDBAccess.GetTimesAsync(date, longitude, latitude, fajrDegree, ishaDegree, ishtibaqDegree, asrKarahaDegree, cancellationToken).ConfigureAwait(false);
 
-                if (prayerTimes == null)
+                if (prayerTimes is null)
                 {
                     var apiResponse = 
                         await muwaqqitApiService.GetTimesAsync(

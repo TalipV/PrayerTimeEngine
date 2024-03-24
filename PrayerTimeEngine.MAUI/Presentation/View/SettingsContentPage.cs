@@ -93,7 +93,7 @@ public partial class SettingsContentPage : ContentPage
     {
         _configurableUIContainer.Children.Clear();
 
-        if (ViewModel.CustomSettingConfigurationViewModel == null)
+        if (ViewModel.CustomSettingConfigurationViewModel is null)
         {
             return;
         }

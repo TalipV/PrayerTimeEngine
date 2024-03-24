@@ -13,7 +13,7 @@ namespace PrayerTimeEngine.Core.Common
 
         public static void Log(MethodBase methodBase, TimeSpan timeSpan, string message)
         {
-            if (logger == null)
+            if (logger is null)
             {
                 _notLoggedStuff.Add(
                     $"TIME-LOGGER: {Environment.NewLine}{methodBase.DeclaringType}.{methodBase.Name}, {Environment.NewLine}{timeSpan.TotalMilliseconds:N0} ms");

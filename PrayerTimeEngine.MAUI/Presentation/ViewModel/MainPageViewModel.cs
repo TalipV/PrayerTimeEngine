@@ -30,7 +30,6 @@ namespace PrayerTimeEngine.Presentation.ViewModel
             IPlaceService placeService,
             IProfileService profileService,
             INavigationService navigationService,
-            AppDbContext appDbContext,
             ILogger<MainPageViewModel> logger
         ) : LogController
     {
@@ -198,7 +197,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
 
                 try
                 {
-                    if (CurrentProfile == null || Interlocked.CompareExchange(ref isLoadPrayerTimesRunningInterlockedInt, 1, 0) == 1)
+                    if (CurrentProfile is null || Interlocked.CompareExchange(ref isLoadPrayerTimesRunningInterlockedInt, 1, 0) == 1)
                     {
                         return;
                     }
@@ -241,7 +240,8 @@ namespace PrayerTimeEngine.Presentation.ViewModel
 
         private async Task onBeforeFirstLoad()
         {
-            await appDbContext.Database.MigrateAsync();
+            // TODO put this somewhere else
+            await MauiProgram.ServiceProvider.GetRequiredService<AppDbContext>().Database.MigrateAsync();
             CurrentProfile ??= (await profileService.GetProfiles(cancellationToken: default)).First();
         }        
         
@@ -263,7 +263,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
         {
             await dispatcher.DispatchAsync(() =>
             {
-                if (CurrentProfile == null)
+                if (CurrentProfile is null)
                     return;
 
                 ShowFajrGhalas = isCalculationShown(ETimeType.FajrGhalas);
@@ -288,7 +288,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
             {
                 BasicPlaceInfo SelectedPlace = this.FoundPlaces.FirstOrDefault(x => x.DisplayText == this.SelectedPlaceText);
 
-                if (CurrentProfile == null || SelectedPlace == null)
+                if (CurrentProfile is null || SelectedPlace is null)
                     return;
 
                 try
@@ -347,7 +347,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
         public PrayerTime GetDisplayPrayerTime()
         {
             // only show data when no information is lacking
-            if (PrayerTimeBundle == null || PrayerTimeBundle.AllPrayerTimes.Any(x => x.Start == null || x.End == null))
+            if (PrayerTimeBundle is null || PrayerTimeBundle.AllPrayerTimes.Any(x => x.Start is null || x.End is null))
             {
                 return null;
             }

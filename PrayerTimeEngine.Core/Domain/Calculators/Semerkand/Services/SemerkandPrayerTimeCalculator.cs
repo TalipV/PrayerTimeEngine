@@ -97,7 +97,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
                         cityID, 
                         cancellationToken).ConfigureAwait(false);
 
-                if (prayerTimes == null)
+                if (prayerTimes is null)
                 {
                     List<SemerkandPrayerTimesResponseDTO> timesResponseDTOs = 
                         await semerkandApiService.GetTimesByCityID(

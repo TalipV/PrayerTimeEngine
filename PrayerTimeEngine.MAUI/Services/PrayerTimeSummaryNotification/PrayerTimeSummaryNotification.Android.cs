@@ -107,7 +107,7 @@ namespace PrayerTimeEngine.Services.PrayerTimeSummaryNotification
 
         private Notification.Builder GetNotificationBuilder()
         {
-            if (_notificationBuilder == null)
+            if (_notificationBuilder is null)
             {
                 string title = "PrayerTimeEngine";
 
@@ -148,7 +148,7 @@ namespace PrayerTimeEngine.Services.PrayerTimeSummaryNotification
 
                 if (prayerTime.End != null
                     && now.ToInstant() < prayerTime.End.Value.ToInstant()
-                    && (nextTime == null || prayerTime.End.Value.ToInstant() < nextTime.Value.ToInstant()))
+                    && (nextTime is null || prayerTime.End.Value.ToInstant() < nextTime.Value.ToInstant()))
                 {
                     nextTime = prayerTime.End;
                     timeName = $"{prayerTime.Name}-End";
@@ -156,14 +156,14 @@ namespace PrayerTimeEngine.Services.PrayerTimeSummaryNotification
 
                 if (prayerTime.Start != null
                     && now.ToInstant() < prayerTime.Start.Value.ToInstant()
-                    && (nextTime == null || prayerTime.Start.Value.ToInstant() < nextTime.Value.ToInstant()))
+                    && (nextTime is null || prayerTime.Start.Value.ToInstant() < nextTime.Value.ToInstant()))
                 {
                     nextTime = prayerTime.Start;
                     timeName = $"{prayerTime.Name}-Start";
                 }
             }
 
-            if (nextTime == null)
+            if (nextTime is null)
                 return "-";
 
             return $"{(nextTime.Value - now).ToString("HH:mm:ss", null)} until {timeName} ({nextTime.Value.ToString("HH:mm:ss", null)})";

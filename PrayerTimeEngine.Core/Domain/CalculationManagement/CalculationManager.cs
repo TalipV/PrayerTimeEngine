@@ -24,9 +24,9 @@ namespace PrayerTimeEngine.Core.Domain.CalculationManagement
             out PrayerTimesBundle prayerTimeEntity)
         {
             // no cache
-            if (_cachedCalculationDate == null 
-                || _cachedProfile == null 
-                || _cachedPrayerTimeBundle == null)
+            if (_cachedCalculationDate is null 
+                || _cachedProfile is null 
+                || _cachedPrayerTimeBundle is null)
             {
                 prayerTimeEntity = null;
                 return false;

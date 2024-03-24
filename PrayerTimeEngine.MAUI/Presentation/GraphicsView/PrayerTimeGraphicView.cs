@@ -21,9 +21,9 @@ namespace PrayerTimeEngine.Presentation.GraphicsView
 
         public void Draw(ICanvas canvas, RectF fullRectangle)
         {
-            if (DisplayPrayerTime == null
-                || DisplayPrayerTime.Start == null
-                || DisplayPrayerTime.End == null)
+            if (DisplayPrayerTime is null
+                || DisplayPrayerTime.Start is null
+                || DisplayPrayerTime.End is null)
             {
                 return;
             }
@@ -150,7 +150,7 @@ namespace PrayerTimeEngine.Presentation.GraphicsView
 
         private void drawFajrSubtimes(ICanvas canvas, RectF mainGraphicRectangle, FajrPrayerTime fajrPrayerTime)
         {
-            if (fajrPrayerTime.Ghalas == null || fajrPrayerTime.Karaha == null)
+            if (fajrPrayerTime.Ghalas is null || fajrPrayerTime.Karaha is null)
             {
                 return;
             }
@@ -182,7 +182,7 @@ namespace PrayerTimeEngine.Presentation.GraphicsView
 
         private void drawDuhaSubtimes(ICanvas canvas, RectF mainGraphicRectangle, DuhaPrayerTime duhaPrayerTime)
         {
-            if (duhaPrayerTime.QuarterOfDay == null)
+            if (duhaPrayerTime.QuarterOfDay is null)
             {
                 return;
             }
@@ -206,7 +206,7 @@ namespace PrayerTimeEngine.Presentation.GraphicsView
 
         private void drawAsrSubtimes(ICanvas canvas, RectF mainGraphicRectangle, AsrPrayerTime asrPrayerTime)
         {
-            if (asrPrayerTime.Mithlayn == null || asrPrayerTime.Karaha == null)
+            if (asrPrayerTime.Mithlayn is null || asrPrayerTime.Karaha is null)
             {
                 return;
             }
@@ -238,7 +238,7 @@ namespace PrayerTimeEngine.Presentation.GraphicsView
 
         private void drawMaghribSubtimes(ICanvas canvas, RectF mainGraphicRectangle, MaghribPrayerTime maghribPrayerTime)
         {
-            if (maghribPrayerTime.SufficientTime == null || maghribPrayerTime.Ishtibaq == null)
+            if (maghribPrayerTime.SufficientTime is null || maghribPrayerTime.Ishtibaq is null)
             {
                 return;
             }
@@ -270,9 +270,9 @@ namespace PrayerTimeEngine.Presentation.GraphicsView
 
         private void drawIshaSubtimes(ICanvas canvas, RectF mainGraphicRectangle, IshaPrayerTime ishaPrayerTime)
         {
-            if (ishaPrayerTime.FirstThirdOfNight == null 
-                || ishaPrayerTime.SecondThirdOfNight == null
-                || ishaPrayerTime.MiddleOfNight == null)
+            if (ishaPrayerTime.FirstThirdOfNight is null 
+                || ishaPrayerTime.SecondThirdOfNight is null
+                || ishaPrayerTime.MiddleOfNight is null)
             {
                 return;
             }
