@@ -214,10 +214,10 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
             await _semerkandDBAccessMock.Received(1).GetCityIDByName(Arg.Is(1), Arg.Is("Berlin"), Arg.Any<CancellationToken>());
             
             await _semerkandDBAccessMock.Received(1).GetTimesByDateAndCityID(Arg.Is(date), Arg.Is(1), Arg.Any<CancellationToken>());
-            await _semerkandDBAccessMock.Received(1).InsertSemerkandPrayerTimes(Arg.Is(date), Arg.Is(1), Arg.Is<SemerkandPrayerTimes>(time => time.Date == date), Arg.Any<CancellationToken>());
+            await _semerkandDBAccessMock.Received(1).InsertSemerkandPrayerTimes(Arg.Is<List<SemerkandPrayerTimes>>(times => times[0].Date == date), Arg.Any<CancellationToken>());
             
             await _semerkandDBAccessMock.Received(1).GetTimesByDateAndCityID(Arg.Is(date.PlusDays(1)), Arg.Is(1), Arg.Any<CancellationToken>());
-            await _semerkandDBAccessMock.Received(1).InsertSemerkandPrayerTimes(Arg.Is(date.PlusDays(1)), Arg.Is(1), Arg.Is<SemerkandPrayerTimes>(time => time.Date == date.PlusDays(1)), Arg.Any<CancellationToken>());
+            await _semerkandDBAccessMock.Received(1).InsertSemerkandPrayerTimes(Arg.Is<List<SemerkandPrayerTimes>>(times => times[0].Date == date.PlusDays(1)), Arg.Any<CancellationToken>());
 
             _semerkandApiServiceMock.ReceivedCalls().Should().HaveCount(2);
             await _semerkandApiServiceMock.Received(0).GetCountries(Arg.Any<CancellationToken>());

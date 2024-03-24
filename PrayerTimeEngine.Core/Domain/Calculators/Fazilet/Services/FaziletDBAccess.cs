@@ -86,9 +86,9 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
             return compiledQuery_GetTimesByDateAndCityID(dbContext, date, cityId);
         }
 
-        public async Task InsertFaziletPrayerTimes(LocalDate date, int cityID, FaziletPrayerTimes faziletPrayerTimes, CancellationToken cancellationToken)
+        public async Task InsertFaziletPrayerTimes(IEnumerable<FaziletPrayerTimes> faziletPrayerTimesLst, CancellationToken cancellationToken)
         {
-            await dbContext.FaziletPrayerTimes.AddAsync(faziletPrayerTimes, cancellationToken).ConfigureAwait(false);
+            await dbContext.FaziletPrayerTimes.AddRangeAsync(faziletPrayerTimesLst, cancellationToken).ConfigureAwait(false);
             await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
         }
 
@@ -106,9 +106,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
 
         public async Task DeleteAllTimes(CancellationToken cancellationToken)
         {
-            List<FaziletPrayerTimes> toBeRemovedTimes = await dbContext.FaziletPrayerTimes.ToListAsync(cancellationToken).ConfigureAwait(false);
-            dbContext.FaziletPrayerTimes.RemoveRange(toBeRemovedTimes);
-            await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+            await dbContext.FaziletPrayerTimes.ExecuteDeleteAsync(cancellationToken).ConfigureAwait(false);
         }
     }
 }

@@ -212,7 +212,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services
                             cancellationToken: cancellationToken).ConfigureAwait(false);
                     
                     prayerTimes = apiResponse.ToMuwaqqitPrayerTimes();
-                    await muwaqqitDBAccess.InsertMuwaqqitPrayerTimesAsync(prayerTimes, cancellationToken).ConfigureAwait(false);
+                    await muwaqqitDBAccess.InsertMuwaqqitPrayerTimesAsync([prayerTimes], cancellationToken).ConfigureAwait(false);
                 }
 
                 return prayerTimes;

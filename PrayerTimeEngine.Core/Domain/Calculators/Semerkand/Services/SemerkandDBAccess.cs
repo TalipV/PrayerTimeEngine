@@ -86,9 +86,9 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
             return compiledQuery_GetTimesByDateAndCityID(dbContext, date, cityId);
         }
 
-        public async Task InsertSemerkandPrayerTimes(LocalDate date, int cityID, SemerkandPrayerTimes semerkandPrayerTimes, CancellationToken cancellationToken)
+        public async Task InsertSemerkandPrayerTimes(IEnumerable<SemerkandPrayerTimes> semerkandPrayerTimesLst, CancellationToken cancellationToken)
         {
-            await dbContext.SemerkandPrayerTimes.AddAsync(semerkandPrayerTimes, cancellationToken).ConfigureAwait(false);
+            await dbContext.SemerkandPrayerTimes.AddRangeAsync(semerkandPrayerTimesLst, cancellationToken).ConfigureAwait(false);
             await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
         }
 
@@ -106,9 +106,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
 
         public async Task DeleteAllPrayerTimes(CancellationToken cancellationToken)
         {
-            List<SemerkandPrayerTimes> toBeDeletedTimes = await dbContext.SemerkandPrayerTimes.ToListAsync(cancellationToken).ConfigureAwait(false);
-            dbContext.SemerkandPrayerTimes.RemoveRange(toBeDeletedTimes);
-            await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+            await dbContext.SemerkandPrayerTimes.ExecuteDeleteAsync(cancellationToken).ConfigureAwait(false);
         }
     }
 }

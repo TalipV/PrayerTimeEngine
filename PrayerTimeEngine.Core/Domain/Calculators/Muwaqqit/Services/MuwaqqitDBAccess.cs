@@ -44,18 +44,15 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services
                 .AsTask();
         }
 
-        public async Task InsertMuwaqqitPrayerTimesAsync(MuwaqqitPrayerTimes prayerTimes, CancellationToken cancellationToken)
+        public async Task InsertMuwaqqitPrayerTimesAsync(IEnumerable<MuwaqqitPrayerTimes> muwaqqitPrayerTimesLst, CancellationToken cancellationToken)
         {
-            await dbContext.MuwaqqitPrayerTimes.AddAsync(prayerTimes, cancellationToken).ConfigureAwait(false);
+            await dbContext.MuwaqqitPrayerTimes.AddRangeAsync(muwaqqitPrayerTimesLst, cancellationToken).ConfigureAwait(false);
             await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
         }
 
         public async Task DeleteAllTimes(CancellationToken cancellationToken)
         {
-            List<MuwaqqitPrayerTimes> toBeDeletedTimes = await dbContext.MuwaqqitPrayerTimes.ToListAsync(cancellationToken).ConfigureAwait(false);
-
-            dbContext.MuwaqqitPrayerTimes.RemoveRange(toBeDeletedTimes);
-            await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+            await dbContext.MuwaqqitPrayerTimes.ExecuteDeleteAsync(cancellationToken).ConfigureAwait(false);
         }
     }
 }

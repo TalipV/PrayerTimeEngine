@@ -94,13 +94,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
                     var prayerTimesResponseDTO = await faziletApiService.GetTimesByCityID(cityID, cancellationToken).ConfigureAwait(false);
                     var timeZone = prayerTimesResponseDTO.Timezone;
                     var prayerTimesLst = prayerTimesResponseDTO.PrayerTimes.Select(x => x.ToFaziletPrayerTimes(cityID, timeZone)).ToList();
-
-                    foreach (var times in prayerTimesLst)
-                    {
-                        await faziletDBAccess.InsertFaziletPrayerTimes(
-                            times.Date, cityID, times, 
-                            cancellationToken).ConfigureAwait(false);
-                    }
+                    await faziletDBAccess.InsertFaziletPrayerTimes(prayerTimesLst, cancellationToken).ConfigureAwait(false);
 
                     prayerTimes = prayerTimesLst.FirstOrDefault(x => x.Date == date);
                 }
@@ -132,7 +126,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
 
                 // load cities through HTTP request and save them
                 var cityDTOs = await faziletApiService.GetCitiesByCountryID(countryID, cancellationToken).ConfigureAwait(false);
-                var cities = cityDTOs.Select(x => new FaziletCity { Name = x.Name, ID = x.ID, CountryID = countryID });
+                var cities = cityDTOs.Select(x => new FaziletCity { Name = x.Name, ID = x.ID, CountryID = countryID }).ToList();
                 await faziletDBAccess.InsertCities(cities, cancellationToken).ConfigureAwait(false);
 
                 if (cities.FirstOrDefault(x => x.Name == cityName)?.ID is int returnValue)
@@ -169,8 +163,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
                 }
 
                 var countriesDTOs = (await faziletApiService.GetCountries(cancellationToken).ConfigureAwait(false)).Countries;
-                var countries = countriesDTOs.Select(x => new FaziletCountry { Name = x.Name, ID = x.ID });
-
+                var countries = countriesDTOs.Select(x => new FaziletCountry { Name = x.Name, ID = x.ID }).ToList();
                 await faziletDBAccess.InsertCountries(countries, cancellationToken).ConfigureAwait(false);
 
                 if (countries.FirstOrDefault(x => x.Name == countryName)?.ID is int returnValue)

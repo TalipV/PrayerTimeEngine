@@ -91,7 +91,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Muwaqqit
             };
 
             // ACT
-            await _muwaqqitDBAccess.InsertMuwaqqitPrayerTimesAsync(newMuwaqqitTime, default);
+            await _muwaqqitDBAccess.InsertMuwaqqitPrayerTimesAsync([newMuwaqqitTime], default);
 
             // ASSERT
             var insertedTime = await _appDbContext.MuwaqqitPrayerTimes.FindAsync(newMuwaqqitTime.ID);

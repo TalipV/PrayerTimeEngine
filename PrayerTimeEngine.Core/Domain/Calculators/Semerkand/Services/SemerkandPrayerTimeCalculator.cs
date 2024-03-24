@@ -113,13 +113,8 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
                             .Select(x => x.ToSemerkandPrayerTimes(cityID, dateTimeZone, firstDayOfYear))
                             .Where(x => date <= x.Date && x.Date < date.PlusDays(MAX_EXTENT_OF_RETRIEVED_DAYS))
                             .ToList();
-                    
-                    foreach (var times in prayerTimesLst)
-                    {
-                        await semerkandDBAccess.InsertSemerkandPrayerTimes(
-                            times.Date, cityID, times, 
-                            cancellationToken).ConfigureAwait(false);
-                    }
+
+                    await semerkandDBAccess.InsertSemerkandPrayerTimes(prayerTimesLst, cancellationToken).ConfigureAwait(false);
 
                     prayerTimes = prayerTimesLst.FirstOrDefault(x => x.Date == date);
                 }
