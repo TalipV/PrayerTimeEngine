@@ -43,7 +43,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="..\SharedGlobalSuppressions.cs" Link="Properties\SharedGlobalSuppressions.cs" />
+    <Compile Include="..\SharedGlobalSettings.cs" Link="Properties\SharedGlobalSettings.cs" />
   </ItemGroup>
 
 </Project>
