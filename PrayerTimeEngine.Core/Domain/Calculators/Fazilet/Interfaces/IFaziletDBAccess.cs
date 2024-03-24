@@ -11,7 +11,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Interfaces
 
         public Task InsertCountries(IEnumerable<FaziletCountry> countries, CancellationToken cancellationToken);
         public Task InsertCities(IEnumerable<FaziletCity> cities, CancellationToken cancellationToken);
-        public Task InsertFaziletPrayerTimes(LocalDate date, int cityID, FaziletPrayerTimes faziletPrayerTimes, CancellationToken cancellationToken);
+        public Task InsertFaziletPrayerTimes(IEnumerable<FaziletPrayerTimes> faziletPrayerTimesLst, CancellationToken cancellationToken);
         public Task<bool> HasCountryData(CancellationToken cancellationToken);
         public Task<int?> GetCountryIDByName(string countryName, CancellationToken cancellationToken);
         public Task<bool> HasCityData(int countryID, CancellationToken cancellationToken);

@@ -13,6 +13,6 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Interfaces
             double ishaDegree, 
             double ishtibaqDegree, 
             double asrKarahaDegree, CancellationToken cancellationToken);
-        Task InsertMuwaqqitPrayerTimesAsync(MuwaqqitPrayerTimes prayerTimes, CancellationToken cancellationToken);
+        Task InsertMuwaqqitPrayerTimesAsync(IEnumerable<MuwaqqitPrayerTimes> muwaqqitPrayerTimesLst, CancellationToken cancellationToken);
     }
 }

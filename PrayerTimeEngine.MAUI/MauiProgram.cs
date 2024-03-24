@@ -56,6 +56,7 @@ namespace PrayerTimeEngine;
  * - Transactions when saving country data and city data to prevent partial safes (or rethink the whole thing)
  * - PlaceService and ProfileService with no or default CancellationToken?
  * - delete old db cache data from time to time
+ * - Consider Muwaqqit API changes and maybe additionally use old API endpoint
  */
 
 /* TODO late:
