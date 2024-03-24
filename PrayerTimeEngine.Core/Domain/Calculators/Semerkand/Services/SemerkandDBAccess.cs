@@ -42,8 +42,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
                 (AppDbContext context, int countryId) =>
                     context.SemerkandCities
                         .AsNoTrackingWithIdentityResolution()
-                        .Include(x => x.Country)
-                        .ThenInclude(x => x.Cities)
+                        .Include(x => x.Country).ThenInclude(x => x.Cities) // why?
                         .Where(x => x.CountryID == countryId));
         public Task<List<SemerkandCity>> GetCitiesByCountryID(int countryId, CancellationToken cancellationToken)
         {

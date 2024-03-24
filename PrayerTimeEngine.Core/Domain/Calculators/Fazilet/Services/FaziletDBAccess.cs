@@ -42,8 +42,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
                 (AppDbContext context, int countryId) =>
                     context.FaziletCities
                         .AsNoTrackingWithIdentityResolution()
-                        .Include(x => x.Country)
-                        .ThenInclude(x => x.Cities)
+                        .Include(x => x.Country).ThenInclude(x => x.Cities) // why?
                         .Where(x => x.CountryID == countryId));
         public Task<List<FaziletCity>> GetCitiesByCountryID(int countryId, CancellationToken cancellationToken)
         {
