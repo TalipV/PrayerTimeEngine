@@ -101,8 +101,8 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
                 {
                     List<SemerkandPrayerTimesResponseDTO> timesResponseDTOs = 
                         await semerkandApiService.GetTimesByCityID(
-                            cityID, 
                             date.Year, 
+                            cityID, 
                             cancellationToken).ConfigureAwait(false);
 
                     var dateTimeZone = DateTimeZoneProviders.Tzdb[timezone];

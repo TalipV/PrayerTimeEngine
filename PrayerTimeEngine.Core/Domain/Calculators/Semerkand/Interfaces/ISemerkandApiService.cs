@@ -14,6 +14,6 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Interfaces
         Task<List<SemerkandCityResponseDTO>> GetCitiesByCountryID(int countryID, CancellationToken cancellationToken);
 
         [Post("/salaattimes?cityId={cityID}&year={year}")]
-        Task<List<SemerkandPrayerTimesResponseDTO>> GetTimesByCityID(int cityID, int year, CancellationToken cancellationToken);
+        Task<List<SemerkandPrayerTimesResponseDTO>> GetTimesByCityID(int year, int cityID, CancellationToken cancellationToken);
     }
 }
