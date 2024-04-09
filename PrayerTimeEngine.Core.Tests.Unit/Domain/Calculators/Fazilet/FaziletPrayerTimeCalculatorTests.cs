@@ -1,5 +1,4 @@
-﻿using FluentAssertions;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using NodaTime;
 using NSubstitute;
 using PrayerTimeEngine.Core.Common.Enum;

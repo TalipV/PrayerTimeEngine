@@ -1,5 +1,4 @@
-﻿using FluentAssertions;
-using NodaTime;
+﻿using NodaTime;
 using PrayerTimeEngine.Core.Data.EntityFramework;
 using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Models.Entities;
 using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services;

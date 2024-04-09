@@ -1,5 +1,4 @@
-﻿using FluentAssertions;
-using NodaTime;
+﻿using NodaTime;
 using NSubstitute;
 using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Domain;

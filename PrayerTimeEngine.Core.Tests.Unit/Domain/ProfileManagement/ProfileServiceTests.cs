@@ -1,5 +1,4 @@
-﻿using FluentAssertions;
-using NSubstitute;
+﻿using NSubstitute;
 using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Domain;
 using PrayerTimeEngine.Core.Domain.Models;

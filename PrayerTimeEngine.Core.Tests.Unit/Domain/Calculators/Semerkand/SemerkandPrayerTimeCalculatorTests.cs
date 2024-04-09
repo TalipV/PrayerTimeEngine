@@ -6,7 +6,6 @@ using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Models;
 using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services;
 using PrayerTimeEngine.Core.Domain.Models;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Interfaces;
-using FluentAssertions;
 using NSubstitute.ReceivedExtensions;
 using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Tests.Common;
