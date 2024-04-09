@@ -1,5 +1,4 @@
-﻿using FluentAssertions;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using NSubstitute;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Services;
 using PrayerTimeEngine.Core.Tests.Common;

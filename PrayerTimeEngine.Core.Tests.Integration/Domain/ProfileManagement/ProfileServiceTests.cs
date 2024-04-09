@@ -1,5 +1,4 @@
-﻿using FluentAssertions;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;

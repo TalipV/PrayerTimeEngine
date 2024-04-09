@@ -7,12 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Domain\NominatimLocation\**" />
-    <EmbeddedResource Remove="Domain\NominatimLocation\**" />
-    <None Remove="Domain\NominatimLocation\**" />
-  </ItemGroup>
-
-  <ItemGroup>
     <InternalsVisibleTo Include="PrayerTimeEngine.Core.Tests.Unit" />
     <InternalsVisibleTo Include="PrayerTimeEngine.Core.Tests.Integration" />
     <InternalsVisibleTo Include="PrayerTimeEngine.Core.Tests.Common" />

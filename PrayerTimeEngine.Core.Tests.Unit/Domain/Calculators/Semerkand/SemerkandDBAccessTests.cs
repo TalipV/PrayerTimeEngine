@@ -1,6 +1,5 @@
 ﻿using PrayerTimeEngine.Core.Data.EntityFramework;
 using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services;
-using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using NodaTime;
 using PrayerTimeEngine.Core.Tests.Common;

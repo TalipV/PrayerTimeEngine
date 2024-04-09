@@ -1,5 +1,4 @@
-﻿using FluentAssertions;
-using NodaTime;
+﻿using NodaTime;
 using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Interfaces;
 using PrayerTimeEngine.Core.Tests.Common;
 using PrayerTimeEngine.Core.Tests.Common.TestData;

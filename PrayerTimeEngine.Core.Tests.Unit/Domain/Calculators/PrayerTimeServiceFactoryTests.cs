@@ -1,6 +1,5 @@
 ﻿using NSubstitute;
 using PrayerTimeEngine.Core.Domain.Calculators;
-using FluentAssertions;
 using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services;
 using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services;

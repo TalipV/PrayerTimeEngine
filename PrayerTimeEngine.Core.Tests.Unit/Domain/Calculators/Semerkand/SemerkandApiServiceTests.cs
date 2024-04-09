@@ -1,6 +1,5 @@
 ﻿using PrayerTimeEngine.Core.Tests.Common;
 using System.Net;
-using FluentAssertions;
 using NodaTime;
 using PrayerTimeEngine.Core.Tests.Common.TestData;
 using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Interfaces;

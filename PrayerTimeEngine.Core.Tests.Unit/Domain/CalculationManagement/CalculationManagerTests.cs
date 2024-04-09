@@ -5,7 +5,6 @@ using NSubstitute;
 using PrayerTimeEngine.Core.Domain.Calculators;
 using NodaTime;
 using PrayerTimeEngine.Core.Domain.Models;
-using FluentAssertions;
 using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Models;
 using Microsoft.Extensions.Logging;
