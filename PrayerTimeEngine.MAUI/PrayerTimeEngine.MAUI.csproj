@@ -102,7 +102,7 @@
     <PackageReference Include="AsyncAwaitBestPractices" Version="7.0.0" />
     <PackageReference Include="Debounce.Core" Version="1.0.0" />
     <PackageReference Include="MethodTimer.Fody" Version="3.2.2" PrivateAssets="All" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.3" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.4" />
     <PackageReference Include="NodaTime" Version="3.1.11" />
     <PackageReference Include="Plugin.Maui.DebugRainbows" Version="1.2.0" />
     <PackageReference Include="PropertyChanged.Fody" Version="4.1.0" PrivateAssets="All" />
@@ -110,8 +110,8 @@
     <PackageReference Include="CommunityToolkit.Maui" Version="8.0.1" />
     <PackageReference Include="MetroLog.Maui" Version="2.1.0" />
     <PackageReference Include="OnScreenSizeMarkup.Maui" Version="3.0.18" />
-    <PackageReference Include="Microsoft.Maui.Controls" Version="8.0.14" />
-    <PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="8.0.14" />
+    <PackageReference Include="Microsoft.Maui.Controls" Version="8.0.20" />
+    <PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="8.0.20" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.0" />
     <PackageReference Include="UraniumUI.Material" Version="2.8.1" />
   </ItemGroup>
