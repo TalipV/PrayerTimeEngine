@@ -19,6 +19,7 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework
 
             // the thread seems to produce something like a dead lock at startup
             // --> use the old behavior
+            // TODO remove as soon as fixed
             if (true || _useOldBehavior31751)
             {
                 model.Initialize();
