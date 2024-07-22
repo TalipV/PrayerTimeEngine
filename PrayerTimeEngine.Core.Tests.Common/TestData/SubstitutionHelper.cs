@@ -18,7 +18,7 @@ namespace PrayerTimeEngine.Core.Tests.Common.TestData
                     responseStream = File.OpenRead(Path.Combine(TestDataHelper.SEMERKAND_TEST_DATA_FILE_PATH, "Semerkand_TestCountriesData.txt"));
                 else if (request.RequestUri.AbsoluteUri == "https://semerkandtakvimi.semerkandmobile.com/cities?countryID=3")
                     responseStream = File.OpenRead(Path.Combine(TestDataHelper.SEMERKAND_TEST_DATA_FILE_PATH, "Semerkand_TestCityData_Austria.txt"));
-                else if (request.RequestUri.AbsoluteUri == "https://semerkandtakvimi.semerkandmobile.com/salaattimes?year=2023&cityId=197")
+                else if (request.RequestUri.AbsoluteUri == "https://semerkandtakvimi.semerkandmobile.com/salaattimes?cityId=197&year=2023")
                     responseStream = File.OpenRead(Path.Combine(TestDataHelper.SEMERKAND_TEST_DATA_FILE_PATH, "Semerkand_TestPrayerTimeData_20230729_Innsbruck.txt"));
                 else
                     throw new Exception($"No response registered for URL: {request.RequestUri.AbsoluteUri}");
@@ -74,11 +74,11 @@ namespace PrayerTimeEngine.Core.Tests.Common.TestData
             {
                 Stream responseStream;
 
-                if (request.RequestUri.AbsoluteUri == $@"{baseURL}/daily?lang=1&districtId=232")
+                if (request.RequestUri.AbsoluteUri == $@"{baseURL}/daily?districtId=232&lang=1")
                     responseStream = File.OpenRead(Path.Combine(TestDataHelper.FAZILET_TEST_DATA_FILE_PATH, "Fazilet_TestCountriesData.txt"));
                 else if (request.RequestUri.AbsoluteUri == $@"{baseURL}/cities-by-country?districtId=2")
                     responseStream = File.OpenRead(Path.Combine(TestDataHelper.FAZILET_TEST_DATA_FILE_PATH, "Fazilet_TestCityData_Austria.txt"));
-                else if (request.RequestUri.AbsoluteUri == $@"{baseURL}/daily?lang=2&districtId=92")
+                else if (request.RequestUri.AbsoluteUri == $@"{baseURL}/daily?districtId=92&lang=2")
                     responseStream = File.OpenRead(Path.Combine(TestDataHelper.FAZILET_TEST_DATA_FILE_PATH, "Fazilet_TestPrayerTimeData_20230729_Innsbruck.txt"));
                 else
                     throw new Exception($"No response registered for URL: {request.RequestUri.AbsoluteUri}");
