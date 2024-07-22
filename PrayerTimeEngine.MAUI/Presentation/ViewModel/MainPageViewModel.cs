@@ -173,7 +173,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
 
             // delete current profile and recalculate SequenceNos
 
-            // switch to profil before it or alternatively after it
+            // switch to profile before it or alternatively after it
         }
         private void switchProfile()
         {

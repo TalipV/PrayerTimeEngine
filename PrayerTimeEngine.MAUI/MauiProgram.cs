@@ -33,7 +33,7 @@ namespace PrayerTimeEngine;
 // weak event manager?
 
 
-/* CLI commands cheatsheet
+/* CLI commands cheat sheet
  * dotnet publish -c release -f net7.0-android -p:false
  */
 
