@@ -18,7 +18,7 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework
             var model = new AppDbContextModel();
 
             // the thread seems to produce something like a dead lock at startup
-            // --> use the old behaviour
+            // --> use the old behavior
             if (true || _useOldBehavior31751)
             {
                 model.Initialize();
