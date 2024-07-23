@@ -138,8 +138,10 @@ public static class MauiProgram
             .SetMinimumLevel(LogLevel.Trace)
             .AddFilter((loggerProviderFullName, loggerFullName, level) =>
             {
-                // temp fix, EF logs too much about its queries
-                if (loggerFullName.StartsWith("Microsoft.EntityFrameworkCore"))
+                // temp fix, these log too much for my taste
+                if (loggerFullName.StartsWith("Microsoft.EntityFrameworkCore") 
+                    || loggerFullName.StartsWith("System.Net.Http.HttpClient.Refit.Implementation.Generated")
+                    || loggerFullName == "Polly")
                 {
                     return false;
                 }
