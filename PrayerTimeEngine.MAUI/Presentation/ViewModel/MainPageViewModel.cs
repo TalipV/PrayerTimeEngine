@@ -304,6 +304,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
                         Enum.GetValues<ECalculationSource>()
                             .Where(enumValue => !CurrentProfile.LocationConfigs.Select(x => x.CalculationSource).Contains(enumValue))
                             .ToList();
+                    missingLocationInfo.Remove(ECalculationSource.None);
 
                     if (missingLocationInfo.Count != 0)
                     {

@@ -50,6 +50,13 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Services
         {
             Profile trackedProfile = await dbContext.Profiles.FindAsync(keyValues: [profile.ID], cancellationToken).ConfigureAwait(false);
 
+            // hack...
+            // TOOD: I have to fix this
+            List<ProfileLocationConfig> locationConfigs = 
+                await dbContext.ProfileLocations
+                    .Where(x => x.ProfileID == profile.ID)
+                    .ToListAsync();
+
             try
             {
                 using (IDbContextTransaction transaction = await dbContext.Database.BeginTransactionAsync(cancellationToken).ConfigureAwait(false))
@@ -69,6 +76,13 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Services
 
                 foreach (var locationConfig in profile.LocationConfigs)
                     await dbContext.Entry(locationConfig).ReloadAsync(CancellationToken.None).ConfigureAwait(false);
+
+                // hack...
+                // TOOD: I have to fix this
+                List<ProfileLocationConfig> locationConfigs2 =
+                    await dbContext.ProfileLocations
+                        .Where(x => x.ProfileID == profile.ID)
+                        .ToListAsync();
             }
         }
 

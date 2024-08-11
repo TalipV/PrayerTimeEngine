@@ -140,6 +140,8 @@ namespace PrayerTimeEngine.Services.PrayerTimeSummaryNotification
 
             ZonedDateTime? nextTime = null;
             string timeName = "-";
+            string additionalInfo = string.Empty;
+            PrayerTime _lastTime = null;
 
             foreach (PrayerTime prayerTime in prayerTimeBundle.AllPrayerTimes)
             {
@@ -160,13 +162,20 @@ namespace PrayerTimeEngine.Services.PrayerTimeSummaryNotification
                 {
                     nextTime = prayerTime.Start;
                     timeName = $"{prayerTime.Name}-Start";
+
+                    if (_lastTime != null && _lastTime.End != null)
+                    {
+                        additionalInfo = $"{(now - _lastTime.End.Value).ToString("HH:mm:ss", null)} since {_lastTime.Name}-End";
+                    }
                 }
+
+                _lastTime = prayerTime;
             }
 
             if (nextTime is null)
                 return "-";
 
-            return $"{(nextTime.Value - now).ToString("HH:mm:ss", null)} until {timeName} ({nextTime.Value.ToString("HH:mm:ss", null)})";
+            return $"{(nextTime.Value - now).ToString("HH:mm:ss", null)} until {timeName} ({nextTime.Value.ToString("HH:mm:ss", null)}) {additionalInfo}";
         }
     }
 }
