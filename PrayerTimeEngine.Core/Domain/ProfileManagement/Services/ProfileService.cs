@@ -98,7 +98,7 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Services
             foreach (KeyValuePair<EPrayerType, List<ETimeType>> item in timeTypeAttributeService.PrayerTypeToTimeTypes)
             {
                 EPrayerType prayerType = item.Key;
-                outputText.Append(prayerType.ToString());
+                outputText.AppendLine(prayerType.ToString());
 
                 foreach (ETimeType timeType in item.Value)
                 {
