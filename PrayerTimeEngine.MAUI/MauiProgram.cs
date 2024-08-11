@@ -33,7 +33,7 @@ namespace PrayerTimeEngine;
 // weak event manager?
 
 
-/* CLI commands cheatsheet
+/* CLI commands cheat sheet
  * dotnet publish -c release -f net7.0-android -p:false
  */
 
@@ -138,8 +138,10 @@ public static class MauiProgram
             .SetMinimumLevel(LogLevel.Trace)
             .AddFilter((loggerProviderFullName, loggerFullName, level) =>
             {
-                // temp fix, EF logs too much about its queries
-                if (loggerFullName.StartsWith("Microsoft.EntityFrameworkCore"))
+                // temp fix, these log too much for my taste
+                if (loggerFullName.StartsWith("Microsoft.EntityFrameworkCore") 
+                    || loggerFullName.StartsWith("System.Net.Http.HttpClient.Refit.Implementation.Generated")
+                    || loggerFullName == "Polly")
                 {
                     return false;
                 }
