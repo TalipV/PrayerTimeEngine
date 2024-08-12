@@ -54,6 +54,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
         public bool IsNotLoadingPrayerTimesOrSelectedPlace => !IsLoadingPrayerTimesOrSelectedPlace;
 
         public bool IsLoadingSelectedPlace { get; set; }
+        public bool IsNotLoadingSelectedPlace => !IsLoadingSelectedPlace;
 
         public bool ShowFajrGhalas { get; set; }
         public bool ShowFajrRedness { get; set; }
@@ -121,6 +122,8 @@ namespace PrayerTimeEngine.Presentation.ViewModel
 
         public async Task<List<BasicPlaceInfo>> PerformPlaceSearch(string searchText)
         {
+            logger.LogInformation("Place search triggered with search text '{SearchText}'", searchText);
+
             var currentTokenSource = new CancellationTokenSource();
             try
             {
@@ -190,6 +193,8 @@ namespace PrayerTimeEngine.Presentation.ViewModel
 
         private async Task refreshData()
         {
+            logger.LogInformation("Refreshing data started");
+
             try
             {
                 if (!MauiProgram.IsFullyInitialized)
@@ -236,6 +241,8 @@ namespace PrayerTimeEngine.Presentation.ViewModel
             {
                 MauiProgram.IsFullyInitialized = true;
             }
+
+            logger.LogInformation("Refreshing data finished");
         }
 
         private async Task onBeforeFirstLoad()
@@ -247,16 +254,24 @@ namespace PrayerTimeEngine.Presentation.ViewModel
         
         private void onAfterFirstLoad()
         {
-            double startUpTimeMS = (DateTime.Now - MauiProgram.StartDateTime).TotalMilliseconds;
-            showToastMessage($"{startUpTimeMS:N0}ms to start!");
+            try
+            {
+                double startUpTimeMS = (DateTime.Now - MauiProgram.StartDateTime).TotalMilliseconds;
+                showToastMessage($"{startUpTimeMS:N0}ms to start!");
 #if ANDROID
-            dispatcher.Dispatch(
-                async () =>
-                {
-                    var notificationManager = MauiProgram.ServiceProvider.GetRequiredService<PrayerTimeSummaryNotificationManager>();
-                    await notificationManager.TryStartPersistentNotification();
-                });
+                dispatcher.Dispatch(
+                    async () =>
+                    {
+                        var notificationManager = MauiProgram.ServiceProvider.GetRequiredService<PrayerTimeSummaryNotificationManager>();
+                        await notificationManager.TryStartPersistentNotification();
+                    });
 #endif
+            }
+            catch (Exception exception)
+            {
+                logger.LogError(exception, "Error during onAfterFirstLoad");
+                showToastMessage(exception?.Message);
+            }
         }
 
         private async Task showHideSpecificTimes()
@@ -284,12 +299,21 @@ namespace PrayerTimeEngine.Presentation.ViewModel
 
         private void onSelectedPlaceChanged()
         {
+            if (string.IsNullOrWhiteSpace(this.SelectedPlaceText))
+            {
+                return;
+            }
+
+            logger.LogInformation("Place '{SelectedPlace}' was selected", this.SelectedPlaceText);
+
             Task.Run(async () =>
             {
                 BasicPlaceInfo SelectedPlace = this.FoundPlaces.FirstOrDefault(x => x.DisplayText == this.SelectedPlaceText);
 
                 if (CurrentProfile is null || SelectedPlace is null)
                     return;
+
+                await dispatcher.DispatchAsync(resetPlaceInput);
 
                 try
                 {
@@ -298,14 +322,23 @@ namespace PrayerTimeEngine.Presentation.ViewModel
                     CompletePlaceInfo completePlaceInfo = await placeService.GetTimezoneInfo(SelectedPlace, cancellationToken: default);
                     var locationDataWithCalculationSource = await getCalculationSourceWithLocationData(completePlaceInfo, cancellationToken: default);
 
-                    await profileService.UpdateLocationConfig(CurrentProfile, SelectedPlace.DisplayText, locationDataWithCalculationSource, cancellationToken: default);
+                    await profileService.UpdateLocationConfig(
+                        CurrentProfile,
+                        SelectedPlace.City, 
+                        locationDataWithCalculationSource,
+                    cancellationToken: default);
 
+                    // notify UI for updates
+                    await dispatcher.DispatchAsync(() => OnPropertyChanged(nameof(CurrentProfile)));
+
+                    HashSet<ECalculationSource> locationConfigCalculationSources = 
+                        this.CurrentProfile.LocationConfigs
+                            .Select(x => x.CalculationSource)
+                            .ToHashSet();
                     List<ECalculationSource> missingLocationInfo =
                         Enum.GetValues<ECalculationSource>()
-                            .Where(enumValue => !CurrentProfile.LocationConfigs.Select(x => x.CalculationSource).Contains(enumValue))
+                            .Where(enumValue => enumValue != ECalculationSource.None && !locationConfigCalculationSources.Contains(enumValue))
                             .ToList();
-                    missingLocationInfo.Remove(ECalculationSource.None);
-
                     if (missingLocationInfo.Count != 0)
                     {
                         showToastMessage($"Location information missing for {string.Join(", ", missingLocationInfo)}");
@@ -323,6 +356,14 @@ namespace PrayerTimeEngine.Presentation.ViewModel
 
                 await refreshData();
             });
+        }
+
+        private void resetPlaceInput()
+        {
+            this.PlaceSearchText = string.Empty;
+            this.SelectedPlaceText = string.Empty;
+            this.FoundPlaces = [];
+            this.FoundPlacesSelectionTexts = [];
         }
 
         private async Task<List<(ECalculationSource, BaseLocationData)>> getCalculationSourceWithLocationData(CompletePlaceInfo completePlaceInfo, CancellationToken cancellationToken)
