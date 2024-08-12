@@ -99,7 +99,8 @@
             BackgroundColor="DarkSlateGray"
             ItemsSource="{Binding FoundPlacesSelectionTexts}"
             SelectedText="{Binding SelectedPlaceText}"
-            Text="{Binding PlaceSearchText}"/>
+            Text="{Binding PlaceSearchText}"
+            IsEnabled="{Binding IsNotLoadingSelectedPlace}"/>
 
         <Label
             x:Name="FajrName"
