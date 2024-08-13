@@ -31,6 +31,124 @@ namespace PrayerTimeEngine
                     });
         }
 
+        private const string _optionsText = "Optionen";
+        private const string _showTimeConfigsOverviewText = "Überblick: Zeiten-Konfiguration";
+        private const string _showLocationConfigsOverviewText = "Überblick: Ortsdaten";
+        private const string _showLogsText = "Logs anzeigen";
+        private const string _showDbTablesText = "DB-Tabellen anzeigen";
+        private const string _saveDbFileText = "DB-Datei speichern";
+        private const string _deviceInfoText = "Geräte-Informationen";
+        private const string _resetAppText = "App-Daten zurücksetzen";
+        private const string _cancelText = "Abbrechen";
+
+        private async Task openOptionsMenu()
+        {
+            string action = await this.DisplayActionSheet(
+                title: _optionsText,
+                cancel: "Abbrechen",
+                destruction: null,
+                _showTimeConfigsOverviewText,
+                _showLocationConfigsOverviewText,
+                _showLogsText,
+                _showDbTablesText,
+                _saveDbFileText,
+                _deviceInfoText,
+                _resetAppText);
+
+            switch (action)
+            {
+                case _showTimeConfigsOverviewText:
+                    await DisplayAlert("Info", this._viewModel.GetPrayerTimeConfigDisplayText(), "Ok");
+                    break;
+                case _showLocationConfigsOverviewText:
+                    await DisplayAlert("Info", this._viewModel.GetLocationDataDisplayText(), "Ok");
+                    break;
+                case _showLogsText:
+                    this._viewModel.GoToLogsPageCommand.Execute(null);
+                    break;
+                case _showDbTablesText:
+                    await this._viewModel.ShowDatabaseTable();
+                    break;
+                case _saveDbFileText:
+                    FolderPickerResult folderPickerResult = await FolderPicker.PickAsync(CancellationToken.None);
+
+                    if (folderPickerResult.Folder != null)
+                    {
+                        File.Copy(
+                            sourceFileName: AppConfig.DATABASE_PATH,
+                            destFileName: Path.Combine(folderPickerResult.Folder.Path, $"dbFile_{DateTime.Now:ddMMyyyy_HH_mm}.db"),
+                            overwrite: true);
+                    }
+
+                    break;
+
+                case _deviceInfoText:
+                    await DisplayAlert(
+                        "Geräteinformationen",
+                        $"""
+                            Modell: {DeviceInfo.Manufacturer.ToUpper()}, {DeviceInfo.Model}
+                            Art: {DeviceInfo.Idiom}, {DeviceInfo.DeviceType}
+                            OS: {DeviceInfo.Platform}, {DeviceInfo.VersionString}
+                            Auflösung: {DeviceDisplay.MainDisplayInfo.Height}x{DeviceDisplay.MainDisplayInfo.Width} (Dichte: {DeviceDisplay.MainDisplayInfo.Density})
+                            Kategorie der Größe: {Presentation.DebugUtil.GetScreenSizeCategoryName()}
+                        """
+                        , "Ok");
+                    break;
+                case _resetAppText:
+                    if (!await DisplayAlert("Bestätigung", "Daten wirklich zurücksetzen?", "Ja", "Abbrechen"))
+                        break;
+
+                    if (File.Exists(AppConfig.DATABASE_PATH))
+                        File.Delete(AppConfig.DATABASE_PATH);
+                    Application.Current.Quit();
+                    break;
+                case _cancelText:
+                    break;
+            }
+
+        }
+
+        private void ViewModel_OnAfterLoadingPrayerTimes_EventTrigger()
+        {
+            _dispatcher.Dispatch(() =>
+            {
+                prayerTimeGraphicView.DisplayPrayerTime = _viewModel.GetDisplayPrayerTime();
+                prayerTimeGraphicViewBaseView.Invalidate();
+            });
+        }
+
+        /// <summary>
+        /// Triggers when the app is opened after being minimized
+        /// </summary>
+        private void app_Resumed()
+        {
+            Task.Run(_viewModel.OnActualAppearing);
+        }
+
+        /// <summary>
+        /// Triggers when this page is navigated to from another page
+        /// </summary>
+        protected override void OnAppearing()
+        {
+            if (Application.Current is App app)
+            {
+                app.Resumed -= app_Resumed;
+                app.Resumed += app_Resumed;
+            }
+
+            Task.Run(_viewModel.OnActualAppearing);
+        }
+
+        protected override void OnDisappearing()
+        {
+            if (Application.Current is App app)
+            {
+                app.Resumed -= app_Resumed;
+            }
+        }
+
+
+
         private Label lastUpdatedTextInfo;
         private PrayerTimeGraphicView prayerTimeGraphicView;
         private GraphicsView prayerTimeGraphicViewBaseView;
@@ -83,16 +201,16 @@ namespace PrayerTimeEngine
                 {
                     new RowDefinition { Height = new GridLength(3, GridUnitType.Star) },
                     new RowDefinition { Height = new GridLength(3, GridUnitType.Star) },
-                    
+
                     new RowDefinition { Height = new GridLength(0) },
-                    
+
                     new RowDefinition { Height = new GridLength(0) },
 
                     // Fajr & Duha
                     new RowDefinition { Height = new GridLength(2, GridUnitType.Star) },
                     new RowDefinition { Height = GridLength.Star },
                     new RowDefinition { Height = GridLength.Star },
-                    
+
                     new RowDefinition { Height = new GridLength(2, GridUnitType.Star) },
                     
                     // Dhuhr & Asr
@@ -396,107 +514,6 @@ namespace PrayerTimeEngine
                         small: 99,
                         extraSmall: 99);
             });
-        }
-
-        private const string _optionsText = "Optionen";
-        private const string _showTimeConfigsOverviewText = "Überblick: Zeiten-Konfiguration";
-        private const string _showLocationConfigsOverviewText = "Überblick: Ortsdaten";
-        private const string _showLogsText = "Logs anzeigen";
-        private const string _showDbTablesText = "DB-Tabellen anzeigen";
-        private const string _saveDbFileText = "DB-Datei speichern";
-        private const string _resetAppText = "App-Daten zurücksetzen";
-        private const string _cancelText = "Abbrechen";
-
-        private async Task openOptionsMenu()
-        {
-            string action = await this.DisplayActionSheet(
-                title: _optionsText,
-                cancel: "Abbrechen",
-                destruction: null,
-                _showTimeConfigsOverviewText,
-                _showLocationConfigsOverviewText,
-                _showLogsText,
-                _showDbTablesText,
-                _saveDbFileText,
-                _resetAppText);
-
-            switch (action)
-            {
-                case _showTimeConfigsOverviewText:
-                    await DisplayAlert("Info", this._viewModel.GetPrayerTimeConfigDisplayText(), "Ok");
-                    break;
-                case _showLocationConfigsOverviewText:
-                    await DisplayAlert("Info", this._viewModel.GetLocationDataDisplayText(), "Ok");
-                    break;
-                case _showLogsText:
-                    this._viewModel.GoToLogsPageCommand.Execute(null);
-                    break;
-                case _showDbTablesText:
-                    await this._viewModel.ShowDatabaseTable();
-                    break;
-                case _saveDbFileText:
-                    FolderPickerResult folderPickerResult = await FolderPicker.PickAsync(CancellationToken.None);
-
-                    if (folderPickerResult.Folder != null)
-                    {
-                        File.Copy(
-                            sourceFileName: AppConfig.DATABASE_PATH,
-                            destFileName: Path.Combine(folderPickerResult.Folder.Path, $"dbFile_{DateTime.Now:ddMMyyyy_HH_mm}.db"),
-                            overwrite: true);
-                    }
-
-                    break;
-                case _resetAppText:
-                    if (!await DisplayAlert("Bestätigung", "Daten wirklich zurücksetzen?", "Ja", "Abbrechen"))
-                        break;
-
-                    if (File.Exists(AppConfig.DATABASE_PATH))
-                        File.Delete(AppConfig.DATABASE_PATH);
-                    Application.Current.Quit();
-                    break;
-                case _cancelText:
-                    break;
-            }
-
-        }
-
-        private void ViewModel_OnAfterLoadingPrayerTimes_EventTrigger()
-        {
-            _dispatcher.Dispatch(() =>
-            {
-                prayerTimeGraphicView.DisplayPrayerTime = _viewModel.GetDisplayPrayerTime();
-                prayerTimeGraphicViewBaseView.Invalidate();
-            });
-        }
-
-        /// <summary>
-        /// Triggers when the app is opened after being minimized
-        /// </summary>
-        private void app_Resumed()
-        {
-            Task.Run(_viewModel.OnActualAppearing);
-        }
-
-        /// <summary>
-        /// Triggers when this page is navigated to from another page
-        /// </summary>
-        protected override void OnAppearing()
-        {
-            if (Application.Current is App app)
-            {
-                app.Resumed -= app_Resumed;
-                app.Resumed += app_Resumed;
-            }
-
-            Task.Run(_viewModel.OnActualAppearing);
-        }
-
-        protected override void OnDisappearing()
-        {
-            if (Application.Current is App app)
-            {
-                app.Resumed -= app_Resumed;
-            }
         }
     }
 }
