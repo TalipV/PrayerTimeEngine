@@ -8,7 +8,6 @@ using PrayerTimeEngine.Core.Domain.Models;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Interfaces;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
 using PrayerTimeEngine.Services.SystemInfoService;
-using System.Threading;
 
 namespace PrayerTimeEngine.Services.PrayerTimeSummaryNotification
 {
