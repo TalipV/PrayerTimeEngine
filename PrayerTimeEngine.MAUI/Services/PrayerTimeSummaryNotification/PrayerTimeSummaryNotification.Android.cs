@@ -8,6 +8,7 @@ using PrayerTimeEngine.Core.Domain.Models;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Interfaces;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
 using PrayerTimeEngine.Services.SystemInfoService;
+using System.Threading;
 
 namespace PrayerTimeEngine.Services.PrayerTimeSummaryNotification
 {
@@ -89,6 +90,7 @@ namespace PrayerTimeEngine.Services.PrayerTimeSummaryNotification
                 try
                 {
                     var notificationBuilder = GetNotificationBuilder();
+                    notificationBuilder.SetContentTitle((await _profileService.GetProfiles(default)).First().LocationName);
                     notificationBuilder.SetContentText(await getRemainingTimeText(cancellationTokenSource.Token));
 
                     var context = Android.App.Application.Context;
