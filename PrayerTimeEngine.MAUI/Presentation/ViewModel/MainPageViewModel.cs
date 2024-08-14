@@ -104,14 +104,16 @@ namespace PrayerTimeEngine.Presentation.ViewModel
 
         public void onPlaceSearchTextChanged()
         {
-            if (string.IsNullOrWhiteSpace(this.PlaceSearchText))
+            string placeSearchText = this.PlaceSearchText;
+
+            if (string.IsNullOrWhiteSpace(placeSearchText))
             {
                 return;
             }
 
             debouncer ??= new Debounce.Core.Debouncer(async () =>
             {
-                FoundPlaces = await PerformPlaceSearch(PlaceSearchText);
+                FoundPlaces = await PerformPlaceSearch(placeSearchText);
                 FoundPlacesSelectionTexts = FoundPlaces.Select(x => x.DisplayText).Distinct().OrderBy(x => x).Take(7).ToList();
             }, intervalMs: 750);
 
@@ -299,16 +301,18 @@ namespace PrayerTimeEngine.Presentation.ViewModel
 
         private void onSelectedPlaceChanged()
         {
-            if (string.IsNullOrWhiteSpace(this.SelectedPlaceText))
+            string selectedPlaceText = this.SelectedPlaceText;
+
+            if (string.IsNullOrWhiteSpace(selectedPlaceText))
             {
                 return;
             }
 
-            logger.LogInformation("Place '{SelectedPlace}' was selected", this.SelectedPlaceText);
+            logger.LogInformation("Place '{SelectedPlace}' was selected", selectedPlaceText);
 
             Task.Run(async () =>
             {
-                BasicPlaceInfo SelectedPlace = this.FoundPlaces.FirstOrDefault(x => x.DisplayText == this.SelectedPlaceText);
+                BasicPlaceInfo SelectedPlace = this.FoundPlaces.FirstOrDefault(x => x.DisplayText == selectedPlaceText);
 
                 if (CurrentProfile is null || SelectedPlace is null)
                     return;
