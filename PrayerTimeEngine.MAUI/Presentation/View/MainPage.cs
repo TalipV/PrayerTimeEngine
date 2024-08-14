@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Maui.Storage;
 using OnScreenSizeMarkup.Maui.Helpers;
 using PrayerTimeEngine.Core.Common.Enum;
+using PrayerTimeEngine.Presentation;
 using PrayerTimeEngine.Presentation.GraphicsView;
 using PrayerTimeEngine.Presentation.ViewModel;
 using UraniumUI.Material.Controls;
@@ -38,6 +39,7 @@ namespace PrayerTimeEngine
         private const string _showDbTablesText = "DB-Tabellen anzeigen";
         private const string _saveDbFileText = "DB-Datei speichern";
         private const string _deviceInfoText = "Geräte-Informationen";
+        private const string _setCustomTextSizes = "Benutzerdefinierte Textgröße";
         private const string _resetAppText = "App-Daten zurücksetzen";
         private const string _cancelText = "Abbrechen";
 
@@ -53,6 +55,7 @@ namespace PrayerTimeEngine
                 _showDbTablesText,
                 _saveDbFileText,
                 _deviceInfoText,
+                _setCustomTextSizes,
                 _resetAppText);
 
             switch (action)
@@ -94,6 +97,9 @@ namespace PrayerTimeEngine
                         """
                         , "Ok");
                     break;
+                case _setCustomTextSizes:
+                    showCustomTextSizesInputPopup();
+                    break;
                 case _resetAppText:
                     if (!await DisplayAlert("Bestätigung", "Daten wirklich zurücksetzen?", "Ja", "Abbrechen"))
                         break;
@@ -106,6 +112,54 @@ namespace PrayerTimeEngine
                     break;
             }
 
+        }
+
+        private async void showCustomTextSizesInputPopup()
+        {
+            var currentValues = DebugUtil.GetSizeValues(0);
+
+            if (currentValues.All(x => x == 0))
+            {
+                currentValues = [25, 24, 18, 14, 14];
+            }
+
+            string initialValue = string.Join(",", currentValues);
+
+            string result = 
+                await DisplayPromptAsync(
+                "Fünf Textgröße angeben", 
+                """
+                Geben Sie Werte für die folgenden vier Textarten komma-separiert an:
+                1. Statustexte oben
+                2. Gebetszeiten-Namen
+                3. Haupt-Gebetszeiten
+                4. Sub-Gebetszeiten-Namen
+                5. Sub-Gebetszeiten
+
+                Zum Zurücksetzen "0,0,0,0,0" eingeben und bestätigen.
+                """, 
+                initialValue: initialValue, 
+                keyboard: Keyboard.Text) ?? "";
+
+            int[] sizeValues = 
+                result.Split(",")
+                .Select(x => x.Replace(" ", ""))
+                .Where(x => int.TryParse(x, out int _))
+                .Select(int.Parse)
+                .ToArray();
+
+            if (sizeValues.Length == 5 && sizeValues.All(x => x >= 0))
+            {
+                // Save the value
+                DebugUtil.SetSizeValue(sizeValues);
+
+                await DisplayAlert("Erfolg", $"Gespeichert! App manuell wieder starten!", "OK");
+                Application.Current.Quit();
+            }
+            else
+            {
+                await DisplayAlert("Eingabe ungültig", "Eingabe war ungültig", "OK");
+            }
         }
 
         private void ViewModel_OnAfterLoadingPrayerTimes_EventTrigger()
@@ -303,12 +357,12 @@ namespace PrayerTimeEngine
             {
                 label.FontSize =
                     OnScreenSizeHelpers.Instance.GetScreenSizeValue<double>(
-                        defaultSize: 99,
-                        extraLarge: 99,
-                        large: 25,
-                        medium: 23,
-                        small: 99,
-                        extraSmall: 99);
+                        defaultSize: DebugUtil.GetSizeValues(99)[0],
+                        extraLarge: DebugUtil.GetSizeValues(99)[0],
+                        large: DebugUtil.GetSizeValues(25)[0],
+                        medium: DebugUtil.GetSizeValues(23)[0],
+                        small: DebugUtil.GetSizeValues(99)[0],
+                        extraSmall: DebugUtil.GetSizeValues(99)[0]);
             });
 
             return mainGrid;
@@ -470,12 +524,12 @@ namespace PrayerTimeEngine
             {
                 label.FontSize =
                     OnScreenSizeHelpers.Instance.GetScreenSizeValue<double>(
-                        defaultSize: 99,
-                        extraLarge: 99,
-                        large: 24,
-                        medium: 22,
-                        small: 99,
-                        extraSmall: 99);
+                        defaultSize: DebugUtil.GetSizeValues(99)[1],
+                        extraLarge: DebugUtil.GetSizeValues(99)[1],
+                        large: DebugUtil.GetSizeValues(24)[1],
+                        medium: DebugUtil.GetSizeValues(22)[1],
+                        small: DebugUtil.GetSizeValues(99)[1],
+                        extraSmall: DebugUtil.GetSizeValues(99)[1]);
             });
 
             // PRAYER TIME MAIN DURATIONS
@@ -483,36 +537,36 @@ namespace PrayerTimeEngine
             {
                 label.FontSize =
                     OnScreenSizeHelpers.Instance.GetScreenSizeValue<double>(
-                        defaultSize: 99,
-                        extraLarge: 99,
-                        large: 18,
-                        medium: 14,
-                        small: 99,
-                        extraSmall: 99);
+                        defaultSize: DebugUtil.GetSizeValues(99)[2],
+                        extraLarge: DebugUtil.GetSizeValues(99)[2],
+                        large: DebugUtil.GetSizeValues(18)[2],
+                        medium: DebugUtil.GetSizeValues(14)[2],
+                        small: DebugUtil.GetSizeValues(99)[2],
+                        extraSmall: DebugUtil.GetSizeValues(99)[2]);
             });
 
             subTimeTextViews.ForEach(label =>
             {
                 label.FontSize =
                     OnScreenSizeHelpers.Instance.GetScreenSizeValue<double>(
-                        defaultSize: 99,
-                        extraLarge: 99,
-                        large: 14,
-                        medium: 12,
-                        small: 99,
-                        extraSmall: 99);
+                        defaultSize: DebugUtil.GetSizeValues(99)[3],
+                        extraLarge: DebugUtil.GetSizeValues(99)[3],
+                        large: DebugUtil.GetSizeValues(14)[3],
+                        medium: DebugUtil.GetSizeValues(12)[3],
+                        small: DebugUtil.GetSizeValues(99)[3],
+                        extraSmall: DebugUtil.GetSizeValues(99)[3]);
             });
 
             subTimeDisplayTextViews.ForEach(label =>
             {
                 label.FontSize =
                     OnScreenSizeHelpers.Instance.GetScreenSizeValue<double>(
-                        defaultSize: 99,
-                        extraLarge: 99,
-                        large: 14,
-                        medium: 11,
-                        small: 99,
-                        extraSmall: 99);
+                        defaultSize: DebugUtil.GetSizeValues(99)[4],
+                        extraLarge: DebugUtil.GetSizeValues(99)[4],
+                        large: DebugUtil.GetSizeValues(14)[4],
+                        medium: DebugUtil.GetSizeValues(11)[4],
+                        small: DebugUtil.GetSizeValues(99)[4],
+                        extraSmall: DebugUtil.GetSizeValues(99)[4]);
             });
         }
     }
