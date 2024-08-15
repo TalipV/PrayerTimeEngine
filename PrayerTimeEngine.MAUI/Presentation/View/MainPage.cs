@@ -33,85 +33,146 @@ namespace PrayerTimeEngine
         }
 
         private const string _optionsText = "Optionen";
+
+        private const string _generalOptionText = "... Allgemeines";
         private const string _showTimeConfigsOverviewText = "Überblick: Zeiten-Konfiguration";
         private const string _showLocationConfigsOverviewText = "Überblick: Ortsdaten";
         private const string _showLogsText = "Logs anzeigen";
+        private const string _setCustomTextSizes = "Benutzerdefinierte Textgröße";
+
+        private const string _technicalOptionText = "... Technisches";
         private const string _showDbTablesText = "DB-Tabellen anzeigen";
         private const string _saveDbFileText = "DB-Datei speichern";
         private const string _deviceInfoText = "Geräte-Informationen";
-        private const string _setCustomTextSizes = "Benutzerdefinierte Textgröße";
+
+        private const string _systemOptionText = "... System";
         private const string _resetAppText = "App-Daten zurücksetzen";
+        private const string _closeAppText = "App schließen";
+
+        private const string _backText = "Zurück";
         private const string _cancelText = "Abbrechen";
 
         private async Task openOptionsMenu()
         {
-            string action = await this.DisplayActionSheet(
-                title: _optionsText,
-                cancel: "Abbrechen",
-                destruction: null,
-                _showTimeConfigsOverviewText,
-                _showLocationConfigsOverviewText,
-                _showLogsText,
-                _showDbTablesText,
-                _saveDbFileText,
-                _deviceInfoText,
-                _setCustomTextSizes,
-                _resetAppText);
+            bool doRepeat;
 
-            switch (action)
+            do
             {
-                case _showTimeConfigsOverviewText:
-                    await DisplayAlert("Info", this._viewModel.GetPrayerTimeConfigDisplayText(), "Ok");
-                    break;
-                case _showLocationConfigsOverviewText:
-                    await DisplayAlert("Info", this._viewModel.GetLocationDataDisplayText(), "Ok");
-                    break;
-                case _showLogsText:
-                    this._viewModel.GoToLogsPageCommand.Execute(null);
-                    break;
-                case _showDbTablesText:
-                    await this._viewModel.ShowDatabaseTable();
-                    break;
-                case _saveDbFileText:
-                    FolderPickerResult folderPickerResult = await FolderPicker.PickAsync(CancellationToken.None);
+                doRepeat = false;
 
-                    if (folderPickerResult.Folder != null)
-                    {
-                        File.Copy(
-                            sourceFileName: AppConfig.DATABASE_PATH,
-                            destFileName: Path.Combine(folderPickerResult.Folder.Path, $"dbFile_{DateTime.Now:ddMMyyyy_HH_mm}.db"),
-                            overwrite: true);
-                    }
+                switch (await this.DisplayActionSheet(
+                    title: _optionsText,
+                    cancel: _cancelText,
+                    destruction: null,
+                    _generalOptionText,
+                    _technicalOptionText,
+                    _systemOptionText))
+                {
+                    case _generalOptionText:
 
-                    break;
+                        switch (await this.DisplayActionSheet(
+                            title: _generalOptionText,
+                            cancel: _backText,
+                            destruction: null,
+                            _showTimeConfigsOverviewText,
+                            _showLocationConfigsOverviewText,
+                            _showLogsText,
+                            _setCustomTextSizes))
+                        {
+                            case _showTimeConfigsOverviewText:
+                                await DisplayAlert("Info", this._viewModel.GetPrayerTimeConfigDisplayText(), "Ok");
+                                break;
+                            case _showLocationConfigsOverviewText:
+                                await DisplayAlert("Info", this._viewModel.GetLocationDataDisplayText(), "Ok");
+                                break;
+                            case _showLogsText:
+                                this._viewModel.GoToLogsPageCommand.Execute(null);
+                                break;
+                            case _setCustomTextSizes:
+                                showCustomTextSizesInputPopup();
+                                break;
+                            case _backText:
+                                doRepeat = true;
+                                break;
+                        }
 
-                case _deviceInfoText:
-                    await DisplayAlert(
-                        "Geräteinformationen",
-                        $"""
+                        break;
+
+                    case _technicalOptionText:
+
+                        switch (await this.DisplayActionSheet(
+                            title: _technicalOptionText,
+                            cancel: _backText,
+                            destruction: null,
+                            _showDbTablesText,
+                            _saveDbFileText,
+                            _deviceInfoText))
+                        {
+                            case _showDbTablesText:
+                                await this._viewModel.ShowDatabaseTable();
+                                break;
+                            case _saveDbFileText:
+                                FolderPickerResult folderPickerResult = await FolderPicker.PickAsync(CancellationToken.None);
+
+                                if (folderPickerResult.Folder != null)
+                                {
+                                    File.Copy(
+                                        sourceFileName: AppConfig.DATABASE_PATH,
+                                        destFileName: Path.Combine(folderPickerResult.Folder.Path, $"dbFile_{DateTime.Now:ddMMyyyy_HH_mm}.db"),
+                                        overwrite: true);
+                                }
+
+                                break;
+
+                            case _deviceInfoText:
+                                await DisplayAlert(
+                                    "Geräteinformationen",
+                                    $"""
                             Modell: {DeviceInfo.Manufacturer.ToUpper()}, {DeviceInfo.Model}
                             Art: {DeviceInfo.Idiom}, {DeviceInfo.DeviceType}
                             OS: {DeviceInfo.Platform}, {DeviceInfo.VersionString}
                             Auflösung: {DeviceDisplay.MainDisplayInfo.Height}x{DeviceDisplay.MainDisplayInfo.Width} (Dichte: {DeviceDisplay.MainDisplayInfo.Density})
                             Kategorie der Größe: {Presentation.DebugUtil.GetScreenSizeCategoryName()}
                         """
-                        , "Ok");
-                    break;
-                case _setCustomTextSizes:
-                    showCustomTextSizesInputPopup();
-                    break;
-                case _resetAppText:
-                    if (!await DisplayAlert("Bestätigung", "Daten wirklich zurücksetzen?", "Ja", "Abbrechen"))
+                                    , "Ok");
+                                break;
+                            case _backText:
+                                doRepeat = true;
+                                break;
+                        }
+
                         break;
+                    case _systemOptionText:
 
-                    if (File.Exists(AppConfig.DATABASE_PATH))
-                        File.Delete(AppConfig.DATABASE_PATH);
-                    Application.Current.Quit();
-                    break;
-                case _cancelText:
-                    break;
+                        switch (await this.DisplayActionSheet(
+                            title: _systemOptionText,
+                            cancel: _backText,
+                            destruction: null,
+                            _resetAppText,
+                            _closeAppText))
+                        {
+                            case _resetAppText:
+                                if (!await DisplayAlert("Bestätigung", "Daten wirklich zurücksetzen?", "Ja", _cancelText))
+                                    break;
+
+                                if (File.Exists(AppConfig.DATABASE_PATH))
+                                    File.Delete(AppConfig.DATABASE_PATH);
+                                Application.Current.Quit();
+                                break;
+                            case _closeAppText:
+                                Application.Current.Quit();
+                                break;
+                            case _backText:
+                                doRepeat = true;
+                                break;
+                        }
+
+                        break;
+                    case _cancelText:
+                        break;
+                }
             }
-
+            while (doRepeat);
         }
 
         private async void showCustomTextSizesInputPopup()
@@ -125,9 +186,9 @@ namespace PrayerTimeEngine
 
             string initialValue = string.Join(",", currentValues);
 
-            string result = 
+            string result =
                 await DisplayPromptAsync(
-                "Fünf Textgröße angeben", 
+                "Fünf Textgröße angeben",
                 """
                 Geben Sie Werte für die folgenden vier Textarten komma-separiert an:
                 1. Statustexte oben
@@ -137,11 +198,11 @@ namespace PrayerTimeEngine
                 5. Sub-Gebetszeiten
 
                 Zum Zurücksetzen "0,0,0,0,0" eingeben und bestätigen.
-                """, 
-                initialValue: initialValue, 
+                """,
+                initialValue: initialValue,
                 keyboard: Keyboard.Text) ?? "";
 
-            int[] sizeValues = 
+            int[] sizeValues =
                 result.Split(",")
                 .Select(x => x.Replace(" ", ""))
                 .Where(x => int.TryParse(x, out int _))
