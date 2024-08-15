@@ -43,5 +43,10 @@ namespace PrayerTimeEngine.Presentation
                 Preferences.Set(SIZE_VALUES_PREFERENCE_KEY, string.Join(",", sizeValues));
             }
         }
+
+        public static string GenerateDebugID()
+        {
+            return Guid.NewGuid().ToString().Substring(0, 5);
+        }
     }
 }
