@@ -126,7 +126,8 @@ namespace PrayerTimeEngine.Presentation.ViewModel
 
         private bool isValidPlaceSearchText()
         {
-            return !string.IsNullOrWhiteSpace(this.PlaceSearchText) && this.PlaceSearchText.Replace(" ", string.Empty).Length > 4;
+            return !string.IsNullOrWhiteSpace(this.PlaceSearchText) 
+                && this.PlaceSearchText.Replace(" ", string.Empty).Length > 4;
         }
 
         private CancellationTokenSource _placeSearchCancellationTokenSource;
@@ -204,7 +205,8 @@ namespace PrayerTimeEngine.Presentation.ViewModel
 
         private async Task refreshData()
         {
-            logger.LogInformation("Refreshing data started");
+            string refreshCallID = DebugUtil.GenerateDebugID();
+            logger.LogInformation("Refreshing data started. ({RefreshCallID})", refreshCallID);
 
             try
             {
@@ -241,11 +243,11 @@ namespace PrayerTimeEngine.Presentation.ViewModel
             }
             catch (OperationCanceledException)
             {
-                logger.LogInformation("Loading times was canceled.");
+                logger.LogInformation("Loading times was canceled. ({RefreshCallID})", refreshCallID);
             }
             catch (Exception exception)
             {
-                logger.LogError(exception, "Error during refreshData");
+                logger.LogError(exception, "Error during refreshData. ({RefreshCallID})", refreshCallID);
                 showToastMessage(exception?.Message);
             }
             finally
@@ -253,7 +255,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
                 MauiProgram.IsFullyInitialized = true;
             }
 
-            logger.LogInformation("Refreshing data finished");
+            logger.LogInformation("Refreshing data finished. ({RefreshCallID})", refreshCallID);
         }
 
         private async Task onBeforeFirstLoad()
