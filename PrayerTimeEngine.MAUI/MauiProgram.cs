@@ -59,6 +59,7 @@ namespace PrayerTimeEngine;
  * - Consider Muwaqqit API changes and maybe additionally use old API endpoint
  * - Save whole PlaceInfo for Profile.LocationName for more flexibility with the display name
  * - Remove #IF ANDROID (and similiar) statements from main code by abstracting logic with interfaces so that OS specific stuff is handled in DI factory code here
+ * - Consistent naming of awaitable methods with or without Async suffix
  */
 
 /* TODO late:
