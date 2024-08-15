@@ -57,6 +57,7 @@ namespace PrayerTimeEngine;
  * - PlaceService and ProfileService with no or default CancellationToken?
  * - delete old db cache data from time to time
  * - Consider Muwaqqit API changes and maybe additionally use old API endpoint
+ * - Save whole PlaceInfo for Profile.LocationName for more flexibility with the display name
  */
 
 /* TODO late:
