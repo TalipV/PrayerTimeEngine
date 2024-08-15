@@ -106,11 +106,11 @@ namespace PrayerTimeEngine.Presentation.ViewModel
         {
             if (!isValidPlaceSearchText())
             {
-                this.resetPlaceInput();
+                this.resetPlaceInput(resetPlaceSearchText: false);
                 return;
             }
 
-            debouncer ??= new Debounce.Core.Debouncer(searchPlace, intervalMs: 750);
+            debouncer ??= new Debounce.Core.Debouncer(searchPlace, intervalMs: 400);
             debouncer.Debounce();
         }
 
@@ -326,7 +326,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
                 if (CurrentProfile is null || SelectedPlace is null)
                     return;
 
-                await dispatcher.DispatchAsync(resetPlaceInput);
+                await dispatcher.DispatchAsync(() => resetPlaceInput());
 
                 try
                 {
@@ -371,9 +371,11 @@ namespace PrayerTimeEngine.Presentation.ViewModel
             });
         }
 
-        private void resetPlaceInput()
+        private void resetPlaceInput(bool resetPlaceSearchText = true)
         {
-            this.PlaceSearchText = string.Empty;
+            if (resetPlaceSearchText)
+                this.PlaceSearchText = string.Empty;
+
             this.SelectedPlaceText = string.Empty;
             this.FoundPlaces = [];
             this.FoundPlacesSelectionTexts = [];
