@@ -206,7 +206,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
         private async Task refreshData()
         {
             string refreshCallID = DebugUtil.GenerateDebugID();
-            logger.LogInformation("Refreshing data started. ({RefreshCallID})", refreshCallID);
+            logger.LogInformation("Refreshing data started. ({RefreshCallID}) {StackTrace}", refreshCallID, new System.Diagnostics.StackTrace().ToString());
 
             try
             {

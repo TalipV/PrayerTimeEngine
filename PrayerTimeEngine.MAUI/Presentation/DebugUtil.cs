@@ -8,15 +8,22 @@ namespace PrayerTimeEngine.Presentation
     {
         public static string GetScreenSizeCategoryName()
         {
-            Type helpersType = typeof(OnScreenSizeHelpers);// Fetch screen diagonal from OnScreenSizeHelpers with no parameters
+            try
+            {
+                Type helpersType = typeof(OnScreenSizeHelpers);// Fetch screen diagonal from OnScreenSizeHelpers with no parameters
 
-            FieldInfo screenCategoryProviderFieldInfo = helpersType
-                .GetFields(BindingFlags.Instance | BindingFlags.NonPublic)
-                .First(x => x.Name == "screenCategoryProvider");
+                FieldInfo screenCategoryProviderFieldInfo = helpersType
+                    .GetFields(BindingFlags.Instance | BindingFlags.NonPublic)
+                    .First(x => x.Name == "screenCategoryProvider");
 
-            IScreenCategoryProvider screenCategoryProvider = screenCategoryProviderFieldInfo.GetValue(OnScreenSizeHelpers.Instance) as IScreenCategoryProvider;
+                IScreenCategoryProvider screenCategoryProvider = screenCategoryProviderFieldInfo.GetValue(OnScreenSizeHelpers.Instance) as IScreenCategoryProvider;
 
-            return screenCategoryProvider?.GetCategory().ToString() ?? "NOT FOUND";
+                return screenCategoryProvider?.GetCategory().ToString() ?? "NOT FOUND";
+            }
+            catch
+            {
+                return "ERROR";
+            }
         }
 
         private const string SIZE_VALUES_PREFERENCE_KEY = "SIZE_VALUE_";
