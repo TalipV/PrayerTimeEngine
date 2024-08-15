@@ -4,6 +4,7 @@ using NodaTime;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Interfaces;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Models;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Models.DTOs;
+using Refit;
 using System.Globalization;
 
 namespace PrayerTimeEngine.Core.Domain.PlaceManagement.Services
@@ -40,16 +41,23 @@ namespace PrayerTimeEngine.Core.Domain.PlaceManagement.Services
         public async Task<List<BasicPlaceInfo>> SearchPlacesAsync(string searchTerm, string language, CancellationToken cancellationToken)
         {
             await ensureCooldown(cancellationToken).ConfigureAwait(false);
-            
-            var places = await locationIQApiService.GetPlacesAsync(
-                    language,
-                    searchTerm,
-                    _apiKey,
-                    cancellationToken).ConfigureAwait(false);
 
-            return places.Select(x => getlocationIQPlace(x, language))
-                .Where(x => !string.IsNullOrWhiteSpace(x.City) && !string.IsNullOrWhiteSpace(x.Country))
-                .ToList();
+            try
+            {
+                var places = await locationIQApiService.GetPlacesAsync(
+                        language,
+                        searchTerm,
+                        _apiKey,
+                        cancellationToken).ConfigureAwait(false);
+
+                return places.Select(x => getlocationIQPlace(x, language))
+                    .Where(x => !string.IsNullOrWhiteSpace(x.City) && !string.IsNullOrWhiteSpace(x.Country))
+                    .ToList();
+            }
+            catch (ApiException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
+            {
+                return [];
+            }
         }
 
         public async Task<BasicPlaceInfo> GetPlaceBasedOnPlace(BasicPlaceInfo inputPlace, string language, CancellationToken cancellationToken)
