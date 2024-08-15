@@ -104,20 +104,29 @@ namespace PrayerTimeEngine.Presentation.ViewModel
 
         public void onPlaceSearchTextChanged()
         {
-            string placeSearchText = this.PlaceSearchText;
-
-            if (string.IsNullOrWhiteSpace(placeSearchText))
+            if (!isValidPlaceSearchText())
             {
+                this.resetPlaceInput();
                 return;
             }
 
-            debouncer ??= new Debounce.Core.Debouncer(async () =>
-            {
-                FoundPlaces = await PerformPlaceSearch(placeSearchText);
-                FoundPlacesSelectionTexts = FoundPlaces.Select(x => x.DisplayText).Distinct().OrderBy(x => x).Take(7).ToList();
-            }, intervalMs: 750);
-
+            debouncer ??= new Debounce.Core.Debouncer(searchPlace, intervalMs: 750);
             debouncer.Debounce();
+        }
+
+        private async void searchPlace()
+        {
+            if (!isValidPlaceSearchText())
+            {
+                return;
+            }
+            FoundPlaces = await PerformPlaceSearch(this.PlaceSearchText);
+            FoundPlacesSelectionTexts = FoundPlaces.Select(x => x.DisplayText).Distinct().OrderBy(x => x).Take(7).ToList();
+        }
+
+        private bool isValidPlaceSearchText()
+        {
+            return !string.IsNullOrWhiteSpace(this.PlaceSearchText) && this.PlaceSearchText.Replace(" ", string.Empty).Length > 4;
         }
 
         private CancellationTokenSource _placeSearchCancellationTokenSource;
