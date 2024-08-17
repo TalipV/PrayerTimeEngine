@@ -111,7 +111,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
                 return;
             }
 
-            debouncer ??= new Debounce.Core.Debouncer(searchPlace, intervalMs: 400);
+            debouncer ??= new Debounce.Core.Debouncer(searchPlace, intervalMs: 600);
             debouncer.Debounce();
         }
 
