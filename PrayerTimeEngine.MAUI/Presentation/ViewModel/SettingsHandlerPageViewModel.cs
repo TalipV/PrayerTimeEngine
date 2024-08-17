@@ -39,6 +39,11 @@ namespace PrayerTimeEngine.Presentation.ViewModel
 
         public override void Initialize(params object[] parameter)
         {
+            if (parameter.Length != 2)
+            {
+                throw new ArgumentException($"{nameof(parameter)} does not contain exactly two values");
+            }
+
             if (parameter[0] is not Profile profile)
             {
                 throw new ArgumentException($"{nameof(parameter)}[0] is not a {nameof(Profile)}");

@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 
-namespace PrayerTimeEngine.Services
+namespace PrayerTimeEngine.Services.PrayerTimeSummaryNotification
 {
     public class PrayerTimeSummaryNotificationManager(ILogger<PrayerTimeSummaryNotificationManager> logger)
     {
@@ -17,7 +17,7 @@ namespace PrayerTimeEngine.Services
                     await tryStartPersistentNotification_iOS();
                 }
             }
-            catch (Exception exception) 
+            catch (Exception exception)
             {
                 logger.LogError(exception, $"Error at {nameof(TryStartPersistentNotification)}");
             }
@@ -41,10 +41,10 @@ namespace PrayerTimeEngine.Services
 
             if (permissionGranted)
             {
-                var startIntent = 
+                var startIntent =
                     new Android.Content.Intent(
-                        global::Android.App.Application.Context, 
-                        typeof(PrayerTimeEngine.Services.PrayerTimeSummaryNotification.PrayerTimeSummaryNotification));
+                        Android.App.Application.Context,
+                        typeof(PrayerTimeSummaryNotification));
                 Platforms.Android.MainActivity.Instance.StartForegroundService(startIntent);
             }
 #else

@@ -7,7 +7,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Interfaces
     {
         public Task<List<FaziletCountry>> GetCountries(CancellationToken cancellationToken);
         public Task<List<FaziletCity>> GetCitiesByCountryID(int countryID, CancellationToken cancellationToken);
-        public Task<FaziletPrayerTimes> GetTimesByDateAndCityID(LocalDate date, int cityID, CancellationToken cancellationToken);
+        public Task<FaziletPrayerTimes> GetTimesByDateAndCityID(ZonedDateTime date, int cityID, CancellationToken cancellationToken);
 
         public Task InsertCountries(IEnumerable<FaziletCountry> countries, CancellationToken cancellationToken);
         public Task InsertCities(IEnumerable<FaziletCity> cities, CancellationToken cancellationToken);

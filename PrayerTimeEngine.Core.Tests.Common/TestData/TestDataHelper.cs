@@ -5,6 +5,7 @@ using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Models;
 using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Models;
 using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Models;
 using PrayerTimeEngine.Core.Domain.Models;
+using PrayerTimeEngine.Core.Domain.PlaceManagement.Models;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
 
 namespace PrayerTimeEngine.Core.Tests.Common.TestData
@@ -19,13 +20,31 @@ namespace PrayerTimeEngine.Core.Tests.Common.TestData
 
         public static readonly string LOCATIONIQ_TEST_DATA_FILE_PATH = Path.Combine(BASE_TEST_DATA_FILE_PATH, "LocationIQTestData");
 
+        public static readonly DateTimeZone EUROPE_VIENNA_TIME_ZONE = DateTimeZoneProviders.Tzdb["Europe/Vienna"];
+
         public static Profile CreateNewCompleteTestProfile(int profileID = 1)
         {
             var profile = new Profile
             {
                 ID = profileID,
                 Name = "Standard-Profil",
-                LocationName = "Innsbruck",
+                PlaceInfo = new CompletePlaceInfo
+                {
+                    Latitude = 47.2803835M,
+                    Longitude = 11.41337M,
+                    InfoLanguageCode = "de",
+                    Country = "Österreich",
+                    City = "Innsbruck",
+                    CityDistrict = "",
+                    PostCode = "6020",
+                    Street = "",
+                    TimezoneInfo = new TimezoneInfo
+                    {
+                        DisplayName = "CET",
+                        Name = "Central European Time",
+                        UtcOffsetSeconds = 3600
+                    }
+                },
                 SequenceNo = 1,
             };
 
@@ -36,7 +55,7 @@ namespace PrayerTimeEngine.Core.Tests.Common.TestData
                         CalculationSource = ECalculationSource.Muwaqqit,
                         ProfileID = profile.ID,
                         Profile = profile,
-                        LocationData = new MuwaqqitLocationData{ Latitude = 47.2803835M,Longitude = 11.41337M,TimezoneName = "Europe/Vienna" }
+                        LocationData = new MuwaqqitLocationData{ Latitude = 47.2803835M,Longitude = 11.41337M, TimezoneName = EUROPE_VIENNA_TIME_ZONE.Id }
                     },
                     new()
                     {
@@ -50,7 +69,7 @@ namespace PrayerTimeEngine.Core.Tests.Common.TestData
                         CalculationSource = ECalculationSource.Semerkand,
                         ProfileID = profile.ID,
                         Profile = profile,
-                        LocationData = new SemerkandLocationData{ CountryName = "Avusturya",CityName = "Innsbruck",TimezoneName = "Europe/Vienna" }
+                        LocationData = new SemerkandLocationData{ CountryName = "Avusturya", CityName = "Innsbruck", TimezoneName = EUROPE_VIENNA_TIME_ZONE.Id }
                     },
                 ];
 
@@ -190,7 +209,7 @@ namespace PrayerTimeEngine.Core.Tests.Common.TestData
         public static PrayerTimesBundle CreateNewTestPrayerTimesBundle()
         {
             var bundle = new PrayerTimesBundle();
-            var zone = DateTimeZoneProviders.Tzdb["Europe/Vienna"];
+            var zone = EUROPE_VIENNA_TIME_ZONE;
 
             bundle.Fajr.Start = new LocalDateTime(2023, 1, 1, 2, 0, 0).InZone(zone, Resolvers.StrictResolver);
             bundle.Fajr.End = new LocalDateTime(2023, 1, 1, 4, 0, 0).InZone(zone, Resolvers.StrictResolver);

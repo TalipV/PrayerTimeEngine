@@ -1,13 +1,16 @@
-﻿using PrayerTimeEngine.Core.Common.Enum;
+﻿using NodaTime;
+using PrayerTimeEngine.Core.Common.Enum;
+using PrayerTimeEngine.Core.Data.EntityFramework;
 using PrayerTimeEngine.Core.Domain.Models;
 using System.ComponentModel.DataAnnotations;
 
 namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities
 {
-    public class ProfileTimeConfig
+    public class ProfileTimeConfig : IInsertedAt
     {
         [Key]
         public int ID { get; set; }
+        public Instant? InsertInstant { get; set; }
 
         public int ProfileID { get; set; }
         public Profile Profile { get; set; }

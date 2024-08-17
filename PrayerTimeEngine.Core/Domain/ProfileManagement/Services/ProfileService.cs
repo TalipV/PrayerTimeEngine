@@ -3,6 +3,7 @@ using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Models;
 using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Models;
 using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Models;
 using PrayerTimeEngine.Core.Domain.Models;
+using PrayerTimeEngine.Core.Domain.PlaceManagement.Models;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Interfaces;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
 using System.Text;
@@ -49,11 +50,11 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Services
 
         public Task UpdateLocationConfig(
             Profile profile,
-            string locationName,
+            CompletePlaceInfo placeInfo,
             List<(ECalculationSource CalculationSource, BaseLocationData LocationData)> locationDataByCalculationSource,
             CancellationToken cancellationToken)
         {
-            return profileDBAccess.UpdateLocationConfig(profile, locationName, locationDataByCalculationSource, cancellationToken);
+            return profileDBAccess.UpdateLocationConfig(profile, placeInfo, locationDataByCalculationSource, cancellationToken);
         }
 
         public Task UpdateTimeConfig(Profile profile, ETimeType timeType, GenericSettingConfiguration settings, CancellationToken cancellationToken)
@@ -146,7 +147,24 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Services
             {
                 ID = 1,
                 Name = "Standard-Profil",
-                LocationName = "Innsbruck",
+                PlaceInfo = new CompletePlaceInfo
+                {
+                    OrmID = "343647974",
+                    Latitude = 47.2803835M,
+                    Longitude = 11.41337M,
+                    InfoLanguageCode = "de",
+                    Country = "Österreich", 
+                    City = "Innsbruck", 
+                    CityDistrict = "",
+                    PostCode = "6020", 
+                    Street = "",
+                    TimezoneInfo  = new TimezoneInfo
+                    {
+                        DisplayName = "CEST",
+                        Name = "Europe/Vienna",
+                        UtcOffsetSeconds = 7200
+                    }
+                },
                 SequenceNo = 1,
             };
 

@@ -10,6 +10,7 @@ using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Models;
 using Microsoft.Extensions.Logging;
 using PrayerTimeEngine.Core.Tests.Common.TestData;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
+using PrayerTimeEngine.Core.Common;
 
 namespace PrayerTimeEngine.Core.Tests.Unit.Domain.CalculationManagement
 {
@@ -23,7 +24,12 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.CalculationManagement
         {
             _prayerTimeServiceFactoryMock = Substitute.For<IPrayerTimeCalculatorFactory>();
             _profileServiceMock = Substitute.For<IProfileService>();
-            _calculationManager = new CalculationManager(_prayerTimeServiceFactoryMock, _profileServiceMock, Substitute.For<ILogger<CalculationManager>>());
+            _calculationManager = new CalculationManager(
+                _prayerTimeServiceFactoryMock, 
+                _profileServiceMock,
+                Substitute.For<ISystemInfoService>(), 
+                Substitute.For<ILogger<CalculationManager>>(), 
+                [Substitute.For<IPrayerTimeCacheCleaner>()]);
         }
 
         #region CalculatePrayerTimesAsync
@@ -51,7 +57,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.CalculationManagement
                 ];
 
             muwaqqitPrayerTimeServiceMock.GetPrayerTimesAsync(
-                    Arg.Is(zonedDate.Date),
+                    Arg.Is(zonedDate),
                     Arg.Is(muwaqqitLocationData),
                     Arg.Is<List<GenericSettingConfiguration>>(x => x.Contains(muwaqqitConfig)),
                     Arg.Any<CancellationToken>())
@@ -71,7 +77,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.CalculationManagement
             muwaqqitPrayerTimeServiceMock.Awaiting(x => x.ReceivedWithAnyArgs(1).GetPrayerTimesAsync(default, default, default, default));
             muwaqqitPrayerTimeServiceMock
                 .Awaiting(x => x.Received(1).GetPrayerTimesAsync(
-                    Arg.Is(zonedDate.Date),
+                    Arg.Is(zonedDate),
                     Arg.Is(muwaqqitLocationData),
                     Arg.Is<List<GenericSettingConfiguration>>(x => x.Contains(muwaqqitConfig)), 
                     Arg.Any<CancellationToken>()));

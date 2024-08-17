@@ -40,6 +40,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Muwaqqit
                 Latitude = 21.4225M,
                 TimezoneName = "Asia/Riyadh"
             };
+            var zonedDateTime = date.AtStartOfDayInZone(DateTimeZoneProviders.Tzdb[locationData.TimezoneName]);
             List<GenericSettingConfiguration> configurations =
             [
                 new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.FajrStart, Degree = 18 },
@@ -56,17 +57,17 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Muwaqqit
                 IshaDegree = 18,
                 IshtibaqDegree = 1,
                 AsrKarahaDegree = 1,
-                Fajr = new ZonedDateTime(Instant.FromUtc(2023, 7, 30, 2, 27, 04), DateTimeZoneProviders.Tzdb[locationData.TimezoneName]).ToOffsetDateTime(),
-                NextFajr = new ZonedDateTime(Instant.FromUtc(2023, 7, 31, 2, 28, 04), DateTimeZoneProviders.Tzdb[locationData.TimezoneName]).ToOffsetDateTime(),
-                Shuruq = new ZonedDateTime(Instant.FromUtc(2023, 7, 30, 3, 49, 53), DateTimeZoneProviders.Tzdb[locationData.TimezoneName]).ToOffsetDateTime(),
-                Ishraq = new ZonedDateTime(Instant.FromUtc(2023, 7, 30, 4, 49, 53), DateTimeZoneProviders.Tzdb[locationData.TimezoneName]).ToOffsetDateTime(),
-                Dhuhr = new ZonedDateTime(Instant.FromUtc(2023, 7, 30, 11, 21, 22), DateTimeZoneProviders.Tzdb[locationData.TimezoneName]).ToOffsetDateTime(),
-                Asr = new ZonedDateTime(Instant.FromUtc(2023, 7, 30, 15, 25, 53), DateTimeZoneProviders.Tzdb[locationData.TimezoneName]).ToOffsetDateTime(),
-                AsrMithlayn = new ZonedDateTime(Instant.FromUtc(2023, 7, 30, 16, 25, 53), DateTimeZoneProviders.Tzdb[locationData.TimezoneName]).ToOffsetDateTime(),
-                AsrKaraha = new ZonedDateTime(Instant.FromUtc(2023, 7, 30, 17, 25, 53), DateTimeZoneProviders.Tzdb[locationData.TimezoneName]).ToOffsetDateTime(),
-                Maghrib = new ZonedDateTime(Instant.FromUtc(2023, 7, 30, 18, 50, 59), DateTimeZoneProviders.Tzdb[locationData.TimezoneName]).ToOffsetDateTime(),
-                Ishtibaq = new ZonedDateTime(Instant.FromUtc(2023, 7, 30, 19, 50, 59), DateTimeZoneProviders.Tzdb[locationData.TimezoneName]).ToOffsetDateTime(),
-                Isha = new ZonedDateTime(Instant.FromUtc(2023, 7, 30, 20, 13, 17), DateTimeZoneProviders.Tzdb[locationData.TimezoneName]).ToOffsetDateTime()
+                Fajr = new ZonedDateTime(Instant.FromUtc(2023, 7, 30, 2, 27, 04), zonedDateTime.Zone).ToOffsetDateTime(),
+                NextFajr = new ZonedDateTime(Instant.FromUtc(2023, 7, 31, 2, 28, 04), zonedDateTime.Zone).ToOffsetDateTime(),
+                Shuruq = new ZonedDateTime(Instant.FromUtc(2023, 7, 30, 3, 49, 53), zonedDateTime.Zone).ToOffsetDateTime(),
+                Ishraq = new ZonedDateTime(Instant.FromUtc(2023, 7, 30, 4, 49, 53), zonedDateTime.Zone).ToOffsetDateTime(),
+                Dhuhr = new ZonedDateTime(Instant.FromUtc(2023, 7, 30, 11, 21, 22), zonedDateTime.Zone).ToOffsetDateTime(),
+                Asr = new ZonedDateTime(Instant.FromUtc(2023, 7, 30, 15, 25, 53), zonedDateTime.Zone).ToOffsetDateTime(),
+                AsrMithlayn = new ZonedDateTime(Instant.FromUtc(2023, 7, 30, 16, 25, 53), zonedDateTime.Zone).ToOffsetDateTime(),
+                AsrKaraha = new ZonedDateTime(Instant.FromUtc(2023, 7, 30, 17, 25, 53), zonedDateTime.Zone).ToOffsetDateTime(),
+                Maghrib = new ZonedDateTime(Instant.FromUtc(2023, 7, 30, 18, 50, 59), zonedDateTime.Zone).ToOffsetDateTime(),
+                Ishtibaq = new ZonedDateTime(Instant.FromUtc(2023, 7, 30, 19, 50, 59), zonedDateTime.Zone).ToOffsetDateTime(),
+                Isha = new ZonedDateTime(Instant.FromUtc(2023, 7, 30, 20, 13, 17), zonedDateTime.Zone).ToOffsetDateTime()
             };
 
             _muwaqqitApiServiceMock.GetTimesAsync(
@@ -83,7 +84,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Muwaqqit
 
             // ACT
             List<(ETimeType TimeType, ZonedDateTime ZonedDateTime)> result = 
-                await _muwaqqitPrayerTimeCalculator.GetPrayerTimesAsync(date, locationData, configurations, default);
+                await _muwaqqitPrayerTimeCalculator.GetPrayerTimesAsync(zonedDateTime, locationData, configurations, default);
 
             // ASSERT
             result.FirstOrDefault(x => x.TimeType == ETimeType.FajrStart).Should().NotBeNull();

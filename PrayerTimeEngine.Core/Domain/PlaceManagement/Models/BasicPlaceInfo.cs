@@ -1,48 +1,25 @@
-﻿using System.Text;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Text;
 
 namespace PrayerTimeEngine.Core.Domain.PlaceManagement.Models
 {
     public class BasicPlaceInfo
     {
-        public BasicPlaceInfo(BasicPlaceInfo basicPlaceInfo)
-            : this(
-            basicPlaceInfo.ID,
-            basicPlaceInfo.Longitude, basicPlaceInfo.Latitude,
-            basicPlaceInfo.InfoLanguageCode,
-            basicPlaceInfo.Country, basicPlaceInfo.City, basicPlaceInfo.CityDistrict,
-            basicPlaceInfo.PostCode, basicPlaceInfo.Street)
-        {
-        }
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int ID { get; set; }
+        public string OrmID { get; set; }
 
-        public BasicPlaceInfo(
-            string id,
-            decimal longitude, decimal latitude,
-            string infoLanguageCode,
-            string country, string city, string cityDistrict,
-            string postCode, string street)
-        {
-            ID = id;
-            Longitude = longitude;
-            Latitude = latitude;
-            InfoLanguageCode = infoLanguageCode;
-            Country = country;
-            City = city;
-            CityDistrict = cityDistrict;
-            PostCode = postCode;
-            Street = street;
-        }
+        public required decimal Longitude { get; set; }
+        public required decimal Latitude { get; set; }
+        public required string InfoLanguageCode { get; set; }
 
-        public string ID { get; set; }
-
-        public decimal Longitude { get; set; }
-        public decimal Latitude { get; set; }
-        public string InfoLanguageCode { get; set; }
-
-        public string Country { get; set; }
-        public string City { get; set; }
-        public string CityDistrict { get; set; }
-        public string PostCode { get; set; }
-        public string Street { get; set; }
+        public required string Country { get; set; }
+        public required string City { get; set; }
+        public required string CityDistrict { get; set; }
+        public required string PostCode { get; set; }
+        public required string Street { get; set; }
 
         public string DisplayText
         {
@@ -68,6 +45,33 @@ namespace PrayerTimeEngine.Core.Domain.PlaceManagement.Models
 
                 return stringBuilder.ToString();
             }
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is not BasicPlaceInfo other)
+            {
+                return false;
+            }
+
+            return ID == other.ID &&
+                OrmID == other.OrmID &&
+                Longitude == other.Longitude &&
+                Latitude == other.Latitude &&
+                InfoLanguageCode == other.InfoLanguageCode &&
+                Country == other.Country &&
+                City == other.City &&
+                CityDistrict == other.CityDistrict &&
+                PostCode == other.PostCode &&
+                Street == other.Street;
+        }
+
+        public override int GetHashCode()
+        {
+            // split up because the method doesn't accept more than 8 parameters
+            return HashCode.Combine(
+                HashCode.Combine(ID, OrmID, Longitude, Latitude, InfoLanguageCode, Country, City, CityDistrict),
+                PostCode, Street);
         }
     }
 }

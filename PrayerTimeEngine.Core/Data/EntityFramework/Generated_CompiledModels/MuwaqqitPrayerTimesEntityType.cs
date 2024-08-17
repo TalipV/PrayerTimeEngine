@@ -14,7 +14,7 @@ using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Models.Entities;
 #pragma warning disable 219, 612, 618
 #nullable disable
 
-namespace PrayerTimeEngine.Core.Data.EntityFramework
+namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
 {
     internal partial class MuwaqqitPrayerTimesEntityType
     {
@@ -157,31 +157,31 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework
 
             var date = runtimeEntityType.AddProperty(
                 "Date",
-                typeof(LocalDate),
+                typeof(ZonedDateTime),
                 propertyInfo: typeof(MuwaqqitPrayerTimes).GetProperty("Date", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 fieldInfo: typeof(MuwaqqitPrayerTimes).GetField("<Date>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
             date.TypeMapping = SqliteStringTypeMapping.Default.Clone(
-                comparer: new ValueComparer<LocalDate>(
-                    (LocalDate v1, LocalDate v2) => v1.Equals(v2),
-                    (LocalDate v) => v.GetHashCode(),
-                    (LocalDate v) => v),
-                keyComparer: new ValueComparer<LocalDate>(
-                    (LocalDate v1, LocalDate v2) => v1.Equals(v2),
-                    (LocalDate v) => v.GetHashCode(),
-                    (LocalDate v) => v),
+                comparer: new ValueComparer<ZonedDateTime>(
+                    (ZonedDateTime v1, ZonedDateTime v2) => v1.Equals(v2),
+                    (ZonedDateTime v) => v.GetHashCode(),
+                    (ZonedDateTime v) => v),
+                keyComparer: new ValueComparer<ZonedDateTime>(
+                    (ZonedDateTime v1, ZonedDateTime v2) => v1.Equals(v2),
+                    (ZonedDateTime v) => v.GetHashCode(),
+                    (ZonedDateTime v) => v),
                 providerValueComparer: new ValueComparer<string>(
                     (string v1, string v2) => v1 == v2,
                     (string v) => v.GetHashCode(),
                     (string v) => v),
-                converter: new ValueConverter<LocalDate, string>(
-                    (LocalDate x) => x.GetStringForDBColumn(),
-                    (string x) => x.GetLocalDateFromDBColumnString()),
-                jsonValueReaderWriter: new JsonConvertedValueReaderWriter<LocalDate, string>(
+                converter: new ValueConverter<ZonedDateTime, string>(
+                    (ZonedDateTime x) => x.GetStringForDBColumn(),
+                    (string x) => x.GetZonedDateTimeFromDBColumnString()),
+                jsonValueReaderWriter: new JsonConvertedValueReaderWriter<ZonedDateTime, string>(
                     JsonStringReaderWriter.Instance,
-                    new ValueConverter<LocalDate, string>(
-                        (LocalDate x) => x.GetStringForDBColumn(),
-                        (string x) => x.GetLocalDateFromDBColumnString())));
-            date.SetSentinelFromProviderValue("01/01/0001");
+                    new ValueConverter<ZonedDateTime, string>(
+                        (ZonedDateTime x) => x.GetStringForDBColumn(),
+                        (string x) => x.GetZonedDateTimeFromDBColumnString())));
+            date.SetSentinelFromProviderValue("0001-01-01T00:00:00 UTC (+00)");
 
             var dhuhr = runtimeEntityType.AddProperty(
                 "Dhuhr",

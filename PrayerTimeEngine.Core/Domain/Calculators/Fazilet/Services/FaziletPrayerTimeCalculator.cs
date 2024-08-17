@@ -35,7 +35,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
             ];
 
         public async Task<List<(ETimeType TimeType, ZonedDateTime ZonedDateTime)>> GetPrayerTimesAsync(
-            LocalDate date,
+            ZonedDateTime date,
             BaseLocationData locationData,
             List<GenericSettingConfiguration> configurations, 
             CancellationToken cancellationToken)
@@ -61,27 +61,27 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
                 .ToList();
         }
 
-        private async Task<FaziletPrayerTimes> getPrayerTimesInternal(LocalDate date, string countryName, string cityName, CancellationToken cancellationToken)
+        private async Task<FaziletPrayerTimes> getPrayerTimesInternal(ZonedDateTime date, string countryName, string cityName, CancellationToken cancellationToken)
         {
             int countryID = await getCountryID(countryName, throwIfNotFound: true, cancellationToken).ConfigureAwait(false);
             int cityID = await getCityID(cityName, countryID, throwIfNotFound: true, cancellationToken).ConfigureAwait(false);
 
             FaziletPrayerTimes prayerTimes = await getPrayerTimesByDateAndCityID(date, cityID, cancellationToken).ConfigureAwait(false)
-                ?? throw new Exception($"Prayer times for the {date:D} could not be found for an unknown reason.");
+                ?? throw new Exception($"Prayer times for the {date} could not be found for an unknown reason.");
 
-            prayerTimes.NextFajr = (await getPrayerTimesByDateAndCityID(date.PlusDays(1), cityID, cancellationToken).ConfigureAwait(false))?.Fajr;
+            prayerTimes.NextFajr = (await getPrayerTimesByDateAndCityID(date.Plus(Duration.FromDays(1)), cityID, cancellationToken).ConfigureAwait(false))?.Fajr;
 
             return prayerTimes;
         }
 
-        private static readonly AsyncKeyedLocker<(LocalDate date, int cityID)> getPrayerTimesLocker = new(o =>
+        private static readonly AsyncKeyedLocker<(ZonedDateTime date, int cityID)> getPrayerTimesLocker = new(o =>
         {
             o.MaxCount = 1;
             o.PoolSize = 20;
             o.PoolInitialFill = 1;
         });
 
-        private async Task<FaziletPrayerTimes> getPrayerTimesByDateAndCityID(LocalDate date, int cityID, CancellationToken cancellationToken)
+        private async Task<FaziletPrayerTimes> getPrayerTimesByDateAndCityID(ZonedDateTime date, int cityID, CancellationToken cancellationToken)
         {
             var lockTuple = (date, cityID);
 
@@ -183,10 +183,19 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
             ArgumentNullException.ThrowIfNull(place);
 
             // if language is already turkish then use this place
-
+            var basicPlaceInfo = await placeService.GetPlaceBasedOnPlace(place, "tr", cancellationToken).ConfigureAwait(false);
             var turkishPlaceInfo =
-                new CompletePlaceInfo(await placeService.GetPlaceBasedOnPlace(place, "tr", cancellationToken).ConfigureAwait(false))
+                new CompletePlaceInfo
                 {
+                    OrmID = basicPlaceInfo.OrmID,
+                    Longitude = basicPlaceInfo.Longitude,
+                    Latitude = basicPlaceInfo.Latitude,
+                    InfoLanguageCode = basicPlaceInfo.InfoLanguageCode,
+                    Country = basicPlaceInfo.Country,
+                    City = basicPlaceInfo.City,
+                    CityDistrict = basicPlaceInfo.CityDistrict,
+                    PostCode = basicPlaceInfo.PostCode,
+                    Street = basicPlaceInfo.Street,
                     TimezoneInfo = place.TimezoneInfo
                 };
 

@@ -5,12 +5,16 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Sqlite.Storage.Internal;
 using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.EntityFrameworkCore.Storage.Json;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using NodaTime;
+using PrayerTimeEngine.Core.Common.Extension;
 using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Models.Entities;
 
 #pragma warning disable 219, 612, 618
 #nullable disable
 
-namespace PrayerTimeEngine.Core.Data.EntityFramework
+namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
 {
     internal partial class FaziletCountryEntityType
     {
@@ -26,7 +30,6 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework
                 typeof(int),
                 propertyInfo: typeof(FaziletCountry).GetProperty("ID", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 fieldInfo: typeof(FaziletCountry).GetField("<ID>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                valueGenerated: ValueGenerated.OnAdd,
                 afterSaveBehavior: PropertySaveBehavior.Throw,
                 sentinel: 0);
             iD.TypeMapping = IntTypeMapping.Default.Clone(
@@ -44,6 +47,34 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework
                     (int v) => v),
                 mappingInfo: new RelationalTypeMappingInfo(
                     storeTypeName: "INTEGER"));
+
+            var insertInstant = runtimeEntityType.AddProperty(
+                "InsertInstant",
+                typeof(Instant?),
+                propertyInfo: typeof(FaziletCountry).GetProperty("InsertInstant", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(FaziletCountry).GetField("<InsertInstant>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                nullable: true);
+            insertInstant.TypeMapping = SqliteStringTypeMapping.Default.Clone(
+                comparer: new ValueComparer<Instant?>(
+                    (Nullable<Instant> v1, Nullable<Instant> v2) => object.Equals((object)v1, (object)v2),
+                    (Nullable<Instant> v) => v.GetHashCode(),
+                    (Nullable<Instant> v) => v),
+                keyComparer: new ValueComparer<Instant?>(
+                    (Nullable<Instant> v1, Nullable<Instant> v2) => object.Equals((object)v1, (object)v2),
+                    (Nullable<Instant> v) => v.GetHashCode(),
+                    (Nullable<Instant> v) => v),
+                providerValueComparer: new ValueComparer<string>(
+                    (string v1, string v2) => v1 == v2,
+                    (string v) => v.GetHashCode(),
+                    (string v) => v),
+                converter: new ValueConverter<Instant?, string>(
+                    (Nullable<Instant> x) => x != null ? x.Value.GetStringForDBColumn() : null,
+                    (string x) => x != null ? (Nullable<Instant>)x.GetInstantFromDBColumnString() : null),
+                jsonValueReaderWriter: new JsonConvertedValueReaderWriter<Instant?, string>(
+                    JsonStringReaderWriter.Instance,
+                    new ValueConverter<Instant?, string>(
+                        (Nullable<Instant> x) => x != null ? x.Value.GetStringForDBColumn() : null,
+                        (string x) => x != null ? (Nullable<Instant>)x.GetInstantFromDBColumnString() : null)));
 
             var name = runtimeEntityType.AddProperty(
                 "Name",

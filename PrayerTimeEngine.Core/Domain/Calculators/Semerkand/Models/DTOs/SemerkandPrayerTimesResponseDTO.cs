@@ -42,7 +42,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Models.DTOs
             {
                 DayOfYear = this.DayOfYear,
                 CityID = cityID,
-                Date = localDate,
+                Date = localDate.AtStartOfDayInZone(dateTimeZone),
 
                 Fajr = getZonedDateTime(dateTimeZone, localDate, this.Fajr),
                 Shuruq = getZonedDateTime(dateTimeZone, localDate, this.Shuruq),

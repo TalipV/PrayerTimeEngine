@@ -54,7 +54,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Models.DTOs
                 Asr = this.Asr.First().OffsetDateTime.InZone(timeZone),
                 Maghrib = this.Maghrib.First().OffsetDateTime.InZone(timeZone),
                 Isha = this.Isha.First().OffsetDateTime.InZone(timeZone),
-                Date = this.Date,
+                Date = this.Date.AtStartOfDayInZone(timeZone),
             };
         }
     }

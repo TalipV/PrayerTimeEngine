@@ -2,6 +2,7 @@
 using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Domain;
 using PrayerTimeEngine.Core.Domain.Models;
+using PrayerTimeEngine.Core.Domain.PlaceManagement.Models;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Interfaces;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Services;
@@ -169,15 +170,34 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.ProfileManagement
         {
             // ARRANGE
             var profile = TestDataHelper.CreateNewCompleteTestProfile();
-            string locationName = "LocationName";
             List<(ECalculationSource, BaseLocationData)> locationData = [(ECalculationSource.Muwaqqit, Substitute.ForPartsOf<BaseLocationData>())];
+            
+            var placeInfo =
+                new CompletePlaceInfo
+                {
+                    OrmID = "1",
+                    Longitude = 1M,
+                    Latitude = 1M,
+                    InfoLanguageCode = "de",
+                    Country = "Deutschland",
+                    City = "Berlin",
+                    CityDistrict = "",
+                    PostCode = "",
+                    Street = "",
+                    TimezoneInfo = new TimezoneInfo
+                    {
+                        DisplayName = "",
+                        Name = "",
+                        UtcOffsetSeconds = 0
+                    }
+                };
 
             // ACT
-            await _profileService.UpdateLocationConfig(profile, locationName, locationData, default);
+            await _profileService.UpdateLocationConfig(profile, placeInfo, locationData, default);
 
             // ASSERT
             _profileDBAccessMock.ReceivedWithAnyArgs(1).Awaiting(x => x.UpdateLocationConfig(default, default, default, default));
-            _profileDBAccessMock.Received(1).Awaiting(x => x.UpdateLocationConfig(Arg.Is(profile), Arg.Is(locationName), Arg.Is(locationData), Arg.Any<CancellationToken>()));
+            _profileDBAccessMock.Received(1).Awaiting(x => x.UpdateLocationConfig(Arg.Is(profile), Arg.Is(placeInfo), Arg.Is(locationData), Arg.Any<CancellationToken>()));
         }
 
         #endregion UpdateLocationConfig

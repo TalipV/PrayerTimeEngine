@@ -4,7 +4,7 @@ namespace PrayerTimeEngine.Core.Domain.Models
 {
     public interface IPrayerTimes
     {
-        public LocalDate Date { get; }
+        public ZonedDateTime Date { get; }
 
         public ZonedDateTime Fajr { get; }
         public ZonedDateTime Shuruq { get; }

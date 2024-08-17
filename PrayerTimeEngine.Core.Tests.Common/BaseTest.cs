@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 using NSubstitute.Extensions;
+using PrayerTimeEngine.Core.Common;
 using PrayerTimeEngine.Core.Data.EntityFramework;
 using System.Data.Common;
 
@@ -26,7 +27,10 @@ namespace PrayerTimeEngine.Core.Tests.Common
                 .UseSqlite($"Data Source=:memory:")
                 .Options;
 
-            var mockableDbContext = Substitute.ForPartsOf<AppDbContext>(dbOptions);
+            var mockableDbContext = Substitute.ForPartsOf<AppDbContext>(
+                dbOptions,
+                new AppDbContextMetaData(),
+                Substitute.For<ISystemInfoService>());
             var mockableDbContextDatabase = Substitute.ForPartsOf<DatabaseFacade>(mockableDbContext);
             mockableDbContext.Configure().Database.Returns(mockableDbContextDatabase);
 

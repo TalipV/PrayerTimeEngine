@@ -1,5 +1,6 @@
 ﻿using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Domain.Models;
+using PrayerTimeEngine.Core.Domain.PlaceManagement.Models;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
 
 namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Interfaces
@@ -10,7 +11,7 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Interfaces
         public Task<Profile> GetUntrackedReferenceOfProfile(int profileID, CancellationToken cancellationToken);
         public Task SaveProfile(Profile profile, CancellationToken cancellationToken);
 
-        public Task UpdateLocationConfig(Profile profile, string locationName, List<(ECalculationSource CalculationSource, BaseLocationData LocationData)> locationDataByCalculationSource, CancellationToken cancellationToken);
+        public Task UpdateLocationConfig(Profile profile, CompletePlaceInfo placeInfo, List<(ECalculationSource CalculationSource, BaseLocationData LocationData)> locationDataByCalculationSource, CancellationToken cancellationToken);
         public Task UpdateTimeConfig(Profile profile, ETimeType timeType, GenericSettingConfiguration settings, CancellationToken cancellationToken);
     }
 }

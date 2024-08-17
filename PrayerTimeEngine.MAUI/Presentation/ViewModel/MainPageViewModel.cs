@@ -4,6 +4,7 @@ using MetroLog.Maui;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using NodaTime;
+using PrayerTimeEngine.Core.Common;
 using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Data.EntityFramework;
 using PrayerTimeEngine.Core.Domain.CalculationManagement;
@@ -14,9 +15,9 @@ using PrayerTimeEngine.Core.Domain.PlaceManagement.Models;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Interfaces;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
 using PrayerTimeEngine.Presentation.Service.Navigation;
-using PrayerTimeEngine.Services;
-using PrayerTimeEngine.Services.SystemInfoService;
+using PrayerTimeEngine.Services.PrayerTimeSummaryNotification;
 using PropertyChanged;
+using System;
 using System.Windows.Input;
 
 namespace PrayerTimeEngine.Presentation.ViewModel
@@ -227,7 +228,17 @@ namespace PrayerTimeEngine.Presentation.ViewModel
                     loadingTimesCancellationTokenSource?.Cancel();
                     loadingTimesCancellationTokenSource?.Dispose();
                     loadingTimesCancellationTokenSource = new CancellationTokenSource();
-                    PrayerTimeBundle = await prayerTimeCalculator.CalculatePrayerTimesAsync(CurrentProfile.ID, _systemInfoService.GetCurrentZonedDateTime(), loadingTimesCancellationTokenSource.Token);
+
+                    ZonedDateTime zonedDateTime = 
+                        _systemInfoService.GetCurrentInstant()
+                            .InZone(DateTimeZoneProviders.Tzdb[CurrentProfile.PlaceInfo.TimezoneInfo.Name]);
+
+                    PrayerTimeBundle = 
+                        await prayerTimeCalculator.CalculatePrayerTimesAsync(
+                            CurrentProfile.ID, 
+                            zonedDateTime, 
+                            loadingTimesCancellationTokenSource.Token);
+
                     OnAfterLoadingPrayerTimes_EventTrigger?.Invoke();
                 }
                 finally
@@ -339,7 +350,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
 
                     await profileService.UpdateLocationConfig(
                         CurrentProfile,
-                        SelectedPlace.City, 
+                        completePlaceInfo, 
                         locationDataWithCalculationSource,
                     cancellationToken: default);
 
@@ -441,7 +452,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
                         message: text, 
                         duration: ToastDuration.Short, 
                         textSize: 14)
-                    .Show();
+                .Show();
             });
         }
 

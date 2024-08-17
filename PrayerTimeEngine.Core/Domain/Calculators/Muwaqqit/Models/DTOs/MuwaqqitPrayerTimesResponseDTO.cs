@@ -84,7 +84,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Models.DTOs
         {
             return new MuwaqqitPrayerTimes
             {
-                Date = this.Date,
+                Date = this.Date.AtStartOfDayInZone(Timezone),
                 Longitude = this.Longitude,
                 Latitude = this.Latitude,
 

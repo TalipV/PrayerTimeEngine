@@ -13,6 +13,7 @@ using System.Data.Common;
 using NSubstitute.Extensions;
 using PrayerTimeEngine.Core.Tests.Common.TestData;
 using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Models.Entities;
+using PrayerTimeEngine.Core.Common;
 
 namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
 {
@@ -22,7 +23,7 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
     {
         #region data
 
-        private static readonly LocalDate _localDate = new(2023, 7, 30);
+        private static readonly ZonedDateTime _zonedDateTime = new LocalDate(2023, 7, 29).AtStartOfDayInZone(TestDataHelper.EUROPE_VIENNA_TIME_ZONE);
 
         private static readonly List<GenericSettingConfiguration> _configs =
             [
@@ -49,7 +50,7 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
             {
                 Latitude = 47.2803835M,
                 Longitude = 11.41337M,
-                TimezoneName = "Europe/Vienna"
+                TimezoneName = TestDataHelper.EUROPE_VIENNA_TIME_ZONE.Id
             };
 
         #endregion data
@@ -62,7 +63,7 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
                     new MuwaqqitDBAccess(appDbContext),
                     SubstitutionHelper.GetMockedMuwaqqitApiService(),
                     new TimeTypeAttributeService()
-                ).GetPrayerTimesAsync(_localDate, _locationData, _configs, default).GetAwaiter().GetResult();
+                ).GetPrayerTimesAsync(_zonedDateTime, _locationData, _configs, default).GetAwaiter().GetResult();
 
             // throw exceptions when the calculator tries using the api
             IMuwaqqitApiService mockedMuwaqqitApiService = Substitute.For<IMuwaqqitApiService>();
@@ -93,7 +94,7 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
             var dbOptions = new DbContextOptionsBuilder()
                 .UseSqlite($"Data Source=:memory:")
                 .Options;
-            var appDbContext = new AppDbContext(dbOptions);
+            var appDbContext = new AppDbContext(dbOptions, new AppDbContextMetaData(), Substitute.For<ISystemInfoService>());
             _dbContextKeepAliveSqlConnection = appDbContext.Database.GetDbConnection();
             _dbContextKeepAliveSqlConnection.Open();
             appDbContext.Database.EnsureCreated();
@@ -110,7 +111,7 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
         public List<(ETimeType TimeType, ZonedDateTime ZonedDateTime)> MuwaqqitPrayerTimeCalculator_GetDataFromDb()
         {
             var result = _muwaqqitPrayerTimeCalculator_DataFromDbStorage.GetPrayerTimesAsync(
-                _localDate,
+                _zonedDateTime,
                 locationData: _locationData,
                 configurations: _configs, 
                 cancellationToken: default).GetAwaiter().GetResult();
@@ -127,7 +128,7 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
         public List<(ETimeType TimeType, ZonedDateTime ZonedDateTime)> MuwaqqitPrayerTimeCalculator_GetDataFromApi()
         {
             var result = _muwaqqitPrayerTimeCalculator_DataFromApi.GetPrayerTimesAsync(
-                _localDate,
+                _zonedDateTime,
                 locationData: _locationData,
                 configurations: _configs, 
                 cancellationToken: default).GetAwaiter().GetResult();

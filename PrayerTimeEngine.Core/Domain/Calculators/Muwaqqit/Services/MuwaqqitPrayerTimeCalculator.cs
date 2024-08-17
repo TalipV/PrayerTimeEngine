@@ -16,7 +16,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services
         ) : IPrayerTimeCalculator
     {
         public async Task<List<(ETimeType TimeType, ZonedDateTime ZonedDateTime)>> GetPrayerTimesAsync(
-            LocalDate date,
+            ZonedDateTime date,
             BaseLocationData locationData,
             List<GenericSettingConfiguration> configurations, 
             CancellationToken cancellationToken)
@@ -174,14 +174,14 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services
             return [];
         }
 
-        private static readonly AsyncKeyedLocker<(LocalDate date, decimal longitude, decimal latitude, double fajrDegree, double ishaDegree, double ishtibaqDegree, double asrKarahaDegree, string timezone)> getPrayerTimesLocker = new(o =>
+        private static readonly AsyncKeyedLocker<(ZonedDateTime date, decimal longitude, decimal latitude, double fajrDegree, double ishaDegree, double ishtibaqDegree, double asrKarahaDegree, string timezone)> getPrayerTimesLocker = new(o =>
         {
             o.PoolSize = 20;
             o.PoolInitialFill = 1;
         });
 
         private async Task<MuwaqqitPrayerTimes> getPrayerTimesInternal(
-            LocalDate date,
+            ZonedDateTime date,
             decimal longitude,
             decimal latitude,
             double fajrDegree,

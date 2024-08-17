@@ -12,6 +12,7 @@ using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Models;
 using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Models;
 using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Models;
 using PrayerTimeEngine.Core.Domain.Models;
+using PrayerTimeEngine.Core.Domain.PlaceManagement.Models;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Interfaces;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Services;
 using PrayerTimeEngine.Core.Tests.Common;
@@ -49,24 +50,37 @@ namespace PrayerTimeEngine.Core.Tests.Integration.Domain.ProfileManagement
                     .AsNoTracking()
                     .Single();
 
-            string oldLocationName = profile.LocationName;
+            CompletePlaceInfo oldPlaceInfo = profile.PlaceInfo;
             var oldLocationDataByCalculationSource = profile.LocationConfigs.ToDictionary(x => x.CalculationSource, x => x.LocationData);
 
-            string newLocationName = "Köln";
+            CompletePlaceInfo newPlaceInfo = new CompletePlaceInfo
+            {
+                OrmID = "1",
+                Longitude = 1M,
+                Latitude = 1M,
+                InfoLanguageCode = "de",
+                Country = "Deutschland",
+                City = "Köln",
+                CityDistrict = "",
+                PostCode = "",
+                Street = "",
+                TimezoneInfo = new TimezoneInfo { Name = TestDataHelper.EUROPE_VIENNA_TIME_ZONE.Id },
+            };
+
             var newLocationDataByCalculationSource = new Dictionary<ECalculationSource, BaseLocationData>
             {
-                [ECalculationSource.Muwaqqit] = new MuwaqqitLocationData { Latitude = 50.9413M, Longitude = 6.9583M, TimezoneName = "Europe/Vienna" },
-                [ECalculationSource.Fazilet] = new FaziletLocationData { CountryName = "Almanya", CityName = newLocationName },
-                [ECalculationSource.Semerkand] = new SemerkandLocationData { CountryName = "Almanya", CityName = newLocationName, TimezoneName = "Europe/Vienna" },
+                [ECalculationSource.Muwaqqit] = new MuwaqqitLocationData { Latitude = 50.9413M, Longitude = 6.9583M, TimezoneName = TestDataHelper.EUROPE_VIENNA_TIME_ZONE.Id },
+                [ECalculationSource.Fazilet] = new FaziletLocationData { CountryName = "Almanya", CityName = newPlaceInfo.City },
+                [ECalculationSource.Semerkand] = new SemerkandLocationData { CountryName = "Almanya", CityName = newPlaceInfo.City, TimezoneName = TestDataHelper.EUROPE_VIENNA_TIME_ZONE.Id },
             };
 
             // ACT
-            await profileService.UpdateLocationConfig(profile, newLocationName, newLocationDataByCalculationSource.Select(x => (x.Key, x.Value)).ToList(), default);
+            await profileService.UpdateLocationConfig(profile, newPlaceInfo, newLocationDataByCalculationSource.Select(x => (x.Key, x.Value)).ToList(), default);
 
             // ASSERT
             dbContext.ChangeTracker.HasChanges().Should().BeFalse();
 
-            profile.LocationName.Should().Be(newLocationName);
+            profile.PlaceInfo.Should().Be(newPlaceInfo);
             foreach (var locationDataByCalculationSource in profile.LocationConfigs.ToDictionary(x => x.CalculationSource, x => x.LocationData))
             {
                 BaseLocationData newValue = newLocationDataByCalculationSource[locationDataByCalculationSource.Key];
@@ -99,37 +113,61 @@ namespace PrayerTimeEngine.Core.Tests.Integration.Domain.ProfileManagement
 
             await dbContext.Profiles.AddAsync(TestDataHelper.CreateNewCompleteTestProfile());
             await dbContext.SaveChangesAsync();
+            dbContext.ChangeTracker.Clear();
+
             var profile =
                 dbContext.Profiles
                     .Include(x => x.LocationConfigs)
                     .Include(x => x.TimeConfigs)
+                    .Include(x => x.PlaceInfo).ThenInclude(x => x.TimezoneInfo)
                     .AsNoTracking()
                     .Single();
 
-            string oldLocationName = profile.LocationName;
+            CompletePlaceInfo oldPlaceInfo = profile.PlaceInfo;
             var oldLocationDataByCalculationSource = profile.LocationConfigs.ToDictionary(x => x.CalculationSource, x => x.LocationData);
             var newLocationDataByCalculationSource = new Dictionary<ECalculationSource, BaseLocationData>
             {
-                [ECalculationSource.Muwaqqit] = new MuwaqqitLocationData { Latitude = 50.9413M, Longitude = 6.9583M, TimezoneName = "Europe/Vienna" },
+                [ECalculationSource.Muwaqqit] = new MuwaqqitLocationData { Latitude = 50.9413M, Longitude = 6.9583M, TimezoneName = TestDataHelper.EUROPE_VIENNA_TIME_ZONE.Id },
                 [ECalculationSource.Fazilet] = new FaziletLocationData { CountryName = "Almanya", CityName = "Köln" },
-                [ECalculationSource.Semerkand] = new SemerkandLocationData { CountryName = "Almanya", CityName = "Köln", TimezoneName = "Europe/Vienna" },
+                [ECalculationSource.Semerkand] = new SemerkandLocationData { CountryName = "Almanya", CityName = "Köln", TimezoneName = TestDataHelper.EUROPE_VIENNA_TIME_ZONE.Id },
             };
+
+            CompletePlaceInfo newPlaceInfo =
+                new CompletePlaceInfo
+                {
+                    Latitude = 1M,
+                    Longitude = 1M,
+                    InfoLanguageCode = "de",
+                    Country = "Deutschland",
+                    City = "Köln",
+                    CityDistrict = "",
+                    PostCode = "50587",
+                    Street = "",
+                    TimezoneInfo = new TimezoneInfo
+                    {
+                        DisplayName = "CET",
+                        Name = "Central European Time",
+                        UtcOffsetSeconds = 3600
+                    }
+                };
 
             // ACT
             Func<Task> updateLocationConfigFunc =
-                async () => 
+                async () =>
+                {
                     await profileService.UpdateLocationConfig(
                         profile: profile,
-                        locationName: oldLocationName,
+                        placeInfo: newPlaceInfo,
                         locationDataByCalculationSource: newLocationDataByCalculationSource.Select(x => (x.Key, x.Value)).ToList(),
                         cancellationToken: default);
+                };
 
             // ASSERT
-            await updateLocationConfigFunc.Should().ThrowAsync<Exception>();
+            await updateLocationConfigFunc.Should().ThrowAsync<Exception>().WithMessage("Test exception during commit");
             dbContext.ChangeTracker.HasChanges().Should().BeFalse();
 
             // old values should still be in this profile instance
-            profile.LocationName.Should().Be(oldLocationName);
+            profile.PlaceInfo.Should().Be(oldPlaceInfo);
             foreach (var locationDataByCalculationSource in profile.LocationConfigs.ToDictionary(x => x.CalculationSource, x => x.LocationData))
             {
                 BaseLocationData oldValue = oldLocationDataByCalculationSource[locationDataByCalculationSource.Key];

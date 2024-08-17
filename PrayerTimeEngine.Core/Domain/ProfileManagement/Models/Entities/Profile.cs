@@ -1,17 +1,22 @@
-﻿using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Models.Entities;
+﻿using NodaTime;
+using PrayerTimeEngine.Core.Common;
+using PrayerTimeEngine.Core.Data.EntityFramework;
+using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Models.Entities;
+using PrayerTimeEngine.Core.Domain.PlaceManagement.Models;
 using PropertyChanged;
 
 namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities
 {
     [AddINotifyPropertyChangedInterface]
-    public class Profile
+    public class Profile : IInsertedAt
     {
         public FaziletCountry Country { get; set; } = null;
 
         public int ID { get; set; }
         public string Name { get; set; }
-        public string LocationName { get; set; }
+        public CompletePlaceInfo PlaceInfo { get; set; }
         public int SequenceNo { get; set; }
+        public Instant? InsertInstant { get; set; }
 
         public ICollection<ProfileTimeConfig> TimeConfigs { get; set; }
         public ICollection<ProfileLocationConfig> LocationConfigs { get; set; }
@@ -22,8 +27,12 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities
 
             if (ID != otherProfile.ID
                 || SequenceNo != otherProfile.SequenceNo
-                || Name != otherProfile.Name
-                || LocationName != otherProfile.LocationName)
+                || Name != otherProfile.Name)
+            {
+                return false;
+            }
+
+            if (!GeneralUtil.BetterEquals(PlaceInfo, otherProfile.PlaceInfo))
             {
                 return false;
             }
@@ -57,7 +66,7 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities
 
         public override int GetHashCode()
         {
-            int mainHash = HashCode.Combine(ID, SequenceNo, Name, LocationName);
+            int mainHash = HashCode.Combine(ID, SequenceNo, Name, PlaceInfo);
 
             // Aggregate hash codes of TimeConfigs
             int timeConfigsHash = 0;

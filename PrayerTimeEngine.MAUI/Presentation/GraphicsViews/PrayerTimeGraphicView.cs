@@ -1,8 +1,8 @@
 ﻿using NodaTime;
+using PrayerTimeEngine.Core.Common;
 using PrayerTimeEngine.Core.Domain.Models;
-using PrayerTimeEngine.Services.SystemInfoService;
 
-namespace PrayerTimeEngine.Presentation.GraphicsView
+namespace PrayerTimeEngine.Presentation.GraphicsViews
 {
     public class PrayerTimeGraphicView : IDrawable
     {

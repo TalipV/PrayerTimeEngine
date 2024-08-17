@@ -6,6 +6,8 @@ using System.Net;
 using PrayerTimeEngine.Core.Tests.Common.TestData;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Models;
 using Refit;
+using PrayerTimeEngine.Core.Common;
+using PrayerTimeEngine.Core.Domain.PlaceManagement.Services.LocationIQ;
 
 namespace PrayerTimeEngine.Core.Tests.Unit.Domain.PlaceManagement
 {
@@ -23,6 +25,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.PlaceManagement
             };
             _placeService = new PlaceService(
                 RestService.For<ILocationIQApiService>(httpClient), 
+                Substitute.For<ISystemInfoService>(),
                 Substitute.For<ILogger<PlaceService>>());
         }
 
@@ -65,11 +68,11 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.PlaceManagement
                 placeInfo.Street.Should().Be("Venloer Straße 160");
             });
 
-            result[0].ID.Should().Be("151467218");
+            result[0].OrmID.Should().Be("151467218");
             result[0].Longitude.Should().Be(6.92839361M);
             result[0].Latitude.Should().Be(50.9457534M);
 
-            result[1].ID.Should().Be("2603567246");
+            result[1].OrmID.Should().Be("2603567246");
             result[1].Longitude.Should().Be(6.9281253M);
             result[1].Latitude.Should().Be(50.9460574M);
         }
@@ -94,25 +97,26 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.PlaceManagement
                 };
             };
 
-            var cologneCentralMosqueInfo = new BasicPlaceInfo
-            (
-                id: "151467218",
-                city: "Cologne",
-                cityDistrict: "Ehrenfeld",
-                country: "Germany",
-                infoLanguageCode: "en",
-                postCode: "50823",
-                street: "Venloer Straße 160",
-                latitude: 50.9457534M,
-                longitude: 6.92839361M
-            );
+            var cologneCentralMosqueInfo = 
+                new BasicPlaceInfo
+                {
+                    OrmID = "151467218",
+                    City = "Cologne",
+                    CityDistrict = "Ehrenfeld",
+                    Country = "Germany",
+                    InfoLanguageCode = "en",
+                    PostCode = "50823",
+                    Street = "Venloer Straße 160",
+                    Longitude = 50.9457534M,
+                    Latitude = 6.92839361M
+                };
 
             // ACT
             BasicPlaceInfo result = await _placeService.GetPlaceBasedOnPlace(cologneCentralMosqueInfo, "de", default);
 
             // ASSERT
             result.Should().NotBeNull();
-            result.ID.Should().Be("151467218");
+            result.OrmID.Should().Be("151467218");
             result.Longitude.Should().Be(6.928393614248124M);
             result.Latitude.Should().Be(50.9457534M);
             result.City.Should().Be("Köln");
@@ -144,7 +148,19 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.PlaceManagement
                 };
             };
 
-            var somePlaceInfo = new BasicPlaceInfo("", 1M, 1M, "", "", "", "", "", "");
+            var somePlaceInfo = 
+                new BasicPlaceInfo
+                {
+                    OrmID = "",
+                    Longitude = 1M,
+                    Latitude = 1M,
+                    InfoLanguageCode = "",
+                    Country = "",
+                    City = "",
+                    CityDistrict = "",
+                    PostCode = "",
+                    Street = ""
+                };
 
             // ACT
             var result = await _placeService.GetTimezoneInfo(somePlaceInfo, default);

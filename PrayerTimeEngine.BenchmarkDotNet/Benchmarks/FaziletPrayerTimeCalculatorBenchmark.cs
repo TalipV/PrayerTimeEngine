@@ -15,6 +15,7 @@ using Microsoft.Extensions.Logging;
 using NSubstitute.ReturnsExtensions;
 using PrayerTimeEngine.Core.Tests.Common.TestData;
 using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Models.Entities;
+using PrayerTimeEngine.Core.Common;
 
 namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
 {
@@ -24,7 +25,7 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
     {
         #region data
 
-        private static readonly LocalDate _localDate = new(2023, 7, 29);
+        private static readonly ZonedDateTime _zonedDateTime = new LocalDate(2023, 7, 29).AtStartOfDayInZone(TestDataHelper.EUROPE_VIENNA_TIME_ZONE);
 
         private static readonly List<GenericSettingConfiguration> _configs =
             [
@@ -49,7 +50,7 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
                     SubstitutionHelper.GetMockedFaziletApiService(),
                     Substitute.For<IPlaceService>(),
                     Substitute.For<ILogger<FaziletPrayerTimeCalculator>>()
-                ).GetPrayerTimesAsync(_localDate, _locationData, _configs, default).GetAwaiter().GetResult();
+                ).GetPrayerTimesAsync(_zonedDateTime, _locationData, _configs, default).GetAwaiter().GetResult();
 
             // throw exceptions when the calculator tries using the api
             IFaziletApiService mockedFaziletApiService = Substitute.For<IFaziletApiService>();
@@ -69,7 +70,7 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
             var faziletDbAccessMock = Substitute.For<IFaziletDBAccess>();
             faziletDbAccessMock.GetCountries(Arg.Any<CancellationToken>()).Returns([]);
             faziletDbAccessMock.GetCitiesByCountryID(Arg.Any<int>(), Arg.Any<CancellationToken>()).Returns([]);
-            faziletDbAccessMock.GetTimesByDateAndCityID(Arg.Any<LocalDate>(), Arg.Any<int>(), Arg.Any<CancellationToken>()).ReturnsNull<FaziletPrayerTimes>();
+            faziletDbAccessMock.GetTimesByDateAndCityID(Arg.Any<ZonedDateTime>(), Arg.Any<int>(), Arg.Any<CancellationToken>()).ReturnsNull<FaziletPrayerTimes>();
 
             return new FaziletPrayerTimeCalculator(
                     // returns null per default
@@ -88,7 +89,7 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
             var dbOptions = new DbContextOptionsBuilder()
                 .UseSqlite($"Data Source=:memory:")
                 .Options;
-            var appDbContext = new AppDbContext(dbOptions);
+            var appDbContext = new AppDbContext(dbOptions, new AppDbContextMetaData(), Substitute.For<ISystemInfoService>());
             _dbContextKeepAliveSqlConnection = appDbContext.Database.GetDbConnection();
             _dbContextKeepAliveSqlConnection.Open();
             appDbContext.Database.EnsureCreated();
@@ -105,7 +106,7 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
         public List<(ETimeType TimeType, ZonedDateTime ZonedDateTime)> FaziletPrayerTimeCalculator_GetDataFromDb()
         {
             var result = _faziletPrayerTimeCalculator_DataFromDbStorage.GetPrayerTimesAsync(
-                _localDate,
+                _zonedDateTime,
                 locationData: _locationData,
                 configurations: _configs, 
                 cancellationToken: default).GetAwaiter().GetResult();
@@ -122,7 +123,7 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
         public List<(ETimeType TimeType, ZonedDateTime ZonedDateTime)> FaziletPrayerTimeCalculator_GetDataFromApi()
         {
             var result = _faziletPrayerTimeCalculator_DataFromApi.GetPrayerTimesAsync(
-                _localDate,
+                _zonedDateTime,
                 locationData: _locationData,
                 configurations: _configs, 
                 cancellationToken: default).GetAwaiter().GetResult();

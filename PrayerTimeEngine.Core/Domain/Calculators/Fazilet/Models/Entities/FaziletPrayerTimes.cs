@@ -1,17 +1,19 @@
 ﻿using NodaTime;
 using PrayerTimeEngine.Core.Common.Enum;
+using PrayerTimeEngine.Core.Data.EntityFramework;
 using PrayerTimeEngine.Core.Domain.Models;
 using System.ComponentModel.DataAnnotations;
 
 namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Models.Entities
 {
-    public class FaziletPrayerTimes : IPrayerTimes
+    public class FaziletPrayerTimes : IPrayerTimes, IInsertedAt
     {
         [Key]
         public int ID { get; set; }
 
-        public required LocalDate Date { get; set; }
+        public required ZonedDateTime Date { get; set; }
         public required int CityID { get; set; }
+        public Instant? InsertInstant { get; set; }
 
         public required ZonedDateTime Imsak { get; set; }
         public required ZonedDateTime Fajr { get; set; }

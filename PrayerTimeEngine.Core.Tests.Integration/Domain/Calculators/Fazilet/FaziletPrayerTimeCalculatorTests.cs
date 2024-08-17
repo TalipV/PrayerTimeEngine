@@ -48,7 +48,7 @@ namespace PrayerTimeEngine.Core.Tests.Integration.Domain.Calculators.Fazilet
             // ACT
             List<(ETimeType TimeType, ZonedDateTime ZonedDateTime)> result =
                 await faziletPrayerTimeCalculator.GetPrayerTimesAsync(
-                    new LocalDate(2023, 7, 29),
+                    new LocalDate(2023, 7, 29).AtStartOfDayInZone(TestDataHelper.EUROPE_VIENNA_TIME_ZONE),
                     new FaziletLocationData { CountryName = "Avusturya", CityName = "Innsbruck" },
                     configs, 
                     default);

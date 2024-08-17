@@ -8,7 +8,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
 {
     public class FaziletDBAccess(
             AppDbContext dbContext
-        ) : IFaziletDBAccess
+        ) : IFaziletDBAccess, IPrayerTimeCacheCleaner
     {
         public Task<List<FaziletCountry>> GetCountries(CancellationToken cancellationToken)
         {
@@ -72,14 +72,14 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
             return compiledQuery_GetCityIDByName(dbContext, cityName);
         }
 
-        private static readonly Func<AppDbContext, LocalDate, int, Task<FaziletPrayerTimes>> compiledQuery_GetTimesByDateAndCityID =
+        private static readonly Func<AppDbContext, ZonedDateTime, int, Task<FaziletPrayerTimes>> compiledQuery_GetTimesByDateAndCityID =
             EF.CompileAsyncQuery(
-                (AppDbContext context, LocalDate date, int cityId) =>
+                (AppDbContext context, ZonedDateTime date, int cityId) =>
                     context.FaziletPrayerTimes
                         .AsNoTracking()
                         .Where(x => x.Date == date && x.CityID == cityId)
                         .FirstOrDefault());
-        public Task<FaziletPrayerTimes> GetTimesByDateAndCityID(LocalDate date, int cityId, CancellationToken cancellationToken)
+        public Task<FaziletPrayerTimes> GetTimesByDateAndCityID(ZonedDateTime date, int cityId, CancellationToken cancellationToken)
         {
             // cancellation?
             return compiledQuery_GetTimesByDateAndCityID(dbContext, date, cityId);
@@ -103,9 +103,12 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
             await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
         }
 
-        public async Task DeleteAllTimes(CancellationToken cancellationToken)
+        public async Task DeleteCacheDataAsync(ZonedDateTime deleteBeforeDate, CancellationToken cancellationToken)
         {
-            await dbContext.FaziletPrayerTimes.ExecuteDeleteAsync(cancellationToken).ConfigureAwait(false);
+            await dbContext.FaziletPrayerTimes
+                .Where(p => p.Date.ToInstant() < deleteBeforeDate.ToInstant())
+                .ExecuteDeleteAsync(cancellationToken)
+                .ConfigureAwait(false);
         }
     }
 }

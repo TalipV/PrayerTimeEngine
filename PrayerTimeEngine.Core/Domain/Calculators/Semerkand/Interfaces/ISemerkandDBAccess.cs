@@ -7,7 +7,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Interfaces
     {
         public Task<List<SemerkandCountry>> GetCountries(CancellationToken cancellationToken);
         public Task<List<SemerkandCity>> GetCitiesByCountryID(int countryID, CancellationToken cancellationToken);
-        public Task<SemerkandPrayerTimes> GetTimesByDateAndCityID(LocalDate date, int cityID, CancellationToken cancellationToken);
+        public Task<SemerkandPrayerTimes> GetTimesByDateAndCityID(ZonedDateTime date, int cityID, CancellationToken cancellationToken);
 
         public Task InsertCountries(IEnumerable<SemerkandCountry> countries, CancellationToken cancellationToken);
         public Task InsertCities(IEnumerable<SemerkandCity> cities, CancellationToken cancellationToken);
