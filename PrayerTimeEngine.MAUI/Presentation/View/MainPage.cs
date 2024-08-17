@@ -1,7 +1,10 @@
-﻿using CommunityToolkit.Maui.Storage;
+﻿using Castle.Core.Logging;
+using CommunityToolkit.Maui.Storage;
+using Microsoft.Extensions.Logging;
 using OnScreenSizeMarkup.Maui.Helpers;
 using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Presentation.GraphicsViews;
+using PrayerTimeEngine.Presentation.Service;
 using PrayerTimeEngine.Presentation.ViewModel;
 using UraniumUI.Material.Controls;
 
@@ -9,13 +12,23 @@ namespace PrayerTimeEngine.Presentation.View
 {
     public partial class MainPage : ContentPage
     {
-        private readonly IDispatcher _dispatcher;
         private readonly MainPageViewModel _viewModel;
+        private readonly IDispatcher _dispatcher;
+        private readonly ToastMessageService _toastMessageService;
+        private readonly ILogger<MainPage> _logger;
 
-        public MainPage(IDispatcher dispatcher, MainPageViewModel viewModel)
+        public MainPage(
+                IDispatcher dispatcher, 
+                MainPageViewModel viewModel, 
+                ToastMessageService toastMessageService,
+                ILogger<MainPage> logger
+            )
         {
-            _dispatcher = dispatcher;
             BindingContext = _viewModel = viewModel;
+            _dispatcher = dispatcher;
+            _toastMessageService = toastMessageService;
+            _logger = logger;
+
             Content = createUI();
 
             BackgroundColor = Color.FromRgb(243, 234, 227);
@@ -55,123 +68,131 @@ namespace PrayerTimeEngine.Presentation.View
         {
             bool doRepeat;
 
-            do
+            try
             {
-                doRepeat = false;
-
-                switch (await DisplayActionSheet(
-                    title: _optionsText,
-                    cancel: _cancelText,
-                    destruction: null,
-                    _generalOptionText,
-                    _technicalOptionText,
-                    _systemOptionText))
+                do
                 {
-                    case _generalOptionText:
+                    doRepeat = false;
 
-                        switch (await DisplayActionSheet(
-                            title: _generalOptionText,
-                            cancel: _backText,
-                            destruction: null,
-                            _showTimeConfigsOverviewText,
-                            _showLocationConfigsOverviewText,
-                            _showLogsText,
-                            _setCustomTextSizes))
-                        {
-                            case _showTimeConfigsOverviewText:
-                                await DisplayAlert("Info", _viewModel.GetPrayerTimeConfigDisplayText(), "Ok");
-                                break;
-                            case _showLocationConfigsOverviewText:
-                                await DisplayAlert("Info", _viewModel.GetLocationDataDisplayText(), "Ok");
-                                break;
-                            case _showLogsText:
-                                _viewModel.GoToLogsPageCommand.Execute(null);
-                                break;
-                            case _setCustomTextSizes:
-                                showCustomTextSizesInputPopup();
-                                break;
-                            case _backText:
-                                doRepeat = true;
-                                break;
-                        }
+                    switch (await DisplayActionSheet(
+                        title: _optionsText,
+                        cancel: _cancelText,
+                        destruction: null,
+                        _generalOptionText,
+                        _technicalOptionText,
+                        _systemOptionText))
+                    {
+                        case _generalOptionText:
 
-                        break;
+                            switch (await DisplayActionSheet(
+                                title: _generalOptionText,
+                                cancel: _backText,
+                                destruction: null,
+                                _showTimeConfigsOverviewText,
+                                _showLocationConfigsOverviewText,
+                                _showLogsText,
+                                _setCustomTextSizes))
+                            {
+                                case _showTimeConfigsOverviewText:
+                                    await DisplayAlert("Info", _viewModel.GetPrayerTimeConfigDisplayText(), "Ok");
+                                    break;
+                                case _showLocationConfigsOverviewText:
+                                    await DisplayAlert("Info", _viewModel.GetLocationDataDisplayText(), "Ok");
+                                    break;
+                                case _showLogsText:
+                                    _viewModel.GoToLogsPageCommand.Execute(null);
+                                    break;
+                                case _setCustomTextSizes:
+                                    showCustomTextSizesInputPopup();
+                                    break;
+                                case _backText:
+                                    doRepeat = true;
+                                    break;
+                            }
 
-                    case _technicalOptionText:
+                            break;
 
-                        switch (await DisplayActionSheet(
-                            title: _technicalOptionText,
-                            cancel: _backText,
-                            destruction: null,
-                            _showDbTablesText,
-                            _saveDbFileText,
-                            _deviceInfoText))
-                        {
-                            case _showDbTablesText:
-                                await _viewModel.ShowDatabaseTable();
-                                break;
-                            case _saveDbFileText:
-                                FolderPickerResult folderPickerResult = await FolderPicker.PickAsync(CancellationToken.None);
+                        case _technicalOptionText:
 
-                                if (folderPickerResult.Folder != null)
-                                {
-                                    File.Copy(
-                                        sourceFileName: AppConfig.DATABASE_PATH,
-                                        destFileName: Path.Combine(folderPickerResult.Folder.Path, $"dbFile_{DateTime.Now:ddMMyyyy_HH_mm}.db"),
-                                        overwrite: true);
-                                }
+                            switch (await DisplayActionSheet(
+                                title: _technicalOptionText,
+                                cancel: _backText,
+                                destruction: null,
+                                _showDbTablesText,
+                                _saveDbFileText,
+                                _deviceInfoText))
+                            {
+                                case _showDbTablesText:
+                                    await _viewModel.ShowDatabaseTable();
+                                    break;
+                                case _saveDbFileText:
+                                    FolderPickerResult folderPickerResult = await FolderPicker.PickAsync(CancellationToken.None);
 
-                                break;
+                                    if (folderPickerResult.Folder != null)
+                                    {
+                                        File.Copy(
+                                            sourceFileName: AppConfig.DATABASE_PATH,
+                                            destFileName: Path.Combine(folderPickerResult.Folder.Path, $"dbFile_{DateTime.Now:ddMMyyyy_HH_mm}.db"),
+                                            overwrite: true);
+                                    }
 
-                            case _deviceInfoText:
-                                await DisplayAlert(
-                                    "Geräteinformationen",
-                                    $"""
+                                    break;
+
+                                case _deviceInfoText:
+                                    await DisplayAlert(
+                                        "Geräteinformationen",
+                                        $"""
                                         Modell: {DeviceInfo.Manufacturer.ToUpper()}, {DeviceInfo.Model}
                                         Art: {DeviceInfo.Idiom}, {DeviceInfo.DeviceType}
                                         OS: {DeviceInfo.Platform}, {DeviceInfo.VersionString}
                                         Auflösung: {DeviceDisplay.MainDisplayInfo.Height}x{DeviceDisplay.MainDisplayInfo.Width} (Dichte: {DeviceDisplay.MainDisplayInfo.Density})
                                         Kategorie der Größe: {DebugUtil.GetScreenSizeCategoryName()}
                                     """
-                                    , "Ok");
-                                break;
-                            case _backText:
-                                doRepeat = true;
-                                break;
-                        }
-
-                        break;
-                    case _systemOptionText:
-
-                        switch (await DisplayActionSheet(
-                            title: _systemOptionText,
-                            cancel: _backText,
-                            destruction: null,
-                            _resetAppText,
-                            _closeAppText))
-                        {
-                            case _resetAppText:
-                                if (!await DisplayAlert("Bestätigung", "Daten wirklich zurücksetzen?", "Ja", _cancelText))
+                                        , "Ok");
                                     break;
+                                case _backText:
+                                    doRepeat = true;
+                                    break;
+                            }
 
-                                if (File.Exists(AppConfig.DATABASE_PATH))
-                                    File.Delete(AppConfig.DATABASE_PATH);
-                                Application.Current.Quit();
-                                break;
-                            case _closeAppText:
-                                Application.Current.Quit();
-                                break;
-                            case _backText:
-                                doRepeat = true;
-                                break;
-                        }
+                            break;
+                        case _systemOptionText:
 
-                        break;
-                    case _cancelText:
-                        break;
+                            switch (await DisplayActionSheet(
+                                title: _systemOptionText,
+                                cancel: _backText,
+                                destruction: null,
+                                _resetAppText,
+                                _closeAppText))
+                            {
+                                case _resetAppText:
+                                    if (!await DisplayAlert("Bestätigung", "Daten wirklich zurücksetzen?", "Ja", _cancelText))
+                                        break;
+
+                                    if (File.Exists(AppConfig.DATABASE_PATH))
+                                        File.Delete(AppConfig.DATABASE_PATH);
+                                    Application.Current.Quit();
+                                    break;
+                                case _closeAppText:
+                                    Application.Current.Quit();
+                                    break;
+                                case _backText:
+                                    doRepeat = true;
+                                    break;
+                            }
+
+                            break;
+                        case _cancelText:
+                            break;
+                    }
                 }
+                while (doRepeat);
             }
-            while (doRepeat);
+            catch (Exception exception)
+            {
+                _logger.LogError(exception, "Error in options menu");
+                _toastMessageService.ShowError(exception.Message);
+            }
         }
 
         private async void showCustomTextSizesInputPopup()

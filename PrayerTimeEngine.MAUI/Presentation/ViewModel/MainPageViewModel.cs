@@ -14,6 +14,7 @@ using PrayerTimeEngine.Core.Domain.PlaceManagement.Interfaces;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Models;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Interfaces;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
+using PrayerTimeEngine.Presentation.Service;
 using PrayerTimeEngine.Presentation.Service.Navigation;
 using PrayerTimeEngine.Services.PrayerTimeSummaryNotification;
 using PropertyChanged;
@@ -25,6 +26,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
     [AddINotifyPropertyChangedInterface]
     public class MainPageViewModel(
             IDispatcher dispatcher,
+            ToastMessageService toastMessageService,
             ISystemInfoService _systemInfoService,
             ICalculationManager prayerTimeCalculator,
             IPrayerTimeCalculatorFactory prayerTimeServiceFactory,
@@ -154,7 +156,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
             catch (Exception exception)
             {
                 logger.LogError(exception, "Error during place search");
-                showToastMessage(exception.Message);
+                toastMessageService.ShowError(exception.Message);
             }
             finally
             {
@@ -259,7 +261,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
             catch (Exception exception)
             {
                 logger.LogError(exception, "Error during refreshData. ({RefreshCallID})", refreshCallID);
-                showToastMessage(exception?.Message);
+                toastMessageService.ShowError(exception.Message);
             }
             finally
             {
@@ -281,7 +283,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
             try
             {
                 double startUpTimeMS = (DateTime.Now - MauiProgram.StartDateTime).TotalMilliseconds;
-                showToastMessage($"{startUpTimeMS:N0}ms to start!");
+                toastMessageService.Show($"{startUpTimeMS:N0}ms to start!");
 #if ANDROID
                 dispatcher.Dispatch(
                     async () =>
@@ -294,7 +296,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
             catch (Exception exception)
             {
                 logger.LogError(exception, "Error during onAfterFirstLoad");
-                showToastMessage(exception?.Message);
+                toastMessageService.ShowError(exception?.Message);
             }
         }
 
@@ -367,13 +369,14 @@ namespace PrayerTimeEngine.Presentation.ViewModel
                             .ToList();
                     if (missingLocationInfo.Count != 0)
                     {
-                        showToastMessage($"Location information missing for {string.Join(", ", missingLocationInfo)}");
+                        logger.LogWarning("Location information missing for the following calculation sources: {CalculationSources}", string.Join(", ", missingLocationInfo));
+                        toastMessageService.ShowWarning($"Location information missing for {string.Join(", ", missingLocationInfo)}");
                     }
                 }
                 catch (Exception exception)
                 {
                     logger.LogError(exception, "Error during place selection");
-                    showToastMessage(exception.Message);
+                    toastMessageService.ShowError(exception.Message);
                 }
                 finally
                 {
@@ -441,19 +444,6 @@ namespace PrayerTimeEngine.Presentation.ViewModel
         internal string GetLocationDataDisplayText()
         {
             return profileService.GetLocationDataDisplayText(CurrentProfile);
-        }
-
-        // TODO REFACTOR
-        private void showToastMessage(string text)
-        {
-            dispatcher.Dispatch(async () =>
-            {
-                await Toast.Make(
-                        message: text, 
-                        duration: ToastDuration.Short, 
-                        textSize: 14)
-                .Show();
-            });
         }
 
         #endregion private methods

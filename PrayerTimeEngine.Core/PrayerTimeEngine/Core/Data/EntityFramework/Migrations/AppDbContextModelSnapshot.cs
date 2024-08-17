@@ -329,6 +329,9 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Migrations
                     b.Property<string>("DisplayName")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("InsertInstant")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Name")
                         .HasColumnType("TEXT");
 
@@ -337,7 +340,7 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Migrations
 
                     b.HasKey("ID");
 
-                    b.ToTable("TimezoneInfo");
+                    b.ToTable("TimezoneInfos");
                 });
 
             modelBuilder.Entity("PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities.Profile", b =>
