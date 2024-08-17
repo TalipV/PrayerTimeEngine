@@ -107,8 +107,8 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Services
                         continue;
 
                     GenericSettingConfiguration config = GetTimeConfig(profile, timeType);
-
-                    outputText.AppendLine($"- {timeType} mit {config.Source}");
+                    outputText.Append(Environment.NewLine);
+                    outputText.Append($"- {timeType} mit {config.Source}");
                     if (config is MuwaqqitDegreeCalculationConfiguration degreeConfig)
                     {
                         outputText.Append($" ({degreeConfig.Degree}°)");
