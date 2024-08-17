@@ -22,6 +22,7 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework
         public DbSet<ProfileLocationConfig> ProfileLocations { get; set; }
         public DbSet<ProfileTimeConfig> ProfileConfigs { get; set; }
         public DbSet<CompletePlaceInfo> PlaceInfos { get; set; }
+        public DbSet<TimezoneInfo> TimezoneInfos { get; set; }
 
         public DbSet<MuwaqqitPrayerTimes> MuwaqqitPrayerTimes { get; set; }
 

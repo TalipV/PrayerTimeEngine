@@ -20,6 +20,7 @@ using PrayerTimeEngine.Core.Domain.PlaceManagement.Services;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Services.LocationIQ;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Interfaces;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Services;
+using PrayerTimeEngine.Presentation.Service;
 using PrayerTimeEngine.Presentation.Service.Navigation;
 using PrayerTimeEngine.Presentation.Service.SettingsContentPageFactory;
 using PrayerTimeEngine.Presentation.View;
@@ -281,6 +282,7 @@ public static class MauiProgram
     private static void addPresentationLayerServices(IServiceCollection serviceCollection)
     {
         serviceCollection.AddTransient<INavigationService, NavigationService>();
+        serviceCollection.AddTransient<ToastMessageService>();
 
         serviceCollection.AddTransient<MainPage>();
         serviceCollection.AddTransient<MainPageViewModel>();

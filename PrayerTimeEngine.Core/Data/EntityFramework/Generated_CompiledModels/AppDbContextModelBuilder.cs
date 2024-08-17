@@ -854,6 +854,11 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
             prayerTimeEngineCoreDomainPlaceManagementModelsTimezoneInfoTableBase.Columns.Add("DisplayName", displayNameColumnBase);
             var iDColumnBase7 = new ColumnBase<ColumnMappingBase>("ID", "INTEGER", prayerTimeEngineCoreDomainPlaceManagementModelsTimezoneInfoTableBase);
             prayerTimeEngineCoreDomainPlaceManagementModelsTimezoneInfoTableBase.Columns.Add("ID", iDColumnBase7);
+            var insertInstantColumnBase7 = new ColumnBase<ColumnMappingBase>("InsertInstant", "TEXT", prayerTimeEngineCoreDomainPlaceManagementModelsTimezoneInfoTableBase)
+            {
+                IsNullable = true
+            };
+            prayerTimeEngineCoreDomainPlaceManagementModelsTimezoneInfoTableBase.Columns.Add("InsertInstant", insertInstantColumnBase7);
             var nameColumnBase3 = new ColumnBase<ColumnMappingBase>("Name", "TEXT", prayerTimeEngineCoreDomainPlaceManagementModelsTimezoneInfoTableBase)
             {
                 IsNullable = true
@@ -867,42 +872,49 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
             defaultTableMappings7.Add(prayerTimeEngineCoreDomainPlaceManagementModelsTimezoneInfoMappingBase);
             RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)iDColumnBase7, timezoneInfo.FindProperty("ID")!, prayerTimeEngineCoreDomainPlaceManagementModelsTimezoneInfoMappingBase);
             RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)displayNameColumnBase, timezoneInfo.FindProperty("DisplayName")!, prayerTimeEngineCoreDomainPlaceManagementModelsTimezoneInfoMappingBase);
+            RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)insertInstantColumnBase7, timezoneInfo.FindProperty("InsertInstant")!, prayerTimeEngineCoreDomainPlaceManagementModelsTimezoneInfoMappingBase);
             RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)nameColumnBase3, timezoneInfo.FindProperty("Name")!, prayerTimeEngineCoreDomainPlaceManagementModelsTimezoneInfoMappingBase);
             RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)utcOffsetSecondsColumnBase, timezoneInfo.FindProperty("UtcOffsetSeconds")!, prayerTimeEngineCoreDomainPlaceManagementModelsTimezoneInfoMappingBase);
 
             var tableMappings7 = new List<TableMapping>();
             timezoneInfo.SetRuntimeAnnotation("Relational:TableMappings", tableMappings7);
-            var timezoneInfoTable = new Table("TimezoneInfo", null, relationalModel);
-            var iDColumn7 = new Column("ID", "INTEGER", timezoneInfoTable);
-            timezoneInfoTable.Columns.Add("ID", iDColumn7);
-            var displayNameColumn = new Column("DisplayName", "TEXT", timezoneInfoTable)
+            var timezoneInfosTable = new Table("TimezoneInfos", null, relationalModel);
+            var iDColumn7 = new Column("ID", "INTEGER", timezoneInfosTable);
+            timezoneInfosTable.Columns.Add("ID", iDColumn7);
+            var displayNameColumn = new Column("DisplayName", "TEXT", timezoneInfosTable)
             {
                 IsNullable = true
             };
-            timezoneInfoTable.Columns.Add("DisplayName", displayNameColumn);
-            var nameColumn3 = new Column("Name", "TEXT", timezoneInfoTable)
+            timezoneInfosTable.Columns.Add("DisplayName", displayNameColumn);
+            var insertInstantColumn7 = new Column("InsertInstant", "TEXT", timezoneInfosTable)
             {
                 IsNullable = true
             };
-            timezoneInfoTable.Columns.Add("Name", nameColumn3);
-            var utcOffsetSecondsColumn = new Column("UtcOffsetSeconds", "INTEGER", timezoneInfoTable);
-            timezoneInfoTable.Columns.Add("UtcOffsetSeconds", utcOffsetSecondsColumn);
-            var pK_TimezoneInfo = new UniqueConstraint("PK_TimezoneInfo", timezoneInfoTable, new[] { iDColumn7 });
-            timezoneInfoTable.PrimaryKey = pK_TimezoneInfo;
-            var pK_TimezoneInfoUc = RelationalModel.GetKey(this,
+            timezoneInfosTable.Columns.Add("InsertInstant", insertInstantColumn7);
+            var nameColumn3 = new Column("Name", "TEXT", timezoneInfosTable)
+            {
+                IsNullable = true
+            };
+            timezoneInfosTable.Columns.Add("Name", nameColumn3);
+            var utcOffsetSecondsColumn = new Column("UtcOffsetSeconds", "INTEGER", timezoneInfosTable);
+            timezoneInfosTable.Columns.Add("UtcOffsetSeconds", utcOffsetSecondsColumn);
+            var pK_TimezoneInfos = new UniqueConstraint("PK_TimezoneInfos", timezoneInfosTable, new[] { iDColumn7 });
+            timezoneInfosTable.PrimaryKey = pK_TimezoneInfos;
+            var pK_TimezoneInfosUc = RelationalModel.GetKey(this,
                 "PrayerTimeEngine.Core.Domain.PlaceManagement.Models.TimezoneInfo",
                 new[] { "ID" });
-            pK_TimezoneInfo.MappedKeys.Add(pK_TimezoneInfoUc);
-            RelationalModel.GetOrCreateUniqueConstraints(pK_TimezoneInfoUc).Add(pK_TimezoneInfo);
-            timezoneInfoTable.UniqueConstraints.Add("PK_TimezoneInfo", pK_TimezoneInfo);
-            relationalModel.Tables.Add(("TimezoneInfo", null), timezoneInfoTable);
-            var timezoneInfoTableMapping = new TableMapping(timezoneInfo, timezoneInfoTable, true);
-            timezoneInfoTable.AddTypeMapping(timezoneInfoTableMapping, false);
-            tableMappings7.Add(timezoneInfoTableMapping);
-            RelationalModel.CreateColumnMapping(iDColumn7, timezoneInfo.FindProperty("ID")!, timezoneInfoTableMapping);
-            RelationalModel.CreateColumnMapping(displayNameColumn, timezoneInfo.FindProperty("DisplayName")!, timezoneInfoTableMapping);
-            RelationalModel.CreateColumnMapping(nameColumn3, timezoneInfo.FindProperty("Name")!, timezoneInfoTableMapping);
-            RelationalModel.CreateColumnMapping(utcOffsetSecondsColumn, timezoneInfo.FindProperty("UtcOffsetSeconds")!, timezoneInfoTableMapping);
+            pK_TimezoneInfos.MappedKeys.Add(pK_TimezoneInfosUc);
+            RelationalModel.GetOrCreateUniqueConstraints(pK_TimezoneInfosUc).Add(pK_TimezoneInfos);
+            timezoneInfosTable.UniqueConstraints.Add("PK_TimezoneInfos", pK_TimezoneInfos);
+            relationalModel.Tables.Add(("TimezoneInfos", null), timezoneInfosTable);
+            var timezoneInfosTableMapping = new TableMapping(timezoneInfo, timezoneInfosTable, true);
+            timezoneInfosTable.AddTypeMapping(timezoneInfosTableMapping, false);
+            tableMappings7.Add(timezoneInfosTableMapping);
+            RelationalModel.CreateColumnMapping(iDColumn7, timezoneInfo.FindProperty("ID")!, timezoneInfosTableMapping);
+            RelationalModel.CreateColumnMapping(displayNameColumn, timezoneInfo.FindProperty("DisplayName")!, timezoneInfosTableMapping);
+            RelationalModel.CreateColumnMapping(insertInstantColumn7, timezoneInfo.FindProperty("InsertInstant")!, timezoneInfosTableMapping);
+            RelationalModel.CreateColumnMapping(nameColumn3, timezoneInfo.FindProperty("Name")!, timezoneInfosTableMapping);
+            RelationalModel.CreateColumnMapping(utcOffsetSecondsColumn, timezoneInfo.FindProperty("UtcOffsetSeconds")!, timezoneInfosTableMapping);
 
             var profile = FindEntityType("PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities.Profile")!;
 
@@ -916,11 +928,11 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
             prayerTimeEngineCoreDomainProfileManagementModelsEntitiesProfileTableBase.Columns.Add("CountryID", countryIDColumnBase1);
             var iDColumnBase8 = new ColumnBase<ColumnMappingBase>("ID", "INTEGER", prayerTimeEngineCoreDomainProfileManagementModelsEntitiesProfileTableBase);
             prayerTimeEngineCoreDomainProfileManagementModelsEntitiesProfileTableBase.Columns.Add("ID", iDColumnBase8);
-            var insertInstantColumnBase7 = new ColumnBase<ColumnMappingBase>("InsertInstant", "TEXT", prayerTimeEngineCoreDomainProfileManagementModelsEntitiesProfileTableBase)
+            var insertInstantColumnBase8 = new ColumnBase<ColumnMappingBase>("InsertInstant", "TEXT", prayerTimeEngineCoreDomainProfileManagementModelsEntitiesProfileTableBase)
             {
                 IsNullable = true
             };
-            prayerTimeEngineCoreDomainProfileManagementModelsEntitiesProfileTableBase.Columns.Add("InsertInstant", insertInstantColumnBase7);
+            prayerTimeEngineCoreDomainProfileManagementModelsEntitiesProfileTableBase.Columns.Add("InsertInstant", insertInstantColumnBase8);
             var nameColumnBase4 = new ColumnBase<ColumnMappingBase>("Name", "TEXT", prayerTimeEngineCoreDomainProfileManagementModelsEntitiesProfileTableBase)
             {
                 IsNullable = true
@@ -939,7 +951,7 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
             defaultTableMappings8.Add(prayerTimeEngineCoreDomainProfileManagementModelsEntitiesProfileMappingBase);
             RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)iDColumnBase8, profile.FindProperty("ID")!, prayerTimeEngineCoreDomainProfileManagementModelsEntitiesProfileMappingBase);
             RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)countryIDColumnBase1, profile.FindProperty("CountryID")!, prayerTimeEngineCoreDomainProfileManagementModelsEntitiesProfileMappingBase);
-            RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)insertInstantColumnBase7, profile.FindProperty("InsertInstant")!, prayerTimeEngineCoreDomainProfileManagementModelsEntitiesProfileMappingBase);
+            RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)insertInstantColumnBase8, profile.FindProperty("InsertInstant")!, prayerTimeEngineCoreDomainProfileManagementModelsEntitiesProfileMappingBase);
             RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)nameColumnBase4, profile.FindProperty("Name")!, prayerTimeEngineCoreDomainProfileManagementModelsEntitiesProfileMappingBase);
             RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)placeInfoIDColumnBase, profile.FindProperty("PlaceInfoID")!, prayerTimeEngineCoreDomainProfileManagementModelsEntitiesProfileMappingBase);
             RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)sequenceNoColumnBase, profile.FindProperty("SequenceNo")!, prayerTimeEngineCoreDomainProfileManagementModelsEntitiesProfileMappingBase);
@@ -954,11 +966,11 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
                 IsNullable = true
             };
             profilesTable.Columns.Add("CountryID", countryIDColumn1);
-            var insertInstantColumn7 = new Column("InsertInstant", "TEXT", profilesTable)
+            var insertInstantColumn8 = new Column("InsertInstant", "TEXT", profilesTable)
             {
                 IsNullable = true
             };
-            profilesTable.Columns.Add("InsertInstant", insertInstantColumn7);
+            profilesTable.Columns.Add("InsertInstant", insertInstantColumn8);
             var nameColumn4 = new Column("Name", "TEXT", profilesTable)
             {
                 IsNullable = true
@@ -1001,7 +1013,7 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
             tableMappings8.Add(profilesTableMapping);
             RelationalModel.CreateColumnMapping(iDColumn8, profile.FindProperty("ID")!, profilesTableMapping);
             RelationalModel.CreateColumnMapping(countryIDColumn1, profile.FindProperty("CountryID")!, profilesTableMapping);
-            RelationalModel.CreateColumnMapping(insertInstantColumn7, profile.FindProperty("InsertInstant")!, profilesTableMapping);
+            RelationalModel.CreateColumnMapping(insertInstantColumn8, profile.FindProperty("InsertInstant")!, profilesTableMapping);
             RelationalModel.CreateColumnMapping(nameColumn4, profile.FindProperty("Name")!, profilesTableMapping);
             RelationalModel.CreateColumnMapping(placeInfoIDColumn, profile.FindProperty("PlaceInfoID")!, profilesTableMapping);
             RelationalModel.CreateColumnMapping(sequenceNoColumn, profile.FindProperty("SequenceNo")!, profilesTableMapping);
@@ -1015,11 +1027,11 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
             prayerTimeEngineCoreDomainProfileManagementModelsEntitiesProfileLocationConfigTableBase.Columns.Add("CalculationSource", calculationSourceColumnBase);
             var iDColumnBase9 = new ColumnBase<ColumnMappingBase>("ID", "INTEGER", prayerTimeEngineCoreDomainProfileManagementModelsEntitiesProfileLocationConfigTableBase);
             prayerTimeEngineCoreDomainProfileManagementModelsEntitiesProfileLocationConfigTableBase.Columns.Add("ID", iDColumnBase9);
-            var insertInstantColumnBase8 = new ColumnBase<ColumnMappingBase>("InsertInstant", "TEXT", prayerTimeEngineCoreDomainProfileManagementModelsEntitiesProfileLocationConfigTableBase)
+            var insertInstantColumnBase9 = new ColumnBase<ColumnMappingBase>("InsertInstant", "TEXT", prayerTimeEngineCoreDomainProfileManagementModelsEntitiesProfileLocationConfigTableBase)
             {
                 IsNullable = true
             };
-            prayerTimeEngineCoreDomainProfileManagementModelsEntitiesProfileLocationConfigTableBase.Columns.Add("InsertInstant", insertInstantColumnBase8);
+            prayerTimeEngineCoreDomainProfileManagementModelsEntitiesProfileLocationConfigTableBase.Columns.Add("InsertInstant", insertInstantColumnBase9);
             var locationDataColumnBase = new ColumnBase<ColumnMappingBase>("LocationData", "TEXT", prayerTimeEngineCoreDomainProfileManagementModelsEntitiesProfileLocationConfigTableBase)
             {
                 IsNullable = true
@@ -1033,7 +1045,7 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
             defaultTableMappings9.Add(prayerTimeEngineCoreDomainProfileManagementModelsEntitiesProfileLocationConfigMappingBase);
             RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)iDColumnBase9, profileLocationConfig.FindProperty("ID")!, prayerTimeEngineCoreDomainProfileManagementModelsEntitiesProfileLocationConfigMappingBase);
             RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)calculationSourceColumnBase, profileLocationConfig.FindProperty("CalculationSource")!, prayerTimeEngineCoreDomainProfileManagementModelsEntitiesProfileLocationConfigMappingBase);
-            RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)insertInstantColumnBase8, profileLocationConfig.FindProperty("InsertInstant")!, prayerTimeEngineCoreDomainProfileManagementModelsEntitiesProfileLocationConfigMappingBase);
+            RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)insertInstantColumnBase9, profileLocationConfig.FindProperty("InsertInstant")!, prayerTimeEngineCoreDomainProfileManagementModelsEntitiesProfileLocationConfigMappingBase);
             RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)locationDataColumnBase, profileLocationConfig.FindProperty("LocationData")!, prayerTimeEngineCoreDomainProfileManagementModelsEntitiesProfileLocationConfigMappingBase);
             RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)profileIDColumnBase, profileLocationConfig.FindProperty("ProfileID")!, prayerTimeEngineCoreDomainProfileManagementModelsEntitiesProfileLocationConfigMappingBase);
 
@@ -1044,11 +1056,11 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
             profileLocationsTable.Columns.Add("ID", iDColumn9);
             var calculationSourceColumn = new Column("CalculationSource", "INTEGER", profileLocationsTable);
             profileLocationsTable.Columns.Add("CalculationSource", calculationSourceColumn);
-            var insertInstantColumn8 = new Column("InsertInstant", "TEXT", profileLocationsTable)
+            var insertInstantColumn9 = new Column("InsertInstant", "TEXT", profileLocationsTable)
             {
                 IsNullable = true
             };
-            profileLocationsTable.Columns.Add("InsertInstant", insertInstantColumn8);
+            profileLocationsTable.Columns.Add("InsertInstant", insertInstantColumn9);
             var locationDataColumn = new Column("LocationData", "TEXT", profileLocationsTable)
             {
                 IsNullable = true
@@ -1078,7 +1090,7 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
             tableMappings9.Add(profileLocationsTableMapping);
             RelationalModel.CreateColumnMapping(iDColumn9, profileLocationConfig.FindProperty("ID")!, profileLocationsTableMapping);
             RelationalModel.CreateColumnMapping(calculationSourceColumn, profileLocationConfig.FindProperty("CalculationSource")!, profileLocationsTableMapping);
-            RelationalModel.CreateColumnMapping(insertInstantColumn8, profileLocationConfig.FindProperty("InsertInstant")!, profileLocationsTableMapping);
+            RelationalModel.CreateColumnMapping(insertInstantColumn9, profileLocationConfig.FindProperty("InsertInstant")!, profileLocationsTableMapping);
             RelationalModel.CreateColumnMapping(locationDataColumn, profileLocationConfig.FindProperty("LocationData")!, profileLocationsTableMapping);
             RelationalModel.CreateColumnMapping(profileIDColumn, profileLocationConfig.FindProperty("ProfileID")!, profileLocationsTableMapping);
 
@@ -1094,11 +1106,11 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
             prayerTimeEngineCoreDomainProfileManagementModelsEntitiesProfileTimeConfigTableBase.Columns.Add("CalculationConfiguration", calculationConfigurationColumnBase);
             var iDColumnBase10 = new ColumnBase<ColumnMappingBase>("ID", "INTEGER", prayerTimeEngineCoreDomainProfileManagementModelsEntitiesProfileTimeConfigTableBase);
             prayerTimeEngineCoreDomainProfileManagementModelsEntitiesProfileTimeConfigTableBase.Columns.Add("ID", iDColumnBase10);
-            var insertInstantColumnBase9 = new ColumnBase<ColumnMappingBase>("InsertInstant", "TEXT", prayerTimeEngineCoreDomainProfileManagementModelsEntitiesProfileTimeConfigTableBase)
+            var insertInstantColumnBase10 = new ColumnBase<ColumnMappingBase>("InsertInstant", "TEXT", prayerTimeEngineCoreDomainProfileManagementModelsEntitiesProfileTimeConfigTableBase)
             {
                 IsNullable = true
             };
-            prayerTimeEngineCoreDomainProfileManagementModelsEntitiesProfileTimeConfigTableBase.Columns.Add("InsertInstant", insertInstantColumnBase9);
+            prayerTimeEngineCoreDomainProfileManagementModelsEntitiesProfileTimeConfigTableBase.Columns.Add("InsertInstant", insertInstantColumnBase10);
             var profileIDColumnBase0 = new ColumnBase<ColumnMappingBase>("ProfileID", "INTEGER", prayerTimeEngineCoreDomainProfileManagementModelsEntitiesProfileTimeConfigTableBase);
             prayerTimeEngineCoreDomainProfileManagementModelsEntitiesProfileTimeConfigTableBase.Columns.Add("ProfileID", profileIDColumnBase0);
             var timeTypeColumnBase = new ColumnBase<ColumnMappingBase>("TimeType", "INTEGER", prayerTimeEngineCoreDomainProfileManagementModelsEntitiesProfileTimeConfigTableBase);
@@ -1109,7 +1121,7 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
             defaultTableMappings10.Add(prayerTimeEngineCoreDomainProfileManagementModelsEntitiesProfileTimeConfigMappingBase);
             RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)iDColumnBase10, profileTimeConfig.FindProperty("ID")!, prayerTimeEngineCoreDomainProfileManagementModelsEntitiesProfileTimeConfigMappingBase);
             RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)calculationConfigurationColumnBase, profileTimeConfig.FindProperty("CalculationConfiguration")!, prayerTimeEngineCoreDomainProfileManagementModelsEntitiesProfileTimeConfigMappingBase);
-            RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)insertInstantColumnBase9, profileTimeConfig.FindProperty("InsertInstant")!, prayerTimeEngineCoreDomainProfileManagementModelsEntitiesProfileTimeConfigMappingBase);
+            RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)insertInstantColumnBase10, profileTimeConfig.FindProperty("InsertInstant")!, prayerTimeEngineCoreDomainProfileManagementModelsEntitiesProfileTimeConfigMappingBase);
             RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)profileIDColumnBase0, profileTimeConfig.FindProperty("ProfileID")!, prayerTimeEngineCoreDomainProfileManagementModelsEntitiesProfileTimeConfigMappingBase);
             RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)timeTypeColumnBase, profileTimeConfig.FindProperty("TimeType")!, prayerTimeEngineCoreDomainProfileManagementModelsEntitiesProfileTimeConfigMappingBase);
 
@@ -1123,11 +1135,11 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
                 IsNullable = true
             };
             profileConfigsTable.Columns.Add("CalculationConfiguration", calculationConfigurationColumn);
-            var insertInstantColumn9 = new Column("InsertInstant", "TEXT", profileConfigsTable)
+            var insertInstantColumn10 = new Column("InsertInstant", "TEXT", profileConfigsTable)
             {
                 IsNullable = true
             };
-            profileConfigsTable.Columns.Add("InsertInstant", insertInstantColumn9);
+            profileConfigsTable.Columns.Add("InsertInstant", insertInstantColumn10);
             var profileIDColumn0 = new Column("ProfileID", "INTEGER", profileConfigsTable);
             profileConfigsTable.Columns.Add("ProfileID", profileIDColumn0);
             var timeTypeColumn = new Column("TimeType", "INTEGER", profileConfigsTable);
@@ -1154,7 +1166,7 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
             tableMappings10.Add(profileConfigsTableMapping);
             RelationalModel.CreateColumnMapping(iDColumn10, profileTimeConfig.FindProperty("ID")!, profileConfigsTableMapping);
             RelationalModel.CreateColumnMapping(calculationConfigurationColumn, profileTimeConfig.FindProperty("CalculationConfiguration")!, profileConfigsTableMapping);
-            RelationalModel.CreateColumnMapping(insertInstantColumn9, profileTimeConfig.FindProperty("InsertInstant")!, profileConfigsTableMapping);
+            RelationalModel.CreateColumnMapping(insertInstantColumn10, profileTimeConfig.FindProperty("InsertInstant")!, profileConfigsTableMapping);
             RelationalModel.CreateColumnMapping(profileIDColumn0, profileTimeConfig.FindProperty("ProfileID")!, profileConfigsTableMapping);
             RelationalModel.CreateColumnMapping(timeTypeColumn, profileTimeConfig.FindProperty("TimeType")!, profileConfigsTableMapping);
             var fK_FaziletCities_FaziletCountries_CountryID = new ForeignKeyConstraint(
@@ -1170,19 +1182,19 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
             RelationalModel.GetOrCreateForeignKeyConstraints(fK_FaziletCities_FaziletCountries_CountryIDFk).Add(fK_FaziletCities_FaziletCountries_CountryID);
             faziletCitiesTable.ForeignKeyConstraints.Add(fK_FaziletCities_FaziletCountries_CountryID);
             faziletCountriesTable.ReferencingForeignKeyConstraints.Add(fK_FaziletCities_FaziletCountries_CountryID);
-            var fK_PlaceInfos_TimezoneInfo_TimezoneInfoID = new ForeignKeyConstraint(
-                "FK_PlaceInfos_TimezoneInfo_TimezoneInfoID", placeInfosTable, timezoneInfoTable,
+            var fK_PlaceInfos_TimezoneInfos_TimezoneInfoID = new ForeignKeyConstraint(
+                "FK_PlaceInfos_TimezoneInfos_TimezoneInfoID", placeInfosTable, timezoneInfosTable,
                 new[] { timezoneInfoIDColumn },
-                timezoneInfoTable.FindUniqueConstraint("PK_TimezoneInfo")!, ReferentialAction.NoAction);
-            var fK_PlaceInfos_TimezoneInfo_TimezoneInfoIDFk = RelationalModel.GetForeignKey(this,
+                timezoneInfosTable.FindUniqueConstraint("PK_TimezoneInfos")!, ReferentialAction.NoAction);
+            var fK_PlaceInfos_TimezoneInfos_TimezoneInfoIDFk = RelationalModel.GetForeignKey(this,
                 "PrayerTimeEngine.Core.Domain.PlaceManagement.Models.CompletePlaceInfo",
                 new[] { "TimezoneInfoID" },
                 "PrayerTimeEngine.Core.Domain.PlaceManagement.Models.TimezoneInfo",
                 new[] { "ID" });
-            fK_PlaceInfos_TimezoneInfo_TimezoneInfoID.MappedForeignKeys.Add(fK_PlaceInfos_TimezoneInfo_TimezoneInfoIDFk);
-            RelationalModel.GetOrCreateForeignKeyConstraints(fK_PlaceInfos_TimezoneInfo_TimezoneInfoIDFk).Add(fK_PlaceInfos_TimezoneInfo_TimezoneInfoID);
-            placeInfosTable.ForeignKeyConstraints.Add(fK_PlaceInfos_TimezoneInfo_TimezoneInfoID);
-            timezoneInfoTable.ReferencingForeignKeyConstraints.Add(fK_PlaceInfos_TimezoneInfo_TimezoneInfoID);
+            fK_PlaceInfos_TimezoneInfos_TimezoneInfoID.MappedForeignKeys.Add(fK_PlaceInfos_TimezoneInfos_TimezoneInfoIDFk);
+            RelationalModel.GetOrCreateForeignKeyConstraints(fK_PlaceInfos_TimezoneInfos_TimezoneInfoIDFk).Add(fK_PlaceInfos_TimezoneInfos_TimezoneInfoID);
+            placeInfosTable.ForeignKeyConstraints.Add(fK_PlaceInfos_TimezoneInfos_TimezoneInfoID);
+            timezoneInfosTable.ReferencingForeignKeyConstraints.Add(fK_PlaceInfos_TimezoneInfos_TimezoneInfoID);
             var fK_ProfileConfigs_Profiles_ProfileID = new ForeignKeyConstraint(
                 "FK_ProfileConfigs_Profiles_ProfileID", profileConfigsTable, profilesTable,
                 new[] { profileIDColumn0 },

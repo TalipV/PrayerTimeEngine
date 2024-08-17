@@ -35,9 +35,19 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Services
 
         public async Task SaveProfile(Profile profile, CancellationToken cancellationToken)
         {
-            if (await dbContext.Profiles.FindAsync(keyValues: [profile.ID], cancellationToken).ConfigureAwait(false) is Profile foundProfile)
+            Profile foundProfile =
+                await dbContext.Profiles
+                    .Include(x => x.TimeConfigs)
+                    .Include(x => x.LocationConfigs)
+                    .Include(x => x.PlaceInfo).ThenInclude(x => x.TimezoneInfo)
+                    .FirstOrDefaultAsync(x => x.ID == profile.ID, cancellationToken)
+                    .ConfigureAwait(false);
+
+            if (foundProfile != null)
             {
                 dbContext.Profiles.Remove(foundProfile);
+                dbContext.PlaceInfos.Remove(foundProfile.PlaceInfo);
+                dbContext.TimezoneInfos.Remove(foundProfile.PlaceInfo.TimezoneInfo);
                 await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
             }
 

@@ -1,4 +1,7 @@
-﻿using MethodTimer;
+﻿using Castle.Core.Logging;
+using MethodTimer;
+using Microsoft.Extensions.Logging;
+using PrayerTimeEngine.Presentation.Service;
 using PrayerTimeEngine.Presentation.ViewModel;
 using UraniumUI.Material.Controls;
 
@@ -7,10 +10,19 @@ namespace PrayerTimeEngine.Presentation.View;
 public partial class SettingsHandlerPage : ContentPage
 {
     private readonly SettingsHandlerPageViewModel _viewModel;
+    private readonly ToastMessageService _toastMessageService;
+    private readonly ILogger<SettingsHandlerPage> _logger;
     private readonly TabView _tabView;
 
-    public SettingsHandlerPage(SettingsHandlerPageViewModel viewModel)
+    public SettingsHandlerPage(
+            SettingsHandlerPageViewModel viewModel, 
+            ToastMessageService toastMessageService,
+            ILogger<SettingsHandlerPage> logger
+        )
     {
+        _toastMessageService = toastMessageService;
+        _logger = logger;
+
         NavigationPage.SetTitleView(this, new Label
         {
             Text = "Configuration",
@@ -49,10 +61,18 @@ public partial class SettingsHandlerPage : ContentPage
 
     protected override async void OnDisappearing()
     {
-        base.OnDisappearing();
+        try
+        {
+            base.OnDisappearing();
 
-        // for ViewModel to handle setting saving
-        await onDisappearingForAllSettingContentPages().ConfigureAwait(false);
+            // for ViewModel to handle setting saving
+            await onDisappearingForAllSettingContentPages().ConfigureAwait(false);
+        }
+        catch (Exception exception)
+        {
+            _logger.LogError(exception, "Error while closing settings page");
+            _toastMessageService.ShowError(exception.Message);
+        }
     }
 
     [Time]

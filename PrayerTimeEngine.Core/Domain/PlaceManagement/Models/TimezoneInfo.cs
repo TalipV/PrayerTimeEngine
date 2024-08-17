@@ -1,13 +1,16 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using NodaTime;
+using PrayerTimeEngine.Core.Data.EntityFramework;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PrayerTimeEngine.Core.Domain.PlaceManagement.Models
 {
-    public class TimezoneInfo
+    public class TimezoneInfo : IInsertedAt
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
+        public Instant? InsertInstant { get; set; }
 
         public string DisplayName { get; set; }
         public string Name { get; set; }
