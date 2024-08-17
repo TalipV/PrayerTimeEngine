@@ -33,6 +33,15 @@ namespace PrayerTimeEngine.Core.Tests.Integration.Domain.Calculators.Semerkand
 
             SemerkandPrayerTimeCalculator semerkandPrayerTimeCalculator = serviceProvider.GetService<SemerkandPrayerTimeCalculator>();
 
+            var date = new LocalDate(2023, 7, 29);
+            var locationData = new SemerkandLocationData
+            {
+                CountryName = "Avusturya",
+                CityName = "Innsbruck",
+                TimezoneName = TestDataHelper.EUROPE_VIENNA_TIME_ZONE.Id
+            };
+            var dateTimeZone = DateTimeZoneProviders.Tzdb[locationData.TimezoneName];
+
             List<GenericSettingConfiguration> configs =
                 [
                     new GenericSettingConfiguration { TimeType = ETimeType.FajrStart, Source = ECalculationSource.Semerkand },
@@ -50,13 +59,8 @@ namespace PrayerTimeEngine.Core.Tests.Integration.Domain.Calculators.Semerkand
             // ACT
             List<(ETimeType TimeType, ZonedDateTime ZonedDateTime)> result =
                 await semerkandPrayerTimeCalculator.GetPrayerTimesAsync(
-                    new LocalDate(2023, 7, 29),
-                    new SemerkandLocationData
-                    {
-                        CountryName = "Avusturya",
-                        CityName = "Innsbruck",
-                        TimezoneName = "Europe/Vienna"
-                    },
+                    date.AtStartOfDayInZone(dateTimeZone),
+                    locationData,
                     configs, 
                     default);
 

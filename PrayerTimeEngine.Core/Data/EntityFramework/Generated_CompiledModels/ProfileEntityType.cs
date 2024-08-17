@@ -5,13 +5,18 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Sqlite.Storage.Internal;
 using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.EntityFrameworkCore.Storage.Json;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using NodaTime;
+using PrayerTimeEngine.Core.Common.Extension;
+using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Models.Entities;
+using PrayerTimeEngine.Core.Domain.PlaceManagement.Models;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
-
 
 #pragma warning disable 219, 612, 618
 #nullable disable
 
-namespace PrayerTimeEngine.Core.Data.EntityFramework
+namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
 {
     internal partial class ProfileEntityType
     {
@@ -46,13 +51,53 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework
                 mappingInfo: new RelationalTypeMappingInfo(
                     storeTypeName: "INTEGER"));
 
-            var locationName = runtimeEntityType.AddProperty(
-                "LocationName",
-                typeof(string),
-                propertyInfo: typeof(Profile).GetProperty("LocationName", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                fieldInfo: typeof(Profile).GetField("<LocationName>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+            var countryID = runtimeEntityType.AddProperty(
+                "CountryID",
+                typeof(int?),
                 nullable: true);
-            locationName.TypeMapping = SqliteStringTypeMapping.Default;
+            countryID.TypeMapping = IntTypeMapping.Default.Clone(
+                comparer: new ValueComparer<int?>(
+                    (Nullable<int> v1, Nullable<int> v2) => v1.HasValue && v2.HasValue && (int)v1 == (int)v2 || !v1.HasValue && !v2.HasValue,
+                    (Nullable<int> v) => v.HasValue ? (int)v : 0,
+                    (Nullable<int> v) => v.HasValue ? (Nullable<int>)(int)v : default(Nullable<int>)),
+                keyComparer: new ValueComparer<int?>(
+                    (Nullable<int> v1, Nullable<int> v2) => v1.HasValue && v2.HasValue && (int)v1 == (int)v2 || !v1.HasValue && !v2.HasValue,
+                    (Nullable<int> v) => v.HasValue ? (int)v : 0,
+                    (Nullable<int> v) => v.HasValue ? (Nullable<int>)(int)v : default(Nullable<int>)),
+                providerValueComparer: new ValueComparer<int?>(
+                    (Nullable<int> v1, Nullable<int> v2) => v1.HasValue && v2.HasValue && (int)v1 == (int)v2 || !v1.HasValue && !v2.HasValue,
+                    (Nullable<int> v) => v.HasValue ? (int)v : 0,
+                    (Nullable<int> v) => v.HasValue ? (Nullable<int>)(int)v : default(Nullable<int>)),
+                mappingInfo: new RelationalTypeMappingInfo(
+                    storeTypeName: "INTEGER"));
+
+            var insertInstant = runtimeEntityType.AddProperty(
+                "InsertInstant",
+                typeof(Instant?),
+                propertyInfo: typeof(Profile).GetProperty("InsertInstant", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(Profile).GetField("<InsertInstant>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                nullable: true);
+            insertInstant.TypeMapping = SqliteStringTypeMapping.Default.Clone(
+                comparer: new ValueComparer<Instant?>(
+                    (Nullable<Instant> v1, Nullable<Instant> v2) => object.Equals((object)v1, (object)v2),
+                    (Nullable<Instant> v) => v.GetHashCode(),
+                    (Nullable<Instant> v) => v),
+                keyComparer: new ValueComparer<Instant?>(
+                    (Nullable<Instant> v1, Nullable<Instant> v2) => object.Equals((object)v1, (object)v2),
+                    (Nullable<Instant> v) => v.GetHashCode(),
+                    (Nullable<Instant> v) => v),
+                providerValueComparer: new ValueComparer<string>(
+                    (string v1, string v2) => v1 == v2,
+                    (string v) => v.GetHashCode(),
+                    (string v) => v),
+                converter: new ValueConverter<Instant?, string>(
+                    (Nullable<Instant> x) => x != null ? x.Value.GetStringForDBColumn() : null,
+                    (string x) => x != null ? (Nullable<Instant>)x.GetInstantFromDBColumnString() : null),
+                jsonValueReaderWriter: new JsonConvertedValueReaderWriter<Instant?, string>(
+                    JsonStringReaderWriter.Instance,
+                    new ValueConverter<Instant?, string>(
+                        (Nullable<Instant> x) => x != null ? x.Value.GetStringForDBColumn() : null,
+                        (string x) => x != null ? (Nullable<Instant>)x.GetInstantFromDBColumnString() : null)));
 
             var name = runtimeEntityType.AddProperty(
                 "Name",
@@ -61,6 +106,26 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework
                 fieldInfo: typeof(Profile).GetField("<Name>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 nullable: true);
             name.TypeMapping = SqliteStringTypeMapping.Default;
+
+            var placeInfoID = runtimeEntityType.AddProperty(
+                "PlaceInfoID",
+                typeof(int?),
+                nullable: true);
+            placeInfoID.TypeMapping = IntTypeMapping.Default.Clone(
+                comparer: new ValueComparer<int?>(
+                    (Nullable<int> v1, Nullable<int> v2) => v1.HasValue && v2.HasValue && (int)v1 == (int)v2 || !v1.HasValue && !v2.HasValue,
+                    (Nullable<int> v) => v.HasValue ? (int)v : 0,
+                    (Nullable<int> v) => v.HasValue ? (Nullable<int>)(int)v : default(Nullable<int>)),
+                keyComparer: new ValueComparer<int?>(
+                    (Nullable<int> v1, Nullable<int> v2) => v1.HasValue && v2.HasValue && (int)v1 == (int)v2 || !v1.HasValue && !v2.HasValue,
+                    (Nullable<int> v) => v.HasValue ? (int)v : 0,
+                    (Nullable<int> v) => v.HasValue ? (Nullable<int>)(int)v : default(Nullable<int>)),
+                providerValueComparer: new ValueComparer<int?>(
+                    (Nullable<int> v1, Nullable<int> v2) => v1.HasValue && v2.HasValue && (int)v1 == (int)v2 || !v1.HasValue && !v2.HasValue,
+                    (Nullable<int> v) => v.HasValue ? (int)v : 0,
+                    (Nullable<int> v) => v.HasValue ? (Nullable<int>)(int)v : default(Nullable<int>)),
+                mappingInfo: new RelationalTypeMappingInfo(
+                    storeTypeName: "INTEGER"));
 
             var sequenceNo = runtimeEntityType.AddProperty(
                 "SequenceNo",
@@ -88,7 +153,45 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework
                 new[] { iD });
             runtimeEntityType.SetPrimaryKey(key);
 
+            var index = runtimeEntityType.AddIndex(
+                new[] { countryID });
+
+            var index0 = runtimeEntityType.AddIndex(
+                new[] { placeInfoID });
+
             return runtimeEntityType;
+        }
+
+        public static RuntimeForeignKey CreateForeignKey1(RuntimeEntityType declaringEntityType, RuntimeEntityType principalEntityType)
+        {
+            var runtimeForeignKey = declaringEntityType.AddForeignKey(new[] { declaringEntityType.FindProperty("CountryID") },
+                principalEntityType.FindKey(new[] { principalEntityType.FindProperty("ID") }),
+                principalEntityType);
+
+            var country = declaringEntityType.AddNavigation("Country",
+                runtimeForeignKey,
+                onDependent: true,
+                typeof(FaziletCountry),
+                propertyInfo: typeof(Profile).GetProperty("Country", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(Profile).GetField("<Country>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
+
+            return runtimeForeignKey;
+        }
+
+        public static RuntimeForeignKey CreateForeignKey2(RuntimeEntityType declaringEntityType, RuntimeEntityType principalEntityType)
+        {
+            var runtimeForeignKey = declaringEntityType.AddForeignKey(new[] { declaringEntityType.FindProperty("PlaceInfoID") },
+                principalEntityType.FindKey(new[] { principalEntityType.FindProperty("ID") }),
+                principalEntityType);
+
+            var placeInfo = declaringEntityType.AddNavigation("PlaceInfo",
+                runtimeForeignKey,
+                onDependent: true,
+                typeof(CompletePlaceInfo),
+                propertyInfo: typeof(Profile).GetProperty("PlaceInfo", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(Profile).GetField("<PlaceInfo>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
+
+            return runtimeForeignKey;
         }
 
         public static void CreateAnnotations(RuntimeEntityType runtimeEntityType)

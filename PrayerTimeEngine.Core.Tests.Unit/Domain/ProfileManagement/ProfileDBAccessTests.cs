@@ -5,6 +5,7 @@ using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Domain.Models;
 using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Models;
 using PrayerTimeEngine.Core.Tests.Common.TestData;
+using PrayerTimeEngine.Core.Domain.PlaceManagement.Models;
 
 namespace PrayerTimeEngine.Core.Tests.Unit.Domain.ProfileManagement
 {
@@ -114,8 +115,28 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.ProfileManagement
                     (ECalculationSource.Fazilet, new FaziletLocationData { CountryName = "DeutschlandYeah", CityName = "BerlinYeah" })
                 ];
 
+            var placeInfo =
+                new CompletePlaceInfo
+                {
+                    OrmID = "1",
+                    Longitude = 1M,
+                    Latitude = 1M,
+                    InfoLanguageCode = "de",
+                    Country = "Deutschland",
+                    City = "Berlin",
+                    CityDistrict = "",
+                    PostCode = "",
+                    Street = "",
+                    TimezoneInfo = new TimezoneInfo
+                    {
+                        DisplayName = "",
+                        Name = "",
+                        UtcOffsetSeconds = 0
+                    }
+                };
+
             // ACT
-            await _profileDBAccess.UpdateLocationConfig(profile, "Berlin", values, default);
+            await _profileDBAccess.UpdateLocationConfig(profile, placeInfo, values, default);
 
             // ASSERT
             profile.LocationConfigs.Should().HaveCount(1);

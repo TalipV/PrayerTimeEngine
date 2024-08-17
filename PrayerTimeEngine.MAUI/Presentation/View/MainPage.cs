@@ -1,12 +1,11 @@
 ﻿using CommunityToolkit.Maui.Storage;
 using OnScreenSizeMarkup.Maui.Helpers;
 using PrayerTimeEngine.Core.Common.Enum;
-using PrayerTimeEngine.Presentation;
-using PrayerTimeEngine.Presentation.GraphicsView;
+using PrayerTimeEngine.Presentation.GraphicsViews;
 using PrayerTimeEngine.Presentation.ViewModel;
 using UraniumUI.Material.Controls;
 
-namespace PrayerTimeEngine
+namespace PrayerTimeEngine.Presentation.View
 {
     public partial class MainPage : ContentPage
     {
@@ -16,18 +15,18 @@ namespace PrayerTimeEngine
         public MainPage(IDispatcher dispatcher, MainPageViewModel viewModel)
         {
             _dispatcher = dispatcher;
-            BindingContext = this._viewModel = viewModel;
-            this.Content = createUI();
+            BindingContext = _viewModel = viewModel;
+            Content = createUI();
 
-            this.BackgroundColor = Color.FromRgb(243, 234, 227);
+            BackgroundColor = Color.FromRgb(243, 234, 227);
 
             viewModel.OnAfterLoadingPrayerTimes_EventTrigger += ViewModel_OnAfterLoadingPrayerTimes_EventTrigger;
 
-            this.lastUpdatedTextInfo.GestureRecognizers
+            lastUpdatedTextInfo.GestureRecognizers
                 .Add(
                     new TapGestureRecognizer
                     {
-                        Command = new Command(async () => await this.openOptionsMenu().ConfigureAwait(false)),
+                        Command = new Command(async () => await openOptionsMenu().ConfigureAwait(false)),
                         NumberOfTapsRequired = 2,
                     });
         }
@@ -60,7 +59,7 @@ namespace PrayerTimeEngine
             {
                 doRepeat = false;
 
-                switch (await this.DisplayActionSheet(
+                switch (await DisplayActionSheet(
                     title: _optionsText,
                     cancel: _cancelText,
                     destruction: null,
@@ -70,7 +69,7 @@ namespace PrayerTimeEngine
                 {
                     case _generalOptionText:
 
-                        switch (await this.DisplayActionSheet(
+                        switch (await DisplayActionSheet(
                             title: _generalOptionText,
                             cancel: _backText,
                             destruction: null,
@@ -80,13 +79,13 @@ namespace PrayerTimeEngine
                             _setCustomTextSizes))
                         {
                             case _showTimeConfigsOverviewText:
-                                await DisplayAlert("Info", this._viewModel.GetPrayerTimeConfigDisplayText(), "Ok");
+                                await DisplayAlert("Info", _viewModel.GetPrayerTimeConfigDisplayText(), "Ok");
                                 break;
                             case _showLocationConfigsOverviewText:
-                                await DisplayAlert("Info", this._viewModel.GetLocationDataDisplayText(), "Ok");
+                                await DisplayAlert("Info", _viewModel.GetLocationDataDisplayText(), "Ok");
                                 break;
                             case _showLogsText:
-                                this._viewModel.GoToLogsPageCommand.Execute(null);
+                                _viewModel.GoToLogsPageCommand.Execute(null);
                                 break;
                             case _setCustomTextSizes:
                                 showCustomTextSizesInputPopup();
@@ -100,7 +99,7 @@ namespace PrayerTimeEngine
 
                     case _technicalOptionText:
 
-                        switch (await this.DisplayActionSheet(
+                        switch (await DisplayActionSheet(
                             title: _technicalOptionText,
                             cancel: _backText,
                             destruction: null,
@@ -109,7 +108,7 @@ namespace PrayerTimeEngine
                             _deviceInfoText))
                         {
                             case _showDbTablesText:
-                                await this._viewModel.ShowDatabaseTable();
+                                await _viewModel.ShowDatabaseTable();
                                 break;
                             case _saveDbFileText:
                                 FolderPickerResult folderPickerResult = await FolderPicker.PickAsync(CancellationToken.None);
@@ -128,12 +127,12 @@ namespace PrayerTimeEngine
                                 await DisplayAlert(
                                     "Geräteinformationen",
                                     $"""
-                            Modell: {DeviceInfo.Manufacturer.ToUpper()}, {DeviceInfo.Model}
-                            Art: {DeviceInfo.Idiom}, {DeviceInfo.DeviceType}
-                            OS: {DeviceInfo.Platform}, {DeviceInfo.VersionString}
-                            Auflösung: {DeviceDisplay.MainDisplayInfo.Height}x{DeviceDisplay.MainDisplayInfo.Width} (Dichte: {DeviceDisplay.MainDisplayInfo.Density})
-                            Kategorie der Größe: {Presentation.DebugUtil.GetScreenSizeCategoryName()}
-                        """
+                                        Modell: {DeviceInfo.Manufacturer.ToUpper()}, {DeviceInfo.Model}
+                                        Art: {DeviceInfo.Idiom}, {DeviceInfo.DeviceType}
+                                        OS: {DeviceInfo.Platform}, {DeviceInfo.VersionString}
+                                        Auflösung: {DeviceDisplay.MainDisplayInfo.Height}x{DeviceDisplay.MainDisplayInfo.Width} (Dichte: {DeviceDisplay.MainDisplayInfo.Density})
+                                        Kategorie der Größe: {DebugUtil.GetScreenSizeCategoryName()}
+                                    """
                                     , "Ok");
                                 break;
                             case _backText:
@@ -144,7 +143,7 @@ namespace PrayerTimeEngine
                         break;
                     case _systemOptionText:
 
-                        switch (await this.DisplayActionSheet(
+                        switch (await DisplayActionSheet(
                             title: _systemOptionText,
                             cancel: _backText,
                             destruction: null,
@@ -287,24 +286,24 @@ namespace PrayerTimeEngine
             activityIndicator.SetBinding(ActivityIndicator.IsRunningProperty, nameof(MainPageViewModel.IsLoadingPrayerTimesOrSelectedPlace));
             titleGrid.AddWithSpan(activityIndicator, row: 0, column: 0, columnSpan: 2);
 
-            this.lastUpdatedTextInfo = new Label
+            lastUpdatedTextInfo = new Label
             {
                 HorizontalTextAlignment = TextAlignment.Start,
                 VerticalTextAlignment = TextAlignment.Center
             };
             lastUpdatedTextInfo.SetBinding(Label.TextProperty, new Binding("PrayerTimeBundle.DataCalculationTimestamp", stringFormat: "{0:dd.MM, HH:mm:ss}"));
-            lastUpdatedTextInfo.SetBinding(Label.IsVisibleProperty, nameof(MainPageViewModel.IsNotLoadingPrayerTimesOrSelectedPlace));
+            lastUpdatedTextInfo.SetBinding(IsVisibleProperty, nameof(MainPageViewModel.IsNotLoadingPrayerTimesOrSelectedPlace));
             titleGrid.AddWithSpan(lastUpdatedTextInfo, row: 0, column: 0);
 
-            var currentProfileLocationName = new Label
+            var currentProfilePlaceName = new Label
             {
                 Padding = new Thickness(0, 0, 20, 0),
                 HorizontalTextAlignment = TextAlignment.End,
                 VerticalTextAlignment = TextAlignment.Center
             };
-            currentProfileLocationName.SetBinding(Label.TextProperty, "CurrentProfile.LocationName");
-            currentProfileLocationName.SetBinding(Label.IsVisibleProperty, nameof(MainPageViewModel.IsNotLoadingPrayerTimesOrSelectedPlace));
-            titleGrid.AddWithSpan(currentProfileLocationName, row: 0, column: 1);
+            currentProfilePlaceName.SetBinding(Label.TextProperty, "CurrentProfile.PlaceInfo.City");
+            currentProfilePlaceName.SetBinding(IsVisibleProperty, nameof(MainPageViewModel.IsNotLoadingPrayerTimesOrSelectedPlace));
+            titleGrid.AddWithSpan(currentProfilePlaceName, row: 0, column: 1);
 
             NavigationPage.SetTitleView(this, titleGrid);
 
@@ -363,7 +362,7 @@ namespace PrayerTimeEngine
             searchBox.SetBinding(AutoCompleteTextField.ItemsSourceProperty, nameof(MainPageViewModel.FoundPlacesSelectionTexts));
             searchBox.SetBinding(AutoCompleteTextField.SelectedTextProperty, nameof(MainPageViewModel.SelectedPlaceText));
             searchBox.SetBinding(AutoCompleteTextField.TextProperty, nameof(MainPageViewModel.PlaceSearchText));
-            searchBox.SetBinding(AutoCompleteTextField.IsEnabledProperty, nameof(MainPageViewModel.IsNotLoadingSelectedPlace));
+            searchBox.SetBinding(IsEnabledProperty, nameof(MainPageViewModel.IsNotLoadingSelectedPlace));
             mainGrid.AddWithSpan(searchBox, row: 0, column: 0, columnSpan: 5);
 
             // Add prayer time labels and text for each prayer time
@@ -413,7 +412,7 @@ namespace PrayerTimeEngine
             // STATUS TEXTS
             new List<Label>()
             {
-                lastUpdatedTextInfo, currentProfileLocationName
+                lastUpdatedTextInfo, currentProfilePlaceName
             }.ForEach(label =>
             {
                 label.FontSize =
@@ -482,7 +481,7 @@ namespace PrayerTimeEngine
 
                 if (!string.IsNullOrEmpty(showSubtime1Binding))
                 {
-                    subtime1Label.SetBinding(Label.IsVisibleProperty, new Binding(showSubtime1Binding, stringFormat: "{0:HH:mm:ss}"));
+                    subtime1Label.SetBinding(IsVisibleProperty, new Binding(showSubtime1Binding, stringFormat: "{0:HH:mm:ss}"));
                 }
 
                 var subtime1DisplayText = new Label
@@ -495,7 +494,7 @@ namespace PrayerTimeEngine
                 subtime1DisplayText.SetBinding(Label.TextProperty, new Binding(subtime1Binding, stringFormat: "{0:HH:mm:ss}"));
                 if (!string.IsNullOrEmpty(showSubtime1Binding))
                 {
-                    subtime1DisplayText.SetBinding(Label.IsVisibleProperty, new Binding(showSubtime1Binding, stringFormat: "{0:HH:mm:ss}"));
+                    subtime1DisplayText.SetBinding(IsVisibleProperty, new Binding(showSubtime1Binding, stringFormat: "{0:HH:mm:ss}"));
                 }
 
                 grid.AddWithSpan(subtime1Label, startRowNo + 2, startColumnNo);
@@ -516,7 +515,7 @@ namespace PrayerTimeEngine
                 };
                 if (!string.IsNullOrEmpty(showSubtime2Binding))
                 {
-                    subtime2Label.SetBinding(Label.IsVisibleProperty, new Binding(showSubtime2Binding, stringFormat: "{0:HH:mm:ss}"));
+                    subtime2Label.SetBinding(IsVisibleProperty, new Binding(showSubtime2Binding, stringFormat: "{0:HH:mm:ss}"));
                 }
 
                 var subtime2DisplayText = new Label
@@ -530,7 +529,7 @@ namespace PrayerTimeEngine
 
                 if (!string.IsNullOrEmpty(showSubtime2Binding))
                 {
-                    subtime2DisplayText.SetBinding(Label.IsVisibleProperty, new Binding(showSubtime2Binding, stringFormat: "{0:HH:mm:ss}"));
+                    subtime2DisplayText.SetBinding(IsVisibleProperty, new Binding(showSubtime2Binding, stringFormat: "{0:HH:mm:ss}"));
                 }
 
                 grid.AddWithSpan(subtime2Label, startRowNo + 3, startColumnNo);
@@ -551,7 +550,7 @@ namespace PrayerTimeEngine
                 };
                 if (!string.IsNullOrEmpty(showSubtime3Binding))
                 {
-                    subtime3Label.SetBinding(Label.IsVisibleProperty, new Binding(showSubtime3Binding, stringFormat: "{0:HH:mm:ss}"));
+                    subtime3Label.SetBinding(IsVisibleProperty, new Binding(showSubtime3Binding, stringFormat: "{0:HH:mm:ss}"));
                 }
 
                 var subtime3DisplayText = new Label
@@ -565,7 +564,7 @@ namespace PrayerTimeEngine
 
                 if (!string.IsNullOrEmpty(showSubtime3Binding))
                 {
-                    subtime3DisplayText.SetBinding(Label.IsVisibleProperty, new Binding(showSubtime3Binding, stringFormat: "{0:HH:mm:ss}"));
+                    subtime3DisplayText.SetBinding(IsVisibleProperty, new Binding(showSubtime3Binding, stringFormat: "{0:HH:mm:ss}"));
                 }
 
                 grid.AddWithSpan(subtime3Label, startRowNo + 4, startColumnNo);

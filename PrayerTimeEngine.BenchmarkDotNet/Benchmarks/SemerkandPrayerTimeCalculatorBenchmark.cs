@@ -15,6 +15,7 @@ using Microsoft.Extensions.Logging;
 using NSubstitute.ReturnsExtensions;
 using PrayerTimeEngine.Core.Tests.Common.TestData;
 using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Models.Entities;
+using PrayerTimeEngine.Core.Common;
 
 namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
 {
@@ -24,7 +25,7 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
     {
         #region data
 
-        private static readonly LocalDate _localDate = new(2023, 7, 29);
+        private static readonly ZonedDateTime _zonedDateTime = new LocalDate(2023, 7, 29).AtStartOfDayInZone(TestDataHelper.EUROPE_VIENNA_TIME_ZONE);
 
         private static readonly List<GenericSettingConfiguration> _configs =
             [
@@ -36,7 +37,7 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
             {
                 CountryName = "Avusturya",
                 CityName = "Innsbruck",
-                TimezoneName = "Europe/Vienna"
+                TimezoneName = TestDataHelper.EUROPE_VIENNA_TIME_ZONE.Id
             };
 
         #endregion data
@@ -50,7 +51,7 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
                     SubstitutionHelper.GetMockedSemerkandApiService(),
                     Substitute.For<IPlaceService>(),
                     Substitute.For<ILogger<SemerkandPrayerTimeCalculator>>()
-                ).GetPrayerTimesAsync(_localDate, _locationData, _configs, default).GetAwaiter().GetResult();
+                ).GetPrayerTimesAsync(_zonedDateTime, _locationData, _configs, default).GetAwaiter().GetResult();
 
             // throw exceptions when the calculator tries using the api
             ISemerkandApiService mockedSemerkandApiService = Substitute.For<ISemerkandApiService>();
@@ -70,7 +71,7 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
             var semerkandDbAccessMock = Substitute.For<ISemerkandDBAccess>();
             semerkandDbAccessMock.GetCountries(Arg.Any<CancellationToken>()).Returns([]);
             semerkandDbAccessMock.GetCitiesByCountryID(Arg.Any<int>(), Arg.Any<CancellationToken>()).Returns([]);
-            semerkandDbAccessMock.GetTimesByDateAndCityID(Arg.Any<LocalDate>(), Arg.Any<int>(), Arg.Any<CancellationToken>()).ReturnsNull<SemerkandPrayerTimes>();
+            semerkandDbAccessMock.GetTimesByDateAndCityID(Arg.Any<ZonedDateTime>(), Arg.Any<int>(), Arg.Any<CancellationToken>()).ReturnsNull<SemerkandPrayerTimes>();
 
             return new SemerkandPrayerTimeCalculator(
                     // returns null per default
@@ -89,7 +90,7 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
             var dbOptions = new DbContextOptionsBuilder()
                 .UseSqlite($"Data Source=:memory:")
                 .Options;
-            var appDbContext = new AppDbContext(dbOptions);
+            var appDbContext = new AppDbContext(dbOptions, new AppDbContextMetaData(), Substitute.For<ISystemInfoService>());
             _dbContextKeepAliveSqlConnection = appDbContext.Database.GetDbConnection();
             _dbContextKeepAliveSqlConnection.Open();
             appDbContext.Database.EnsureCreated();
@@ -106,7 +107,7 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
         public List<(ETimeType TimeType, ZonedDateTime ZonedDateTime)> SemerkandPrayerTimeCalculator_GetDataFromDb()
         {
             var result = _semerkandPrayerTimeCalculator_DataFromDbStorage.GetPrayerTimesAsync(
-                _localDate,
+                _zonedDateTime,
                 locationData: _locationData,
                 configurations: _configs, 
                 cancellationToken: default).GetAwaiter().GetResult();
@@ -123,7 +124,7 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
         public List<(ETimeType TimeType, ZonedDateTime ZonedDateTime)> SemerkandPrayerTimeCalculator_GetDataFromApi()
         {
             var result = _semerkandPrayerTimeCalculator_DataFromApi.GetPrayerTimesAsync(
-                _localDate,
+                _zonedDateTime,
                 locationData: _locationData,
                 configurations: _configs, 
                 cancellationToken: default).GetAwaiter().GetResult();

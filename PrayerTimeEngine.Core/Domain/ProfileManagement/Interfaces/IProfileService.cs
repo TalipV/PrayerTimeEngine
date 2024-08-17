@@ -1,5 +1,6 @@
 ﻿using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Domain.Models;
+using PrayerTimeEngine.Core.Domain.PlaceManagement.Models;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
 
 namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Interfaces
@@ -12,7 +13,7 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Interfaces
         public GenericSettingConfiguration GetTimeConfig(Profile profile, ETimeType timeType);
         public BaseLocationData GetLocationConfig(Profile profile, ECalculationSource calculationSource);
 
-        public Task UpdateLocationConfig(Profile profile, string locationName, List<(ECalculationSource CalculationSource, BaseLocationData LocationData)> locationDataByCalculationSource, CancellationToken cancellationToken);
+        public Task UpdateLocationConfig(Profile profile, CompletePlaceInfo placeInfo, List<(ECalculationSource CalculationSource, BaseLocationData LocationData)> locationDataByCalculationSource, CancellationToken cancellationToken);
         public Task UpdateTimeConfig(Profile profile, ETimeType timeType, GenericSettingConfiguration settings, CancellationToken cancellationToken);
 
         public string GetLocationDataDisplayText(Profile profile);

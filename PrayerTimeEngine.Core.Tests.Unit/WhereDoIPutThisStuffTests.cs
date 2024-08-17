@@ -2,9 +2,9 @@
 {
     public class WhereDoIPutThisStuffTests
     {
+        [Fact]
         public void PrayerTimeBundle_SetSpecificPrayerTimeDateTime_X_X()
         {
-            throw new NotImplementedException();
         }
     }
 }

@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Metadata;
 #pragma warning disable 219, 612, 618
 #nullable disable
 
-namespace PrayerTimeEngine.Core.Data.EntityFramework
+namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
 {
     [DbContext(typeof(AppDbContext))]
     public partial class AppDbContextModel : RuntimeModel

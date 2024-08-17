@@ -1,7 +1,7 @@
-﻿using PrayerTimeEngine.Core.Domain.PlaceManagement.Models.DTOs;
+﻿using PrayerTimeEngine.Core.Domain.PlaceManagement.Services.LocationIQ.DTOs;
 using Refit;
 
-namespace PrayerTimeEngine.Core.Domain.PlaceManagement.Services
+namespace PrayerTimeEngine.Core.Domain.PlaceManagement.Services.LocationIQ
 {
     public interface ILocationIQApiService
     {
@@ -9,7 +9,7 @@ namespace PrayerTimeEngine.Core.Domain.PlaceManagement.Services
 
         [Get($$"""/timezone?format=json&key={accessToken}&lat={latitude}&lon={longitude}""")]
         Task<LocationIQTimezoneResponseDTO> GetTimezoneAsync(
-            decimal latitude, 
+            decimal latitude,
             decimal longitude,
             string accessToken,
             CancellationToken cancellationToken);
@@ -17,7 +17,7 @@ namespace PrayerTimeEngine.Core.Domain.PlaceManagement.Services
         // &countrycodes is also available to restrict results to countries
         [Get($$"""/autocomplete?format=json&key={accessToken}&addressdetails=1&limit={{MAX_RESULTS}}&accept-language={language}&q={searchTerm}""")]
         Task<List<LocationIQPlace>> GetPlacesAsync(
-            string language, 
+            string language,
             string searchTerm,
             string accessToken,
             CancellationToken cancellationToken);

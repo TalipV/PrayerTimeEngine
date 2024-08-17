@@ -1,9 +1,11 @@
 ﻿using AsyncKeyedLock;
 using Microsoft.Extensions.Logging;
 using NodaTime;
+using PrayerTimeEngine.Core.Common;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Interfaces;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Models;
-using PrayerTimeEngine.Core.Domain.PlaceManagement.Models.DTOs;
+using PrayerTimeEngine.Core.Domain.PlaceManagement.Services.LocationIQ;
+using PrayerTimeEngine.Core.Domain.PlaceManagement.Services.LocationIQ.DTOs;
 using Refit;
 using System.Globalization;
 
@@ -11,6 +13,7 @@ namespace PrayerTimeEngine.Core.Domain.PlaceManagement.Services
 {
     public class PlaceService(
             ILocationIQApiService locationIQApiService,
+            ISystemInfoService systemInfoService,
             ILogger<PlaceService> logger
         ) : IPlaceService
     {
@@ -20,15 +23,24 @@ namespace PrayerTimeEngine.Core.Domain.PlaceManagement.Services
         {
             await ensureCooldown(cancellationToken).ConfigureAwait(false);
 
-            LocationIQTimezoneResponseDTO locationIQTimezone = 
+            LocationIQTimezoneResponseDTO locationIQTimezone =
                 await locationIQApiService.GetTimezoneAsync(
-                    basicPlaceInfo.Latitude, 
+                    basicPlaceInfo.Latitude,
                     basicPlaceInfo.Longitude,
                     _apiKey,
                     cancellationToken).ConfigureAwait(false);
 
-            return new CompletePlaceInfo(basicPlaceInfo)
+            return new CompletePlaceInfo()
             {
+                OrmID = basicPlaceInfo.OrmID,
+                Longitude = basicPlaceInfo.Longitude, 
+                Latitude = basicPlaceInfo.Latitude,
+                InfoLanguageCode = basicPlaceInfo.InfoLanguageCode,
+                Country = basicPlaceInfo.Country, 
+                City = basicPlaceInfo.City, 
+                CityDistrict = basicPlaceInfo.CityDistrict,
+                PostCode = basicPlaceInfo.PostCode, 
+                Street = basicPlaceInfo.Street,
                 TimezoneInfo = new TimezoneInfo
                 {
                     DisplayName = locationIQTimezone.LocationIQTimezone.ShortName,
@@ -68,7 +80,7 @@ namespace PrayerTimeEngine.Core.Domain.PlaceManagement.Services
                     language,
                     inputPlace.Latitude,
                     inputPlace.Longitude,
-                    inputPlace.ID,
+                    inputPlace.OrmID,
                     _apiKey,
                     cancellationToken).ConfigureAwait(false);
 
@@ -88,7 +100,7 @@ namespace PrayerTimeEngine.Core.Domain.PlaceManagement.Services
                 {
                     if (lastCooldownCheck != null)
                     {
-                        Instant currentInstant = SystemClock.Instance.GetCurrentInstant();
+                        Instant currentInstant = systemInfoService.GetCurrentInstant();
                         int millisecondsSinceLastCooldownCheck = (int)Math.Floor((currentInstant - lastCooldownCheck.Value).TotalMilliseconds);
 
                         if (millisecondsSinceLastCooldownCheck < NECESSARY_COOL_DOWN_MS)
@@ -104,7 +116,7 @@ namespace PrayerTimeEngine.Core.Domain.PlaceManagement.Services
                 }
                 finally
                 {
-                    lastCooldownCheck = SystemClock.Instance.GetCurrentInstant();
+                    lastCooldownCheck = systemInfoService.GetCurrentInstant();
                     logger.LogDebug("Cooldown end at {Instant} ms", lastCooldownCheck.Value.ToUnixTimeMilliseconds());
                 }
             }
@@ -112,16 +124,18 @@ namespace PrayerTimeEngine.Core.Domain.PlaceManagement.Services
 
         private static BasicPlaceInfo getlocationIQPlace(LocationIQPlace locationIQPlace, string languageCode)
         {
-            return new BasicPlaceInfo(
-                id: locationIQPlace.OsmID,
-                longitude: decimal.Parse(locationIQPlace.Longitude, CultureInfo.InvariantCulture),
-                latitude: decimal.Parse(locationIQPlace.Latitude, CultureInfo.InvariantCulture),
-                infoLanguageCode: languageCode,
-                country: locationIQPlace.Address.Country,
-                city: locationIQPlace.Address.City,
-                cityDistrict: locationIQPlace.Address.Suburb,
-                postCode: locationIQPlace.Address.Postcode,
-                street: $"{locationIQPlace.Address.Road} {locationIQPlace.Address.HouseNumber}");
+            return new BasicPlaceInfo
+            {
+                OrmID = locationIQPlace.OsmID,
+                Longitude = decimal.Parse(locationIQPlace.Longitude, CultureInfo.InvariantCulture),
+                Latitude = decimal.Parse(locationIQPlace.Latitude, CultureInfo.InvariantCulture),
+                InfoLanguageCode = languageCode,
+                Country = locationIQPlace.Address.Country,
+                City = locationIQPlace.Address.City,
+                CityDistrict = locationIQPlace.Address.Suburb,
+                PostCode = locationIQPlace.Address.Postcode,
+                Street = $"{locationIQPlace.Address.Road} {locationIQPlace.Address.HouseNumber}"
+            };
         }
     }
 }

@@ -3,11 +3,11 @@ using Android.Content;
 using Android.OS;
 using Microsoft.Extensions.Logging;
 using NodaTime;
+using PrayerTimeEngine.Core.Common;
 using PrayerTimeEngine.Core.Domain.CalculationManagement;
 using PrayerTimeEngine.Core.Domain.Models;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Interfaces;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
-using PrayerTimeEngine.Services.SystemInfoService;
 
 namespace PrayerTimeEngine.Services.PrayerTimeSummaryNotification
 {
@@ -89,7 +89,7 @@ namespace PrayerTimeEngine.Services.PrayerTimeSummaryNotification
                 try
                 {
                     var notificationBuilder = GetNotificationBuilder();
-                    notificationBuilder.SetContentTitle((await _profileService.GetProfiles(default)).First().LocationName);
+                    notificationBuilder.SetContentTitle((await _profileService.GetProfiles(default)).First().PlaceInfo.City);
                     notificationBuilder.SetContentText(await getRemainingTimeText(cancellationTokenSource.Token));
 
                     var context = Android.App.Application.Context;

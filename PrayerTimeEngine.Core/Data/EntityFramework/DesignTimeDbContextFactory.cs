@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
+using PrayerTimeEngine.Core.Common;
 
 namespace PrayerTimeEngine.Core.Data.EntityFramework
 {
@@ -10,7 +11,10 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework
             var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
             optionsBuilder.UseSqlite("Data Source=:memory:");
 
-            return new AppDbContext(optionsBuilder.Options);
+            return new AppDbContext(
+                optionsBuilder.Options, 
+                new AppDbContextMetaData(),
+                NSubstitute.Substitute.For<ISystemInfoService>());
         }
     }
 

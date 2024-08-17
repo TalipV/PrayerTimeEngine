@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using Plugin.Maui.DebugRainbows;
 using PrayerTimeEngine.Core.Common;
 using PrayerTimeEngine.Core.Data.EntityFramework;
+using PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels;
 using PrayerTimeEngine.Core.Domain;
 using PrayerTimeEngine.Core.Domain.CalculationManagement;
 using PrayerTimeEngine.Core.Domain.Calculators;
@@ -16,6 +17,7 @@ using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Interfaces;
 using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Interfaces;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Services;
+using PrayerTimeEngine.Core.Domain.PlaceManagement.Services.LocationIQ;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Interfaces;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Services;
 using PrayerTimeEngine.Presentation.Service.Navigation;
@@ -33,8 +35,10 @@ namespace PrayerTimeEngine;
 // weak event manager?
 
 
-/* CLI commands cheat sheet
- * dotnet publish -c release -f net7.0-android -p:false
+/* CLI commands cheat sheet (executed in solution folder)
+ * Generate Release APK:    dotnet publish -c release -f net8.0-android -p:false
+ * EF Migration:            dotnet ef migrations add InitialMigration --output-dir PrayerTimeEngine.Core\Data\EntityFramework\Generated_Migrations --namespace PrayerTimeEngine.Core.Data.EntityFramework.Migrations --context PrayerTimeEngine.Core.Data.EntityFramework.AppDbContext --project PrayerTimeEngine.Core\PrayerTimeEngine.Core.csproj
+ * EF Compiled Models:      dotnet ef dbcontext optimize --output-dir Data\EntityFramework\Generated_CompiledModels --namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels --context PrayerTimeEngine.Core.Data.EntityFramework.AppDbContext --project PrayerTimeEngine.Core\PrayerTimeEngine.Core.csproj
  */
 
 /* BUGS:
@@ -47,6 +51,7 @@ namespace PrayerTimeEngine;
  * - Calculation relevant data like the Profile with its configs may change in the middle of the calculation process due to shared references
  * - Semerkand sometimes puts "*" in the json for their times which is not handled in the app (e.g. "*23:54")
  * - Semerkand sometimes has countries and cities with duplicate names
+ * - remove AppDbContextModel _useOldBehavior31751 temp fix
  */
 
 /* TODO general:
@@ -55,9 +60,7 @@ namespace PrayerTimeEngine;
  * - Decrease count of reloads (e.g. mere app switch shouldn't always require reload)
  * - Transactions when saving country data and city data to prevent partial safes (or rethink the whole thing)
  * - PlaceService and ProfileService with no or default CancellationToken?
- * - delete old db cache data from time to time
  * - Consider Muwaqqit API changes and maybe additionally use old API endpoint
- * - Save whole PlaceInfo for Profile.LocationName for more flexibility with the display name
  * - Remove #IF ANDROID (and similiar) statements from main code by abstracting logic with interfaces so that OS specific stuff is handled in DI factory code here
  * - Consistent naming of awaitable methods with or without Async suffix
  */
@@ -99,7 +102,10 @@ public static class MauiProgram
         MauiAppBuilder builder = MauiApp.CreateBuilder();
         builder
             .UseMauiApp<App>()
-            .UseMauiCommunityToolkit()
+            .UseMauiCommunityToolkit(options =>
+            {
+                options.SetShouldEnableSnackbarOnWindows(true);
+            })
             .UseUraniumUI()
             .UseUraniumUIMaterial()
             .UseDebugRainbows(new DebugRainbowsOptions { ShowRainbows = false })
@@ -191,6 +197,7 @@ public static class MauiProgram
         // Transient because (Microsoft) "A DbContext instance is designed to be used for a single unit-of-work. This means that the lifetime of a DbContext instance is usually very short."
         contextLifetime: ServiceLifetime.Transient, 
         optionsLifetime: ServiceLifetime.Singleton);
+        serviceCollection.AddSingleton<AppDbContextMetaData>();
 
         serviceCollection.AddSingleton<ISystemInfoService, SystemInfoService>();
         serviceCollection.AddSingleton<TimeTypeAttributeService>();
@@ -216,11 +223,12 @@ public static class MauiProgram
 
             return new PlaceService(
                 RestService.For<ILocationIQApiService>(httpClient), 
+                sp.GetRequiredService<ISystemInfoService>(),
                 sp.GetRequiredService<ILogger<PlaceService>>());
         });
 
 #if ANDROID
-        serviceCollection.AddSingleton<Services.PrayerTimeSummaryNotificationManager>();
+        serviceCollection.AddSingleton<Services.PrayerTimeSummaryNotification.PrayerTimeSummaryNotificationManager>();
 #endif
 
         addApiServices(serviceCollection);
@@ -231,6 +239,7 @@ public static class MauiProgram
     {
         // FAZILET
         serviceCollection.AddTransient<IFaziletDBAccess, FaziletDBAccess>();
+        serviceCollection.AddTransient<IPrayerTimeCacheCleaner, FaziletDBAccess>();
         serviceCollection
             .AddRefitClient<IFaziletApiService>()
             .ConfigureHttpClient(config =>
@@ -243,6 +252,7 @@ public static class MauiProgram
 
         // SEMERKAND
         serviceCollection.AddTransient<ISemerkandDBAccess, SemerkandDBAccess>();
+        serviceCollection.AddTransient<IPrayerTimeCacheCleaner, SemerkandDBAccess>();
         serviceCollection
             .AddRefitClient<ISemerkandApiService>()
             .ConfigureHttpClient(config =>
@@ -255,6 +265,7 @@ public static class MauiProgram
 
         // MUWAQQIT
         serviceCollection.AddTransient<IMuwaqqitDBAccess, MuwaqqitDBAccess>();
+        serviceCollection.AddTransient<IPrayerTimeCacheCleaner, MuwaqqitDBAccess>();
         serviceCollection
             .AddRefitClient<IMuwaqqitApiService>()
             .ConfigureHttpClient(config =>

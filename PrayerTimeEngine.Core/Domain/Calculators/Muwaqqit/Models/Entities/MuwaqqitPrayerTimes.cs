@@ -1,16 +1,17 @@
 ﻿using NodaTime;
 using PrayerTimeEngine.Core.Common.Enum;
+using PrayerTimeEngine.Core.Data.EntityFramework;
 using PrayerTimeEngine.Core.Domain.Models;
 using System.ComponentModel.DataAnnotations;
 
 namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Models.Entities
 {
-    public class MuwaqqitPrayerTimes : IPrayerTimes
+    public class MuwaqqitPrayerTimes : IPrayerTimes, IInsertedAt
     {
         [Key]
         public int ID { get; set; }
 
-        public required LocalDate Date { get; set; }
+        public required ZonedDateTime Date { get; set; }
         public required decimal Longitude { get; set; }
         public required decimal Latitude { get; set; }
         public Instant? InsertInstant { get; set; }

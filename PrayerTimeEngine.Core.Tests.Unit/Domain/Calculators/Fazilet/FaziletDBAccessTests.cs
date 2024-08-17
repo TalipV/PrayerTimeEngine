@@ -117,7 +117,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Fazilet
         {
             // ARRANGE
             var date = new LocalDate(2023, 1, 5);
-            ZonedDateTime dateInUTC = date.AtStartOfDayInZone(DateTimeZone.Utc);
+            ZonedDateTime dateInUtc = date.AtStartOfDayInZone(DateTimeZone.Utc);
             var germany = new FaziletCountry { ID = 1, Name = "Deutschland" };
             var gerCity1 = new FaziletCity { ID = 1, CountryID = germany.ID, Name = "Berlin", Country = germany };
             var gerCity2 = new FaziletCity { ID = 2, CountryID = germany.ID, Name = "Hamburg", Country = germany };
@@ -126,40 +126,40 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Fazilet
             var city1Times1 = new FaziletPrayerTimes
             {
                 CityID = gerCity1.ID,
-                Date = date,
-                Imsak = dateInUTC.PlusHours(4),
-                Fajr = dateInUTC.PlusHours(5),
-                Shuruq = dateInUTC.PlusHours(7),
-                Dhuhr = dateInUTC.PlusHours(12),
-                Asr = dateInUTC.PlusHours(15),
-                Maghrib = dateInUTC.PlusHours(18),
-                Isha = dateInUTC.PlusHours(20),
+                Date = dateInUtc,
+                Imsak = dateInUtc.PlusHours(4),
+                Fajr = dateInUtc.PlusHours(5),
+                Shuruq = dateInUtc.PlusHours(7),
+                Dhuhr = dateInUtc.PlusHours(12),
+                Asr = dateInUtc.PlusHours(15),
+                Maghrib = dateInUtc.PlusHours(18),
+                Isha = dateInUtc.PlusHours(20),
             };
 
             var city1Times2 = new FaziletPrayerTimes
             {
                 CityID = gerCity1.ID,
-                Date = date.PlusDays(1),
-                Imsak = dateInUTC.PlusHours(24 + 4),
-                Fajr = dateInUTC.PlusHours(24 + 5),
-                Shuruq = dateInUTC.PlusHours(24 + 7),
-                Dhuhr = dateInUTC.PlusHours(24 + 12),
-                Asr = dateInUTC.PlusHours(24 + 15),
-                Maghrib = dateInUTC.PlusHours(24 + 19),
-                Isha = dateInUTC.PlusHours(24 + 23),
+                Date = dateInUtc.Plus(Duration.FromDays(1)),
+                Imsak = dateInUtc.PlusHours(24 + 4),
+                Fajr = dateInUtc.PlusHours(24 + 5),
+                Shuruq = dateInUtc.PlusHours(24 + 7),
+                Dhuhr = dateInUtc.PlusHours(24 + 12),
+                Asr = dateInUtc.PlusHours(24 + 15),
+                Maghrib = dateInUtc.PlusHours(24 + 19),
+                Isha = dateInUtc.PlusHours(24 + 23),
             };
 
             var city2Times1 = new FaziletPrayerTimes
             {
                 CityID = gerCity2.ID,
-                Date = date,
-                Imsak = dateInUTC.PlusHours(4),
-                Fajr = dateInUTC.PlusHours(5),
-                Shuruq = dateInUTC.PlusHours(7),
-                Dhuhr = dateInUTC.PlusHours(12),
-                Asr = dateInUTC.PlusHours(15),
-                Maghrib = dateInUTC.PlusHours(18),
-                Isha = dateInUTC.PlusHours(21),
+                Date = dateInUtc,
+                Imsak = dateInUtc.PlusHours(4),
+                Fajr = dateInUtc.PlusHours(5),
+                Shuruq = dateInUtc.PlusHours(7),
+                Dhuhr = dateInUtc.PlusHours(12),
+                Asr = dateInUtc.PlusHours(15),
+                Maghrib = dateInUtc.PlusHours(18),
+                Isha = dateInUtc.PlusHours(21),
             };
 
             await _appDbContext.FaziletCountries.AddAsync(germany);
@@ -168,7 +168,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Fazilet
             await _appDbContext.SaveChangesAsync();
 
             // ACT
-            var times = await _faziletDBAccess.GetTimesByDateAndCityID(date, gerCity1.ID, default);
+            var times = await _faziletDBAccess.GetTimesByDateAndCityID(dateInUtc, gerCity1.ID, default);
 
             // ASSERT
             times.Should()
@@ -181,7 +181,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Fazilet
         {
             // ARRANGE
             var date = new LocalDate(2023, 1, 5);
-            ZonedDateTime dateInUTC = date.AtStartOfDayInZone(DateTimeZone.Utc);
+            ZonedDateTime dateInUtc = date.AtStartOfDayInZone(DateTimeZone.Utc);
             var germany = new FaziletCountry { ID = 1, Name = "Deutschland" };
             var gerCity1 = new FaziletCity { ID = 1, CountryID = germany.ID, Name = "Berlin", Country = germany };
             var gerCity2 = new FaziletCity { ID = 2, CountryID = germany.ID, Name = "Hamburg", Country = germany };
@@ -190,40 +190,40 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Fazilet
             var city1Times1 = new FaziletPrayerTimes
             {
                 CityID = gerCity1.ID,
-                Date = date,
-                Imsak = dateInUTC.PlusHours(4),
-                Fajr = dateInUTC.PlusHours(5),
-                Shuruq = dateInUTC.PlusHours(7),
-                Dhuhr = dateInUTC.PlusHours(12),
-                Asr = dateInUTC.PlusHours(15),
-                Maghrib = dateInUTC.PlusHours(18),
-                Isha = dateInUTC.PlusHours(20),
+                Date = dateInUtc,
+                Imsak = dateInUtc.PlusHours(4),
+                Fajr = dateInUtc.PlusHours(5),
+                Shuruq = dateInUtc.PlusHours(7),
+                Dhuhr = dateInUtc.PlusHours(12),
+                Asr = dateInUtc.PlusHours(15),
+                Maghrib = dateInUtc.PlusHours(18),
+                Isha = dateInUtc.PlusHours(20),
             };
 
             var city1Times2 = new FaziletPrayerTimes
             {
                 CityID = gerCity1.ID,
-                Date = date.PlusDays(1),
-                Imsak = dateInUTC.PlusHours(24 + 4),
-                Fajr = dateInUTC.PlusHours(24 + 5),
-                Shuruq = dateInUTC.PlusHours(24 + 7),
-                Dhuhr = dateInUTC.PlusHours(24 + 12),
-                Asr = dateInUTC.PlusHours(24 + 15),
-                Maghrib = dateInUTC.PlusHours(24 + 19),
-                Isha = dateInUTC.PlusHours(24 + 23),
+                Date = dateInUtc.Plus(Duration.FromDays(1)),
+                Imsak = dateInUtc.PlusHours(24 + 4),
+                Fajr = dateInUtc.PlusHours(24 + 5),
+                Shuruq = dateInUtc.PlusHours(24 + 7),
+                Dhuhr = dateInUtc.PlusHours(24 + 12),
+                Asr = dateInUtc.PlusHours(24 + 15),
+                Maghrib = dateInUtc.PlusHours(24 + 19),
+                Isha = dateInUtc.PlusHours(24 + 23),
             };
 
             var city2Times1 = new FaziletPrayerTimes
             {
                 CityID = gerCity2.ID,
-                Date = date,
-                Imsak = dateInUTC.PlusHours(4),
-                Fajr = dateInUTC.PlusHours(5),
-                Shuruq = dateInUTC.PlusHours(7),
-                Dhuhr = dateInUTC.PlusHours(12),
-                Asr = dateInUTC.PlusHours(15),
-                Maghrib = dateInUTC.PlusHours(18),
-                Isha = dateInUTC.PlusHours(21),
+                Date = dateInUtc,
+                Imsak = dateInUtc.PlusHours(4),
+                Fajr = dateInUtc.PlusHours(5),
+                Shuruq = dateInUtc.PlusHours(7),
+                Dhuhr = dateInUtc.PlusHours(12),
+                Asr = dateInUtc.PlusHours(15),
+                Maghrib = dateInUtc.PlusHours(18),
+                Isha = dateInUtc.PlusHours(21),
             };
 
             await _appDbContext.FaziletCountries.AddAsync(germany);
@@ -233,7 +233,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Fazilet
             await _appDbContext.SaveChangesAsync();
 
             // ACT
-            var times = await _faziletDBAccess.GetTimesByDateAndCityID(date, 5, default);
+            var times = await _faziletDBAccess.GetTimesByDateAndCityID(dateInUtc, 5, default);
 
             // ASSERT
             times.Should().BeNull();
@@ -300,7 +300,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Fazilet
         {
             // ARRANGE
             var date = new LocalDate(2023, 1, 1);
-            ZonedDateTime dateInUTC = date.AtStartOfDayInZone(DateTimeZone.Utc);
+            ZonedDateTime dateInUtc = date.AtStartOfDayInZone(DateTimeZone.Utc);
             var germany = new FaziletCountry { ID = 1, Name = "Deutschland" };
             germany.Cities =
             [
@@ -320,38 +320,38 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Fazilet
             var time1 = new FaziletPrayerTimes
             {
                 CityID = 1,
-                Date = date.PlusDays(1),
-                Imsak = dateInUTC,
-                Fajr = dateInUTC,
-                Shuruq = dateInUTC,
-                Dhuhr = dateInUTC,
-                Asr = dateInUTC,
-                Maghrib = dateInUTC,
-                Isha = dateInUTC,
+                Date = dateInUtc.Plus(Duration.FromDays(1)),
+                Imsak = dateInUtc,
+                Fajr = dateInUtc,
+                Shuruq = dateInUtc,
+                Dhuhr = dateInUtc,
+                Asr = dateInUtc,
+                Maghrib = dateInUtc,
+                Isha = dateInUtc,
             };
             var time2 = new FaziletPrayerTimes
             {
                 CityID = 2,
-                Date = date.PlusDays(2),
-                Imsak = dateInUTC,
-                Fajr = dateInUTC,
-                Shuruq = dateInUTC,
-                Dhuhr = dateInUTC,
-                Asr = dateInUTC,
-                Maghrib = dateInUTC,
-                Isha = dateInUTC,
+                Date = dateInUtc.Plus(Duration.FromDays(2)),
+                Imsak = dateInUtc,
+                Fajr = dateInUtc,
+                Shuruq = dateInUtc,
+                Dhuhr = dateInUtc,
+                Asr = dateInUtc,
+                Maghrib = dateInUtc,
+                Isha = dateInUtc,
             };
             var time3 = new FaziletPrayerTimes
             {
                 CityID = 1,
-                Date = date.PlusDays(3),
-                Imsak = dateInUTC,
-                Fajr = dateInUTC,
-                Shuruq = dateInUTC,
-                Dhuhr = dateInUTC,
-                Asr = dateInUTC,
-                Maghrib = dateInUTC,
-                Isha = dateInUTC,
+                Date = dateInUtc.Plus(Duration.FromDays(3)),
+                Imsak = dateInUtc,
+                Fajr = dateInUtc,
+                Shuruq = dateInUtc,
+                Dhuhr = dateInUtc,
+                Asr = dateInUtc,
+                Maghrib = dateInUtc,
+                Isha = dateInUtc,
             };
 
             // ACT

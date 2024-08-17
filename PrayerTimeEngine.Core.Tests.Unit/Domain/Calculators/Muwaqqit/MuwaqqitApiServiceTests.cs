@@ -28,7 +28,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Muwaqqit
         {
             // ARRANGE
             var date = new LocalDate(2023, 7, 29);
-            DateTimeZone europeTimeZone = DateTimeZoneProviders.Tzdb["Europe/Vienna"];
+            DateTimeZone europeTimeZone = TestDataHelper.EUROPE_VIENNA_TIME_ZONE;
 
             _mockHttpMessageHandler.HandleRequestFunc =
                 (request) =>
@@ -59,7 +59,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Muwaqqit
             time.Should().NotBeNull();
 
             time.ID.Should().Be(0);
-            time.Date.Should().Be(new LocalDate(2023, 7, 30));
+            time.Date.Should().Be(new LocalDate(2023, 7, 30).AtStartOfDayInZone(europeTimeZone));
             time.FajrDegree.Should().Be(-12);
             time.AsrKarahaDegree.Should().Be(3.5);
             time.IshtibaqDegree.Should().Be(-8);

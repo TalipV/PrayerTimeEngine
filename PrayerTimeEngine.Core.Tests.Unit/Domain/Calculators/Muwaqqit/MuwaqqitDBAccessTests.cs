@@ -3,6 +3,7 @@ using PrayerTimeEngine.Core.Data.EntityFramework;
 using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Models.Entities;
 using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services;
 using PrayerTimeEngine.Core.Tests.Common;
+using PrayerTimeEngine.Core.Tests.Common.TestData;
 
 namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Muwaqqit
 {
@@ -22,26 +23,27 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Muwaqqit
         {
             // ARRANGE
             var date = new LocalDate(2023, 7, 30);
+            var dateTimeZone = TestDataHelper.EUROPE_VIENNA_TIME_ZONE;
             var muwaqqitTime = new MuwaqqitPrayerTimes
             {
-                Date = date,
+                Date = date.AtStartOfDayInZone(dateTimeZone),
                 Latitude = 47.2803835M,
                 Longitude = 11.41337M,
                 FajrDegree = 1,
                 IshaDegree = 1,
                 IshtibaqDegree = 1,
                 AsrKarahaDegree = 1,
-                Fajr = new ZonedDateTime(Instant.FromUtc(2023, 7, 30, 2, 27, 04), DateTimeZoneProviders.Tzdb["Europe/Vienna"]),
-                NextFajr = new ZonedDateTime(Instant.FromUtc(2023, 7, 31, 2, 28, 04), DateTimeZoneProviders.Tzdb["Europe/Vienna"]),
-                Shuruq = new ZonedDateTime(Instant.FromUtc(2023, 7, 30, 3, 49, 53), DateTimeZoneProviders.Tzdb["Europe/Vienna"]),
-                Duha = new ZonedDateTime(Instant.FromUtc(2023, 7, 30, 4, 49, 53), DateTimeZoneProviders.Tzdb["Europe/Vienna"]),
-                Dhuhr = new ZonedDateTime(Instant.FromUtc(2023, 7, 30, 11, 21, 22), DateTimeZoneProviders.Tzdb["Europe/Vienna"]),
-                Asr = new ZonedDateTime(Instant.FromUtc(2023, 7, 30, 15, 25, 53), DateTimeZoneProviders.Tzdb["Europe/Vienna"]),
-                AsrMithlayn = new ZonedDateTime(Instant.FromUtc(2023, 7, 30, 16, 25, 53), DateTimeZoneProviders.Tzdb["Europe/Vienna"]),
-                AsrKaraha = new ZonedDateTime(Instant.FromUtc(2023, 7, 30, 17, 25, 53), DateTimeZoneProviders.Tzdb["Europe/Vienna"]),
-                Maghrib = new ZonedDateTime(Instant.FromUtc(2023, 7, 30, 18, 50, 59), DateTimeZoneProviders.Tzdb["Europe/Vienna"]),
-                Ishtibaq = new ZonedDateTime(Instant.FromUtc(2023, 7, 30, 19, 50, 59), DateTimeZoneProviders.Tzdb["Europe/Vienna"]),
-                Isha = new ZonedDateTime(Instant.FromUtc(2023, 7, 30, 20, 13, 17), DateTimeZoneProviders.Tzdb["Europe/Vienna"])
+                Fajr = new ZonedDateTime(Instant.FromUtc(2023, 7, 30, 2, 27, 04), dateTimeZone),
+                NextFajr = new ZonedDateTime(Instant.FromUtc(2023, 7, 31, 2, 28, 04), dateTimeZone),
+                Shuruq = new ZonedDateTime(Instant.FromUtc(2023, 7, 30, 3, 49, 53), dateTimeZone),
+                Duha = new ZonedDateTime(Instant.FromUtc(2023, 7, 30, 4, 49, 53), dateTimeZone),
+                Dhuhr = new ZonedDateTime(Instant.FromUtc(2023, 7, 30, 11, 21, 22), dateTimeZone),
+                Asr = new ZonedDateTime(Instant.FromUtc(2023, 7, 30, 15, 25, 53), dateTimeZone),
+                AsrMithlayn = new ZonedDateTime(Instant.FromUtc(2023, 7, 30, 16, 25, 53), dateTimeZone),
+                AsrKaraha = new ZonedDateTime(Instant.FromUtc(2023, 7, 30, 17, 25, 53), dateTimeZone),
+                Maghrib = new ZonedDateTime(Instant.FromUtc(2023, 7, 30, 18, 50, 59), dateTimeZone),
+                Ishtibaq = new ZonedDateTime(Instant.FromUtc(2023, 7, 30, 19, 50, 59), dateTimeZone),
+                Isha = new ZonedDateTime(Instant.FromUtc(2023, 7, 30, 20, 13, 17), dateTimeZone)
             };
 
             await _appDbContext.MuwaqqitPrayerTimes.AddAsync(muwaqqitTime);
@@ -67,26 +69,27 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Muwaqqit
         {
             // ARRANGE
             var date = new LocalDate(2023, 7, 31);
+            var dateTimeZone = TestDataHelper.EUROPE_VIENNA_TIME_ZONE;
             var newMuwaqqitTime = new MuwaqqitPrayerTimes
             {
-                Date = date,
+                Date = date.AtStartOfDayInZone(dateTimeZone),
                 Latitude = 47.2803835M,
                 Longitude = 11.41337M,
                 FajrDegree = 1,
                 IshaDegree = 1,
                 IshtibaqDegree = 1,
                 AsrKarahaDegree = 1,
-                Fajr = new ZonedDateTime(Instant.FromUtc(2023, 7, 30, 2, 27, 04), DateTimeZoneProviders.Tzdb["Europe/Vienna"]),
-                NextFajr = new ZonedDateTime(Instant.FromUtc(2023, 7, 31, 2, 28, 04), DateTimeZoneProviders.Tzdb["Europe/Vienna"]),
-                Shuruq = new ZonedDateTime(Instant.FromUtc(2023, 7, 30, 3, 49, 53), DateTimeZoneProviders.Tzdb["Europe/Vienna"]),
-                Duha = new ZonedDateTime(Instant.FromUtc(2023, 7, 30, 4, 49, 53), DateTimeZoneProviders.Tzdb["Europe/Vienna"]),
-                Dhuhr = new ZonedDateTime(Instant.FromUtc(2023, 7, 30, 11, 21, 22), DateTimeZoneProviders.Tzdb["Europe/Vienna"]),
-                Asr = new ZonedDateTime(Instant.FromUtc(2023, 7, 30, 15, 25, 53), DateTimeZoneProviders.Tzdb["Europe/Vienna"]),
-                AsrMithlayn = new ZonedDateTime(Instant.FromUtc(2023, 7, 30, 16, 25, 53), DateTimeZoneProviders.Tzdb["Europe/Vienna"]),
-                AsrKaraha = new ZonedDateTime(Instant.FromUtc(2023, 7, 30, 17, 25, 53), DateTimeZoneProviders.Tzdb["Europe/Vienna"]),
-                Maghrib = new ZonedDateTime(Instant.FromUtc(2023, 7, 30, 18, 50, 59), DateTimeZoneProviders.Tzdb["Europe/Vienna"]),
-                Ishtibaq = new ZonedDateTime(Instant.FromUtc(2023, 7, 30, 19, 50, 59), DateTimeZoneProviders.Tzdb["Europe/Vienna"]),
-                Isha = new ZonedDateTime(Instant.FromUtc(2023, 7, 30, 20, 13, 17), DateTimeZoneProviders.Tzdb["Europe/Vienna"])
+                Fajr = new ZonedDateTime(Instant.FromUtc(2023, 7, 30, 2, 27, 04), dateTimeZone),
+                NextFajr = new ZonedDateTime(Instant.FromUtc(2023, 7, 31, 2, 28, 04), dateTimeZone),
+                Shuruq = new ZonedDateTime(Instant.FromUtc(2023, 7, 30, 3, 49, 53), dateTimeZone),
+                Duha = new ZonedDateTime(Instant.FromUtc(2023, 7, 30, 4, 49, 53), dateTimeZone),
+                Dhuhr = new ZonedDateTime(Instant.FromUtc(2023, 7, 30, 11, 21, 22), dateTimeZone),
+                Asr = new ZonedDateTime(Instant.FromUtc(2023, 7, 30, 15, 25, 53), dateTimeZone),
+                AsrMithlayn = new ZonedDateTime(Instant.FromUtc(2023, 7, 30, 16, 25, 53), dateTimeZone),
+                AsrKaraha = new ZonedDateTime(Instant.FromUtc(2023, 7, 30, 17, 25, 53), dateTimeZone),
+                Maghrib = new ZonedDateTime(Instant.FromUtc(2023, 7, 30, 18, 50, 59), dateTimeZone),
+                Ishtibaq = new ZonedDateTime(Instant.FromUtc(2023, 7, 30, 19, 50, 59), dateTimeZone),
+                Isha = new ZonedDateTime(Instant.FromUtc(2023, 7, 30, 20, 13, 17), dateTimeZone)
             };
 
             // ACT

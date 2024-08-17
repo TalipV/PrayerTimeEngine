@@ -1,20 +1,27 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using NodaTime;
+using PrayerTimeEngine.Core.Common;
 using PrayerTimeEngine.Core.Common.Extension;
 using PrayerTimeEngine.Core.Data.EntityFramework.Configurations;
 using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Models.Entities;
 using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Models.Entities;
 using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Models.Entities;
+using PrayerTimeEngine.Core.Domain.PlaceManagement.Models;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
 using System.Reflection;
 
 namespace PrayerTimeEngine.Core.Data.EntityFramework
 {
-    public class AppDbContext(DbContextOptions options) : DbContext(options)
+    public class AppDbContext(
+            DbContextOptions options,
+            AppDbContextMetaData appDbContextMetaData,
+            ISystemInfoService systemInfoService
+        ) : DbContext(options)
     {
         public DbSet<Profile> Profiles { get; set; }
         public DbSet<ProfileLocationConfig> ProfileLocations { get; set; }
         public DbSet<ProfileTimeConfig> ProfileConfigs { get; set; }
+        public DbSet<CompletePlaceInfo> PlaceInfos { get; set; }
 
         public DbSet<MuwaqqitPrayerTimes> MuwaqqitPrayerTimes { get; set; }
 
@@ -31,9 +38,10 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework
             modelBuilder.ApplyConfiguration(new ProfileTimeConfigConfiguration());
             modelBuilder.ApplyConfiguration(new ProfileLocationConfigConfiguration());
 
-            configureNodaTimeProperties(modelBuilder, typeof(MuwaqqitPrayerTimes));
-            configureNodaTimeProperties(modelBuilder, typeof(FaziletPrayerTimes));
-            configureNodaTimeProperties(modelBuilder, typeof(SemerkandPrayerTimes));
+            foreach (var type in appDbContextMetaData.GetDbSetPropertyTypes())
+            {
+                configureNodaTimeProperties(modelBuilder, type);
+            }
 
             modelBuilder
                 .Entity<FaziletCity>()
@@ -114,6 +122,43 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework
                 }
 
             };
+        }
+
+        public override int SaveChanges()
+        {
+            onBeforeSave();
+            return base.SaveChanges();
+        }
+
+        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            onBeforeSave();
+            return base.SaveChangesAsync(cancellationToken);
+        }
+
+        private void onBeforeSave()
+        {
+            setInsertInstant();
+        }
+
+        private void setInsertInstant()
+        {
+            List<IInsertedAt> insertedAtEntities = ChangeTracker.Entries()
+                .Where(e => e.State == EntityState.Added && e.Entity is IInsertedAt)
+                .Select(x => x.Entity).OfType<IInsertedAt>()
+                .ToList();
+
+            if (insertedAtEntities.Count == 0)
+            {
+                return;
+            }
+
+            Instant currentInstant = systemInfoService.GetCurrentInstant();
+
+            foreach (IInsertedAt entity in insertedAtEntities)
+            {
+                entity.InsertInstant = currentInstant;
+            }
         }
     }
 }

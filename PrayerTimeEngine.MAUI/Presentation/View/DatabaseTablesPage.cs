@@ -1,4 +1,5 @@
 ﻿using NodaTime;
+using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Domain.Models;
 using PrayerTimeEngine.Presentation.ViewModel;
 using System.Reflection;
@@ -29,11 +30,22 @@ public partial class DatabaseTablesPage : ContentPage
         viewModel.OnChangeSelectionAction = PopulateTabViewWithItems;
     }
 
+    // Maybe adding some attribute to exclude specific properties would be a more intuitive option?
+    // But it would only be for this specific debug feature so here like this is fine, I guess.
     private readonly HashSet<Type> validTypes =
     [
-        typeof(int), typeof(string), typeof(ZonedDateTime), typeof(LocalDate),
+        typeof(string),
+        typeof(int), typeof(int?), 
+        typeof(double), typeof(double?), 
+        typeof(decimal), typeof(decimal?), 
+        typeof(ZonedDateTime), typeof(ZonedDateTime?),
+        typeof(LocalTime), typeof(LocalTime?),
+        typeof(LocalDate), typeof(LocalDate?),
+        typeof(Instant), typeof(Instant?),
         typeof(GenericSettingConfiguration),
         typeof(BaseLocationData),
+        typeof(ECalculationSource),
+        typeof(ETimeType),
     ];
 
     public void PopulateTabViewWithItems(List<object> list)

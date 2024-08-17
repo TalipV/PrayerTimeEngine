@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace PrayerTimeEngine.Core.Domain.PlaceManagement.Models.DTOs
+namespace PrayerTimeEngine.Core.Domain.PlaceManagement.Services.LocationIQ.DTOs
 {
     public class LocationIQTimezoneResponseDTO
     {

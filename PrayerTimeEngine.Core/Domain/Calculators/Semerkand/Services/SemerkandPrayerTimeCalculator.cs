@@ -36,7 +36,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
             ];
 
         public async Task<List<(ETimeType TimeType, ZonedDateTime ZonedDateTime)>> GetPrayerTimesAsync(
-            LocalDate date,
+            ZonedDateTime date,
             BaseLocationData locationData,
             List<GenericSettingConfiguration> configurations, 
             CancellationToken cancellationToken)
@@ -59,7 +59,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
                 .ToList();
         }
 
-        private async Task<SemerkandPrayerTimes> getPrayerTimesInternal(LocalDate date, string countryName, string cityName, string timezoneName, CancellationToken cancellationToken)
+        private async Task<SemerkandPrayerTimes> getPrayerTimesInternal(ZonedDateTime date, string countryName, string cityName, string timezoneName, CancellationToken cancellationToken)
         {
             int countryID = await getCountryID(countryName, throwIfNotFound: true, cancellationToken).ConfigureAwait(false);
             int cityID = await getCityID(cityName, countryID, throwIfNotFound: true, cancellationToken).ConfigureAwait(false);
@@ -70,14 +70,14 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
                     timezoneName, 
                     cityID, 
                     cancellationToken).ConfigureAwait(false)
-                ?? throw new Exception($"Prayer times for the {date:D} could not be found for an unknown reason.");
+                ?? throw new Exception($"Prayer times for the {date} could not be found for an unknown reason.");
 
-            prayerTimes.NextFajr = (await getPrayerTimesByDateAndCityID(date.PlusDays(1), timezoneName, cityID, cancellationToken).ConfigureAwait(false))?.Fajr;
+            prayerTimes.NextFajr = (await getPrayerTimesByDateAndCityID(date.Plus(Duration.FromDays(1)), timezoneName, cityID, cancellationToken).ConfigureAwait(false))?.Fajr;
 
             return prayerTimes;
         }
 
-        private static readonly AsyncKeyedLocker<(LocalDate date, int cityID)> getPrayerTimesLocker = new(o =>
+        private static readonly AsyncKeyedLocker<(ZonedDateTime date, int cityID)> getPrayerTimesLocker = new(o =>
         {
             o.PoolSize = 20;
             o.PoolInitialFill = 1;
@@ -85,7 +85,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
 
         internal const int MAX_EXTENT_OF_RETRIEVED_DAYS = 5;
 
-        private async Task<SemerkandPrayerTimes> getPrayerTimesByDateAndCityID(LocalDate date, string timezone, int cityID, CancellationToken cancellationToken)
+        private async Task<SemerkandPrayerTimes> getPrayerTimesByDateAndCityID(ZonedDateTime date, string timezone, int cityID, CancellationToken cancellationToken)
         {
             var lockTuple = (date, cityID);
 
@@ -111,7 +111,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
                     List<SemerkandPrayerTimes> prayerTimesLst = 
                         timesResponseDTOs
                             .Select(x => x.ToSemerkandPrayerTimes(cityID, dateTimeZone, firstDayOfYear))
-                            .Where(x => date <= x.Date && x.Date < date.PlusDays(MAX_EXTENT_OF_RETRIEVED_DAYS))
+                            .Where(x => date.ToInstant() <= x.Date.ToInstant() && x.Date.ToInstant() < date.Plus(Duration.FromDays(MAX_EXTENT_OF_RETRIEVED_DAYS)).ToInstant())
                             .ToList();
 
                     await semerkandDBAccess.InsertSemerkandPrayerTimes(prayerTimesLst, cancellationToken).ConfigureAwait(false);
@@ -195,9 +195,19 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
 
             // if language is already turkish then use this place
 
+            var basicPlaceInfo = await placeService.GetPlaceBasedOnPlace(place, "tr", cancellationToken).ConfigureAwait(false);
             var turkishPlaceInfo =
-                new CompletePlaceInfo(await placeService.GetPlaceBasedOnPlace(place, "tr", cancellationToken).ConfigureAwait(false))
+                new CompletePlaceInfo
                 {
+                    OrmID = basicPlaceInfo.OrmID,
+                    Longitude = basicPlaceInfo.Longitude,
+                    Latitude = basicPlaceInfo.Latitude,
+                    InfoLanguageCode = basicPlaceInfo.InfoLanguageCode,
+                    Country = basicPlaceInfo.Country,
+                    City = basicPlaceInfo.City,
+                    CityDistrict = basicPlaceInfo.CityDistrict,
+                    PostCode = basicPlaceInfo.PostCode,
+                    Street = basicPlaceInfo.Street,
                     TimezoneInfo = place.TimezoneInfo
                 };
 

@@ -34,7 +34,14 @@ namespace PrayerTimeEngine.Core.Tests.Integration.Domain.Calculators.Muwaqqit
                     serviceCollection.AddSingleton<MuwaqqitPrayerTimeCalculator>();
                 });
 
-            var testDate = new LocalDate(2023, 7, 30);
+            var date = new LocalDate(2023, 7, 30);
+            var locationData = new MuwaqqitLocationData
+            {
+                Latitude = 47.2803835M,
+                Longitude = 11.41337M,
+                TimezoneName = TestDataHelper.EUROPE_VIENNA_TIME_ZONE.Id
+            };
+            var dateTimeZone = DateTimeZoneProviders.Tzdb[locationData.TimezoneName];
             List<GenericSettingConfiguration> configs =
                 [
                     new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.FajrStart, Degree = -12.0 },
@@ -60,15 +67,10 @@ namespace PrayerTimeEngine.Core.Tests.Integration.Domain.Calculators.Muwaqqit
             // ACT
             List<(ETimeType TimeType, ZonedDateTime ZonedDateTime)> result =
                 await muwaqqitPrayerTimeCalculator.GetPrayerTimesAsync(
-                    testDate,
-                    new MuwaqqitLocationData
-                    {
-                        Latitude = 47.2803835M,
-                        Longitude = 11.41337M,
-                        TimezoneName = "Europe/Vienna"
-                    },
-                    configs
-                    , default);
+                    date.AtStartOfDayInZone(dateTimeZone),
+                    locationData,
+                    configs, 
+                    default);
 
             // ASSERT
             result.FirstOrDefault(x => x.TimeType == ETimeType.FajrStart).ZonedDateTime.LocalDateTime.Should().Be(new LocalDateTime(2023, 7, 30, 04, 27, 04));

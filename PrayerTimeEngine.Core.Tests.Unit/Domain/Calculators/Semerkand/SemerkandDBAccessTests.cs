@@ -117,7 +117,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
         {
             // ARRANGE
             var date = new LocalDate(2023, 1, 5);
-            ZonedDateTime dateInUTC = date.AtStartOfDayInZone(DateTimeZone.Utc);
+            ZonedDateTime dateInUtc = date.AtStartOfDayInZone(DateTimeZone.Utc);
             var germany = new SemerkandCountry { ID = 1, Name = "Deutschland" };
             var gerCity1 = new SemerkandCity { ID = 1, CountryID = germany.ID, Name = "Berlin", Country = germany};
             var gerCity2 = new SemerkandCity { ID = 2, CountryID = germany.ID, Name = "Hamburg", Country = germany};
@@ -127,39 +127,39 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
             {
                 CityID = gerCity1.ID,
                 DayOfYear = 5,
-                Date = date,
-                Fajr = dateInUTC.PlusHours(5),
-                Shuruq = dateInUTC.PlusHours(7),
-                Dhuhr = dateInUTC.PlusHours(12),
-                Asr = dateInUTC.PlusHours(15),
-                Maghrib = dateInUTC.PlusHours(18),
-                Isha = dateInUTC.PlusHours(20),
+                Date = dateInUtc,
+                Fajr = dateInUtc.PlusHours(5),
+                Shuruq = dateInUtc.PlusHours(7),
+                Dhuhr = dateInUtc.PlusHours(12),
+                Asr = dateInUtc.PlusHours(15),
+                Maghrib = dateInUtc.PlusHours(18),
+                Isha = dateInUtc.PlusHours(20),
             };
             
             var city1Times2 = new SemerkandPrayerTimes
             {
                 CityID = gerCity1.ID,
                 DayOfYear = 6,
-                Date = date.PlusDays(1),
-                Fajr = dateInUTC.PlusHours(24 + 5),
-                Shuruq = dateInUTC.PlusHours(24 + 7),
-                Dhuhr = dateInUTC.PlusHours(24 + 12),
-                Asr = dateInUTC.PlusHours(24 + 15),
-                Maghrib = dateInUTC.PlusHours(24 + 19),
-                Isha = dateInUTC.PlusHours(24 + 23),
+                Date = dateInUtc.Plus(Duration.FromDays(1)),
+                Fajr = dateInUtc.PlusHours(24 + 5),
+                Shuruq = dateInUtc.PlusHours(24 + 7),
+                Dhuhr = dateInUtc.PlusHours(24 + 12),
+                Asr = dateInUtc.PlusHours(24 + 15),
+                Maghrib = dateInUtc.PlusHours(24 + 19),
+                Isha = dateInUtc.PlusHours(24 + 23),
             };
             
             var city2Times1 = new SemerkandPrayerTimes
             {
                 CityID = gerCity2.ID,
                 DayOfYear = 5,
-                Date = date,
-                Fajr = dateInUTC.PlusHours(5),
-                Shuruq = dateInUTC.PlusHours(7),
-                Dhuhr = dateInUTC.PlusHours(12),
-                Asr = dateInUTC.PlusHours(15),
-                Maghrib = dateInUTC.PlusHours(18),
-                Isha = dateInUTC.PlusHours(21),
+                Date = dateInUtc,
+                Fajr = dateInUtc.PlusHours(5),
+                Shuruq = dateInUtc.PlusHours(7),
+                Dhuhr = dateInUtc.PlusHours(12),
+                Asr = dateInUtc.PlusHours(15),
+                Maghrib = dateInUtc.PlusHours(18),
+                Isha = dateInUtc.PlusHours(21),
             };
             
             await _appDbContext.SemerkandCountries.AddAsync(germany);
@@ -168,7 +168,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
             await _appDbContext.SaveChangesAsync();
             
             // ACT
-            var times = await _semerkandDBAccess.GetTimesByDateAndCityID(date, gerCity1.ID, default);
+            var times = await _semerkandDBAccess.GetTimesByDateAndCityID(dateInUtc, gerCity1.ID, default);
 
             // ASSERT
             times.Should()
@@ -181,7 +181,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
         {
             // ARRANGE
             var date = new LocalDate(2023, 1, 5);
-            ZonedDateTime dateInUTC = date.AtStartOfDayInZone(DateTimeZone.Utc);
+            ZonedDateTime dateInUtc = date.AtStartOfDayInZone(DateTimeZone.Utc);
             var germany = new SemerkandCountry { ID = 1, Name = "Deutschland" };
             var gerCity1 = new SemerkandCity { ID = 1, CountryID = germany.ID, Name = "Berlin", Country = germany};
             var gerCity2 = new SemerkandCity { ID = 2, CountryID = germany.ID, Name = "Hamburg", Country = germany};
@@ -191,39 +191,39 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
             {
                 CityID = gerCity1.ID,
                 DayOfYear = 5,
-                Date = date,
-                Fajr = dateInUTC.PlusHours(5),
-                Shuruq = dateInUTC.PlusHours(7),
-                Dhuhr = dateInUTC.PlusHours(12),
-                Asr = dateInUTC.PlusHours(15),
-                Maghrib = dateInUTC.PlusHours(18),
-                Isha = dateInUTC.PlusHours(20),
+                Date = dateInUtc,
+                Fajr = dateInUtc.PlusHours(5),
+                Shuruq = dateInUtc.PlusHours(7),
+                Dhuhr = dateInUtc.PlusHours(12),
+                Asr = dateInUtc.PlusHours(15),
+                Maghrib = dateInUtc.PlusHours(18),
+                Isha = dateInUtc.PlusHours(20),
             };
 
             var city1Times2 = new SemerkandPrayerTimes
             {
                 CityID = gerCity1.ID,
                 DayOfYear = 6,
-                Date = date.PlusDays(1),
-                Fajr = dateInUTC.PlusHours(24 + 5),
-                Shuruq = dateInUTC.PlusHours(24 + 7),
-                Dhuhr = dateInUTC.PlusHours(24 + 12),
-                Asr = dateInUTC.PlusHours(24 + 15),
-                Maghrib = dateInUTC.PlusHours(24 + 19),
-                Isha = dateInUTC.PlusHours(24 + 23),
+                Date = dateInUtc.Plus(Duration.FromDays(1)),
+                Fajr = dateInUtc.PlusHours(24 + 5),
+                Shuruq = dateInUtc.PlusHours(24 + 7),
+                Dhuhr = dateInUtc.PlusHours(24 + 12),
+                Asr = dateInUtc.PlusHours(24 + 15),
+                Maghrib = dateInUtc.PlusHours(24 + 19),
+                Isha = dateInUtc.PlusHours(24 + 23),
             };
             
             var city2Times1 = new SemerkandPrayerTimes
             {
                 CityID = gerCity2.ID,
                 DayOfYear = 5,
-                Date = date,
-                Fajr = dateInUTC.PlusHours(5),
-                Shuruq = dateInUTC.PlusHours(7),
-                Dhuhr = dateInUTC.PlusHours(12),
-                Asr = dateInUTC.PlusHours(15),
-                Maghrib = dateInUTC.PlusHours(18),
-                Isha = dateInUTC.PlusHours(21),
+                Date = dateInUtc,
+                Fajr = dateInUtc.PlusHours(5),
+                Shuruq = dateInUtc.PlusHours(7),
+                Dhuhr = dateInUtc.PlusHours(12),
+                Asr = dateInUtc.PlusHours(15),
+                Maghrib = dateInUtc.PlusHours(18),
+                Isha = dateInUtc.PlusHours(21),
             };
             
             await _appDbContext.SemerkandCountries.AddAsync(germany);
@@ -233,7 +233,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
             await _appDbContext.SaveChangesAsync();
             
             // ACT
-            var times = await _semerkandDBAccess.GetTimesByDateAndCityID(date, 5, default);
+            var times = await _semerkandDBAccess.GetTimesByDateAndCityID(dateInUtc, 5, default);
 
             // ASSERT
             times.Should().BeNull();
@@ -301,7 +301,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
         {
             // ARRANGE
             var date = new LocalDate(2023, 1, 1);
-            ZonedDateTime dateInUTC = date.AtStartOfDayInZone(DateTimeZone.Utc);
+            ZonedDateTime dateInUtc = date.AtStartOfDayInZone(DateTimeZone.Utc);
             var germany = 
                 new SemerkandCountry 
                 { 
@@ -333,37 +333,37 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
             {
                 CityID = 1,
                 DayOfYear = 2,
-                Date = date.PlusDays(1),
-                Fajr = dateInUTC,
-                Shuruq = dateInUTC,
-                Dhuhr = dateInUTC,
-                Asr = dateInUTC,
-                Maghrib = dateInUTC,
-                Isha = dateInUTC,
+                Date = dateInUtc.Plus(Duration.FromDays(1)),
+                Fajr = dateInUtc,
+                Shuruq = dateInUtc,
+                Dhuhr = dateInUtc,
+                Asr = dateInUtc,
+                Maghrib = dateInUtc,
+                Isha = dateInUtc,
             }; 
             var time2 = new SemerkandPrayerTimes
             {
                 CityID = 2,
                 DayOfYear = 3,
-                Date = date.PlusDays(2),
-                Fajr = dateInUTC,
-                Shuruq = dateInUTC,
-                Dhuhr = dateInUTC,
-                Asr = dateInUTC,
-                Maghrib = dateInUTC,
-                Isha = dateInUTC,
+                Date = dateInUtc.Plus(Duration.FromDays(2)),
+                Fajr = dateInUtc,
+                Shuruq = dateInUtc,
+                Dhuhr = dateInUtc,
+                Asr = dateInUtc,
+                Maghrib = dateInUtc,
+                Isha = dateInUtc,
             };
             var time3 = new SemerkandPrayerTimes
             {
                 CityID = 1,
                 DayOfYear = 4,
-                Date = date.PlusDays(3),
-                Fajr = dateInUTC,
-                Shuruq = dateInUTC,
-                Dhuhr = dateInUTC,
-                Asr = dateInUTC,
-                Maghrib = dateInUTC,
-                Isha = dateInUTC,
+                Date = dateInUtc.Plus(Duration.FromDays(3)),
+                Fajr = dateInUtc,
+                Shuruq = dateInUtc,
+                Dhuhr = dateInUtc,
+                Asr = dateInUtc,
+                Maghrib = dateInUtc,
+                Isha = dateInUtc,
             };
             
             // ACT

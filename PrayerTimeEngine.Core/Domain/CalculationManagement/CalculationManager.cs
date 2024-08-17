@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using NodaTime;
+using PrayerTimeEngine.Core.Common;
 using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Domain.Calculators;
 using PrayerTimeEngine.Core.Domain.Models;
@@ -11,16 +12,18 @@ namespace PrayerTimeEngine.Core.Domain.CalculationManagement
     public class CalculationManager(
             IPrayerTimeCalculatorFactory prayerTimeServiceFactory,
             IProfileService profileService,
-            ILogger<CalculationManager> logger
+            ISystemInfoService systemInfoService,
+            ILogger<CalculationManager> logger,
+            IEnumerable<IPrayerTimeCacheCleaner> cacheCleaners
         ) : ICalculationManager
     {
-        private LocalDate? _cachedCalculationDate = null;
+        private ZonedDateTime? _cachedCalculationDate = null;
         private Profile _cachedProfile = null;
         private PrayerTimesBundle _cachedPrayerTimeBundle = null;
 
         private bool tryGetCachedCalculation(
             Profile profile, 
-            LocalDate date, 
+            ZonedDateTime date, 
             out PrayerTimesBundle prayerTimeEntity)
         {
             // no cache
@@ -43,15 +46,14 @@ namespace PrayerTimeEngine.Core.Domain.CalculationManagement
             return true;
         }
 
-        public async Task<PrayerTimesBundle> CalculatePrayerTimesAsync(int profileID, ZonedDateTime zoneDate, CancellationToken cancellationToken)
+        public async Task<PrayerTimesBundle> CalculatePrayerTimesAsync(int profileID, ZonedDateTime date, CancellationToken cancellationToken)
         {
-            LocalDate date = zoneDate.Date;
-            DateTimeZone zone = zoneDate.Zone;
+            date = date.LocalDateTime.Date.AtStartOfDayInZone(date.Zone);
             Profile profile = await profileService.GetUntrackedReferenceOfProfile(profileID, cancellationToken).ConfigureAwait(false);
 
             if (tryGetCachedCalculation(profile, date, out PrayerTimesBundle prayerTimeEntity))
             {
-                prayerTimeEntity.DataCalculationTimestamp = SystemClock.Instance.GetCurrentInstant().InZone(zone);
+                prayerTimeEntity.DataCalculationTimestamp = systemInfoService.GetCurrentZonedDateTime();
                 return prayerTimeEntity;
             }
 
@@ -73,16 +75,36 @@ namespace PrayerTimeEngine.Core.Domain.CalculationManagement
                 prayerTimeEntity.SetSpecificPrayerTimeDateTime(timeType, zonedDateTime);
             }
 
-            prayerTimeEntity.DataCalculationTimestamp = SystemClock.Instance.GetCurrentInstant().InZone(zone);
+            prayerTimeEntity.DataCalculationTimestamp = systemInfoService.GetCurrentZonedDateTime();
             _cachedCalculationDate = date;
             _cachedProfile = profile;
             _cachedPrayerTimeBundle = prayerTimeEntity;
+
+            cleanUpOldCacheData(cancellationToken);
+
             return prayerTimeEntity;
+        }
+
+        private void cleanUpOldCacheData(CancellationToken cancellationToken)
+        {
+            ZonedDateTime deleteBeforeDate = systemInfoService.GetCurrentZonedDateTime().Minus(Duration.FromDays(3));
+
+            foreach (IPrayerTimeCacheCleaner cacheCleaner in cacheCleaners)
+            {
+                try
+                {
+                    cacheCleaner.DeleteCacheDataAsync(deleteBeforeDate, cancellationToken);
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex, "Error while trying to clean cache with {CacheCleanerFullName}", cacheCleaner.GetType().FullName);
+                }
+            }
         }
 
         private async Task<List<(ETimeType TimeType, ZonedDateTime ZonedDateTime)>> calculateInternal(
             Profile profile,
-            LocalDate date,
+            ZonedDateTime date,
             CancellationToken cancellationToken)
         {
             List<Task<List<(ETimeType, ZonedDateTime)>>> calculatorTasks = [];

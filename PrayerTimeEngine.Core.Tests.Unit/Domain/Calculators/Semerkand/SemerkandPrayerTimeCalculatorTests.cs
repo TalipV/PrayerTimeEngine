@@ -13,6 +13,7 @@ using NSubstitute.ReturnsExtensions;
 using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Models.Entities;
 using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Models.DTOs;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Models;
+using PrayerTimeEngine.Core.Tests.Common.TestData;
 
 namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
 {
@@ -45,7 +46,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
             // ARRANGE
             var date = new LocalDate(2024, 1, 1);
             ZonedDateTime dateInUtc = date.AtStartOfDayInZone(DateTimeZone.Utc);
-            BaseLocationData locationData = new SemerkandLocationData { CityName = "Berlin", CountryName = "Deutschland", TimezoneName = "Europe/Vienna" };
+            BaseLocationData locationData = new SemerkandLocationData { CityName = "Berlin", CountryName = "Deutschland", TimezoneName = TestDataHelper.EUROPE_VIENNA_TIME_ZONE.Id };
             List<GenericSettingConfiguration> configurations = 
                 [
                     new GenericSettingConfiguration { TimeType = ETimeType.FajrEnd, Source = ECalculationSource.Semerkand }
@@ -58,7 +59,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
             {
                 CityID = 1,
                 DayOfYear = 5,
-                Date = date,
+                Date = dateInUtc,
                 Fajr = dateInUtc.PlusHours(5),
                 Shuruq = dateInUtc.PlusHours(7),
                 Dhuhr = dateInUtc.PlusHours(12),
@@ -68,14 +69,14 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
             };
             
             _semerkandDBAccessMock.GetTimesByDateAndCityID(
-                    Arg.Is<LocalDate>(x => x == date || x == date.PlusDays(1)),
+                    Arg.Is<ZonedDateTime>(x => x == dateInUtc || x == dateInUtc.Plus(Duration.FromDays(1))),
                     Arg.Any<int>(), 
                     Arg.Any<CancellationToken>())
                 .Returns(times);
 
             // ACT
             List<(ETimeType TimeType, ZonedDateTime ZonedDateTime)> calculationResult = 
-                await _semerkandPrayerTimeCalculator.GetPrayerTimesAsync(date, locationData, configurations, default);
+                await _semerkandPrayerTimeCalculator.GetPrayerTimesAsync(dateInUtc, locationData, configurations, default);
 
             // ASSERT
             calculationResult.Should().NotBeNull().And.HaveCount(1);
@@ -86,15 +87,15 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
             _semerkandDBAccessMock.ReceivedCalls().Should().HaveCount(4);
             await _semerkandDBAccessMock.Received(1).GetCountryIDByName(Arg.Is("Deutschland"), Arg.Any<CancellationToken>());
             await _semerkandDBAccessMock.Received(1).GetCityIDByName(Arg.Is(1), Arg.Is("Berlin"), Arg.Any<CancellationToken>());
-            await _semerkandDBAccessMock.Received(1).GetTimesByDateAndCityID(Arg.Is(date), Arg.Is(1), Arg.Any<CancellationToken>());
-            await _semerkandDBAccessMock.Received(1).GetTimesByDateAndCityID(Arg.Is(date.PlusDays(1)), Arg.Is(1), Arg.Any<CancellationToken>());
+            await _semerkandDBAccessMock.Received(1).GetTimesByDateAndCityID(Arg.Is(dateInUtc), Arg.Is(1), Arg.Any<CancellationToken>());
+            await _semerkandDBAccessMock.Received(1).GetTimesByDateAndCityID(Arg.Is(dateInUtc.Plus(Duration.FromDays(1))), Arg.Is(1), Arg.Any<CancellationToken>());
         }
 
         [Fact]
         public async Task GetPrayerTimesAsync_AllValuesFromApi_Success()
         {
             // ARRANGE
-            DateTimeZone dateTimeZone = DateTimeZoneProviders.Tzdb["Europe/Vienna"];
+            DateTimeZone dateTimeZone = TestDataHelper.EUROPE_VIENNA_TIME_ZONE;
             var date = new LocalDate(2024, 12, 31);
             var nextFajrDate = new LocalDate(2025, 1, 1);
 
@@ -149,7 +150,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
                 ];
 
             // ACT
-            var calculationResult = await _semerkandPrayerTimeCalculator.GetPrayerTimesAsync(date, locationData, configurations, default);
+            var calculationResult = await _semerkandPrayerTimeCalculator.GetPrayerTimesAsync(zonedDateTime, locationData, configurations, default);
 
             // ASSERT
             calculationResult.Should().NotBeNull().And.HaveCount(1);
@@ -167,7 +168,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
         public async Task GetPrayerTimesAsync_OnlyTimesFromApi_Success()
         {
             // ARRANGE
-            DateTimeZone dateTimeZone = DateTimeZoneProviders.Tzdb["Europe/Vienna"];
+            DateTimeZone dateTimeZone = TestDataHelper.EUROPE_VIENNA_TIME_ZONE;
             var date = new LocalDate(2024, 12, 31);
             var nextFajrDate = new LocalDate(2025, 1, 1);
 
@@ -219,7 +220,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
                 ];
 
             // ACT
-            var calculationResult = await _semerkandPrayerTimeCalculator.GetPrayerTimesAsync(date, locationData, configurations, default);
+            var calculationResult = await _semerkandPrayerTimeCalculator.GetPrayerTimesAsync(zonedDateTime, locationData, configurations, default);
 
             // ASSERT
             calculationResult.Should().NotBeNull().And.HaveCount(1);
@@ -230,11 +231,11 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
             await _semerkandDBAccessMock.Received(1).GetCountryIDByName(Arg.Is("Deutschland"), Arg.Any<CancellationToken>());
             await _semerkandDBAccessMock.Received(1).GetCityIDByName(Arg.Is(1), Arg.Is("Berlin"), Arg.Any<CancellationToken>());
             
-            await _semerkandDBAccessMock.Received(1).GetTimesByDateAndCityID(Arg.Is(date), Arg.Is(1), Arg.Any<CancellationToken>());
-            await _semerkandDBAccessMock.Received(1).InsertSemerkandPrayerTimes(Arg.Is<List<SemerkandPrayerTimes>>(times => times[0].Date == date), Arg.Any<CancellationToken>());
+            await _semerkandDBAccessMock.Received(1).GetTimesByDateAndCityID(Arg.Is(zonedDateTime), Arg.Is(1), Arg.Any<CancellationToken>());
+            await _semerkandDBAccessMock.Received(1).InsertSemerkandPrayerTimes(Arg.Is<List<SemerkandPrayerTimes>>(times => times[0].Date == zonedDateTime), Arg.Any<CancellationToken>());
             
-            await _semerkandDBAccessMock.Received(1).GetTimesByDateAndCityID(Arg.Is(nextFajrDate), Arg.Is(1), Arg.Any<CancellationToken>());
-            await _semerkandDBAccessMock.Received(1).InsertSemerkandPrayerTimes(Arg.Is<List<SemerkandPrayerTimes>>(times => times[0].Date == nextFajrDate), Arg.Any<CancellationToken>());
+            await _semerkandDBAccessMock.Received(1).GetTimesByDateAndCityID(Arg.Is(nextFajrZonedDateTime), Arg.Is(1), Arg.Any<CancellationToken>());
+            await _semerkandDBAccessMock.Received(1).InsertSemerkandPrayerTimes(Arg.Is<List<SemerkandPrayerTimes>>(times => times[0].Date == nextFajrZonedDateTime), Arg.Any<CancellationToken>());
 
             _semerkandApiServiceMock.ReceivedCalls().Should().HaveCount(2);
             await _semerkandApiServiceMock.Received(0).GetCountries(Arg.Any<CancellationToken>());
@@ -251,14 +252,34 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
         public async Task GetLocationInfo_X_X()
         {
             // ARRANGE
-            var basicPlaceInfo = new BasicPlaceInfo("1", 1M, 1M, "de", "Österreich", "Innsbruck", "", "6020", "Straße");
-            var completePlaceInfo = new CompletePlaceInfo(basicPlaceInfo)
+            var completePlaceInfo = new CompletePlaceInfo
             {
-                TimezoneInfo = new TimezoneInfo { Name = "Europe/Vienna" },
+                OrmID = "1",
+                Longitude = 1M,
+                Latitude = 1M,
+                InfoLanguageCode = "de",
+                Country = "Österreich",
+                City = "Innsbruck",
+                CityDistrict = "",
+                PostCode = "6020",
+                Street = "Straße",
+                TimezoneInfo = new TimezoneInfo { Name = TestDataHelper.EUROPE_VIENNA_TIME_ZONE.Id },
             };
 
-            var turkishBasicPlaceInfo = new BasicPlaceInfo("1", 1M, 1M, "de", "Avusturya", "Innsbruck", "", "6020", "Yol");;
-            
+            var turkishBasicPlaceInfo =
+                new BasicPlaceInfo
+                {
+                    OrmID = "1",
+                    Longitude = 1M,
+                    Latitude = 1M,
+                    InfoLanguageCode = "de",
+                    Country = "Avusturya",
+                    City = "Innsbruck",
+                    CityDistrict = "",
+                    PostCode = "6020",
+                    Street = "Yol",
+                };
+
             _placeServiceMock
                 .GetPlaceBasedOnPlace(Arg.Is(completePlaceInfo), Arg.Is("tr"), Arg.Any<CancellationToken>())
                 .Returns(turkishBasicPlaceInfo);
@@ -273,7 +294,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
             locationData.CountryName.Should().Be("Avusturya");
             locationData.CityName.Should().Be("Innsbruck");
             locationData.Source.Should().Be(ECalculationSource.Semerkand);
-            locationData.TimezoneName.Should().Be("Europe/Vienna");
+            locationData.TimezoneName.Should().Be(TestDataHelper.EUROPE_VIENNA_TIME_ZONE.Id);
         }
 
         #endregion GetLocationInfo

@@ -10,6 +10,7 @@ using PrayerTimeEngine.Core.Domain.Models;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Interfaces;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Models;
 using PrayerTimeEngine.Core.Tests.Common;
+using PrayerTimeEngine.Core.Tests.Common.TestData;
 
 namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Fazilet
 {
@@ -54,7 +55,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Fazilet
             var times = new FaziletPrayerTimes
             {
                 CityID = 1,
-                Date = date,
+                Date = dateInUtc,
                 Imsak = dateInUtc.PlusHours(4),
                 Fajr = dateInUtc.PlusHours(5),
                 Shuruq = dateInUtc.PlusHours(7),
@@ -65,14 +66,14 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Fazilet
             };
 
             _faziletDBAccessMock.GetTimesByDateAndCityID(
-                Arg.Is<LocalDate>(x => x == date || x == date.PlusDays(1)),
+                Arg.Is<ZonedDateTime>(x => x == dateInUtc || x == dateInUtc.Plus(Duration.FromDays(1))),
                 Arg.Any<int>(), 
                 Arg.Any<CancellationToken>())
                 .Returns(times);
 
             // ACT
             List<(ETimeType TimeType, ZonedDateTime ZonedDateTime)> calculationResult =
-                await _faziletPrayerTimeCalculator.GetPrayerTimesAsync(date, locationData, configurations, default);
+                await _faziletPrayerTimeCalculator.GetPrayerTimesAsync(dateInUtc, locationData, configurations, default);
 
             // ASSERT
             calculationResult.Should().NotBeNull().And.HaveCount(1);
@@ -83,8 +84,8 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Fazilet
             _faziletDBAccessMock.ReceivedCalls().Should().HaveCount(4);
             await _faziletDBAccessMock.Received(1).GetCountryIDByName(Arg.Is("Deutschland"), Arg.Any<CancellationToken>());
             await _faziletDBAccessMock.Received(1).GetCityIDByName(Arg.Is(1), Arg.Is("Berlin"), Arg.Any<CancellationToken>());
-            await _faziletDBAccessMock.Received(1).GetTimesByDateAndCityID(Arg.Is(date), Arg.Is(1), Arg.Any<CancellationToken>());
-            await _faziletDBAccessMock.Received(1).GetTimesByDateAndCityID(Arg.Is(date.PlusDays(1)), Arg.Is(1), Arg.Any<CancellationToken>());
+            await _faziletDBAccessMock.Received(1).GetTimesByDateAndCityID(Arg.Is(dateInUtc), Arg.Is(1), Arg.Any<CancellationToken>());
+            await _faziletDBAccessMock.Received(1).GetTimesByDateAndCityID(Arg.Is(dateInUtc.Plus(Duration.FromDays(1))), Arg.Is(1), Arg.Any<CancellationToken>());
         }
 
         #endregion GetPrayerTimesAsync
@@ -95,13 +96,33 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Fazilet
         public async Task GetLocationInfo_X_X()
         {
             // ARRANGE
-            var basicPlaceInfo = new BasicPlaceInfo("1", 1M, 1M, "de", "Österreich", "Innsbruck", "", "6020", "Straße");
-            var completePlaceInfo = new CompletePlaceInfo(basicPlaceInfo)
+            var completePlaceInfo = new CompletePlaceInfo
             {
-                TimezoneInfo = new TimezoneInfo { Name = "Europe/Vienna" },
+                OrmID = "1",
+                Longitude = 1M,
+                Latitude = 1M,
+                InfoLanguageCode = "de",
+                Country = "Österreich",
+                City = "Innsbruck",
+                CityDistrict = "",
+                PostCode = "6020",
+                Street = "Straße",
+                TimezoneInfo = new TimezoneInfo { Name = TestDataHelper.EUROPE_VIENNA_TIME_ZONE.Id },
             };
 
-            var turkishBasicPlaceInfo = new BasicPlaceInfo("1", 1M, 1M, "de", "Avusturya", "Innsbruck", "", "6020", "Yol"); ;
+            var turkishBasicPlaceInfo = 
+                new BasicPlaceInfo
+                {
+                    OrmID = "1",
+                    Longitude = 1M,
+                    Latitude = 1M,
+                    InfoLanguageCode = "de",
+                    Country = "Avusturya",
+                    City = "Innsbruck",
+                    CityDistrict = "",
+                    PostCode = "6020",
+                    Street = "Yol",
+                };
 
             _placeServiceMock
                 .GetPlaceBasedOnPlace(Arg.Is(completePlaceInfo), Arg.Is("tr"), Arg.Any<CancellationToken>())

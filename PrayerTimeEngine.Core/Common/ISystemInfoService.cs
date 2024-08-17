@@ -1,7 +1,7 @@
 ﻿using NodaTime;
 using System.Globalization;
 
-namespace PrayerTimeEngine.Services.SystemInfoService
+namespace PrayerTimeEngine.Core.Common
 {
     public interface ISystemInfoService
     {

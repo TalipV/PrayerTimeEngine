@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore.Storage;
 using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Data.EntityFramework;
 using PrayerTimeEngine.Core.Domain.Models;
+using PrayerTimeEngine.Core.Domain.PlaceManagement.Models;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Interfaces;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
 
@@ -17,6 +18,7 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Services
             return dbContext.Profiles
                 .Include(x => x.TimeConfigs)
                 .Include(x => x.LocationConfigs)
+                .Include(x => x.PlaceInfo).ThenInclude(x => x.TimezoneInfo)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.ID == profileID, cancellationToken);
         }
@@ -26,6 +28,7 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Services
             return dbContext.Profiles
                 .Include(x => x.TimeConfigs)
                 .Include(x => x.LocationConfigs)
+                .Include(x => x.PlaceInfo).ThenInclude(x => x.TimezoneInfo)
                 .AsNoTracking()
                 .ToListAsync(cancellationToken);
         }
@@ -44,25 +47,21 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Services
 
         public async Task UpdateLocationConfig(
             Profile profile,
-            string locationName,
+            CompletePlaceInfo placeInfo,
             List<(ECalculationSource CalculationSource, BaseLocationData LocationData)> locationDataByCalculationSource,
             CancellationToken cancellationToken)
         {
-            Profile trackedProfile = await dbContext.Profiles.FindAsync(keyValues: [profile.ID], cancellationToken).ConfigureAwait(false);
-
-            // hack...
-            // TOOD: I have to fix this
-            List<ProfileLocationConfig> locationConfigs = 
-                await dbContext.ProfileLocations
-                    .Where(x => x.ProfileID == profile.ID)
-                    .ToListAsync();
-
+            Profile trackedProfile = 
+                await dbContext.Profiles
+                    .Include(x => x.LocationConfigs)
+                    .FirstOrDefaultAsync(x => x.ID == profile.ID, cancellationToken)
+                    .ConfigureAwait(false);
             try
             {
                 using (IDbContextTransaction transaction = await dbContext.Database.BeginTransactionAsync(cancellationToken).ConfigureAwait(false))
                 {
                     await setNewLocationData(trackedProfile, locationDataByCalculationSource, cancellationToken).ConfigureAwait(false);
-                    trackedProfile.LocationName = locationName;
+                    trackedProfile.PlaceInfo = placeInfo;
 
                     await SaveProfile(trackedProfile, cancellationToken).ConfigureAwait(false);
                     await transaction.CommitAsync(cancellationToken).ConfigureAwait(false);
@@ -75,14 +74,19 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Services
                 await dbContext.Entry(profile).ReloadAsync(CancellationToken.None).ConfigureAwait(false);
 
                 foreach (var locationConfig in profile.LocationConfigs)
+                {
                     await dbContext.Entry(locationConfig).ReloadAsync(CancellationToken.None).ConfigureAwait(false);
+                }
 
-                // hack...
-                // TOOD: I have to fix this
-                List<ProfileLocationConfig> locationConfigs2 =
-                    await dbContext.ProfileLocations
-                        .Where(x => x.ProfileID == profile.ID)
-                        .ToListAsync();
+                if (profile.PlaceInfo != null)
+                {
+                    await dbContext.Entry(profile.PlaceInfo).ReloadAsync(CancellationToken.None).ConfigureAwait(false);
+
+                    if (profile.PlaceInfo.TimezoneInfo != null)
+                    {
+                        await dbContext.Entry(profile.PlaceInfo.TimezoneInfo).ReloadAsync(CancellationToken.None).ConfigureAwait(false);
+                    }
+                }
             }
         }
 
