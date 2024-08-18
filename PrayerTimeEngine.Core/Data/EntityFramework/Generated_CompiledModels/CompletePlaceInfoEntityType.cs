@@ -28,8 +28,8 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
             var iD = runtimeEntityType.AddProperty(
                 "ID",
                 typeof(int),
-                propertyInfo: typeof(BasicPlaceInfo).GetProperty("ID", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                fieldInfo: typeof(BasicPlaceInfo).GetField("<ID>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                propertyInfo: typeof(CompletePlaceInfo).GetProperty("ID", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(CompletePlaceInfo).GetField("<ID>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 valueGenerated: ValueGenerated.OnAdd,
                 afterSaveBehavior: PropertySaveBehavior.Throw,
                 sentinel: 0);
@@ -72,6 +72,14 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
                 fieldInfo: typeof(BasicPlaceInfo).GetField("<Country>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 nullable: true);
             country.TypeMapping = SqliteStringTypeMapping.Default;
+
+            var externalID = runtimeEntityType.AddProperty(
+                "ExternalID",
+                typeof(string),
+                propertyInfo: typeof(BasicPlaceInfo).GetProperty("ExternalID", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(BasicPlaceInfo).GetField("<ExternalID>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                nullable: true);
+            externalID.TypeMapping = SqliteStringTypeMapping.Default;
 
             var infoLanguageCode = runtimeEntityType.AddProperty(
                 "InfoLanguageCode",
@@ -124,14 +132,6 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
                 fieldInfo: typeof(BasicPlaceInfo).GetField("<Longitude>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 sentinel: 0m);
             longitude.TypeMapping = SqliteDecimalTypeMapping.Default;
-
-            var ormID = runtimeEntityType.AddProperty(
-                "OrmID",
-                typeof(string),
-                propertyInfo: typeof(BasicPlaceInfo).GetProperty("OrmID", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                fieldInfo: typeof(BasicPlaceInfo).GetField("<OrmID>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                nullable: true);
-            ormID.TypeMapping = SqliteStringTypeMapping.Default;
 
             var postCode = runtimeEntityType.AddProperty(
                 "PostCode",

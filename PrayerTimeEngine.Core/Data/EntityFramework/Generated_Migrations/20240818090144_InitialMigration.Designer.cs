@@ -8,10 +8,10 @@ using PrayerTimeEngine.Core.Data.EntityFramework;
 
 #nullable disable
 
-namespace PrayerTimeEngine.Core.Data.EntityFramework.Migrations
+namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240817143505_InitialMigration")]
+    [Migration("20240818090144_InitialMigration")]
     partial class InitialMigration
     {
         /// <inheritdoc />
@@ -292,6 +292,9 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Migrations
                     b.Property<string>("Country")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("ExternalID")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("InfoLanguageCode")
                         .HasColumnType("TEXT");
 
@@ -302,9 +305,6 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<decimal>("Longitude")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("OrmID")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("PostCode")
@@ -352,9 +352,6 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int?>("CountryID")
-                        .HasColumnType("INTEGER");
-
                     b.Property<string>("InsertInstant")
                         .HasColumnType("TEXT");
 
@@ -368,8 +365,6 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Migrations
                         .HasColumnType("INTEGER");
 
                     b.HasKey("ID");
-
-                    b.HasIndex("CountryID");
 
                     b.HasIndex("PlaceInfoID");
 
@@ -459,15 +454,9 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Migrations
 
             modelBuilder.Entity("PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities.Profile", b =>
                 {
-                    b.HasOne("PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Models.Entities.FaziletCountry", "Country")
-                        .WithMany()
-                        .HasForeignKey("CountryID");
-
                     b.HasOne("PrayerTimeEngine.Core.Domain.PlaceManagement.Models.CompletePlaceInfo", "PlaceInfo")
                         .WithMany()
                         .HasForeignKey("PlaceInfoID");
-
-                    b.Navigation("Country");
 
                     b.Navigation("PlaceInfo");
                 });

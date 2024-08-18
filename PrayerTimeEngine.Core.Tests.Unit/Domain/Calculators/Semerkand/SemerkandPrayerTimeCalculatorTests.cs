@@ -254,7 +254,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
             // ARRANGE
             var completePlaceInfo = new CompletePlaceInfo
             {
-                OrmID = "1",
+                ExternalID = "1",
                 Longitude = 1M,
                 Latitude = 1M,
                 InfoLanguageCode = "de",
@@ -269,7 +269,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
             var turkishBasicPlaceInfo =
                 new BasicPlaceInfo
                 {
-                    OrmID = "1",
+                    ExternalID = "1",
                     Longitude = 1M,
                     Latitude = 1M,
                     InfoLanguageCode = "de",

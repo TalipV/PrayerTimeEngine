@@ -68,11 +68,11 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.PlaceManagement
                 placeInfo.Street.Should().Be("Venloer Straße 160");
             });
 
-            result[0].OrmID.Should().Be("151467218");
+            result[0].ExternalID.Should().Be("151467218");
             result[0].Longitude.Should().Be(6.92839361M);
             result[0].Latitude.Should().Be(50.9457534M);
 
-            result[1].OrmID.Should().Be("2603567246");
+            result[1].ExternalID.Should().Be("2603567246");
             result[1].Longitude.Should().Be(6.9281253M);
             result[1].Latitude.Should().Be(50.9460574M);
         }
@@ -100,7 +100,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.PlaceManagement
             var cologneCentralMosqueInfo = 
                 new BasicPlaceInfo
                 {
-                    OrmID = "151467218",
+                    ExternalID = "151467218",
                     City = "Cologne",
                     CityDistrict = "Ehrenfeld",
                     Country = "Germany",
@@ -116,7 +116,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.PlaceManagement
 
             // ASSERT
             result.Should().NotBeNull();
-            result.OrmID.Should().Be("151467218");
+            result.ExternalID.Should().Be("151467218");
             result.Longitude.Should().Be(6.928393614248124M);
             result.Latitude.Should().Be(50.9457534M);
             result.City.Should().Be("Köln");
@@ -151,7 +151,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.PlaceManagement
             var somePlaceInfo = 
                 new BasicPlaceInfo
                 {
-                    OrmID = "",
+                    ExternalID = "",
                     Longitude = 1M,
                     Latitude = 1M,
                     InfoLanguageCode = "",

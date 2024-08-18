@@ -1,13 +1,19 @@
 ﻿using NodaTime;
 using PrayerTimeEngine.Core.Common;
 using PrayerTimeEngine.Core.Data.EntityFramework;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PrayerTimeEngine.Core.Domain.PlaceManagement.Models
 {
     public class CompletePlaceInfo : BasicPlaceInfo, IInsertedAt
     {
-        public required TimezoneInfo TimezoneInfo { get; set; }
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int ID { get; set; }
         public Instant? InsertInstant { get; set; }
+
+        public required TimezoneInfo TimezoneInfo { get; set; }
 
         public override bool Equals(object obj)
         {
@@ -16,7 +22,7 @@ namespace PrayerTimeEngine.Core.Domain.PlaceManagement.Models
                 return false;
             }
 
-            if(!GeneralUtil.BetterEquals(TimezoneInfo, other.TimezoneInfo))
+            if(ID != other.ID || !GeneralUtil.BetterEquals(TimezoneInfo, other.TimezoneInfo))
             {
                 return false;
             }
@@ -26,7 +32,7 @@ namespace PrayerTimeEngine.Core.Domain.PlaceManagement.Models
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(base.GetHashCode(), TimezoneInfo);
+            return HashCode.Combine(base.GetHashCode(), ID, TimezoneInfo);
         }
     }
 }

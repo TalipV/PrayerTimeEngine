@@ -149,7 +149,7 @@ namespace PrayerTimeEngine.Core.Domain.CalculationManagement
 
         private IEnumerable<(ETimeType, ZonedDateTime?)> calculateSimpleTypes(Profile profile, PrayerTimesBundle prayerTimeEntity)
         {
-            if (prayerTimeEntity.Dhuhr?.Start != null
+            if (prayerTimeEntity.Dhuhr?.Start is not null
                 && profileService.GetTimeConfig(profile, ETimeType.DuhaEnd) is GenericSettingConfiguration duhaConfig
                 && duhaConfig.IsTimeShown)
             {
@@ -158,7 +158,7 @@ namespace PrayerTimeEngine.Core.Domain.CalculationManagement
                     prayerTimeEntity.Dhuhr.Start.Value.PlusMinutes(duhaConfig.MinuteAdjustment));
             }
 
-            if (prayerTimeEntity.Maghrib?.Start != null
+            if (prayerTimeEntity.Maghrib?.Start is not null
                 && profileService.GetTimeConfig(profile, ETimeType.MaghribSufficientTime) is GenericSettingConfiguration maghribSufficientTimeConfig
                 && maghribSufficientTimeConfig.IsTimeShown)
             {

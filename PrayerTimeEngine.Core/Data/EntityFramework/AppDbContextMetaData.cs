@@ -11,7 +11,7 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework
             return typeof(AppDbContext).GetProperties()
                 .Where(prop => prop.PropertyType.IsGenericType && prop.PropertyType.GetGenericTypeDefinition() == typeof(DbSet<>))
                 .Select(prop => prop.PropertyType.GetGenericArguments().FirstOrDefault())
-                .Where(x => x != null)
+                .Where(x => x is not null)
                 .ToList();
         }
 

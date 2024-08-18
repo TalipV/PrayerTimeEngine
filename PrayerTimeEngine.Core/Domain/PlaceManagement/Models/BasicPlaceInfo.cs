@@ -6,10 +6,7 @@ namespace PrayerTimeEngine.Core.Domain.PlaceManagement.Models
 {
     public class BasicPlaceInfo
     {
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int ID { get; set; }
-        public string OrmID { get; set; }
+        public string ExternalID { get; set; }
 
         public required decimal Longitude { get; set; }
         public required decimal Latitude { get; set; }
@@ -54,8 +51,7 @@ namespace PrayerTimeEngine.Core.Domain.PlaceManagement.Models
                 return false;
             }
 
-            return ID == other.ID &&
-                OrmID == other.OrmID &&
+            return ExternalID == other.ExternalID &&
                 Longitude == other.Longitude &&
                 Latitude == other.Latitude &&
                 InfoLanguageCode == other.InfoLanguageCode &&
@@ -70,7 +66,7 @@ namespace PrayerTimeEngine.Core.Domain.PlaceManagement.Models
         {
             // split up because the method doesn't accept more than 8 parameters
             return HashCode.Combine(
-                HashCode.Combine(ID, OrmID, Longitude, Latitude, InfoLanguageCode, Country, City, CityDistrict),
+                HashCode.Combine(ExternalID, Longitude, Latitude, InfoLanguageCode, Country, City, CityDistrict),
                 PostCode, Street);
         }
     }
