@@ -133,7 +133,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
                 int? cityID = await semerkandDBAccess.GetCityIDByName(countryID, cityName, cancellationToken).ConfigureAwait(false);
 
                 // city found
-                if (cityID != null)
+                if (cityID is not null)
                     return cityID.Value;
 
                 // unknown city
@@ -166,7 +166,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
                 int? countryID = await semerkandDBAccess.GetCountryIDByName(countryName, cancellationToken).ConfigureAwait(false);
 
                 // country found
-                if (countryID != null)
+                if (countryID is not null)
                     return countryID.Value;
 
                 // unknown country
@@ -199,7 +199,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
             var turkishPlaceInfo =
                 new CompletePlaceInfo
                 {
-                    OrmID = basicPlaceInfo.OrmID,
+                    ExternalID = basicPlaceInfo.ExternalID,
                     Longitude = basicPlaceInfo.Longitude,
                     Latitude = basicPlaceInfo.Latitude,
                     InfoLanguageCode = basicPlaceInfo.InfoLanguageCode,

@@ -83,7 +83,7 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Services
 
                 await dbContext.Entry(profile).ReloadAsync(CancellationToken.None).ConfigureAwait(false);
 
-                foreach (var locationConfig in profile.LocationConfigs)
+                foreach (var locationConfig in profile.LocationConfigs.ToList())
                 {
                     await dbContext.Entry(locationConfig).ReloadAsync(CancellationToken.None).ConfigureAwait(false);
                 }
@@ -119,7 +119,7 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Services
 
                 await dbContext.Entry(profile).ReloadAsync(CancellationToken.None).ConfigureAwait(false);
 
-                foreach (var timeConfig in profile.TimeConfigs)
+                foreach (var timeConfig in profile.TimeConfigs.ToList())
                     await dbContext.Entry(timeConfig).ReloadAsync(CancellationToken.None).ConfigureAwait(false);
             }
         }

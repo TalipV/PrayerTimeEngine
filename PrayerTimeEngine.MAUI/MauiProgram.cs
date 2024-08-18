@@ -38,7 +38,7 @@ namespace PrayerTimeEngine;
 
 /* CLI commands cheat sheet (executed in solution folder)
  * Generate Release APK:    dotnet publish -c release -f net8.0-android -p:false
- * EF Migration:            dotnet ef migrations add InitialMigration --output-dir PrayerTimeEngine.Core\Data\EntityFramework\Generated_Migrations --namespace PrayerTimeEngine.Core.Data.EntityFramework.Migrations --context PrayerTimeEngine.Core.Data.EntityFramework.AppDbContext --project PrayerTimeEngine.Core\PrayerTimeEngine.Core.csproj
+ * EF Migration:            dotnet ef migrations add InitialMigration --output-dir Data\EntityFramework\Generated_Migrations --namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_Migrations --context PrayerTimeEngine.Core.Data.EntityFramework.AppDbContext --project PrayerTimeEngine.Core\PrayerTimeEngine.Core.csproj
  * EF Compiled Models:      dotnet ef dbcontext optimize --output-dir Data\EntityFramework\Generated_CompiledModels --namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels --context PrayerTimeEngine.Core.Data.EntityFramework.AppDbContext --project PrayerTimeEngine.Core\PrayerTimeEngine.Core.csproj
  */
 
@@ -47,12 +47,13 @@ namespace PrayerTimeEngine;
  * - No robust system for country and city (re)load from fazilet/semerkand API (e.g. failed city retrieval leads to no second try)
  * - Fazilet/Semerkand country/city names which are unexpected (e.g. "Vienna (Wien)")
  * - Turkish location details for Fazilet/Semerkand not robust
- * - Exception for single calculation prevents all the other calculations (rough fix already done)
- * - Exception for single calculation only disables that calculation but subsequent calculations rely on cached values and don't retry
- * - Calculation relevant data like the Profile with its configs may change in the middle of the calculation process due to shared references
  * - Semerkand sometimes puts "*" in the json for their times which is not handled in the app (e.g. "*23:54")
  * - Semerkand sometimes has countries and cities with duplicate names
+ * 
+ * - Exception for single calculation prevents all the other calculations (rough fix already done)
+ * - Exception for single calculation only disables that calculation but subsequent calculations rely on cached values and don't retry
  * - remove AppDbContextModel _useOldBehavior31751 temp fix
+ * - FIXED? Calculation relevant data like the Profile with its configs may change in the middle of the calculation process due to shared references
  */
 
 /* TODO general:
@@ -124,6 +125,8 @@ public static class MauiProgram
 
         MethodTimeLogger.logger = mauiApp.Services.GetRequiredService<ILogger<App>>();
 
+        //File.Delete(AppConfig.DATABASE_PATH);
+
         return mauiApp;
     }
 
@@ -133,7 +136,7 @@ public static class MauiProgram
         {
             var text = new StringBuilder($"███ {info.Level}|{info.TimeStamp:HH:mm:ss:fff}|{info.Logger}|{info.Message}");
 
-            if (info.Exception != null)
+            if (info.Exception is not null)
             {
                 text.Append($"|Exception:'{info.Exception.Message}' AT '{info.Exception.StackTrace}'");
             }

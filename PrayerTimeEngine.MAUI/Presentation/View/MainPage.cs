@@ -128,7 +128,7 @@ namespace PrayerTimeEngine.Presentation.View
                                 case _saveDbFileText:
                                     FolderPickerResult folderPickerResult = await FolderPicker.PickAsync(CancellationToken.None);
 
-                                    if (folderPickerResult.Folder != null)
+                                    if (folderPickerResult.Folder is not null)
                                     {
                                         File.Copy(
                                             sourceFileName: AppConfig.DATABASE_PATH,

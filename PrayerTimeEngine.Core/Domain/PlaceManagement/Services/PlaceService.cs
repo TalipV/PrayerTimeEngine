@@ -32,7 +32,7 @@ namespace PrayerTimeEngine.Core.Domain.PlaceManagement.Services
 
             return new CompletePlaceInfo()
             {
-                OrmID = basicPlaceInfo.OrmID,
+                ExternalID = basicPlaceInfo.ExternalID,
                 Longitude = basicPlaceInfo.Longitude, 
                 Latitude = basicPlaceInfo.Latitude,
                 InfoLanguageCode = basicPlaceInfo.InfoLanguageCode,
@@ -80,7 +80,7 @@ namespace PrayerTimeEngine.Core.Domain.PlaceManagement.Services
                     language,
                     inputPlace.Latitude,
                     inputPlace.Longitude,
-                    inputPlace.OrmID,
+                    inputPlace.ExternalID,
                     _apiKey,
                     cancellationToken).ConfigureAwait(false);
 
@@ -98,7 +98,7 @@ namespace PrayerTimeEngine.Core.Domain.PlaceManagement.Services
             {
                 try
                 {
-                    if (lastCooldownCheck != null)
+                    if (lastCooldownCheck is not null)
                     {
                         Instant currentInstant = systemInfoService.GetCurrentInstant();
                         int millisecondsSinceLastCooldownCheck = (int)Math.Floor((currentInstant - lastCooldownCheck.Value).TotalMilliseconds);
@@ -126,7 +126,7 @@ namespace PrayerTimeEngine.Core.Domain.PlaceManagement.Services
         {
             return new BasicPlaceInfo
             {
-                OrmID = locationIQPlace.OsmID,
+                ExternalID = locationIQPlace.OsmID,
                 Longitude = decimal.Parse(locationIQPlace.Longitude, CultureInfo.InvariantCulture),
                 Latitude = decimal.Parse(locationIQPlace.Latitude, CultureInfo.InvariantCulture),
                 InfoLanguageCode = languageCode,

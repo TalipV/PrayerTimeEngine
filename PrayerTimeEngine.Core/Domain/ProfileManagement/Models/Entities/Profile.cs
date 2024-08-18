@@ -10,8 +10,6 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities
     [AddINotifyPropertyChangedInterface]
     public class Profile : IInsertedAt
     {
-        public FaziletCountry Country { get; set; } = null;
-
         public int ID { get; set; }
         public string Name { get; set; }
         public CompletePlaceInfo PlaceInfo { get; set; }

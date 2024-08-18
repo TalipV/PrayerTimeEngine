@@ -113,7 +113,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
                 int? cityID = await faziletDBAccess.GetCityIDByName(countryID, cityName, cancellationToken).ConfigureAwait(false);
 
                 // city found
-                if (cityID != null)
+                if (cityID is not null)
                     return cityID.Value;
 
                 // unknown city
@@ -151,7 +151,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
                 int? countryID = await faziletDBAccess.GetCountryIDByName(countryName, cancellationToken).ConfigureAwait(false);
 
                 // country found
-                if (countryID != null)
+                if (countryID is not null)
                     return countryID.Value;
 
                 // unknown country
@@ -187,7 +187,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
             var turkishPlaceInfo =
                 new CompletePlaceInfo
                 {
-                    OrmID = basicPlaceInfo.OrmID,
+                    ExternalID = basicPlaceInfo.ExternalID,
                     Longitude = basicPlaceInfo.Longitude,
                     Latitude = basicPlaceInfo.Latitude,
                     InfoLanguageCode = basicPlaceInfo.InfoLanguageCode,

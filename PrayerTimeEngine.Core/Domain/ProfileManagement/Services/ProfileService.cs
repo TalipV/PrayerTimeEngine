@@ -149,7 +149,7 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Services
                 Name = "Standard-Profil",
                 PlaceInfo = new CompletePlaceInfo
                 {
-                    OrmID = "343647974",
+                    ExternalID = "343647974",
                     Latitude = 47.2803835M,
                     Longitude = 11.41337M,
                     InfoLanguageCode = "de",

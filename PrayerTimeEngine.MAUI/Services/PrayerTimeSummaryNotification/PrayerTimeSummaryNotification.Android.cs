@@ -149,7 +149,7 @@ namespace PrayerTimeEngine.Services.PrayerTimeSummaryNotification
                 if (prayerTime is DuhaPrayerTime)
                     continue;
 
-                if (prayerTime.End != null
+                if (prayerTime.End is not null
                     && now.ToInstant() < prayerTime.End.Value.ToInstant()
                     && (nextTime is null || prayerTime.End.Value.ToInstant() < nextTime.Value.ToInstant()))
                 {
@@ -157,14 +157,14 @@ namespace PrayerTimeEngine.Services.PrayerTimeSummaryNotification
                     timeName = $"{prayerTime.Name}-End";
                 }
 
-                if (prayerTime.Start != null
+                if (prayerTime.Start is not null
                     && now.ToInstant() < prayerTime.Start.Value.ToInstant()
                     && (nextTime is null || prayerTime.Start.Value.ToInstant() < nextTime.Value.ToInstant()))
                 {
                     nextTime = prayerTime.Start;
                     timeName = $"{prayerTime.Name}-Start";
 
-                    if (_lastTime != null && _lastTime.End != null)
+                    if (_lastTime is not null && _lastTime.End is not null)
                     {
                         additionalInfo = $"{(now - _lastTime.End.Value).ToString("HH:mm:ss", null)} since {_lastTime.Name}-End";
                     }

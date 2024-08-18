@@ -55,7 +55,7 @@ namespace PrayerTimeEngine.Core.Tests.Integration.Domain.ProfileManagement
 
             CompletePlaceInfo newPlaceInfo = new CompletePlaceInfo
             {
-                OrmID = "1",
+                ExternalID = "1",
                 Longitude = 1M,
                 Latitude = 1M,
                 InfoLanguageCode = "de",
