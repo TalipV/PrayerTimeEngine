@@ -1,6 +1,4 @@
-﻿using CommunityToolkit.Maui.Alerts;
-using CommunityToolkit.Maui.Core;
-using MetroLog.Maui;
+﻿using MetroLog.Maui;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using NodaTime;
@@ -18,7 +16,6 @@ using PrayerTimeEngine.Presentation.Service;
 using PrayerTimeEngine.Presentation.Service.Navigation;
 using PrayerTimeEngine.Services.PrayerTimeSummaryNotification;
 using PropertyChanged;
-using System;
 using System.Windows.Input;
 
 namespace PrayerTimeEngine.Presentation.ViewModel
