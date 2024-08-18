@@ -1,7 +1,7 @@
-﻿using Castle.Core.Logging;
-using CommunityToolkit.Maui.Storage;
+﻿using CommunityToolkit.Maui.Storage;
 using Microsoft.Extensions.Logging;
 using OnScreenSizeMarkup.Maui.Helpers;
+using PrayerTimeEngine.Core.Common;
 using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Presentation.GraphicsViews;
 using PrayerTimeEngine.Presentation.Service;
@@ -15,19 +15,27 @@ namespace PrayerTimeEngine.Presentation.View
         private readonly MainPageViewModel _viewModel;
         private readonly IDispatcher _dispatcher;
         private readonly ToastMessageService _toastMessageService;
+        private readonly IPreferenceService _preferenceService;
         private readonly ILogger<MainPage> _logger;
 
         public MainPage(
                 IDispatcher dispatcher, 
                 MainPageViewModel viewModel, 
                 ToastMessageService toastMessageService,
+                IPreferenceService preferenceService,
                 ILogger<MainPage> logger
             )
         {
             BindingContext = _viewModel = viewModel;
             _dispatcher = dispatcher;
             _toastMessageService = toastMessageService;
+            _preferenceService = preferenceService;
             _logger = logger;
+
+            if (_preferenceService.CheckAndResetDoReset())
+            {
+                File.Delete(AppConfig.DATABASE_PATH);
+            }
 
             Content = createUI();
 
@@ -169,8 +177,11 @@ namespace PrayerTimeEngine.Presentation.View
                                     if (!await DisplayAlert("Bestätigung", "Daten wirklich zurücksetzen?", "Ja", _cancelText))
                                         break;
 
-                                    if (File.Exists(AppConfig.DATABASE_PATH))
-                                        File.Delete(AppConfig.DATABASE_PATH);
+                                    //if (File.Exists(AppConfig.DATABASE_PATH))
+                                    //    File.Delete(AppConfig.DATABASE_PATH);
+
+                                    _preferenceService.SetDoReset();
+
                                     Application.Current.Quit();
                                     break;
                                 case _closeAppText:

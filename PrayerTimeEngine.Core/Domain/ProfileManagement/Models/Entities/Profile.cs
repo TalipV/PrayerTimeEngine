@@ -1,7 +1,6 @@
 ﻿using NodaTime;
 using PrayerTimeEngine.Core.Common;
 using PrayerTimeEngine.Core.Data.EntityFramework;
-using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Models.Entities;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Models;
 using PropertyChanged;
 

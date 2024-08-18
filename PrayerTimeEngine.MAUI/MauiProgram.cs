@@ -26,6 +26,7 @@ using PrayerTimeEngine.Presentation.Service.SettingsContentPageFactory;
 using PrayerTimeEngine.Presentation.View;
 using PrayerTimeEngine.Presentation.ViewModel;
 using PrayerTimeEngine.Presentation.ViewModel.Custom;
+using PrayerTimeEngine.Services;
 using PrayerTimeEngine.Services.SystemInfoService;
 using Refit;
 using System.Text;
@@ -125,8 +126,6 @@ public static class MauiProgram
 
         MethodTimeLogger.logger = mauiApp.Services.GetRequiredService<ILogger<App>>();
 
-        //File.Delete(AppConfig.DATABASE_PATH);
-
         return mauiApp;
     }
 
@@ -204,6 +203,7 @@ public static class MauiProgram
         serviceCollection.AddSingleton<AppDbContextMetaData>();
 
         serviceCollection.AddSingleton<ISystemInfoService, SystemInfoService>();
+        serviceCollection.AddTransient<IPreferenceService, PreferenceService>();
         serviceCollection.AddSingleton<TimeTypeAttributeService>();
 
         serviceCollection.AddTransient<ICalculationManager, CalculationManager>();

@@ -1,5 +1,4 @@
-﻿using Castle.Core.Logging;
-using MethodTimer;
+﻿using MethodTimer;
 using Microsoft.Extensions.Logging;
 using PrayerTimeEngine.Presentation.Service;
 using PrayerTimeEngine.Presentation.ViewModel;
