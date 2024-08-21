@@ -173,7 +173,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.ProfileManagement
             List<(ECalculationSource, BaseLocationData)> locationData = [(ECalculationSource.Muwaqqit, Substitute.ForPartsOf<BaseLocationData>())];
             
             var placeInfo =
-                new CompletePlaceInfo
+                new ProfilePlaceInfo
                 {
                     ExternalID = "1",
                     Longitude = 1M,

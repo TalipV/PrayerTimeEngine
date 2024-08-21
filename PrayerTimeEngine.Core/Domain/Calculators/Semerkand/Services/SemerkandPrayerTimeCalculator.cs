@@ -52,6 +52,11 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
             string cityName = semerkandLocationData.CityName;
             string timezoneName = semerkandLocationData.TimezoneName;
 
+            if (timezoneName != date.Zone.Id)
+            {
+                throw new Exception("Time requested for timezone that differs from provided location data!");
+            }
+
             SemerkandPrayerTimes semerkandPrayerTimes = await getPrayerTimesInternal(date, countryName, cityName, timezoneName, cancellationToken).ConfigureAwait(false);
             
             return configurations
@@ -189,7 +194,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
             }
         }
 
-        public async Task<BaseLocationData> GetLocationInfo(CompletePlaceInfo place, CancellationToken cancellationToken)
+        public async Task<BaseLocationData> GetLocationInfo(ProfilePlaceInfo place, CancellationToken cancellationToken)
         {
             ArgumentNullException.ThrowIfNull(place);
 
@@ -197,7 +202,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
 
             var basicPlaceInfo = await placeService.GetPlaceBasedOnPlace(place, "tr", cancellationToken).ConfigureAwait(false);
             var turkishPlaceInfo =
-                new CompletePlaceInfo
+                new ProfilePlaceInfo
                 {
                     ExternalID = basicPlaceInfo.ExternalID,
                     Longitude = basicPlaceInfo.Longitude,

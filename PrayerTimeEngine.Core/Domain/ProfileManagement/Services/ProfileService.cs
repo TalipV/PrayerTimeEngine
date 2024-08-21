@@ -50,7 +50,7 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Services
 
         public Task UpdateLocationConfig(
             Profile profile,
-            CompletePlaceInfo placeInfo,
+            ProfilePlaceInfo placeInfo,
             List<(ECalculationSource CalculationSource, BaseLocationData LocationData)> locationDataByCalculationSource,
             CancellationToken cancellationToken)
         {
@@ -147,7 +147,7 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Services
             {
                 ID = 1,
                 Name = "Standard-Profil",
-                PlaceInfo = new CompletePlaceInfo
+                PlaceInfo = new ProfilePlaceInfo
                 {
                     ExternalID = "343647974",
                     Latitude = 47.2803835M,

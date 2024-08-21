@@ -22,6 +22,7 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities
 
             return ID == otherLocationConfig.ID
                 && ProfileID == otherLocationConfig.ProfileID
+                // && object.Equals(otherLocationConfig.Profile) why not check it here? why check objects of related data in other Equals implementations?
                 && CalculationSource == otherLocationConfig.CalculationSource
                 && LocationData.Equals(otherLocationConfig.LocationData);
         }

@@ -178,14 +178,14 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
             }
         }
 
-        public async Task<BaseLocationData> GetLocationInfo(CompletePlaceInfo place, CancellationToken cancellationToken)
+        public async Task<BaseLocationData> GetLocationInfo(ProfilePlaceInfo place, CancellationToken cancellationToken)
         {
             ArgumentNullException.ThrowIfNull(place);
 
             // if language is already turkish then use this place
             var basicPlaceInfo = await placeService.GetPlaceBasedOnPlace(place, "tr", cancellationToken).ConfigureAwait(false);
             var turkishPlaceInfo =
-                new CompletePlaceInfo
+                new ProfilePlaceInfo
                 {
                     ExternalID = basicPlaceInfo.ExternalID,
                     Longitude = basicPlaceInfo.Longitude,

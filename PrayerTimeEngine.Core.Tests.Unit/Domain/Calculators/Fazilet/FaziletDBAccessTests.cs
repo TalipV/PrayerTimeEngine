@@ -9,13 +9,13 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Fazilet
 {
     public class FaziletDBAccessTests : BaseTest
     {
-        private readonly AppDbContext _appDbContext;
+        private readonly IDbContextFactory<AppDbContext> _dbContextFactory;
         private readonly FaziletDBAccess _faziletDBAccess;
 
         public FaziletDBAccessTests()
         {
-            _appDbContext = GetHandledDbContext();
-            _faziletDBAccess = new FaziletDBAccess(_appDbContext);
+            _dbContextFactory = GetHandledDbContextFactory();
+            _faziletDBAccess = new FaziletDBAccess(_dbContextFactory);
         }
 
         [Fact]
@@ -36,9 +36,9 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Fazilet
             // ARRANGE
             var country1 = new FaziletCountry { ID = 1, Name = "Deutschland" };
             var country2 = new FaziletCountry { ID = 2, Name = "Türkei" };
-            await _appDbContext.FaziletCountries.AddAsync(country1);
-            await _appDbContext.FaziletCountries.AddAsync(country2);
-            await _appDbContext.SaveChangesAsync();
+            await TestArrangeDbContext.FaziletCountries.AddAsync(country1);
+            await TestArrangeDbContext.FaziletCountries.AddAsync(country2);
+            await TestArrangeDbContext.SaveChangesAsync();
 
             // ACT
             var countries = await _faziletDBAccess.GetCountries(default);
@@ -60,9 +60,9 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Fazilet
             var autCity1 = new FaziletCity { ID = 3, CountryID = austria.ID, Name = "Wien", Country = austria };
             germany.Cities = [gerCity1, gerCity2];
             austria.Cities = [autCity1];
-            await _appDbContext.FaziletCountries.AddAsync(germany);
-            await _appDbContext.FaziletCountries.AddAsync(austria);
-            await _appDbContext.SaveChangesAsync();
+            await TestArrangeDbContext.FaziletCountries.AddAsync(germany);
+            await TestArrangeDbContext.FaziletCountries.AddAsync(austria);
+            await TestArrangeDbContext.SaveChangesAsync();
 
             // ACT
             var germanCities = await _faziletDBAccess.GetCitiesByCountryID(germany.ID, default);
@@ -84,8 +84,8 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Fazilet
         {
             // ARRANGE
             var germany = new FaziletCountry { ID = 1, Name = "Deutschland" };
-            await _appDbContext.FaziletCountries.AddAsync(germany);
-            await _appDbContext.SaveChangesAsync();
+            await TestArrangeDbContext.FaziletCountries.AddAsync(germany);
+            await TestArrangeDbContext.SaveChangesAsync();
 
             // ACT
             var germanCities = await _faziletDBAccess.GetCitiesByCountryID(germany.ID, default);
@@ -102,8 +102,8 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Fazilet
             var gerCity1 = new FaziletCity { ID = 1, CountryID = germany.ID, Name = "Berlin", Country = germany };
             var gerCity2 = new FaziletCity { ID = 2, CountryID = germany.ID, Name = "Hamburg", Country = germany };
             germany.Cities = [gerCity1, gerCity2];
-            await _appDbContext.FaziletCountries.AddAsync(germany);
-            await _appDbContext.SaveChangesAsync();
+            await TestArrangeDbContext.FaziletCountries.AddAsync(germany);
+            await TestArrangeDbContext.SaveChangesAsync();
 
             // ACT
             var cities = await _faziletDBAccess.GetCitiesByCountryID(2, default);
@@ -162,10 +162,10 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Fazilet
                 Isha = dateInUtc.PlusHours(21),
             };
 
-            await _appDbContext.FaziletCountries.AddAsync(germany);
-            await _appDbContext.FaziletPrayerTimes.AddAsync(city1Times1);
-            await _appDbContext.FaziletPrayerTimes.AddAsync(city2Times1);
-            await _appDbContext.SaveChangesAsync();
+            await TestArrangeDbContext.FaziletCountries.AddAsync(germany);
+            await TestArrangeDbContext.FaziletPrayerTimes.AddAsync(city1Times1);
+            await TestArrangeDbContext.FaziletPrayerTimes.AddAsync(city2Times1);
+            await TestArrangeDbContext.SaveChangesAsync();
 
             // ACT
             var times = await _faziletDBAccess.GetTimesByDateAndCityID(dateInUtc, gerCity1.ID, default);
@@ -226,11 +226,11 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Fazilet
                 Isha = dateInUtc.PlusHours(21),
             };
 
-            await _appDbContext.FaziletCountries.AddAsync(germany);
-            await _appDbContext.FaziletPrayerTimes.AddAsync(city1Times1);
-            await _appDbContext.FaziletPrayerTimes.AddAsync(city1Times2);
-            await _appDbContext.FaziletPrayerTimes.AddAsync(city2Times1);
-            await _appDbContext.SaveChangesAsync();
+            await TestArrangeDbContext.FaziletCountries.AddAsync(germany);
+            await TestArrangeDbContext.FaziletPrayerTimes.AddAsync(city1Times1);
+            await TestArrangeDbContext.FaziletPrayerTimes.AddAsync(city1Times2);
+            await TestArrangeDbContext.FaziletPrayerTimes.AddAsync(city2Times1);
+            await TestArrangeDbContext.SaveChangesAsync();
 
             // ACT
             var times = await _faziletDBAccess.GetTimesByDateAndCityID(dateInUtc, 5, default);
@@ -256,7 +256,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Fazilet
             // ASSERT
             foreach (var newCountry in newCountries)
             {
-                var foundCountry = await _appDbContext.FaziletCountries.FindAsync(newCountry.ID);
+                var foundCountry = await TestAssertDbContext.FaziletCountries.FindAsync(newCountry.ID);
                 newCountry.Should().BeEquivalentTo(foundCountry);
             }
         }
@@ -267,18 +267,18 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Fazilet
             // ARRANGE
             var germany = new FaziletCountry { ID = 1, Name = "Deutschland" };
             var austria = new FaziletCountry { ID = 2, Name = "Österreich" };
-            await _appDbContext.FaziletCountries.AddAsync(germany);
-            await _appDbContext.FaziletCountries.AddAsync(austria);
-            await _appDbContext.SaveChangesAsync();
+            await TestArrangeDbContext.FaziletCountries.AddAsync(germany);
+            await TestArrangeDbContext.FaziletCountries.AddAsync(austria);
+            await TestArrangeDbContext.SaveChangesAsync();
 
             List<FaziletCity> gerCities =
             [
-                new FaziletCity { ID = 1, CountryID = 1, Name = "Berlin", Country = germany },
-                new FaziletCity { ID = 2, CountryID = 1, Name = "Köln", Country = germany }
+                new FaziletCity { ID = 1, CountryID = 1, Name = "Berlin" },
+                new FaziletCity { ID = 2, CountryID = 1, Name = "Köln" }
             ];
             List<FaziletCity> autCities =
             [
-                new FaziletCity { ID = 3, CountryID = 2, Name = "Wien", Country = austria }
+                new FaziletCity { ID = 3, CountryID = 2, Name = "Wien" }
             ];
 
             // ACT
@@ -287,10 +287,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Fazilet
             // ASSERT
             foreach (var newCity in gerCities.Concat(autCities))
             {
-                var foundCity =
-                    await _appDbContext.FaziletCities
-                        .Include(x => x.Country)
-                        .FirstAsync(x => x.ID == newCity.ID);
+                var foundCity = await TestAssertDbContext.FaziletCities.FirstAsync(x => x.ID == newCity.ID);
                 foundCity.Should().BeEquivalentTo(newCity);
             }
         }
@@ -313,9 +310,9 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Fazilet
                 new FaziletCity { ID = 3, CountryID = 2, Name = "Wien", Country = austria }
             ];
 
-            await _appDbContext.FaziletCountries.AddAsync(germany);
-            await _appDbContext.FaziletCountries.AddAsync(austria);
-            await _appDbContext.SaveChangesAsync();
+            await TestArrangeDbContext.FaziletCountries.AddAsync(germany);
+            await TestArrangeDbContext.FaziletCountries.AddAsync(austria);
+            await TestArrangeDbContext.SaveChangesAsync();
 
             var time1 = new FaziletPrayerTimes
             {
@@ -358,9 +355,9 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Fazilet
             await _faziletDBAccess.InsertFaziletPrayerTimes([time1, time2, time3], default);
 
             // ASSERT
-            (await _appDbContext.FaziletPrayerTimes.FindAsync(time1.ID)).Should().BeEquivalentTo(time1);
-            (await _appDbContext.FaziletPrayerTimes.FindAsync(time2.ID)).Should().BeEquivalentTo(time2);
-            (await _appDbContext.FaziletPrayerTimes.FindAsync(time3.ID)).Should().BeEquivalentTo(time3);
+            (await TestAssertDbContext.FaziletPrayerTimes.FindAsync(time1.ID)).Should().BeEquivalentTo(time1);
+            (await TestAssertDbContext.FaziletPrayerTimes.FindAsync(time2.ID)).Should().BeEquivalentTo(time2);
+            (await TestAssertDbContext.FaziletPrayerTimes.FindAsync(time3.ID)).Should().BeEquivalentTo(time3);
         }
     }
 }

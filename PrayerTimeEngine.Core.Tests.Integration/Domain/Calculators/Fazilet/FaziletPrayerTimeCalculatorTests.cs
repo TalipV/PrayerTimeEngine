@@ -22,7 +22,7 @@ namespace PrayerTimeEngine.Core.Tests.Integration.Domain.Calculators.Fazilet
             ServiceProvider serviceProvider = createServiceProvider(
                 configureServiceCollection: serviceCollection =>
                 {
-                    serviceCollection.AddSingleton(GetHandledDbContext());
+                    serviceCollection.AddSingleton(GetHandledDbContextFactory());
                     serviceCollection.AddSingleton(Substitute.For<IPlaceService>());
                     serviceCollection.AddSingleton<IFaziletDBAccess, FaziletDBAccess>();
                     serviceCollection.AddSingleton<IFaziletApiService>(SubstitutionHelper.GetMockedFaziletApiService());

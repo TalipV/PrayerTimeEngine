@@ -1,4 +1,5 @@
-﻿using NodaTime;
+﻿using Microsoft.EntityFrameworkCore;
+using NodaTime;
 using PrayerTimeEngine.Core.Data.EntityFramework;
 using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Models.Entities;
 using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services;
@@ -9,13 +10,13 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Muwaqqit
 {
     public class MuwaqqitDBAccessTests : BaseTest
     {
-        private readonly AppDbContext _appDbContext;
+        private readonly IDbContextFactory<AppDbContext> _dbContextFactory;
         private readonly MuwaqqitDBAccess _muwaqqitDBAccess;
 
         public MuwaqqitDBAccessTests()
         {
-            _appDbContext = GetHandledDbContext();
-            _muwaqqitDBAccess = new MuwaqqitDBAccess(_appDbContext);
+            _dbContextFactory = GetHandledDbContextFactory();
+            _muwaqqitDBAccess = new MuwaqqitDBAccess(_dbContextFactory);
         }
 
         [Fact]
@@ -46,8 +47,8 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Muwaqqit
                 Isha = new ZonedDateTime(Instant.FromUtc(2023, 7, 30, 20, 13, 17), dateTimeZone)
             };
 
-            await _appDbContext.MuwaqqitPrayerTimes.AddAsync(muwaqqitTime);
-            await _appDbContext.SaveChangesAsync();
+            await TestArrangeDbContext.MuwaqqitPrayerTimes.AddAsync(muwaqqitTime);
+            await TestArrangeDbContext.SaveChangesAsync();
 
             // ACT
             var retrievedTime = await _muwaqqitDBAccess.GetTimesAsync(
@@ -96,7 +97,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Muwaqqit
             await _muwaqqitDBAccess.InsertMuwaqqitPrayerTimesAsync([newMuwaqqitTime], default);
 
             // ASSERT
-            var insertedTime = await _appDbContext.MuwaqqitPrayerTimes.FindAsync(newMuwaqqitTime.ID);
+            var insertedTime = await TestAssertDbContext.MuwaqqitPrayerTimes.FindAsync(newMuwaqqitTime.ID);
             insertedTime.Should().BeEquivalentTo(newMuwaqqitTime, options => options.IgnoringCyclicReferences());
         }
     }

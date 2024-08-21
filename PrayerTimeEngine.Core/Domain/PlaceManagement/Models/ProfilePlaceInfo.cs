@@ -1,28 +1,30 @@
 ﻿using NodaTime;
-using PrayerTimeEngine.Core.Common;
 using PrayerTimeEngine.Core.Data.EntityFramework;
+using PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PrayerTimeEngine.Core.Domain.PlaceManagement.Models
 {
-    public class CompletePlaceInfo : BasicPlaceInfo, IInsertedAt
+    public class ProfilePlaceInfo : BasicPlaceInfo, IInsertedAt
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
         public Instant? InsertInstant { get; set; }
+        public int ProfileID { get; set; }
+        public Profile Profile { get; set; }
 
         public required TimezoneInfo TimezoneInfo { get; set; }
 
         public override bool Equals(object obj)
         {
-            if (obj is not CompletePlaceInfo other)
+            if (obj is not ProfilePlaceInfo other)
             {
                 return false;
             }
 
-            if(ID != other.ID || !GeneralUtil.BetterEquals(TimezoneInfo, other.TimezoneInfo))
+            if(ID != other.ID || ProfileID != other.ProfileID || !object.Equals(TimezoneInfo, other.TimezoneInfo))
             {
                 return false;
             }

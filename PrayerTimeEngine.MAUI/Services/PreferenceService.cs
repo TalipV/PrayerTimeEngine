@@ -9,6 +9,9 @@ namespace PrayerTimeEngine.Services
         public void SetDoReset()
         {
             SetValue(DO_RESET_KEY, "JA");
+
+            // setting value didn't work without this on my physical smartphone
+            Thread.Sleep(100);
         }
         public bool CheckAndResetDoReset()
         {

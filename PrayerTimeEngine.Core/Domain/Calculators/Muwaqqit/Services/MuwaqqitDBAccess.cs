@@ -7,14 +7,18 @@ using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Models.Entities;
 namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services
 {
     public class MuwaqqitDBAccess(
-            AppDbContext dbContext
+            IDbContextFactory<AppDbContext> dbContextFactory
         ) : IMuwaqqitDBAccess, IPrayerTimeCacheCleaner
     {
-        public Task<List<MuwaqqitPrayerTimes>> GetAllTimes(CancellationToken cancellationToken)
+        public async Task<List<MuwaqqitPrayerTimes>> GetAllTimes(CancellationToken cancellationToken)
         {
-            return dbContext
-                .MuwaqqitPrayerTimes.AsNoTracking()
-                .ToListAsync(cancellationToken);
+            using (AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken))
+            {
+                return await dbContext
+                    .MuwaqqitPrayerTimes.AsNoTracking()
+                    .ToListAsync(cancellationToken)
+                    .ConfigureAwait(false);
+            }
         }
 
         private static readonly Func<AppDbContext, ZonedDateTime, decimal, decimal, double, double, double, double, IAsyncEnumerable<MuwaqqitPrayerTimes>> compiledQuery_GetTimesAsync =
@@ -30,33 +34,42 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services
                         && x.IshtibaqDegree == ishtibaqDegree
                         && x.AsrKarahaDegree == asrKarahaDegree));
 
-        public Task<MuwaqqitPrayerTimes> GetTimesAsync(
+        public async Task<MuwaqqitPrayerTimes> GetTimesAsync(
             ZonedDateTime date,
             decimal longitude,
             decimal latitude,
             double fajrDegree,
             double ishaDegree,
             double ishtibaqDegree,
-            double asrKarahaDegree, CancellationToken cancellationToken)
+            double asrKarahaDegree,
+            CancellationToken cancellationToken)
         {
-            return compiledQuery_GetTimesAsync(dbContext, date, longitude, latitude, fajrDegree, ishaDegree, ishtibaqDegree, asrKarahaDegree)
-                .FirstOrDefaultAsync(cancellationToken)
-                .AsTask();
+            using (AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken))
+            {
+                return await compiledQuery_GetTimesAsync(dbContext, date, longitude, latitude, fajrDegree, ishaDegree, ishtibaqDegree, asrKarahaDegree)
+                    .FirstOrDefaultAsync(cancellationToken)
+                    .ConfigureAwait(false);
+            }
         }
 
         public async Task InsertMuwaqqitPrayerTimesAsync(IEnumerable<MuwaqqitPrayerTimes> muwaqqitPrayerTimesLst, CancellationToken cancellationToken)
         {
-            await dbContext.MuwaqqitPrayerTimes.AddRangeAsync(muwaqqitPrayerTimesLst, cancellationToken).ConfigureAwait(false);
-            await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+            using (AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken))
+            {
+                await dbContext.MuwaqqitPrayerTimes.AddRangeAsync(muwaqqitPrayerTimesLst, cancellationToken).ConfigureAwait(false);
+                await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+            }
         }
 
         public async Task DeleteCacheDataAsync(ZonedDateTime deleteBeforeDate, CancellationToken cancellationToken)
         {
-            await dbContext.MuwaqqitPrayerTimes
-                .Where(p => p.Date.ToInstant() < deleteBeforeDate.ToInstant())
-                .ExecuteDeleteAsync(cancellationToken)
-                .ConfigureAwait(false);
+            using (AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken))
+            {
+                await dbContext.MuwaqqitPrayerTimes
+                    .Where(p => p.Date.ToInstant() < deleteBeforeDate.ToInstant())
+                    .ExecuteDeleteAsync(cancellationToken)
+                    .ConfigureAwait(false);
+            }
         }
-
     }
 }

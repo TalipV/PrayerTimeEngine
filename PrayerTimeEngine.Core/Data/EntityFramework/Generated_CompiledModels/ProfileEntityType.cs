@@ -9,7 +9,6 @@ using Microsoft.EntityFrameworkCore.Storage.Json;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NodaTime;
 using PrayerTimeEngine.Core.Common.Extension;
-using PrayerTimeEngine.Core.Domain.PlaceManagement.Models;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
 
 #pragma warning disable 219, 612, 618
@@ -86,26 +85,6 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
                 nullable: true);
             name.TypeMapping = SqliteStringTypeMapping.Default;
 
-            var placeInfoID = runtimeEntityType.AddProperty(
-                "PlaceInfoID",
-                typeof(int?),
-                nullable: true);
-            placeInfoID.TypeMapping = IntTypeMapping.Default.Clone(
-                comparer: new ValueComparer<int?>(
-                    (Nullable<int> v1, Nullable<int> v2) => v1.HasValue && v2.HasValue && (int)v1 == (int)v2 || !v1.HasValue && !v2.HasValue,
-                    (Nullable<int> v) => v.HasValue ? (int)v : 0,
-                    (Nullable<int> v) => v.HasValue ? (Nullable<int>)(int)v : default(Nullable<int>)),
-                keyComparer: new ValueComparer<int?>(
-                    (Nullable<int> v1, Nullable<int> v2) => v1.HasValue && v2.HasValue && (int)v1 == (int)v2 || !v1.HasValue && !v2.HasValue,
-                    (Nullable<int> v) => v.HasValue ? (int)v : 0,
-                    (Nullable<int> v) => v.HasValue ? (Nullable<int>)(int)v : default(Nullable<int>)),
-                providerValueComparer: new ValueComparer<int?>(
-                    (Nullable<int> v1, Nullable<int> v2) => v1.HasValue && v2.HasValue && (int)v1 == (int)v2 || !v1.HasValue && !v2.HasValue,
-                    (Nullable<int> v) => v.HasValue ? (int)v : 0,
-                    (Nullable<int> v) => v.HasValue ? (Nullable<int>)(int)v : default(Nullable<int>)),
-                mappingInfo: new RelationalTypeMappingInfo(
-                    storeTypeName: "INTEGER"));
-
             var sequenceNo = runtimeEntityType.AddProperty(
                 "SequenceNo",
                 typeof(int),
@@ -132,26 +111,7 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
                 new[] { iD });
             runtimeEntityType.SetPrimaryKey(key);
 
-            var index = runtimeEntityType.AddIndex(
-                new[] { placeInfoID });
-
             return runtimeEntityType;
-        }
-
-        public static RuntimeForeignKey CreateForeignKey1(RuntimeEntityType declaringEntityType, RuntimeEntityType principalEntityType)
-        {
-            var runtimeForeignKey = declaringEntityType.AddForeignKey(new[] { declaringEntityType.FindProperty("PlaceInfoID") },
-                principalEntityType.FindKey(new[] { principalEntityType.FindProperty("ID") }),
-                principalEntityType);
-
-            var placeInfo = declaringEntityType.AddNavigation("PlaceInfo",
-                runtimeForeignKey,
-                onDependent: true,
-                typeof(CompletePlaceInfo),
-                propertyInfo: typeof(Profile).GetProperty("PlaceInfo", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                fieldInfo: typeof(Profile).GetField("<PlaceInfo>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
-
-            return runtimeForeignKey;
         }
 
         public static void CreateAnnotations(RuntimeEntityType runtimeEntityType)

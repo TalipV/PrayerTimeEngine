@@ -78,6 +78,21 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Profiles",
+                columns: table => new
+                {
+                    ID = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Name = table.Column<string>(type: "TEXT", nullable: true),
+                    SequenceNo = table.Column<int>(type: "INTEGER", nullable: false),
+                    InsertInstant = table.Column<string>(type: "TEXT", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Profiles", x => x.ID);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "SemerkandCountries",
                 columns: table => new
                 {
@@ -150,75 +165,6 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "SemerkandCities",
-                columns: table => new
-                {
-                    ID = table.Column<int>(type: "INTEGER", nullable: false),
-                    InsertInstant = table.Column<string>(type: "TEXT", nullable: true),
-                    Name = table.Column<string>(type: "TEXT", nullable: true),
-                    CountryID = table.Column<int>(type: "INTEGER", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_SemerkandCities", x => x.ID);
-                    table.ForeignKey(
-                        name: "FK_SemerkandCities_SemerkandCountries_CountryID",
-                        column: x => x.CountryID,
-                        principalTable: "SemerkandCountries",
-                        principalColumn: "ID",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "PlaceInfos",
-                columns: table => new
-                {
-                    ID = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    InsertInstant = table.Column<string>(type: "TEXT", nullable: true),
-                    TimezoneInfoID = table.Column<int>(type: "INTEGER", nullable: true),
-                    ExternalID = table.Column<string>(type: "TEXT", nullable: true),
-                    Longitude = table.Column<decimal>(type: "TEXT", nullable: false),
-                    Latitude = table.Column<decimal>(type: "TEXT", nullable: false),
-                    InfoLanguageCode = table.Column<string>(type: "TEXT", nullable: true),
-                    Country = table.Column<string>(type: "TEXT", nullable: true),
-                    City = table.Column<string>(type: "TEXT", nullable: true),
-                    CityDistrict = table.Column<string>(type: "TEXT", nullable: true),
-                    PostCode = table.Column<string>(type: "TEXT", nullable: true),
-                    Street = table.Column<string>(type: "TEXT", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_PlaceInfos", x => x.ID);
-                    table.ForeignKey(
-                        name: "FK_PlaceInfos_TimezoneInfos_TimezoneInfoID",
-                        column: x => x.TimezoneInfoID,
-                        principalTable: "TimezoneInfos",
-                        principalColumn: "ID");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Profiles",
-                columns: table => new
-                {
-                    ID = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    Name = table.Column<string>(type: "TEXT", nullable: true),
-                    PlaceInfoID = table.Column<int>(type: "INTEGER", nullable: true),
-                    SequenceNo = table.Column<int>(type: "INTEGER", nullable: false),
-                    InsertInstant = table.Column<string>(type: "TEXT", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Profiles", x => x.ID);
-                    table.ForeignKey(
-                        name: "FK_Profiles_PlaceInfos_PlaceInfoID",
-                        column: x => x.PlaceInfoID,
-                        principalTable: "PlaceInfos",
-                        principalColumn: "ID");
-                });
-
-            migrationBuilder.CreateTable(
                 name: "ProfileConfigs",
                 columns: table => new
                 {
@@ -262,10 +208,71 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "SemerkandCities",
+                columns: table => new
+                {
+                    ID = table.Column<int>(type: "INTEGER", nullable: false),
+                    InsertInstant = table.Column<string>(type: "TEXT", nullable: true),
+                    Name = table.Column<string>(type: "TEXT", nullable: true),
+                    CountryID = table.Column<int>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SemerkandCities", x => x.ID);
+                    table.ForeignKey(
+                        name: "FK_SemerkandCities_SemerkandCountries_CountryID",
+                        column: x => x.CountryID,
+                        principalTable: "SemerkandCountries",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PlaceInfos",
+                columns: table => new
+                {
+                    ID = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    InsertInstant = table.Column<string>(type: "TEXT", nullable: true),
+                    ProfileID = table.Column<int>(type: "INTEGER", nullable: false),
+                    TimezoneInfoID = table.Column<int>(type: "INTEGER", nullable: true),
+                    ExternalID = table.Column<string>(type: "TEXT", nullable: true),
+                    Longitude = table.Column<decimal>(type: "TEXT", nullable: false),
+                    Latitude = table.Column<decimal>(type: "TEXT", nullable: false),
+                    InfoLanguageCode = table.Column<string>(type: "TEXT", nullable: true),
+                    Country = table.Column<string>(type: "TEXT", nullable: true),
+                    City = table.Column<string>(type: "TEXT", nullable: true),
+                    CityDistrict = table.Column<string>(type: "TEXT", nullable: true),
+                    PostCode = table.Column<string>(type: "TEXT", nullable: true),
+                    Street = table.Column<string>(type: "TEXT", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PlaceInfos", x => x.ID);
+                    table.ForeignKey(
+                        name: "FK_PlaceInfos_Profiles_ProfileID",
+                        column: x => x.ProfileID,
+                        principalTable: "Profiles",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_PlaceInfos_TimezoneInfos_TimezoneInfoID",
+                        column: x => x.TimezoneInfoID,
+                        principalTable: "TimezoneInfos",
+                        principalColumn: "ID");
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_FaziletCities_CountryID",
                 table: "FaziletCities",
                 column: "CountryID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PlaceInfos_ProfileID",
+                table: "PlaceInfos",
+                column: "ProfileID",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_PlaceInfos_TimezoneInfoID",
@@ -281,11 +288,6 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_Migrations
                 name: "IX_ProfileLocations_ProfileID",
                 table: "ProfileLocations",
                 column: "ProfileID");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Profiles_PlaceInfoID",
-                table: "Profiles",
-                column: "PlaceInfoID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_SemerkandCities_CountryID",
@@ -306,6 +308,9 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_Migrations
                 name: "MuwaqqitPrayerTimes");
 
             migrationBuilder.DropTable(
+                name: "PlaceInfos");
+
+            migrationBuilder.DropTable(
                 name: "ProfileConfigs");
 
             migrationBuilder.DropTable(
@@ -321,16 +326,13 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_Migrations
                 name: "FaziletCountries");
 
             migrationBuilder.DropTable(
+                name: "TimezoneInfos");
+
+            migrationBuilder.DropTable(
                 name: "Profiles");
 
             migrationBuilder.DropTable(
                 name: "SemerkandCountries");
-
-            migrationBuilder.DropTable(
-                name: "PlaceInfos");
-
-            migrationBuilder.DropTable(
-                name: "TimezoneInfos");
         }
     }
 }

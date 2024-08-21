@@ -21,7 +21,7 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework
         public DbSet<Profile> Profiles { get; set; }
         public DbSet<ProfileLocationConfig> ProfileLocations { get; set; }
         public DbSet<ProfileTimeConfig> ProfileConfigs { get; set; }
-        public DbSet<CompletePlaceInfo> PlaceInfos { get; set; }
+        public DbSet<ProfilePlaceInfo> PlaceInfos { get; set; }
         public DbSet<TimezoneInfo> TimezoneInfos { get; set; }
 
         public DbSet<MuwaqqitPrayerTimes> MuwaqqitPrayerTimes { get; set; }
@@ -55,6 +55,12 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework
                 .HasOne(x => x.Country)
                 .WithMany(x => x.Cities)
                 .HasForeignKey(x => x.CountryID);
+
+            modelBuilder
+                .Entity<ProfilePlaceInfo>()
+                .HasOne(x => x.Profile)
+                .WithOne(x => x.PlaceInfo)
+                .HasForeignKey<ProfilePlaceInfo>(x => x.ProfileID);
         }
 
         private static void configureNodaTimeProperties(ModelBuilder modelBuilder, Type type)
