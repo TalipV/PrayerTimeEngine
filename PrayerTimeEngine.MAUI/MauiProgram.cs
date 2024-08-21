@@ -66,6 +66,7 @@ namespace PrayerTimeEngine;
  * - Consider Muwaqqit API changes and maybe additionally use old API endpoint
  * - Remove #IF ANDROID (and similiar) statements from main code by abstracting logic with interfaces so that OS specific stuff is handled in DI factory code here
  * - Consistent naming of awaitable methods with or without Async suffix
+ * - Also check navigation properties back and forth in Equals override? Mixed approaches currently
  */
 
 /* TODO late:
@@ -188,7 +189,7 @@ public static class MauiProgram
     {
         // Note: Microsoft recommends explicit HttpClient instances without DI for MAUI
 
-        serviceCollection.AddDbContext<AppDbContext>(options =>
+        serviceCollection.AddDbContextFactory<AppDbContext>(options =>
         {
             options.UseModel(AppDbContextModel.Instance);
             options.UseSqlite($"Data Source={AppConfig.DATABASE_PATH}",
@@ -197,9 +198,8 @@ public static class MauiProgram
             //options.ConfigureWarnings(x => x.Throw(RelationalEventId.MultipleCollectionIncludeWarning));
             //options.LogTo(Console.WriteLine, LogLevel.Trace);
         },
-        // Transient because (Microsoft) "A DbContext instance is designed to be used for a single unit-of-work. This means that the lifetime of a DbContext instance is usually very short."
-        contextLifetime: ServiceLifetime.Transient, 
-        optionsLifetime: ServiceLifetime.Singleton);
+        lifetime: ServiceLifetime.Singleton);
+        
         serviceCollection.AddSingleton<AppDbContextMetaData>();
 
         serviceCollection.AddSingleton<ISystemInfoService, SystemInfoService>();
@@ -209,13 +209,7 @@ public static class MauiProgram
         serviceCollection.AddTransient<ICalculationManager, CalculationManager>();
         serviceCollection.AddTransient<IPrayerTimeCalculatorFactory, PrayerTimeCalculatorFactory>();
 
-        serviceCollection.AddTransient<IProfileService>(serviceProvider =>
-        {
-            var appDbContext = serviceProvider.GetRequiredService<AppDbContext>();
-            var profileDBAccess = new ProfileDBAccess(appDbContext);
-            var timeTypeAttributeService = serviceProvider.GetRequiredService<TimeTypeAttributeService>();
-            return new ProfileService(profileDBAccess, timeTypeAttributeService);
-        });
+        serviceCollection.AddTransient<IProfileService, ProfileService>();
 
         serviceCollection.AddTransient<IPlaceService, PlaceService>(sp =>
         {

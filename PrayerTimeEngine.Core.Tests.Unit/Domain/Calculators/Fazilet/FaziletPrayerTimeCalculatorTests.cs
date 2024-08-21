@@ -96,7 +96,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Fazilet
         public async Task GetLocationInfo_X_X()
         {
             // ARRANGE
-            var completePlaceInfo = new CompletePlaceInfo
+            var completePlaceInfo = new ProfilePlaceInfo
             {
                 ExternalID = "1",
                 Longitude = 1M,

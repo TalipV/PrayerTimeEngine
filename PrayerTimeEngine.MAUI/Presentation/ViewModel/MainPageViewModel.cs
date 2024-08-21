@@ -270,8 +270,14 @@ namespace PrayerTimeEngine.Presentation.ViewModel
 
         private async Task onBeforeFirstLoad()
         {
-            // TODO put this somewhere else
-            await MauiProgram.ServiceProvider.GetRequiredService<AppDbContext>().Database.MigrateAsync();
+            var dbContextFactory = MauiProgram.ServiceProvider.GetRequiredService<IDbContextFactory<AppDbContext>>();
+
+            using (AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(default))
+            {
+                // TODO put this somewhere else
+                await dbContext.Database.MigrateAsync();
+            }
+
             CurrentProfile ??= (await profileService.GetProfiles(cancellationToken: default)).First();
         }        
         
@@ -344,7 +350,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
                 {
                     this.IsLoadingSelectedPlace = true;
 
-                    CompletePlaceInfo completePlaceInfo = await placeService.GetTimezoneInfo(SelectedPlace, cancellationToken: default);
+                    ProfilePlaceInfo completePlaceInfo = await placeService.GetTimezoneInfo(SelectedPlace, cancellationToken: default);
                     var locationDataWithCalculationSource = await getCalculationSourceWithLocationData(completePlaceInfo, cancellationToken: default);
 
                     await profileService.UpdateLocationConfig(
@@ -394,7 +400,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
             this.FoundPlacesSelectionTexts = [];
         }
 
-        private async Task<List<(ECalculationSource, BaseLocationData)>> getCalculationSourceWithLocationData(CompletePlaceInfo completePlaceInfo, CancellationToken cancellationToken)
+        private async Task<List<(ECalculationSource, BaseLocationData)>> getCalculationSourceWithLocationData(ProfilePlaceInfo completePlaceInfo, CancellationToken cancellationToken)
         {
             var locationDataWithCalculationSource = new List<(ECalculationSource, BaseLocationData)>();
 

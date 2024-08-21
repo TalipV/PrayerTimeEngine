@@ -1,5 +1,4 @@
 ﻿using NodaTime;
-using PrayerTimeEngine.Core.Common;
 using PrayerTimeEngine.Core.Data.EntityFramework;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Models;
 using PropertyChanged;
@@ -11,7 +10,7 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities
     {
         public int ID { get; set; }
         public string Name { get; set; }
-        public CompletePlaceInfo PlaceInfo { get; set; }
+        public ProfilePlaceInfo PlaceInfo { get; set; }
         public int SequenceNo { get; set; }
         public Instant? InsertInstant { get; set; }
 
@@ -29,7 +28,7 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities
                 return false;
             }
 
-            if (!GeneralUtil.BetterEquals(PlaceInfo, otherProfile.PlaceInfo))
+            if (!object.Equals(PlaceInfo, otherProfile.PlaceInfo))
             {
                 return false;
             }

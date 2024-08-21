@@ -9,13 +9,13 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
 {
     public class SemerkandDBAccessTests : BaseTest
     {
-        private readonly AppDbContext _appDbContext;
+        private readonly IDbContextFactory<AppDbContext> _dbContextFactory;
         private readonly SemerkandDBAccess _semerkandDBAccess;
 
         public SemerkandDBAccessTests()
         {
-            _appDbContext = GetHandledDbContext();
-            _semerkandDBAccess = new SemerkandDBAccess(_appDbContext);
+            _dbContextFactory = GetHandledDbContextFactory();
+            _semerkandDBAccess = new SemerkandDBAccess(_dbContextFactory);
         }
 
         [Fact]
@@ -36,9 +36,9 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
             // ARRANGE
             var country1 = new SemerkandCountry { ID = 1, Name = "Deutschland" };
             var country2 = new SemerkandCountry { ID = 2, Name = "Türkei" };
-            await _appDbContext.SemerkandCountries.AddAsync(country1);
-            await _appDbContext.SemerkandCountries.AddAsync(country2);
-            await _appDbContext.SaveChangesAsync();
+            await TestArrangeDbContext.SemerkandCountries.AddAsync(country1);
+            await TestArrangeDbContext.SemerkandCountries.AddAsync(country2);
+            await TestArrangeDbContext.SaveChangesAsync();
             
             // ACT
             var countries = await _semerkandDBAccess.GetCountries(default);
@@ -60,9 +60,9 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
             var autCity1 = new SemerkandCity { ID = 3, CountryID = austria.ID, Name = "Wien", Country = austria};
             germany.Cities = [gerCity1, gerCity2];
             austria.Cities = [autCity1];
-            await _appDbContext.SemerkandCountries.AddAsync(germany);
-            await _appDbContext.SemerkandCountries.AddAsync(austria);
-            await _appDbContext.SaveChangesAsync();
+            await TestArrangeDbContext.SemerkandCountries.AddAsync(germany);
+            await TestArrangeDbContext.SemerkandCountries.AddAsync(austria);
+            await TestArrangeDbContext.SaveChangesAsync();
             
             // ACT
             var germanCities = await _semerkandDBAccess.GetCitiesByCountryID(germany.ID, default);
@@ -84,8 +84,8 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
         {
             // ARRANGE
             var germany = new SemerkandCountry { ID = 1, Name = "Deutschland" };
-            await _appDbContext.SemerkandCountries.AddAsync(germany);
-            await _appDbContext.SaveChangesAsync();
+            await TestArrangeDbContext.SemerkandCountries.AddAsync(germany);
+            await TestArrangeDbContext.SaveChangesAsync();
             
             // ACT
             var germanCities = await _semerkandDBAccess.GetCitiesByCountryID(germany.ID, default);
@@ -102,8 +102,8 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
             var gerCity1 = new SemerkandCity { ID = 1, CountryID = germany.ID, Name = "Berlin", Country = germany};
             var gerCity2 = new SemerkandCity { ID = 2, CountryID = germany.ID, Name = "Hamburg", Country = germany};
             germany.Cities = [gerCity1, gerCity2];
-            await _appDbContext.SemerkandCountries.AddAsync(germany);
-            await _appDbContext.SaveChangesAsync();
+            await TestArrangeDbContext.SemerkandCountries.AddAsync(germany);
+            await TestArrangeDbContext.SaveChangesAsync();
             
             // ACT
             var cities = await _semerkandDBAccess.GetCitiesByCountryID(2, default);
@@ -162,10 +162,10 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
                 Isha = dateInUtc.PlusHours(21),
             };
             
-            await _appDbContext.SemerkandCountries.AddAsync(germany);
-            await _appDbContext.SemerkandPrayerTimes.AddAsync(city1Times1);
-            await _appDbContext.SemerkandPrayerTimes.AddAsync(city2Times1);
-            await _appDbContext.SaveChangesAsync();
+            await TestArrangeDbContext.SemerkandCountries.AddAsync(germany);
+            await TestArrangeDbContext.SemerkandPrayerTimes.AddAsync(city1Times1);
+            await TestArrangeDbContext.SemerkandPrayerTimes.AddAsync(city2Times1);
+            await TestArrangeDbContext.SaveChangesAsync();
             
             // ACT
             var times = await _semerkandDBAccess.GetTimesByDateAndCityID(dateInUtc, gerCity1.ID, default);
@@ -226,11 +226,11 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
                 Isha = dateInUtc.PlusHours(21),
             };
             
-            await _appDbContext.SemerkandCountries.AddAsync(germany);
-            await _appDbContext.SemerkandPrayerTimes.AddAsync(city1Times1);
-            await _appDbContext.SemerkandPrayerTimes.AddAsync(city1Times2);
-            await _appDbContext.SemerkandPrayerTimes.AddAsync(city2Times1);
-            await _appDbContext.SaveChangesAsync();
+            await TestArrangeDbContext.SemerkandCountries.AddAsync(germany);
+            await TestArrangeDbContext.SemerkandPrayerTimes.AddAsync(city1Times1);
+            await TestArrangeDbContext.SemerkandPrayerTimes.AddAsync(city1Times2);
+            await TestArrangeDbContext.SemerkandPrayerTimes.AddAsync(city2Times1);
+            await TestArrangeDbContext.SaveChangesAsync();
             
             // ACT
             var times = await _semerkandDBAccess.GetTimesByDateAndCityID(dateInUtc, 5, default);
@@ -256,7 +256,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
             // ASSERT
             foreach (var newCountry in newCountries)
             {
-                var foundCountry = await _appDbContext.SemerkandCountries.FindAsync(newCountry.ID);
+                var foundCountry = await TestAssertDbContext.SemerkandCountries.FindAsync(newCountry.ID);
                 newCountry.Should().BeEquivalentTo(foundCountry);
             }
         }
@@ -267,9 +267,9 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
             // ARRANGE
             var germany = new SemerkandCountry { ID = 1, Name = "Deutschland" };
             var austria = new SemerkandCountry { ID = 2, Name = "Österreich" };
-            await _appDbContext.SemerkandCountries.AddAsync(germany);
-            await _appDbContext.SemerkandCountries.AddAsync(austria);
-            await _appDbContext.SaveChangesAsync();
+            await TestArrangeDbContext.SemerkandCountries.AddAsync(germany);
+            await TestArrangeDbContext.SemerkandCountries.AddAsync(austria);
+            await TestArrangeDbContext.SaveChangesAsync();
 
             List<SemerkandCity> gerCities =
             [
@@ -288,10 +288,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
             // ASSERT
             foreach (var newCity in gerCities.Concat(autCities))
             {
-                var foundCity = 
-                    await _appDbContext.SemerkandCities
-                        .Include(x => x.Country)
-                        .FirstAsync(x => x.ID == newCity.ID);
+                var foundCity = await TestAssertDbContext.SemerkandCities.FirstAsync(x => x.ID == newCity.ID);
                 foundCity.Should().BeEquivalentTo(newCity);
             }
         }
@@ -325,9 +322,9 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
                     new SemerkandCity { ID = 3, CountryID = 2, Name = "Wien", Country = austria }
                 ];
 
-            await _appDbContext.SemerkandCountries.AddAsync(germany);
-            await _appDbContext.SemerkandCountries.AddAsync(austria);
-            await _appDbContext.SaveChangesAsync();
+            await TestArrangeDbContext.SemerkandCountries.AddAsync(germany);
+            await TestArrangeDbContext.SemerkandCountries.AddAsync(austria);
+            await TestArrangeDbContext.SaveChangesAsync();
 
             var time1 = new SemerkandPrayerTimes
             {
@@ -370,9 +367,9 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
             await _semerkandDBAccess.InsertSemerkandPrayerTimes([time1, time2, time3], default);
 
             // ASSERT
-            (await _appDbContext.SemerkandPrayerTimes.FindAsync(time1.ID)).Should().BeEquivalentTo(time1);
-            (await _appDbContext.SemerkandPrayerTimes.FindAsync(time2.ID)).Should().BeEquivalentTo(time2);
-            (await _appDbContext.SemerkandPrayerTimes.FindAsync(time3.ID)).Should().BeEquivalentTo(time3);
+            (await TestAssertDbContext.SemerkandPrayerTimes.FindAsync(time1.ID)).Should().BeEquivalentTo(time1);
+            (await TestAssertDbContext.SemerkandPrayerTimes.FindAsync(time2.ID)).Should().BeEquivalentTo(time2);
+            (await TestAssertDbContext.SemerkandPrayerTimes.FindAsync(time3.ID)).Should().BeEquivalentTo(time3);
         }
     }
 }

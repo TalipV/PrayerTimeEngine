@@ -219,7 +219,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services
             }
         }
 
-        public Task<BaseLocationData> GetLocationInfo(CompletePlaceInfo place, CancellationToken cancellationToken)
+        public Task<BaseLocationData> GetLocationInfo(ProfilePlaceInfo place, CancellationToken cancellationToken)
         {
             ArgumentNullException.ThrowIfNull(place);
 

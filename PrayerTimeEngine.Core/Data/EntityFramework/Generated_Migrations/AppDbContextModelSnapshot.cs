@@ -274,7 +274,7 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_Migrations
                     b.ToTable("SemerkandPrayerTimes");
                 });
 
-            modelBuilder.Entity("PrayerTimeEngine.Core.Domain.PlaceManagement.Models.CompletePlaceInfo", b =>
+            modelBuilder.Entity("PrayerTimeEngine.Core.Domain.PlaceManagement.Models.ProfilePlaceInfo", b =>
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
@@ -307,6 +307,9 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_Migrations
                     b.Property<string>("PostCode")
                         .HasColumnType("TEXT");
 
+                    b.Property<int>("ProfileID")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("Street")
                         .HasColumnType("TEXT");
 
@@ -314,6 +317,9 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_Migrations
                         .HasColumnType("INTEGER");
 
                     b.HasKey("ID");
+
+                    b.HasIndex("ProfileID")
+                        .IsUnique();
 
                     b.HasIndex("TimezoneInfoID");
 
@@ -355,15 +361,10 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_Migrations
                     b.Property<string>("Name")
                         .HasColumnType("TEXT");
 
-                    b.Property<int?>("PlaceInfoID")
-                        .HasColumnType("INTEGER");
-
                     b.Property<int>("SequenceNo")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("ID");
-
-                    b.HasIndex("PlaceInfoID");
 
                     b.ToTable("Profiles");
                 });
@@ -440,22 +441,21 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_Migrations
                     b.Navigation("Country");
                 });
 
-            modelBuilder.Entity("PrayerTimeEngine.Core.Domain.PlaceManagement.Models.CompletePlaceInfo", b =>
+            modelBuilder.Entity("PrayerTimeEngine.Core.Domain.PlaceManagement.Models.ProfilePlaceInfo", b =>
                 {
+                    b.HasOne("PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities.Profile", "Profile")
+                        .WithOne("PlaceInfo")
+                        .HasForeignKey("PrayerTimeEngine.Core.Domain.PlaceManagement.Models.ProfilePlaceInfo", "ProfileID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("PrayerTimeEngine.Core.Domain.PlaceManagement.Models.TimezoneInfo", "TimezoneInfo")
                         .WithMany()
                         .HasForeignKey("TimezoneInfoID");
 
+                    b.Navigation("Profile");
+
                     b.Navigation("TimezoneInfo");
-                });
-
-            modelBuilder.Entity("PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities.Profile", b =>
-                {
-                    b.HasOne("PrayerTimeEngine.Core.Domain.PlaceManagement.Models.CompletePlaceInfo", "PlaceInfo")
-                        .WithMany()
-                        .HasForeignKey("PlaceInfoID");
-
-                    b.Navigation("PlaceInfo");
                 });
 
             modelBuilder.Entity("PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities.ProfileLocationConfig", b =>
@@ -493,6 +493,8 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_Migrations
             modelBuilder.Entity("PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities.Profile", b =>
                 {
                     b.Navigation("LocationConfigs");
+
+                    b.Navigation("PlaceInfo");
 
                     b.Navigation("TimeConfigs");
                 });

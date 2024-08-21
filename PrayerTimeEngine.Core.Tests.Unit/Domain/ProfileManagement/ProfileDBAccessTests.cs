@@ -6,18 +6,19 @@ using PrayerTimeEngine.Core.Domain.Models;
 using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Models;
 using PrayerTimeEngine.Core.Tests.Common.TestData;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace PrayerTimeEngine.Core.Tests.Unit.Domain.ProfileManagement
 {
     public class ProfileDBAccessTests : BaseTest
     {
-        private readonly AppDbContext _appDbContext;
+        private readonly IDbContextFactory<AppDbContext> _dbContextFactory;
         private readonly ProfileDBAccess _profileDBAccess;
 
         public ProfileDBAccessTests()
         {
-            _appDbContext = GetHandledDbContext();
-            _profileDBAccess = new ProfileDBAccess(_appDbContext);
+            _dbContextFactory = GetHandledDbContextFactory();
+            _profileDBAccess = new ProfileDBAccess(_dbContextFactory);
         }
 
         #region GetProfiles
@@ -30,10 +31,10 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.ProfileManagement
             var profile1 = TestDataHelper.CreateNewCompleteTestProfile(profileID: 1);
             var profile2 = TestDataHelper.CreateNewCompleteTestProfile(profileID: 2);
             var profile3 = TestDataHelper.CreateNewCompleteTestProfile(profileID: 3);
-            await _appDbContext.Profiles.AddAsync(profile1);
-            await _appDbContext.Profiles.AddAsync(profile2);
-            await _appDbContext.Profiles.AddAsync(profile3);
-            await _appDbContext.SaveChangesAsync();
+            await TestArrangeDbContext.Profiles.AddAsync(profile1);
+            await TestArrangeDbContext.Profiles.AddAsync(profile2);
+            await TestArrangeDbContext.Profiles.AddAsync(profile3);
+            await TestArrangeDbContext.SaveChangesAsync();
 
             // ACT
             var profiles = await _profileDBAccess.GetProfiles(default);
@@ -55,8 +56,8 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.ProfileManagement
         {
             // ARRANGE
             var profile = TestDataHelper.CreateNewCompleteTestProfile();
-            await _appDbContext.Profiles.AddAsync(profile);
-            await _appDbContext.SaveChangesAsync();
+            await TestArrangeDbContext.Profiles.AddAsync(profile);
+            await TestArrangeDbContext.SaveChangesAsync();
 
             // ACT
             var untracktedProfile = await _profileDBAccess.GetUntrackedReferenceOfProfile(profile.ID, default);
@@ -64,7 +65,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.ProfileManagement
             // ASSERT
             profile.Should().BeEquivalentTo(untracktedProfile);
             ReferenceEquals(profile, untracktedProfile).Should().BeFalse(because: "they should be equal but not exactly the same");
-            _appDbContext.Entry(untracktedProfile).State.Should().Be(Microsoft.EntityFrameworkCore.EntityState.Detached);
+            TestAssertDbContext.Entry(untracktedProfile).State.Should().Be(Microsoft.EntityFrameworkCore.EntityState.Detached);
         }        
         
         [Fact]
@@ -94,7 +95,14 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.ProfileManagement
             await _profileDBAccess.SaveProfile(profile, default);
 
             // ASSERT
-            _appDbContext.Profiles.SingleOrDefault().Should().BeEquivalentTo(profile);
+            var savedProfile =
+                TestAssertDbContext.Profiles
+                .Include(x => x.PlaceInfo).ThenInclude(x => x.TimezoneInfo)
+                .Include(x => x.TimeConfigs)
+                .Include(x => x.LocationConfigs)
+                .SingleOrDefault();
+
+            savedProfile.Should().BeEquivalentTo(profile);
         }
 
         #endregion SaveProfile
@@ -107,8 +115,8 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.ProfileManagement
         {
             // ARRANGE
             var profile = TestDataHelper.CreateNewCompleteTestProfile();
-            await _appDbContext.Profiles.AddAsync(profile);
-            await _appDbContext.SaveChangesAsync();
+            await TestArrangeDbContext.Profiles.AddAsync(profile);
+            await TestArrangeDbContext.SaveChangesAsync();
 
             List<(ECalculationSource CalculationSource, BaseLocationData LocationData)> values =
                 [
@@ -116,7 +124,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.ProfileManagement
                 ];
 
             var placeInfo =
-                new CompletePlaceInfo
+                new ProfilePlaceInfo
                 {
                     ExternalID = "1",
                     Longitude = 1M,
@@ -153,8 +161,8 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.ProfileManagement
         {
             // ARRANGE
             var profile = TestDataHelper.CreateNewCompleteTestProfile();
-            await _appDbContext.Profiles.AddAsync(profile);
-            await _appDbContext.SaveChangesAsync();
+            await TestArrangeDbContext.Profiles.AddAsync(profile);
+            await TestArrangeDbContext.SaveChangesAsync();
 
             var genericSettingConfiguration = new GenericSettingConfiguration
             {

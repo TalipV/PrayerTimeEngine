@@ -19,7 +19,7 @@ namespace PrayerTimeEngine.Core.Domain.PlaceManagement.Services
     {
         private const string _apiKey = "pk.5fdf59f9c3682abc89749e42d1f68d8d";
 
-        public async Task<CompletePlaceInfo> GetTimezoneInfo(BasicPlaceInfo basicPlaceInfo, CancellationToken cancellationToken)
+        public async Task<ProfilePlaceInfo> GetTimezoneInfo(BasicPlaceInfo basicPlaceInfo, CancellationToken cancellationToken)
         {
             await ensureCooldown(cancellationToken).ConfigureAwait(false);
 
@@ -30,7 +30,7 @@ namespace PrayerTimeEngine.Core.Domain.PlaceManagement.Services
                     _apiKey,
                     cancellationToken).ConfigureAwait(false);
 
-            return new CompletePlaceInfo()
+            return new ProfilePlaceInfo()
             {
                 ExternalID = basicPlaceInfo.ExternalID,
                 Longitude = basicPlaceInfo.Longitude, 

@@ -9,6 +9,6 @@ namespace PrayerTimeEngine.Core.Domain.Calculators
     {
         public Task<List<(ETimeType TimeType, ZonedDateTime ZonedDateTime)>> GetPrayerTimesAsync(ZonedDateTime date, BaseLocationData locationData, List<GenericSettingConfiguration> configurations, CancellationToken cancellationToken);
         public HashSet<ETimeType> GetUnsupportedTimeTypes();
-        public Task<BaseLocationData> GetLocationInfo(CompletePlaceInfo place, CancellationToken cancellationToken);
+        public Task<BaseLocationData> GetLocationInfo(ProfilePlaceInfo place, CancellationToken cancellationToken);
     }
 }

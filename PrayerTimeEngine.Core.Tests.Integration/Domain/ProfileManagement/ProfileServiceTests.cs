@@ -1,7 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using NSubstitute.Extensions;
@@ -29,13 +27,13 @@ namespace PrayerTimeEngine.Core.Tests.Integration.Domain.ProfileManagement
             ServiceProvider serviceProvider = createServiceProvider(
                 serviceCollection =>
                 {
-                    serviceCollection.AddSingleton(GetHandledDbContext());
+                    serviceCollection.AddSingleton(GetHandledDbContextFactory());
                     serviceCollection.AddSingleton<TimeTypeAttributeService>();
                     serviceCollection.AddSingleton<IProfileDBAccess, ProfileDBAccess>();
                     serviceCollection.AddSingleton<IProfileService, ProfileService>();
                 });
 
-            var dbContext = serviceProvider.GetService<AppDbContext>();
+            using var dbContext = serviceProvider.GetService<IDbContextFactory<AppDbContext>>().CreateDbContext();
             var profileService = serviceProvider.GetService<IProfileService>() as ProfileService;
 
             await dbContext.Profiles.AddAsync(TestDataHelper.CreateNewCompleteTestProfile());
@@ -47,13 +45,14 @@ namespace PrayerTimeEngine.Core.Tests.Integration.Domain.ProfileManagement
                 dbContext.Profiles
                     .Include(x => x.LocationConfigs)
                     .Include(x => x.TimeConfigs)
+                    .Include(x => x.PlaceInfo).ThenInclude(x => x.TimezoneInfo)
                     .AsNoTracking()
                     .Single();
 
-            CompletePlaceInfo oldPlaceInfo = profile.PlaceInfo;
+            ProfilePlaceInfo oldPlaceInfo = profile.PlaceInfo;
             var oldLocationDataByCalculationSource = profile.LocationConfigs.ToDictionary(x => x.CalculationSource, x => x.LocationData);
 
-            CompletePlaceInfo newPlaceInfo = new CompletePlaceInfo
+            ProfilePlaceInfo newPlaceInfo = new ProfilePlaceInfo
             {
                 ExternalID = "1",
                 Longitude = 1M,
@@ -64,14 +63,14 @@ namespace PrayerTimeEngine.Core.Tests.Integration.Domain.ProfileManagement
                 CityDistrict = "",
                 PostCode = "",
                 Street = "",
-                TimezoneInfo = new TimezoneInfo { Name = TestDataHelper.EUROPE_VIENNA_TIME_ZONE.Id },
+                TimezoneInfo = new TimezoneInfo { Name = TestDataHelper.EUROPE_BERLIN_TIME_ZONE.Id },
             };
 
             var newLocationDataByCalculationSource = new Dictionary<ECalculationSource, BaseLocationData>
             {
-                [ECalculationSource.Muwaqqit] = new MuwaqqitLocationData { Latitude = 50.9413M, Longitude = 6.9583M, TimezoneName = TestDataHelper.EUROPE_VIENNA_TIME_ZONE.Id },
+                [ECalculationSource.Muwaqqit] = new MuwaqqitLocationData { Latitude = 50.9413M, Longitude = 6.9583M, TimezoneName = TestDataHelper.EUROPE_BERLIN_TIME_ZONE.Id },
                 [ECalculationSource.Fazilet] = new FaziletLocationData { CountryName = "Almanya", CityName = newPlaceInfo.City },
-                [ECalculationSource.Semerkand] = new SemerkandLocationData { CountryName = "Almanya", CityName = newPlaceInfo.City, TimezoneName = TestDataHelper.EUROPE_VIENNA_TIME_ZONE.Id },
+                [ECalculationSource.Semerkand] = new SemerkandLocationData { CountryName = "Almanya", CityName = newPlaceInfo.City, TimezoneName = TestDataHelper.EUROPE_BERLIN_TIME_ZONE.Id },
             };
 
             // ACT
@@ -80,7 +79,10 @@ namespace PrayerTimeEngine.Core.Tests.Integration.Domain.ProfileManagement
             // ASSERT
             dbContext.ChangeTracker.HasChanges().Should().BeFalse();
 
+            profile.PlaceInfo.Should().NotBeNull();
+            profile.PlaceInfo.Should().NotBe(oldPlaceInfo);
             profile.PlaceInfo.Should().Be(newPlaceInfo);
+
             foreach (var locationDataByCalculationSource in profile.LocationConfigs.ToDictionary(x => x.CalculationSource, x => x.LocationData))
             {
                 BaseLocationData newValue = newLocationDataByCalculationSource[locationDataByCalculationSource.Key];
@@ -91,29 +93,30 @@ namespace PrayerTimeEngine.Core.Tests.Integration.Domain.ProfileManagement
         }
 
         [Fact]
-        public async Task UpdateLocationConfig_SetsDataWithExceptionOnCommit_LocalAndDbChangesReverted()
+        public async Task UpdateLocationConfig_SetsDataWithExceptionOnCommit_OldDataFullyRemains()
         {
             // ARRANGE
             ServiceProvider serviceProvider = createServiceProvider(
                 serviceCollection =>
                 {
-                    serviceCollection.AddSingleton(GetHandledDbContext());
+                    serviceCollection.AddSingleton(GetHandledDbContextFactory());
                     serviceCollection.AddSingleton<TimeTypeAttributeService>();
                     serviceCollection.AddSingleton<IProfileDBAccess, ProfileDBAccess>();
                     serviceCollection.AddSingleton<IProfileService, ProfileService>();
                 });
 
-            var dbContext = serviceProvider.GetService<AppDbContext>();
-            var transactionSub = Substitute.For<IDbContextTransaction>();
-            dbContext.Database.Configure().BeginTransactionAsync().Returns(Task.FromResult(transactionSub));
-            transactionSub.Configure().CommitAsync(Arg.Any<CancellationToken>())
-                          .Throws(new Exception("Test exception during commit"));
+            var dbContextFactory = serviceProvider.GetService<IDbContextFactory<AppDbContext>>();
+            using var dbContext = dbContextFactory.CreateDbContext();
+
+            dbContextFactory.Configure().CreateDbContext().Returns(dbContext);
+            dbContextFactory.Configure().CreateDbContextAsync().Returns(Task.FromResult(dbContext));
 
             var profileService = serviceProvider.GetService<IProfileService>() as ProfileService;
 
             await dbContext.Profiles.AddAsync(TestDataHelper.CreateNewCompleteTestProfile());
             await dbContext.SaveChangesAsync();
-            dbContext.ChangeTracker.Clear();
+
+            dbContext.SaveChangesAsync().Throws(new Exception("Test exception during commit"));
 
             var profile =
                 dbContext.Profiles
@@ -123,17 +126,17 @@ namespace PrayerTimeEngine.Core.Tests.Integration.Domain.ProfileManagement
                     .AsNoTracking()
                     .Single();
 
-            CompletePlaceInfo oldPlaceInfo = profile.PlaceInfo;
+            ProfilePlaceInfo oldPlaceInfo = profile.PlaceInfo;
             var oldLocationDataByCalculationSource = profile.LocationConfigs.ToDictionary(x => x.CalculationSource, x => x.LocationData);
             var newLocationDataByCalculationSource = new Dictionary<ECalculationSource, BaseLocationData>
             {
-                [ECalculationSource.Muwaqqit] = new MuwaqqitLocationData { Latitude = 50.9413M, Longitude = 6.9583M, TimezoneName = TestDataHelper.EUROPE_VIENNA_TIME_ZONE.Id },
+                [ECalculationSource.Muwaqqit] = new MuwaqqitLocationData { Latitude = 50.9413M, Longitude = 6.9583M, TimezoneName = TestDataHelper.EUROPE_BERLIN_TIME_ZONE.Id },
                 [ECalculationSource.Fazilet] = new FaziletLocationData { CountryName = "Almanya", CityName = "Köln" },
-                [ECalculationSource.Semerkand] = new SemerkandLocationData { CountryName = "Almanya", CityName = "Köln", TimezoneName = TestDataHelper.EUROPE_VIENNA_TIME_ZONE.Id },
+                [ECalculationSource.Semerkand] = new SemerkandLocationData { CountryName = "Almanya", CityName = "Köln", TimezoneName = TestDataHelper.EUROPE_BERLIN_TIME_ZONE.Id },
             };
 
-            CompletePlaceInfo newPlaceInfo =
-                new CompletePlaceInfo
+            var newPlaceInfo =
+                new ProfilePlaceInfo
                 {
                     Latitude = 1M,
                     Longitude = 1M,
@@ -164,10 +167,11 @@ namespace PrayerTimeEngine.Core.Tests.Integration.Domain.ProfileManagement
 
             // ASSERT
             await updateLocationConfigFunc.Should().ThrowAsync<Exception>().WithMessage("Test exception during commit");
-            dbContext.ChangeTracker.HasChanges().Should().BeFalse();
-
-            // old values should still be in this profile instance
+            
+            profile.PlaceInfo.Should().NotBeNull();
+            profile.PlaceInfo.Should().NotBe(newPlaceInfo);
             profile.PlaceInfo.Should().Be(oldPlaceInfo);
+
             foreach (var locationDataByCalculationSource in profile.LocationConfigs.ToDictionary(x => x.CalculationSource, x => x.LocationData))
             {
                 BaseLocationData oldValue = oldLocationDataByCalculationSource[locationDataByCalculationSource.Key];
@@ -184,25 +188,24 @@ namespace PrayerTimeEngine.Core.Tests.Integration.Domain.ProfileManagement
             ServiceProvider serviceProvider = createServiceProvider(
                 serviceCollection =>
                 {
-                    serviceCollection.AddSingleton(GetHandledDbContext());
+                    serviceCollection.AddSingleton(GetHandledDbContextFactory());
                     serviceCollection.AddSingleton<TimeTypeAttributeService>();
                     serviceCollection.AddSingleton<IProfileDBAccess, ProfileDBAccess>();
                     serviceCollection.AddSingleton<IProfileService, ProfileService>();
                 });
 
-            var dbContext = serviceProvider.GetService<AppDbContext>();
             var profileService = serviceProvider.GetService<IProfileService>() as ProfileService;
 
-            await dbContext.Profiles.AddAsync(TestDataHelper.CreateNewCompleteTestProfile());
-            await dbContext.SaveChangesAsync();
+            await TestArrangeDbContext.Profiles.AddAsync(TestDataHelper.CreateNewCompleteTestProfile());
+            await TestArrangeDbContext.SaveChangesAsync();
+
             var profile =
-                dbContext.Profiles
+                TestArrangeDbContext.Profiles
                     .Include(x => x.LocationConfigs)
                     .Include(x => x.TimeConfigs)
                     .AsNoTracking()
                     .Single();
 
-            // ACT
             var newSemerkandConfig =
                 new GenericSettingConfiguration
                 {
@@ -210,10 +213,10 @@ namespace PrayerTimeEngine.Core.Tests.Integration.Domain.ProfileManagement
                     TimeType = ETimeType.FajrStart
                 };
 
+            // ACT
             await profileService.UpdateTimeConfig(profile, ETimeType.FajrStart, newSemerkandConfig, default);
 
             // ASSERT
-            dbContext.ChangeTracker.HasChanges().Should().BeFalse();
 
             var fajrStartConfig = profileService.GetTimeConfig(profile, ETimeType.FajrStart);
             fajrStartConfig.Source.Should().Be(ECalculationSource.Semerkand);

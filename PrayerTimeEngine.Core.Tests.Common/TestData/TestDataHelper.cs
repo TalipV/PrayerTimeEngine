@@ -21,6 +21,7 @@ namespace PrayerTimeEngine.Core.Tests.Common.TestData
         public static readonly string LOCATIONIQ_TEST_DATA_FILE_PATH = Path.Combine(BASE_TEST_DATA_FILE_PATH, "LocationIQTestData");
 
         public static readonly DateTimeZone EUROPE_VIENNA_TIME_ZONE = DateTimeZoneProviders.Tzdb["Europe/Vienna"];
+        public static readonly DateTimeZone EUROPE_BERLIN_TIME_ZONE = DateTimeZoneProviders.Tzdb["Europe/Berlin"];
 
         public static Profile CreateNewCompleteTestProfile(int profileID = 1)
         {
@@ -28,7 +29,7 @@ namespace PrayerTimeEngine.Core.Tests.Common.TestData
             {
                 ID = profileID,
                 Name = "Standard-Profil",
-                PlaceInfo = new CompletePlaceInfo
+                PlaceInfo = new ProfilePlaceInfo
                 {
                     Latitude = 47.2803835M,
                     Longitude = 11.41337M,
