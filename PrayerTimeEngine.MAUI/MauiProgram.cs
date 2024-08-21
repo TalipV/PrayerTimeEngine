@@ -210,6 +210,7 @@ public static class MauiProgram
         serviceCollection.AddTransient<IPrayerTimeCalculatorFactory, PrayerTimeCalculatorFactory>();
 
         serviceCollection.AddTransient<IProfileService, ProfileService>();
+        serviceCollection.AddTransient<IProfileDBAccess, ProfileDBAccess>();
 
         serviceCollection.AddTransient<IPlaceService, PlaceService>(sp =>
         {
