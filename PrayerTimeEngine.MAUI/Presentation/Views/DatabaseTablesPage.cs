@@ -5,7 +5,7 @@ using PrayerTimeEngine.Presentation.ViewModel;
 using System.Reflection;
 using UraniumUI.Material.Controls;
 
-namespace PrayerTimeEngine.Presentation.View;
+namespace PrayerTimeEngine.Presentation.Views;
 
 public partial class DatabaseTablesPage : ContentPage
 {
@@ -35,9 +35,9 @@ public partial class DatabaseTablesPage : ContentPage
     private readonly HashSet<Type> validTypes =
     [
         typeof(string),
-        typeof(int), typeof(int?), 
-        typeof(double), typeof(double?), 
-        typeof(decimal), typeof(decimal?), 
+        typeof(int), typeof(int?),
+        typeof(double), typeof(double?),
+        typeof(decimal), typeof(decimal?),
         typeof(ZonedDateTime), typeof(ZonedDateTime?),
         typeof(LocalTime), typeof(LocalTime?),
         typeof(LocalDate), typeof(LocalDate?),

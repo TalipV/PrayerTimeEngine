@@ -4,7 +4,7 @@ using PrayerTimeEngine.Presentation.Service;
 using PrayerTimeEngine.Presentation.ViewModel;
 using UraniumUI.Material.Controls;
 
-namespace PrayerTimeEngine.Presentation.View;
+namespace PrayerTimeEngine.Presentation.Views;
 
 public partial class SettingsHandlerPage : ContentPage
 {
@@ -14,7 +14,7 @@ public partial class SettingsHandlerPage : ContentPage
     private readonly TabView _tabView;
 
     public SettingsHandlerPage(
-            SettingsHandlerPageViewModel viewModel, 
+            SettingsHandlerPageViewModel viewModel,
             ToastMessageService toastMessageService,
             ILogger<SettingsHandlerPage> logger
         )
@@ -42,11 +42,14 @@ public partial class SettingsHandlerPage : ContentPage
         {
             foreach (SettingsContentPage settingContentPages in _viewModel.SettingsContentPages)
             {
+                var content = settingContentPages.Content;
+                settingContentPages.RemoveLogicalChild(content); // Causes warning if View is added to another page if not removed from former page
+
                 var tabItem = new TabItem
                 {
                     Content = new ContentView
                     {
-                        Content = settingContentPages.Content,
+                        Content = content,
                         BindingContext = settingContentPages.ViewModel
                     },
                     BindingContext = settingContentPages.ViewModel,
@@ -54,6 +57,9 @@ public partial class SettingsHandlerPage : ContentPage
 
                 tabItem.SetBinding(TabItem.TitleProperty, nameof(settingContentPages.ViewModel.TabTitle));
                 _tabView.Items.Add(tabItem);
+
+                // added so late because moving around the contents triggers warning level binding errors
+                settingContentPages.AddDataBindings();
             }
         };
     }
@@ -74,7 +80,6 @@ public partial class SettingsHandlerPage : ContentPage
         }
     }
 
-    [Time]
     private async Task onDisappearingForAllSettingContentPages()
     {
         foreach (SettingsContentPageViewModel contentPageViewModel in _viewModel.SettingsContentPages.Select(x => x.ViewModel))

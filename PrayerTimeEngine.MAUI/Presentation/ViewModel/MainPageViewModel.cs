@@ -41,8 +41,20 @@ namespace PrayerTimeEngine.Presentation.ViewModel
         #endregion fields
 
         #region properties
+        
+        public List<PrayerTimeViewModel> ProfilesWithModel { get; set; }
 
-        public Profile CurrentProfile { get; set; }
+        [OnChangedMethod(nameof(onCurrentProfileWithModelChanged))]
+        public PrayerTimeViewModel CurrentProfileWithModel { get; set; }
+        public Profile CurrentProfile
+        {
+            get
+            {
+                return CurrentProfileWithModel?.Profile;
+            }
+        }
+        public string ProfileDisplayText => $"{CurrentProfile?.PlaceInfo?.City ?? "-"}, {CurrentProfile?.SequenceNo ?? -1}";
+
         public PrayerTimesBundle PrayerTimeBundle { get; private set; }
 
         [OnChangedMethod(nameof(onSelectedPlaceChanged))]
@@ -175,28 +187,32 @@ namespace PrayerTimeEngine.Presentation.ViewModel
 
         #region private methods
 
-#pragma warning disable CA1822 // Mark members as static
-        private void createNewProfile()
+        private async Task reloadProfiles(int selectedProfile = 1)
         {
-            // create new profile with SequenceNo = profiles.Select(x => x.SequenceNo).Max();
+            List<Profile> profiles = await profileService.GetProfiles(cancellationToken: default);
 
-            // switch to this new profile
+            ProfilesWithModel = profiles.Select(getPrayerTimeViewModel).ToList();
+            CurrentProfileWithModel = 
+                ProfilesWithModel.FirstOrDefault(x => x.Profile.ID == selectedProfile) 
+                ?? CurrentProfileWithModel 
+                ?? ProfilesWithModel.First();
         }
-        private void deleteCurrentProfile()
+
+        public async Task CreateNewProfile()
         {
-            // don't allow if it is the only profile
+            CancellationToken cancellationToken = default;
 
-            // delete current profile and recalculate SequenceNos
-
-            // switch to profile before it or alternatively after it
+            var copiedProfile = await profileService.CopyProfile(CurrentProfile, cancellationToken);
+            await reloadProfiles(copiedProfile.ID);
         }
-        private void switchProfile()
+
+        public async Task DeleteCurrentProfile()
         {
-            // set CurrentProfile to new value
+            CancellationToken cancellationToken = default;
 
-            // reload prayer times for new profile
+            await profileService.DeleteProfile(CurrentProfile, cancellationToken);
+            await reloadProfiles();
         }
-#pragma warning restore CA1822 // Mark members as static
 
         // concurrent loading is prevent in that subsequent loading requests are ignored when a previous one is currently running
         // but that one can be cancelled by things like leaving the page
@@ -206,7 +222,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
         private async Task refreshData()
         {
             string refreshCallID = DebugUtil.GenerateDebugID();
-            logger.LogInformation("Refreshing data started. ({RefreshCallID}) {StackTrace}", refreshCallID, new System.Diagnostics.StackTrace().ToString());
+            logger.LogInformation("Refreshing data started. ({RefreshCallID})", refreshCallID);
 
             try
             {
@@ -215,14 +231,16 @@ namespace PrayerTimeEngine.Presentation.ViewModel
 
                 try
                 {
-                    if (CurrentProfile is null || Interlocked.CompareExchange(ref isLoadPrayerTimesRunningInterlockedInt, 1, 0) == 1)
+                    var currentProfile = CurrentProfile;
+
+                    if (currentProfile is null || Interlocked.CompareExchange(ref isLoadPrayerTimesRunningInterlockedInt, 1, 0) == 1)
                     {
                         return;
                     }
 
                     this.IsLoadingPrayerTimes = true;
 
-                    await showHideSpecificTimes();
+                    await showHideSpecificTimes(currentProfile);
 
                     loadingTimesCancellationTokenSource?.Cancel();
                     loadingTimesCancellationTokenSource?.Dispose();
@@ -230,11 +248,11 @@ namespace PrayerTimeEngine.Presentation.ViewModel
 
                     ZonedDateTime zonedDateTime = 
                         _systemInfoService.GetCurrentInstant()
-                            .InZone(DateTimeZoneProviders.Tzdb[CurrentProfile.PlaceInfo.TimezoneInfo.Name]);
+                            .InZone(DateTimeZoneProviders.Tzdb[currentProfile.PlaceInfo.TimezoneInfo.Name]);
 
                     PrayerTimeBundle = 
                         await prayerTimeCalculator.CalculatePrayerTimesAsync(
-                            CurrentProfile.ID, 
+                            currentProfile.ID, 
                             zonedDateTime, 
                             loadingTimesCancellationTokenSource.Token);
 
@@ -268,6 +286,11 @@ namespace PrayerTimeEngine.Presentation.ViewModel
             logger.LogInformation("Refreshing data finished. ({RefreshCallID})", refreshCallID);
         }
 
+        private PrayerTimeViewModel getPrayerTimeViewModel(Profile profile)
+        {
+            return new PrayerTimeViewModel(this, profile);
+        }
+
         private async Task onBeforeFirstLoad()
         {
             var dbContextFactory = MauiProgram.ServiceProvider.GetRequiredService<IDbContextFactory<AppDbContext>>();
@@ -278,8 +301,16 @@ namespace PrayerTimeEngine.Presentation.ViewModel
                 await dbContext.Database.MigrateAsync();
             }
 
-            CurrentProfile ??= (await profileService.GetProfiles(cancellationToken: default)).First();
-        }        
+            try
+            {
+                _suspendOnCurrentProfileWithModelChanged = true;
+                await reloadProfiles();
+            }
+            finally
+            {
+                _suspendOnCurrentProfileWithModelChanged = false;
+            }
+        }
         
         private void onAfterFirstLoad()
         {
@@ -303,27 +334,40 @@ namespace PrayerTimeEngine.Presentation.ViewModel
             }
         }
 
-        private async Task showHideSpecificTimes()
+        private async Task showHideSpecificTimes(Profile profile)
         {
+            if (profile is null)
+                return;
+
             await dispatcher.DispatchAsync(() =>
             {
-                if (CurrentProfile is null)
-                    return;
+                ShowFajrGhalas = isCalculationShown(profile, ETimeType.FajrGhalas);
+                ShowFajrRedness = isCalculationShown(profile, ETimeType.FajrKaraha);
 
-                ShowFajrGhalas = isCalculationShown(ETimeType.FajrGhalas);
-                ShowFajrRedness = isCalculationShown(ETimeType.FajrKaraha);
+                ShowMithlayn = isCalculationShown(profile, ETimeType.AsrMithlayn);
+                ShowKaraha = isCalculationShown(profile, ETimeType.AsrKaraha);
 
-                ShowMithlayn = isCalculationShown(ETimeType.AsrMithlayn);
-                ShowKaraha = isCalculationShown(ETimeType.AsrKaraha);
-
-                ShowMaghribSufficientTime = isCalculationShown(ETimeType.MaghribSufficientTime);
-                ShowIshtibaq = isCalculationShown(ETimeType.MaghribIshtibaq);
+                ShowMaghribSufficientTime = isCalculationShown(profile, ETimeType.MaghribSufficientTime);
+                ShowIshtibaq = isCalculationShown(profile, ETimeType.MaghribIshtibaq);
             });
         }
 
-        private bool isCalculationShown(ETimeType timeData)
+        private bool isCalculationShown(Profile profile, ETimeType timeData)
         {
-            return profileService.GetTimeConfig(CurrentProfile, timeData)?.IsTimeShown == true;
+            return profileService.GetTimeConfig(profile, timeData)?.IsTimeShown == true;
+        }
+
+        // TODO use different approach
+        private bool _suspendOnCurrentProfileWithModelChanged = false;
+
+        private async void onCurrentProfileWithModelChanged()
+        {
+            if (_suspendOnCurrentProfileWithModelChanged || this.CurrentProfileWithModel == null)
+            {
+                return;
+            }
+
+            await refreshData();
         }
 
         private void onSelectedPlaceChanged()
@@ -341,7 +385,9 @@ namespace PrayerTimeEngine.Presentation.ViewModel
             {
                 BasicPlaceInfo SelectedPlace = this.FoundPlaces.FirstOrDefault(x => x.DisplayText == selectedPlaceText);
 
-                if (CurrentProfile is null || SelectedPlace is null)
+                Profile currentProfile = CurrentProfile;
+
+                if (currentProfile is null || SelectedPlace is null)
                     return;
 
                 await dispatcher.DispatchAsync(() => resetPlaceInput());
@@ -354,7 +400,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
                     var locationDataWithCalculationSource = await getCalculationSourceWithLocationData(completePlaceInfo, cancellationToken: default);
 
                     await profileService.UpdateLocationConfig(
-                        CurrentProfile,
+                        currentProfile,
                         completePlaceInfo, 
                         locationDataWithCalculationSource,
                     cancellationToken: default);
@@ -363,7 +409,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
                     await dispatcher.DispatchAsync(() => OnPropertyChanged(nameof(CurrentProfile)));
 
                     HashSet<ECalculationSource> locationConfigCalculationSources = 
-                        this.CurrentProfile.LocationConfigs
+                        currentProfile.LocationConfigs
                             .Select(x => x.CalculationSource)
                             .ToHashSet();
                     List<ECalculationSource> missingLocationInfo =

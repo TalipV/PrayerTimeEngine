@@ -6,6 +6,7 @@ using PrayerTimeEngine.Core.Domain.Calculators;
 using PrayerTimeEngine.Core.Domain.Models;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Interfaces;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
+using System.Collections.Concurrent;
 
 namespace PrayerTimeEngine.Core.Domain.CalculationManagement
 {
@@ -17,9 +18,7 @@ namespace PrayerTimeEngine.Core.Domain.CalculationManagement
             IEnumerable<IPrayerTimeCacheCleaner> cacheCleaners
         ) : ICalculationManager
     {
-        private ZonedDateTime? _cachedCalculationDate = null;
-        private Profile _cachedProfile = null;
-        private PrayerTimesBundle _cachedPrayerTimeBundle = null;
+        private ConcurrentDictionary<(ZonedDateTime, int), (Profile, PrayerTimesBundle)> _cachedDateAndProfileIDToPrayerTimeBundle = new();
 
         private bool tryGetCachedCalculation(
             Profile profile, 
@@ -27,22 +26,20 @@ namespace PrayerTimeEngine.Core.Domain.CalculationManagement
             out PrayerTimesBundle prayerTimeEntity)
         {
             // no cache
-            if (_cachedCalculationDate is null 
-                || _cachedProfile is null 
-                || _cachedPrayerTimeBundle is null)
+            if (!_cachedDateAndProfileIDToPrayerTimeBundle.TryGetValue((date, profile.ID), out (Profile, PrayerTimesBundle) cachedValue))
             {
                 prayerTimeEntity = null;
                 return false;
             }
 
-            // wrong input params for cache
-            if (_cachedCalculationDate != date || !_cachedProfile.Equals(profile))
+            // there is only a cache for a different profile config
+            if (!cachedValue.Item1.Equals(profile))
             {
                 prayerTimeEntity = null;
                 return false;
             }
 
-            prayerTimeEntity = _cachedPrayerTimeBundle;
+            prayerTimeEntity = cachedValue.Item2;
             return true;
         }
 
@@ -76,9 +73,8 @@ namespace PrayerTimeEngine.Core.Domain.CalculationManagement
             }
 
             prayerTimeEntity.DataCalculationTimestamp = systemInfoService.GetCurrentZonedDateTime();
-            _cachedCalculationDate = date;
-            _cachedProfile = profile;
-            _cachedPrayerTimeBundle = prayerTimeEntity;
+
+            _cachedDateAndProfileIDToPrayerTimeBundle[(date, profile.ID)] = (profile, prayerTimeEntity);
 
             cleanUpOldCacheData(cancellationToken);
 

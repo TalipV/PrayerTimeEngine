@@ -167,5 +167,9 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework
                 entity.InsertInstant = currentInstant;
             }
         }
+
+        // https://stackoverflow.com/a/63381238/2924986
+        public TEntity DetachedClone<TEntity>(TEntity entity) where TEntity : class
+            => Entry(entity).CurrentValues.Clone().ToObject() as TEntity;
     }
 }

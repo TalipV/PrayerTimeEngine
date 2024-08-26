@@ -62,7 +62,7 @@ namespace PrayerTimeEngine.Core.Tests.Integration.Domain.Calculators.Muwaqqit
                     new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.IshaEnd, Degree = -15.0 },
                 ];
 
-            MuwaqqitPrayerTimeCalculator muwaqqitPrayerTimeCalculator = serviceProvider.GetService<MuwaqqitPrayerTimeCalculator>();
+            MuwaqqitPrayerTimeCalculator muwaqqitPrayerTimeCalculator = serviceProvider.GetRequiredService<MuwaqqitPrayerTimeCalculator>();
 
             // ACT
             List<(ETimeType TimeType, ZonedDateTime ZonedDateTime)> result =

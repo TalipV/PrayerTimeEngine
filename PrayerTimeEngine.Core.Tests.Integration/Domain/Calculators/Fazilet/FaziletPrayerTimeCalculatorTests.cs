@@ -29,7 +29,7 @@ namespace PrayerTimeEngine.Core.Tests.Integration.Domain.Calculators.Fazilet
                     serviceCollection.AddSingleton(Substitute.For<ILogger<FaziletPrayerTimeCalculator>>());
                     serviceCollection.AddSingleton<FaziletPrayerTimeCalculator>();
                 });
-            FaziletPrayerTimeCalculator faziletPrayerTimeCalculator = serviceProvider.GetService<FaziletPrayerTimeCalculator>();
+            FaziletPrayerTimeCalculator faziletPrayerTimeCalculator = serviceProvider.GetRequiredService<FaziletPrayerTimeCalculator>();
 
             List<GenericSettingConfiguration> configs =
                 [

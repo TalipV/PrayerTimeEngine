@@ -374,9 +374,9 @@ namespace PrayerTimeEngine.Presentation.GraphicsViews
 
                     canvas.DrawString(
                         name,
-                        innerSubtimeBackgroundRectangle.Center.X - 25,
+                        innerSubtimeBackgroundRectangle.Center.X - 45,
                         innerSubtimeBackgroundRectangle.Center.Y - 10,
-                        50,
+                        90,
                         20,
                         HorizontalAlignment.Center, VerticalAlignment.Center);
                 }

@@ -15,11 +15,6 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Services
             TimeTypeAttributeService timeTypeAttributeService
         ) : IProfileService
     {
-        public Task<Profile> GetUntrackedReferenceOfProfile(int profileID, CancellationToken cancellationToken)
-        {
-            return profileDBAccess.GetUntrackedReferenceOfProfile(profileID, cancellationToken);
-        }
-
         public async Task<List<Profile>> GetProfiles(CancellationToken cancellationToken)
         {
             List<Profile> profiles = await profileDBAccess.GetProfiles(cancellationToken).ConfigureAwait(false);
@@ -357,6 +352,21 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Services
                 ];
 
             return profile;
+        }
+
+        public Task<Profile> GetUntrackedReferenceOfProfile(int profileID, CancellationToken cancellationToken)
+        {
+            return profileDBAccess.GetUntrackedReferenceOfProfile(profileID, cancellationToken);
+        }
+
+        public Task<Profile> CopyProfile(Profile profile, CancellationToken cancellationToken)
+        {
+            return profileDBAccess.CopyProfile(profile, cancellationToken);
+        }
+
+        public Task DeleteProfile(Profile profile, CancellationToken cancellationToken)
+        {
+            return profileDBAccess.DeleteProfile(profile, cancellationToken);
         }
     }
 }
