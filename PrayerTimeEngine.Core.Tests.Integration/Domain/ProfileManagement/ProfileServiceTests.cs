@@ -33,8 +33,8 @@ namespace PrayerTimeEngine.Core.Tests.Integration.Domain.ProfileManagement
                     serviceCollection.AddSingleton<IProfileService, ProfileService>();
                 });
 
-            using var dbContext = serviceProvider.GetService<IDbContextFactory<AppDbContext>>().CreateDbContext();
-            var profileService = serviceProvider.GetService<IProfileService>() as ProfileService;
+            using var dbContext = serviceProvider.GetRequiredService<IDbContextFactory<AppDbContext>>().CreateDbContext();
+            var profileService = serviceProvider.GetRequiredService<IProfileService>() as ProfileService;
 
             await dbContext.Profiles.AddAsync(TestDataHelper.CreateNewCompleteTestProfile());
             await dbContext.SaveChangesAsync();
@@ -105,13 +105,13 @@ namespace PrayerTimeEngine.Core.Tests.Integration.Domain.ProfileManagement
                     serviceCollection.AddSingleton<IProfileService, ProfileService>();
                 });
 
-            var dbContextFactory = serviceProvider.GetService<IDbContextFactory<AppDbContext>>();
+            var dbContextFactory = serviceProvider.GetRequiredService<IDbContextFactory<AppDbContext>>();
             using var dbContext = dbContextFactory.CreateDbContext();
 
             dbContextFactory.Configure().CreateDbContext().Returns(dbContext);
             dbContextFactory.Configure().CreateDbContextAsync().Returns(Task.FromResult(dbContext));
 
-            var profileService = serviceProvider.GetService<IProfileService>() as ProfileService;
+            var profileService = serviceProvider.GetRequiredService<IProfileService>() as ProfileService;
 
             await dbContext.Profiles.AddAsync(TestDataHelper.CreateNewCompleteTestProfile());
             await dbContext.SaveChangesAsync();
@@ -194,7 +194,7 @@ namespace PrayerTimeEngine.Core.Tests.Integration.Domain.ProfileManagement
                     serviceCollection.AddSingleton<IProfileService, ProfileService>();
                 });
 
-            var profileService = serviceProvider.GetService<IProfileService>() as ProfileService;
+            var profileService = serviceProvider.GetRequiredService<IProfileService>() as ProfileService;
 
             await TestArrangeDbContext.Profiles.AddAsync(TestDataHelper.CreateNewCompleteTestProfile());
             await TestArrangeDbContext.SaveChangesAsync();

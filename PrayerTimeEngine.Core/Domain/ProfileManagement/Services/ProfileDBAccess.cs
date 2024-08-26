@@ -188,5 +188,52 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Services
             timeConfig.Profile = profile;
             timeConfig.CalculationConfiguration = settings;
         }
+
+        public async Task<Profile> CopyProfile(Profile profile, CancellationToken cancellationToken)
+        {
+            using (AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken))
+            {
+                Profile clonedProfile = dbContext.DetachedClone(profile);
+                clonedProfile.ID = default;
+                clonedProfile.SequenceNo = dbContext.Profiles.Select(x => x.SequenceNo).Max() + 1;
+                
+                clonedProfile.PlaceInfo = dbContext.DetachedClone(profile.PlaceInfo);
+                clonedProfile.PlaceInfo.ID = default;
+                clonedProfile.PlaceInfo.TimezoneInfo = dbContext.DetachedClone(profile.PlaceInfo.TimezoneInfo);
+                clonedProfile.PlaceInfo.TimezoneInfo.ID = default;
+
+                await dbContext.Entry(clonedProfile).Collection(x => x.TimeConfigs).LoadAsync(cancellationToken);
+                foreach (var timeConfig in profile.TimeConfigs)
+                {
+                    ProfileTimeConfig copiedTimeConfig = dbContext.DetachedClone(timeConfig);
+                    copiedTimeConfig.ID = default;
+                    clonedProfile.TimeConfigs.Add(copiedTimeConfig);
+                }
+
+                await dbContext.Entry(clonedProfile).Collection(x => x.LocationConfigs).LoadAsync(cancellationToken);
+                foreach (var locationConfig in profile.LocationConfigs)
+                {
+                    ProfileLocationConfig copiedProfileLocationConfig = dbContext.DetachedClone(locationConfig);
+                    copiedProfileLocationConfig.ID = default;
+                    clonedProfile.LocationConfigs.Add(copiedProfileLocationConfig);
+                }
+
+                await dbContext.Profiles.AddAsync(clonedProfile, cancellationToken);
+                await dbContext.SaveChangesAsync(cancellationToken);
+                return clonedProfile;
+            }
+        }
+
+        public async Task DeleteProfile(Profile profile, CancellationToken cancellationToken)
+        {
+            using (AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken))
+            {
+                Profile trackedProfile = await this.GetUntrackedReferenceOfProfile(profile.ID, cancellationToken);
+                dbContext.Entry(trackedProfile).State = EntityState.Unchanged;
+
+                dbContext.Profiles.Remove(trackedProfile);
+                await dbContext.SaveChangesAsync(cancellationToken);
+            }
+        }
     }
 }

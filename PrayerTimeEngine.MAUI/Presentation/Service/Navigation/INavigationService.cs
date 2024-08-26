@@ -1,5 +1,5 @@
-﻿using PrayerTimeEngine.Presentation.View;
-using PrayerTimeEngine.Presentation.ViewModel;
+﻿using PrayerTimeEngine.Presentation.ViewModel;
+using PrayerTimeEngine.Presentation.Views;
 
 namespace PrayerTimeEngine.Presentation.Service.Navigation
 {

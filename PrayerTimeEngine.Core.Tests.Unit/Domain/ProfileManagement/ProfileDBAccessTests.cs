@@ -7,6 +7,7 @@ using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Models;
 using PrayerTimeEngine.Core.Tests.Common.TestData;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Models;
 using Microsoft.EntityFrameworkCore;
+using PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
 
 namespace PrayerTimeEngine.Core.Tests.Unit.Domain.ProfileManagement
 {
@@ -181,5 +182,111 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.ProfileManagement
         }
 
         #endregion UpdateTimeConfig
+
+        #region CopyProfile
+
+        [Fact]
+        [Trait("Method", "CopyProfile")]
+        public async Task CopyProfile_BasicTestProfile_NewProfileWithNewRelatedData()
+        {
+            // ARRANGE
+            var profile = TestDataHelper.CreateNewCompleteTestProfile();
+            await TestArrangeDbContext.Profiles.AddAsync(profile);
+            await TestArrangeDbContext.SaveChangesAsync();
+            profile.ID.Should().Be(1, "this is a precondition");
+            profile.SequenceNo.Should().Be(1, "this is a precondition");
+
+            // ACT
+            Profile copiedProfile = await _profileDBAccess.CopyProfile(profile, default);
+
+            // ASSERT
+            copiedProfile.Should().NotBeNull();
+            copiedProfile.PlaceInfo.Should().NotBeNull();
+            copiedProfile.PlaceInfo.TimezoneInfo.Should().NotBeNull();
+            copiedProfile.LocationConfigs.Should().HaveSameCount(profile.LocationConfigs);
+            copiedProfile.TimeConfigs.Should().HaveSameCount(profile.TimeConfigs);
+
+            copiedProfile.Should()
+                .BeEquivalentTo(profile, options => options
+                        .ComparingByMembers<Profile>()
+                        .ComparingByMembers<ProfilePlaceInfo>()
+                        .ComparingByMembers<TimezoneInfo>()
+                        .ComparingByMembers<ProfileLocationConfig>()
+                        .ComparingByMembers<ProfileTimeConfig>()
+                        .Excluding(x => x.ID)
+                        .Excluding(x => x.SequenceNo)
+                        .Excluding(x => x.InsertInstant)
+                        .Excluding(x => x.PlaceInfo.ID)
+                        .Excluding(x => x.PlaceInfo.ProfileID)
+                        .Excluding(x => x.PlaceInfo.Profile)
+                        .Excluding(x => x.PlaceInfo.InsertInstant)
+                        .Excluding(x => x.PlaceInfo.TimezoneInfo.ID)
+                        .Excluding(x => x.PlaceInfo.TimezoneInfo.InsertInstant)
+                        .For(x => x.LocationConfigs).Exclude(x => x.ID)
+                        .For(x => x.LocationConfigs).Exclude(x => x.ProfileID)
+                        .For(x => x.LocationConfigs).Exclude(x => x.Profile)
+                        .For(x => x.LocationConfigs).Exclude(x => x.InsertInstant)
+                        .For(x => x.TimeConfigs).Exclude(x => x.ID)
+                        .For(x => x.TimeConfigs).Exclude(x => x.ProfileID)
+                        .For(x => x.TimeConfigs).Exclude(x => x.Profile)
+                        .For(x => x.TimeConfigs).Exclude(x => x.InsertInstant)
+                    );
+
+            copiedProfile.ID.Should().Be(2);
+            copiedProfile.SequenceNo.Should().Be(2);
+
+            copiedProfile.PlaceInfo.ID.Should().Be(2);
+            copiedProfile.PlaceInfo.ProfileID.Should().Be(2);
+            copiedProfile.PlaceInfo.Profile.Should().Be(copiedProfile);
+
+            copiedProfile.PlaceInfo.TimezoneInfo.ID.Should().Be(2);
+
+            copiedProfile.LocationConfigs
+                .Should().AllSatisfy(locationConfig =>
+                {
+                    locationConfig.ProfileID.Should().Be(2);
+                    locationConfig.Profile.Should().Be(copiedProfile);
+                });
+
+            copiedProfile.TimeConfigs
+                .Should().AllSatisfy(timeConfig =>
+                {
+                    timeConfig.ProfileID.Should().Be(2);
+                    timeConfig.Profile.Should().Be(copiedProfile);
+                });
+        }
+
+        #endregion CopyProfile
+
+        #region DeleteProfile
+
+        [Fact]
+        [Trait("Method", "DeleteProfile")]
+        public async Task DeleteProfile_CopyTestProfileAndDeleteOriginalProfile_OriginalProfileDeleted()
+        {
+            // ARRANGE
+            var profile = TestDataHelper.CreateNewCompleteTestProfile();
+            await TestArrangeDbContext.Profiles.AddAsync(profile);
+            await TestArrangeDbContext.SaveChangesAsync();
+            profile.ID.Should().Be(1, "this is a precondition");
+            profile.SequenceNo.Should().Be(1, "this is a precondition");
+            Profile copiedProfile = await _profileDBAccess.CopyProfile(profile, default);
+
+            // ACT 
+            await _profileDBAccess.DeleteProfile(profile, default);
+
+            // ASSERT
+            var profiles = 
+                await TestAssertDbContext
+                    .Profiles
+                    .Include(x => x.PlaceInfo).ThenInclude(x => x.TimezoneInfo)
+                    .Include(x => x.LocationConfigs)
+                    .Include(x => x.TimeConfigs)
+                    .ToListAsync(default);
+            profiles.Should().HaveCount(1);
+            profiles.First().Should().BeEquivalentTo(copiedProfile);
+        }
+
+        #endregion DeleteProfile
     }
 }

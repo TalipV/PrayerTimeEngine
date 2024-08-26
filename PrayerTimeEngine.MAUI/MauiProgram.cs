@@ -23,12 +23,13 @@ using PrayerTimeEngine.Core.Domain.ProfileManagement.Services;
 using PrayerTimeEngine.Presentation.Service;
 using PrayerTimeEngine.Presentation.Service.Navigation;
 using PrayerTimeEngine.Presentation.Service.SettingsContentPageFactory;
-using PrayerTimeEngine.Presentation.View;
 using PrayerTimeEngine.Presentation.ViewModel;
 using PrayerTimeEngine.Presentation.ViewModel.Custom;
+using PrayerTimeEngine.Presentation.Views;
 using PrayerTimeEngine.Services;
 using PrayerTimeEngine.Services.SystemInfoService;
 using Refit;
+using System.Diagnostics;
 using System.Text;
 using UraniumUI;
 
@@ -133,13 +134,15 @@ public static class MauiProgram
     class LoggingLayout : MetroLog.Layouts.Layout
     {
         public override string GetFormattedString(MetroLog.LogWriteContext context, MetroLog.LogEventInfo info)
-        {
+        {   
             var text = new StringBuilder($"███ {info.Level}|{info.TimeStamp:HH:mm:ss:fff}|{info.Logger}|{info.Message}");
 
             if (info.Exception is not null)
             {
                 text.Append($"|Exception:'{info.Exception.Message}' AT '{info.Exception.StackTrace}'");
             }
+
+            text.Append($"|StackTrace: {new StackTrace()}");
 
             return text.ToString();
         }

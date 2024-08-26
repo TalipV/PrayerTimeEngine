@@ -31,7 +31,7 @@ namespace PrayerTimeEngine.Core.Tests.Integration.Domain.Calculators.Semerkand
                     serviceCollection.AddSingleton<SemerkandPrayerTimeCalculator>();
                 });
 
-            SemerkandPrayerTimeCalculator semerkandPrayerTimeCalculator = serviceProvider.GetService<SemerkandPrayerTimeCalculator>();
+            SemerkandPrayerTimeCalculator semerkandPrayerTimeCalculator = serviceProvider.GetRequiredService<SemerkandPrayerTimeCalculator>();
 
             var date = new LocalDate(2023, 7, 29);
             var locationData = new SemerkandLocationData

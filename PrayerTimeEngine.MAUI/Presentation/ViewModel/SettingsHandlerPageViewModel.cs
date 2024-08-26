@@ -4,7 +4,7 @@ using PrayerTimeEngine.Core.Domain;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
 using PrayerTimeEngine.Presentation.Service.Navigation;
 using PrayerTimeEngine.Presentation.Service.SettingsContentPageFactory;
-using PrayerTimeEngine.Presentation.View;
+using PrayerTimeEngine.Presentation.Views;
 using PropertyChanged;
 
 namespace PrayerTimeEngine.Presentation.ViewModel

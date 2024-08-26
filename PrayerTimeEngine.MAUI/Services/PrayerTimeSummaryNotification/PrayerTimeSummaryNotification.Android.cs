@@ -24,12 +24,14 @@ namespace PrayerTimeEngine.Services.PrayerTimeSummaryNotification
         private readonly IProfileService _profileService;
         private readonly ICalculationManager _prayerTimeCalculationManager;
         private readonly ILogger<PrayerTimeSummaryNotificationManager> _prayerTimeSummaryNotificationManager;
+        private readonly ISystemInfoService _systemInfoService;
 
         public PrayerTimeSummaryNotification()
         {
             _profileService = MauiProgram.ServiceProvider.GetRequiredService<IProfileService>();
             _prayerTimeCalculationManager = MauiProgram.ServiceProvider.GetRequiredService<ICalculationManager>();
             _prayerTimeSummaryNotificationManager = MauiProgram.ServiceProvider.GetRequiredService<ILogger<PrayerTimeSummaryNotificationManager>>();
+            _systemInfoService = MauiProgram.ServiceProvider.GetRequiredService<ISystemInfoService>();
 
             updateTimer = new System.Timers.Timer(TIMER_FREQUENCY_MS);
             updateTimer.Elapsed += (sender, e) => Task.Run(UpdateNotification);
@@ -131,13 +133,17 @@ namespace PrayerTimeEngine.Services.PrayerTimeSummaryNotification
         private async Task<string> getRemainingTimeText(CancellationToken cancellationToken)
         {
             // potential for performance improvement
+            Profile profile = (await _profileService.GetProfiles(cancellationToken)).First();
 
             ZonedDateTime now =
-                MauiProgram.ServiceProvider.GetRequiredService<ISystemInfoService>()
-                    .GetCurrentZonedDateTime();
+                _systemInfoService.GetCurrentInstant()
+                    .InZone(DateTimeZoneProviders.Tzdb[profile.PlaceInfo.TimezoneInfo.Name]);
 
-            Profile profile = (await _profileService.GetProfiles(cancellationToken)).First();
-            PrayerTimesBundle prayerTimeBundle = await _prayerTimeCalculationManager.CalculatePrayerTimesAsync(profile.ID, now, cancellationToken);
+            PrayerTimesBundle prayerTimeBundle = 
+                await _prayerTimeCalculationManager.CalculatePrayerTimesAsync(
+                    profile.ID, 
+                    now, 
+                    cancellationToken);
 
             ZonedDateTime? nextTime = null;
             string timeName = "-";

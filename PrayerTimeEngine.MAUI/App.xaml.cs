@@ -1,5 +1,5 @@
 ﻿using MetroLog.Maui;
-using PrayerTimeEngine.Presentation.View;
+using PrayerTimeEngine.Presentation.Views;
 
 namespace PrayerTimeEngine;
 

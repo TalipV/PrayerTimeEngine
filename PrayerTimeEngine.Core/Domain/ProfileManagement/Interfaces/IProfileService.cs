@@ -21,5 +21,7 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Interfaces
 
         List<GenericSettingConfiguration> GetActiveComplexTimeConfigs(Profile profile);
         Task<Profile> GetUntrackedReferenceOfProfile(int profileID, CancellationToken cancellationToken);
+        Task<Profile> CopyProfile(Profile profile, CancellationToken cancellationToken);
+        Task DeleteProfile(Profile profile, CancellationToken cancellationToken);
     }
 }

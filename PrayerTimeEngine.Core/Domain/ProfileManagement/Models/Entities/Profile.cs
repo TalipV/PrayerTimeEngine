@@ -2,12 +2,16 @@
 using PrayerTimeEngine.Core.Data.EntityFramework;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Models;
 using PropertyChanged;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities
 {
     [AddINotifyPropertyChangedInterface]
     public class Profile : IInsertedAt
     {
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
         public string Name { get; set; }
         public ProfilePlaceInfo PlaceInfo { get; set; }

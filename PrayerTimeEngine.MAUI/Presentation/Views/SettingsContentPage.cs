@@ -1,22 +1,32 @@
 ﻿using Microsoft.Maui.Controls.Shapes;
 using PrayerTimeEngine.Presentation.ViewModel;
 
-namespace PrayerTimeEngine.Presentation.View;
+namespace PrayerTimeEngine.Presentation.Views;
 
 public partial class SettingsContentPage : ContentPage
 {
     public SettingsContentPageViewModel ViewModel { get; private set; }
 
-    private readonly StackLayout _configurableUIContainer;
+    private StackLayout _configurableUIContainer;
 
-    private readonly Picker _calculationSourcePicker;
-    private readonly Picker _minuteAdjustmentPicker;
+    private Picker _calculationSourcePicker;
+    private Picker _minuteAdjustmentPicker;
 
-    private readonly Label _calculationSourcePickerLabel;
-    private readonly Label _isTimeShownCheckBoxLabel;
-    private readonly CheckBox _isTimeShownCheckBox;
+    private Label _calculationSourcePickerLabel;
+    private Label _isTimeShownCheckBoxLabel;
+    private CheckBox _isTimeShownCheckBox;
 
     public SettingsContentPage(SettingsContentPageViewModel viewModel)
+    {
+        Content = createUI();
+
+        ViewModel = viewModel;
+        BindingContext = ViewModel;
+
+        ViewModel.OnInitializeCustomUI_EventTrigger += onInitializeCustomUI_EventTrigger;
+    }
+
+    private Grid createUI()
     {
         var grid = new Grid
         {
@@ -69,19 +79,7 @@ public partial class SettingsContentPage : ContentPage
         grid.AddWithSpan(view: line, row: 4, columnSpan: 4);
         grid.AddWithSpan(view: _configurableUIContainer, row: 5, columnSpan: 2);
 
-        Content = grid;
-
-        ViewModel = viewModel;
-        BindingContext = ViewModel;
-
-        ViewModel.OnInitializeCustomUI_EventTrigger += onInitializeCustomUI_EventTrigger;
-        ViewModel.OnViewModelInitialize_EventTrigger += onViewModelInitialize_EventTrigger;
-    }
-
-    private void onViewModelInitialize_EventTrigger()
-    {
-        ViewModel.OnViewModelInitialize_EventTrigger -= onViewModelInitialize_EventTrigger;
-        addDataBindings();
+        return grid;
     }
 
     private void onInitializeCustomUI_EventTrigger()
@@ -104,11 +102,11 @@ public partial class SettingsContentPage : ContentPage
         }
     }
 
-    private void addDataBindings()
+    public void AddDataBindings()
     {
         _calculationSourcePicker.SetBinding(Picker.ItemsSourceProperty, nameof(SettingsContentPageViewModel.CalculationSources), BindingMode.Default);
-        _calculationSourcePickerLabel.SetBinding(IsVisibleProperty, nameof(SettingsContentPageViewModel.ShowCalculationSourcePicker), BindingMode.Default);
         _calculationSourcePicker.SetBinding(Picker.SelectedItemProperty, nameof(SettingsContentPageViewModel.SelectedCalculationSource), BindingMode.TwoWay);
+        _calculationSourcePickerLabel.SetBinding(IsVisibleProperty, nameof(SettingsContentPageViewModel.ShowCalculationSourcePicker), BindingMode.Default);
         _calculationSourcePicker.SetBinding(IsVisibleProperty, nameof(SettingsContentPageViewModel.ShowCalculationSourcePicker), BindingMode.Default);
 
         _minuteAdjustmentPicker.SetBinding(Picker.ItemsSourceProperty, nameof(SettingsContentPageViewModel.MinuteAdjustments), BindingMode.Default);
