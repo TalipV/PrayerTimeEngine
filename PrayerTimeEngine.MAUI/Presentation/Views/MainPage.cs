@@ -138,20 +138,12 @@ namespace PrayerTimeEngine.Presentation.Views
                 }
             };
 
-            var activityIndicator = new ActivityIndicator
-            {
-                IsRunning = true,
-            };
-            activityIndicator.SetBinding(ActivityIndicator.IsRunningProperty, nameof(MainPageViewModel.IsLoadingPrayerTimesOrSelectedPlace));
-            titleGrid.AddWithSpan(activityIndicator, row: 0, column: 0, columnSpan: 2);
-
             _lastUpdatedTextInfo = new Label
             {
                 HorizontalTextAlignment = TextAlignment.Start,
                 VerticalTextAlignment = TextAlignment.Center
             };
             _lastUpdatedTextInfo.SetBinding(Label.TextProperty, new Binding("PrayerTimeBundle.DataCalculationTimestamp", stringFormat: "{0:dd.MM, HH:mm:ss}"));
-            _lastUpdatedTextInfo.SetBinding(IsVisibleProperty, nameof(MainPageViewModel.IsNotLoadingPrayerTimesOrSelectedPlace));
             titleGrid.AddWithSpan(_lastUpdatedTextInfo, row: 0, column: 0);
 
             _profileDisplayNameTextInfo = new Label
@@ -161,7 +153,6 @@ namespace PrayerTimeEngine.Presentation.Views
                 VerticalTextAlignment = TextAlignment.Center
             };
             _profileDisplayNameTextInfo.SetBinding(Label.TextProperty, nameof(MainPageViewModel.ProfileDisplayText));
-            _profileDisplayNameTextInfo.SetBinding(IsVisibleProperty, nameof(MainPageViewModel.IsNotLoadingPrayerTimesOrSelectedPlace));
             titleGrid.AddWithSpan(_profileDisplayNameTextInfo, row: 0, column: 1);
 
             NavigationPage.SetTitleView(this, titleGrid);
@@ -178,7 +169,7 @@ namespace PrayerTimeEngine.Presentation.Views
             searchBox.SetBinding(AutoCompleteTextField.ItemsSourceProperty, nameof(MainPageViewModel.FoundPlacesSelectionTexts));
             searchBox.SetBinding(AutoCompleteTextField.SelectedTextProperty, nameof(MainPageViewModel.SelectedPlaceText));
             searchBox.SetBinding(AutoCompleteTextField.TextProperty, nameof(MainPageViewModel.PlaceSearchText));
-            searchBox.SetBinding(IsEnabledProperty, nameof(MainPageViewModel.IsNotLoadingSelectedPlace));
+            searchBox.SetBinding(IsEnabledProperty, nameof(MainPageViewModel.IsNotLoadingPrayerTimesOrSelectedPlace));
 
             var prayerTimesGridView = new PrayerTimeView(_viewModel);
 
@@ -199,6 +190,7 @@ namespace PrayerTimeEngine.Presentation.Views
             {
                 Drawable = prayerTimeGraphicView
             };
+            prayerTimeGraphicViewBaseView.SetBinding(GraphicsView.OpacityProperty, new Binding(nameof(MainPageViewModel.LoadingStatusOpacityValue)));
 
             var carouselView = new CarouselView
             {
@@ -219,6 +211,8 @@ namespace PrayerTimeEngine.Presentation.Views
             mainGrid.AddWithSpan(searchBox, row: 0, column: 0);
             mainGrid.AddWithSpan(carouselView, row: 1, column: 0);
             mainGrid.AddWithSpan(prayerTimeGraphicViewBaseView, row: 2, column: 0);
+
+            mainGrid.SetBinding(Grid.OpacityProperty, new Binding(nameof(MainPageViewModel.LoadingStatusOpacityValue)));
 
             if (OperatingSystem.IsWindows())
             {
