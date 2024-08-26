@@ -62,6 +62,18 @@ namespace PrayerTimeEngine.Presentation.ViewModel
 
         public bool IsLoadingPrayerTimes { get; set; }
 
+        public double LoadingStatusOpacityValue
+        {
+            get
+            {
+                if (this.IsLoadingPrayerTimesOrSelectedPlace)
+                {
+                    return 0.8;
+                }
+
+                return 1;
+            }
+        }
         public bool IsLoadingPrayerTimesOrSelectedPlace => IsLoadingPrayerTimes || IsLoadingSelectedPlace;
         public bool IsNotLoadingPrayerTimesOrSelectedPlace => !IsLoadingPrayerTimesOrSelectedPlace;
 
