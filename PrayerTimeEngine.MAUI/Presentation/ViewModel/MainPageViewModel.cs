@@ -55,7 +55,6 @@ namespace PrayerTimeEngine.Presentation.ViewModel
         }
         public string ProfileDisplayText => $"{CurrentProfile?.PlaceInfo?.City ?? "-"}, {CurrentProfile?.SequenceNo ?? -1}";
 
-        public PrayerTimesBundle PrayerTimeBundle { get; private set; }
 
         [OnChangedMethod(nameof(onSelectedPlaceChanged))]
         public string SelectedPlaceText { get; set; }
@@ -262,7 +261,7 @@ namespace PrayerTimeEngine.Presentation.ViewModel
                         _systemInfoService.GetCurrentInstant()
                             .InZone(DateTimeZoneProviders.Tzdb[currentProfile.PlaceInfo.TimezoneInfo.Name]);
 
-                    PrayerTimeBundle = 
+                    this.CurrentProfileWithModel.PrayerTimeBundle = 
                         await prayerTimeCalculator.CalculatePrayerTimesAsync(
                             currentProfile.ID, 
                             zonedDateTime, 
@@ -480,16 +479,18 @@ namespace PrayerTimeEngine.Presentation.ViewModel
 
         public PrayerTime GetDisplayPrayerTime()
         {
+            var prayerTimeBundle = this.CurrentProfileWithModel?.PrayerTimeBundle;
+
             // only show data when no information is lacking
-            if (PrayerTimeBundle is null || PrayerTimeBundle.AllPrayerTimes.Any(x => x.Start is null || x.End is null))
+            if (prayerTimeBundle is null || prayerTimeBundle.AllPrayerTimes.Any(x => x.Start is null || x.End is null))
             {
                 return null;
             }
 
             Instant currentInstant = _systemInfoService.GetCurrentInstant();
 
-            return PrayerTimeBundle.AllPrayerTimes.FirstOrDefault(x => x.Start.Value.ToInstant() <= currentInstant && currentInstant <= x.End.Value.ToInstant())
-                ?? PrayerTimeBundle.AllPrayerTimes.OrderBy(x => x.Start.Value.ToInstant()).FirstOrDefault(x => x.Start.Value.ToInstant() > currentInstant);
+            return prayerTimeBundle.AllPrayerTimes.FirstOrDefault(x => x.Start.Value.ToInstant() <= currentInstant && currentInstant <= x.End.Value.ToInstant())
+                ?? prayerTimeBundle.AllPrayerTimes.OrderBy(x => x.Start.Value.ToInstant()).FirstOrDefault(x => x.Start.Value.ToInstant() > currentInstant);
         }
 
         public async Task ShowDatabaseTable()

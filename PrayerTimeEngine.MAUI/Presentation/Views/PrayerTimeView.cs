@@ -49,7 +49,7 @@ namespace PrayerTimeEngine.Presentation.Views
 
             int startRowNo = 1; 
 
-            string bindingBeginning = $"{nameof(PrayerTimeViewModel.MainPageViewModel)}.{nameof(MainPageViewModel.PrayerTimeBundle)}";
+            string bindingBeginning = $"{nameof(PrayerTimeViewModel.PrayerTimeBundle)}";
 
             string bindingBeginningSpecific = $"{bindingBeginning}.{nameof(PrayerTimesBundle.Fajr)}";
             addPrayerTimeUI(mainGrid, "Fajr", durationBinding: $"{bindingBeginningSpecific}.{nameof(PrayerTime.DurationDisplayText)}", 
