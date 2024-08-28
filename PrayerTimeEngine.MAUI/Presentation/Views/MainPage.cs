@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using OnScreenSizeMarkup.Maui.Helpers;
 using PrayerTimeEngine.Core.Common;
+using PrayerTimeEngine.Core.Domain.Models;
 using PrayerTimeEngine.Presentation.GraphicsViews;
 using PrayerTimeEngine.Presentation.Service;
 using PrayerTimeEngine.Presentation.ViewModel;
@@ -143,7 +144,7 @@ namespace PrayerTimeEngine.Presentation.Views
                 HorizontalTextAlignment = TextAlignment.Start,
                 VerticalTextAlignment = TextAlignment.Center
             };
-            _lastUpdatedTextInfo.SetBinding(Label.TextProperty, new Binding("PrayerTimeBundle.DataCalculationTimestamp", stringFormat: "{0:dd.MM, HH:mm:ss}"));
+            _lastUpdatedTextInfo.SetBinding(Label.TextProperty, new Binding($"{nameof(MainPageViewModel.CurrentProfileWithModel)}.{nameof(PrayerTimeViewModel.PrayerTimeBundle)}.{nameof(PrayerTimesBundle.DataCalculationTimestamp)}", stringFormat: "{0:dd.MM, HH:mm:ss}"));
             titleGrid.AddWithSpan(_lastUpdatedTextInfo, row: 0, column: 0);
 
             _profileDisplayNameTextInfo = new Label
