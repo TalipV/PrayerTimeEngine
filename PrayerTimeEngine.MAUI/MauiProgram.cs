@@ -233,11 +233,11 @@ public static class MauiProgram
         serviceCollection.AddSingleton<Services.PrayerTimeSummaryNotification.PrayerTimeSummaryNotificationManager>();
 #endif
 
-        addApiServices(serviceCollection);
+        addCalculatorServices(serviceCollection);
         addPresentationLayerServices(serviceCollection);
     }
 
-    private static void addApiServices(IServiceCollection serviceCollection)
+    private static void addCalculatorServices(IServiceCollection serviceCollection)
     {
         // FAZILET
         serviceCollection.AddTransient<IFaziletDBAccess, FaziletDBAccess>();
@@ -276,7 +276,6 @@ public static class MauiProgram
                 config.BaseAddress = new Uri("https://www.muwaqqit.com/");
             })
             .AddStandardResilienceHandler();
-        serviceCollection.AddTransient<FaziletPrayerTimeCalculator>();
         serviceCollection.AddTransient<MuwaqqitPrayerTimeCalculator>();
     }
 

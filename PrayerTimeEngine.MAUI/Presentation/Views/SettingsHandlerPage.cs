@@ -1,5 +1,4 @@
-﻿using MethodTimer;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using PrayerTimeEngine.Presentation.Service;
 using PrayerTimeEngine.Presentation.ViewModel;
 using UraniumUI.Material.Controls;
