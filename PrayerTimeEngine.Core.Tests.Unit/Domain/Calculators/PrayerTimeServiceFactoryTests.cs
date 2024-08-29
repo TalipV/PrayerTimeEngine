@@ -31,7 +31,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators
         {
             // ARRANGE
             Type requestedType = null;
-            serviceProviderMock.When(x => x.GetRequiredService(Arg.Any<Type>()))
+            serviceProviderMock.When(x => x.GetService(Arg.Any<Type>()))
                 .Do(x => requestedType = x.Arg<Type>());
 
             // ACT
@@ -45,8 +45,8 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators
 
             // ASSERT
             requestedType.Should().Be(expectedType);
-            serviceProviderMock.ReceivedWithAnyArgs(1).GetRequiredService(default);
-            serviceProviderMock.Received(1).GetRequiredService(Arg.Is(expectedType));
+            serviceProviderMock.ReceivedWithAnyArgs(1).GetService(default);
+            serviceProviderMock.Received(1).GetService(Arg.Is(expectedType));
         }
 
         [Fact]
