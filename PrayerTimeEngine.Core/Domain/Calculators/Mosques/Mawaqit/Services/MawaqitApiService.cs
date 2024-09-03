@@ -6,7 +6,7 @@ using System.Text.RegularExpressions;
 
 namespace PrayerTimeEngine.Core.Domain.Calculators.Mosques.Mawaqit.Services
 {
-    public class MawaqitApiService(
+    public partial class MawaqitApiService(
             HttpClient httpClient
         ) : IMawaqitApiService
     {
@@ -27,16 +27,17 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Mosques.Mawaqit.Services
             var scriptNode = doc.DocumentNode.SelectSingleNode("//script[contains(text(), 'var confData = ')]")
                 ?? throw new Exception($"Script containing confData not found for {externalID}");
 
+            // fix
             var match =
-                Regex.Match(
-                    input: scriptNode.InnerText,
-                    pattern: @"var confData = (.*?);",
-                    options: RegexOptions.Singleline);
+                confDataExtractionRegex().Match(input: scriptNode.InnerText);
 
             if (!match.Success)
                 throw new Exception($"Failed to extract confData JSON for {externalID}");
 
             return JsonSerializer.Deserialize<MawaqitResponseDTO>(match.Groups[1].Value);
         }
+
+        [GeneratedRegex(@"var confData = (.*?);", RegexOptions.Singleline)]
+        private static partial Regex confDataExtractionRegex();
     }
 }
