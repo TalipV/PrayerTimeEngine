@@ -5,12 +5,17 @@ using Microsoft.Extensions.Logging;
 using Plugin.Maui.DebugRainbows;
 using PrayerTimeEngine.Core.Common;
 using PrayerTimeEngine.Core.Data.EntityFramework;
-using PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels;
+using PrayerTimeEngine.Core.Data.WebSocket;
+using PrayerTimeEngine.Core.Data.WebSocket.Interfaces;
 using PrayerTimeEngine.Core.Domain;
 using PrayerTimeEngine.Core.Domain.CalculationManagement;
 using PrayerTimeEngine.Core.Domain.Calculators;
 using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Interfaces;
 using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services;
+using PrayerTimeEngine.Core.Domain.Calculators.Mosques.Mawaqit.Interfaces;
+using PrayerTimeEngine.Core.Domain.Calculators.Mosques.Mawaqit.Services;
+using PrayerTimeEngine.Core.Domain.Calculators.Mosques.MyMosq.Interfaces;
+using PrayerTimeEngine.Core.Domain.Calculators.Mosques.MyMosq.Services;
 using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Interfaces;
 using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services;
 using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Interfaces;
@@ -20,16 +25,18 @@ using PrayerTimeEngine.Core.Domain.PlaceManagement.Services;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Services.LocationIQ;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Interfaces;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Services;
-using PrayerTimeEngine.Presentation.Service;
-using PrayerTimeEngine.Presentation.Service.Navigation;
-using PrayerTimeEngine.Presentation.Service.SettingsContentPageFactory;
-using PrayerTimeEngine.Presentation.ViewModel;
-using PrayerTimeEngine.Presentation.ViewModel.Custom;
-using PrayerTimeEngine.Presentation.Views;
+using PrayerTimeEngine.Presentation.Pages.DatabaseTables;
+using PrayerTimeEngine.Presentation.Pages.Main;
+using PrayerTimeEngine.Presentation.Pages.Settings.SettingsContent;
+using PrayerTimeEngine.Presentation.Pages.Settings.SettingsContent.Custom;
+using PrayerTimeEngine.Presentation.Pages.Settings.SettingsHandler;
+using PrayerTimeEngine.Presentation.Services;
+using PrayerTimeEngine.Presentation.Services.Navigation;
+using PrayerTimeEngine.Presentation.Services.SettingsContentPageFactory;
 using PrayerTimeEngine.Services;
-using PrayerTimeEngine.Services.SystemInfoService;
 using Refit;
 using System.Diagnostics;
+using System.Net.WebSockets;
 using System.Text;
 using UraniumUI;
 
@@ -56,6 +63,7 @@ namespace PrayerTimeEngine;
  * - Exception for single calculation only disables that calculation but subsequent calculations rely on cached values and don't retry
  * - remove AppDbContextModel _useOldBehavior31751 temp fix
  * - FIXED? Calculation relevant data like the Profile with its configs may change in the middle of the calculation process due to shared references
+ * - MyMosq: "DhuhrTIME" is earlier than "Dhuhr" but "Fajr" is earlier than "FajrTIME". Bug?? One of them has to be the time for the congregation/iqama and the other one the actual prayer time
  */
 
 /* TODO general:
@@ -205,6 +213,12 @@ public static class MauiProgram
         
         serviceCollection.AddSingleton<AppDbContextMetaData>();
 
+        serviceCollection.AddTransient<IWebSocketClientFactory, WebSocketClientFactory>();
+        serviceCollection.AddTransient<IWebSocketClient, WebSocketClient>(factory =>
+        {
+            return new WebSocketClient(new ClientWebSocket());
+        });
+
         serviceCollection.AddSingleton<ISystemInfoService, SystemInfoService>();
         serviceCollection.AddTransient<IPreferenceService, PreferenceService>();
         serviceCollection.AddSingleton<TimeTypeAttributeService>();
@@ -277,6 +291,24 @@ public static class MauiProgram
             })
             .AddStandardResilienceHandler();
         serviceCollection.AddTransient<MuwaqqitPrayerTimeCalculator>();
+
+        // MYMOSQ
+        serviceCollection.AddTransient<IMyMosqDBAccess, MyMosqDBAccess>();
+        serviceCollection.AddTransient<IPrayerTimeCacheCleaner, MyMosqDBAccess>();
+        serviceCollection.AddTransient<IMyMosqApiService, MyMosqApiService>();
+        serviceCollection.AddTransient<MyMosqPrayerTimeService>();
+
+        // MAWAQIT
+        serviceCollection.AddTransient<IMawaqitDBAccess, MawaqitDBAccess>();
+        serviceCollection.AddTransient<IPrayerTimeCacheCleaner, MawaqitDBAccess>();
+        serviceCollection.AddTransient<IMawaqitApiService, MawaqitApiService>(factory =>
+        {
+            HttpClient httpClient = new HttpClient();
+            httpClient.Timeout = TimeSpan.FromSeconds(HTTP_REQUEST_TIMEOUT_SECONDS);
+            httpClient.BaseAddress = new Uri("https://mawaqit.net/de/");
+            return new MawaqitApiService(httpClient);
+        });
+        serviceCollection.AddTransient<MawaqitPrayerTimeService>();
     }
 
     private static void addPresentationLayerServices(IServiceCollection serviceCollection)

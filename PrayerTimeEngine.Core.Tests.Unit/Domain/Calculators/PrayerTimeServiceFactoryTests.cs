@@ -4,7 +4,6 @@ using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services;
 using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services;
 using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators
 {

@@ -110,7 +110,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
             }
         }
 
-        public async Task InsertSemerkandPrayerTimes(IEnumerable<SemerkandPrayerTimes> semerkandPrayerTimesLst, CancellationToken cancellationToken)
+        public async Task InsertPrayerTimesAsync(IEnumerable<SemerkandPrayerTimes> semerkandPrayerTimesLst, CancellationToken cancellationToken)
         {
             using (AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken))
             {

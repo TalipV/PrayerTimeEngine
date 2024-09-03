@@ -20,7 +20,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Muwaqqit
         }
 
         [Fact]
-        public async Task GetTimesAsync_ExistingTime_ReturnsCorrectTime()
+        public async Task GetPrayerTimesAsync_ExistingTime_ReturnsCorrectTime()
         {
             // ARRANGE
             var date = new LocalDate(2023, 7, 30);
@@ -51,7 +51,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Muwaqqit
             await TestArrangeDbContext.SaveChangesAsync();
 
             // ACT
-            var retrievedTime = await _muwaqqitDBAccess.GetTimesAsync(
+            var retrievedTime = await _muwaqqitDBAccess.GetPrayerTimesAsync(
                 muwaqqitTime.Date,
                 muwaqqitTime.Longitude,
                 muwaqqitTime.Latitude,
@@ -66,7 +66,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Muwaqqit
         }
 
         [Fact]
-        public async Task InsertMuwaqqitPrayerTimesAsync_NewTime_TimeInDb()
+        public async Task InsertPrayerTimesAsync_NewTime_TimeInDb()
         {
             // ARRANGE
             var date = new LocalDate(2023, 7, 31);
@@ -94,7 +94,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Muwaqqit
             };
 
             // ACT
-            await _muwaqqitDBAccess.InsertMuwaqqitPrayerTimesAsync([newMuwaqqitTime], default);
+            await _muwaqqitDBAccess.InsertPrayerTimesAsync([newMuwaqqitTime], default);
 
             // ASSERT
             var insertedTime = await TestAssertDbContext.MuwaqqitPrayerTimes.FindAsync(newMuwaqqitTime.ID);

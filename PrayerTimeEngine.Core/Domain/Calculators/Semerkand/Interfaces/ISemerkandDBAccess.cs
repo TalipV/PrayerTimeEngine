@@ -11,7 +11,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Interfaces
 
         public Task InsertCountries(IEnumerable<SemerkandCountry> countries, CancellationToken cancellationToken);
         public Task InsertCities(IEnumerable<SemerkandCity> cities, CancellationToken cancellationToken);
-        public Task InsertSemerkandPrayerTimes(IEnumerable<SemerkandPrayerTimes> semerkandPrayerTimesLst, CancellationToken cancellationToken);
+        public Task InsertPrayerTimesAsync(IEnumerable<SemerkandPrayerTimes> semerkandPrayerTimesLst, CancellationToken cancellationToken);
         public Task<int?> GetCityIDByName(int countryID, string cityName, CancellationToken cancellationToken);
         public Task<bool> HasCityData(int countryID, CancellationToken cancellationToken);
         public Task<bool> HasCountryData(CancellationToken cancellationToken);

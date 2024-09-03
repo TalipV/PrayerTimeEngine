@@ -1,0 +1,465 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8" lang="fr">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="google-site-verification" content="yVXxhpL2W-XXQ-lS4uVdnaNmK88uoobaGtuu8lYtbMw"/>
+<meta name="msvalidate.01" content="0E9277188FD6EBB737118E82B294631E" />
+<meta name="author" content="MAWAQIT"/>
+<meta name="robots" content="index, follow" />
+<meta name="apple-itunes-app" content="app-id=1460522683">
+<meta name="google-play-app" content="app-id=com.kanout.mawaqit">
+
+<!-- og tags -->
+<meta property="og:url" content="https://mawaqit.net"/>
+<meta property="og:site_name" content="MAWAQIT"/>
+<meta property="og:image" content="/static/images/logo/mawaqit_logo_vertical.png"/>
+<meta property="og:image:width" content="500"/>
+<meta property="og:image:height" content="500"/>
+<meta property="og:type" content="website"/>
+<meta property="og:title" content="--Masjid Hamza Köln-- مسجد حمزة"/>
+<meta property="og:description" content="Mawaqit vous offre les heures de prière exactes de : --Masjid Hamza Köln-- مسجد حمزة"/>
+
+<!-- twitter card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@Mawaqit">
+<meta name="twitter:creator" content="@Mawaqit">
+<meta name="twitter:title" content="--Masjid Hamza Köln-- مسجد حمزة">
+<meta name="twitter:description" content="Mawaqit vous offre les heures de prière exactes de : --Masjid Hamza Köln-- مسجد حمزة">
+<meta name="twitter:image" content="/static/images/logo/mawaqit_logo_vertical.png">
+<meta name="twitter:app:name:iphone" content="MAWAQIT">
+<meta name="twitter:app:name:googleplay" content="MAWAQIT">
+<meta name="twitter:app:id:googleplay" content="com.kanout.mawaqit">
+    <link rel="apple-touch-icon" sizes="57x57" href="/static/images/logo/apple-icon-57x57.png">
+<link rel="apple-touch-icon" sizes="60x60" href="/static/images/logo/apple-icon-60x60.png">
+<link rel="apple-touch-icon" sizes="72x72" href="/static/images/logo/apple-icon-72x72.png">
+<link rel="apple-touch-icon" sizes="76x76" href="/static/images/logo/apple-icon-76x76.png">
+<link rel="apple-touch-icon" sizes="114x114" href="/static/images/logo/apple-icon-114x114.png">
+<link rel="apple-touch-icon" sizes="120x120" href="/static/images/logo/apple-icon-120x120.png">
+<link rel="apple-touch-icon" sizes="144x144" href="/static/images/logo/apple-icon-144x144.png">
+<link rel="apple-touch-icon" sizes="152x152" href="/static/images/logo/apple-icon-152x152.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/static/images/logo/apple-icon-180x180.png">
+<link rel="icon" type="image/png" sizes="192x192"  href="/static/images/logo/android-icon-192x192.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/static/images/logo/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="96x96" href="/static/images/logo/favicon-96x96.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/static/images/logo/favicon-16x16.png">
+<meta name="msapplication-TileColor" content="#da532c">
+<meta name="msapplication-TileImage" content="/static/images/logo/ms-icon-144x144.png">
+<meta name="theme-color" content="#da532c">    <title>--Masjid Hamza Köln-- مسجد حمزة | Mawaqit - Horaire de prière, Mosquée</title>
+    <meta name="google" content="notranslate">
+    <meta name="description" content="Mawaqit vous offre les heures de prière exactes de : --Masjid Hamza Köln-- مسجد حمزة">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <link rel="canonical" href="https://mawaqit.net/fr/hamza-koln" />
+    <link rel="alternate" hreflang="x-default" href="https://mawaqit.net/fr/hamza-koln" />
+          <link rel="alternate" hreflang="sq" href="https://mawaqit.net/sq/hamza-koln" />
+      <link rel="alternate" hreflang="sq" href="https://mawaqit.net/sq/m/hamza-koln" />
+          <link rel="alternate" hreflang="de" href="https://mawaqit.net/de/hamza-koln" />
+      <link rel="alternate" hreflang="de" href="https://mawaqit.net/de/m/hamza-koln" />
+          <link rel="alternate" hreflang="en" href="https://mawaqit.net/en/hamza-koln" />
+      <link rel="alternate" hreflang="en" href="https://mawaqit.net/en/m/hamza-koln" />
+          <link rel="alternate" hreflang="ar" href="https://mawaqit.net/ar/hamza-koln" />
+      <link rel="alternate" hreflang="ar" href="https://mawaqit.net/ar/m/hamza-koln" />
+          <link rel="alternate" hreflang="bn" href="https://mawaqit.net/bn/hamza-koln" />
+      <link rel="alternate" hreflang="bn" href="https://mawaqit.net/bn/m/hamza-koln" />
+          <link rel="alternate" hreflang="bs" href="https://mawaqit.net/bs/hamza-koln" />
+      <link rel="alternate" hreflang="bs" href="https://mawaqit.net/bs/m/hamza-koln" />
+          <link rel="alternate" hreflang="hr" href="https://mawaqit.net/hr/hamza-koln" />
+      <link rel="alternate" hreflang="hr" href="https://mawaqit.net/hr/m/hamza-koln" />
+          <link rel="alternate" hreflang="es" href="https://mawaqit.net/es/hamza-koln" />
+      <link rel="alternate" hreflang="es" href="https://mawaqit.net/es/m/hamza-koln" />
+          <link rel="alternate" hreflang="fr" href="https://mawaqit.net/fr/hamza-koln" />
+      <link rel="alternate" hreflang="fr" href="https://mawaqit.net/fr/m/hamza-koln" />
+          <link rel="alternate" hreflang="it" href="https://mawaqit.net/it/hamza-koln" />
+      <link rel="alternate" hreflang="it" href="https://mawaqit.net/it/m/hamza-koln" />
+          <link rel="alternate" hreflang="ml" href="https://mawaqit.net/ml/hamza-koln" />
+      <link rel="alternate" hreflang="ml" href="https://mawaqit.net/ml/m/hamza-koln" />
+          <link rel="alternate" hreflang="no" href="https://mawaqit.net/no/hamza-koln" />
+      <link rel="alternate" hreflang="no" href="https://mawaqit.net/no/m/hamza-koln" />
+          <link rel="alternate" hreflang="nl" href="https://mawaqit.net/nl/hamza-koln" />
+      <link rel="alternate" hreflang="nl" href="https://mawaqit.net/nl/m/hamza-koln" />
+          <link rel="alternate" hreflang="ur" href="https://mawaqit.net/ur/hamza-koln" />
+      <link rel="alternate" hreflang="ur" href="https://mawaqit.net/ur/m/hamza-koln" />
+          <link rel="alternate" hreflang="pt" href="https://mawaqit.net/pt/hamza-koln" />
+      <link rel="alternate" hreflang="pt" href="https://mawaqit.net/pt/m/hamza-koln" />
+          <link rel="alternate" hreflang="ru" href="https://mawaqit.net/ru/hamza-koln" />
+      <link rel="alternate" hreflang="ru" href="https://mawaqit.net/ru/m/hamza-koln" />
+          <link rel="alternate" hreflang="ta" href="https://mawaqit.net/ta/hamza-koln" />
+      <link rel="alternate" hreflang="ta" href="https://mawaqit.net/ta/m/hamza-koln" />
+          <link rel="alternate" hreflang="tr" href="https://mawaqit.net/tr/hamza-koln" />
+      <link rel="alternate" hreflang="tr" href="https://mawaqit.net/tr/m/hamza-koln" />
+    
+    
+    <script type="text/javascript" src="/jquery/js/jquery.min.js"></script>
+    <link rel="stylesheet" href="/build/374.cfd499da.css" integrity="sha384-jy6yRMnCG6ao43thsjLMurOK0t9RlB/lZaPJ87z/sXhdhO4TVFlAMPQuVSWcu8GY"><link rel="stylesheet" href="/build/227.5b4cb7b9.css" integrity="sha384-LR2wFN9weH6YHvFdZaGeGpL3xrn/e3tS4sM0nqYyjHj7oTPVuNgxLbIwW601i28x"><link rel="stylesheet" href="/build/mosque-mosque.805b3dda.css" integrity="sha384-07HAkgizv6snBWcKDoxmm3tL/nPBZTSJRy5e6Wc7xCVsobSXGDrRhgpomjtmVKtG">
+
+    <link href="/prayer-times/css/themes/spring.css" type="text/css" rel="stylesheet preload" as="style"/>
+
+    <style>
+body {
+    
+                                      background-image: linear-gradient(0deg, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('/prayer-times/img/background/23.jpg');
+    }
+</style>
+</head>
+<body class="text-center ">
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-MMZKGM2" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<div id="spinner"></div>
+
+<!-- Iqama screen -->
+<div class="iqama" style="display: none">
+    <div class="top">Iqama</div>
+    <div class="image"></div>
+    <div class="bottom">Éteignez vos portables SVP !</div>
+</div>
+
+<!-- Douaa after prayer slider -->
+<div class="adhkar-after-prayer" style="display: none">
+    <div class="title">(Al-Athkar) أذكار بعد الصلاة</div>
+<div class="slider duaa ltr">
+  <ul>
+    <li>
+      <div>
+        <div class="ar">
+          أَسْـتَغْفِرُ الله، أَسْـتَغْفِرُ الله، أَسْـتَغْفِرُ الله<br>
+          اللّهُـمَّ أَنْـتَ السَّلامُ ، وَمِـنْكَ السَّلام ، تَبارَكْتَ يا ذا الجَـلالِ وَالإِكْـرام
+          اللَّهُمَّ أَعِنِّي عَلَى ذِكْرِكَ وَشُكْرِكَ وَحُسْنِ عِبَادَتِكَ
+        </div>
+                  <div class="fr">
+            <div>Astaghfiru Allah, Astaghfiru Allah, Astaghfiru Allah</div>
+            <div>Allahumma anta Essalam wa mineka Essalam, tabarakta ya dhal djalali wel ikram</div>
+            <div>Allahumma A`inni `ala dhikrika wa chukrika wa husni `ibadatik</div>
+          </div>
+              </div>
+    </li>
+    <li>
+      <div>
+        <div class="ar">
+          <div>سُـبْحانَ اللهِ، والحَمْـدُ لله، واللهُ أكْـبَر 33 مرة</div>
+          <div>
+            لا إِلَٰهَ إلاّ اللّهُ وَحْـدَهُ لا شريكَ لهُ، لهُ الملكُ ولهُ الحَمْد، وهُوَ على كُلّ شَيءٍ قَـدير
+          </div>
+        </div>
+                  <div class="fr">
+            <div>Subhan Allah wal hamdu lillah wallahu akbar (33 fois)</div>
+            <div>La ilaha illa Allah, wahdahu la charika lah, lahu elmoulku wa lahu elhamdu, wa hua `ala
+              kulli chay in kadir
+            </div>
+          </div>
+              </div>
+    </li>
+    <li>
+      <div>
+        <div class="ar">
+          <div>بِسۡمِ ٱللَّهِ ٱلرَّحۡمَٰنِ ٱلرَّحِيمِ</div>
+          قُلۡ أَعُوذُ بِرَبِّ ٱلنَّاسِ ، مَلِكِ ٱلنَّاسِ ، إِلَٰهِ ٱلنَّاسِ ، مِن شَرِّ ٱلۡوَسۡوَاسِ ٱلۡخَنَّاسِ
+          ، ٱلَّذِي يُوَسۡوِسُ فِي صُدُورِ ٱلنَّاسِ ، مِنَ ٱلۡجِنَّةِ وَٱلنَّاسِ
+        </div>
+      </div>
+    </li>
+    <li>
+      <div>
+        <div class="ar">
+          <div>بِسۡمِ ٱللَّهِ ٱلرَّحۡمَٰنِ ٱلرَّحِيمِ</div>
+          قُلۡ أَعُوذُ بِرَبِّ ٱلۡفَلَقِ ، مِن شَرِّ مَا خَلَقَ ، وَمِن شَرِّ غَاسِقٍ إِذَا وَقَبَ ، وَمِن شَرِّ
+          ٱلنَّفَّٰثَٰتِ فِي ٱلۡعُقَدِ ، وَمِن شَرِّ حَاسِدٍ إِذَا حَسَدَ
+        </div>
+      </div>
+    </li>
+    <li>
+      <div>
+        <div class="ar">
+          <div>بِسۡمِ ٱللَّهِ ٱلرَّحۡمَٰنِ ٱلرَّحِيمِ</div>
+          قُلۡ هُوَ ٱللَّهُ أَحَدٌ ، ٱللَّهُ ٱلصَّمَدُ ، لَمۡ يَلِدۡ وَلَمۡ يُولَدۡ ، وَلَمۡ يَكُن لَّهُۥ كُفُوًا أَحَدُۢ
+        </div>
+      </div>
+    </li>
+    <li>
+      <div>
+        <div class="ar">
+          ٱللَّهُ لَآ إِلَٰهَ إِلَّا هُوَ ٱلۡحَيُّ ٱلۡقَيُّومُۚ لَا تَأۡخُذُهُۥ سِنَةٞ وَلَا نَوۡمٞۚ لَّهُۥ مَا فِي
+          ٱلسَّمَٰوَٰتِ وَمَا فِي ٱلۡأَرۡضِۗ مَن ذَا ٱلَّذِي يَشۡفَعُ عِندَهُۥٓ إِلَّا بِإِذۡنِهِۦۚ يَعۡلَمُ مَا بَيۡنَ
+          أَيۡدِيهِمۡ وَمَا خَلۡفَهُمۡۖ وَلَا يُحِيطُونَ بِشَيۡءٖ مِّنۡ عِلۡمِهِۦٓ إِلَّا بِمَا شَآءَۚ وَسِعَ
+          كُرۡسِيُّهُ ٱلسَّمَٰوَٰتِ وَٱلۡأَرۡضَۖ وَلَا يَ‍ُٔودُهُۥ حِفۡظُهُمَاۚ وَهُوَ ٱلۡعَلِيُّ ٱلۡعَظِيمُ
+        </div>
+      </div>
+    </li>
+    <li>
+      <div>
+        <div class="ar">
+          لا إِلَٰهَ إلاّ اللّهُ وحدَهُ لا شريكَ لهُ، لهُ المُـلْكُ ولهُ الحَمْد، وهوَ على كلّ شَيءٍ قَدير،
+          اللّهُـمَّ لا مانِعَ لِما أَعْطَـيْت، وَلا مُعْطِـيَ لِما مَنَـعْت، وَلا يَنْفَـعُ ذا
+          الجَـدِّ مِنْـكَ الجَـد
+        </div>
+                  <div class="fr">
+            La ilaha illa Allah, wahdahu la charika lah, lahu elmulku wa lahu elhamdu, wa hua `ala koulli
+            chayin kadir,
+            Allahumma la mani`a lima a`atayte, wa la mu`atia lima mana`ate, wa la yanefa`u dhal djaddi
+            mineka eldjad
+          </div>
+              </div>
+    </li>
+  </ul>
+</div>
+</div>
+
+<!-- message info slider -->
+<div class="message-slider slider ltr" style="display: none">
+    <div class="currentTimeShort"></div>
+    <div class="messageContent">
+        <ul>
+                                                <li data-position="5" data-duration="30">
+                                                                                                    <div class="text">
+                                <div>
+                                                                            <div class="title"> Spenden </div>
+                                                                        <div class="content"> ***Spendenaktion*** (ALLAH gibt denjenigen der auch was gibt ) Liebe Geschwister: Wir bitten euch sehr um eure Hilfe! Bitte spendet an: Per PayPal: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="0c65626a634c616d7f66656821646d61766d226869">[email&#160;protected]</a> Per Bank: DMKZ Köln e.V. IBAN: DE86370501980029472123<br />
+BIC: COLSDE33XXX Stadtsparkasse Köln Bonn </div>
+                                </div>
+                            </div>
+                                            </li>
+                                    </ul>
+    </div>
+</div>
+
+<div class="adhan" style="display: none">
+    <div class="ar">
+        <div class="title">دعاء ما بعد الأذان</div>
+        <p >
+            اللّهُـمَّ رَبَّ هَذِهِ الدّعْـوَةِ التّـامَّة وَالصّلاةِ القَـائِمَة آتِ محَـمَّداً الوَسيـلةَ وَالْفَضـيلَة وَابْعَـثْه مَقـامـاً مَحـموداً الَّذي وَعَـدْتَه
+        </p>
+    </div>
+
+            <div class="fr">
+            <div class="title">Invocation après l&#039;adhân</div>
+            <p>Ô Allah, Maître de cet appel parfait et de la prière que l&#039;on va accomplir, donne à Mohammed le pouvoir d&#039;intercéder
+(le Jour du Jugement) et la place d&#039;honneur [au Paradis], et ressuscite-le dans la position louable que Tu lui as promise
+</p>
+        </div>
+    </div>
+<div class="douaa-between-adhan-iqama" style="display: none">
+    <div class="ar">
+        <div class="title">الدعاء لا يرد بين الأذان والإقامة</div>
+        <p >
+            عَنْ أَنَسِ بْنِ مَالِكٍ قَالَ: قَالَ رَسُولُ اللَّهِ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ: الدُّعَاءُ لَا يُرَدُّ بَيْنَ الْأَذَانِ وَالْإِقَامَةِ
+        </p>
+    </div>
+
+            <div class="fr">
+            <p>Selon Anas Ibn Mâlik, le Prophète (sallallahu ‘alayhi wa sallam) a dit :
+Les invocations entre l&#039;Adhân et l’Iqâmah ne sont pas rejetées
+</p>
+        </div>
+    </div><div class="jumua-dhikr-reminder" style="display: none">
+    <div class="title">حَانَ وَقْتُ صَلاَةِ الجُمُعَة</div>
+    <div>
+        <div class="ar">
+            عَنْ أَبِي هُرَيْرَةَ قَالَ قَالَ رَسُولُ اللَّهِ صَلَّى اللَّه عَلَيْهِ وَسَلَّمَ مَنْ تَوَضَّأَ فَأَحْسَنَ الْوُضُوءَ ثُمَّ أَتَى الْجُمُعَةَ فَاسْتَمَعَ وَأَنْصَتَ غُفِرَ لَهُ مَا
+            بَيْنَهُ وَبَيْنَ الْجُمُعَةِ وَزِيَادَةُ ثَلاثَةِ أَيَّامٍ وَمَنْ مَسَّ الْحَصَى فَقَدْ لَغَا
+        </div>
+
+                    <div class="fr">
+                <p>Le Prophète (que la prière d&#039;Allah et son salut soient sur lui) a dit
+&quot;Celui qui fait les ablutions parfaitement puis se rend au jumu&#039;a puis écoute et se tait,
+il lui est pardonné ce qu&#039;il y a entre ce moment et le vendredi suivant et trois jours en plus
+et celui qui touche des cailloux a certes fait une futilité&quot;
+</p>
+            </div>
+            </div>
+</div>
+<div id="black-screen" style="display: none"></div>
+
+
+<!-- main screen -->
+<div class="main"
+     data-remote="/id/4116/has-been-updated">
+    <div class="sub-main">
+        <!-- Random hadith container -->
+        <div class="random-hadith" style="display: none"
+             data-remote="/api/2.0/hadith/random?lang=ar">
+            <div class="next-prayer-bloc-hadith">
+                <div class="next-prayer bottom-block">
+                    <span></span> dans
+                    <div class="countdown"></div>
+                </div>
+                <div class="currentTimeShort bottom-block"></div>
+            </div>
+            <div class="text ltr">
+                <div></div>
+            </div>
+        </div>
+
+        <!-- top container -->
+        <div class="top-content">
+            <div class="top-buttons text-left">
+                <div style="font-size: 1.5rem">
+                  <div class="screen-status online hidden"><i class="fas fa-circle" style="color: #126611; font-size: 1.3rem"></i> En ligne</div>
+                  <div class="screen-status offline hidden"><i class="fas fa-circle" style="color: #702828; font-size: 1.3rem"></i> Hors ligne</div>
+                </div>
+                            </div>
+
+            <!-- temperature container -->
+                            <div class="ltr">
+                    <div id="weather" class="hidden ltr" data-remote="/api/2.0/mosque/2659ae1c-0654-4650-9188-5516a02cf251/weather">
+                        <i style="color: #FFF;"></i> <span></span><sup>°C</sup>
+                    </div>
+                </div>
+                        <div class="header">
+                <h1>
+                                        --Masjid Hamza Köln-- مسجد حمزة - Köln
+                                    </h1>
+            </div>
+
+            <!-- Adhan flash -->
+            <div class="main-iqama-countdown hidden">
+                <div class="text">Al-Iqama dans</div>
+                <div class="countdown"></div>
+            </div>
+
+            <!-- Adhan flash -->
+            <div class="adhan-flash hidden">
+                <div>
+                    <script type="text/javascript" style="display:none">
+//<![CDATA[
+window.__mirage2 = {petok:"qLqjycepgturFwI4B0Vc5HjfkBFTSRBg6oXATw6FRsE-1800-0.0.1.1"};
+//]]>
+</script>
+<script type="text/javascript" src="https://ajax.cloudflare.com/cdn-cgi/scripts/04b3eb47/cloudflare-static/mirage2.min.js"></script>
+<img class="cupola" alt="!" data-cfsrc="/static/images/icon/cupola_500x500.png" style="display:none;visibility:hidden;"><noscript><img class="cupola" src="/static/images/icon/cupola_500x500.png" alt="!"></noscript>
+                </div>
+                <div>
+                    Adhan
+                </div>
+                <div>
+                    <img class="cupola" alt="!" data-cfsrc="/static/images/icon/cupola_500x500.png" style="display:none;visibility:hidden;"><noscript><img class="cupola" src="/static/images/icon/cupola_500x500.png" alt="!"></noscript>
+                </div>
+            </div>
+
+            <!-- Alarm flash -->
+            <div class="alarm-flash hidden">
+                <div>
+                    <img class="cupola" alt="!" data-cfsrc="/static/images/icon/cupola_500x500.png" style="display:none;visibility:hidden;"><noscript><img class="cupola" src="/static/images/icon/cupola_500x500.png" alt="!"></noscript>
+                </div>
+                <div>
+                    Essalatu khayrun mina ennawm
+                </div>
+                <div>
+                    <img class="cupola" alt="!" data-cfsrc="/static/images/icon/cupola_500x500.png" style="display:none;visibility:hidden;"><noscript><img class="cupola" src="/static/images/icon/cupola_500x500.png" alt="!"></noscript>
+                </div>
+            </div>
+
+            <div class="content">
+                <div>
+                    <div class="chourouk custom-time">
+                        <div class="name">Chourouk</div>
+                        <div class="time chourouk-id"></div>
+                    </div>
+                    <div class="imsak custom-time">
+                        <div class="name">Imsak</div>
+                        <div class="time imsak-id"></div>
+                    </div>
+                </div>
+                <div class="middle-bloc">
+                    <div class="center-time">
+                        <div class="currentTime"></div>
+                                                    <div id="hijriDate" class="fadeOut">
+                                <span></span>
+                                <img class="full-moon" alt="!" data-cfsrc="/prayer-times/img/full-moon.png" style="display:none;visibility:hidden;"><noscript><img class="full-moon" src="/prayer-times/img/full-moon.png" alt="!"></noscript>
+                            </div>
+                                                <div id="gregorianDate" class="fadeIn"></div>
+                    </div>
+                    <div class="next-prayer-bloc">
+                        <div class="next-prayer">
+                            <img alt="!" data-cfsrc="/static/images/icon/cupola.png" style="display:none;visibility:hidden;"><noscript><img src="/static/images/icon/cupola.png" alt="!"></noscript>
+                            <span></span> dans
+                            <div class="countdown"></div>
+                            <img alt="!" data-cfsrc="/static/images/icon/cupola.png" style="display:none;visibility:hidden;"><noscript><img src="/static/images/icon/cupola.png" alt="!"></noscript>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div class="joumouaa custom-time">
+  <div class="ar name">Jumua</div>
+  <div class="prayer">
+                        
+                  <div class="joumouaa-id time"></div>
+                  </div>
+</div>
+                    <div class="aid custom-time">
+  <div class="name">Salat Al-Aïd</div>
+  <div class="prayer">
+    <div class="time aid-time"></div>
+      </div>
+</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- prayer times container -->
+        <div class="prayers">
+            <div>
+                <div class="name">Fajr</div>
+                <div class="time"></div>
+                <div class="wait"></div>
+            </div>
+            <div>
+                <div class="name">Dhuhr</div>
+                <div class="time"></div>
+                <div class="wait"></div>
+            </div>
+            <div>
+                <div class="name">Asr</div>
+                <div class="time"></div>
+                <div class="wait"></div>
+            </div>
+            <div>
+                <div class="name">Maghrib</div>
+                <div class="time"></div>
+                <div class="wait"></div>
+            </div>
+            <div>
+                <div class="name">Isha</div>
+                <div class="time"></div>
+                <div class="wait"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- footer container -->
+    <footer style="direction: ltr">
+                <div class="store">
+            <div id="mosque-id">ID 4116</div>
+                            <div id="qrcode">
+                    <img alt="qrcode mawaqit mobile" data-cfsrc="/static/images/store-qrcode.png" style="display:none;visibility:hidden;"><noscript><img src="/static/images/store-qrcode.png" alt="qrcode mawaqit mobile"></noscript>
+                </div>
+                    </div>
+        <div class="info ">
+                            <div class="assosciation">
+                    DMKZ e.V.
+                </div>
+                    </div>
+        <div class="version">v4.119.1</div>
+        <img class="logo" alt="mawaqit logo" data-cfsrc="/static/images/logo/mawaqit_logo_light_rounded.png" style="display:none;visibility:hidden;"><noscript><img class="logo" src="/static/images/logo/mawaqit_logo_light_rounded.png" alt="mawaqit logo"></noscript>
+    </footer>
+</div>
+
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+    var site = 'https://mawaqit.net';
+    var offlineSyncCookie = null;
+    var isMobile = false;
+    var isMosque = true;
+    var lastUpdated = 1724789865;
+    var longitude = 7.0073273777962;
+    var latitude = 50.963053980994;
+    var confData = {"showCityInTitle":true,"showLogo":true,"showPrayerTimesOnMessageScreen":true,"duaAfterPrayerShowTimes":["10","8","8","8","15"],"hijriDateEnabled":true,"hijriDateForceTo30":false,"duaAfterAzanEnabled":true,"duaAfterPrayerEnabled":true,"iqamaDisplayTime":30,"iqamaBip":true,"backgroundColor":"#1b1b1b","jumuaDhikrReminderEnabled":false,"jumuaTimeout":25,"randomHadithEnabled":true,"blackScreenWhenPraying":true,"wakeForFajrTime":null,"jumuaBlackScreenEnabled":true,"temperatureEnabled":true,"temperatureUnit":"C","hadithLang":"ar","iqamaEnabled":true,"randomHadithIntervalDisabling":"","adhanVoice":"bip","adhanEnabledByPrayer":["1","1","1","1","1"],"footer":true,"iqamaMoreImportant":false,"timeDisplayFormat":"24","backgroundType":"motif","backgroundMotif":"23","iqamaFullScreenCountdown":true,"theme":"spring","adhanDuration":150,"type":"MOSQUE","partner":true,"name":"--Masjid Hamza K\u00f6ln-- \u0645\u0633\u062c\u062f \u062d\u0645\u0632\u0629 - K\u00f6ln","label":"--Masjid Hamza K\u00f6ln-- \u0645\u0633\u062c\u062f \u062d\u0645\u0632\u0629 - K\u00f6ln","streamUrl":null,"paymentWebsite":"https:\/\/www.paypal.me\/MasjidHamza1985","countryCode":"DE","timezone":"Europe\/Berlin","site":"http:\/\/masjid-hamza.de","association":"DMKZ e.V.","image":"https:\/\/cdn.mawaqit.net\/images\/backend\/mosque\/2659ae1c-0654-4650-9188-5516a02cf251\/mosque\/1eea8da9-5bd2-63c0-981c-066ed47a7584.jpg","interiorPicture":"https:\/\/cdn.mawaqit.net\/images\/backend\/mosque\/2659ae1c-0654-4650-9188-5516a02cf251\/mosque\/1eea8da9-5bd2-63c0-981c-066ed47a7584.jpg","exteriorPicture":"https:\/\/cdn.mawaqit.net\/images\/backend\/mosque_default_interior_picture.png","logo":null,"url":"https:\/\/mawaqit.net\/fr\/hamza-koln","latitude":50.963053980994,"longitude":7.0073273777962,"womenSpace":true,"janazaPrayer":true,"aidPrayer":true,"childrenCourses":true,"adultCourses":true,"ramadanMeal":false,"handicapAccessibility":true,"ablutions":true,"parking":true,"otherInfo":null,"closed":null,"announcements":[{"id":23798,"title":"Spenden","content":"***Spendenaktion*** (ALLAH gibt denjenigen der auch was gibt ) Liebe Geschwister: Wir bitten euch sehr um eure Hilfe! Bitte spendet an: Per PayPal: info@masjid-hamza.de Per Bank: DMKZ K\u00f6ln e.V. IBAN: DE86370501980029472123\r\nBIC: COLSDE33XXX Stadtsparkasse K\u00f6ln Bonn","image":null,"video":null,"startDate":null,"endDate":null,"updated":"2022-01-21 16:30","duration":30,"isMobile":true,"isDesktop":true}],"events":[],"aidPrayerTime":"07:30","aidPrayerTime2":null,"jumua":"14:30","jumua2":null,"jumua3":null,"jumuaAsDuhr":false,"imsakNbMinBeforeFajr":0,"hijriAdjustment":1,"times":["05:05","13:35","17:22","20:30","22:06"],"shuruq":"06:35","calendar":[{"1":["07:01","08:31","12:37","14:20","16:37","18:22"],"2":["07:01","08:31","12:37","14:20","16:38","18:23"],"3":["07:01","08:31","12:37","14:22","16:40","18:25"],"4":["07:01","08:31","12:37","14:22","16:41","18:26"],"5":["07:01","08:31","12:39","14:24","16:41","18:26"],"6":["07:01","08:31","12:39","14:24","16:44","18:27"],"7":["07:00","08:30","12:39","14:26","16:45","18:29"],"8":["07:00","08:30","12:39","14:26","16:45","18:30"],"9":["06:58","08:28","12:39","14:26","16:45","18:30"],"10":["06:58","08:28","12:41","14:28","16:48","18:32"],"11":["06:58","08:28","12:41","14:30","16:49","18:33"],"12":["06:58","08:28","12:41","14:31","16:51","18:33"],"13":["06:56","08:26","12:41","14:33","16:52","18:36"],"14":["06:56","08:26","12:41","14:33","16:53","18:37"],"15":["06:56","08:26","12:43","14:35","16:56","18:37"],"16":["06:54","08:24","12:43","14:35","16:56","18:38"],"17":["06:54","08:24","12:43","14:37","16:59","18:41"],"18":["06:52","08:22","12:43","14:39","17:00","18:41"],"19":["06:52","08:22","12:43","14:39","17:02","18:42"],"20":["06:50","08:20","12:43","14:41","17:03","18:44"],"21":["06:50","08:20","12:43","14:43","17:04","18:45"],"22":["06:48","08:18","12:45","14:43","17:07","18:47"],"23":["06:48","08:18","12:45","14:46","17:07","18:48"],"24":["06:46","08:16","12:45","14:46","17:10","18:49"],"25":["06:46","08:16","12:46","14:48","17:11","18:51"],"26":["06:43","08:13","12:46","14:50","17:12","18:52"],"27":["06:43","08:13","12:46","14:50","17:15","18:53"],"28":["06:41","08:11","12:46","14:52","17:17","18:56"],"29":["06:39","08:09","12:46","14:54","17:18","18:56"],"30":["06:39","08:09","12:46","14:54","17:19","18:59"],"31":["06:37","08:07","12:46","14:56","17:22","19:00"]},{"1":["06:35","08:05","12:46","14:58","17:23","19:02"],"2":["06:35","08:05","12:46","15:00","17:25","19:03"],"3":["06:33","08:03","12:46","15:01","17:26","19:04"],"4":["06:31","08:01","12:46","15:03","17:29","19:06"],"5":["06:30","08:00","12:46","15:03","17:30","19:07"],"6":["06:28","07:58","12:46","15:05","17:33","19:08"],"7":["06:27","07:57","12:48","15:07","17:33","19:11"],"8":["06:25","07:55","12:48","15:07","17:36","19:11"],"9":["06:23","07:53","12:48","15:09","17:37","19:14"],"10":["06:21","07:51","12:48","15:11","17:40","19:15"],"11":["06:19","07:49","12:48","15:13","17:41","19:17"],"12":["06:17","07:47","12:48","15:13","17:42","19:18"],"13":["06:16","07:46","12:48","15:15","17:45","19:19"],"14":["06:15","07:45","12:48","15:16","17:47","19:22"],"15":["06:13","07:43","12:48","15:18","17:48","19:22"],"16":["06:11","07:41","12:48","15:20","17:51","19:25"],"17":["06:09","07:39","12:48","15:20","17:52","19:26"],"18":["06:06","07:36","12:48","15:22","17:53","19:27"],"19":["06:04","07:34","12:48","15:24","17:56","19:30"],"20":["06:02","07:32","12:48","15:24","17:57","19:30"],"21":["06:00","07:30","12:46","15:26","17:59","19:33"],"22":["05:59","07:29","12:46","15:28","18:00","19:34"],"23":["05:57","07:27","12:46","15:28","18:03","19:36"],"24":["05:55","07:25","12:46","15:30","18:04","19:37"],"25":["05:53","07:23","12:46","15:31","18:07","19:40"],"26":["05:50","07:20","12:46","15:33","18:07","19:41"],"27":["05:48","07:18","12:46","15:33","18:10","19:42"],"28":["05:46","07:16","12:46","15:35","18:11","19:44"],"29":["05:45","07:15","12:46","15:37","18:14","19:45"]},{"1":["05:45","07:15","12:46","15:37","18:14","19:45"],"2":["05:43","07:13","12:46","15:37","18:15","19:48"],"3":["05:41","07:11","12:46","15:39","18:17","19:48"],"4":["05:39","07:09","12:46","15:41","18:18","19:51"],"5":["05:36","07:06","12:46","15:41","18:19","19:52"],"6":["05:34","07:04","12:45","15:43","18:22","19:53"],"7":["05:31","07:01","12:45","15:43","18:23","19:56"],"8":["05:30","07:00","12:45","15:45","18:26","19:56"],"9":["05:28","06:58","12:45","15:46","18:26","19:59"],"10":["05:26","06:56","12:43","15:48","18:29","20:00"],"11":["05:24","06:54","12:43","15:48","18:30","20:02"],"12":["05:20","06:50","12:43","15:50","18:32","20:03"],"13":["05:18","06:48","12:43","15:50","18:33","20:06"],"14":["05:16","06:46","12:43","15:52","18:36","20:07"],"15":["05:15","06:45","12:43","15:52","18:37","20:08"],"16":["05:13","06:43","12:43","15:54","18:38","20:11"],"17":["05:10","06:40","12:43","15:54","18:41","20:11"],"18":["05:08","06:38","12:41","15:56","18:41","20:14"],"19":["05:05","06:35","12:41","15:56","18:44","20:15"],"20":["05:03","06:33","12:41","15:58","18:45","20:17"],"21":["05:00","06:30","12:41","15:58","18:47","20:18"],"22":["04:59","06:29","12:41","16:00","18:48","20:21"],"23":["04:57","06:27","12:41","16:00","18:51","20:22"],"24":["04:55","06:25","12:39","16:02","18:52","20:23"],"25":["04:51","06:21","12:39","16:03","18:53","20:26"],"26":["04:49","06:19","12:39","16:03","18:55","20:27"],"27":["04:47","06:17","12:39","16:04","18:56","20:29"],"28":["04:45","06:15","12:39","16:06","18:59","20:30"],"29":["04:43","06:13","12:39","16:07","19:00","20:33"],"30":["04:41","06:11","12:39","16:07","19:02","20:34"],"31":["05:39","07:09","13:37","17:08","20:03","21:36"]},{"1":["05:36","07:06","13:37","17:08","20:04","21:37"],"2":["05:33","07:03","13:37","17:10","20:07","21:40"],"3":["05:31","07:01","13:37","17:11","20:07","21:41"],"4":["05:30","07:00","13:37","17:11","20:10","21:44"],"5":["05:28","06:58","13:37","17:12","20:11","21:45"],"6":["05:25","06:55","13:35","17:14","20:12","21:47"],"7":["05:23","06:53","13:35","17:14","20:15","21:48"],"8":["05:20","06:50","13:35","17:15","20:17","21:51"],"9":["05:18","06:48","13:35","17:15","20:18","21:52"],"10":["05:16","06:46","13:35","17:17","20:19","21:55"],"11":["05:14","06:44","13:35","17:18","20:21","21:56"],"12":["05:12","06:42","13:35","17:18","20:22","21:57"],"13":["05:10","06:40","13:33","17:18","20:25","22:00"],"14":["05:08","06:38","13:33","17:19","20:26","22:02"],"15":["05:05","06:35","13:33","17:21","20:27","22:03"],"16":["05:02","06:32","13:33","17:21","20:30","22:06"],"17":["05:00","06:30","13:33","17:22","20:30","22:07"],"18":["04:59","06:29","13:33","17:22","20:33","22:10"],"19":["04:57","06:27","13:33","17:23","20:33","22:11"],"20":["04:55","06:25","13:33","17:23","20:36","22:14"],"21":["04:53","06:23","13:31","17:25","20:37","22:15"],"22":["04:50","06:20","13:31","17:26","20:38","22:18"],"23":["04:48","06:18","13:31","17:26","20:41","22:19"],"24":["04:46","06:16","13:31","17:26","20:42","22:22"],"25":["04:45","06:15","13:31","17:27","20:44","22:23"],"26":["04:43","06:13","13:31","17:27","20:45","22:26"],"27":["04:41","06:11","13:31","17:29","20:47","22:27"],"28":["04:39","06:09","13:31","17:30","20:48","22:30"],"29":["04:36","06:06","13:31","17:30","20:51","22:32"],"30":["04:34","06:04","13:31","17:30","20:52","22:33"]},{"1":["04:32","06:02","13:31","17:32","20:53","22:36"],"2":["04:31","06:01","13:30","17:32","20:55","22:37"],"3":["04:30","06:00","13:30","17:33","20:56","22:40"],"4":["04:28","05:58","13:30","17:33","20:59","22:41"],"5":["04:26","05:56","13:30","17:33","21:00","22:44"],"6":["04:24","05:54","13:30","17:34","21:02","22:45"],"7":["04:23","05:53","13:30","17:36","21:03","22:48"],"8":["04:20","05:50","13:30","17:36","21:04","22:49"],"9":["04:18","05:48","13:30","17:37","21:07","22:52"],"10":["04:17","05:47","13:30","17:37","21:07","22:53"],"11":["04:16","05:46","13:30","17:37","21:10","22:56"],"12":["04:14","05:44","13:30","17:38","21:12","22:59"],"13":["04:13","05:43","13:30","17:38","21:12","23:00"],"14":["04:11","05:51","13:30","17:40","21:14","23:03"],"15":["04:10","05:40","13:30","17:41","21:15","23:04"],"16":["04:08","05:38","13:30","17:41","21:17","23:07"],"17":["04:06","05:36","13:30","17:41","21:18","23:08"],"18":["04:05","05:35","13:30","17:41","21:19","23:11"],"19":["04:03","05:33","13:30","17:42","21:22","23:12"],"20":["04:02","05:32","13:30","17:44","21:22","23:15"],"21":["04:01","05:31","13:30","17:44","21:25","23:17"],"22":["04:00","05:30","13:30","17:45","21:26","23:18"],"23":["03:59","05:29","13:30","17:45","21:26","23:19"],"24":["03:58","05:28","13:30","17:45","21:29","23:22"],"25":["03:57","05:27","13:31","17:45","21:30","23:23"],"26":["03:56","05:26","13:31","17:47","21:30","23:26"],"27":["03:55","05:25","13:31","17:47","21:33","23:27"],"28":["03:54","05:24","13:31","17:48","21:33","23:30"],"29":["03:53","05:23","13:31","17:48","21:34","23:30"],"30":["03:51","05:21","13:31","17:48","21:36","23:33"],"31":["03:50","05:20","13:31","17:48","21:37","23:34"]},{"1":["03:49","05:19","13:31","17:49","21:38","23:08"],"2":["03:49","05:19","13:31","17:49","21:40","23:10"],"3":["03:48","05:18","13:31","17:51","21:41","23:11"],"4":["03:47","05:17","13:31","17:51","21:41","23:11"],"5":["03:47","05:17","13:31","17:52","21:42","23:12"],"6":["03:46","05:16","13:31","17:52","21:44","23:14"],"7":["03:45","05:15","13:33","17:52","21:45","23:15"],"8":["03:45","05:15","13:33","17:52","21:45","23:15"],"9":["03:45","05:15","13:33","17:52","21:45","23:15"],"10":["03:45","05:15","13:33","17:53","21:47","23:17"],"11":["03:45","05:15","13:33","17:53","21:48","23:18"],"12":["03:44","05:14","13:33","17:53","21:48","23:18"],"13":["03:44","05:14","13:33","17:55","21:48","23:18"],"14":["03:44","05:14","13:33","17:55","21:49","23:19"],"15":["03:44","05:14","13:33","17:55","21:49","23:19"],"16":["03:44","05:14","13:33","17:56","21:51","23:21"],"17":["03:44","05:14","13:33","17:56","21:51","23:21"],"18":["03:44","05:14","13:35","17:56","21:52","23:22"],"19":["03:44","05:14","13:37","17:56","21:52","23:22"],"20":["03:44","05:14","13:35","17:56","21:52","23:22"],"21":["03:44","05:14","13:35","17:56","21:52","23:22"],"22":["03:44","05:14","13:35","17:56","21:52","23:22"],"23":["03:44","05:14","13:35","17:56","21:52","23:22"],"24":["03:44","05:14","13:35","17:57","21:52","23:22"],"25":["03:45","05:15","13:35","17:57","21:52","23:22"],"26":["03:45","05:15","13:35","17:57","21:52","23:22"],"27":["03:45","05:15","13:37","17:57","21:52","23:22"],"28":["03:45","05:15","13:37","17:57","21:52","23:22"],"29":["03:46","05:16","13:37","17:57","21:52","23:22"],"30":["03:46","05:16","13:37","17:57","21:52","23:22"]},{"1":["03:47","05:17","13:37","17:57","21:52","23:22"],"2":["03:47","05:17","13:37","17:52","21:52","23:22"],"3":["03:48","05:18","13:37","17:57","21:52","23:22"],"4":["03:49","05:19","13:37","17:57","21:52","23:22"],"5":["03:49","05:19","13:37","17:57","21:51","23:21"],"6":["03:50","05:20","13:37","17:57","21:51","23:21"],"7":["03:51","05:21","13:37","17:57","21:49","23:19"],"8":["03:53","05:23","13:37","17:57","21:49","23:19"],"9":["03:54","05:24","13:39","17:57","21:48","23:18"],"10":["03:55","05:25","13:39","17:57","21:48","23:18"],"11":["03:56","05:26","13:39","17:57","21:48","23:18"],"12":["03:57","05:27","13:39","17:57","21:47","23:17"],"13":["03:58","05:28","13:39","17:56","21:45","23:15"],"14":["03:59","05:29","13:39","17:56","21:45","23:15"],"15":["04:00","05:30","13:39","17:56","21:44","23:14"],"16":["04:01","05:30","13:39","17:56","21:42","23:12"],"17":["04:01","05:31","13:39","17:56","21:41","23:11"],"18":["04:03","05:33","13:39","17:56","21:41","23:11"],"19":["04:04","05:34","13:39","17:56","21:40","23:10"],"20":["04:05","05:35","13:39","17:55","21:38","23:08"],"21":["04:06","05:36","13:39","17:55","21:37","23:07"],"22":["04:09","05:39","13:39","17:55","21:37","23:07"],"23":["04:10","05:40","13:39","17:53","21:36","23:06"],"24":["04:11","05:41","13:39","17:53","21:33","23:03"],"25":["04:13","05:43","13:39","17:52","21:33","23:03"],"26":["04:14","05:44","13:39","17:52","21:32","23:02"],"27":["04:15","05:45","13:39","17:52","21:30","23:00"],"28":["04:16","05:46","13:39","17:52","21:29","22:59"],"29":["04:17","05:47","13:39","17:51","21:26","22:56"],"30":["04:19","05:49","13:39","17:51","21:26","22:56"],"31":["04:20","05:50","13:39","17:49","21:23","22:53"]},{"1":["04:23","05:53","13:39","17:48","21:22","22:52"],"2":["04:24","05:54","13:39","17:48","21:21","22:51"],"3":["04:26","05:56","13:39","17:48","21:19","22:49"],"4":["04:27","05:57","13:39","17:47","21:18","22:48"],"5":["04:29","05:59","13:39","17:47","21:15","22:45"],"6":["04:30","06:00","13:39","17:45","21:15","23:00"],"7":["04:31","06:01","13:39","17:45","21:12","22:57"],"8":["04:32","06:02","13:39","17:44","21:11","22:56"],"9":["04:34","06:04","13:39","17:42","21:08","22:52"],"10":["04:35","06:05","13:39","17:42","21:07","22:51"],"11":["04:38","06:08","13:39","17:41","21:06","22:48"],"12":["04:39","06:09","13:39","17:41","21:03","22:47"],"13":["04:41","06:11","13:39","17:40","21:02","22:44"],"14":["04:43","06:13","13:37","17:38","21:00","22:41"],"15":["04:44","06:14","13:37","17:37","20:57","22:40"],"16":["04:45","06:15","13:37","17:37","20:56","22:37"],"17":["04:46","06:16","13:37","17:36","20:55","22:34"],"18":["04:48","06:18","13:37","17:34","20:52","22:33"],"19":["04:49","06:19","13:37","17:33","20:51","22:30"],"20":["04:51","06:21","13:37","17:33","20:48","22:27"],"21":["04:54","06:24","13:37","17:32","20:47","22:26"],"22":["04:55","06:25","13:37","17:30","20:45","22:22"],"23":["04:57","06:27","13:37","17:30","20:42","22:21"],"24":["04:58","06:28","13:35","17:29","20:41","22:18"],"25":["05:00","06:30","13:35","17:26","20:37","22:15"],"26":["05:00","06:30","13:35","17:26","20:36","22:14"],"27":["05:02","06:32","13:35","17:25","20:33","22:11"],"28":["05:05","06:34","13:35","17:23","20:32","22:08"],"29":["05:05","06:35","13:35","17:22","20:30","22:06"],"30":["05:08","06:38","13:35","17:21","20:27","22:03"],"31":["05:09","06:39","13:35","17:19","20:26","22:00"]},{"1":["05:11","06:41","13:33","17:18","20:23","21:59"],"2":["05:12","06:42","13:33","17:17","20:21","21:56"],"3":["05:14","06:44","13:33","17:15","20:18","21:53"],"4":["05:16","06:46","13:33","17:14","20:17","21:52"],"5":["05:16","06:46","13:33","17:12","20:15","21:48"],"6":["05:18","06:48","13:33","17:11","20:12","21:47"],"7":["05:19","06:49","13:31","17:10","20:10","21:44"],"8":["05:21","06:51","13:31","17:08","20:07","21:41"],"9":["05:23","06:53","13:31","17:07","20:06","21:40"],"10":["05:25","06:55","13:31","17:06","20:03","21:37"],"11":["05:26","06:56","13:31","17:03","20:00","21:34"],"12":["05:28","06:58","13:31","17:03","19:59","21:32"],"13":["05:30","07:00","13:30","17:00","19:56","21:30"],"14":["05:30","07:00","13:30","17:00","19:55","21:26"],"15":["05:32","07:02","13:28","16:57","19:52","21:25"],"16":["05:33","07:03","13:28","16:56","19:49","21:22"],"17":["05:35","07:05","13:28","16:55","19:48","21:19"],"18":["05:36","07:06","13:28","16:53","19:45","21:18"],"19":["05:39","07:09","13:28","16:52","19:42","21:15"],"20":["05:40","07:10","13:28","16:49","19:41","21:12"],"21":["05:42","07:12","13:26","16:48","19:38","21:11"],"22":["05:43","07:13","13:26","16:47","19:36","21:07"],"23":["05:45","07:15","13:26","16:45","19:33","21:06"],"24":["05:46","07:16","13:26","16:44","19:32","21:03"],"25":["05:47","07:17","13:26","16:41","19:29","21:00"],"26":["05:49","07:19","13:24","16:41","19:26","20:59"],"27":["05:50","07:20","13:24","16:38","19:25","20:56"],"28":["05:53","07:23","13:24","16:37","19:22","20:53"],"29":["05:54","07:24","13:24","16:36","19:19","20:52"],"30":["05:56","07:26","13:24","16:33","19:18","20:49"]},{"1":["05:57","07:27","13:24","16:32","19:15","20:47"],"2":["05:59","07:29","13:22","16:30","19:14","20:45"],"3":["06:00","07:30","13:22","16:29","19:11","20:42"],"4":["06:01","07:31","13:22","16:26","19:08","20:41"],"5":["06:03","07:33","13:22","16:25","19:07","20:38"],"6":["06:04","07:34","13:22","16:23","19:04","20:36"],"7":["06:06","07:36","13:22","16:22","19:02","20:33"],"8":["06:09","07:39","13:20","16:19","19:00","20:32"],"9":["06:10","07:40","13:20","16:18","18:57","20:30"],"10":["06:12","07:42","13:20","16:17","18:56","20:27"],"11":["06:13","07:43","13:20","16:15","18:52","20:26"],"12":["06:15","07:45","13:20","16:14","18:51","20:23"],"13":["06:16","07:46","13:20","16:11","18:48","20:21"],"14":["06:17","07:47","13:20","16:10","18:47","20:18"],"15":["06:19","07:49","13:18","16:08","18:45","20:17"],"16":["06:21","07:51","13:18","16:07","18:42","20:15"],"17":["06:23","07:53","13:18","16:04","18:41","20:12"],"18":["06:25","07:55","13:18","16:03","18:37","20:11"],"19":["06:26","07:56","13:18","16:02","18:36","20:08"],"20":["06:28","07:58","13:18","16:00","18:33","20:07"],"21":["06:30","08:00","13:18","15:58","18:32","20:06"],"22":["06:31","08:01","13:18","15:56","18:30","20:03"],"23":["06:32","08:03","13:18","15:56","18:27","20:02"],"24":["06:35","08:05","13:18","15:54","18:26","20:00"],"25":["06:37","08:07","13:16","15:52","18:23","19:57"],"26":["06:37","08:07","13:16","15:50","18:22","19:56"],"27":["05:39","07:09","12:16","14:48","17:19","18:55"],"28":["05:42","07:12","12:16","14:48","17:18","18:52"],"29":["05:43","07:13","12:16","14:46","17:17","18:52"],"30":["05:45","07:15","12:16","14:45","17:15","18:49"],"31":["05:46","07:16","12:16","14:43","17:12","18:48"]},{"1":["05:48","07:18","12:16","14:41","17:11","18:47"],"2":["05:49","07:19","12:16","14:41","17:08","18:45"],"3":["05:51","07:21","12:16","14:39","17:07","18:44"],"4":["05:54","07:24","12:16","14:37","17:06","18:41"],"5":["05:56","07:26","12:16","14:37","17:03","18:41"],"6":["05:57","07:27","12:16","14:35","17:03","18:38"],"7":["05:59","07:29","12:16","14:33","17:00","18:37"],"8":["06:00","07:30","12:16","14:33","16:59","18:37"],"9":["06:02","07:32","12:16","14:31","16:57","18:34"],"10":["06:04","07:33","12:16","14:30","16:56","18:33"],"11":["06:05","07:35","12:16","14:28","16:55","18:33"],"12":["06:08","07:38","12:18","14:28","16:52","18:32"],"13":["06:09","07:39","12:18","14:26","16:52","18:30"],"14":["06:11","07:41","12:18","14:26","16:51","18:29"],"15":["06:13","07:43","12:18","14:24","16:48","18:27"],"16":["06:15","07:45","12:18","14:24","16:48","18:26"],"17":["06:16","07:46","12:18","14:22","16:47","18:26"],"18":["06:17","07:47","12:18","14:22","16:45","18:25"],"19":["06:19","07:49","12:18","14:20","16:44","18:23"],"20":["06:20","07:50","12:18","14:20","16:42","18:22"],"21":["06:23","07:53","12:18","14:18","16:41","18:22"],"22":["06:25","07:55","12:20","14:18","16:41","18:22"],"23":["06:26","07:56","12:20","14:18","16:40","18:21"],"24":["06:28","07:58","12:20","14:16","16:38","18:19"],"25":["06:29","07:59","12:20","14:16","16:37","18:18"],"26":["06:31","08:01","12:20","14:16","16:37","18:18"],"27":["06:31","08:01","12:20","14:15","16:36","18:18"],"28":["06:33","08:03","12:22","14:15","16:34","18:17"],"29":["06:35","08:05","12:22","14:13","16:33","18:17"],"30":["06:37","08:07","12:22","14:13","16:33","18:15"]},{"1":["06:37","08:07","12:22","14:13","16:33","18:15"],"2":["06:39","08:09","12:22","14:13","16:32","18:15"],"3":["06:41","08:11","12:22","14:11","16:32","18:15"],"4":["06:41","08:11","12:24","14:11","16:30","18:15"],"5":["06:43","08:13","12:24","14:11","16:30","18:15"],"6":["06:45","08:15","12:24","14:11","16:30","18:14"],"7":["06:46","08:16","12:24","14:11","16:30","18:14"],"8":["06:46","08:16","12:26","14:11","16:30","18:14"],"9":["06:48","08:18","12:26","14:11","16:30","18:14"],"10":["06:50","08:20","12:26","14:11","16:30","18:14"],"11":["06:50","08:20","12:26","14:11","16:29","18:14"],"12":["06:52","08:22","12:26","14:11","16:29","18:14"],"13":["06:52","08:22","12:28","14:11","16:29","18:14"],"14":["06:54","08:24","12:28","14:11","16:29","18:14"],"15":["06:54","08:24","12:28","14:11","16:29","18:14"],"16":["06:54","08:24","12:28","14:11","16:29","18:14"],"17":["06:56","08:26","12:30","14:11","16:29","18:15"],"18":["06:56","08:26","12:30","14:11","16:30","18:15"],"19":["06:58","08:28","12:31","14:11","16:30","18:15"],"20":["06:58","08:28","12:31","14:13","16:30","18:15"],"21":["06:58","08:28","12:31","14:13","16:30","18:15"],"22":["06:58","08:28","12:31","14:13","16:30","18:15"],"23":["07:00","08:30","12:33","14:13","16:30","18:17"],"24":["07:00","08:30","12:33","14:15","16:32","18:17"],"25":["07:01","08:31","12:33","14:15","16:33","18:18"],"26":["07:01","08:31","12:33","14:16","16:33","18:18"],"27":["07:01","08:31","12:35","14:16","16:33","18:18"],"28":["07:01","08:31","12:35","14:16","16:34","18:19"],"29":["07:01","08:31","12:35","14:18","16:34","18:21"],"30":["07:01","08:31","12:35","14:18","16:36","18:21"],"31":["07:01","08:31","12:35","14:18","16:37","18:22"]}],"iqamaCalendar":[{"1":["+30","+10","+10","+5","+10"],"2":["+30","+10","+10","+5","+10"],"3":["+30","+10","+10","+5","+10"],"4":["+30","+10","+10","+5","+10"],"5":["+30","+10","+10","+5","+10"],"6":["+30","+10","+10","+5","+10"],"7":["+30","+10","+10","+5","+10"],"8":["+30","+10","+10","+5","+10"],"9":["+30","+10","+10","+5","+10"],"10":["+30","+10","+10","+5","+10"],"11":["+30","+10","+10","+5","+10"],"12":["+30","+10","+10","+5","+10"],"13":["+30","+10","+10","+5","+10"],"14":["+30","+10","+10","+5","+10"],"15":["+30","+10","+10","+5","+10"],"16":["+30","+10","+10","+5","+10"],"17":["+30","+10","+10","+5","+10"],"18":["+30","+10","+10","+5","+10"],"19":["+30","+10","+10","+5","+10"],"20":["+30","+10","+10","+5","+10"],"21":["+30","+10","+10","+5","+10"],"22":["+30","+10","+10","+5","+10"],"23":["+30","+10","+10","+5","+10"],"24":["+30","+10","+10","+5","+10"],"25":["+30","+10","+10","+5","+10"],"26":["+30","+10","+10","+5","+10"],"27":["+30","+10","+10","+5","+10"],"28":["+30","+10","+10","+5","+10"],"29":["+30","+10","+10","+5","+10"],"30":["+30","+10","+10","+5","+10"],"31":["+30","+10","+10","+5","+10"]},{"1":["+30","+10","+10","+5","+10"],"2":["+30","+10","+10","+5","+10"],"3":["+30","+10","+10","+5","+10"],"4":["+30","+10","+10","+5","+10"],"5":["+30","+10","+10","+5","+10"],"6":["+30","+10","+10","+5","+10"],"7":["+30","+10","+10","+5","+10"],"8":["+30","+10","+10","+5","+10"],"9":["+30","+10","+10","+5","+10"],"10":["+30","+10","+10","+5","+10"],"11":["+30","+10","+10","+5","+10"],"12":["+30","+10","+10","+5","+10"],"13":["+30","+10","+10","+5","+10"],"14":["+30","+10","+10","+5","+10"],"15":["+30","+10","+10","+5","+10"],"16":["+30","+10","+10","+5","+10"],"17":["+30","+10","+10","+5","+10"],"18":["+30","+10","+10","+5","+10"],"19":["+30","+10","+10","+5","+10"],"20":["+30","+10","+10","+5","+10"],"21":["+30","+10","+10","+5","+10"],"22":["+30","+10","+10","+5","+10"],"23":["+30","+10","+10","+5","+10"],"24":["+30","+10","+10","+5","+10"],"25":["+30","+10","+10","+5","+10"],"26":["+30","+10","+10","+5","+10"],"27":["+30","+10","+10","+5","+10"],"28":["+30","+10","+10","+5","+10"],"29":["+30","+10","+10","+5","+10"]},{"1":["+30","+10","+10","+5","+10"],"2":["+30","+10","+10","+5","+10"],"3":["+30","+10","+10","+5","+10"],"4":["+30","+10","+10","+5","+10"],"5":["+30","+10","+10","+5","+10"],"6":["+30","+10","+10","+5","+10"],"7":["+30","+10","+10","+5","+10"],"8":["+30","+10","+10","+5","+10"],"9":["+30","+10","+10","+5","+10"],"10":["+30","+10","+10","+5","+10"],"11":["+30","+10","+10","+5","+10"],"12":["+30","+10","+10","+5","+10"],"13":["+30","+10","+10","+5","+10"],"14":["+30","+10","+10","+5","+10"],"15":["+30","+10","+10","+5","+10"],"16":["+30","+10","+10","+5","+10"],"17":["+30","+10","+10","+5","+10"],"18":["+30","+10","+10","+5","+10"],"19":["+30","+10","+10","+5","+10"],"20":["+30","+10","+10","+5","+10"],"21":["+30","+10","+10","+5","+10"],"22":["+30","+10","+10","+5","+10"],"23":["+30","+10","+10","+5","+10"],"24":["+30","+10","+10","+5","+10"],"25":["+30","+10","+10","+5","+10"],"26":["+30","+10","+10","+5","+10"],"27":["+30","+10","+10","+5","+10"],"28":["+30","+10","+10","+5","+10"],"29":["+30","+10","+10","+5","+10"],"30":["+30","+10","+10","+5","+10"],"31":["+30","+10","+10","+5","+10"]},{"1":["+30","+10","+10","+5","+10"],"2":["+30","+10","+10","+5","+10"],"3":["+30","+10","+10","+5","+10"],"4":["+30","+10","+10","+5","+10"],"5":["+30","+10","+10","+5","+10"],"6":["+30","+10","+10","+5","+10"],"7":["+30","+10","+10","+5","+10"],"8":["+30","+10","+10","+5","+10"],"9":["+30","+10","+10","+5","+10"],"10":["+30","+10","+10","+5","+10"],"11":["+30","+10","+10","+5","+10"],"12":["+30","+10","+10","+5","+10"],"13":["+30","+10","+10","+5","+10"],"14":["+30","+10","+10","+5","+10"],"15":["+30","+10","+10","+5","+10"],"16":["+30","+10","+10","+5","+10"],"17":["+30","+10","+10","+5","+10"],"18":["+30","+10","+10","+5","+10"],"19":["+30","+10","+10","+5","+10"],"20":["+30","+10","+10","+5","+10"],"21":["+30","+10","+10","+5","+10"],"22":["+30","+10","+10","+5","+10"],"23":["+30","+10","+10","+5","+10"],"24":["+30","+10","+10","+5","+10"],"25":["+30","+10","+10","+5","+10"],"26":["+30","+10","+10","+5","+10"],"27":["+30","+10","+10","+5","+10"],"28":["+30","+10","+10","+5","+10"],"29":["+30","+10","+10","+5","+10"],"30":["+30","+10","+10","+5","+10"]},{"1":["+30","+10","+10","+5","+10"],"2":["+30","+10","+10","+5","+10"],"3":["+30","+10","+10","+5","+10"],"4":["+30","+10","+10","+5","+10"],"5":["+30","+10","+10","+5","+10"],"6":["+30","+10","+10","+5","+10"],"7":["+30","+10","+10","+5","+10"],"8":["+30","+10","+10","+5","+10"],"9":["+30","+10","+10","+5","+10"],"10":["+30","+10","+10","+5","+10"],"11":["+30","+10","+10","+5","+10"],"12":["+30","+10","+10","+5","+10"],"13":["+30","+10","+10","+5","+10"],"14":["+30","+10","+10","+5","+10"],"15":["+30","+10","+10","+5","+10"],"16":["+30","+10","+10","+5","+10"],"17":["+30","+10","+10","+5","+10"],"18":["+30","+10","+10","+5","+10"],"19":["+30","+10","+10","+5","+10"],"20":["+30","+10","+10","+5","+10"],"21":["+30","+10","+10","+5","+10"],"22":["+30","+10","+10","+5","+10"],"23":["+30","+10","+10","+5","+10"],"24":["+30","+10","+10","+5","+10"],"25":["+30","+10","+10","+5","+10"],"26":["+30","+10","+10","+5","+10"],"27":["+30","+10","+10","+5","+10"],"28":["+30","+10","+10","+5","+10"],"29":["+30","+10","+10","+5","+10"],"30":["+30","+10","+10","+5","+10"],"31":["+30","+10","+10","+5","+10"]},{"1":["+30","+10","+10","+5","+10"],"2":["+30","+10","+10","+5","+10"],"3":["+30","+10","+10","+5","+10"],"4":["+30","+10","+10","+5","+10"],"5":["+30","+10","+10","+5","+10"],"6":["+30","+10","+10","+5","+10"],"7":["+30","+10","+10","+5","+10"],"8":["+30","+10","+10","+5","+10"],"9":["+30","+10","+10","+5","+10"],"10":["+30","+10","+10","+5","+10"],"11":["+30","+10","+10","+5","+10"],"12":["+30","+10","+10","+5","+10"],"13":["+30","+10","+10","+5","+10"],"14":["+30","+10","+10","+5","+10"],"15":["+30","+10","+10","+5","+10"],"16":["+30","+10","+10","+5","+10"],"17":["+30","+10","+10","+5","+10"],"18":["+30","+10","+10","+5","+10"],"19":["+30","+10","+10","+5","+10"],"20":["+30","+10","+10","+5","+10"],"21":["+30","+10","+10","+5","+10"],"22":["+30","+10","+10","+5","+10"],"23":["+30","+10","+10","+5","+10"],"24":["+30","+10","+10","+5","+10"],"25":["+30","+10","+10","+5","+10"],"26":["+30","+10","+10","+5","+10"],"27":["+30","+10","+10","+5","+10"],"28":["+30","+10","+10","+5","+10"],"29":["+30","+10","+10","+5","+10"],"30":["+30","+10","+10","+5","+10"]},{"1":["+30","+10","+10","+5","+10"],"2":["+30","+10","+10","+5","+10"],"3":["+30","+10","+10","+5","+10"],"4":["+30","+10","+10","+5","+10"],"5":["+30","+10","+10","+5","+10"],"6":["+30","+10","+10","+5","+10"],"7":["+30","+10","+10","+5","+10"],"8":["+30","+10","+10","+5","+10"],"9":["+30","+10","+10","+5","+10"],"10":["+30","+10","+10","+5","+10"],"11":["+30","+10","+10","+5","+10"],"12":["+30","+10","+10","+5","+10"],"13":["+30","+10","+10","+5","+10"],"14":["+30","+10","+10","+5","+10"],"15":["+30","+10","+10","+5","+10"],"16":["+30","+10","+10","+5","+10"],"17":["+30","+10","+10","+5","+10"],"18":["+30","+10","+10","+5","+10"],"19":["+30","+10","+10","+5","+10"],"20":["+30","+10","+10","+5","+10"],"21":["+30","+10","+10","+5","+10"],"22":["+30","+10","+10","+5","+10"],"23":["+30","+10","+10","+5","+10"],"24":["+30","+10","+10","+5","+10"],"25":["+30","+10","+10","+5","+10"],"26":["+30","+10","+10","+5","+10"],"27":["+30","+10","+10","+5","+10"],"28":["+30","+10","+10","+5","+10"],"29":["+30","+10","+10","+5","+10"],"30":["+30","+10","+10","+5","+10"],"31":["+30","+10","+10","+5","+10"]},{"1":["+30","+10","+10","+5","+10"],"2":["+30","+10","+10","+5","+10"],"3":["+30","+10","+10","+5","+10"],"4":["+30","+10","+10","+5","+10"],"5":["+30","+10","+10","+5","+10"],"6":["+30","+10","+10","+5","+10"],"7":["+30","+10","+10","+5","+10"],"8":["+30","+10","+10","+5","+10"],"9":["+30","+10","+10","+5","+10"],"10":["+30","+10","+10","+5","+10"],"11":["+30","+10","+10","+5","+10"],"12":["+30","+10","+10","+5","+10"],"13":["+30","+10","+10","+5","+10"],"14":["+30","+10","+10","+5","+10"],"15":["+30","+10","+10","+5","+10"],"16":["+30","+10","+10","+5","+10"],"17":["+30","+10","+10","+5","+10"],"18":["+30","+10","+10","+5","+10"],"19":["+30","+10","+10","+5","+10"],"20":["+30","+10","+10","+5","+10"],"21":["+30","+10","+10","+5","+10"],"22":["+30","+10","+10","+5","+10"],"23":["+30","+10","+10","+5","+10"],"24":["+30","+10","+10","+5","+10"],"25":["+30","+10","+10","+5","+10"],"26":["+30","+10","+10","+5","+10"],"27":["+30","+10","+10","+5","+10"],"28":["+30","+10","+10","+5","+10"],"29":["+30","+10","+10","+5","+10"],"30":["+30","+10","+10","+5","+10"],"31":["+30","+10","+10","+5","+10"]},{"1":["+30","+10","+10","+5","+10"],"2":["+30","+10","+10","+5","+10"],"3":["+30","+10","+10","+5","+10"],"4":["+30","+10","+10","+5","+10"],"5":["+30","+10","+10","+5","+10"],"6":["+30","+10","+10","+5","+10"],"7":["+30","+10","+10","+5","+10"],"8":["+30","+10","+10","+5","+10"],"9":["+30","+10","+10","+5","+10"],"10":["+30","+10","+10","+5","+10"],"11":["+30","+10","+10","+5","+10"],"12":["+30","+10","+10","+5","+10"],"13":["+30","+10","+10","+5","+10"],"14":["+30","+10","+10","+5","+10"],"15":["+30","+10","+10","+5","+10"],"16":["+30","+10","+10","+5","+10"],"17":["+30","+10","+10","+5","+10"],"18":["+30","+10","+10","+5","+10"],"19":["+30","+10","+10","+5","+10"],"20":["+30","+10","+10","+5","+10"],"21":["+30","+10","+10","+5","+10"],"22":["+30","+10","+10","+5","+10"],"23":["+30","+10","+10","+5","+10"],"24":["+30","+10","+10","+5","+10"],"25":["+30","+10","+10","+5","+10"],"26":["+30","+10","+10","+5","+10"],"27":["+30","+10","+10","+5","+10"],"28":["+30","+10","+10","+5","+10"],"29":["+30","+10","+10","+5","+10"],"30":["+30","+10","+10","+5","+10"]},{"1":["+30","+10","+10","+5","+10"],"2":["+30","+10","+10","+5","+10"],"3":["+30","+10","+10","+5","+10"],"4":["+30","+10","+10","+5","+10"],"5":["+30","+10","+10","+5","+10"],"6":["+30","+10","+10","+5","+10"],"7":["+30","+10","+10","+5","+10"],"8":["+30","+10","+10","+5","+10"],"9":["+30","+10","+10","+5","+10"],"10":["+30","+10","+10","+5","+10"],"11":["+30","+10","+10","+5","+10"],"12":["+30","+10","+10","+5","+10"],"13":["+30","+10","+10","+5","+10"],"14":["+30","+10","+10","+5","+10"],"15":["+30","+10","+10","+5","+10"],"16":["+30","+10","+10","+5","+10"],"17":["+30","+10","+10","+5","+10"],"18":["+30","+10","+10","+5","+10"],"19":["+30","+10","+10","+5","+10"],"20":["+30","+10","+10","+5","+10"],"21":["+30","+10","+10","+5","+10"],"22":["+30","+10","+10","+5","+10"],"23":["+30","+10","+10","+5","+10"],"24":["+30","+10","+10","+5","+10"],"25":["+30","+10","+10","+5","+10"],"26":["+30","+10","+10","+5","+10"],"27":["+30","+10","+10","+5","+10"],"28":["+30","+10","+10","+5","+10"],"29":["+30","+10","+10","+5","+10"],"30":["+30","+10","+10","+5","+10"],"31":["+30","+10","+10","+5","+10"]},{"1":["+30","+10","+10","+5","+10"],"2":["+30","+10","+10","+5","+10"],"3":["+30","+10","+10","+5","+10"],"4":["+30","+10","+10","+5","+10"],"5":["+30","+10","+10","+5","+10"],"6":["+30","+10","+10","+5","+10"],"7":["+30","+10","+10","+5","+10"],"8":["+30","+10","+10","+5","+10"],"9":["+30","+10","+10","+5","+10"],"10":["+30","+10","+10","+5","+10"],"11":["+30","+10","+10","+5","+10"],"12":["+30","+10","+10","+5","+10"],"13":["+30","+10","+10","+5","+10"],"14":["+30","+10","+10","+5","+10"],"15":["+30","+10","+10","+5","+10"],"16":["+30","+10","+10","+5","+10"],"17":["+30","+10","+10","+5","+10"],"18":["+30","+10","+10","+5","+10"],"19":["+30","+10","+10","+5","+10"],"20":["+30","+10","+10","+5","+10"],"21":["+30","+10","+10","+5","+10"],"22":["+30","+10","+10","+5","+10"],"23":["+30","+10","+10","+5","+10"],"24":["+30","+10","+10","+5","+10"],"25":["+30","+10","+10","+5","+10"],"26":["+30","+10","+10","+5","+10"],"27":["+30","+10","+10","+5","+10"],"28":["+30","+10","+10","+5","+10"],"29":["+30","+10","+10","+5","+10"],"30":["+30","+10","+10","+5","+10"]},{"1":["+30","+10","+10","+5","+10"],"2":["+30","+10","+10","+5","+10"],"3":["+30","+10","+10","+5","+10"],"4":["+30","+10","+10","+5","+10"],"5":["+30","+10","+10","+5","+10"],"6":["+30","+10","+10","+5","+10"],"7":["+30","+10","+10","+5","+10"],"8":["+30","+10","+10","+5","+10"],"9":["+30","+10","+10","+5","+10"],"10":["+30","+10","+10","+5","+10"],"11":["+30","+10","+10","+5","+10"],"12":["+30","+10","+10","+5","+10"],"13":["+30","+10","+10","+5","+10"],"14":["+30","+10","+10","+5","+10"],"15":["+30","+10","+10","+5","+10"],"16":["+30","+10","+10","+5","+10"],"17":["+30","+10","+10","+5","+10"],"18":["+30","+10","+10","+5","+10"],"19":["+30","+10","+10","+5","+10"],"20":["+30","+10","+10","+5","+10"],"21":["+30","+10","+10","+5","+10"],"22":["+30","+10","+10","+5","+10"],"23":["+30","+10","+10","+5","+10"],"24":["+30","+10","+10","+5","+10"],"25":["+30","+10","+10","+5","+10"],"26":["+30","+10","+10","+5","+10"],"27":["+30","+10","+10","+5","+10"],"28":["+30","+10","+10","+5","+10"],"29":["+30","+10","+10","+5","+10"],"30":["+30","+10","+10","+5","+10"],"31":["+30","+10","+10","+5","+10"]}]};
+    var lang = 'fr';
+    var locale = 'fr-DE';
+    var isLocal = false;
+    var isSecondaryScreen = false;
+</script>
+
+
+<script src="/build/runtime.eaf8f0a4.js" defer integrity="sha384-yhy70EQFm8WV4ChMFsyC/etIk8GPEbLbGgg1EqwB28h5uerkZQZIoG8XnnnlX7fB"></script><script src="/build/989.39b20868.js" defer integrity="sha384-bbOICB0la6S5SX4aCHTp3wGgvVZKji7YV6H9AV1wgmo6VF7FKuu5e6W+S+mpMaEL"></script><script src="/build/984.e1b7440e.js" defer integrity="sha384-C92EwqAKtMwKIZWIHZw0DWsepbpQ32/cwVb+Ov5V5RUcVLeXq5jlCOx4+Mb479u1"></script><script src="/build/42.9be0244e.js" defer integrity="sha384-XztkwH+6yMeRaoLkg8WY7AedmkbgMdmgVdhoV4/Xzp2ApvTLN02hjDssNY38Lj4Q"></script><script src="/build/361.87d2fde4.js" defer integrity="sha384-8tr4ipvZLoGl3Eps6/qKO1SJKSiogd5Q3WNeqj+9W84HIgzU48RbgQGHKyhQdNsl"></script><script src="/build/340.92179b95.js" defer integrity="sha384-niY3R+AJcobvckUB9+B9GAAqMHMtnAUoUaN0twLX5BGCw2QofRc4l49qo1osaKVb"></script><script src="/build/602.e95103f0.js" defer integrity="sha384-4KraA2ovfDyw2TX6ieOs4g7DMbTYb6DaRH7r23oheiiAHzahyAXVwkfs8riziy0h"></script><script src="/build/256.e251a451.js" defer integrity="sha384-pnjrnB4xQSVaT339sCcbhDtd6DoLQzxbpD1UKudNwIWzUCJentfHqvukKKmQcT9N"></script><script src="/build/mosque-mosque.1745a50c.js" defer integrity="sha384-UrxSyBbwFgyVN0vKfBfbLgzKTvmqBh21OecZdb7bxbXAOSSra98SRwdqrATLsan7"></script>
+<script src="https://www.youtube.com/iframe_api" rel="preconnect"></script>
+</body>
+</html>

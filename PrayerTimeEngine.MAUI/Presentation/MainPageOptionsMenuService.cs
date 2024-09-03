@@ -1,9 +1,8 @@
 ﻿using CommunityToolkit.Maui.Storage;
 using Microsoft.Extensions.Logging;
 using PrayerTimeEngine.Core.Common;
-using PrayerTimeEngine.Presentation.Service;
-using PrayerTimeEngine.Presentation.ViewModel;
-using PrayerTimeEngine.Presentation.Views;
+using PrayerTimeEngine.Presentation.Pages.Main;
+using PrayerTimeEngine.Presentation.Services;
 
 namespace PrayerTimeEngine.Presentation
 {

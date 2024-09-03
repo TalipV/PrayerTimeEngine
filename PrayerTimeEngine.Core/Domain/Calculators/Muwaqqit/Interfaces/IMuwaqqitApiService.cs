@@ -6,7 +6,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Interfaces
     public interface IMuwaqqitApiService
     {
         [Get("/api2.json")]
-        Task<MuwaqqitPrayerTimesResponseDTO> GetTimesAsync(
+        Task<MuwaqqitPrayerTimesResponseDTO> GetPrayerTimesAsync(
             [AliasAs("d")] string date,
             [AliasAs("ln")] decimal longitude,
             [AliasAs("lt")] decimal latitude,

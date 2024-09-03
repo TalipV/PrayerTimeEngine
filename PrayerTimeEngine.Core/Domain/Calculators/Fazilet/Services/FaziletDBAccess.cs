@@ -114,7 +114,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
             }
         }
 
-        public async Task InsertFaziletPrayerTimes(IEnumerable<FaziletPrayerTimes> faziletPrayerTimesLst, CancellationToken cancellationToken)
+        public async Task InsertPrayerTimesAsync(IEnumerable<FaziletPrayerTimes> faziletPrayerTimesLst, CancellationToken cancellationToken)
         {
             using (AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken))
             {

@@ -106,6 +106,148 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_Migrations
                     b.ToTable("FaziletPrayerTimes");
                 });
 
+            modelBuilder.Entity("PrayerTimeEngine.Core.Domain.Calculators.Mosques.Mawaqit.Models.Entities.MawaqitPrayerTimes", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Asr")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("AsrCongregation")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Date")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Dhuhr")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("DhuhrCongregation")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ExternalID")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Fajr")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("FajrCongregation")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("InsertInstant")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Isha")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("IshaCongregation")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Jumuah")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Jumuah2")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Maghrib")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("MaghribCongregation")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Shuruq")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("MawaqitPrayerTimes");
+                });
+
+            modelBuilder.Entity("PrayerTimeEngine.Core.Domain.Calculators.Mosques.MyMosq.Models.Entities.MyMosqPrayerTimes", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Asr")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("AsrCongregation")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Date")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Dhuhr")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("DhuhrCongregation")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ExternalID")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Fajr")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("FajrCongregation")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("InsertInstant")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Isha")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("IshaCongregation")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Jumuah")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Jumuah2")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Maghrib")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("MaghribCongregation")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Shuruq")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("MyMosqPrayerTimes");
+                });
+
             modelBuilder.Entity("PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Models.Entities.MuwaqqitPrayerTimes", b =>
                 {
                     b.Property<int>("ID")

@@ -1,8 +1,14 @@
-﻿using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Interfaces;
+﻿using NSubstitute;
+using PrayerTimeEngine.Core.Data.WebSocket.Interfaces;
+using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Interfaces;
+using PrayerTimeEngine.Core.Domain.Calculators.Mosques.Mawaqit.Interfaces;
+using PrayerTimeEngine.Core.Domain.Calculators.Mosques.Mawaqit.Services;
 using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Interfaces;
 using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Interfaces;
 using Refit;
 using System.Net;
+using System.Net.WebSockets;
+using System.Text;
 
 namespace PrayerTimeEngine.Core.Tests.Common.TestData
 {
@@ -95,5 +101,77 @@ namespace PrayerTimeEngine.Core.Tests.Common.TestData
 
             return RestService.For<IFaziletApiService>(httpClient);
         }
+
+        public static IMawaqitApiService GetMockedMawaqitApiService()
+        {
+            static HttpResponseMessage handleRequestFunc(HttpRequestMessage request)
+            {
+                Stream responseStream =
+                    request.RequestUri.AbsoluteUri switch
+                    {
+                        "https://mawaqit.net/de/hamza-koln" => File.OpenRead(Path.Combine(TestDataHelper.MAWAQIT_TEST_DATA_FILE_PATH, "Mawaqit_ResponsePageContent_20240829_hamza-koln.txt")),
+                        _ => throw new Exception($"No response registered for URL: {request.RequestUri.AbsoluteUri}")
+                    };
+
+                return new HttpResponseMessage
+                {
+                    StatusCode = HttpStatusCode.OK,
+                    Content = new StreamContent(responseStream)
+                };
+            }
+
+            var mockHttpMessageHandler = new MockHttpMessageHandler(handleRequestFunc);
+            var httpClient = new HttpClient(mockHttpMessageHandler)
+            {
+                BaseAddress = new Uri("https://mawaqit.net/de/")
+            };
+
+            return new MawaqitApiService(httpClient);
+        }
+
+        private const string WEB_SOCKET_MESSAGE_SEPARATOR_TEXT = "#CUSTOM-SEPARATOR#";
+
+        public static IWebSocketClient GetMockedMyMosqWebSocketClient()
+        {
+            var mockWebSocketClient = Substitute.For<IWebSocketClient>();
+
+            var filePath = Path.Combine(TestDataHelper.MYMOSQ_TEST_DATA_FILE_PATH, "MyMosq_WebSocketMessage_20240830_1239.txt");
+            var fileContent = File.ReadAllText(filePath);
+
+            var messages = new Queue<string>(fileContent.Split(WEB_SOCKET_MESSAGE_SEPARATOR_TEXT));
+
+            mockWebSocketClient.ReceiveAsync(Arg.Any<ArraySegment<byte>>(), Arg.Any<CancellationToken>())
+                .Returns(callInfo =>
+                {
+                    ArraySegment<byte> arraySegment = callInfo.Arg<ArraySegment<byte>>();
+                    var token = callInfo.Arg<CancellationToken>();
+
+                    if (messages.Count == 0)
+                    {
+                        // unfortunately, the server suddenly stops reacting and leaves us hanging
+                        // => I (currently) use this as the end of the transmission (yes.. I know)
+                        Thread.Sleep(2000);
+
+                        if (token.IsCancellationRequested) 
+                        {
+                            mockWebSocketClient.State.Returns(WebSocketState.Aborted);
+                            token.ThrowIfCancellationRequested();
+                        }
+
+                        return new WebSocketReceiveResult(count: 0, messageType: WebSocketMessageType.Text, endOfMessage: true);
+                    }
+
+                    var message = messages.Dequeue();
+                    var byteArray = Encoding.UTF8.GetBytes(message);
+                    Array.Copy(byteArray, arraySegment.Array, byteArray.Length);
+
+                    return new WebSocketReceiveResult(count: byteArray.Length, messageType: WebSocketMessageType.Text, endOfMessage: true);
+                });
+
+            mockWebSocketClient.State.Returns(WebSocketState.Open);
+
+            return mockWebSocketClient;
+        }
+
     }
 }

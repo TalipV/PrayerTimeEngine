@@ -4,6 +4,8 @@ using PrayerTimeEngine.Core.Common;
 using PrayerTimeEngine.Core.Common.Extension;
 using PrayerTimeEngine.Core.Data.EntityFramework.Configurations;
 using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Models.Entities;
+using PrayerTimeEngine.Core.Domain.Calculators.Mosques.Mawaqit.Models.Entities;
+using PrayerTimeEngine.Core.Domain.Calculators.Mosques.MyMosq.Models.Entities;
 using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Models.Entities;
 using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Models.Entities;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Models;
@@ -33,6 +35,9 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework
         public DbSet<SemerkandCountry> SemerkandCountries { get; set; }
         public DbSet<SemerkandCity> SemerkandCities { get; set; }
         public DbSet<SemerkandPrayerTimes> SemerkandPrayerTimes { get; set; }
+
+        public DbSet<MawaqitPrayerTimes> MawaqitPrayerTimes { get; set; }
+        public DbSet<MyMosqPrayerTimes> MyMosqPrayerTimes { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -105,6 +110,26 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework
                         .HasConversion(
                             x => x != null ? x.Value.GetStringForDBColumn() : null,
                             x => x != null ? x.GetLocalDateFromDBColumnString() : null
+                        );
+                }
+                else if (item.PropertyType == typeof(LocalTime))
+                {
+                    modelBuilder
+                        .Entity(type)
+                        .Property<LocalTime>(item.Name)
+                        .HasConversion(
+                            x => x.GetStringForDBColumn(),
+                            x => x.GetLocalTimeFromDBColumnString()
+                        );
+                }
+                else if (item.PropertyType == typeof(LocalTime?))
+                {
+                    modelBuilder
+                        .Entity(type)
+                        .Property<LocalTime?>(item.Name)
+                        .HasConversion(
+                            x => x != null ? x.Value.GetStringForDBColumn() : null,
+                            x => x != null ? x.GetLocalTimeFromDBColumnString() : null
                         );
                 }
                 else if (item.PropertyType == typeof(Instant))
