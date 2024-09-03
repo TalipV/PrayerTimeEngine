@@ -5,7 +5,6 @@ using PrayerTimeEngine.Core.Domain.Models;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Models;
 using PrayerTimeEngine.Presentation.Services;
 using PrayerTimeEngine.Presentation.Views;
-using PrayerTimeEngine.Presentation.Views.MosquePrayerTime;
 using PrayerTimeEngine.Presentation.Views.PrayerTimes;
 using UraniumUI.Material.Controls;
 
@@ -41,7 +40,7 @@ namespace PrayerTimeEngine.Presentation.Pages.Main
                     MauiProgram.ServiceProvider.GetRequiredService<ILogger<MainPageOptionsMenuService>>(),
                     preferenceService);
 
-            if (_preferenceService.CheckAndResetDoReset())
+            if (true)
             {
                 File.Delete(AppConfig.DATABASE_PATH);
             }
