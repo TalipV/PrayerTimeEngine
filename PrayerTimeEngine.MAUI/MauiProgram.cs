@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using Plugin.Maui.DebugRainbows;
 using PrayerTimeEngine.Core.Common;
 using PrayerTimeEngine.Core.Data.EntityFramework;
+using PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels;
 using PrayerTimeEngine.Core.Data.WebSocket;
 using PrayerTimeEngine.Core.Data.WebSocket.Interfaces;
 using PrayerTimeEngine.Core.Domain;
