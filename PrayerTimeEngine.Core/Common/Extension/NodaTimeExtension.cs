@@ -5,17 +5,6 @@ namespace PrayerTimeEngine.Core.Common.Extension
 {
     internal static class NodaTimeExtensions
     {
-        private static readonly InstantPattern _instantPatternForDBColumn = InstantPattern.CreateWithInvariantCulture("g");
-
-        internal static string GetStringForDBColumn(this Instant instant)
-        {
-            return _instantPatternForDBColumn.Format(instant);
-        }
-        internal static Instant GetInstantFromDBColumnString(this string instantString)
-        {
-            return _instantPatternForDBColumn.Parse(instantString).GetValueOrThrow();
-        }
-
         private static readonly ZonedDateTimePattern _zonedDateTimePatternForDBColumn = ZonedDateTimePattern.CreateWithInvariantCulture("G", DateTimeZoneProviders.Tzdb);
 
         internal static string GetStringForDBColumn(this ZonedDateTime zonedDateTime)
@@ -38,6 +27,29 @@ namespace PrayerTimeEngine.Core.Common.Extension
         internal static LocalDate GetLocalDateFromDBColumnString(this string localDateString)
         {
             return _localDatePatternForDBColumn.Parse(localDateString).GetValueOrThrow();
+        }
+
+        private static readonly LocalTimePattern _localTimePatternForDBColumn = LocalTimePattern.CreateWithInvariantCulture("HH:mm:ss");
+
+        internal static string GetStringForDBColumn(this LocalTime LocalTime)
+        {
+            return _localTimePatternForDBColumn.Format(LocalTime);
+        }
+
+        internal static LocalTime GetLocalTimeFromDBColumnString(this string LocalTimeString)
+        {
+            return _localTimePatternForDBColumn.Parse(LocalTimeString).GetValueOrThrow();
+        }
+
+        private static readonly InstantPattern _instantPatternForDBColumn = InstantPattern.CreateWithInvariantCulture("g");
+
+        internal static string GetStringForDBColumn(this Instant instant)
+        {
+            return _instantPatternForDBColumn.Format(instant);
+        }
+        internal static Instant GetInstantFromDBColumnString(this string instantString)
+        {
+            return _instantPatternForDBColumn.Parse(instantString).GetValueOrThrow();
         }
     }
 }

@@ -24,7 +24,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Muwaqqit
         }
 
         [Fact]
-        public async Task GetTimesAsync_IrrelevantInput_MockedHttpResults()
+        public async Task GetPrayerTimesAsync_IrrelevantInput_MockedHttpResults()
         {
             // ARRANGE
             var date = new LocalDate(2023, 7, 29);
@@ -43,7 +43,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Muwaqqit
                 };
 
             // ACT
-            var response = await _muwaqqitApiService.GetTimesAsync(
+            var response = await _muwaqqitApiService.GetPrayerTimesAsync(
                 date: date.ToString("yyyy-MM-dd", null),
                 longitude: 1M,
                 latitude: 1M,

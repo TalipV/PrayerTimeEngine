@@ -85,7 +85,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
         {
             var lockTuple = (date, cityID);
 
-            using (await getPrayerTimesLocker.LockAsync(lockTuple).ConfigureAwait(false))
+            using (await getPrayerTimesLocker.LockAsync(lockTuple, cancellationToken).ConfigureAwait(false))
             {
                 FaziletPrayerTimes prayerTimes = await faziletDBAccess.GetTimesByDateAndCityID(date, cityID, cancellationToken).ConfigureAwait(false);
 
@@ -94,7 +94,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
                     var prayerTimesResponseDTO = await faziletApiService.GetTimesByCityID(cityID, cancellationToken).ConfigureAwait(false);
                     var timeZone = prayerTimesResponseDTO.Timezone;
                     var prayerTimesLst = prayerTimesResponseDTO.PrayerTimes.Select(x => x.ToFaziletPrayerTimes(cityID, timeZone)).ToList();
-                    await faziletDBAccess.InsertFaziletPrayerTimes(prayerTimesLst, cancellationToken).ConfigureAwait(false);
+                    await faziletDBAccess.InsertPrayerTimesAsync(prayerTimesLst, cancellationToken).ConfigureAwait(false);
 
                     prayerTimes = prayerTimesLst.FirstOrDefault(x => x.Date == date);
                 }

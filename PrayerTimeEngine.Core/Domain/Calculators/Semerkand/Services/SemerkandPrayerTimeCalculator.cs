@@ -94,7 +94,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
         {
             var lockTuple = (date, cityID);
 
-            using (await getPrayerTimesLocker.LockAsync(lockTuple).ConfigureAwait(false))
+            using (await getPrayerTimesLocker.LockAsync(lockTuple, cancellationToken).ConfigureAwait(false))
             {
                 SemerkandPrayerTimes prayerTimes = 
                     await semerkandDBAccess.GetTimesByDateAndCityID(
@@ -119,7 +119,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
                             .Where(x => date.ToInstant() <= x.Date.ToInstant() && x.Date.ToInstant() < date.Plus(Duration.FromDays(MAX_EXTENT_OF_RETRIEVED_DAYS)).ToInstant())
                             .ToList();
 
-                    await semerkandDBAccess.InsertSemerkandPrayerTimes(prayerTimesLst, cancellationToken).ConfigureAwait(false);
+                    await semerkandDBAccess.InsertPrayerTimesAsync(prayerTimesLst, cancellationToken).ConfigureAwait(false);
 
                     prayerTimes = prayerTimesLst.FirstOrDefault(x => x.Date == date);
                 }
@@ -133,7 +133,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
         private async Task<int> getCityID(string cityName, int countryID, bool throwIfNotFound, CancellationToken cancellationToken)
         {
             // check-then-act has to be thread safe
-            using (await semaphoreTryGetCityID.LockAsync().ConfigureAwait(false))
+            using (await semaphoreTryGetCityID.LockAsync(cancellationToken).ConfigureAwait(false))
             {
                 int? cityID = await semerkandDBAccess.GetCityIDByName(countryID, cityName, cancellationToken).ConfigureAwait(false);
 

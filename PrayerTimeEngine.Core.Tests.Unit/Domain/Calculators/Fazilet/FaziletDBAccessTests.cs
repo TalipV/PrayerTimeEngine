@@ -293,7 +293,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Fazilet
         }
 
         [Fact]
-        public async Task InsertFaziletPrayerTimes_InsertThreeNewTimes_AllThreeInserted()
+        public async Task InsertPrayerTimesAsync_InsertThreeNewTimes_AllThreeInserted()
         {
             // ARRANGE
             var date = new LocalDate(2023, 1, 1);
@@ -352,7 +352,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Fazilet
             };
 
             // ACT
-            await _faziletDBAccess.InsertFaziletPrayerTimes([time1, time2, time3], default);
+            await _faziletDBAccess.InsertPrayerTimesAsync([time1, time2, time3], default);
 
             // ASSERT
             (await TestAssertDbContext.FaziletPrayerTimes.FindAsync(time1.ID)).Should().BeEquivalentTo(time1);

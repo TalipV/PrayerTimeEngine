@@ -70,7 +70,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Muwaqqit
                 Isha = new ZonedDateTime(Instant.FromUtc(2023, 7, 30, 20, 13, 17), zonedDateTime.Zone).ToOffsetDateTime()
             };
 
-            _muwaqqitApiServiceMock.GetTimesAsync(
+            _muwaqqitApiServiceMock.GetPrayerTimesAsync(
                     date: Arg.Any<string>(),
                     longitude: Arg.Any<decimal>(),
                     latitude: Arg.Any<decimal>(),

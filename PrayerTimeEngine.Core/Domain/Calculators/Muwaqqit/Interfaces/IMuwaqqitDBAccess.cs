@@ -5,7 +5,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Interfaces
 {
     public interface IMuwaqqitDBAccess
     {
-        Task<MuwaqqitPrayerTimes> GetTimesAsync(
+        Task<MuwaqqitPrayerTimes> GetPrayerTimesAsync(
             ZonedDateTime date, 
             decimal longitude, 
             decimal latitude, 
@@ -13,6 +13,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Interfaces
             double ishaDegree, 
             double ishtibaqDegree, 
             double asrKarahaDegree, CancellationToken cancellationToken);
-        Task InsertMuwaqqitPrayerTimesAsync(IEnumerable<MuwaqqitPrayerTimes> muwaqqitPrayerTimesLst, CancellationToken cancellationToken);
+
+        Task InsertPrayerTimesAsync(IEnumerable<MuwaqqitPrayerTimes> muwaqqitPrayerTimesLst, CancellationToken cancellationToken);
     }
 }

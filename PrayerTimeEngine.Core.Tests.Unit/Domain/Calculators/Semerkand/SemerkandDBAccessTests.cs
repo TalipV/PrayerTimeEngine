@@ -294,7 +294,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
         }
 
         [Fact]
-        public async Task InsertSemerkandPrayerTimes_InsertThreeNewTimes_AllThreeInserted()
+        public async Task InsertPrayerTimesAsync_InsertThreeNewTimes_AllThreeInserted()
         {
             // ARRANGE
             var date = new LocalDate(2023, 1, 1);
@@ -364,7 +364,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
             };
             
             // ACT
-            await _semerkandDBAccess.InsertSemerkandPrayerTimes([time1, time2, time3], default);
+            await _semerkandDBAccess.InsertPrayerTimesAsync([time1, time2, time3], default);
 
             // ASSERT
             (await TestAssertDbContext.SemerkandPrayerTimes.FindAsync(time1.ID)).Should().BeEquivalentTo(time1);
