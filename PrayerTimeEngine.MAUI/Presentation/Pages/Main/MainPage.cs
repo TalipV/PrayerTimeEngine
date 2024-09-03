@@ -40,7 +40,7 @@ namespace PrayerTimeEngine.Presentation.Pages.Main
                     MauiProgram.ServiceProvider.GetRequiredService<ILogger<MainPageOptionsMenuService>>(),
                     preferenceService);
 
-            if (true)
+            if (_preferenceService.CheckAndResetDoReset())
             {
                 File.Delete(AppConfig.DATABASE_PATH);
             }
