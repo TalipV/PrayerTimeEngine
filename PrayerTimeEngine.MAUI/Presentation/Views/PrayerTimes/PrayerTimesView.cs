@@ -49,41 +49,39 @@ namespace PrayerTimeEngine.Presentation.Views.PrayerTimes
 
             int startRowNo = 1;
 
-            string bindingBeginning = $"{nameof(PrayerTimeViewModel.PrayerTimeBundle)}";
-
-            string bindingBeginningSpecific = $"{bindingBeginning}.{nameof(PrayerTimesBundle.Fajr)}";
-            addPrayerTimeUI(mainGrid, "Fajr", durationBinding: $"{bindingBeginningSpecific}.{nameof(PrayerTime.DurationDisplayText)}",
+            string bindingText = $"{nameof(PrayerTimeViewModel.PrayerTimeBundle)}.{nameof(PrayerTimesBundle.Fajr)}";
+            addPrayerTimeUI(mainGrid, "Fajr", durationBinding: $"{bindingText}.{nameof(PrayerTime.DurationDisplayText)}",
                 startRowNo: startRowNo, startColumnNo: 0,
-                subtime1Name: "Ghalas", showSubtime1Binding: $"{nameof(PrayerTimeViewModel.MainPageViewModel)}.{nameof(MainPageViewModel.ShowFajrGhalas)}", subtime1Binding: $"{bindingBeginningSpecific}.{nameof(FajrPrayerTime.Ghalas)}",
-        subtime2Name: "Redness", showSubtime2Binding: $"{nameof(PrayerTimeViewModel.MainPageViewModel)}.{nameof(MainPageViewModel.ShowFajrRedness)}", subtime2Binding: $"{bindingBeginningSpecific}.{nameof(FajrPrayerTime.Karaha)}");
+                subtime1Name: "Ghalas", showSubtime1Binding: $"{nameof(PrayerTimeViewModel.MainPageViewModel)}.{nameof(MainPageViewModel.ShowFajrGhalas)}", subtime1Binding: $"{bindingText}.{nameof(FajrPrayerTime.Ghalas)}",
+                subtime2Name: "Redness", showSubtime2Binding: $"{nameof(PrayerTimeViewModel.MainPageViewModel)}.{nameof(MainPageViewModel.ShowFajrRedness)}", subtime2Binding: $"{bindingText}.{nameof(FajrPrayerTime.Karaha)}");
 
-            bindingBeginningSpecific = $"{bindingBeginning}.{nameof(PrayerTimesBundle.Duha)}";
-            addPrayerTimeUI(mainGrid, "Duha", durationBinding: $"{bindingBeginningSpecific}.{nameof(PrayerTime.DurationDisplayText)}",
+            bindingText = $"{nameof(PrayerTimeViewModel.PrayerTimeBundle)}.{nameof(PrayerTimesBundle.Duha)}";
+            addPrayerTimeUI(mainGrid, "Duha", durationBinding: $"{bindingText}.{nameof(PrayerTime.DurationDisplayText)}",
                 startRowNo: startRowNo, startColumnNo: 3,
-                subtime1Name: "Quarter", subtime1Binding: $"{bindingBeginningSpecific}.{nameof(DuhaPrayerTime.QuarterOfDay)}");
+                subtime1Name: "Quarter", subtime1Binding: $"{bindingText}.{nameof(DuhaPrayerTime.QuarterOfDay)}");
 
-            bindingBeginningSpecific = $"{bindingBeginning}.{nameof(PrayerTimesBundle.Dhuhr)}";
-            addPrayerTimeUI(mainGrid, "Dhuhr", durationBinding: $"{bindingBeginningSpecific}.{nameof(PrayerTime.DurationDisplayText)}",
+            bindingText = $"{nameof(PrayerTimeViewModel.PrayerTimeBundle)}.{nameof(PrayerTimesBundle.Dhuhr)}";
+            addPrayerTimeUI(mainGrid, "Dhuhr", durationBinding: $"{bindingText}.{nameof(PrayerTime.DurationDisplayText)}",
                 startRowNo: startRowNo + 4, startColumnNo: 0);
 
-            bindingBeginningSpecific = $"{bindingBeginning}.{nameof(PrayerTimesBundle.Asr)}";
-            addPrayerTimeUI(mainGrid, "Asr", durationBinding: $"{bindingBeginningSpecific}.{nameof(PrayerTime.DurationDisplayText)}",
+            bindingText = $"{nameof(PrayerTimeViewModel.PrayerTimeBundle)}.{nameof(PrayerTimesBundle.Asr)}";
+            addPrayerTimeUI(mainGrid, "Asr", durationBinding: $"{bindingText}.{nameof(PrayerTime.DurationDisplayText)}",
                 startRowNo: startRowNo + 4, startColumnNo: 3,
-                subtime1Name: "Mithlayn", showSubtime1Binding: $"{nameof(PrayerTimeViewModel.MainPageViewModel)}.{nameof(MainPageViewModel.ShowMithlayn)}", subtime1Binding: $"{bindingBeginningSpecific}.{nameof(AsrPrayerTime.Mithlayn)}",
-                subtime2Name: "Karaha", showSubtime2Binding: $"{nameof(PrayerTimeViewModel.MainPageViewModel)}.{nameof(MainPageViewModel.ShowKaraha)}", subtime2Binding: $"{bindingBeginningSpecific}.{nameof(AsrPrayerTime.Karaha)}");
+                subtime1Name: "Mithlayn", showSubtime1Binding: $"{nameof(PrayerTimeViewModel.MainPageViewModel)}.{nameof(MainPageViewModel.ShowMithlayn)}", subtime1Binding: $"{bindingText}.{nameof(AsrPrayerTime.Mithlayn)}",
+                subtime2Name: "Karaha", showSubtime2Binding: $"{nameof(PrayerTimeViewModel.MainPageViewModel)}.{nameof(MainPageViewModel.ShowKaraha)}", subtime2Binding: $"{bindingText}.{nameof(AsrPrayerTime.Karaha)}");
 
-            bindingBeginningSpecific = $"{bindingBeginning}.{nameof(PrayerTimesBundle.Maghrib)}";
-            addPrayerTimeUI(mainGrid, "Maghrib", durationBinding: $"{bindingBeginningSpecific}.{nameof(PrayerTime.DurationDisplayText)}",
+            bindingText = $"{nameof(PrayerTimeViewModel.PrayerTimeBundle)}.{nameof(PrayerTimesBundle.Maghrib)}";
+            addPrayerTimeUI(mainGrid, "Maghrib", durationBinding: $"{bindingText}.{nameof(PrayerTime.DurationDisplayText)}",
                 startRowNo: startRowNo + 8, startColumnNo: 0,
-                subtime1Name: "Sufficient", showSubtime1Binding: $"{nameof(PrayerTimeViewModel.MainPageViewModel)}.{nameof(MainPageViewModel.ShowMaghribSufficientTime)}", subtime1Binding: $"{bindingBeginningSpecific}.{nameof(MaghribPrayerTime.SufficientTime)}",
-                subtime2Name: "Ishtibaq", showSubtime2Binding: $"{nameof(PrayerTimeViewModel.MainPageViewModel)}.{nameof(MainPageViewModel.ShowIshtibaq)}", subtime2Binding: $"{bindingBeginningSpecific}.{nameof(MaghribPrayerTime.Ishtibaq)}");
+                subtime1Name: "Sufficient", showSubtime1Binding: $"{nameof(PrayerTimeViewModel.MainPageViewModel)}.{nameof(MainPageViewModel.ShowMaghribSufficientTime)}", subtime1Binding: $"{bindingText}.{nameof(MaghribPrayerTime.SufficientTime)}",
+                subtime2Name: "Ishtibaq", showSubtime2Binding: $"{nameof(PrayerTimeViewModel.MainPageViewModel)}.{nameof(MainPageViewModel.ShowIshtibaq)}", subtime2Binding: $"{bindingText}.{nameof(MaghribPrayerTime.Ishtibaq)}");
 
-            bindingBeginningSpecific = $"{bindingBeginning}.{nameof(PrayerTimesBundle.Isha)}";
-            addPrayerTimeUI(mainGrid, "Isha", durationBinding: $"{bindingBeginningSpecific}.{nameof(PrayerTime.DurationDisplayText)}",
+            bindingText = $"{nameof(PrayerTimeViewModel.PrayerTimeBundle)}.{nameof(PrayerTimesBundle.Isha)}";
+            addPrayerTimeUI(mainGrid, "Isha", durationBinding: $"{bindingText}.{nameof(PrayerTime.DurationDisplayText)}",
                 startRowNo: startRowNo + 8, startColumnNo: 3,
-                subtime1Name: "1/3", subtime1Binding: $"{bindingBeginningSpecific}.{nameof(IshaPrayerTime.FirstThirdOfNight)}",
-                subtime2Name: "1/2", subtime2Binding: $"{bindingBeginningSpecific}.{nameof(IshaPrayerTime.MiddleOfNight)}",
-                subtime3Name: "2/3", subtime3Binding: $"{bindingBeginningSpecific}.{nameof(IshaPrayerTime.SecondThirdOfNight)}");
+                subtime1Name: "1/3", subtime1Binding: $"{bindingText}.{nameof(IshaPrayerTime.FirstThirdOfNight)}",
+                subtime2Name: "1/2", subtime2Binding: $"{bindingText}.{nameof(IshaPrayerTime.MiddleOfNight)}",
+                subtime3Name: "2/3", subtime3Binding: $"{bindingText}.{nameof(IshaPrayerTime.SecondThirdOfNight)}");
 
             return mainGrid;
         }

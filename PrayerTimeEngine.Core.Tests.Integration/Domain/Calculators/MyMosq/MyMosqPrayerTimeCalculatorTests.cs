@@ -57,5 +57,34 @@ namespace PrayerTimeEngine.Core.Tests.Integration.Domain.Calculators.MyMosq
             result.Jumuah.Should().Be(new LocalTime(0, 0, 0));
             result.Jumuah2.Should().Be(new LocalTime(0, 0, 0));
         }
+
+        // to check the fragile API implementation with a live API call because why not
+        [Theory]
+        [InlineData("1239")]
+        [InlineData("1145")]
+        [InlineData("1140")]
+        public async Task GetPrayerTimesAsync_DifferentExternalIDsWithLiveApi_NoErrors(string externalID)
+        {
+            // ARRANGE
+            ServiceProvider serviceProvider = createServiceProvider(
+                configureServiceCollection: serviceCollection =>
+                {
+                    serviceCollection.AddSingleton(GetHandledDbContextFactory());
+                    serviceCollection.AddTransient<IMyMosqDBAccess, MyMosqDBAccess>();
+                    serviceCollection.AddTransient<IMyMosqApiService, MyMosqApiService>();
+                    serviceCollection.AddSingleton<IWebSocketClientFactory, WebSocketClientFactory>();
+                    serviceCollection.AddTransient<IWebSocketClient, WebSocketClient>(factory =>
+                    {
+                        return new WebSocketClient(new ClientWebSocket());
+                    });
+                    serviceCollection.AddTransient<MyMosqPrayerTimeService>();
+                });
+
+            var date = new LocalDate(2024, 8, 30);
+            MyMosqPrayerTimeService myMosqPrayerTimeService = serviceProvider.GetRequiredService<MyMosqPrayerTimeService>();
+
+            // ACT & ASSERT
+            IMosquePrayerTimes result = await myMosqPrayerTimeService.GetPrayerTimesAsync(date, externalID, default);
+        }
     }
 }

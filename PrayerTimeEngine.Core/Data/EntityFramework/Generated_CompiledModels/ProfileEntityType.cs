@@ -77,6 +77,28 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
                         (Nullable<Instant> x) => x != null ? x.Value.GetStringForDBColumn() : null,
                         (string x) => x != null ? (Nullable<Instant>)x.GetInstantFromDBColumnString() : null)));
 
+            var isMosqueProfile = runtimeEntityType.AddProperty(
+                "IsMosqueProfile",
+                typeof(bool),
+                propertyInfo: typeof(Profile).GetProperty("IsMosqueProfile", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(Profile).GetField("<IsMosqueProfile>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                sentinel: false);
+            isMosqueProfile.TypeMapping = BoolTypeMapping.Default.Clone(
+                comparer: new ValueComparer<bool>(
+                    (bool v1, bool v2) => v1 == v2,
+                    (bool v) => v.GetHashCode(),
+                    (bool v) => v),
+                keyComparer: new ValueComparer<bool>(
+                    (bool v1, bool v2) => v1 == v2,
+                    (bool v) => v.GetHashCode(),
+                    (bool v) => v),
+                providerValueComparer: new ValueComparer<bool>(
+                    (bool v1, bool v2) => v1 == v2,
+                    (bool v) => v.GetHashCode(),
+                    (bool v) => v),
+                mappingInfo: new RelationalTypeMappingInfo(
+                    storeTypeName: "INTEGER"));
+
             var name = runtimeEntityType.AddProperty(
                 "Name",
                 typeof(string),

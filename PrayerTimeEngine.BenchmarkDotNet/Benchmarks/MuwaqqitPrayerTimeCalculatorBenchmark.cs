@@ -14,6 +14,7 @@ using NSubstitute.Extensions;
 using PrayerTimeEngine.Core.Tests.Common.TestData;
 using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Models.Entities;
 using PrayerTimeEngine.Core.Common;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
 {
@@ -56,11 +57,11 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
         #endregion data
 
         private static MuwaqqitPrayerTimeCalculator getMuwaqqitPrayerTimeCalculator_DataFromDbStorage(
-            AppDbContext appDbContext)
+            IDbContextFactory<AppDbContext> dbContextFactory)
         {
             // to make sure that before the benchmark the data is gotten from the APIService and stored in the db
             new MuwaqqitPrayerTimeCalculator(
-                    new MuwaqqitDBAccess(appDbContext),
+                    new MuwaqqitDBAccess(dbContextFactory),
                     SubstitutionHelper.GetMockedMuwaqqitApiService(),
                     new TimeTypeAttributeService()
                 ).GetPrayerTimesAsync(_zonedDateTime, _locationData, _configs, default).GetAwaiter().GetResult();
@@ -70,7 +71,7 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
             mockedMuwaqqitApiService.ReturnsForAll<Task<MuwaqqitPrayerTimes>>((callInfo) => throw new Exception("Don't use this!"));
 
             return new MuwaqqitPrayerTimeCalculator(
-                    new MuwaqqitDBAccess(appDbContext),
+                    new MuwaqqitDBAccess(dbContextFactory),
                     mockedMuwaqqitApiService,
                     new TimeTypeAttributeService()
                 );
@@ -91,15 +92,28 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
         [GlobalSetup]
         public static void Setup()
         {
+
             var dbOptions = new DbContextOptionsBuilder()
                 .UseSqlite($"Data Source=:memory:")
                 .Options;
-            var appDbContext = new AppDbContext(dbOptions, new AppDbContextMetaData(), Substitute.For<ISystemInfoService>());
-            _dbContextKeepAliveSqlConnection = appDbContext.Database.GetDbConnection();
-            _dbContextKeepAliveSqlConnection.Open();
-            appDbContext.Database.EnsureCreated();
 
-            _muwaqqitPrayerTimeCalculator_DataFromDbStorage = getMuwaqqitPrayerTimeCalculator_DataFromDbStorage(appDbContext);
+            var mockableDbContext =
+                Substitute.ForPartsOf<AppDbContext>(
+                    dbOptions,
+                    new AppDbContextMetaData(),
+                    Substitute.For<ISystemInfoService>());
+
+            var mockableDbContextDatabase = Substitute.ForPartsOf<DatabaseFacade>(mockableDbContext);
+            mockableDbContext.Configure().Database.Returns(mockableDbContextDatabase);
+            _dbContextKeepAliveSqlConnection = mockableDbContext.Database.GetDbConnection();
+            _dbContextKeepAliveSqlConnection.Open();
+            mockableDbContext.Database.EnsureCreated();
+
+            var dbContextFactoryMock = Substitute.For<IDbContextFactory<AppDbContext>>();
+            dbContextFactoryMock.CreateDbContext().Returns(mockableDbContext);
+            dbContextFactoryMock.CreateDbContextAsync().Returns(callInfo => Task.FromResult(mockableDbContext));
+
+            _muwaqqitPrayerTimeCalculator_DataFromDbStorage = getMuwaqqitPrayerTimeCalculator_DataFromDbStorage(dbContextFactoryMock);
             _muwaqqitPrayerTimeCalculator_DataFromApi = getMuwaqqitPrayerTimeCalculator_DataFromApi();
         }
 
