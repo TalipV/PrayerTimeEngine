@@ -5,7 +5,6 @@ using Microsoft.Extensions.Logging;
 using Plugin.Maui.DebugRainbows;
 using PrayerTimeEngine.Core.Common;
 using PrayerTimeEngine.Core.Data.EntityFramework;
-using PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels;
 using PrayerTimeEngine.Core.Data.WebSocket;
 using PrayerTimeEngine.Core.Data.WebSocket.Interfaces;
 using PrayerTimeEngine.Core.Domain;
@@ -102,6 +101,7 @@ namespace PrayerTimeEngine;
  * --- MuwaqqitApiService
  * --- MuwaqqitDBAccess
  * # CalculationManager
+ * # MyMosqPrayerTimes & MawaqitPrayerTimes: One test each to validate their respective scraped JSON inputs (i.e. every time text is a valid time and so on)
  */
 
 public static class MauiProgram

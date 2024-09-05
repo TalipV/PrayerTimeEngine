@@ -16,6 +16,8 @@ using NSubstitute.ReturnsExtensions;
 using PrayerTimeEngine.Core.Tests.Common.TestData;
 using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Models.Entities;
 using PrayerTimeEngine.Core.Common;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Internal;
 
 namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
 {
@@ -43,11 +45,11 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
         #endregion data
 
         private static SemerkandPrayerTimeCalculator getSemerkandPrayerTimeCalculator_DataFromDbStorage(
-            AppDbContext appDbContext)
+            IDbContextFactory<AppDbContext> dbContextFactory)
         {
             // to make sure that before the benchmark the data is gotten from the APIService and stored in the db
             new SemerkandPrayerTimeCalculator(
-                    new SemerkandDBAccess(appDbContext),
+                    new SemerkandDBAccess(dbContextFactory),
                     SubstitutionHelper.GetMockedSemerkandApiService(),
                     Substitute.For<IPlaceService>(),
                     Substitute.For<ILogger<SemerkandPrayerTimeCalculator>>()
@@ -58,7 +60,7 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
             mockedSemerkandApiService.ReturnsForAll<Task<SemerkandPrayerTimes>>((callInfo) => throw new Exception("Don't use this!"));
 
             return new SemerkandPrayerTimeCalculator(
-                    new SemerkandDBAccess(appDbContext),
+                    new SemerkandDBAccess(dbContextFactory),
                     mockedSemerkandApiService,
                     Substitute.For<IPlaceService>(),
                     Substitute.For<ILogger<SemerkandPrayerTimeCalculator>>()
@@ -90,12 +92,24 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
             var dbOptions = new DbContextOptionsBuilder()
                 .UseSqlite($"Data Source=:memory:")
                 .Options;
-            var appDbContext = new AppDbContext(dbOptions, new AppDbContextMetaData(), Substitute.For<ISystemInfoService>());
-            _dbContextKeepAliveSqlConnection = appDbContext.Database.GetDbConnection();
-            _dbContextKeepAliveSqlConnection.Open();
-            appDbContext.Database.EnsureCreated();
 
-            _semerkandPrayerTimeCalculator_DataFromDbStorage = getSemerkandPrayerTimeCalculator_DataFromDbStorage(appDbContext);
+            var mockableDbContext =
+                Substitute.ForPartsOf<AppDbContext>(
+                    dbOptions,
+                    new AppDbContextMetaData(),
+                    Substitute.For<ISystemInfoService>());
+
+            var mockableDbContextDatabase = Substitute.ForPartsOf<DatabaseFacade>(mockableDbContext);
+            mockableDbContext.Configure().Database.Returns(mockableDbContextDatabase);
+            _dbContextKeepAliveSqlConnection = mockableDbContext.Database.GetDbConnection();
+            _dbContextKeepAliveSqlConnection.Open();
+            mockableDbContext.Database.EnsureCreated();
+
+            var dbContextFactoryMock = Substitute.For<IDbContextFactory<AppDbContext>>();
+            dbContextFactoryMock.CreateDbContext().Returns(mockableDbContext);
+            dbContextFactoryMock.CreateDbContextAsync().Returns(callInfo => Task.FromResult(mockableDbContext));
+
+            _semerkandPrayerTimeCalculator_DataFromDbStorage = getSemerkandPrayerTimeCalculator_DataFromDbStorage(dbContextFactoryMock);
             _semerkandPrayerTimeCalculator_DataFromApi = getSemerkandPrayerTimeCalculator_DataFromApi();
         }
 

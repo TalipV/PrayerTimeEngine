@@ -15,6 +15,7 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities
         public int ID { get; set; }
         public string Name { get; set; }
         public ProfilePlaceInfo PlaceInfo { get; set; }
+        public bool IsMosqueProfile { get; set; }
         public int SequenceNo { get; set; }
         public Instant? InsertInstant { get; set; }
 
@@ -27,7 +28,8 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities
 
             if (ID != otherProfile.ID
                 || SequenceNo != otherProfile.SequenceNo
-                || Name != otherProfile.Name)
+                || Name != otherProfile.Name
+                || IsMosqueProfile != otherProfile.IsMosqueProfile)
             {
                 return false;
             }

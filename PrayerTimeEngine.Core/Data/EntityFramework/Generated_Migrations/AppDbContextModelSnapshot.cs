@@ -500,6 +500,9 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_Migrations
                     b.Property<string>("InsertInstant")
                         .HasColumnType("TEXT");
 
+                    b.Property<bool>("IsMosqueProfile")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("Name")
                         .HasColumnType("TEXT");
 

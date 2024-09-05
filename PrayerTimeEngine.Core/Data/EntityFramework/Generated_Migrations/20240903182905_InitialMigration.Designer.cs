@@ -11,7 +11,7 @@ using PrayerTimeEngine.Core.Data.EntityFramework;
 namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240903052908_InitialMigration")]
+    [Migration("20240903182905_InitialMigration")]
     partial class InitialMigration
     {
         /// <inheritdoc />
@@ -502,6 +502,9 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_Migrations
 
                     b.Property<string>("InsertInstant")
                         .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsMosqueProfile")
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Name")
                         .HasColumnType("TEXT");

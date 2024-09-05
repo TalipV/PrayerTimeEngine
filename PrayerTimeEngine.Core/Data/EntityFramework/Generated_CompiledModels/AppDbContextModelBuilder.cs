@@ -1249,6 +1249,8 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
                 IsNullable = true
             };
             prayerTimeEngineCoreDomainProfileManagementModelsEntitiesProfileTableBase.Columns.Add("InsertInstant", insertInstantColumnBase10);
+            var isMosqueProfileColumnBase = new ColumnBase<ColumnMappingBase>("IsMosqueProfile", "INTEGER", prayerTimeEngineCoreDomainProfileManagementModelsEntitiesProfileTableBase);
+            prayerTimeEngineCoreDomainProfileManagementModelsEntitiesProfileTableBase.Columns.Add("IsMosqueProfile", isMosqueProfileColumnBase);
             var nameColumnBase4 = new ColumnBase<ColumnMappingBase>("Name", "TEXT", prayerTimeEngineCoreDomainProfileManagementModelsEntitiesProfileTableBase)
             {
                 IsNullable = true
@@ -1262,6 +1264,7 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
             defaultTableMappings10.Add(prayerTimeEngineCoreDomainProfileManagementModelsEntitiesProfileMappingBase);
             RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)iDColumnBase10, profile.FindProperty("ID")!, prayerTimeEngineCoreDomainProfileManagementModelsEntitiesProfileMappingBase);
             RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)insertInstantColumnBase10, profile.FindProperty("InsertInstant")!, prayerTimeEngineCoreDomainProfileManagementModelsEntitiesProfileMappingBase);
+            RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)isMosqueProfileColumnBase, profile.FindProperty("IsMosqueProfile")!, prayerTimeEngineCoreDomainProfileManagementModelsEntitiesProfileMappingBase);
             RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)nameColumnBase4, profile.FindProperty("Name")!, prayerTimeEngineCoreDomainProfileManagementModelsEntitiesProfileMappingBase);
             RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)sequenceNoColumnBase, profile.FindProperty("SequenceNo")!, prayerTimeEngineCoreDomainProfileManagementModelsEntitiesProfileMappingBase);
 
@@ -1275,6 +1278,8 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
                 IsNullable = true
             };
             profilesTable.Columns.Add("InsertInstant", insertInstantColumn10);
+            var isMosqueProfileColumn = new Column("IsMosqueProfile", "INTEGER", profilesTable);
+            profilesTable.Columns.Add("IsMosqueProfile", isMosqueProfileColumn);
             var nameColumn4 = new Column("Name", "TEXT", profilesTable)
             {
                 IsNullable = true
@@ -1296,6 +1301,7 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
             tableMappings10.Add(profilesTableMapping);
             RelationalModel.CreateColumnMapping(iDColumn10, profile.FindProperty("ID")!, profilesTableMapping);
             RelationalModel.CreateColumnMapping(insertInstantColumn10, profile.FindProperty("InsertInstant")!, profilesTableMapping);
+            RelationalModel.CreateColumnMapping(isMosqueProfileColumn, profile.FindProperty("IsMosqueProfile")!, profilesTableMapping);
             RelationalModel.CreateColumnMapping(nameColumn4, profile.FindProperty("Name")!, profilesTableMapping);
             RelationalModel.CreateColumnMapping(sequenceNoColumn, profile.FindProperty("SequenceNo")!, profilesTableMapping);
 
