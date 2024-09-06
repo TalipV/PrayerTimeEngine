@@ -4,10 +4,10 @@ using System.Text.Json;
 using System.Text.RegularExpressions;
 using NodaTime;
 using PrayerTimeEngine.Core.Data.WebSocket.Interfaces;
-using PrayerTimeEngine.Core.Domain.MosquePrayerTimeProviders.Providers.MyMosq.Interfaces;
-using PrayerTimeEngine.Core.Domain.MosquePrayerTimeProviders.Providers.MyMosq.Models.DTOs;
+using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.MyMosq.Interfaces;
+using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.MyMosq.Models.DTOs;
 
-namespace PrayerTimeEngine.Core.Domain.MosquePrayerTimeProviders.Providers.MyMosq.Services
+namespace PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.MyMosq.Services
 {
     public class MyMosqApiService(
             IWebSocketClientFactory webSocketClientFactory

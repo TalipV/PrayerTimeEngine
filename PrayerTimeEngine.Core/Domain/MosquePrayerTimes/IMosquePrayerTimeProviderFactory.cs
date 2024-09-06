@@ -1,7 +1,7 @@
 ﻿using PrayerTimeEngine.Core.Common.Enum;
-using PrayerTimeEngine.Core.Domain.MosquePrayerTimeProviders.Providers;
+using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers;
 
-namespace PrayerTimeEngine.Core.Domain.MosquePrayerTimeProviders
+namespace PrayerTimeEngine.Core.Domain.MosquePrayerTimes
 {
     public interface IMosquePrayerTimeProviderFactory
     {

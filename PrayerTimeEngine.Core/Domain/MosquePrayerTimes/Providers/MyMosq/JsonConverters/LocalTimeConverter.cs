@@ -3,7 +3,7 @@ using NodaTime;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace PrayerTimeEngine.Core.Domain.MosquePrayerTimeProviders.Providers.MyMosq.JsonConverters;
+namespace PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.MyMosq.JsonConverters;
 
 public class LocalTimeConverter : JsonConverter<LocalTime>
 {

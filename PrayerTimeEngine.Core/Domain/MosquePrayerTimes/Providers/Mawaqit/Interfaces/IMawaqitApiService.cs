@@ -1,6 +1,6 @@
-﻿using PrayerTimeEngine.Core.Domain.MosquePrayerTimeProviders.Providers.Mawaqit.Models.DTOs;
+﻿using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.Mawaqit.Models.DTOs;
 
-namespace PrayerTimeEngine.Core.Domain.MosquePrayerTimeProviders.Providers.Mawaqit.Interfaces
+namespace PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.Mawaqit.Interfaces
 {
     public interface IMawaqitApiService
     {

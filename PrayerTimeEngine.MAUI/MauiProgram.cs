@@ -18,12 +18,12 @@ using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Muwaqqit.Interfa
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Muwaqqit.Services;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Semerkand.Interfaces;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Semerkand.Services;
-using PrayerTimeEngine.Core.Domain.MosquePrayerTimeProviders;
-using PrayerTimeEngine.Core.Domain.MosquePrayerTimeProviders.Providers.Mawaqit.Interfaces;
-using PrayerTimeEngine.Core.Domain.MosquePrayerTimeProviders.Providers.Mawaqit.Services;
-using PrayerTimeEngine.Core.Domain.MosquePrayerTimeProviders.Providers.MyMosq.Interfaces;
-using PrayerTimeEngine.Core.Domain.MosquePrayerTimeProviders.Providers.MyMosq.Services;
+using PrayerTimeEngine.Core.Domain.MosquePrayerTimes;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Management;
+using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.Mawaqit.Interfaces;
+using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.Mawaqit.Services;
+using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.MyMosq.Interfaces;
+using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.MyMosq.Services;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Interfaces;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Services;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Services.LocationIQ;
@@ -304,7 +304,7 @@ public static class MauiProgram
         serviceCollection.AddTransient<IMyMosqDBAccess, MyMosqDBAccess>();
         serviceCollection.AddTransient<IPrayerTimeCacheCleaner, MyMosqDBAccess>();
         serviceCollection.AddTransient<IMyMosqApiService, MyMosqApiService>();
-        serviceCollection.AddTransient<MyMosqPrayerTimeService>();
+        serviceCollection.AddTransient<MyMosqMosquePrayerTimeProvider>();
 
         // MAWAQIT
         serviceCollection.AddTransient<IMawaqitDBAccess, MawaqitDBAccess>();
@@ -316,7 +316,7 @@ public static class MauiProgram
             httpClient.BaseAddress = new Uri("https://mawaqit.net/de/");
             return new MawaqitApiService(httpClient);
         });
-        serviceCollection.AddTransient<MawaqitPrayerTimeService>();
+        serviceCollection.AddTransient<MawaqitMosquePrayerTimeProvider>();
     }
 
     private static void addPresentationLayerServices(IServiceCollection serviceCollection)

@@ -1,9 +1,8 @@
 ﻿using NodaTime;
 using NSubstitute;
-using PrayerTimeEngine.Core.Domain.MosquePrayerTimeProviders.Models;
-using PrayerTimeEngine.Core.Domain.MosquePrayerTimeProviders.Providers.Mawaqit.Interfaces;
-using PrayerTimeEngine.Core.Domain.MosquePrayerTimeProviders.Providers.Mawaqit.Models.Entities;
-using PrayerTimeEngine.Core.Domain.MosquePrayerTimeProviders.Providers.Mawaqit.Services;
+using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Models;
+using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.Mawaqit.Interfaces;
+using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.Mawaqit.Services;
 using PrayerTimeEngine.Core.Tests.Common;
 
 namespace PrayerTimeEngine.Core.Tests.Unit.Domain.DynamicPrayerTimeProviders.Mawaqit
@@ -12,7 +11,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.DynamicPrayerTimeProviders.Maw
     {
         private readonly IMawaqitDBAccess _mawaqitDBAccessMock;
         private readonly IMawaqitApiService _mawaqitApiServiceMock;
-        private readonly MawaqitPrayerTimeService _mawaqitPrayerTimeService;
+        private readonly MawaqitMosquePrayerTimeProvider _mawaqitPrayerTimeService;
 
         public MawaqitDynamicPrayerTimeProviderTests()
         {
@@ -20,7 +19,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.DynamicPrayerTimeProviders.Maw
             _mawaqitApiServiceMock = Substitute.For<IMawaqitApiService>();
 
             _mawaqitPrayerTimeService =
-                new MawaqitPrayerTimeService(
+                new MawaqitMosquePrayerTimeProvider(
                     _mawaqitDBAccessMock,
                     _mawaqitApiServiceMock);
         }

@@ -1,10 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using NodaTime;
 using PrayerTimeEngine.Core.Data.EntityFramework;
-using PrayerTimeEngine.Core.Domain.MosquePrayerTimeProviders.Providers.MyMosq.Interfaces;
-using PrayerTimeEngine.Core.Domain.MosquePrayerTimeProviders.Providers.MyMosq.Models.Entities;
+using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.MyMosq.Interfaces;
+using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.MyMosq.Models.Entities;
 
-namespace PrayerTimeEngine.Core.Domain.MosquePrayerTimeProviders.Providers.MyMosq.Services
+namespace PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.MyMosq.Services
 {
     public class MyMosqDBAccess(
             IDbContextFactory<AppDbContext> dbContextFactory

@@ -3,7 +3,7 @@ using PrayerTimeEngine.Core.Tests.Common;
 using PrayerTimeEngine.Core.Tests.Common.TestData;
 using System.Net;
 using PrayerTimeEngine.Core.Domain.Calculators.Mosques.Mawaqit.Services;
-using PrayerTimeEngine.Core.Domain.MosquePrayerTimeProviders.Providers.Mawaqit.Models.Entities;
+using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.Mawaqit.Models.Entities;
 
 namespace PrayerTimeEngine.Core.Tests.Unit.Domain.DynamicPrayerTimeProviders.Mawaqit
 {
