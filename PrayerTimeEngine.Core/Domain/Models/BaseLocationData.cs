@@ -1,7 +1,7 @@
 ﻿using PrayerTimeEngine.Core.Common.Enum;
-using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Models;
-using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Models;
-using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Models;
+using PrayerTimeEngine.Core.Domain.DynamicPrayerTimeProviders.Fazilet.Models;
+using PrayerTimeEngine.Core.Domain.DynamicPrayerTimeProviders.Muwaqqit.Models;
+using PrayerTimeEngine.Core.Domain.DynamicPrayerTimeProviders.Semerkand.Models;
 using System.Text.Json.Serialization;
 
 namespace PrayerTimeEngine.Core.Domain.Models
