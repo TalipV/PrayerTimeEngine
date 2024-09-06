@@ -6,7 +6,7 @@ namespace PrayerTimeEngine.Core.Domain
 {
     public class TimeTypeAttributeService
     {
-        public IDictionary<ETimeType, IReadOnlyList<ECalculationSource>> TimeTypeCompatibleSources { get; }
+        public IDictionary<ETimeType, IReadOnlyList<EDynamicPrayerTimeProviderType>> TimeTypeCompatibleSources { get; }
         public List<ETimeType> DegreeTypes { get; }
         public List<ETimeType> SimpleTypes { get; }
         public List<ETimeType> ComplexTypes { get; }
@@ -17,7 +17,7 @@ namespace PrayerTimeEngine.Core.Domain
 
         public TimeTypeAttributeService()
         {
-            TimeTypeCompatibleSources = new Dictionary<ETimeType, IReadOnlyList<ECalculationSource>>();
+            TimeTypeCompatibleSources = new Dictionary<ETimeType, IReadOnlyList<EDynamicPrayerTimeProviderType>>();
             DegreeTypes = [];
             SimpleTypes = [];
             ComplexTypes = [];
@@ -46,7 +46,7 @@ namespace PrayerTimeEngine.Core.Domain
 
                 foreach (TimeTypeSupportedByAttribute attr in timeTypeSupportedByAttrs)
                 {
-                    TimeTypeCompatibleSources[timeType] = attr.CalculationSources;
+                    TimeTypeCompatibleSources[timeType] = attr.DynamicPrayerTimeProviders;
                 }
 
                 if (degreeTimeTypeAttrs.Count != 0)

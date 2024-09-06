@@ -3,9 +3,9 @@ using PrayerTimeEngine.BenchmarkDotNet.Benchmarks;
 
 Type[] types = 
     [
-        typeof(SemerkandPrayerTimeCalculatorBenchmark),
-        typeof(FaziletPrayerTimeCalculatorBenchmark),
-        typeof(MuwaqqitPrayerTimeCalculatorBenchmark)
+        typeof(SemerkandDynamicPrayerTimeProviderBenchmark),
+        typeof(FaziletDynamicPrayerTimeProviderBenchmark),
+        typeof(MuwaqqitDynamicPrayerTimeProviderBenchmark)
     ];
 
 BenchmarkSwitcher.FromTypes(types).Run(args);

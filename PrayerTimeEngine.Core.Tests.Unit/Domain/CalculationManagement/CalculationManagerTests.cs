@@ -14,21 +14,21 @@ using PrayerTimeEngine.Core.Common;
 
 namespace PrayerTimeEngine.Core.Tests.Unit.Domain.CalculationManagement
 {
-    public class CalculationManagerTests : BaseTest
+    public class DynamicPrayerTimeProviderManagerTests : BaseTest
     {
-        private readonly IPrayerTimeCalculatorFactory _prayerTimeServiceFactoryMock;
+        private readonly IDynamicPrayerTimeProviderFactory _prayerTimeServiceFactoryMock;
         private readonly IProfileService _profileServiceMock;
-        private readonly CalculationManager _calculationManager;
+        private readonly DynamicPrayerTimeProviderManager _dynamicPrayerTimeProviderManager;
 
-        public CalculationManagerTests()
+        public DynamicPrayerTimeProviderManagerTests()
         {
-            _prayerTimeServiceFactoryMock = Substitute.For<IPrayerTimeCalculatorFactory>();
+            _prayerTimeServiceFactoryMock = Substitute.For<IDynamicPrayerTimeProviderFactory>();
             _profileServiceMock = Substitute.For<IProfileService>();
-            _calculationManager = new CalculationManager(
+            _dynamicPrayerTimeProviderManager = new DynamicPrayerTimeProviderManager(
                 _prayerTimeServiceFactoryMock, 
                 _profileServiceMock,
                 Substitute.For<ISystemInfoService>(), 
-                Substitute.For<ILogger<CalculationManager>>(), 
+                Substitute.For<ILogger<DynamicPrayerTimeProviderManager>>(), 
                 [Substitute.For<IPrayerTimeCacheCleaner>()]);
         }
 
@@ -44,12 +44,12 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.CalculationManagement
 
             var muwaqqitLocationData = Substitute.ForPartsOf<BaseLocationData>();
             _profileServiceMock.GetUntrackedReferenceOfProfile(Arg.Any<int>(), Arg.Any<CancellationToken>()).Returns(profile);
-            _profileServiceMock.GetLocationConfig(Arg.Is(profile), Arg.Is(ECalculationSource.Muwaqqit)).Returns(muwaqqitLocationData);
+            _profileServiceMock.GetLocationConfig(Arg.Is(profile), Arg.Is(EDynamicPrayerTimeProviderType.Muwaqqit)).Returns(muwaqqitLocationData);
 
             GenericSettingConfiguration muwaqqitConfig = new MuwaqqitDegreeCalculationConfiguration { Degree = 14, TimeType = ETimeType.FajrStart };
-            var muwaqqitPrayerTimeServiceMock = Substitute.For<IPrayerTimeCalculator>();
+            var muwaqqitPrayerTimeServiceMock = Substitute.For<IDynamicPrayerTimeProvider>();
 
-            _prayerTimeServiceFactoryMock.GetPrayerTimeCalculatorByCalculationSource(Arg.Is(ECalculationSource.Muwaqqit)).Returns(muwaqqitPrayerTimeServiceMock);
+            _prayerTimeServiceFactoryMock.GetDynamicPrayerTimeProviderByDynamicPrayerTimeProvider(Arg.Is(EDynamicPrayerTimeProviderType.Muwaqqit)).Returns(muwaqqitPrayerTimeServiceMock);
 
             List<(ETimeType, ZonedDateTime)> muwaqqitReturnValue =
                 [
@@ -67,7 +67,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.CalculationManagement
             muwaqqitPrayerTimeServiceMock.GetUnsupportedTimeTypes().Returns([]);
 
             // ACT
-            PrayerTimesBundle result = await _calculationManager.CalculatePrayerTimesAsync(profile.ID, zonedDate, default);
+            PrayerTimesBundle result = await _dynamicPrayerTimeProviderManager.CalculatePrayerTimesAsync(profile.ID, zonedDate, default);
 
             // ASSERT
             result.Should().NotBeNull();

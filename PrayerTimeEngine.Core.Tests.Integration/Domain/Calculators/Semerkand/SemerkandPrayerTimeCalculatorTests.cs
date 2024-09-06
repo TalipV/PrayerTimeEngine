@@ -13,7 +13,7 @@ using PrayerTimeEngine.Core.Tests.Common.TestData;
 
 namespace PrayerTimeEngine.Core.Tests.Integration.Domain.Calculators.Semerkand
 {
-    public class SemerkandPrayerTimeCalculatorTests : BaseTest
+    public class SemerkandDynamicPrayerTimeProviderTests : BaseTest
     {
         [Fact]
         public async Task GetPrayerTimesAsync_NormalInput_PrayerTimesForThatDay()
@@ -27,11 +27,11 @@ namespace PrayerTimeEngine.Core.Tests.Integration.Domain.Calculators.Semerkand
 
                     serviceCollection.AddSingleton<ISemerkandDBAccess, SemerkandDBAccess>();
                     serviceCollection.AddSingleton<ISemerkandApiService>(SubstitutionHelper.GetMockedSemerkandApiService());
-                    serviceCollection.AddSingleton(Substitute.For<ILogger<SemerkandPrayerTimeCalculator>>());
-                    serviceCollection.AddSingleton<SemerkandPrayerTimeCalculator>();
+                    serviceCollection.AddSingleton(Substitute.For<ILogger<SemerkandDynamicPrayerTimeProvider>>());
+                    serviceCollection.AddSingleton<SemerkandDynamicPrayerTimeProvider>();
                 });
 
-            SemerkandPrayerTimeCalculator semerkandPrayerTimeCalculator = serviceProvider.GetRequiredService<SemerkandPrayerTimeCalculator>();
+            SemerkandDynamicPrayerTimeProvider semerkandDynamicPrayerTimeProvider = serviceProvider.GetRequiredService<SemerkandDynamicPrayerTimeProvider>();
 
             var date = new LocalDate(2023, 7, 29);
             var locationData = new SemerkandLocationData
@@ -44,21 +44,21 @@ namespace PrayerTimeEngine.Core.Tests.Integration.Domain.Calculators.Semerkand
 
             List<GenericSettingConfiguration> configs =
                 [
-                    new GenericSettingConfiguration { TimeType = ETimeType.FajrStart, Source = ECalculationSource.Semerkand },
-                    new GenericSettingConfiguration { TimeType = ETimeType.FajrEnd, Source = ECalculationSource.Semerkand },
-                    new GenericSettingConfiguration { TimeType = ETimeType.DhuhrStart, Source = ECalculationSource.Semerkand },
-                    new GenericSettingConfiguration { TimeType = ETimeType.DhuhrEnd, Source = ECalculationSource.Semerkand },
-                    new GenericSettingConfiguration { TimeType = ETimeType.AsrStart, Source = ECalculationSource.Semerkand },
-                    new GenericSettingConfiguration { TimeType = ETimeType.AsrEnd, Source = ECalculationSource.Semerkand },
-                    new GenericSettingConfiguration { TimeType = ETimeType.MaghribStart, Source = ECalculationSource.Semerkand },
-                    new GenericSettingConfiguration { TimeType = ETimeType.MaghribEnd, Source = ECalculationSource.Semerkand },
-                    new GenericSettingConfiguration { TimeType = ETimeType.IshaStart, Source = ECalculationSource.Semerkand },
-                    new GenericSettingConfiguration { TimeType = ETimeType.IshaEnd, Source = ECalculationSource.Semerkand },
+                    new GenericSettingConfiguration { TimeType = ETimeType.FajrStart, Source = EDynamicPrayerTimeProviderType.Semerkand },
+                    new GenericSettingConfiguration { TimeType = ETimeType.FajrEnd, Source = EDynamicPrayerTimeProviderType.Semerkand },
+                    new GenericSettingConfiguration { TimeType = ETimeType.DhuhrStart, Source = EDynamicPrayerTimeProviderType.Semerkand },
+                    new GenericSettingConfiguration { TimeType = ETimeType.DhuhrEnd, Source = EDynamicPrayerTimeProviderType.Semerkand },
+                    new GenericSettingConfiguration { TimeType = ETimeType.AsrStart, Source = EDynamicPrayerTimeProviderType.Semerkand },
+                    new GenericSettingConfiguration { TimeType = ETimeType.AsrEnd, Source = EDynamicPrayerTimeProviderType.Semerkand },
+                    new GenericSettingConfiguration { TimeType = ETimeType.MaghribStart, Source = EDynamicPrayerTimeProviderType.Semerkand },
+                    new GenericSettingConfiguration { TimeType = ETimeType.MaghribEnd, Source = EDynamicPrayerTimeProviderType.Semerkand },
+                    new GenericSettingConfiguration { TimeType = ETimeType.IshaStart, Source = EDynamicPrayerTimeProviderType.Semerkand },
+                    new GenericSettingConfiguration { TimeType = ETimeType.IshaEnd, Source = EDynamicPrayerTimeProviderType.Semerkand },
                 ];
 
             // ACT
             List<(ETimeType TimeType, ZonedDateTime ZonedDateTime)> result =
-                await semerkandPrayerTimeCalculator.GetPrayerTimesAsync(
+                await semerkandDynamicPrayerTimeProvider.GetPrayerTimesAsync(
                     date.AtStartOfDayInZone(dateTimeZone),
                     locationData,
                     configs, 

@@ -8,13 +8,13 @@ using PrayerTimeEngine.Core.Tests.Common;
 
 namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Mawaqit
 {
-    public class MawaqitPrayerTimeCalculatorTests : BaseTest
+    public class MawaqitDynamicPrayerTimeProviderTests : BaseTest
     {
         private readonly IMawaqitDBAccess _mawaqitDBAccessMock;
         private readonly IMawaqitApiService _mawaqitApiServiceMock;
         private readonly MawaqitPrayerTimeService _mawaqitPrayerTimeService;
 
-        public MawaqitPrayerTimeCalculatorTests()
+        public MawaqitDynamicPrayerTimeProviderTests()
         {
             _mawaqitDBAccessMock = Substitute.For<IMawaqitDBAccess>();
             _mawaqitApiServiceMock = Substitute.For<IMawaqitApiService>();

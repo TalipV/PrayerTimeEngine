@@ -14,25 +14,25 @@ using PrayerTimeEngine.Core.Tests.Common.TestData;
 
 namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Fazilet
 {
-    public class FaziletPrayerTimeCalculatorTests : BaseTest
+    public class FaziletDynamicPrayerTimeProviderTests : BaseTest
     {
         private readonly IFaziletDBAccess _faziletDBAccessMock;
         private readonly IFaziletApiService _faziletApiServiceMock;
         private readonly IPlaceService _placeServiceMock;
-        private readonly FaziletPrayerTimeCalculator _faziletPrayerTimeCalculator;
+        private readonly FaziletDynamicPrayerTimeProvider _faziletDynamicPrayerTimeProvider;
 
-        public FaziletPrayerTimeCalculatorTests()
+        public FaziletDynamicPrayerTimeProviderTests()
         {
             _faziletDBAccessMock = Substitute.For<IFaziletDBAccess>();
             _faziletApiServiceMock = Substitute.For<IFaziletApiService>();
             _placeServiceMock = Substitute.For<IPlaceService>();
 
-            _faziletPrayerTimeCalculator =
-                new FaziletPrayerTimeCalculator(
+            _faziletDynamicPrayerTimeProvider =
+                new FaziletDynamicPrayerTimeProvider(
                     _faziletDBAccessMock,
                     _faziletApiServiceMock,
                     _placeServiceMock,
-                    Substitute.For<ILogger<FaziletPrayerTimeCalculator>>());
+                    Substitute.For<ILogger<FaziletDynamicPrayerTimeProvider>>());
         }
 
         #region GetPrayerTimesAsync
@@ -46,7 +46,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Fazilet
             BaseLocationData locationData = new FaziletLocationData { CityName = "Berlin", CountryName = "Deutschland" };
             List<GenericSettingConfiguration> configurations =
                 [
-                    new GenericSettingConfiguration { TimeType = ETimeType.FajrEnd, Source = ECalculationSource.Fazilet }
+                    new GenericSettingConfiguration { TimeType = ETimeType.FajrEnd, Source = EDynamicPrayerTimeProviderType.Fazilet }
                 ];
 
             _faziletDBAccessMock.GetCountryIDByName(Arg.Is("Deutschland"), Arg.Any<CancellationToken>()).Returns(1);
@@ -73,7 +73,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Fazilet
 
             // ACT
             List<(ETimeType TimeType, ZonedDateTime ZonedDateTime)> calculationResult =
-                await _faziletPrayerTimeCalculator.GetPrayerTimesAsync(dateInUtc, locationData, configurations, default);
+                await _faziletDynamicPrayerTimeProvider.GetPrayerTimesAsync(dateInUtc, locationData, configurations, default);
 
             // ASSERT
             calculationResult.Should().NotBeNull().And.HaveCount(1);
@@ -131,13 +131,13 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Fazilet
             _faziletDBAccessMock.GetCityIDByName(Arg.Is(1), Arg.Is("Innsbruck"), Arg.Any<CancellationToken>()).Returns(1);
 
             // ACT
-            var locationData = await _faziletPrayerTimeCalculator.GetLocationInfo(completePlaceInfo, default) as FaziletLocationData;
+            var locationData = await _faziletDynamicPrayerTimeProvider.GetLocationInfo(completePlaceInfo, default) as FaziletLocationData;
 
             // ASSERT
             locationData.Should().NotBeNull();
             locationData.CountryName.Should().Be("Avusturya");
             locationData.CityName.Should().Be("Innsbruck");
-            locationData.Source.Should().Be(ECalculationSource.Fazilet);
+            locationData.Source.Should().Be(EDynamicPrayerTimeProviderType.Fazilet);
         }
 
         #endregion GetLocationInfo

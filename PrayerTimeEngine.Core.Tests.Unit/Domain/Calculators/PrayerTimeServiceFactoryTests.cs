@@ -10,23 +10,23 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators
     public class PrayerTimeServiceFactoryTests
     {
         private readonly IServiceProvider serviceProviderMock;
-        private readonly PrayerTimeCalculatorFactory _prayerTimeServiceFactory;
+        private readonly DynamicPrayerTimeProviderFactory _prayerTimeServiceFactory;
 
         public PrayerTimeServiceFactoryTests()
         {
             serviceProviderMock = Substitute.For<IServiceProvider>();
-            _prayerTimeServiceFactory = new PrayerTimeCalculatorFactory(serviceProviderMock);
+            _prayerTimeServiceFactory = new DynamicPrayerTimeProviderFactory(serviceProviderMock);
         }
 
-        #region GetPrayerTimeCalculatorByCalculationSource
+        #region GetDynamicPrayerTimeProviderByDynamicPrayerTimeProvider
 
         [Theory]
-        [InlineData(ECalculationSource.Muwaqqit, typeof(MuwaqqitPrayerTimeCalculator))]
-        [InlineData(ECalculationSource.Fazilet, typeof(FaziletPrayerTimeCalculator))]
-        [InlineData(ECalculationSource.Semerkand, typeof(SemerkandPrayerTimeCalculator))]
-        [Trait("Method", "GetPrayerTimeCalculatorByCalculationSource")]
-        public void GetPrayerTimeCalculatorByCalculationSource_DifferentValidCalculationSources_RightTypeReturned(
-            ECalculationSource calculationSource, Type expectedType)
+        [InlineData(EDynamicPrayerTimeProviderType.Muwaqqit, typeof(MuwaqqitDynamicPrayerTimeProvider))]
+        [InlineData(EDynamicPrayerTimeProviderType.Fazilet, typeof(FaziletDynamicPrayerTimeProvider))]
+        [InlineData(EDynamicPrayerTimeProviderType.Semerkand, typeof(SemerkandDynamicPrayerTimeProvider))]
+        [Trait("Method", "GetDynamicPrayerTimeProviderByDynamicPrayerTimeProvider")]
+        public void GetDynamicPrayerTimeProviderByDynamicPrayerTimeProvider_DifferentValidDynamicPrayerTimeProviders_RightTypeReturned(
+            EDynamicPrayerTimeProviderType dynamicPrayerTimeProviderType, Type expectedType)
         {
             // ARRANGE
             Type requestedType = null;
@@ -38,7 +38,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators
             // which are not really important for the test anyway so...
             try 
             { 
-                _prayerTimeServiceFactory.GetPrayerTimeCalculatorByCalculationSource(calculationSource); 
+                _prayerTimeServiceFactory.GetDynamicPrayerTimeProviderByDynamicPrayerTimeProvider(dynamicPrayerTimeProviderType); 
             }
             catch { }
 
@@ -49,16 +49,16 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators
         }
 
         [Fact]
-        [Trait("Method", "GetPrayerTimeCalculatorByCalculationSource")]
-        public void GetPrayerTimeCalculatorByCalculationSource_CalculationSourceNone_ArgumentException()
+        [Trait("Method", "GetDynamicPrayerTimeProviderByDynamicPrayerTimeProvider")]
+        public void GetDynamicPrayerTimeProviderByDynamicPrayerTimeProvider_DynamicPrayerTimeProviderNone_ArgumentException()
         {
             // ARRANGE & ACT
-            Action action = () => _prayerTimeServiceFactory.GetPrayerTimeCalculatorByCalculationSource(ECalculationSource.None);
+            Action action = () => _prayerTimeServiceFactory.GetDynamicPrayerTimeProviderByDynamicPrayerTimeProvider(EDynamicPrayerTimeProviderType.None);
 
             // ASSERT
             action.Should().Throw<ArgumentException>();
         }
 
-        #endregion GetPrayerTimeCalculatorByCalculationSource
+        #endregion GetDynamicPrayerTimeProviderByDynamicPrayerTimeProvider
     }
 }

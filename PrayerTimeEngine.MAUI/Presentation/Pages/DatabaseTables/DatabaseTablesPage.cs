@@ -43,7 +43,7 @@ public partial class DatabaseTablesPage : ContentPage
         typeof(Instant), typeof(Instant?),
         typeof(GenericSettingConfiguration),
         typeof(BaseLocationData),
-        typeof(ECalculationSource),
+        typeof(EDynamicPrayerTimeProviderType),
         typeof(ETimeType),
     ];
 

@@ -8,7 +8,7 @@ using PrayerTimeEngine.Core.Tests.Common.TestData;
 
 namespace PrayerTimeEngine.Core.Tests.Integration.Domain.Calculators.Mawaqit
 {
-    public class MawaqitPrayerTimeCalculatorTests : BaseTest
+    public class MawaqitDynamicPrayerTimeProviderTests : BaseTest
     {
         [Fact]
         public async Task GetPrayerTimesAsync_NormalInput_PrayerTimesForThatDay()

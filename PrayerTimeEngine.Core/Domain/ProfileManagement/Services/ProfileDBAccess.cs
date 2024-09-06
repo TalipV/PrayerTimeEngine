@@ -66,7 +66,7 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Services
         public async Task UpdateLocationConfig(
             Profile inputProfile,
             ProfilePlaceInfo newPlaceInfo,
-            List<(ECalculationSource CalculationSource, BaseLocationData LocationData)> locationDataByCalculationSource,
+            List<(EDynamicPrayerTimeProviderType DynamicPrayerTimeProvider, BaseLocationData LocationData)> locationDataByDynamicPrayerTimeProvider,
             CancellationToken cancellationToken)
         {
             using (AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken))
@@ -79,7 +79,7 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Services
                         .ConfigureAwait(false);
                 try
                 {
-                    setNewLocationData(dbContext, profile, locationDataByCalculationSource);
+                    setNewLocationData(dbContext, profile, locationDataByDynamicPrayerTimeProvider);
 
                     if (profile.PlaceInfo != null)
                     {
@@ -135,22 +135,22 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Services
             }
         }
 
-        private void setNewLocationData(
+        private static void setNewLocationData(
             AppDbContext dbContext,
             Profile profile,
-            List<(ECalculationSource CalculationSource, BaseLocationData LocationData)> locationDataByCalculationSource)
+            List<(EDynamicPrayerTimeProviderType DynamicPrayerTimeProvider, BaseLocationData LocationData)> locationDataByDynamicPrayerTimeProvider)
         {
             var currentLocationConfigs = profile.LocationConfigs.ToList();
 
-            HashSet<ECalculationSource> newCalculationSources = locationDataByCalculationSource.Select(x => x.CalculationSource).ToHashSet();
+            HashSet<EDynamicPrayerTimeProviderType> newDynamicPrayerTimeProviders = locationDataByDynamicPrayerTimeProvider.Select(x => x.DynamicPrayerTimeProvider).ToHashSet();
             List<ProfileLocationConfig> configsToRemove = currentLocationConfigs
-                .Where(config => !newCalculationSources.Contains(config.CalculationSource))
+                .Where(config => !newDynamicPrayerTimeProviders.Contains(config.DynamicPrayerTimeProvider))
                 .ToList();
 
-            foreach ((ECalculationSource calculationSource, BaseLocationData locationData) in locationDataByCalculationSource)
+            foreach ((EDynamicPrayerTimeProviderType dynamicPrayerTimeProviderType, BaseLocationData locationData) in locationDataByDynamicPrayerTimeProvider)
             {
                 var existingLocationConfig = currentLocationConfigs
-                    .FirstOrDefault(config => config.CalculationSource == calculationSource);
+                    .FirstOrDefault(config => config.DynamicPrayerTimeProvider == dynamicPrayerTimeProviderType);
 
                 if (existingLocationConfig != null)
                 {
@@ -160,7 +160,7 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Services
                 {
                     var newLocationConfig = new ProfileLocationConfig
                     {
-                        CalculationSource = calculationSource,
+                        DynamicPrayerTimeProvider = dynamicPrayerTimeProviderType,
                         ProfileID = profile.ID,
                         Profile = profile,
                         LocationData = locationData

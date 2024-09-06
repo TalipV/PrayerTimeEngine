@@ -2,8 +2,8 @@
 
 namespace PrayerTimeEngine.Core.Domain.Calculators
 {
-    public interface IPrayerTimeCalculatorFactory
+    public interface IDynamicPrayerTimeProviderFactory
     {
-        IPrayerTimeCalculator GetPrayerTimeCalculatorByCalculationSource(ECalculationSource source);
+        IDynamicPrayerTimeProvider GetDynamicPrayerTimeProviderByDynamicPrayerTimeProvider(EDynamicPrayerTimeProviderType source);
     }
 }

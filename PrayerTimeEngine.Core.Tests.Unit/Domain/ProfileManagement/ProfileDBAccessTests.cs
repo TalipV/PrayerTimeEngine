@@ -119,9 +119,9 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.ProfileManagement
             await TestArrangeDbContext.Profiles.AddAsync(profile);
             await TestArrangeDbContext.SaveChangesAsync();
 
-            List<(ECalculationSource CalculationSource, BaseLocationData LocationData)> values =
+            List<(EDynamicPrayerTimeProviderType DynamicPrayerTimeProvider, BaseLocationData LocationData)> values =
                 [
-                    (ECalculationSource.Fazilet, new FaziletLocationData { CountryName = "DeutschlandYeah", CityName = "BerlinYeah" })
+                    (EDynamicPrayerTimeProviderType.Fazilet, new FaziletLocationData { CountryName = "DeutschlandYeah", CityName = "BerlinYeah" })
                 ];
 
             var placeInfo =
@@ -167,7 +167,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.ProfileManagement
 
             var genericSettingConfiguration = new GenericSettingConfiguration
             {
-                Source = ECalculationSource.Muwaqqit,
+                Source = EDynamicPrayerTimeProviderType.Muwaqqit,
                 TimeType = ETimeType.FajrEnd,
                 MinuteAdjustment = 11,
                 IsTimeShown = false

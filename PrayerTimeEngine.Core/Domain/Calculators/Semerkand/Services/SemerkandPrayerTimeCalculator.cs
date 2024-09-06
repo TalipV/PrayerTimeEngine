@@ -12,12 +12,12 @@ using PrayerTimeEngine.Core.Domain.PlaceManagement.Models;
 
 namespace PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services
 {
-    public class SemerkandPrayerTimeCalculator(
+    public class SemerkandDynamicPrayerTimeProvider(
             ISemerkandDBAccess semerkandDBAccess,
             ISemerkandApiService semerkandApiService,
             IPlaceService placeService,
-            ILogger<SemerkandPrayerTimeCalculator> logger
-        ) : IPrayerTimeCalculator
+            ILogger<SemerkandDynamicPrayerTimeProvider> logger
+        ) : IDynamicPrayerTimeProvider
     {
         public HashSet<ETimeType> GetUnsupportedTimeTypes()
         {

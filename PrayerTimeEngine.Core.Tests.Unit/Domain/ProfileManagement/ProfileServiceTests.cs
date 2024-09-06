@@ -25,10 +25,10 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.ProfileManagement
         public static TheoryData<ETimeType> configurableTimeTypeValues => new(
             values: new TimeTypeAttributeService().ConfigurableTypes);
 
-        public static TheoryData<ECalculationSource> calculationSourceValues => new(
-            values: Enum.GetValues(typeof(ECalculationSource))
-                    .OfType<ECalculationSource>()
-                    .Where(x => x != ECalculationSource.None));
+        public static TheoryData<EDynamicPrayerTimeProviderType> dynamicPrayerTimeProviderValues => new(
+            values: Enum.GetValues(typeof(EDynamicPrayerTimeProviderType))
+                    .OfType<EDynamicPrayerTimeProviderType>()
+                    .Where(x => x != EDynamicPrayerTimeProviderType.None));
 
         #region GetProfiles
 
@@ -128,9 +128,9 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.ProfileManagement
         #region GetLocationConfig
 
         [Theory]
-        [MemberData(nameof(calculationSourceValues))]
+        [MemberData(nameof(dynamicPrayerTimeProviderValues))]
         [Trait("Method", "GetLocationConfig")]
-        public void GetLocationConfig_MatchFound_ReturnValue(ECalculationSource source)
+        public void GetLocationConfig_MatchFound_ReturnValue(EDynamicPrayerTimeProviderType source)
         {
             // ARRANGE
             var profile = TestDataHelper.CreateNewCompleteTestProfile();
@@ -144,14 +144,14 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.ProfileManagement
         }
 
         [Theory]
-        [MemberData(nameof(calculationSourceValues))]
+        [MemberData(nameof(dynamicPrayerTimeProviderValues))]
         [Trait("Method", "GetLocationConfig")]
-        public void GetLocationConfig_NoMatchFound_ReturnNull(ECalculationSource source)
+        public void GetLocationConfig_NoMatchFound_ReturnNull(EDynamicPrayerTimeProviderType source)
         {
             // ARRANGE
             var profile = TestDataHelper.CreateNewCompleteTestProfile();
-            profile.LocationConfigs.Should().Contain(x => x.CalculationSource == source);
-            profile.LocationConfigs.Remove(profile.LocationConfigs.First(x => x.CalculationSource == source));
+            profile.LocationConfigs.Should().Contain(x => x.DynamicPrayerTimeProvider == source);
+            profile.LocationConfigs.Remove(profile.LocationConfigs.First(x => x.DynamicPrayerTimeProvider == source));
 
             // ACT
             BaseLocationData result = _profileService.GetLocationConfig(profile, source);
@@ -170,7 +170,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.ProfileManagement
         {
             // ARRANGE
             var profile = TestDataHelper.CreateNewCompleteTestProfile();
-            List<(ECalculationSource, BaseLocationData)> locationData = [(ECalculationSource.Muwaqqit, Substitute.ForPartsOf<BaseLocationData>())];
+            List<(EDynamicPrayerTimeProviderType, BaseLocationData)> locationData = [(EDynamicPrayerTimeProviderType.Muwaqqit, Substitute.ForPartsOf<BaseLocationData>())];
             
             var placeInfo =
                 new ProfilePlaceInfo
@@ -269,7 +269,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.ProfileManagement
 
             // make two of them inactive
             profile.TimeConfigs.First().CalculationConfiguration.IsTimeShown = false;
-            profile.TimeConfigs.Last().CalculationConfiguration = new GenericSettingConfiguration { Source = ECalculationSource.None, TimeType = ETimeType.IshaEnd };
+            profile.TimeConfigs.Last().CalculationConfiguration = new GenericSettingConfiguration { Source = EDynamicPrayerTimeProviderType.None, TimeType = ETimeType.IshaEnd };
 
             // ACT
             List<GenericSettingConfiguration> activeComplexConfigs = _profileService.GetActiveComplexTimeConfigs(profile);
@@ -279,7 +279,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.ProfileManagement
             activeComplexConfigs.Should().AllSatisfy(config =>
             {
                 config.IsTimeShown.Should().BeTrue();
-                config.Source.Should().NotBe(ECalculationSource.None);
+                config.Source.Should().NotBe(EDynamicPrayerTimeProviderType.None);
             });
         }        
         

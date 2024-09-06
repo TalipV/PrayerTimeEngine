@@ -9,11 +9,11 @@ using PrayerTimeEngine.Core.Domain.PlaceManagement.Models;
 
 namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Services
 {
-    public class MuwaqqitPrayerTimeCalculator(
+    public class MuwaqqitDynamicPrayerTimeProvider(
             IMuwaqqitDBAccess muwaqqitDBAccess,
             IMuwaqqitApiService muwaqqitApiService,
             TimeTypeAttributeService timeTypeAttributeService
-        ) : IPrayerTimeCalculator
+        ) : IDynamicPrayerTimeProvider
     {
         public async Task<List<(ETimeType TimeType, ZonedDateTime ZonedDateTime)>> GetPrayerTimesAsync(
             ZonedDateTime date,

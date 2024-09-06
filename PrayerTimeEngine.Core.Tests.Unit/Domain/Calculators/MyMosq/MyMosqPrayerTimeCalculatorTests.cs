@@ -8,13 +8,13 @@ using PrayerTimeEngine.Core.Tests.Common;
 
 namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.MyMosq
 {
-    public class MyMosqPrayerTimeCalculatorTests : BaseTest
+    public class MyMosqDynamicPrayerTimeProviderTests : BaseTest
     {
         private readonly IMyMosqDBAccess _myMosqDBAccessMock;
         private readonly IMyMosqApiService _myMosqApiServiceMock;
         private readonly MyMosqPrayerTimeService _myMosqPrayerTimeService;
 
-        public MyMosqPrayerTimeCalculatorTests()
+        public MyMosqDynamicPrayerTimeProviderTests()
         {
             _myMosqDBAccessMock = Substitute.For<IMyMosqDBAccess>();
             _myMosqApiServiceMock = Substitute.For<IMyMosqApiService>();

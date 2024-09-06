@@ -13,7 +13,7 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities
         public Instant? InsertInstant { get; set; }
         public int ProfileID { get; set; }
         public Profile Profile { get; set; }
-        public ECalculationSource CalculationSource { get; set; }
+        public EDynamicPrayerTimeProviderType DynamicPrayerTimeProvider { get; set; }
         public BaseLocationData LocationData { get; set; }
         public override bool Equals(object obj)
         {
@@ -23,13 +23,13 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities
             return ID == otherLocationConfig.ID
                 && ProfileID == otherLocationConfig.ProfileID
                 // && object.Equals(otherLocationConfig.Profile) why not check it here? why check objects of related data in other Equals implementations?
-                && CalculationSource == otherLocationConfig.CalculationSource
+                && DynamicPrayerTimeProvider == otherLocationConfig.DynamicPrayerTimeProvider
                 && LocationData.Equals(otherLocationConfig.LocationData);
         }
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(ID, ProfileID, CalculationSource, LocationData);
+            return HashCode.Combine(ID, ProfileID, DynamicPrayerTimeProvider, LocationData);
         }
     }
 }

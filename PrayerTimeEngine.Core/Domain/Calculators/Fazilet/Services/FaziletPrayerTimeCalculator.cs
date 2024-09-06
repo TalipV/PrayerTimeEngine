@@ -11,12 +11,12 @@ using PrayerTimeEngine.Core.Domain.PlaceManagement.Models;
 
 namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Services
 {
-    public class FaziletPrayerTimeCalculator(
+    public class FaziletDynamicPrayerTimeProvider(
             IFaziletDBAccess faziletDBAccess,
             IFaziletApiService faziletApiService,
             IPlaceService placeService,
-            ILogger<FaziletPrayerTimeCalculator> logger
-        ) : IPrayerTimeCalculator
+            ILogger<FaziletDynamicPrayerTimeProvider> logger
+        ) : IDynamicPrayerTimeProvider
     {
         public HashSet<ETimeType> GetUnsupportedTimeTypes()
         {

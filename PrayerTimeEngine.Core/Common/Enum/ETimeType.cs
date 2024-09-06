@@ -6,23 +6,23 @@ namespace PrayerTimeEngine.Core.Common.Enum
     {
         #region Fajr
 
-        [TimeTypeSupportedBy(ECalculationSource.None, ECalculationSource.Muwaqqit, ECalculationSource.Fazilet, ECalculationSource.Semerkand)]
+        [TimeTypeSupportedBy(EDynamicPrayerTimeProviderType.None, EDynamicPrayerTimeProviderType.Muwaqqit, EDynamicPrayerTimeProviderType.Fazilet, EDynamicPrayerTimeProviderType.Semerkand)]
         [TimeTypeForPrayerType(EPrayerType.Fajr)]
         [DegreeTimeType]
         [IsNotHidableTimeType]
         FajrStart,
 
-        [TimeTypeSupportedBy(ECalculationSource.None, ECalculationSource.Muwaqqit, ECalculationSource.Fazilet, ECalculationSource.Semerkand)]
+        [TimeTypeSupportedBy(EDynamicPrayerTimeProviderType.None, EDynamicPrayerTimeProviderType.Muwaqqit, EDynamicPrayerTimeProviderType.Fazilet, EDynamicPrayerTimeProviderType.Semerkand)]
         [TimeTypeForPrayerType(EPrayerType.Fajr)]
         [IsNotHidableTimeType]
         FajrEnd,
 
-        [TimeTypeSupportedBy(ECalculationSource.None, ECalculationSource.Muwaqqit)]
+        [TimeTypeSupportedBy(EDynamicPrayerTimeProviderType.None, EDynamicPrayerTimeProviderType.Muwaqqit)]
         [TimeTypeForPrayerType(EPrayerType.Fajr)]
         [DegreeTimeType]
         FajrGhalas,
 
-        [TimeTypeSupportedBy(ECalculationSource.None, ECalculationSource.Muwaqqit)]
+        [TimeTypeSupportedBy(EDynamicPrayerTimeProviderType.None, EDynamicPrayerTimeProviderType.Muwaqqit)]
         [TimeTypeForPrayerType(EPrayerType.Fajr)]
         [DegreeTimeType]
         FajrKaraha,
@@ -31,7 +31,7 @@ namespace PrayerTimeEngine.Core.Common.Enum
 
         #region Duha
 
-        [TimeTypeSupportedBy(ECalculationSource.None, ECalculationSource.Muwaqqit)]
+        [TimeTypeSupportedBy(EDynamicPrayerTimeProviderType.None, EDynamicPrayerTimeProviderType.Muwaqqit)]
         [TimeTypeForPrayerType(EPrayerType.Duha)]
         [DegreeTimeType]
         [IsNotHidableTimeType]
@@ -50,12 +50,12 @@ namespace PrayerTimeEngine.Core.Common.Enum
 
         #region Dhuhr
 
-        [TimeTypeSupportedBy(ECalculationSource.None, ECalculationSource.Muwaqqit, ECalculationSource.Fazilet, ECalculationSource.Semerkand)]
+        [TimeTypeSupportedBy(EDynamicPrayerTimeProviderType.None, EDynamicPrayerTimeProviderType.Muwaqqit, EDynamicPrayerTimeProviderType.Fazilet, EDynamicPrayerTimeProviderType.Semerkand)]
         [TimeTypeForPrayerType(EPrayerType.Dhuhr)]
         [IsNotHidableTimeType]
         DhuhrStart,
 
-        [TimeTypeSupportedBy(ECalculationSource.None, ECalculationSource.Muwaqqit, ECalculationSource.Fazilet, ECalculationSource.Semerkand)]
+        [TimeTypeSupportedBy(EDynamicPrayerTimeProviderType.None, EDynamicPrayerTimeProviderType.Muwaqqit, EDynamicPrayerTimeProviderType.Fazilet, EDynamicPrayerTimeProviderType.Semerkand)]
         [TimeTypeForPrayerType(EPrayerType.Dhuhr)]
         [IsNotHidableTimeType]
         DhuhrEnd,
@@ -64,21 +64,21 @@ namespace PrayerTimeEngine.Core.Common.Enum
 
         #region Asr
 
-        [TimeTypeSupportedBy(ECalculationSource.None, ECalculationSource.Muwaqqit, ECalculationSource.Fazilet, ECalculationSource.Semerkand)]
+        [TimeTypeSupportedBy(EDynamicPrayerTimeProviderType.None, EDynamicPrayerTimeProviderType.Muwaqqit, EDynamicPrayerTimeProviderType.Fazilet, EDynamicPrayerTimeProviderType.Semerkand)]
         [TimeTypeForPrayerType(EPrayerType.Asr)]
         [IsNotHidableTimeType]
         AsrStart,
 
-        [TimeTypeSupportedBy(ECalculationSource.None, ECalculationSource.Muwaqqit, ECalculationSource.Fazilet, ECalculationSource.Semerkand)]
+        [TimeTypeSupportedBy(EDynamicPrayerTimeProviderType.None, EDynamicPrayerTimeProviderType.Muwaqqit, EDynamicPrayerTimeProviderType.Fazilet, EDynamicPrayerTimeProviderType.Semerkand)]
         [TimeTypeForPrayerType(EPrayerType.Asr)]
         [IsNotHidableTimeType]
         AsrEnd,
 
-        [TimeTypeSupportedBy(ECalculationSource.None, ECalculationSource.Muwaqqit)]
+        [TimeTypeSupportedBy(EDynamicPrayerTimeProviderType.None, EDynamicPrayerTimeProviderType.Muwaqqit)]
         [TimeTypeForPrayerType(EPrayerType.Asr)]
         AsrMithlayn,
 
-        [TimeTypeSupportedBy(ECalculationSource.None, ECalculationSource.Muwaqqit)]
+        [TimeTypeSupportedBy(EDynamicPrayerTimeProviderType.None, EDynamicPrayerTimeProviderType.Muwaqqit)]
         [TimeTypeForPrayerType(EPrayerType.Asr)]
         [DegreeTimeType]
         AsrKaraha,
@@ -87,12 +87,12 @@ namespace PrayerTimeEngine.Core.Common.Enum
 
         #region Maghrib
 
-        [TimeTypeSupportedBy(ECalculationSource.None, ECalculationSource.Muwaqqit, ECalculationSource.Fazilet, ECalculationSource.Semerkand)]
+        [TimeTypeSupportedBy(EDynamicPrayerTimeProviderType.None, EDynamicPrayerTimeProviderType.Muwaqqit, EDynamicPrayerTimeProviderType.Fazilet, EDynamicPrayerTimeProviderType.Semerkand)]
         [TimeTypeForPrayerType(EPrayerType.Maghrib)]
         [IsNotHidableTimeType]
         MaghribStart,
 
-        [TimeTypeSupportedBy(ECalculationSource.None, ECalculationSource.Muwaqqit, ECalculationSource.Fazilet, ECalculationSource.Semerkand)]
+        [TimeTypeSupportedBy(EDynamicPrayerTimeProviderType.None, EDynamicPrayerTimeProviderType.Muwaqqit, EDynamicPrayerTimeProviderType.Fazilet, EDynamicPrayerTimeProviderType.Semerkand)]
         [TimeTypeForPrayerType(EPrayerType.Maghrib)]
         [DegreeTimeType]
         [IsNotHidableTimeType]
@@ -102,7 +102,7 @@ namespace PrayerTimeEngine.Core.Common.Enum
         [ConfigurableSimpleType]
         MaghribSufficientTime,
 
-        [TimeTypeSupportedBy(ECalculationSource.None, ECalculationSource.Muwaqqit)]
+        [TimeTypeSupportedBy(EDynamicPrayerTimeProviderType.None, EDynamicPrayerTimeProviderType.Muwaqqit)]
         [TimeTypeForPrayerType(EPrayerType.Maghrib)]
         [DegreeTimeType]
         MaghribIshtibaq,
@@ -111,13 +111,13 @@ namespace PrayerTimeEngine.Core.Common.Enum
 
         #region Isha
 
-        [TimeTypeSupportedBy(ECalculationSource.None, ECalculationSource.Muwaqqit, ECalculationSource.Fazilet, ECalculationSource.Semerkand)]
+        [TimeTypeSupportedBy(EDynamicPrayerTimeProviderType.None, EDynamicPrayerTimeProviderType.Muwaqqit, EDynamicPrayerTimeProviderType.Fazilet, EDynamicPrayerTimeProviderType.Semerkand)]
         [TimeTypeForPrayerType(EPrayerType.Isha)]
         [DegreeTimeType]
         [IsNotHidableTimeType]
         IshaStart,
 
-        [TimeTypeSupportedBy(ECalculationSource.None, ECalculationSource.Muwaqqit, ECalculationSource.Fazilet, ECalculationSource.Semerkand)]
+        [TimeTypeSupportedBy(EDynamicPrayerTimeProviderType.None, EDynamicPrayerTimeProviderType.Muwaqqit, EDynamicPrayerTimeProviderType.Fazilet, EDynamicPrayerTimeProviderType.Semerkand)]
         [TimeTypeForPrayerType(EPrayerType.Isha)]
         [DegreeTimeType]
         [IsNotHidableTimeType]

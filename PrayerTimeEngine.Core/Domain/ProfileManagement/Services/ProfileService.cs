@@ -38,18 +38,18 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Services
             return profile.TimeConfigs.FirstOrDefault(x => x.TimeType == timeType)?.CalculationConfiguration;
         }
 
-        public BaseLocationData GetLocationConfig(Profile profile, ECalculationSource calculationSource)
+        public BaseLocationData GetLocationConfig(Profile profile, EDynamicPrayerTimeProviderType dynamicPrayerTimeProviderType)
         {
-            return profile.LocationConfigs.FirstOrDefault(x => x.CalculationSource == calculationSource)?.LocationData;
+            return profile.LocationConfigs.FirstOrDefault(x => x.DynamicPrayerTimeProvider == dynamicPrayerTimeProviderType)?.LocationData;
         }
 
         public Task UpdateLocationConfig(
             Profile profile,
             ProfilePlaceInfo placeInfo,
-            List<(ECalculationSource CalculationSource, BaseLocationData LocationData)> locationDataByCalculationSource,
+            List<(EDynamicPrayerTimeProviderType DynamicPrayerTimeProvider, BaseLocationData LocationData)> locationDataByDynamicPrayerTimeProvider,
             CancellationToken cancellationToken)
         {
-            return profileDBAccess.UpdateLocationConfig(profile, placeInfo, locationDataByCalculationSource, cancellationToken);
+            return profileDBAccess.UpdateLocationConfig(profile, placeInfo, locationDataByDynamicPrayerTimeProvider, cancellationToken);
         }
 
         public Task UpdateTimeConfig(Profile profile, ETimeType timeType, GenericSettingConfiguration settings, CancellationToken cancellationToken)
@@ -62,9 +62,9 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Services
             if (profile is null)
                 return string.Empty;
 
-            MuwaqqitLocationData muwaqqitLocationData = GetLocationConfig(profile, ECalculationSource.Muwaqqit) as MuwaqqitLocationData;
-            FaziletLocationData faziletLocationData = GetLocationConfig(profile, ECalculationSource.Fazilet) as FaziletLocationData;
-            SemerkandLocationData semerkandLocationData = GetLocationConfig(profile, ECalculationSource.Semerkand) as SemerkandLocationData;
+            MuwaqqitLocationData muwaqqitLocationData = GetLocationConfig(profile, EDynamicPrayerTimeProviderType.Muwaqqit) as MuwaqqitLocationData;
+            FaziletLocationData faziletLocationData = GetLocationConfig(profile, EDynamicPrayerTimeProviderType.Fazilet) as FaziletLocationData;
+            SemerkandLocationData semerkandLocationData = GetLocationConfig(profile, EDynamicPrayerTimeProviderType.Semerkand) as SemerkandLocationData;
 
             return $"""
                     Muwaqqit:
@@ -130,7 +130,7 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Services
                 .Where(config =>
                     config is GenericSettingConfiguration
                     {
-                        Source: not ECalculationSource.None,
+                        Source: not EDynamicPrayerTimeProviderType.None,
                         IsTimeShown: true
                     })
                 .ToList();
@@ -167,7 +167,7 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Services
                 [
                     new()
                     {
-                        CalculationSource = ECalculationSource.Muwaqqit,
+                        DynamicPrayerTimeProvider = EDynamicPrayerTimeProviderType.Muwaqqit,
                         ProfileID = profile.ID,
                         Profile = profile,
                         LocationData =
@@ -180,7 +180,7 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Services
                     },
                     new()
                     {
-                        CalculationSource = ECalculationSource.Fazilet,
+                        DynamicPrayerTimeProvider = EDynamicPrayerTimeProviderType.Fazilet,
                         ProfileID = profile.ID,
                         Profile = profile,
                         LocationData =
@@ -192,7 +192,7 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Services
                     },
                     new()
                     {
-                        CalculationSource = ECalculationSource.Semerkand,
+                        DynamicPrayerTimeProvider = EDynamicPrayerTimeProviderType.Semerkand,
                         ProfileID = profile.ID,
                         Profile = profile,
                         LocationData =
@@ -213,7 +213,7 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Services
                         ProfileID = profile.ID,
                         Profile = profile,
                         // späteste Berechnung
-                        CalculationConfiguration = new GenericSettingConfiguration { Source = ECalculationSource.Fazilet, TimeType = ETimeType.FajrStart }
+                        CalculationConfiguration = new GenericSettingConfiguration { Source = EDynamicPrayerTimeProviderType.Fazilet, TimeType = ETimeType.FajrStart }
                     },
                     new()
                     {
@@ -221,7 +221,7 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Services
                         ProfileID = profile.ID,
                         Profile = profile,
                         // früheste Berechnung
-                        CalculationConfiguration = new GenericSettingConfiguration { Source = ECalculationSource.Semerkand, MinuteAdjustment = -5, TimeType = ETimeType.FajrEnd }
+                        CalculationConfiguration = new GenericSettingConfiguration { Source = EDynamicPrayerTimeProviderType.Semerkand, MinuteAdjustment = -5, TimeType = ETimeType.FajrEnd }
                     },
                     new()
                     {
@@ -261,7 +261,7 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Services
                         ProfileID = profile.ID,
                         Profile = profile,
                         // späteste Berechnung
-                        CalculationConfiguration = new GenericSettingConfiguration { Source = ECalculationSource.Fazilet, TimeType = ETimeType.DhuhrStart }
+                        CalculationConfiguration = new GenericSettingConfiguration { Source = EDynamicPrayerTimeProviderType.Fazilet, TimeType = ETimeType.DhuhrStart }
                     },
                     new()
                     {
@@ -269,7 +269,7 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Services
                         ProfileID = profile.ID,
                         Profile = profile,
                         // früheste Berechnung
-                        CalculationConfiguration = new GenericSettingConfiguration { Source = ECalculationSource.Muwaqqit, MinuteAdjustment = -5, TimeType = ETimeType.DhuhrEnd }
+                        CalculationConfiguration = new GenericSettingConfiguration { Source = EDynamicPrayerTimeProviderType.Muwaqqit, MinuteAdjustment = -5, TimeType = ETimeType.DhuhrEnd }
                     },
                     new()
                     {
@@ -277,7 +277,7 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Services
                         ProfileID = profile.ID,
                         Profile = profile,
                         // späteste Berechnung
-                        CalculationConfiguration = new GenericSettingConfiguration { Source = ECalculationSource.Fazilet, TimeType = ETimeType.AsrStart }
+                        CalculationConfiguration = new GenericSettingConfiguration { Source = EDynamicPrayerTimeProviderType.Fazilet, TimeType = ETimeType.AsrStart }
                     },
                     new()
                     {
@@ -285,14 +285,14 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Services
                         ProfileID = profile.ID,
                         Profile = profile,
                         // früheste Berechnung
-                        CalculationConfiguration = new GenericSettingConfiguration { Source = ECalculationSource.Muwaqqit, MinuteAdjustment = -5, TimeType = ETimeType.AsrEnd }
+                        CalculationConfiguration = new GenericSettingConfiguration { Source = EDynamicPrayerTimeProviderType.Muwaqqit, MinuteAdjustment = -5, TimeType = ETimeType.AsrEnd }
                     },
                     new()
                     {
                         TimeType = ETimeType.AsrMithlayn,
                         ProfileID = profile.ID,
                         Profile = profile,
-                        CalculationConfiguration = new GenericSettingConfiguration { Source = ECalculationSource.Muwaqqit, TimeType = ETimeType.AsrMithlayn }
+                        CalculationConfiguration = new GenericSettingConfiguration { Source = EDynamicPrayerTimeProviderType.Muwaqqit, TimeType = ETimeType.AsrMithlayn }
                     },
                     new()
                     {
@@ -308,7 +308,7 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Services
                         ProfileID = profile.ID,
                         Profile = profile,
                         // späteste Berechnung
-                        CalculationConfiguration = new GenericSettingConfiguration { Source = ECalculationSource.Fazilet, TimeType = ETimeType.MaghribStart }
+                        CalculationConfiguration = new GenericSettingConfiguration { Source = EDynamicPrayerTimeProviderType.Fazilet, TimeType = ETimeType.MaghribStart }
                     },
                     new()
                     {
@@ -316,7 +316,7 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Services
                         ProfileID = profile.ID,
                         Profile = profile,
                         // ### keine Erfahrung, aber Sicherheitsabstand
-                        CalculationConfiguration = new GenericSettingConfiguration { Source = ECalculationSource.Semerkand, MinuteAdjustment = -5, TimeType = ETimeType.MaghribEnd }
+                        CalculationConfiguration = new GenericSettingConfiguration { Source = EDynamicPrayerTimeProviderType.Semerkand, MinuteAdjustment = -5, TimeType = ETimeType.MaghribEnd }
                     },
                     new()
                     {
@@ -339,7 +339,7 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Services
                         ProfileID = profile.ID,
                         Profile = profile,
                         // späteste Berechnung
-                        CalculationConfiguration = new GenericSettingConfiguration { Source = ECalculationSource.Fazilet, TimeType = ETimeType.IshaStart }
+                        CalculationConfiguration = new GenericSettingConfiguration { Source = EDynamicPrayerTimeProviderType.Fazilet, TimeType = ETimeType.IshaStart }
                     },
                     new()
                     {
@@ -347,7 +347,7 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Services
                         ProfileID = profile.ID,
                         Profile = profile,
                         // früheste Berechnung
-                        CalculationConfiguration = new GenericSettingConfiguration { Source = ECalculationSource.Semerkand, TimeType = ETimeType.IshaEnd }
+                        CalculationConfiguration = new GenericSettingConfiguration { Source = EDynamicPrayerTimeProviderType.Semerkand, TimeType = ETimeType.IshaEnd }
                     }
                 ];
 
