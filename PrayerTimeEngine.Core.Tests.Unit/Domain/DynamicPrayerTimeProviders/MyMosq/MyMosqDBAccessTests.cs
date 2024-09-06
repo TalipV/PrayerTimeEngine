@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using NodaTime;
 using PrayerTimeEngine.Core.Data.EntityFramework;
+using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.MyMosq.Models.Entities;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.MyMosq.Services;
 using PrayerTimeEngine.Core.Tests.Common;
 
@@ -27,7 +28,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.DynamicPrayerTimeProviders.MyM
             var myMosqTime = new MyMosqPrayerTimes
             {
                 ID = 0,
-                Date = new LocalDate(2024, 8, 30),
+                Date = date,
                 ExternalID = externalID,
                 Fajr = new LocalTime(05, 05, 00),
                 FajrCongregation = new LocalTime(05, 35, 00),
@@ -63,7 +64,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.DynamicPrayerTimeProviders.MyM
 
             var newMyMosqTime = new MyMosqPrayerTimes
             {
-                Date = new LocalDate(2024, 8, 30),
+                Date = date,
                 ExternalID = externalID,
                 Fajr = new LocalTime(05, 05, 00),
                 FajrCongregation = new LocalTime(05, 35, 00),

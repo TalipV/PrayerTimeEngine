@@ -1,9 +1,11 @@
 ﻿using Microsoft.Extensions.Logging;
+using NodaTime;
 using OnScreenSizeMarkup.Maui.Helpers;
 using PrayerTimeEngine.Core.Common;
 using PrayerTimeEngine.Core.Domain.Models;
 using PrayerTimeEngine.Presentation.Services;
 using PrayerTimeEngine.Presentation.Views;
+using PrayerTimeEngine.Presentation.Views.MosquePrayerTime;
 using PrayerTimeEngine.Presentation.Views.PrayerTimes;
 using UraniumUI.Material.Controls;
 
@@ -13,9 +15,8 @@ namespace PrayerTimeEngine.Presentation.Pages.Main
     {
         private readonly MainPageViewModel _viewModel;
         private readonly IDispatcher _dispatcher;
-        private readonly ToastMessageService _toastMessageService;
         private readonly IPreferenceService _preferenceService;
-        private readonly ILogger<MainPage> _logger;
+        private readonly ISystemInfoService _systemInfoService;
         private readonly MainPageOptionsMenuService _mainPageOptionsMenuService;
 
         public MainPage(
@@ -23,14 +24,13 @@ namespace PrayerTimeEngine.Presentation.Pages.Main
                 MainPageViewModel viewModel,
                 ToastMessageService toastMessageService,
                 IPreferenceService preferenceService,
-                ILogger<MainPage> logger
+                ISystemInfoService systemInfoService
             )
         {
             BindingContext = _viewModel = viewModel;
             _dispatcher = dispatcher;
-            _toastMessageService = toastMessageService;
             _preferenceService = preferenceService;
-            _logger = logger;
+            _systemInfoService = systemInfoService;
             _mainPageOptionsMenuService =
                 new MainPageOptionsMenuService(
                     toastMessageService,
@@ -69,10 +69,14 @@ namespace PrayerTimeEngine.Presentation.Pages.Main
                                 cancel: "Abbrechen",
                                 destruction: null,
                                 "Neues Profil erstellen",
+                                "Neues Moschee-Profil erstellen",
                                 "Profil löschen"))
                             {
                                 case "Neues Profil erstellen":
                                     await _viewModel.CreateNewProfile();
+                                    break;
+                                case"Neues Moschee-Profil erstellen":
+                                    await _viewModel.CreateNewMosqueProfile();
                                     break;
                                 case "Profil löschen":
                                     await _viewModel.DeleteCurrentProfile();
@@ -87,7 +91,8 @@ namespace PrayerTimeEngine.Presentation.Pages.Main
         {
             _dispatcher.Dispatch(() =>
             {
-                prayerTimeGraphicView.DisplayPrayerTime = _viewModel.GetDisplayPrayerTime();
+                Instant instant = _systemInfoService.GetCurrentInstant();
+                prayerTimeGraphicView.DisplayPrayerTime = _viewModel.CurrentProfileWithModel.GetDisplayPrayerTime(instant);
                 prayerTimeGraphicViewBaseView.Invalidate();
             });
         }
@@ -126,6 +131,7 @@ namespace PrayerTimeEngine.Presentation.Pages.Main
         private Label _profileDisplayNameTextInfo;
         private PrayerTimeGraphicView prayerTimeGraphicView;
         private GraphicsView prayerTimeGraphicViewBaseView;
+        private CarouselView _carouselView;
 
         private Grid createUI()
         {
@@ -144,7 +150,10 @@ namespace PrayerTimeEngine.Presentation.Pages.Main
                 HorizontalTextAlignment = TextAlignment.Start,
                 VerticalTextAlignment = TextAlignment.Center
             };
-            _lastUpdatedTextInfo.SetBinding(Label.TextProperty, new Binding($"{nameof(MainPageViewModel.CurrentProfileWithModel)}.{nameof(PrayerTimeViewModel.PrayerTimeBundle)}.{nameof(PrayerTimesCollection.DataCalculationTimestamp)}", stringFormat: "{0:dd.MM, HH:mm:ss}"));
+            _lastUpdatedTextInfo.SetBinding(
+                Label.TextProperty, 
+                new Binding($"{nameof(MainPageViewModel.CurrentProfileWithModel)}.{nameof(DynamicPrayerTimeViewModel.PrayerTimesCollection)}.{nameof(PrayerTimesCollection.DataCalculationTimestamp)}", 
+                stringFormat: "{0:dd.MM, HH:mm:ss}"));
             titleGrid.AddWithSpan(_lastUpdatedTextInfo, row: 0, column: 0);
 
             _profileDisplayNameTextInfo = new Label
@@ -172,7 +181,7 @@ namespace PrayerTimeEngine.Presentation.Pages.Main
             searchBox.SetBinding(AutoCompleteTextField.TextProperty, nameof(MainPageViewModel.PlaceSearchText));
             searchBox.SetBinding(IsEnabledProperty, nameof(MainPageViewModel.IsNotLoadingPrayerTimesOrSelectedPlace));
 
-            var prayerTimesGridView = new PrayerTimesView(_viewModel);
+            var prayerTimesGridView = new DynamicPrayerTimeView(_viewModel);
 
             var mainGrid = new Grid
             {
@@ -193,24 +202,24 @@ namespace PrayerTimeEngine.Presentation.Pages.Main
             };
             prayerTimeGraphicViewBaseView.SetBinding(OpacityProperty, new Binding(nameof(MainPageViewModel.LoadingStatusOpacityValue)));
 
-            var carouselView = new CarouselView
+            _carouselView = new CarouselView
             {
-                ItemTemplate = new DataTemplate(() =>
+                ItemTemplate = new ProfileDataTemplateSelector
                 {
-                    var prayerTimeView = new PrayerTimesView(_viewModel);
-                    return prayerTimeView;
-                }),
+                    MosquePrayerTimeTemplate = new DataTemplate(() => new MosquePrayerTimeView()),
+                    PrayerTimesTemplate = new DataTemplate(() => new DynamicPrayerTimeView(_viewModel))
+                },
                 HorizontalOptions = LayoutOptions.Fill,
                 VerticalOptions = LayoutOptions.Fill,
                 Loop = false
             };
 
             // Bind the SelectedItem to CurrentProfile
-            carouselView.SetBinding(ItemsView.ItemsSourceProperty, new Binding(nameof(MainPageViewModel.ProfilesWithModel), mode: BindingMode.TwoWay));
-            carouselView.SetBinding(CarouselView.CurrentItemProperty, new Binding(nameof(MainPageViewModel.CurrentProfileWithModel), mode: BindingMode.TwoWay));
+            _carouselView.SetBinding(ItemsView.ItemsSourceProperty, new Binding(nameof(MainPageViewModel.ProfilesWithModel), mode: BindingMode.TwoWay));
+            _carouselView.SetBinding(CarouselView.CurrentItemProperty, new Binding(nameof(MainPageViewModel.CurrentProfileWithModel), mode: BindingMode.TwoWay));
 
             mainGrid.AddWithSpan(searchBox, row: 0, column: 0);
-            mainGrid.AddWithSpan(carouselView, row: 1, column: 0);
+            mainGrid.AddWithSpan(_carouselView, row: 1, column: 0);
             mainGrid.AddWithSpan(prayerTimeGraphicViewBaseView, row: 2, column: 0);
 
             mainGrid.SetBinding(OpacityProperty, new Binding(nameof(MainPageViewModel.LoadingStatusOpacityValue)));

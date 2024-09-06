@@ -21,7 +21,7 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
         public static RuntimeEntityType Create(RuntimeModel model, RuntimeEntityType baseEntityType = null)
         {
             var runtimeEntityType = model.AddEntityType(
-                "PrayerTimeEngine.Core.Domain.Calculators.Mosques.MyMosq.Models.Entities.MyMosqPrayerTimes",
+                "PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.MyMosq.Models.Entities.MyMosqPrayerTimes",
                 typeof(MyMosqPrayerTimes),
                 baseEntityType);
 

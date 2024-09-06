@@ -13,7 +13,6 @@ using NodaTime;
 using PrayerTimeEngine.Core.Common.Extension;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Semerkand.Models.Entities;
 
-
 #pragma warning disable 219, 612, 618
 #nullable disable
 
@@ -24,7 +23,7 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
         public static RuntimeEntityType Create(RuntimeModel model, RuntimeEntityType baseEntityType = null)
         {
             var runtimeEntityType = model.AddEntityType(
-                "PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Models.Entities.SemerkandCity",
+                "PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Semerkand.Models.Entities.SemerkandCity",
                 typeof(SemerkandCity),
                 baseEntityType);
 

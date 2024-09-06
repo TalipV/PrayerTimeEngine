@@ -6,9 +6,7 @@ using PrayerTimeEngine.Core.Common;
 using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Data.EntityFramework;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes;
-using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Management;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Models;
-using PrayerTimeEngine.Core.Domain.Models;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Interfaces;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Models;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Interfaces;
@@ -17,6 +15,7 @@ using PrayerTimeEngine.Presentation.Pages.DatabaseTables;
 using PrayerTimeEngine.Presentation.Pages.Settings.SettingsHandler;
 using PrayerTimeEngine.Presentation.Services;
 using PrayerTimeEngine.Presentation.Services.Navigation;
+using PrayerTimeEngine.Presentation.Views.MosquePrayerTime;
 using PrayerTimeEngine.Presentation.Views.PrayerTimes;
 using PrayerTimeEngine.Services.PrayerTimeSummaryNotification;
 using PropertyChanged;
@@ -29,7 +28,6 @@ namespace PrayerTimeEngine.Presentation.Pages.Main
             IDispatcher dispatcher,
             ToastMessageService toastMessageService,
             ISystemInfoService _systemInfoService,
-            IDynamicPrayerTimeProviderManager dynamicPrayerTimeProvider,
             IDynamicPrayerTimeProviderFactory prayerTimeServiceFactory,
             IPlaceService placeService,
             IProfileService profileService,
@@ -46,10 +44,10 @@ namespace PrayerTimeEngine.Presentation.Pages.Main
 
         #region properties
 
-        public List<PrayerTimeViewModel> ProfilesWithModel { get; set; }
+        public List<IPrayerTimeViewModel> ProfilesWithModel { get; set; }
 
         [OnChangedMethod(nameof(onCurrentProfileWithModelChanged))]
-        public PrayerTimeViewModel CurrentProfileWithModel { get; set; }
+        public IPrayerTimeViewModel CurrentProfileWithModel { get; set; }
         public Profile CurrentProfile
         {
             get
@@ -82,13 +80,6 @@ namespace PrayerTimeEngine.Presentation.Pages.Main
 
         public bool IsLoadingSelectedPlace { get; set; }
         public bool IsNotLoadingSelectedPlace => !IsLoadingSelectedPlace;
-
-        public bool ShowFajrGhalas { get; set; }
-        public bool ShowFajrRedness { get; set; }
-        public bool ShowMithlayn { get; set; }
-        public bool ShowKaraha { get; set; }
-        public bool ShowIshtibaq { get; set; }
-        public bool ShowMaghribSufficientTime { get; set; }
 
         [OnChangedMethod(nameof(onPlaceSearchTextChanged))]
         public string PlaceSearchText { get; set; }
@@ -206,7 +197,17 @@ namespace PrayerTimeEngine.Presentation.Pages.Main
         {
             List<Profile> profiles = await profileService.GetProfiles(cancellationToken: default);
 
-            ProfilesWithModel = profiles.Select(getPrayerTimeViewModel).ToList();
+            bool oldValue = _suspendOnCurrentProfileWithModelChanged;
+            try
+            {
+                _suspendOnCurrentProfileWithModelChanged = true;
+                ProfilesWithModel = profiles.Select(getPrayerTimeViewModel).ToList();
+            }
+            finally
+            {
+                _suspendOnCurrentProfileWithModelChanged = oldValue;
+            }
+            
             CurrentProfileWithModel =
                 ProfilesWithModel.FirstOrDefault(x => x.Profile.ID == selectedProfile)
                 ?? CurrentProfileWithModel
@@ -218,6 +219,23 @@ namespace PrayerTimeEngine.Presentation.Pages.Main
             CancellationToken cancellationToken = default;
 
             var copiedProfile = await profileService.CopyProfile(CurrentProfile, cancellationToken);
+            await reloadProfiles(copiedProfile.ID);
+        }
+
+        public async Task CreateNewMosqueProfile()
+        {
+            CancellationToken cancellationToken = default;
+
+            var copiedProfile = await profileService.CopyProfile(CurrentProfile, cancellationToken);
+
+            var dbContextFactory = MauiProgram.ServiceProvider.GetRequiredService<IDbContextFactory<AppDbContext>>();
+            using (AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(default))
+            {
+                dbContext.Entry(copiedProfile).State = EntityState.Unchanged;
+                copiedProfile.IsMosqueProfile = true;
+                await dbContext.SaveChangesAsync();
+            }
+
             await reloadProfiles(copiedProfile.ID);
         }
 
@@ -255,8 +273,6 @@ namespace PrayerTimeEngine.Presentation.Pages.Main
 
                     IsLoadingPrayerTimes = true;
 
-                    await showHideSpecificTimes(currentProfile);
-
                     loadingTimesCancellationTokenSource?.Cancel();
                     loadingTimesCancellationTokenSource?.Dispose();
                     loadingTimesCancellationTokenSource = new CancellationTokenSource();
@@ -265,11 +281,7 @@ namespace PrayerTimeEngine.Presentation.Pages.Main
                         _systemInfoService.GetCurrentInstant()
                             .InZone(DateTimeZoneProviders.Tzdb[currentProfile.PlaceInfo.TimezoneInfo.Name]);
 
-                    CurrentProfileWithModel.PrayerTimeBundle =
-                        await dynamicPrayerTimeProvider.CalculatePrayerTimesAsync(
-                            currentProfile.ID,
-                            zonedDateTime,
-                            loadingTimesCancellationTokenSource.Token);
+                    await CurrentProfileWithModel.RefreshData(zonedDateTime, loadingTimesCancellationTokenSource.Token);
 
                     OnAfterLoadingPrayerTimes_EventTrigger?.Invoke();
                 }
@@ -301,9 +313,16 @@ namespace PrayerTimeEngine.Presentation.Pages.Main
             logger.LogInformation("Refreshing data finished. ({RefreshCallID})", refreshCallID);
         }
 
-        private PrayerTimeViewModel getPrayerTimeViewModel(Profile profile)
+        private IPrayerTimeViewModel getPrayerTimeViewModel(Profile profile)
         {
-            return new PrayerTimeViewModel(this, profile);
+            IPrayerTimeViewModel viewModel = profile.IsMosqueProfile
+                ? MauiProgram.ServiceProvider.GetRequiredService<MosquePrayerTimeViewModel>()
+                : MauiProgram.ServiceProvider.GetRequiredService<DynamicPrayerTimeViewModel>();
+
+            viewModel.MainPageViewModel = this;
+            viewModel.Profile = profile;
+
+            return viewModel;
         }
 
         private async Task onBeforeFirstLoad()
@@ -347,29 +366,6 @@ namespace PrayerTimeEngine.Presentation.Pages.Main
                 logger.LogError(exception, "Error during onAfterFirstLoad");
                 toastMessageService.ShowError(exception?.Message);
             }
-        }
-
-        private async Task showHideSpecificTimes(Profile profile)
-        {
-            if (profile is null)
-                return;
-
-            await dispatcher.DispatchAsync(() =>
-            {
-                ShowFajrGhalas = isCalculationShown(profile, ETimeType.FajrGhalas);
-                ShowFajrRedness = isCalculationShown(profile, ETimeType.FajrKaraha);
-
-                ShowMithlayn = isCalculationShown(profile, ETimeType.AsrMithlayn);
-                ShowKaraha = isCalculationShown(profile, ETimeType.AsrKaraha);
-
-                ShowMaghribSufficientTime = isCalculationShown(profile, ETimeType.MaghribSufficientTime);
-                ShowIshtibaq = isCalculationShown(profile, ETimeType.MaghribIshtibaq);
-            });
-        }
-
-        private bool isCalculationShown(Profile profile, ETimeType timeData)
-        {
-            return profileService.GetTimeConfig(profile, timeData)?.IsTimeShown == true;
         }
 
         // TODO use different approach
@@ -479,22 +475,6 @@ namespace PrayerTimeEngine.Presentation.Pages.Main
             }
 
             return locationDataWithDynamicPrayerTimeProvider;
-        }
-
-        public AbstractPrayerTime GetDisplayPrayerTime()
-        {
-            var prayerTimeBundle = CurrentProfileWithModel?.PrayerTimeBundle;
-
-            // only show data when no information is lacking
-            if (prayerTimeBundle is null || prayerTimeBundle.AllPrayerTimes.Any(x => x.Start is null || x.End is null))
-            {
-                return null;
-            }
-
-            Instant currentInstant = _systemInfoService.GetCurrentInstant();
-
-            return prayerTimeBundle.AllPrayerTimes.FirstOrDefault(x => x.Start.Value.ToInstant() <= currentInstant && currentInstant <= x.End.Value.ToInstant())
-                ?? prayerTimeBundle.AllPrayerTimes.OrderBy(x => x.Start.Value.ToInstant()).FirstOrDefault(x => x.Start.Value.ToInstant() > currentInstant);
         }
 
         public async Task ShowDatabaseTable()
