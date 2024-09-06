@@ -2,7 +2,6 @@
 using OnScreenSizeMarkup.Maui.Helpers;
 using PrayerTimeEngine.Core.Common;
 using PrayerTimeEngine.Core.Domain.Models;
-using PrayerTimeEngine.Core.Domain.ProfileManagement.Models;
 using PrayerTimeEngine.Presentation.Services;
 using PrayerTimeEngine.Presentation.Views;
 using PrayerTimeEngine.Presentation.Views.PrayerTimes;
