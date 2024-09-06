@@ -1,9 +1,10 @@
 ﻿using NodaTime;
 using NodaTime.TimeZones;
 using PrayerTimeEngine.Core.Common.Enum;
-using PrayerTimeEngine.Core.Domain.DynamicPrayerTimeProviders.Fazilet.Models;
-using PrayerTimeEngine.Core.Domain.DynamicPrayerTimeProviders.Muwaqqit.Models;
-using PrayerTimeEngine.Core.Domain.DynamicPrayerTimeProviders.Semerkand.Models;
+using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Models;
+using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Models;
+using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Muwaqqit.Models;
+using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Semerkand.Models;
 using PrayerTimeEngine.Core.Domain.Models;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Models;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;

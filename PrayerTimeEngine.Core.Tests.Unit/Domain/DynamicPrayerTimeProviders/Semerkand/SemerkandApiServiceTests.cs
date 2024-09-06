@@ -3,7 +3,7 @@ using System.Net;
 using NodaTime;
 using PrayerTimeEngine.Core.Tests.Common.TestData;
 using Refit;
-using PrayerTimeEngine.Core.Domain.DynamicPrayerTimeProviders.Semerkand.Interfaces;
+using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Semerkand.Interfaces;
 
 namespace PrayerTimeEngine.Core.Tests.Unit.Domain.DynamicPrayerTimeProviders.Semerkand
 {

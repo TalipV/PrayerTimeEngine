@@ -2,11 +2,11 @@
 using NodaTime;
 using NSubstitute;
 using PrayerTimeEngine.Core.Common.Enum;
-using PrayerTimeEngine.Core.Domain.DynamicPrayerTimeProviders.Fazilet.Interfaces;
-using PrayerTimeEngine.Core.Domain.DynamicPrayerTimeProviders.Fazilet.Models;
-using PrayerTimeEngine.Core.Domain.DynamicPrayerTimeProviders.Fazilet.Models.Entities;
-using PrayerTimeEngine.Core.Domain.DynamicPrayerTimeProviders.Fazilet.Services;
-using PrayerTimeEngine.Core.Domain.Models;
+using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Models;
+using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Interfaces;
+using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Models;
+using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Models.Entities;
+using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Services;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Interfaces;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Models;
 using PrayerTimeEngine.Core.Tests.Common;

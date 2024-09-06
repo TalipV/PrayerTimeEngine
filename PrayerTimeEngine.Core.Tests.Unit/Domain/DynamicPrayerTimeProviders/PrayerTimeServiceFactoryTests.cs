@@ -1,9 +1,9 @@
 ﻿using NSubstitute;
 using PrayerTimeEngine.Core.Common.Enum;
-using PrayerTimeEngine.Core.Domain.DynamicPrayerTimeProviders.Fazilet.Services;
-using PrayerTimeEngine.Core.Domain.DynamicPrayerTimeProviders.Semerkand.Services;
-using PrayerTimeEngine.Core.Domain.DynamicPrayerTimeProviders;
-using PrayerTimeEngine.Core.Domain.DynamicPrayerTimeProviders.Muwaqqit.Services;
+using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes;
+using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Services;
+using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Muwaqqit.Services;
+using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Semerkand.Services;
 
 namespace PrayerTimeEngine.Core.Tests.Unit.Domain.DynamicPrayerTimeProviders
 {

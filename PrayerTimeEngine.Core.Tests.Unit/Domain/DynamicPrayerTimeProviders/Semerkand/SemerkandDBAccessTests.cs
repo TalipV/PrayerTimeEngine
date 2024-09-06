@@ -2,8 +2,8 @@
 using Microsoft.EntityFrameworkCore;
 using NodaTime;
 using PrayerTimeEngine.Core.Tests.Common;
-using PrayerTimeEngine.Core.Domain.DynamicPrayerTimeProviders.Semerkand.Models.Entities;
-using PrayerTimeEngine.Core.Domain.DynamicPrayerTimeProviders.Semerkand.Services;
+using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Semerkand.Models.Entities;
+using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Semerkand.Services;
 
 namespace PrayerTimeEngine.Core.Tests.Unit.Domain.DynamicPrayerTimeProviders.Semerkand
 {

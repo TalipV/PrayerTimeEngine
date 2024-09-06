@@ -1,4 +1,4 @@
-﻿using PrayerTimeEngine.Core.Domain.Models;
+﻿using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Models;
 
 namespace PrayerTimeEngine.Presentation.Pages.Settings.SettingsContent.Custom
 {

@@ -5,16 +5,16 @@ using NSubstitute;
 using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Data.EntityFramework;
 using PrayerTimeEngine.Core.Domain;
-using PrayerTimeEngine.Core.Domain.Models;
 using System.Data.Common;
 using NSubstitute.Extensions;
 using PrayerTimeEngine.Core.Tests.Common.TestData;
 using PrayerTimeEngine.Core.Common;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using PrayerTimeEngine.Core.Domain.DynamicPrayerTimeProviders.Muwaqqit.Models.Entities;
-using PrayerTimeEngine.Core.Domain.DynamicPrayerTimeProviders.Muwaqqit.Models;
-using PrayerTimeEngine.Core.Domain.DynamicPrayerTimeProviders.Muwaqqit.Interfaces;
-using PrayerTimeEngine.Core.Domain.DynamicPrayerTimeProviders.Muwaqqit.Services;
+using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Models;
+using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Muwaqqit.Interfaces;
+using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Muwaqqit.Models.Entities;
+using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Muwaqqit.Models;
+using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Muwaqqit.Services;
 
 namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
 {
