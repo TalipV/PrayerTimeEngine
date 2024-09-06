@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.Json;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NodaTime;
 using PrayerTimeEngine.Core.Common.Extension;
-using PrayerTimeEngine.Core.Domain.Calculators.Mosques.MyMosq.Models.Entities;
+using PrayerTimeEngine.Core.Domain.DynamicPrayerTimeProviders.Mosques.MyMosq.Models.Entities;
 
 #pragma warning disable 219, 612, 618
 #nullable disable

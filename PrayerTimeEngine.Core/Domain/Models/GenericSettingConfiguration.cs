@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 using PrayerTimeEngine.Core.Common.Enum;
-using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Models;
+using PrayerTimeEngine.Core.Domain.DynamicPrayerTimeProviders.Muwaqqit.Models;
 
 namespace PrayerTimeEngine.Core.Domain.Models
 {

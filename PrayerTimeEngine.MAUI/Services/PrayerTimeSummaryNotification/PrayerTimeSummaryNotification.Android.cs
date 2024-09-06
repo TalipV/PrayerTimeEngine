@@ -4,7 +4,7 @@ using Android.OS;
 using Microsoft.Extensions.Logging;
 using NodaTime;
 using PrayerTimeEngine.Core.Common;
-using PrayerTimeEngine.Core.Domain.CalculationManagement;
+using PrayerTimeEngine.Core.Domain.DynamicPrayerTimeProviderManagement;
 using PrayerTimeEngine.Core.Domain.Models;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Interfaces;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
