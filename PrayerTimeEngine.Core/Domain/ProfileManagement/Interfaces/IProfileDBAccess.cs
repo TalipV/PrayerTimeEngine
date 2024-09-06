@@ -10,7 +10,7 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Interfaces
         public Task<List<Profile>> GetProfiles(CancellationToken cancellationToken);
         public Task SaveProfile(Profile profile, CancellationToken cancellationToken);
 
-        public Task UpdateLocationConfig(Profile profile, ProfilePlaceInfo placeInfo, List<(ECalculationSource CalculationSource, BaseLocationData LocationData)> locationDataByCalculationSource, CancellationToken cancellationToken);
+        public Task UpdateLocationConfig(Profile profile, ProfilePlaceInfo placeInfo, List<(EDynamicPrayerTimeProviderType DynamicPrayerTimeProvider, BaseLocationData LocationData)> locationDataByDynamicPrayerTimeProvider, CancellationToken cancellationToken);
         public Task UpdateTimeConfig(Profile profile, ETimeType timeType, GenericSettingConfiguration settings, CancellationToken cancellationToken);
 
         public Task<Profile> GetUntrackedReferenceOfProfile(int profileID, CancellationToken cancellationToken);

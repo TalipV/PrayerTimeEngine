@@ -20,7 +20,7 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
 {
     [Config(typeof(BenchmarkConfig))]
     [MemoryDiagnoser]
-    public class MuwaqqitPrayerTimeCalculatorBenchmark
+    public class MuwaqqitDynamicPrayerTimeProviderBenchmark
     {
         #region data
 
@@ -29,17 +29,17 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
         private static readonly List<GenericSettingConfiguration> _configs =
             [
                 new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.FajrStart, Degree = -12.0 },
-                new GenericSettingConfiguration { TimeType = ETimeType.FajrEnd, Source = ECalculationSource.Muwaqqit },
+                new GenericSettingConfiguration { TimeType = ETimeType.FajrEnd, Source = EDynamicPrayerTimeProviderType.Muwaqqit },
                 new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.FajrGhalas, Degree = -7.5 },
                 new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.FajrKaraha, Degree = -4.5 },
                 new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.DuhaStart, Degree = 3.5 },
-                new GenericSettingConfiguration { TimeType = ETimeType.DhuhrStart, Source = ECalculationSource.Muwaqqit },
-                new GenericSettingConfiguration { TimeType = ETimeType.DhuhrEnd, Source = ECalculationSource.Muwaqqit },
-                new GenericSettingConfiguration { TimeType = ETimeType.AsrStart, Source = ECalculationSource.Muwaqqit },
-                new GenericSettingConfiguration { TimeType = ETimeType.AsrEnd, Source = ECalculationSource.Muwaqqit },
-                new GenericSettingConfiguration { TimeType = ETimeType.AsrMithlayn, Source = ECalculationSource.Muwaqqit },
+                new GenericSettingConfiguration { TimeType = ETimeType.DhuhrStart, Source = EDynamicPrayerTimeProviderType.Muwaqqit },
+                new GenericSettingConfiguration { TimeType = ETimeType.DhuhrEnd, Source = EDynamicPrayerTimeProviderType.Muwaqqit },
+                new GenericSettingConfiguration { TimeType = ETimeType.AsrStart, Source = EDynamicPrayerTimeProviderType.Muwaqqit },
+                new GenericSettingConfiguration { TimeType = ETimeType.AsrEnd, Source = EDynamicPrayerTimeProviderType.Muwaqqit },
+                new GenericSettingConfiguration { TimeType = ETimeType.AsrMithlayn, Source = EDynamicPrayerTimeProviderType.Muwaqqit },
                 new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.AsrKaraha, Degree = 4.5 },
-                new GenericSettingConfiguration { TimeType = ETimeType.MaghribStart, Source = ECalculationSource.Muwaqqit },
+                new GenericSettingConfiguration { TimeType = ETimeType.MaghribStart, Source = EDynamicPrayerTimeProviderType.Muwaqqit },
                 new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.MaghribEnd, Degree = -12.0 },
                 new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.MaghribIshtibaq, Degree = -8 },
                 new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.IshaStart, Degree = -15.5 },
@@ -56,11 +56,11 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
 
         #endregion data
 
-        private static MuwaqqitPrayerTimeCalculator getMuwaqqitPrayerTimeCalculator_DataFromDbStorage(
+        private static MuwaqqitDynamicPrayerTimeProvider getMuwaqqitDynamicPrayerTimeProvider_DataFromDbStorage(
             IDbContextFactory<AppDbContext> dbContextFactory)
         {
             // to make sure that before the benchmark the data is gotten from the APIService and stored in the db
-            new MuwaqqitPrayerTimeCalculator(
+            new MuwaqqitDynamicPrayerTimeProvider(
                     new MuwaqqitDBAccess(dbContextFactory),
                     SubstitutionHelper.GetMockedMuwaqqitApiService(),
                     new TimeTypeAttributeService()
@@ -70,16 +70,16 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
             IMuwaqqitApiService mockedMuwaqqitApiService = Substitute.For<IMuwaqqitApiService>();
             mockedMuwaqqitApiService.ReturnsForAll<Task<MuwaqqitPrayerTimes>>((callInfo) => throw new Exception("Don't use this!"));
 
-            return new MuwaqqitPrayerTimeCalculator(
+            return new MuwaqqitDynamicPrayerTimeProvider(
                     new MuwaqqitDBAccess(dbContextFactory),
                     mockedMuwaqqitApiService,
                     new TimeTypeAttributeService()
                 );
         }
 
-        private static MuwaqqitPrayerTimeCalculator getMuwaqqitPrayerTimeCalculator_DataFromApi()
+        private static MuwaqqitDynamicPrayerTimeProvider getMuwaqqitDynamicPrayerTimeProvider_DataFromApi()
         {
-            return new MuwaqqitPrayerTimeCalculator(
+            return new MuwaqqitDynamicPrayerTimeProvider(
                     // returns null per default
                     Substitute.For<IMuwaqqitDBAccess>(),
                     SubstitutionHelper.GetMockedMuwaqqitApiService(),
@@ -113,18 +113,18 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
             dbContextFactoryMock.CreateDbContext().Returns(mockableDbContext);
             dbContextFactoryMock.CreateDbContextAsync().Returns(callInfo => Task.FromResult(mockableDbContext));
 
-            _muwaqqitPrayerTimeCalculator_DataFromDbStorage = getMuwaqqitPrayerTimeCalculator_DataFromDbStorage(dbContextFactoryMock);
-            _muwaqqitPrayerTimeCalculator_DataFromApi = getMuwaqqitPrayerTimeCalculator_DataFromApi();
+            _muwaqqitDynamicPrayerTimeProvider_DataFromDbStorage = getMuwaqqitDynamicPrayerTimeProvider_DataFromDbStorage(dbContextFactoryMock);
+            _muwaqqitDynamicPrayerTimeProvider_DataFromApi = getMuwaqqitDynamicPrayerTimeProvider_DataFromApi();
         }
 
-        private static MuwaqqitPrayerTimeCalculator _muwaqqitPrayerTimeCalculator_DataFromDbStorage = null;
-        private static MuwaqqitPrayerTimeCalculator _muwaqqitPrayerTimeCalculator_DataFromApi = null;
+        private static MuwaqqitDynamicPrayerTimeProvider _muwaqqitDynamicPrayerTimeProvider_DataFromDbStorage = null;
+        private static MuwaqqitDynamicPrayerTimeProvider _muwaqqitDynamicPrayerTimeProvider_DataFromApi = null;
 
 #pragma warning disable CA1822 // Mark members as static
         [Benchmark]
-        public List<(ETimeType TimeType, ZonedDateTime ZonedDateTime)> MuwaqqitPrayerTimeCalculator_GetDataFromDb()
+        public List<(ETimeType TimeType, ZonedDateTime ZonedDateTime)> MuwaqqitDynamicPrayerTimeProvider_GetDataFromDb()
         {
-            var result = _muwaqqitPrayerTimeCalculator_DataFromDbStorage.GetPrayerTimesAsync(
+            var result = _muwaqqitDynamicPrayerTimeProvider_DataFromDbStorage.GetPrayerTimesAsync(
                 _zonedDateTime,
                 locationData: _locationData,
                 configurations: _configs, 
@@ -139,9 +139,9 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
         }
 
         [Benchmark]
-        public List<(ETimeType TimeType, ZonedDateTime ZonedDateTime)> MuwaqqitPrayerTimeCalculator_GetDataFromApi()
+        public List<(ETimeType TimeType, ZonedDateTime ZonedDateTime)> MuwaqqitDynamicPrayerTimeProvider_GetDataFromApi()
         {
-            var result = _muwaqqitPrayerTimeCalculator_DataFromApi.GetPrayerTimesAsync(
+            var result = _muwaqqitDynamicPrayerTimeProvider_DataFromApi.GetPrayerTimesAsync(
                 _zonedDateTime,
                 locationData: _locationData,
                 configurations: _configs, 

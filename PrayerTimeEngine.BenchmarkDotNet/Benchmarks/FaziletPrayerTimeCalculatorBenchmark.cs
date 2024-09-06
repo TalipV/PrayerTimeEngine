@@ -22,7 +22,7 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
 {
     [Config(typeof(BenchmarkConfig))]
     [MemoryDiagnoser(false)]
-    public class FaziletPrayerTimeCalculatorBenchmark
+    public class FaziletDynamicPrayerTimeProviderBenchmark
     {
         #region data
 
@@ -30,7 +30,7 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
 
         private static readonly List<GenericSettingConfiguration> _configs =
             [
-                new GenericSettingConfiguration { TimeType = ETimeType.DhuhrStart, Source = ECalculationSource.Fazilet }
+                new GenericSettingConfiguration { TimeType = ETimeType.DhuhrStart, Source = EDynamicPrayerTimeProviderType.Fazilet }
             ];
 
         private static readonly FaziletLocationData _locationData =
@@ -42,30 +42,30 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
 
         #endregion data
 
-        private static FaziletPrayerTimeCalculator getFaziletPrayerTimeCalculator_DataFromDbStorage(
+        private static FaziletDynamicPrayerTimeProvider getFaziletDynamicPrayerTimeProvider_DataFromDbStorage(
             IDbContextFactory<AppDbContext> dbContextFactory)
         {
             // to make sure that before the benchmark the data is gotten from the APIService and stored in the db
-            new FaziletPrayerTimeCalculator(
+            new FaziletDynamicPrayerTimeProvider(
                     new FaziletDBAccess(dbContextFactory),
                     SubstitutionHelper.GetMockedFaziletApiService(),
                     Substitute.For<IPlaceService>(),
-                    Substitute.For<ILogger<FaziletPrayerTimeCalculator>>()
+                    Substitute.For<ILogger<FaziletDynamicPrayerTimeProvider>>()
                 ).GetPrayerTimesAsync(_zonedDateTime, _locationData, _configs, default).GetAwaiter().GetResult();
 
             // throw exceptions when the calculator tries using the api
             IFaziletApiService mockedFaziletApiService = Substitute.For<IFaziletApiService>();
             mockedFaziletApiService.ReturnsForAll<Task<FaziletPrayerTimes>>((callInfo) => throw new Exception("Don't use this!"));
 
-            return new FaziletPrayerTimeCalculator(
+            return new FaziletDynamicPrayerTimeProvider(
                     new FaziletDBAccess(dbContextFactory),
                     mockedFaziletApiService,
                     Substitute.For<IPlaceService>(),
-                    Substitute.For<ILogger<FaziletPrayerTimeCalculator>>()
+                    Substitute.For<ILogger<FaziletDynamicPrayerTimeProvider>>()
                 );
         }
 
-        private static FaziletPrayerTimeCalculator getFaziletPrayerTimeCalculator_DataFromApi()
+        private static FaziletDynamicPrayerTimeProvider getFaziletDynamicPrayerTimeProvider_DataFromApi()
         {
             // db doesn't return any data
             var faziletDbAccessMock = Substitute.For<IFaziletDBAccess>();
@@ -73,12 +73,12 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
             faziletDbAccessMock.GetCitiesByCountryID(Arg.Any<int>(), Arg.Any<CancellationToken>()).Returns([]);
             faziletDbAccessMock.GetTimesByDateAndCityID(Arg.Any<ZonedDateTime>(), Arg.Any<int>(), Arg.Any<CancellationToken>()).ReturnsNull<FaziletPrayerTimes>();
 
-            return new FaziletPrayerTimeCalculator(
+            return new FaziletDynamicPrayerTimeProvider(
                     // returns null per default
                     faziletDbAccessMock,
                     SubstitutionHelper.GetMockedFaziletApiService(),
                     Substitute.For<IPlaceService>(),
-                    Substitute.For<ILogger<FaziletPrayerTimeCalculator>>()
+                    Substitute.For<ILogger<FaziletDynamicPrayerTimeProvider>>()
                 );
         }
 
@@ -108,18 +108,18 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
             dbContextFactoryMock.CreateDbContext().Returns(mockableDbContext);
             dbContextFactoryMock.CreateDbContextAsync().Returns(callInfo => Task.FromResult(mockableDbContext));
 
-            _faziletPrayerTimeCalculator_DataFromDbStorage = getFaziletPrayerTimeCalculator_DataFromDbStorage(dbContextFactoryMock);
-            _faziletPrayerTimeCalculator_DataFromApi = getFaziletPrayerTimeCalculator_DataFromApi();
+            _faziletDynamicPrayerTimeProvider_DataFromDbStorage = getFaziletDynamicPrayerTimeProvider_DataFromDbStorage(dbContextFactoryMock);
+            _faziletDynamicPrayerTimeProvider_DataFromApi = getFaziletDynamicPrayerTimeProvider_DataFromApi();
         }
 
-        private static FaziletPrayerTimeCalculator _faziletPrayerTimeCalculator_DataFromDbStorage = null;
-        private static FaziletPrayerTimeCalculator _faziletPrayerTimeCalculator_DataFromApi = null;
+        private static FaziletDynamicPrayerTimeProvider _faziletDynamicPrayerTimeProvider_DataFromDbStorage = null;
+        private static FaziletDynamicPrayerTimeProvider _faziletDynamicPrayerTimeProvider_DataFromApi = null;
 
 #pragma warning disable CA1822 // Mark members as static
         [Benchmark]
-        public List<(ETimeType TimeType, ZonedDateTime ZonedDateTime)> FaziletPrayerTimeCalculator_GetDataFromDb()
+        public List<(ETimeType TimeType, ZonedDateTime ZonedDateTime)> FaziletDynamicPrayerTimeProvider_GetDataFromDb()
         {
-            var result = _faziletPrayerTimeCalculator_DataFromDbStorage.GetPrayerTimesAsync(
+            var result = _faziletDynamicPrayerTimeProvider_DataFromDbStorage.GetPrayerTimesAsync(
                 _zonedDateTime,
                 locationData: _locationData,
                 configurations: _configs, 
@@ -134,9 +134,9 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
         }
 
         [Benchmark]
-        public List<(ETimeType TimeType, ZonedDateTime ZonedDateTime)> FaziletPrayerTimeCalculator_GetDataFromApi()
+        public List<(ETimeType TimeType, ZonedDateTime ZonedDateTime)> FaziletDynamicPrayerTimeProvider_GetDataFromApi()
         {
-            var result = _faziletPrayerTimeCalculator_DataFromApi.GetPrayerTimesAsync(
+            var result = _faziletDynamicPrayerTimeProvider_DataFromApi.GetPrayerTimesAsync(
                 _zonedDateTime,
                 locationData: _locationData,
                 configurations: _configs, 

@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using Plugin.Maui.DebugRainbows;
 using PrayerTimeEngine.Core.Common;
 using PrayerTimeEngine.Core.Data.EntityFramework;
+using PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels;
 using PrayerTimeEngine.Core.Data.WebSocket;
 using PrayerTimeEngine.Core.Data.WebSocket.Interfaces;
 using PrayerTimeEngine.Core.Domain;
@@ -89,18 +90,18 @@ namespace PrayerTimeEngine;
 /* TODO tests:
  * ### UNIT
  * # Semerkand
- * --- SemerkandPrayerTimeCalculator
+ * --- SemerkandDynamicPrayerTimeProvider
  * --- SemerkandApiService
  * --- SemerkandDBAccess
  * # Fazilet
- * --- FaziletPrayerTimeCalculator
+ * --- FaziletDynamicPrayerTimeProvider
  * --- FaziletApiService
  * --- FaziletDBAccess
  * # Muwaqqit
- * --- MuwaqqitPrayerTimeCalculator
+ * --- MuwaqqitDynamicPrayerTimeProvider
  * --- MuwaqqitApiService
  * --- MuwaqqitDBAccess
- * # CalculationManager
+ * # DynamicPrayerTimeProviderManager
  * # MyMosqPrayerTimes & MawaqitPrayerTimes: One test each to validate their respective scraped JSON inputs (i.e. every time text is a valid time and so on)
  */
 
@@ -224,8 +225,8 @@ public static class MauiProgram
         serviceCollection.AddTransient<IPreferenceService, PreferenceService>();
         serviceCollection.AddSingleton<TimeTypeAttributeService>();
 
-        serviceCollection.AddTransient<ICalculationManager, CalculationManager>();
-        serviceCollection.AddTransient<IPrayerTimeCalculatorFactory, PrayerTimeCalculatorFactory>();
+        serviceCollection.AddTransient<IDynamicPrayerTimeProviderManager, DynamicPrayerTimeProviderManager>();
+        serviceCollection.AddTransient<IDynamicPrayerTimeProviderFactory, DynamicPrayerTimeProviderFactory>();
 
         serviceCollection.AddTransient<IProfileService, ProfileService>();
         serviceCollection.AddTransient<IProfileDBAccess, ProfileDBAccess>();
@@ -265,7 +266,7 @@ public static class MauiProgram
                 config.BaseAddress = new Uri("https://fazilettakvimi.com/api/cms/");
             })
             .AddStandardResilienceHandler();
-        serviceCollection.AddTransient<FaziletPrayerTimeCalculator>();
+        serviceCollection.AddTransient<FaziletDynamicPrayerTimeProvider>();
 
         // SEMERKAND
         serviceCollection.AddTransient<ISemerkandDBAccess, SemerkandDBAccess>();
@@ -278,7 +279,7 @@ public static class MauiProgram
                 config.BaseAddress = new Uri("https://semerkandtakvimi.semerkandmobile.com/");
             })
             .AddStandardResilienceHandler(); 
-        serviceCollection.AddTransient<SemerkandPrayerTimeCalculator>();
+        serviceCollection.AddTransient<SemerkandDynamicPrayerTimeProvider>();
 
         // MUWAQQIT
         serviceCollection.AddTransient<IMuwaqqitDBAccess, MuwaqqitDBAccess>();
@@ -291,7 +292,7 @@ public static class MauiProgram
                 config.BaseAddress = new Uri("https://www.muwaqqit.com/");
             })
             .AddStandardResilienceHandler();
-        serviceCollection.AddTransient<MuwaqqitPrayerTimeCalculator>();
+        serviceCollection.AddTransient<MuwaqqitDynamicPrayerTimeProvider>();
 
         // MYMOSQ
         serviceCollection.AddTransient<IMyMosqDBAccess, MyMosqDBAccess>();

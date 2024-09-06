@@ -520,7 +520,7 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("CalculationSource")
+                    b.Property<int>("DynamicPrayerTimeProvider")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("InsertInstant")

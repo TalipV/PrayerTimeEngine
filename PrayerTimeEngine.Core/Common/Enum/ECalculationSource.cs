@@ -1,6 +1,6 @@
 ﻿namespace PrayerTimeEngine.Core.Common.Enum
 {
-    public enum ECalculationSource
+    public enum EDynamicPrayerTimeProviderType
     {
         None,
         Muwaqqit,

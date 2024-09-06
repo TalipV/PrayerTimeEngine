@@ -55,35 +55,35 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
                 mappingInfo: new RelationalTypeMappingInfo(
                     storeTypeName: "INTEGER"));
 
-            var calculationSource = runtimeEntityType.AddProperty(
-                "CalculationSource",
-                typeof(ECalculationSource),
-                propertyInfo: typeof(ProfileLocationConfig).GetProperty("CalculationSource", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                fieldInfo: typeof(ProfileLocationConfig).GetField("<CalculationSource>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
-            calculationSource.TypeMapping = IntTypeMapping.Default.Clone(
-                comparer: new ValueComparer<ECalculationSource>(
-                    (ECalculationSource v1, ECalculationSource v2) => object.Equals((object)v1, (object)v2),
-                    (ECalculationSource v) => v.GetHashCode(),
-                    (ECalculationSource v) => v),
-                keyComparer: new ValueComparer<ECalculationSource>(
-                    (ECalculationSource v1, ECalculationSource v2) => object.Equals((object)v1, (object)v2),
-                    (ECalculationSource v) => v.GetHashCode(),
-                    (ECalculationSource v) => v),
+            var dynamicPrayerTimeProvider = runtimeEntityType.AddProperty(
+                "DynamicPrayerTimeProvider",
+                typeof(EDynamicPrayerTimeProviderType),
+                propertyInfo: typeof(ProfileLocationConfig).GetProperty("DynamicPrayerTimeProvider", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(ProfileLocationConfig).GetField("<DynamicPrayerTimeProvider>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
+            dynamicPrayerTimeProvider.TypeMapping = IntTypeMapping.Default.Clone(
+                comparer: new ValueComparer<EDynamicPrayerTimeProviderType>(
+                    (EDynamicPrayerTimeProviderType v1, EDynamicPrayerTimeProviderType v2) => object.Equals((object)v1, (object)v2),
+                    (EDynamicPrayerTimeProviderType v) => v.GetHashCode(),
+                    (EDynamicPrayerTimeProviderType v) => v),
+                keyComparer: new ValueComparer<EDynamicPrayerTimeProviderType>(
+                    (EDynamicPrayerTimeProviderType v1, EDynamicPrayerTimeProviderType v2) => object.Equals((object)v1, (object)v2),
+                    (EDynamicPrayerTimeProviderType v) => v.GetHashCode(),
+                    (EDynamicPrayerTimeProviderType v) => v),
                 providerValueComparer: new ValueComparer<int>(
                     (int v1, int v2) => v1 == v2,
                     (int v) => v,
                     (int v) => v),
                 mappingInfo: new RelationalTypeMappingInfo(
                     storeTypeName: "INTEGER"),
-                converter: new ValueConverter<ECalculationSource, int>(
-                    (ECalculationSource value) => (int)value,
-                    (int value) => (ECalculationSource)value),
-                jsonValueReaderWriter: new JsonConvertedValueReaderWriter<ECalculationSource, int>(
+                converter: new ValueConverter<EDynamicPrayerTimeProviderType, int>(
+                    (EDynamicPrayerTimeProviderType value) => (int)value,
+                    (int value) => (EDynamicPrayerTimeProviderType)value),
+                jsonValueReaderWriter: new JsonConvertedValueReaderWriter<EDynamicPrayerTimeProviderType, int>(
                     JsonInt32ReaderWriter.Instance,
-                    new ValueConverter<ECalculationSource, int>(
-                        (ECalculationSource value) => (int)value,
-                        (int value) => (ECalculationSource)value)));
-            calculationSource.SetSentinelFromProviderValue(0);
+                    new ValueConverter<EDynamicPrayerTimeProviderType, int>(
+                        (EDynamicPrayerTimeProviderType value) => (int)value,
+                        (int value) => (EDynamicPrayerTimeProviderType)value)));
+            dynamicPrayerTimeProvider.SetSentinelFromProviderValue(0);
 
             var insertInstant = runtimeEntityType.AddProperty(
                 "InsertInstant",

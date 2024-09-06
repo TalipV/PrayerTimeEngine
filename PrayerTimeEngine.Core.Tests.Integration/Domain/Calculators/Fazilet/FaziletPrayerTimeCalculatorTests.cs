@@ -13,7 +13,7 @@ using PrayerTimeEngine.Core.Tests.Common.TestData;
 
 namespace PrayerTimeEngine.Core.Tests.Integration.Domain.Calculators.Fazilet
 {
-    public class FaziletPrayerTimeCalculatorTests : BaseTest
+    public class FaziletDynamicPrayerTimeProviderTests : BaseTest
     {
         [Fact]
         public async Task GetPrayerTimesAsync_NormalInput_PrayerTimesForThatDay()
@@ -26,28 +26,28 @@ namespace PrayerTimeEngine.Core.Tests.Integration.Domain.Calculators.Fazilet
                     serviceCollection.AddSingleton(Substitute.For<IPlaceService>());
                     serviceCollection.AddSingleton<IFaziletDBAccess, FaziletDBAccess>();
                     serviceCollection.AddSingleton<IFaziletApiService>(SubstitutionHelper.GetMockedFaziletApiService());
-                    serviceCollection.AddSingleton(Substitute.For<ILogger<FaziletPrayerTimeCalculator>>());
-                    serviceCollection.AddSingleton<FaziletPrayerTimeCalculator>();
+                    serviceCollection.AddSingleton(Substitute.For<ILogger<FaziletDynamicPrayerTimeProvider>>());
+                    serviceCollection.AddSingleton<FaziletDynamicPrayerTimeProvider>();
                 });
-            FaziletPrayerTimeCalculator faziletPrayerTimeCalculator = serviceProvider.GetRequiredService<FaziletPrayerTimeCalculator>();
+            FaziletDynamicPrayerTimeProvider faziletDynamicPrayerTimeProvider = serviceProvider.GetRequiredService<FaziletDynamicPrayerTimeProvider>();
 
             List<GenericSettingConfiguration> configs =
                 [
-                    new GenericSettingConfiguration { TimeType = ETimeType.FajrStart, Source = ECalculationSource.Fazilet },
-                    new GenericSettingConfiguration { TimeType = ETimeType.FajrEnd, Source = ECalculationSource.Fazilet },
-                    new GenericSettingConfiguration { TimeType = ETimeType.DhuhrStart, Source = ECalculationSource.Fazilet },
-                    new GenericSettingConfiguration { TimeType = ETimeType.DhuhrEnd, Source = ECalculationSource.Fazilet },
-                    new GenericSettingConfiguration { TimeType = ETimeType.AsrStart, Source = ECalculationSource.Fazilet },
-                    new GenericSettingConfiguration { TimeType = ETimeType.AsrEnd, Source = ECalculationSource.Fazilet },
-                    new GenericSettingConfiguration { TimeType = ETimeType.MaghribStart, Source = ECalculationSource.Fazilet },
-                    new GenericSettingConfiguration { TimeType = ETimeType.MaghribEnd, Source = ECalculationSource.Fazilet },
-                    new GenericSettingConfiguration { TimeType = ETimeType.IshaStart, Source = ECalculationSource.Fazilet },
-                    new GenericSettingConfiguration { TimeType = ETimeType.IshaEnd, Source = ECalculationSource.Fazilet },
+                    new GenericSettingConfiguration { TimeType = ETimeType.FajrStart, Source = EDynamicPrayerTimeProviderType.Fazilet },
+                    new GenericSettingConfiguration { TimeType = ETimeType.FajrEnd, Source = EDynamicPrayerTimeProviderType.Fazilet },
+                    new GenericSettingConfiguration { TimeType = ETimeType.DhuhrStart, Source = EDynamicPrayerTimeProviderType.Fazilet },
+                    new GenericSettingConfiguration { TimeType = ETimeType.DhuhrEnd, Source = EDynamicPrayerTimeProviderType.Fazilet },
+                    new GenericSettingConfiguration { TimeType = ETimeType.AsrStart, Source = EDynamicPrayerTimeProviderType.Fazilet },
+                    new GenericSettingConfiguration { TimeType = ETimeType.AsrEnd, Source = EDynamicPrayerTimeProviderType.Fazilet },
+                    new GenericSettingConfiguration { TimeType = ETimeType.MaghribStart, Source = EDynamicPrayerTimeProviderType.Fazilet },
+                    new GenericSettingConfiguration { TimeType = ETimeType.MaghribEnd, Source = EDynamicPrayerTimeProviderType.Fazilet },
+                    new GenericSettingConfiguration { TimeType = ETimeType.IshaStart, Source = EDynamicPrayerTimeProviderType.Fazilet },
+                    new GenericSettingConfiguration { TimeType = ETimeType.IshaEnd, Source = EDynamicPrayerTimeProviderType.Fazilet },
                 ];
 
             // ACT
             List<(ETimeType TimeType, ZonedDateTime ZonedDateTime)> result =
-                await faziletPrayerTimeCalculator.GetPrayerTimesAsync(
+                await faziletDynamicPrayerTimeProvider.GetPrayerTimesAsync(
                     new LocalDate(2023, 7, 29).AtStartOfDayInZone(TestDataHelper.EUROPE_VIENNA_TIME_ZONE),
                     new FaziletLocationData { CountryName = "Avusturya", CityName = "Innsbruck" },
                     configs, 

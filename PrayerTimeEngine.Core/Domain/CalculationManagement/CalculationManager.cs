@@ -10,15 +10,15 @@ using System.Collections.Concurrent;
 
 namespace PrayerTimeEngine.Core.Domain.CalculationManagement
 {
-    public class CalculationManager(
-            IPrayerTimeCalculatorFactory prayerTimeServiceFactory,
+    public class DynamicPrayerTimeProviderManager(
+            IDynamicPrayerTimeProviderFactory prayerTimeServiceFactory,
             IProfileService profileService,
             ISystemInfoService systemInfoService,
-            ILogger<CalculationManager> logger,
+            ILogger<DynamicPrayerTimeProviderManager> logger,
             IEnumerable<IPrayerTimeCacheCleaner> cacheCleaners
-        ) : ICalculationManager
+        ) : IDynamicPrayerTimeProviderManager
     {
-        private ConcurrentDictionary<(ZonedDateTime, int), (Profile, PrayerTimesBundle)> _cachedDateAndProfileIDToPrayerTimeBundle = new();
+        private readonly ConcurrentDictionary<(ZonedDateTime, int), (Profile, PrayerTimesBundle)> _cachedDateAndProfileIDToPrayerTimeBundle = new();
 
         private bool tryGetCachedCalculation(
             Profile profile, 
@@ -107,17 +107,17 @@ namespace PrayerTimeEngine.Core.Domain.CalculationManagement
 
             foreach (var timeConfigsByCalcSource in profileService.GetActiveComplexTimeConfigs(profile).GroupBy(x => x.Source))
             {
-                ECalculationSource calculationSource = timeConfigsByCalcSource.Key;
+                EDynamicPrayerTimeProviderType dynamicPrayerTimeProviderType = timeConfigsByCalcSource.Key;
                 List<GenericSettingConfiguration> configs = [.. timeConfigsByCalcSource];
 
-                IPrayerTimeCalculator prayerTimeCalculator = prayerTimeServiceFactory.GetPrayerTimeCalculatorByCalculationSource(calculationSource);
-                throwIfConfigsHaveUnsupportedTimeTypes(prayerTimeCalculator, calculationSource, configs);
-                BaseLocationData locationData = profileService.GetLocationConfig(profile, calculationSource);
+                IDynamicPrayerTimeProvider dynamicPrayerTimeProvider = prayerTimeServiceFactory.GetDynamicPrayerTimeProviderByDynamicPrayerTimeProvider(dynamicPrayerTimeProviderType);
+                throwIfConfigsHaveUnsupportedTimeTypes(dynamicPrayerTimeProvider, dynamicPrayerTimeProviderType, configs);
+                BaseLocationData locationData = profileService.GetLocationConfig(profile, dynamicPrayerTimeProviderType);
 
                 try
                 {
-                    var calculatorTask = 
-                        prayerTimeCalculator.GetPrayerTimesAsync(date, locationData, configs, cancellationToken)
+                    var calculatorTask =
+                        dynamicPrayerTimeProvider.GetPrayerTimesAsync(date, locationData, configs, cancellationToken)
                             .ContinueWith(task =>
                             {
                                 if (!task.IsCompletedSuccessfully)
@@ -136,7 +136,7 @@ namespace PrayerTimeEngine.Core.Domain.CalculationManagement
                 }
                 catch (Exception ex)
                 {
-                    logger.LogError(ex, "Error for {CalculatorName}", prayerTimeCalculator.GetType().Name);
+                    logger.LogError(ex, "Error for {CalculatorName}", dynamicPrayerTimeProviderType.GetType().Name);
                 }
             }
 
@@ -195,8 +195,8 @@ namespace PrayerTimeEngine.Core.Domain.CalculationManagement
         }
 
         private static void throwIfConfigsHaveUnsupportedTimeTypes(
-            IPrayerTimeCalculator timeCalculator,
-            ECalculationSource calculationSource,
+            IDynamicPrayerTimeProvider timeCalculator,
+            EDynamicPrayerTimeProviderType dynamicPrayerTimeProviderType,
             List<GenericSettingConfiguration> configs)
         {
             List<ETimeType> unsupportedTimeTypes =
@@ -207,7 +207,7 @@ namespace PrayerTimeEngine.Core.Domain.CalculationManagement
             if (unsupportedTimeTypes.Count != 0)
             {
                 throw new ArgumentException(
-                    $"{timeCalculator.GetType().Name}[{calculationSource}] does not support the following values of {nameof(ETimeType)}: " +
+                    $"{timeCalculator.GetType().Name}[{dynamicPrayerTimeProviderType}] does not support the following values of {nameof(ETimeType)}: " +
                     string.Join(", ", unsupportedTimeTypes));
             }
         }

@@ -12,7 +12,7 @@ using System.Net.WebSockets;
 namespace PrayerTimeEngine.Core.Tests.Integration.Domain.Calculators.MyMosq
 {
 
-    public class MyMosqPrayerTimeCalculatorTests : BaseTest
+    public class MyMosqDynamicPrayerTimeProviderTests : BaseTest
     {
         [Fact]
         public async Task GetPrayerTimesAsync_NormalInput_PrayerTimesForThatDay()

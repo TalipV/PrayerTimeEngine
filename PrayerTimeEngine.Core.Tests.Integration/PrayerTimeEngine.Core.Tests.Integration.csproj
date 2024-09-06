@@ -38,7 +38,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Domain\CalculationManager\" />
+    <Folder Include="Domain\DynamicPrayerTimeProviderManager\" />
     <Folder Include="Domain\PlaceManagement\" />
   </ItemGroup>
 

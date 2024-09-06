@@ -8,10 +8,10 @@ public partial class SettingsContentPage : ContentPage
 
     private StackLayout _configurableUIContainer;
 
-    private Picker _calculationSourcePicker;
+    private Picker _dynamicPrayerTimeProviderPicker;
     private Picker _minuteAdjustmentPicker;
 
-    private Label _calculationSourcePickerLabel;
+    private Label _dynamicPrayerTimeProviderPickerLabel;
     private Label _isTimeShownCheckBoxLabel;
     private CheckBox _isTimeShownCheckBox;
 
@@ -49,8 +49,8 @@ public partial class SettingsContentPage : ContentPage
                 ]
         };
 
-        _calculationSourcePickerLabel = new Label { Text = "Calculation Source" };
-        _calculationSourcePicker = new Picker();
+        _dynamicPrayerTimeProviderPickerLabel = new Label { Text = "Calculation Source" };
+        _dynamicPrayerTimeProviderPicker = new Picker();
 
         var minuteAdjustmentLabel = new Label { Text = "Minute Adjustment" };
         _minuteAdjustmentPicker = new Picker();
@@ -69,8 +69,8 @@ public partial class SettingsContentPage : ContentPage
 
         _configurableUIContainer = [];
 
-        grid.AddWithSpan(view: _calculationSourcePickerLabel);
-        grid.AddWithSpan(view: _calculationSourcePicker, row: 1, column: 0);
+        grid.AddWithSpan(view: _dynamicPrayerTimeProviderPickerLabel);
+        grid.AddWithSpan(view: _dynamicPrayerTimeProviderPicker, row: 1, column: 0);
         grid.AddWithSpan(view: minuteAdjustmentLabel, column: 2, columnSpan: 3);
         grid.AddWithSpan(view: _minuteAdjustmentPicker, row: 1, column: 2);
         grid.AddWithSpan(view: _isTimeShownCheckBoxLabel, row: 2, columnSpan: 3);
@@ -103,10 +103,10 @@ public partial class SettingsContentPage : ContentPage
 
     public void AddDataBindings()
     {
-        _calculationSourcePicker.SetBinding(Picker.ItemsSourceProperty, nameof(SettingsContentPageViewModel.CalculationSources), BindingMode.Default);
-        _calculationSourcePicker.SetBinding(Picker.SelectedItemProperty, nameof(SettingsContentPageViewModel.SelectedCalculationSource), BindingMode.TwoWay);
-        _calculationSourcePickerLabel.SetBinding(IsVisibleProperty, nameof(SettingsContentPageViewModel.ShowCalculationSourcePicker), BindingMode.Default);
-        _calculationSourcePicker.SetBinding(IsVisibleProperty, nameof(SettingsContentPageViewModel.ShowCalculationSourcePicker), BindingMode.Default);
+        _dynamicPrayerTimeProviderPicker.SetBinding(Picker.ItemsSourceProperty, nameof(SettingsContentPageViewModel.DynamicPrayerTimeProviders), BindingMode.Default);
+        _dynamicPrayerTimeProviderPicker.SetBinding(Picker.SelectedItemProperty, nameof(SettingsContentPageViewModel.SelectedDynamicPrayerTimeProvider), BindingMode.TwoWay);
+        _dynamicPrayerTimeProviderPickerLabel.SetBinding(IsVisibleProperty, nameof(SettingsContentPageViewModel.ShowDynamicPrayerTimeProviderPicker), BindingMode.Default);
+        _dynamicPrayerTimeProviderPicker.SetBinding(IsVisibleProperty, nameof(SettingsContentPageViewModel.ShowDynamicPrayerTimeProviderPicker), BindingMode.Default);
 
         _minuteAdjustmentPicker.SetBinding(Picker.ItemsSourceProperty, nameof(SettingsContentPageViewModel.MinuteAdjustments), BindingMode.Default);
         _minuteAdjustmentPicker.SetBinding(Picker.SelectedItemProperty, nameof(SettingsContentPageViewModel.SelectedMinuteAdjustment), BindingMode.TwoWay);

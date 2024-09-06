@@ -5,6 +5,6 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Models
 {
     public class MuwaqqitCalculationConfiguration : GenericSettingConfiguration
     {
-        public override ECalculationSource Source => ECalculationSource.Muwaqqit;
+        public override EDynamicPrayerTimeProviderType Source => EDynamicPrayerTimeProviderType.Muwaqqit;
     }
 }

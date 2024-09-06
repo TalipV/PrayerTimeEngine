@@ -29,8 +29,8 @@ namespace PrayerTimeEngine.Presentation.Pages.Main
             IDispatcher dispatcher,
             ToastMessageService toastMessageService,
             ISystemInfoService _systemInfoService,
-            ICalculationManager prayerTimeCalculator,
-            IPrayerTimeCalculatorFactory prayerTimeServiceFactory,
+            IDynamicPrayerTimeProviderManager dynamicPrayerTimeProvider,
+            IDynamicPrayerTimeProviderFactory prayerTimeServiceFactory,
             IPlaceService placeService,
             IProfileService profileService,
             INavigationService navigationService,
@@ -266,7 +266,7 @@ namespace PrayerTimeEngine.Presentation.Pages.Main
                             .InZone(DateTimeZoneProviders.Tzdb[currentProfile.PlaceInfo.TimezoneInfo.Name]);
 
                     CurrentProfileWithModel.PrayerTimeBundle =
-                        await prayerTimeCalculator.CalculatePrayerTimesAsync(
+                        await dynamicPrayerTimeProvider.CalculatePrayerTimesAsync(
                             currentProfile.ID,
                             zonedDateTime,
                             loadingTimesCancellationTokenSource.Token);
@@ -412,28 +412,28 @@ namespace PrayerTimeEngine.Presentation.Pages.Main
                     IsLoadingSelectedPlace = true;
 
                     ProfilePlaceInfo completePlaceInfo = await placeService.GetTimezoneInfo(SelectedPlace, cancellationToken: default);
-                    var locationDataWithCalculationSource = await getCalculationSourceWithLocationData(completePlaceInfo, cancellationToken: default);
+                    var locationDataWithDynamicPrayerTimeProvider = await getDynamicPrayerTimeProviderWithLocationData(completePlaceInfo, cancellationToken: default);
 
                     await profileService.UpdateLocationConfig(
                         currentProfile,
                         completePlaceInfo,
-                        locationDataWithCalculationSource,
+                        locationDataWithDynamicPrayerTimeProvider,
                     cancellationToken: default);
 
                     // notify UI for updates
                     await dispatcher.DispatchAsync(() => OnPropertyChanged(nameof(CurrentProfile)));
 
-                    HashSet<ECalculationSource> locationConfigCalculationSources =
+                    HashSet<EDynamicPrayerTimeProviderType> locationConfigDynamicPrayerTimeProviders =
                         currentProfile.LocationConfigs
-                            .Select(x => x.CalculationSource)
+                            .Select(x => x.DynamicPrayerTimeProvider)
                             .ToHashSet();
-                    List<ECalculationSource> missingLocationInfo =
-                        Enum.GetValues<ECalculationSource>()
-                            .Where(enumValue => enumValue != ECalculationSource.None && !locationConfigCalculationSources.Contains(enumValue))
+                    List<EDynamicPrayerTimeProviderType> missingLocationInfo =
+                        Enum.GetValues<EDynamicPrayerTimeProviderType>()
+                            .Where(enumValue => enumValue != EDynamicPrayerTimeProviderType.None && !locationConfigDynamicPrayerTimeProviders.Contains(enumValue))
                             .ToList();
                     if (missingLocationInfo.Count != 0)
                     {
-                        logger.LogWarning("Location information missing for the following calculation sources: {CalculationSources}", string.Join(", ", missingLocationInfo));
+                        logger.LogWarning("Location information missing for the following calculation sources: {DynamicPrayerTimeProviders}", string.Join(", ", missingLocationInfo));
                         toastMessageService.ShowWarning($"Location information missing for {string.Join(", ", missingLocationInfo)}");
                     }
                 }
@@ -461,24 +461,24 @@ namespace PrayerTimeEngine.Presentation.Pages.Main
             FoundPlacesSelectionTexts = [];
         }
 
-        private async Task<List<(ECalculationSource, BaseLocationData)>> getCalculationSourceWithLocationData(ProfilePlaceInfo completePlaceInfo, CancellationToken cancellationToken)
+        private async Task<List<(EDynamicPrayerTimeProviderType, BaseLocationData)>> getDynamicPrayerTimeProviderWithLocationData(ProfilePlaceInfo completePlaceInfo, CancellationToken cancellationToken)
         {
-            var locationDataWithCalculationSource = new List<(ECalculationSource, BaseLocationData)>();
+            var locationDataWithDynamicPrayerTimeProvider = new List<(EDynamicPrayerTimeProviderType, BaseLocationData)>();
 
-            foreach (var calculationSource in Enum.GetValues<ECalculationSource>())
+            foreach (var dynamicPrayerTimeProvider in Enum.GetValues<EDynamicPrayerTimeProviderType>())
             {
-                if (calculationSource == ECalculationSource.None)
+                if (dynamicPrayerTimeProvider == EDynamicPrayerTimeProviderType.None)
                     continue;
 
                 BaseLocationData locationConfig =
                     await prayerTimeServiceFactory
-                        .GetPrayerTimeCalculatorByCalculationSource(calculationSource)
+                        .GetDynamicPrayerTimeProviderByDynamicPrayerTimeProvider(dynamicPrayerTimeProvider)
                         .GetLocationInfo(completePlaceInfo, cancellationToken);
 
-                locationDataWithCalculationSource.Add((calculationSource, locationConfig));
+                locationDataWithDynamicPrayerTimeProvider.Add((dynamicPrayerTimeProvider, locationConfig));
             }
 
-            return locationDataWithCalculationSource;
+            return locationDataWithDynamicPrayerTimeProvider;
         }
 
         public PrayerTime GetDisplayPrayerTime()

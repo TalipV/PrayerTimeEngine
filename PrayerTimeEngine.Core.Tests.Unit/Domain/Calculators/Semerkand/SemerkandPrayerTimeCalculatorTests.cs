@@ -17,25 +17,25 @@ using PrayerTimeEngine.Core.Tests.Common.TestData;
 
 namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
 {
-    public class SemerkandPrayerTimeCalculatorTests : BaseTest
+    public class SemerkandDynamicPrayerTimeProviderTests : BaseTest
     {
         private readonly ISemerkandDBAccess _semerkandDBAccessMock;
         private readonly ISemerkandApiService _semerkandApiServiceMock;
         private readonly IPlaceService _placeServiceMock;
-        private readonly SemerkandPrayerTimeCalculator _semerkandPrayerTimeCalculator;
+        private readonly SemerkandDynamicPrayerTimeProvider _semerkandDynamicPrayerTimeProvider;
 
-        public SemerkandPrayerTimeCalculatorTests()
+        public SemerkandDynamicPrayerTimeProviderTests()
         {
             _semerkandDBAccessMock = Substitute.For<ISemerkandDBAccess>();
             _semerkandApiServiceMock = Substitute.For<ISemerkandApiService>();
             _placeServiceMock = Substitute.For<IPlaceService>();
 
-            _semerkandPrayerTimeCalculator = 
-                new SemerkandPrayerTimeCalculator(
+            _semerkandDynamicPrayerTimeProvider = 
+                new SemerkandDynamicPrayerTimeProvider(
                     _semerkandDBAccessMock, 
                     _semerkandApiServiceMock, 
                     _placeServiceMock, 
-                    Substitute.For<ILogger<SemerkandPrayerTimeCalculator>>());
+                    Substitute.For<ILogger<SemerkandDynamicPrayerTimeProvider>>());
         }
 
         #region GetPrayerTimesAsync
@@ -49,7 +49,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
             BaseLocationData locationData = new SemerkandLocationData { CityName = "Berlin", CountryName = "Deutschland", TimezoneName = TestDataHelper.EUROPE_BERLIN_TIME_ZONE.Id };
             List<GenericSettingConfiguration> configurations = 
                 [
-                    new GenericSettingConfiguration { TimeType = ETimeType.FajrEnd, Source = ECalculationSource.Semerkand }
+                    new GenericSettingConfiguration { TimeType = ETimeType.FajrEnd, Source = EDynamicPrayerTimeProviderType.Semerkand }
                 ];
 
             _semerkandDBAccessMock.GetCountryIDByName(Arg.Is("Deutschland"), Arg.Any<CancellationToken>()).Returns(1);
@@ -76,7 +76,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
 
             // ACT
             List<(ETimeType TimeType, ZonedDateTime ZonedDateTime)> calculationResult = 
-                await _semerkandPrayerTimeCalculator.GetPrayerTimesAsync(zonedDate, locationData, configurations, default);
+                await _semerkandDynamicPrayerTimeProvider.GetPrayerTimesAsync(zonedDate, locationData, configurations, default);
 
             // ASSERT
             calculationResult.Should().NotBeNull().And.HaveCount(1);
@@ -146,11 +146,11 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
             var locationData = new SemerkandLocationData { CityName = "Berlin", CountryName = "Deutschland", TimezoneName = dateTimeZone.Id };
             List<GenericSettingConfiguration> configurations =
                 [
-                    new GenericSettingConfiguration { TimeType = ETimeType.FajrEnd, Source = ECalculationSource.Semerkand }
+                    new GenericSettingConfiguration { TimeType = ETimeType.FajrEnd, Source = EDynamicPrayerTimeProviderType.Semerkand }
                 ];
 
             // ACT
-            var calculationResult = await _semerkandPrayerTimeCalculator.GetPrayerTimesAsync(zonedDateTime, locationData, configurations, default);
+            var calculationResult = await _semerkandDynamicPrayerTimeProvider.GetPrayerTimesAsync(zonedDateTime, locationData, configurations, default);
 
             // ASSERT
             calculationResult.Should().NotBeNull().And.HaveCount(1);
@@ -216,11 +216,11 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
             var locationData = new SemerkandLocationData { CityName = "Berlin", CountryName = "Deutschland", TimezoneName = dateTimeZone.Id };
             List<GenericSettingConfiguration> configurations =
                 [
-                    new GenericSettingConfiguration { TimeType = ETimeType.FajrEnd, Source = ECalculationSource.Semerkand }
+                    new GenericSettingConfiguration { TimeType = ETimeType.FajrEnd, Source = EDynamicPrayerTimeProviderType.Semerkand }
                 ];
 
             // ACT
-            var calculationResult = await _semerkandPrayerTimeCalculator.GetPrayerTimesAsync(zonedDateTime, locationData, configurations, default);
+            var calculationResult = await _semerkandDynamicPrayerTimeProvider.GetPrayerTimesAsync(zonedDateTime, locationData, configurations, default);
 
             // ASSERT
             calculationResult.Should().NotBeNull().And.HaveCount(1);
@@ -287,13 +287,13 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Semerkand
             _semerkandDBAccessMock.GetCityIDByName(Arg.Is(1), Arg.Is("Innsbruck"), Arg.Any<CancellationToken>()).Returns(1);
 
             // ACT
-            var locationData = await _semerkandPrayerTimeCalculator.GetLocationInfo(completePlaceInfo, default) as SemerkandLocationData;
+            var locationData = await _semerkandDynamicPrayerTimeProvider.GetLocationInfo(completePlaceInfo, default) as SemerkandLocationData;
 
             // ASSERT
             locationData.Should().NotBeNull();
             locationData.CountryName.Should().Be("Avusturya");
             locationData.CityName.Should().Be("Innsbruck");
-            locationData.Source.Should().Be(ECalculationSource.Semerkand);
+            locationData.Source.Should().Be(EDynamicPrayerTimeProviderType.Semerkand);
             locationData.TimezoneName.Should().Be(TestDataHelper.EUROPE_VIENNA_TIME_ZONE.Id);
         }
 

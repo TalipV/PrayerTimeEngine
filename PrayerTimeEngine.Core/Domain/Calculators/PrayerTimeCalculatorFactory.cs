@@ -6,16 +6,16 @@ using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services;
 
 namespace PrayerTimeEngine.Core.Domain.Calculators
 {
-    public class PrayerTimeCalculatorFactory(IServiceProvider serviceProvider) : IPrayerTimeCalculatorFactory
+    public class DynamicPrayerTimeProviderFactory(IServiceProvider serviceProvider) : IDynamicPrayerTimeProviderFactory
     {
-        public IPrayerTimeCalculator GetPrayerTimeCalculatorByCalculationSource(ECalculationSource source)
+        public IDynamicPrayerTimeProvider GetDynamicPrayerTimeProviderByDynamicPrayerTimeProvider(EDynamicPrayerTimeProviderType source)
         {
             return source switch
             {
-                ECalculationSource.Fazilet => serviceProvider.GetService<FaziletPrayerTimeCalculator>(),
-                ECalculationSource.Semerkand => serviceProvider.GetService<SemerkandPrayerTimeCalculator>(),
-                ECalculationSource.Muwaqqit => serviceProvider.GetService<MuwaqqitPrayerTimeCalculator>(),
-                ECalculationSource.None => throw new ArgumentException(message: $"'{nameof(ECalculationSource.None)}' is not a valid calculation source", paramName: nameof(source)),
+                EDynamicPrayerTimeProviderType.Fazilet => serviceProvider.GetService<FaziletDynamicPrayerTimeProvider>(),
+                EDynamicPrayerTimeProviderType.Semerkand => serviceProvider.GetService<SemerkandDynamicPrayerTimeProvider>(),
+                EDynamicPrayerTimeProviderType.Muwaqqit => serviceProvider.GetService<MuwaqqitDynamicPrayerTimeProvider>(),
+                EDynamicPrayerTimeProviderType.None => throw new ArgumentException(message: $"'{nameof(EDynamicPrayerTimeProviderType.None)}' is not a valid calculation source", paramName: nameof(source)),
                 _ => throw new NotImplementedException($"No calculator service implemented for source: {source}"),
             };
         }

@@ -9,7 +9,7 @@ namespace PrayerTimeEngine.Core.Domain.Models
     public class GenericSettingConfiguration
     {
         public required ETimeType TimeType { get; init; }
-        public virtual ECalculationSource Source { get; init; } = ECalculationSource.None;
+        public virtual EDynamicPrayerTimeProviderType Source { get; init; } = EDynamicPrayerTimeProviderType.None;
         public int MinuteAdjustment { get; set; } = 0;
         public bool IsTimeShown { get; set; } = true;
 

@@ -50,9 +50,9 @@ namespace PrayerTimeEngine.Core.Tests.Integration.Domain.ProfileManagement
                     .Single();
 
             ProfilePlaceInfo oldPlaceInfo = profile.PlaceInfo;
-            var oldLocationDataByCalculationSource = profile.LocationConfigs.ToDictionary(x => x.CalculationSource, x => x.LocationData);
+            var oldLocationDataByDynamicPrayerTimeProvider = profile.LocationConfigs.ToDictionary(x => x.DynamicPrayerTimeProvider, x => x.LocationData);
 
-            ProfilePlaceInfo newPlaceInfo = new ProfilePlaceInfo
+            var newPlaceInfo = new ProfilePlaceInfo
             {
                 ExternalID = "1",
                 Longitude = 1M,
@@ -66,15 +66,15 @@ namespace PrayerTimeEngine.Core.Tests.Integration.Domain.ProfileManagement
                 TimezoneInfo = new TimezoneInfo { Name = TestDataHelper.EUROPE_BERLIN_TIME_ZONE.Id },
             };
 
-            var newLocationDataByCalculationSource = new Dictionary<ECalculationSource, BaseLocationData>
+            var newLocationDataByDynamicPrayerTimeProvider = new Dictionary<EDynamicPrayerTimeProviderType, BaseLocationData>
             {
-                [ECalculationSource.Muwaqqit] = new MuwaqqitLocationData { Latitude = 50.9413M, Longitude = 6.9583M, TimezoneName = TestDataHelper.EUROPE_BERLIN_TIME_ZONE.Id },
-                [ECalculationSource.Fazilet] = new FaziletLocationData { CountryName = "Almanya", CityName = newPlaceInfo.City },
-                [ECalculationSource.Semerkand] = new SemerkandLocationData { CountryName = "Almanya", CityName = newPlaceInfo.City, TimezoneName = TestDataHelper.EUROPE_BERLIN_TIME_ZONE.Id },
+                [EDynamicPrayerTimeProviderType.Muwaqqit] = new MuwaqqitLocationData { Latitude = 50.9413M, Longitude = 6.9583M, TimezoneName = TestDataHelper.EUROPE_BERLIN_TIME_ZONE.Id },
+                [EDynamicPrayerTimeProviderType.Fazilet] = new FaziletLocationData { CountryName = "Almanya", CityName = newPlaceInfo.City },
+                [EDynamicPrayerTimeProviderType.Semerkand] = new SemerkandLocationData { CountryName = "Almanya", CityName = newPlaceInfo.City, TimezoneName = TestDataHelper.EUROPE_BERLIN_TIME_ZONE.Id },
             };
 
             // ACT
-            await profileService.UpdateLocationConfig(profile, newPlaceInfo, newLocationDataByCalculationSource.Select(x => (x.Key, x.Value)).ToList(), default);
+            await profileService.UpdateLocationConfig(profile, newPlaceInfo, newLocationDataByDynamicPrayerTimeProvider.Select(x => (x.Key, x.Value)).ToList(), default);
 
             // ASSERT
             dbContext.ChangeTracker.HasChanges().Should().BeFalse();
@@ -83,10 +83,10 @@ namespace PrayerTimeEngine.Core.Tests.Integration.Domain.ProfileManagement
             profile.PlaceInfo.Should().NotBe(oldPlaceInfo);
             profile.PlaceInfo.Should().Be(newPlaceInfo);
 
-            foreach (var locationDataByCalculationSource in profile.LocationConfigs.ToDictionary(x => x.CalculationSource, x => x.LocationData))
+            foreach (var locationDataByDynamicPrayerTimeProvider in profile.LocationConfigs.ToDictionary(x => x.DynamicPrayerTimeProvider, x => x.LocationData))
             {
-                BaseLocationData newValue = newLocationDataByCalculationSource[locationDataByCalculationSource.Key];
-                BaseLocationData currentValue = locationDataByCalculationSource.Value;
+                BaseLocationData newValue = newLocationDataByDynamicPrayerTimeProvider[locationDataByDynamicPrayerTimeProvider.Key];
+                BaseLocationData currentValue = locationDataByDynamicPrayerTimeProvider.Value;
 
                 currentValue.Should().Be(newValue);
             }
@@ -127,12 +127,12 @@ namespace PrayerTimeEngine.Core.Tests.Integration.Domain.ProfileManagement
                     .Single();
 
             ProfilePlaceInfo oldPlaceInfo = profile.PlaceInfo;
-            var oldLocationDataByCalculationSource = profile.LocationConfigs.ToDictionary(x => x.CalculationSource, x => x.LocationData);
-            var newLocationDataByCalculationSource = new Dictionary<ECalculationSource, BaseLocationData>
+            var oldLocationDataByDynamicPrayerTimeProvider = profile.LocationConfigs.ToDictionary(x => x.DynamicPrayerTimeProvider, x => x.LocationData);
+            var newLocationDataByDynamicPrayerTimeProvider = new Dictionary<EDynamicPrayerTimeProviderType, BaseLocationData>
             {
-                [ECalculationSource.Muwaqqit] = new MuwaqqitLocationData { Latitude = 50.9413M, Longitude = 6.9583M, TimezoneName = TestDataHelper.EUROPE_BERLIN_TIME_ZONE.Id },
-                [ECalculationSource.Fazilet] = new FaziletLocationData { CountryName = "Almanya", CityName = "Köln" },
-                [ECalculationSource.Semerkand] = new SemerkandLocationData { CountryName = "Almanya", CityName = "Köln", TimezoneName = TestDataHelper.EUROPE_BERLIN_TIME_ZONE.Id },
+                [EDynamicPrayerTimeProviderType.Muwaqqit] = new MuwaqqitLocationData { Latitude = 50.9413M, Longitude = 6.9583M, TimezoneName = TestDataHelper.EUROPE_BERLIN_TIME_ZONE.Id },
+                [EDynamicPrayerTimeProviderType.Fazilet] = new FaziletLocationData { CountryName = "Almanya", CityName = "Köln" },
+                [EDynamicPrayerTimeProviderType.Semerkand] = new SemerkandLocationData { CountryName = "Almanya", CityName = "Köln", TimezoneName = TestDataHelper.EUROPE_BERLIN_TIME_ZONE.Id },
             };
 
             var newPlaceInfo =
@@ -161,7 +161,7 @@ namespace PrayerTimeEngine.Core.Tests.Integration.Domain.ProfileManagement
                     await profileService.UpdateLocationConfig(
                         profile: profile,
                         placeInfo: newPlaceInfo,
-                        locationDataByCalculationSource: newLocationDataByCalculationSource.Select(x => (x.Key, x.Value)).ToList(),
+                        locationDataByDynamicPrayerTimeProvider: newLocationDataByDynamicPrayerTimeProvider.Select(x => (x.Key, x.Value)).ToList(),
                         cancellationToken: default);
                 };
 
@@ -172,10 +172,10 @@ namespace PrayerTimeEngine.Core.Tests.Integration.Domain.ProfileManagement
             profile.PlaceInfo.Should().NotBe(newPlaceInfo);
             profile.PlaceInfo.Should().Be(oldPlaceInfo);
 
-            foreach (var locationDataByCalculationSource in profile.LocationConfigs.ToDictionary(x => x.CalculationSource, x => x.LocationData))
+            foreach (var locationDataByDynamicPrayerTimeProvider in profile.LocationConfigs.ToDictionary(x => x.DynamicPrayerTimeProvider, x => x.LocationData))
             {
-                BaseLocationData oldValue = oldLocationDataByCalculationSource[locationDataByCalculationSource.Key];
-                BaseLocationData currentValue = locationDataByCalculationSource.Value;
+                BaseLocationData oldValue = oldLocationDataByDynamicPrayerTimeProvider[locationDataByDynamicPrayerTimeProvider.Key];
+                BaseLocationData currentValue = locationDataByDynamicPrayerTimeProvider.Value;
 
                 currentValue.Should().Be(oldValue);
             }
@@ -209,7 +209,7 @@ namespace PrayerTimeEngine.Core.Tests.Integration.Domain.ProfileManagement
             var newSemerkandConfig =
                 new GenericSettingConfiguration
                 {
-                    Source = ECalculationSource.Semerkand,
+                    Source = EDynamicPrayerTimeProviderType.Semerkand,
                     TimeType = ETimeType.FajrStart
                 };
 
@@ -219,7 +219,7 @@ namespace PrayerTimeEngine.Core.Tests.Integration.Domain.ProfileManagement
             // ASSERT
 
             var fajrStartConfig = profileService.GetTimeConfig(profile, ETimeType.FajrStart);
-            fajrStartConfig.Source.Should().Be(ECalculationSource.Semerkand);
+            fajrStartConfig.Source.Should().Be(EDynamicPrayerTimeProviderType.Semerkand);
         }
     }
 }

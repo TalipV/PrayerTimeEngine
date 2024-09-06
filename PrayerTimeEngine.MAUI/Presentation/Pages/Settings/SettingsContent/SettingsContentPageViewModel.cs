@@ -53,8 +53,8 @@ namespace PrayerTimeEngine.Presentation.Pages.Settings.SettingsContent
         public string TabTitle { get; set; }
         public ETimeType TimeType { get; set; }
 
-        public List<ECalculationSource> CalculationSources { get; set; }
-        public ECalculationSource SelectedCalculationSource { get; set; }
+        public List<EDynamicPrayerTimeProviderType> DynamicPrayerTimeProviders { get; set; }
+        public EDynamicPrayerTimeProviderType SelectedDynamicPrayerTimeProvider { get; set; }
 
         public List<int> MinuteAdjustments { get; set; }
         public int SelectedMinuteAdjustment { get; set; }
@@ -63,7 +63,7 @@ namespace PrayerTimeEngine.Presentation.Pages.Settings.SettingsContent
         public bool IsTimeShownCheckBoxVisible { get; set; }
 
         public bool ShowMinuteAdjustmentPicker { get; set; }
-        public bool ShowCalculationSourcePicker { get; set; }
+        public bool ShowDynamicPrayerTimeProviderPicker { get; set; }
 
         public ISettingConfigurationViewModel CustomSettingConfigurationViewModel { get; set; }
 
@@ -77,10 +77,10 @@ namespace PrayerTimeEngine.Presentation.Pages.Settings.SettingsContent
         {
             TabTitle = $"{timeType}";
             TimeType = timeType;
-            ShowCalculationSourcePicker = !timeTypeAttributeService.ConfigurableSimpleTypes.Contains(timeType);
+            ShowDynamicPrayerTimeProviderPicker = !timeTypeAttributeService.ConfigurableSimpleTypes.Contains(timeType);
             IsTimeShownCheckBoxVisible = !timeTypeAttributeService.NotHideableTypes.Contains(timeType);
 
-            CalculationSources = getCalculationSource();
+            DynamicPrayerTimeProviders = getDynamicPrayerTimeProvider();
             MinuteAdjustments = getMinuteAdjustmentSource();
 
             Profile = profile;
@@ -89,21 +89,21 @@ namespace PrayerTimeEngine.Presentation.Pages.Settings.SettingsContent
                 ?? new GenericSettingConfiguration { TimeType = TimeType };
 
             IsTimeShown = !IsTimeShownCheckBoxVisible || calculationConfiguration.IsTimeShown;
-            SelectedCalculationSource = calculationConfiguration.Source;
+            SelectedDynamicPrayerTimeProvider = calculationConfiguration.Source;
             SelectedMinuteAdjustment = calculationConfiguration.MinuteAdjustment;
             _isInitialized = true;
 
-            OnSelectedCalculationSourceChanged();
+            OnSelectedDynamicPrayerTimeProviderChanged();
             CustomSettingConfigurationViewModel?.AssignSettingValues(calculationConfiguration);
             OnViewModelInitialize_EventTrigger();
         }
 
-        public void OnSelectedCalculationSourceChanged()
+        public void OnSelectedDynamicPrayerTimeProviderChanged()
         {
             if (!_isInitialized)
                 return;
 
-            if (SelectedCalculationSource == ECalculationSource.Muwaqqit
+            if (SelectedDynamicPrayerTimeProvider == EDynamicPrayerTimeProviderType.Muwaqqit
                 && timeTypeAttributeService.DegreeTypes.Contains(TimeType))
             {
                 CustomSettingConfigurationViewModel = new MuwaqqitDegreeSettingConfigurationViewModel(TimeType);
@@ -143,19 +143,19 @@ namespace PrayerTimeEngine.Presentation.Pages.Settings.SettingsContent
                 {
                     TimeType = TimeType,
                     MinuteAdjustment = SelectedMinuteAdjustment,
-                    Source = SelectedCalculationSource,
+                    Source = SelectedDynamicPrayerTimeProvider,
                     IsTimeShown = IsTimeShown
                 };
         }
 
-        private List<ECalculationSource> getCalculationSource()
+        private List<EDynamicPrayerTimeProviderType> getDynamicPrayerTimeProvider()
         {
-            if (!timeTypeAttributeService.TimeTypeCompatibleSources.TryGetValue(TimeType, out IReadOnlyList<ECalculationSource> calculationSources))
+            if (!timeTypeAttributeService.TimeTypeCompatibleSources.TryGetValue(TimeType, out IReadOnlyList<EDynamicPrayerTimeProviderType> dynamicPrayerTimeProviders))
             {
                 return [];
             }
 
-            return [.. calculationSources];
+            return [.. dynamicPrayerTimeProviders];
         }
 
         private List<int> getMinuteAdjustmentSource()

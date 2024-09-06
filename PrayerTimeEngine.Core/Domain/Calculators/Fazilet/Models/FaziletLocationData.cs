@@ -8,7 +8,7 @@ namespace PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Models
         public required string CountryName { get; init; }
         public required string CityName { get; init; }
 
-        public override ECalculationSource Source => ECalculationSource.Fazilet;
+        public override EDynamicPrayerTimeProviderType Source => EDynamicPrayerTimeProviderType.Fazilet;
 
         public override bool Equals(object obj)
         {

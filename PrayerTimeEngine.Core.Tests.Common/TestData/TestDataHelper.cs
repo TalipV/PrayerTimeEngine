@@ -55,21 +55,21 @@ namespace PrayerTimeEngine.Core.Tests.Common.TestData
                 [
                     new()
                     {
-                        CalculationSource = ECalculationSource.Muwaqqit,
+                        DynamicPrayerTimeProvider = EDynamicPrayerTimeProviderType.Muwaqqit,
                         ProfileID = profile.ID,
                         Profile = profile,
                         LocationData = new MuwaqqitLocationData{ Latitude = 47.2803835M,Longitude = 11.41337M, TimezoneName = EUROPE_VIENNA_TIME_ZONE.Id }
                     },
                     new()
                     {
-                        CalculationSource = ECalculationSource.Fazilet,
+                        DynamicPrayerTimeProvider = EDynamicPrayerTimeProviderType.Fazilet,
                         ProfileID = profile.ID,
                         Profile = profile,
                         LocationData = new FaziletLocationData{ CountryName = "Avusturya",CityName = "Innsbruck" }
                     },
                     new()
                     {
-                        CalculationSource = ECalculationSource.Semerkand,
+                        DynamicPrayerTimeProvider = EDynamicPrayerTimeProviderType.Semerkand,
                         ProfileID = profile.ID,
                         Profile = profile,
                         LocationData = new SemerkandLocationData{ CountryName = "Avusturya", CityName = "Innsbruck", TimezoneName = EUROPE_VIENNA_TIME_ZONE.Id }
@@ -83,14 +83,14 @@ namespace PrayerTimeEngine.Core.Tests.Common.TestData
                         TimeType = ETimeType.FajrStart,
                         ProfileID = profile.ID,
                         Profile = profile,
-                        CalculationConfiguration = new GenericSettingConfiguration { Source = ECalculationSource.Fazilet, TimeType = ETimeType.FajrStart }
+                        CalculationConfiguration = new GenericSettingConfiguration { Source = EDynamicPrayerTimeProviderType.Fazilet, TimeType = ETimeType.FajrStart }
                     },
                     new()
                     {
                         TimeType = ETimeType.FajrEnd,
                         ProfileID = profile.ID,
                         Profile = profile,
-                        CalculationConfiguration = new GenericSettingConfiguration { Source = ECalculationSource.Semerkand, TimeType = ETimeType.FajrEnd }
+                        CalculationConfiguration = new GenericSettingConfiguration { Source = EDynamicPrayerTimeProviderType.Semerkand, TimeType = ETimeType.FajrEnd }
                     },
                     new()
                     {
@@ -125,35 +125,35 @@ namespace PrayerTimeEngine.Core.Tests.Common.TestData
                         TimeType = ETimeType.DhuhrStart,
                         ProfileID = profile.ID,
                         Profile = profile,
-                        CalculationConfiguration = new GenericSettingConfiguration { Source = ECalculationSource.Fazilet, TimeType = ETimeType.DhuhrStart }
+                        CalculationConfiguration = new GenericSettingConfiguration { Source = EDynamicPrayerTimeProviderType.Fazilet, TimeType = ETimeType.DhuhrStart }
                     },
                     new()
                     {
                         TimeType = ETimeType.DhuhrEnd,
                         ProfileID = profile.ID,
                         Profile = profile,
-                        CalculationConfiguration = new GenericSettingConfiguration { Source = ECalculationSource.Muwaqqit, TimeType = ETimeType.DhuhrEnd }
+                        CalculationConfiguration = new GenericSettingConfiguration { Source = EDynamicPrayerTimeProviderType.Muwaqqit, TimeType = ETimeType.DhuhrEnd }
                     },
                     new()
                     {
                         TimeType = ETimeType.AsrStart,
                         ProfileID = profile.ID,
                         Profile = profile,
-                        CalculationConfiguration = new GenericSettingConfiguration { Source = ECalculationSource.Fazilet, TimeType = ETimeType.AsrStart }
+                        CalculationConfiguration = new GenericSettingConfiguration { Source = EDynamicPrayerTimeProviderType.Fazilet, TimeType = ETimeType.AsrStart }
                     },
                     new()
                     {
                         TimeType = ETimeType.AsrEnd,
                         ProfileID = profile.ID,
                         Profile = profile,
-                        CalculationConfiguration = new GenericSettingConfiguration { Source = ECalculationSource.Muwaqqit, TimeType = ETimeType.AsrEnd }
+                        CalculationConfiguration = new GenericSettingConfiguration { Source = EDynamicPrayerTimeProviderType.Muwaqqit, TimeType = ETimeType.AsrEnd }
                     },
                     new()
                     {
                         TimeType = ETimeType.AsrMithlayn,
                         ProfileID = profile.ID,
                         Profile = profile,
-                        CalculationConfiguration = new GenericSettingConfiguration { Source = ECalculationSource.Muwaqqit, TimeType = ETimeType.AsrMithlayn }
+                        CalculationConfiguration = new GenericSettingConfiguration { Source = EDynamicPrayerTimeProviderType.Muwaqqit, TimeType = ETimeType.AsrMithlayn }
                     },
                     new()
                     {
@@ -167,7 +167,7 @@ namespace PrayerTimeEngine.Core.Tests.Common.TestData
                         TimeType = ETimeType.MaghribStart,
                         ProfileID = profile.ID,
                         Profile = profile,
-                        CalculationConfiguration = new GenericSettingConfiguration { Source = ECalculationSource.Fazilet, TimeType = ETimeType.MaghribStart }
+                        CalculationConfiguration = new GenericSettingConfiguration { Source = EDynamicPrayerTimeProviderType.Fazilet, TimeType = ETimeType.MaghribStart }
                     },
                     new()
                     {
@@ -195,14 +195,14 @@ namespace PrayerTimeEngine.Core.Tests.Common.TestData
                         TimeType = ETimeType.IshaStart,
                         ProfileID = profile.ID,
                         Profile = profile,
-                        CalculationConfiguration = new GenericSettingConfiguration { Source = ECalculationSource.Fazilet, TimeType = ETimeType.IshaStart }
+                        CalculationConfiguration = new GenericSettingConfiguration { Source = EDynamicPrayerTimeProviderType.Fazilet, TimeType = ETimeType.IshaStart }
                     },
                     new()
                     {
                         TimeType = ETimeType.IshaEnd,
                         ProfileID = profile.ID,
                         Profile = profile,
-                        CalculationConfiguration = new GenericSettingConfiguration { Source = ECalculationSource.Semerkand, TimeType = ETimeType.IshaEnd }
+                        CalculationConfiguration = new GenericSettingConfiguration { Source = EDynamicPrayerTimeProviderType.Semerkand, TimeType = ETimeType.IshaEnd }
                     }
                 ];
 

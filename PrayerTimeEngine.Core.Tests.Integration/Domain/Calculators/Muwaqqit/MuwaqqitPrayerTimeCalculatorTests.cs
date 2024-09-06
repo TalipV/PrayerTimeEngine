@@ -14,7 +14,7 @@ using PrayerTimeEngine.Core.Tests.Common.TestData;
 
 namespace PrayerTimeEngine.Core.Tests.Integration.Domain.Calculators.Muwaqqit
 {
-    public class MuwaqqitPrayerTimeCalculatorTests : BaseTest
+    public class MuwaqqitDynamicPrayerTimeProviderTests : BaseTest
     {
         [Fact]
         public async Task GetPrayerTimesAsync_NormalInput_PrayerTimesForThatDay()
@@ -30,8 +30,8 @@ namespace PrayerTimeEngine.Core.Tests.Integration.Domain.Calculators.Muwaqqit
                     serviceCollection.AddSingleton(Substitute.For<ILogger<MuwaqqitDBAccess>>());
                     serviceCollection.AddSingleton<IMuwaqqitDBAccess, MuwaqqitDBAccess>();
                     serviceCollection.AddSingleton<IMuwaqqitApiService>(SubstitutionHelper.GetMockedMuwaqqitApiService());
-                    serviceCollection.AddSingleton(Substitute.For<ILogger<MuwaqqitPrayerTimeCalculator>>());
-                    serviceCollection.AddSingleton<MuwaqqitPrayerTimeCalculator>();
+                    serviceCollection.AddSingleton(Substitute.For<ILogger<MuwaqqitDynamicPrayerTimeProvider>>());
+                    serviceCollection.AddSingleton<MuwaqqitDynamicPrayerTimeProvider>();
                 });
 
             var date = new LocalDate(2023, 7, 30);
@@ -45,28 +45,28 @@ namespace PrayerTimeEngine.Core.Tests.Integration.Domain.Calculators.Muwaqqit
             List<GenericSettingConfiguration> configs =
                 [
                     new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.FajrStart, Degree = -12.0 },
-                    new GenericSettingConfiguration { TimeType = ETimeType.FajrEnd, Source = ECalculationSource.Muwaqqit },
+                    new GenericSettingConfiguration { TimeType = ETimeType.FajrEnd, Source = EDynamicPrayerTimeProviderType.Muwaqqit },
                     new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.FajrGhalas, Degree = -7.5 },
                     new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.FajrKaraha, Degree = -4.5 },
                     new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.DuhaStart, Degree = 3.5 },
-                    new GenericSettingConfiguration { TimeType = ETimeType.DhuhrStart, Source = ECalculationSource.Muwaqqit },
-                    new GenericSettingConfiguration { TimeType = ETimeType.DhuhrEnd, Source = ECalculationSource.Muwaqqit },
-                    new GenericSettingConfiguration { TimeType = ETimeType.AsrStart, Source = ECalculationSource.Muwaqqit },
-                    new GenericSettingConfiguration { TimeType = ETimeType.AsrEnd, Source = ECalculationSource.Muwaqqit },
-                    new GenericSettingConfiguration { TimeType = ETimeType.AsrMithlayn, Source = ECalculationSource.Muwaqqit },
+                    new GenericSettingConfiguration { TimeType = ETimeType.DhuhrStart, Source = EDynamicPrayerTimeProviderType.Muwaqqit },
+                    new GenericSettingConfiguration { TimeType = ETimeType.DhuhrEnd, Source = EDynamicPrayerTimeProviderType.Muwaqqit },
+                    new GenericSettingConfiguration { TimeType = ETimeType.AsrStart, Source = EDynamicPrayerTimeProviderType.Muwaqqit },
+                    new GenericSettingConfiguration { TimeType = ETimeType.AsrEnd, Source = EDynamicPrayerTimeProviderType.Muwaqqit },
+                    new GenericSettingConfiguration { TimeType = ETimeType.AsrMithlayn, Source = EDynamicPrayerTimeProviderType.Muwaqqit },
                     new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.AsrKaraha, Degree = 4.5 },
-                    new GenericSettingConfiguration { TimeType = ETimeType.MaghribStart, Source = ECalculationSource.Muwaqqit },
+                    new GenericSettingConfiguration { TimeType = ETimeType.MaghribStart, Source = EDynamicPrayerTimeProviderType.Muwaqqit },
                     new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.MaghribEnd, Degree = -12.0 },
                     new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.MaghribIshtibaq, Degree = -8 },
                     new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.IshaStart, Degree = -15.5 },
                     new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.IshaEnd, Degree = -15.0 },
                 ];
 
-            MuwaqqitPrayerTimeCalculator muwaqqitPrayerTimeCalculator = serviceProvider.GetRequiredService<MuwaqqitPrayerTimeCalculator>();
+            MuwaqqitDynamicPrayerTimeProvider muwaqqitDynamicPrayerTimeProvider = serviceProvider.GetRequiredService<MuwaqqitDynamicPrayerTimeProvider>();
 
             // ACT
             List<(ETimeType TimeType, ZonedDateTime ZonedDateTime)> result =
-                await muwaqqitPrayerTimeCalculator.GetPrayerTimesAsync(
+                await muwaqqitDynamicPrayerTimeProvider.GetPrayerTimesAsync(
                     date.AtStartOfDayInZone(dateTimeZone),
                     locationData,
                     configs, 

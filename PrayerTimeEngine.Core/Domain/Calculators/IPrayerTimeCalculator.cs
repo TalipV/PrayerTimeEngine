@@ -5,7 +5,7 @@ using PrayerTimeEngine.Core.Domain.PlaceManagement.Models;
 
 namespace PrayerTimeEngine.Core.Domain.Calculators
 {
-    public interface IPrayerTimeCalculator
+    public interface IDynamicPrayerTimeProvider
     {
         public Task<List<(ETimeType TimeType, ZonedDateTime ZonedDateTime)>> GetPrayerTimesAsync(ZonedDateTime date, BaseLocationData locationData, List<GenericSettingConfiguration> configurations, CancellationToken cancellationToken);
         public HashSet<ETimeType> GetUnsupportedTimeTypes();

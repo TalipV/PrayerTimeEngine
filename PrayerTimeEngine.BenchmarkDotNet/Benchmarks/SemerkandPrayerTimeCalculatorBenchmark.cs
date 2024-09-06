@@ -22,7 +22,7 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
 {
     [Config(typeof(BenchmarkConfig))]
     [MemoryDiagnoser]
-    public class SemerkandPrayerTimeCalculatorBenchmark
+    public class SemerkandDynamicPrayerTimeProviderBenchmark
     {
         #region data
 
@@ -30,7 +30,7 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
 
         private static readonly List<GenericSettingConfiguration> _configs =
             [
-                new GenericSettingConfiguration { TimeType = ETimeType.DhuhrStart, Source = ECalculationSource.Semerkand }
+                new GenericSettingConfiguration { TimeType = ETimeType.DhuhrStart, Source = EDynamicPrayerTimeProviderType.Semerkand }
             ];
 
         private static readonly SemerkandLocationData _locationData =
@@ -43,30 +43,30 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
 
         #endregion data
 
-        private static SemerkandPrayerTimeCalculator getSemerkandPrayerTimeCalculator_DataFromDbStorage(
+        private static SemerkandDynamicPrayerTimeProvider getSemerkandDynamicPrayerTimeProvider_DataFromDbStorage(
             IDbContextFactory<AppDbContext> dbContextFactory)
         {
             // to make sure that before the benchmark the data is gotten from the APIService and stored in the db
-            new SemerkandPrayerTimeCalculator(
+            new SemerkandDynamicPrayerTimeProvider(
                     new SemerkandDBAccess(dbContextFactory),
                     SubstitutionHelper.GetMockedSemerkandApiService(),
                     Substitute.For<IPlaceService>(),
-                    Substitute.For<ILogger<SemerkandPrayerTimeCalculator>>()
+                    Substitute.For<ILogger<SemerkandDynamicPrayerTimeProvider>>()
                 ).GetPrayerTimesAsync(_zonedDateTime, _locationData, _configs, default).GetAwaiter().GetResult();
 
             // throw exceptions when the calculator tries using the api
             ISemerkandApiService mockedSemerkandApiService = Substitute.For<ISemerkandApiService>();
             mockedSemerkandApiService.ReturnsForAll<Task<SemerkandPrayerTimes>>((callInfo) => throw new Exception("Don't use this!"));
 
-            return new SemerkandPrayerTimeCalculator(
+            return new SemerkandDynamicPrayerTimeProvider(
                     new SemerkandDBAccess(dbContextFactory),
                     mockedSemerkandApiService,
                     Substitute.For<IPlaceService>(),
-                    Substitute.For<ILogger<SemerkandPrayerTimeCalculator>>()
+                    Substitute.For<ILogger<SemerkandDynamicPrayerTimeProvider>>()
                 );
         }
 
-        private static SemerkandPrayerTimeCalculator getSemerkandPrayerTimeCalculator_DataFromApi()
+        private static SemerkandDynamicPrayerTimeProvider getSemerkandDynamicPrayerTimeProvider_DataFromApi()
         {
             // db doesn't return any data
             var semerkandDbAccessMock = Substitute.For<ISemerkandDBAccess>();
@@ -74,12 +74,12 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
             semerkandDbAccessMock.GetCitiesByCountryID(Arg.Any<int>(), Arg.Any<CancellationToken>()).Returns([]);
             semerkandDbAccessMock.GetTimesByDateAndCityID(Arg.Any<ZonedDateTime>(), Arg.Any<int>(), Arg.Any<CancellationToken>()).ReturnsNull<SemerkandPrayerTimes>();
 
-            return new SemerkandPrayerTimeCalculator(
+            return new SemerkandDynamicPrayerTimeProvider(
                     // returns null per default
                     semerkandDbAccessMock,
                     SubstitutionHelper.GetMockedSemerkandApiService(),
                     Substitute.For<IPlaceService>(),
-                    Substitute.For<ILogger<SemerkandPrayerTimeCalculator>>()
+                    Substitute.For<ILogger<SemerkandDynamicPrayerTimeProvider>>()
                 );
         }
 
@@ -108,18 +108,18 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
             dbContextFactoryMock.CreateDbContext().Returns(mockableDbContext);
             dbContextFactoryMock.CreateDbContextAsync().Returns(callInfo => Task.FromResult(mockableDbContext));
 
-            _semerkandPrayerTimeCalculator_DataFromDbStorage = getSemerkandPrayerTimeCalculator_DataFromDbStorage(dbContextFactoryMock);
-            _semerkandPrayerTimeCalculator_DataFromApi = getSemerkandPrayerTimeCalculator_DataFromApi();
+            _semerkandDynamicPrayerTimeProvider_DataFromDbStorage = getSemerkandDynamicPrayerTimeProvider_DataFromDbStorage(dbContextFactoryMock);
+            _semerkandDynamicPrayerTimeProvider_DataFromApi = getSemerkandDynamicPrayerTimeProvider_DataFromApi();
         }
 
-        private static SemerkandPrayerTimeCalculator _semerkandPrayerTimeCalculator_DataFromDbStorage = null;
-        private static SemerkandPrayerTimeCalculator _semerkandPrayerTimeCalculator_DataFromApi = null;
+        private static SemerkandDynamicPrayerTimeProvider _semerkandDynamicPrayerTimeProvider_DataFromDbStorage = null;
+        private static SemerkandDynamicPrayerTimeProvider _semerkandDynamicPrayerTimeProvider_DataFromApi = null;
 
 #pragma warning disable CA1822 // Mark members as static
         [Benchmark]
-        public List<(ETimeType TimeType, ZonedDateTime ZonedDateTime)> SemerkandPrayerTimeCalculator_GetDataFromDb()
+        public List<(ETimeType TimeType, ZonedDateTime ZonedDateTime)> SemerkandDynamicPrayerTimeProvider_GetDataFromDb()
         {
-            var result = _semerkandPrayerTimeCalculator_DataFromDbStorage.GetPrayerTimesAsync(
+            var result = _semerkandDynamicPrayerTimeProvider_DataFromDbStorage.GetPrayerTimesAsync(
                 _zonedDateTime,
                 locationData: _locationData,
                 configurations: _configs, 
@@ -134,9 +134,9 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
         }
 
         [Benchmark]
-        public List<(ETimeType TimeType, ZonedDateTime ZonedDateTime)> SemerkandPrayerTimeCalculator_GetDataFromApi()
+        public List<(ETimeType TimeType, ZonedDateTime ZonedDateTime)> SemerkandDynamicPrayerTimeProvider_GetDataFromApi()
         {
-            var result = _semerkandPrayerTimeCalculator_DataFromApi.GetPrayerTimesAsync(
+            var result = _semerkandDynamicPrayerTimeProvider_DataFromApi.GetPrayerTimesAsync(
                 _zonedDateTime,
                 locationData: _locationData,
                 configurations: _configs, 

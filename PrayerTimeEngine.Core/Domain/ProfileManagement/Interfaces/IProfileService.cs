@@ -11,9 +11,9 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Interfaces
         public Task SaveProfile(Profile profile, CancellationToken cancellationToken);
 
         public GenericSettingConfiguration GetTimeConfig(Profile profile, ETimeType timeType);
-        public BaseLocationData GetLocationConfig(Profile profile, ECalculationSource calculationSource);
+        public BaseLocationData GetLocationConfig(Profile profile, EDynamicPrayerTimeProviderType dynamicPrayerTimeProviderType);
 
-        public Task UpdateLocationConfig(Profile profile, ProfilePlaceInfo placeInfo, List<(ECalculationSource CalculationSource, BaseLocationData LocationData)> locationDataByCalculationSource, CancellationToken cancellationToken);
+        public Task UpdateLocationConfig(Profile profile, ProfilePlaceInfo placeInfo, List<(EDynamicPrayerTimeProviderType DynamicPrayerTimeProvider, BaseLocationData LocationData)> locationDataByDynamicPrayerTimeProvider, CancellationToken cancellationToken);
         public Task UpdateTimeConfig(Profile profile, ETimeType timeType, GenericSettingConfiguration settings, CancellationToken cancellationToken);
 
         public string GetLocationDataDisplayText(Profile profile);

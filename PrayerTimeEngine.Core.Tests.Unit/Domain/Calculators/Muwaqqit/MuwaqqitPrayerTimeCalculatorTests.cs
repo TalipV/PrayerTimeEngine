@@ -11,19 +11,19 @@ using PrayerTimeEngine.Core.Tests.Common;
 
 namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Muwaqqit
 {
-    public class MuwaqqitPrayerTimeCalculatorTests : BaseTest
+    public class MuwaqqitDynamicPrayerTimeProviderTests : BaseTest
     {
         private readonly IMuwaqqitDBAccess _muwaqqitDBAccessMock;
         private readonly IMuwaqqitApiService _muwaqqitApiServiceMock;
-        private readonly MuwaqqitPrayerTimeCalculator _muwaqqitPrayerTimeCalculator;
+        private readonly MuwaqqitDynamicPrayerTimeProvider _muwaqqitDynamicPrayerTimeProvider;
 
-        public MuwaqqitPrayerTimeCalculatorTests()
+        public MuwaqqitDynamicPrayerTimeProviderTests()
         {
             _muwaqqitDBAccessMock = Substitute.For<IMuwaqqitDBAccess>();
             _muwaqqitApiServiceMock = Substitute.For<IMuwaqqitApiService>();
 
-            _muwaqqitPrayerTimeCalculator =
-                new MuwaqqitPrayerTimeCalculator(
+            _muwaqqitDynamicPrayerTimeProvider =
+                new MuwaqqitDynamicPrayerTimeProvider(
                     _muwaqqitDBAccessMock,
                     _muwaqqitApiServiceMock,
                     new TimeTypeAttributeService());
@@ -84,7 +84,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.Calculators.Muwaqqit
 
             // ACT
             List<(ETimeType TimeType, ZonedDateTime ZonedDateTime)> result = 
-                await _muwaqqitPrayerTimeCalculator.GetPrayerTimesAsync(zonedDateTime, locationData, configurations, default);
+                await _muwaqqitDynamicPrayerTimeProvider.GetPrayerTimesAsync(zonedDateTime, locationData, configurations, default);
 
             // ASSERT
             result.FirstOrDefault(x => x.TimeType == ETimeType.FajrStart).Should().NotBeNull();

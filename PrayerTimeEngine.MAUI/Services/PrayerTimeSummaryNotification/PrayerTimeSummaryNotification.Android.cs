@@ -22,14 +22,14 @@ namespace PrayerTimeEngine.Services.PrayerTimeSummaryNotification
         private readonly System.Timers.Timer updateTimer;
 
         private readonly IProfileService _profileService;
-        private readonly ICalculationManager _prayerTimeCalculationManager;
+        private readonly IDynamicPrayerTimeProviderManager _prayerTimeDynamicPrayerTimeProviderManager;
         private readonly ILogger<PrayerTimeSummaryNotificationManager> _prayerTimeSummaryNotificationManager;
         private readonly ISystemInfoService _systemInfoService;
 
         public PrayerTimeSummaryNotification()
         {
             _profileService = MauiProgram.ServiceProvider.GetRequiredService<IProfileService>();
-            _prayerTimeCalculationManager = MauiProgram.ServiceProvider.GetRequiredService<ICalculationManager>();
+            _prayerTimeDynamicPrayerTimeProviderManager = MauiProgram.ServiceProvider.GetRequiredService<IDynamicPrayerTimeProviderManager>();
             _prayerTimeSummaryNotificationManager = MauiProgram.ServiceProvider.GetRequiredService<ILogger<PrayerTimeSummaryNotificationManager>>();
             _systemInfoService = MauiProgram.ServiceProvider.GetRequiredService<ISystemInfoService>();
 
@@ -140,7 +140,7 @@ namespace PrayerTimeEngine.Services.PrayerTimeSummaryNotification
                     .InZone(DateTimeZoneProviders.Tzdb[profile.PlaceInfo.TimezoneInfo.Name]);
 
             PrayerTimesBundle prayerTimeBundle = 
-                await _prayerTimeCalculationManager.CalculatePrayerTimesAsync(
+                await _prayerTimeDynamicPrayerTimeProviderManager.CalculatePrayerTimesAsync(
                     profile.ID, 
                     now, 
                     cancellationToken);

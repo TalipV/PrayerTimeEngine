@@ -251,7 +251,7 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_Migrations
                         .Annotation("Sqlite:Autoincrement", true),
                     InsertInstant = table.Column<string>(type: "TEXT", nullable: true),
                     ProfileID = table.Column<int>(type: "INTEGER", nullable: false),
-                    CalculationSource = table.Column<int>(type: "INTEGER", nullable: false),
+                    DynamicPrayerTimeProvider = table.Column<int>(type: "INTEGER", nullable: false),
                     LocationData = table.Column<string>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>

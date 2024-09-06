@@ -12,6 +12,6 @@ namespace PrayerTimeEngine.Core.Domain.Models
     public abstract class BaseLocationData
     {
         [JsonIgnore]
-        public abstract ECalculationSource Source { get; }
+        public abstract EDynamicPrayerTimeProviderType Source { get; }
     }
 }

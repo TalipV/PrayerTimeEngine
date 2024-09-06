@@ -5,11 +5,11 @@ namespace PrayerTimeEngine.Core.Common.Attribute
     [AttributeUsage(AttributeTargets.Field)]
     public class TimeTypeSupportedByAttribute : System.Attribute
     {
-        public List<ECalculationSource> CalculationSources { get; private set; }
+        public List<EDynamicPrayerTimeProviderType> DynamicPrayerTimeProviders { get; private set; }
 
-        public TimeTypeSupportedByAttribute(params ECalculationSource[] sources)
+        public TimeTypeSupportedByAttribute(params EDynamicPrayerTimeProviderType[] sources)
         {
-            CalculationSources = sources.ToList();
+            DynamicPrayerTimeProviders = sources.ToList();
         }
     }
 }
