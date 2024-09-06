@@ -1,12 +1,12 @@
 ﻿using NodaTime;
 using PrayerTimeEngine.Core.Common;
 using PrayerTimeEngine.Core.Domain.Models;
+using PrayerTimeEngine.Core.Domain.Models.PrayerTimes;
 
 namespace PrayerTimeEngine.Presentation.Views
 {
     public class PrayerTimeGraphicView : IDrawable
     {
-        //private readonly Color MainBackgroundColor = Color.FromRgba(35, 41, 53, 255);
         private readonly Color PrayerTimeColor = Colors.LightGray;
 
         private readonly Color PrayerMainTextColor = Colors.Black;

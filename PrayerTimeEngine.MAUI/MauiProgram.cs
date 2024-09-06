@@ -37,6 +37,8 @@ using PrayerTimeEngine.Presentation.Pages.Settings.SettingsHandler;
 using PrayerTimeEngine.Presentation.Services;
 using PrayerTimeEngine.Presentation.Services.Navigation;
 using PrayerTimeEngine.Presentation.Services.SettingsContentPageFactory;
+using PrayerTimeEngine.Presentation.Views.MosquePrayerTime;
+using PrayerTimeEngine.Presentation.Views.PrayerTimes;
 using PrayerTimeEngine.Services;
 using Refit;
 using System.Diagnostics;
@@ -326,6 +328,9 @@ public static class MauiProgram
 
         serviceCollection.AddTransient<MainPage>();
         serviceCollection.AddTransient<MainPageViewModel>();
+
+        serviceCollection.AddTransient<DynamicPrayerTimeViewModel>();
+        serviceCollection.AddTransient<MosquePrayerTimeViewModel>();
 
         serviceCollection.AddTransient<SettingsHandlerPage>();
         serviceCollection.AddTransient<SettingsHandlerPageViewModel>();

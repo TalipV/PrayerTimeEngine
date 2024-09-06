@@ -11,7 +11,6 @@ using NodaTime;
 using PrayerTimeEngine.Core.Common.Extension;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Models.Entities;
 
-
 #pragma warning disable 219, 612, 618
 #nullable disable
 
@@ -22,7 +21,7 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
         public static RuntimeEntityType Create(RuntimeModel model, RuntimeEntityType baseEntityType = null)
         {
             var runtimeEntityType = model.AddEntityType(
-                "PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Models.Entities.FaziletCountry",
+                "PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Models.Entities.FaziletCountry",
                 typeof(FaziletCountry),
                 baseEntityType);
 
