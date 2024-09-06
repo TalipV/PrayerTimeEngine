@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Logging;
 using NodaTime;
 using PrayerTimeEngine.Core.Common.Enum;
-using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Models.Entities;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimeProviders.Semerkand.Interfaces;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimeProviders.Semerkand.Models;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimeProviders.Semerkand.Models.DTOs;

@@ -1,8 +1,8 @@
 ﻿using NodaTime;
 using NSubstitute;
-using PrayerTimeEngine.Core.Domain.Calculators.Mosques.MyMosq.Models.Entities;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimeProviders.Mosques;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimeProviders.Mosques.MyMosq.Interfaces;
+using PrayerTimeEngine.Core.Domain.DynamicPrayerTimeProviders.Mosques.MyMosq.Models.Entities;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimeProviders.Mosques.MyMosq.Services;
 using PrayerTimeEngine.Core.Tests.Common;
 

@@ -1,6 +1,5 @@
 ﻿using NodaTime;
 using AsyncKeyedLock;
-using PrayerTimeEngine.Core.Domain.DynamicPrayerTimeProviders.Mosques;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimeProviders.Mosques.Mawaqit.Interfaces;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimeProviders.Mosques.Mawaqit.Models.Entities;
 

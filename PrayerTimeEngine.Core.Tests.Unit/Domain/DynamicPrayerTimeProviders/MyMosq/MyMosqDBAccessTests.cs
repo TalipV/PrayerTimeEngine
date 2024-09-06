@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using NodaTime;
 using PrayerTimeEngine.Core.Data.EntityFramework;
-using PrayerTimeEngine.Core.Domain.Calculators.Mosques.MyMosq.Models.Entities;
+using PrayerTimeEngine.Core.Domain.DynamicPrayerTimeProviders.Mosques.MyMosq.Models.Entities;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimeProviders.Mosques.MyMosq.Services;
 using PrayerTimeEngine.Core.Tests.Common;
 

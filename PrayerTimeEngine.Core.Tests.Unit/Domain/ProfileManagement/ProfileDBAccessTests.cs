@@ -3,11 +3,11 @@ using PrayerTimeEngine.Core.Data.EntityFramework;
 using PrayerTimeEngine.Core.Tests.Common;
 using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Domain.Models;
-using PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Models;
 using PrayerTimeEngine.Core.Tests.Common.TestData;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Models;
 using Microsoft.EntityFrameworkCore;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
+using PrayerTimeEngine.Core.Domain.DynamicPrayerTimeProviders.Fazilet.Models;
 
 namespace PrayerTimeEngine.Core.Tests.Unit.Domain.ProfileManagement
 {

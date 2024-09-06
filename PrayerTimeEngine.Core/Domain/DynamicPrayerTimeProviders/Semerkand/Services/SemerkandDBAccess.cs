@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using NodaTime;
 using PrayerTimeEngine.Core.Data.EntityFramework;
-using PrayerTimeEngine.Core.Domain.DynamicPrayerTimeProviders;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimeProviders.Semerkand.Interfaces;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimeProviders.Semerkand.Models.Entities;
 

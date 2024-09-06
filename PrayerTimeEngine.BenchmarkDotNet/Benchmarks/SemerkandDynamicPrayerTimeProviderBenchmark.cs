@@ -4,7 +4,6 @@ using NodaTime;
 using NSubstitute;
 using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Data.EntityFramework;
-using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Services;
 using PrayerTimeEngine.Core.Domain.Models;
 using System.Data.Common;
 using NSubstitute.Extensions;

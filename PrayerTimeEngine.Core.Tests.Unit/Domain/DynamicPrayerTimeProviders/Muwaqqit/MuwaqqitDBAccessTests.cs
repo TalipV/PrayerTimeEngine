@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using NodaTime;
 using PrayerTimeEngine.Core.Data.EntityFramework;
-using PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Models.Entities;
+using PrayerTimeEngine.Core.Domain.DynamicPrayerTimeProviders.Muwaqqit.Models.Entities;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimeProviders.Muwaqqit.Services;
 using PrayerTimeEngine.Core.Tests.Common;
 using PrayerTimeEngine.Core.Tests.Common.TestData;

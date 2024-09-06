@@ -1,6 +1,5 @@
 ﻿using NodaTime;
 using PrayerTimeEngine.Core.Data.EntityFramework;
-using PrayerTimeEngine.Core.Domain.DynamicPrayerTimeProviders.Mosques;
 using System.ComponentModel.DataAnnotations;
 
 namespace PrayerTimeEngine.Core.Domain.DynamicPrayerTimeProviders.Mosques.Mawaqit.Models.Entities;
