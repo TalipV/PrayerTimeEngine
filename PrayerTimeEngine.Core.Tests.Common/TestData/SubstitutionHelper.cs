@@ -1,10 +1,10 @@
 ﻿using NSubstitute;
 using PrayerTimeEngine.Core.Data.WebSocket.Interfaces;
 using PrayerTimeEngine.Core.Domain.Calculators.Mosques.Mawaqit.Services;
-using PrayerTimeEngine.Core.Domain.DynamicPrayerTimeProviders.Fazilet.Interfaces;
-using PrayerTimeEngine.Core.Domain.DynamicPrayerTimeProviders.Mosques.Mawaqit.Interfaces;
-using PrayerTimeEngine.Core.Domain.DynamicPrayerTimeProviders.Muwaqqit.Interfaces;
-using PrayerTimeEngine.Core.Domain.DynamicPrayerTimeProviders.Semerkand.Interfaces;
+using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Interfaces;
+using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Muwaqqit.Interfaces;
+using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Semerkand.Interfaces;
+using PrayerTimeEngine.Core.Domain.MosquePrayerTimeProviders.Providers.Mawaqit.Interfaces;
 using Refit;
 using System.Net;
 using System.Net.WebSockets;

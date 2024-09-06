@@ -1,7 +1,7 @@
 ﻿using NodaTime;
 using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Data.EntityFramework;
-using PrayerTimeEngine.Core.Domain.Models;
+using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Models;
 using System.ComponentModel.DataAnnotations;
 
 namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities

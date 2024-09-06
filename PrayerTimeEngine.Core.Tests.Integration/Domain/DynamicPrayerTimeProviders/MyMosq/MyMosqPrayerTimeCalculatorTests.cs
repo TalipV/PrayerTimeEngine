@@ -5,9 +5,9 @@ using PrayerTimeEngine.Core.Tests.Common.TestData;
 using PrayerTimeEngine.Core.Data.WebSocket;
 using PrayerTimeEngine.Core.Data.WebSocket.Interfaces;
 using System.Net.WebSockets;
-using PrayerTimeEngine.Core.Domain.DynamicPrayerTimeProviders.Mosques;
-using PrayerTimeEngine.Core.Domain.DynamicPrayerTimeProviders.Mosques.MyMosq.Interfaces;
-using PrayerTimeEngine.Core.Domain.DynamicPrayerTimeProviders.Mosques.MyMosq.Services;
+using PrayerTimeEngine.Core.Domain.MosquePrayerTimeProviders.Models;
+using PrayerTimeEngine.Core.Domain.MosquePrayerTimeProviders.Providers.MyMosq.Services;
+using PrayerTimeEngine.Core.Domain.MosquePrayerTimeProviders.Providers.MyMosq.Interfaces;
 
 namespace PrayerTimeEngine.Core.Tests.Integration.Domain.DynamicPrayerTimeProviders.MyMosq
 {

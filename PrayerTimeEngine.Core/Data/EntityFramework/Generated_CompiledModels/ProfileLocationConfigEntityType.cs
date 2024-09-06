@@ -14,7 +14,7 @@ using NodaTime;
 using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Common.Extension;
 using PrayerTimeEngine.Core.Data.EntityFramework.Configurations;
-using PrayerTimeEngine.Core.Domain.Models;
+using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Models;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
 
 #pragma warning disable 219, 612, 618

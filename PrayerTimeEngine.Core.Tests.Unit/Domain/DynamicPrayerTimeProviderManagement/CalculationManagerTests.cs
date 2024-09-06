@@ -8,9 +8,12 @@ using Microsoft.Extensions.Logging;
 using PrayerTimeEngine.Core.Tests.Common.TestData;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
 using PrayerTimeEngine.Core.Common;
-using PrayerTimeEngine.Core.Domain.DynamicPrayerTimeProviders;
-using PrayerTimeEngine.Core.Domain.DynamicPrayerTimeProviderManagement;
-using PrayerTimeEngine.Core.Domain.DynamicPrayerTimeProviders.Muwaqqit.Models;
+using PrayerTimeEngine.Core.Domain;
+using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Models;
+using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes;
+using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers;
+using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Management;
+using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Muwaqqit.Models;
 
 namespace PrayerTimeEngine.Core.Tests.Unit.Domain.DynamicPrayerTimeProviderManagement
 {

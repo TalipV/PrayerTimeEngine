@@ -4,7 +4,6 @@ using NodaTime;
 using NSubstitute;
 using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Data.EntityFramework;
-using PrayerTimeEngine.Core.Domain.Models;
 using System.Data.Common;
 using NSubstitute.Extensions;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Interfaces;
@@ -13,10 +12,11 @@ using NSubstitute.ReturnsExtensions;
 using PrayerTimeEngine.Core.Tests.Common.TestData;
 using PrayerTimeEngine.Core.Common;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using PrayerTimeEngine.Core.Domain.DynamicPrayerTimeProviders.Semerkand.Models;
-using PrayerTimeEngine.Core.Domain.DynamicPrayerTimeProviders.Semerkand.Interfaces;
-using PrayerTimeEngine.Core.Domain.DynamicPrayerTimeProviders.Semerkand.Models.Entities;
-using PrayerTimeEngine.Core.Domain.DynamicPrayerTimeProviders.Semerkand.Services;
+using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Models;
+using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Semerkand.Models;
+using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Semerkand.Models.Entities;
+using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Semerkand.Interfaces;
+using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Semerkand.Services;
 
 namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
 {
