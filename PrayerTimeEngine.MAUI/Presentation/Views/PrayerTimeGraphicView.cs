@@ -17,7 +17,7 @@ namespace PrayerTimeEngine.Presentation.Views
 
         private DateTimeZone _timeZone { get; } = MauiProgram.ServiceProvider.GetRequiredService<ISystemInfoService>().GetSystemTimeZone();
 
-        public PrayerTime DisplayPrayerTime { get; set; }
+        public AbstractPrayerTime DisplayPrayerTime { get; set; }
 
         public void Draw(ICanvas canvas, RectF fullRectangle)
         {

@@ -94,7 +94,7 @@ namespace PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Semerkand.Se
             }
         }
 
-        private static readonly Func<AppDbContext, ZonedDateTime, int, Task<SemerkandPrayerTimes>> compiledQuery_GetTimesByDateAndCityID =
+        private static readonly Func<AppDbContext, ZonedDateTime, int, Task<SemerkandDailyPrayerTimes>> compiledQuery_GetTimesByDateAndCityID =
             EF.CompileAsyncQuery(
                 (AppDbContext context, ZonedDateTime date, int cityId) =>
                     context.SemerkandPrayerTimes
@@ -102,7 +102,7 @@ namespace PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Semerkand.Se
                         .Where(x => x.Date == date && x.CityID == cityId)
                         .FirstOrDefault());
 
-        public async Task<SemerkandPrayerTimes> GetTimesByDateAndCityID(ZonedDateTime date, int cityId, CancellationToken cancellationToken)
+        public async Task<SemerkandDailyPrayerTimes> GetTimesByDateAndCityID(ZonedDateTime date, int cityId, CancellationToken cancellationToken)
         {
             using (AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken))
             {
@@ -110,7 +110,7 @@ namespace PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Semerkand.Se
             }
         }
 
-        public async Task InsertPrayerTimesAsync(IEnumerable<SemerkandPrayerTimes> semerkandPrayerTimesLst, CancellationToken cancellationToken)
+        public async Task InsertPrayerTimesAsync(IEnumerable<SemerkandDailyPrayerTimes> semerkandPrayerTimesLst, CancellationToken cancellationToken)
         {
             using (AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken))
             {

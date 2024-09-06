@@ -42,9 +42,9 @@ namespace PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Mode
         [JsonPropertyName("yatsi")]
         public List<TimeDetail> Isha { get; set; }
 
-        internal FaziletPrayerTimes ToFaziletPrayerTimes(int cityID, DateTimeZone timeZone)
+        internal FaziletDailyPrayerTimes ToFaziletPrayerTimes(int cityID, DateTimeZone timeZone)
         {
-            return new FaziletPrayerTimes
+            return new FaziletDailyPrayerTimes
             {
                 CityID = cityID,
                 Imsak = Imsak.First().OffsetDateTime.InZone(timeZone),

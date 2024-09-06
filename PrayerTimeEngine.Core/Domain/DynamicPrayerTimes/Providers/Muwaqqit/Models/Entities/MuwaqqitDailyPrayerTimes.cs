@@ -1,12 +1,12 @@
 ﻿using NodaTime;
 using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Data.EntityFramework;
-using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Models;
+using PrayerTimeEngine.Core.Domain.Models;
 using System.ComponentModel.DataAnnotations;
 
 namespace PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Muwaqqit.Models.Entities
 {
-    public class MuwaqqitPrayerTimes : IDynamicPrayerTimes, IInsertedAt
+    public class MuwaqqitDailyPrayerTimes : IDailyPrayerTimes, IInsertedAt
     {
         [Key]
         public int ID { get; set; }

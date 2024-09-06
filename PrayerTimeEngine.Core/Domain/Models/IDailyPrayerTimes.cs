@@ -1,8 +1,8 @@
 ﻿using NodaTime;
 
-namespace PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Models
+namespace PrayerTimeEngine.Core.Domain.Models
 {
-    public interface IDynamicPrayerTimes
+    public interface IDailyPrayerTimes
     {
         public ZonedDateTime Date { get; }
 

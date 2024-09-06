@@ -123,7 +123,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.DynamicPrayerTimeProviders.Sem
             var gerCity2 = new SemerkandCity { ID = 2, CountryID = germany.ID, Name = "Hamburg", Country = germany };
             germany.Cities = [gerCity1, gerCity2];
 
-            var city1Times1 = new SemerkandPrayerTimes
+            var city1Times1 = new SemerkandDailyPrayerTimes
             {
                 CityID = gerCity1.ID,
                 DayOfYear = 5,
@@ -136,7 +136,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.DynamicPrayerTimeProviders.Sem
                 Isha = dateInUtc.PlusHours(20),
             };
 
-            var city1Times2 = new SemerkandPrayerTimes
+            var city1Times2 = new SemerkandDailyPrayerTimes
             {
                 CityID = gerCity1.ID,
                 DayOfYear = 6,
@@ -149,7 +149,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.DynamicPrayerTimeProviders.Sem
                 Isha = dateInUtc.PlusHours(24 + 23),
             };
 
-            var city2Times1 = new SemerkandPrayerTimes
+            var city2Times1 = new SemerkandDailyPrayerTimes
             {
                 CityID = gerCity2.ID,
                 DayOfYear = 5,
@@ -187,7 +187,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.DynamicPrayerTimeProviders.Sem
             var gerCity2 = new SemerkandCity { ID = 2, CountryID = germany.ID, Name = "Hamburg", Country = germany };
             germany.Cities = [gerCity1, gerCity2];
 
-            var city1Times1 = new SemerkandPrayerTimes
+            var city1Times1 = new SemerkandDailyPrayerTimes
             {
                 CityID = gerCity1.ID,
                 DayOfYear = 5,
@@ -200,7 +200,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.DynamicPrayerTimeProviders.Sem
                 Isha = dateInUtc.PlusHours(20),
             };
 
-            var city1Times2 = new SemerkandPrayerTimes
+            var city1Times2 = new SemerkandDailyPrayerTimes
             {
                 CityID = gerCity1.ID,
                 DayOfYear = 6,
@@ -213,7 +213,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.DynamicPrayerTimeProviders.Sem
                 Isha = dateInUtc.PlusHours(24 + 23),
             };
 
-            var city2Times1 = new SemerkandPrayerTimes
+            var city2Times1 = new SemerkandDailyPrayerTimes
             {
                 CityID = gerCity2.ID,
                 DayOfYear = 5,
@@ -326,7 +326,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.DynamicPrayerTimeProviders.Sem
             await TestArrangeDbContext.SemerkandCountries.AddAsync(austria);
             await TestArrangeDbContext.SaveChangesAsync();
 
-            var time1 = new SemerkandPrayerTimes
+            var time1 = new SemerkandDailyPrayerTimes
             {
                 CityID = 1,
                 DayOfYear = 2,
@@ -338,7 +338,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.DynamicPrayerTimeProviders.Sem
                 Maghrib = dateInUtc,
                 Isha = dateInUtc,
             };
-            var time2 = new SemerkandPrayerTimes
+            var time2 = new SemerkandDailyPrayerTimes
             {
                 CityID = 2,
                 DayOfYear = 3,
@@ -350,7 +350,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.DynamicPrayerTimeProviders.Sem
                 Maghrib = dateInUtc,
                 Isha = dateInUtc,
             };
-            var time3 = new SemerkandPrayerTimes
+            var time3 = new SemerkandDailyPrayerTimes
             {
                 CityID = 1,
                 DayOfYear = 4,

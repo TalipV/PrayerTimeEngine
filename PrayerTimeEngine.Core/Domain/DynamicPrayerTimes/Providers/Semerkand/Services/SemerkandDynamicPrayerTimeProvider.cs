@@ -57,19 +57,19 @@ namespace PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Semerkand.Se
                 throw new Exception("Time requested for timezone that differs from provided location data!");
             }
 
-            SemerkandPrayerTimes semerkandPrayerTimes = await getPrayerTimesInternal(date, countryName, cityName, timezoneName, cancellationToken).ConfigureAwait(false);
+            SemerkandDailyPrayerTimes semerkandPrayerTimes = await getPrayerTimesInternal(date, countryName, cityName, timezoneName, cancellationToken).ConfigureAwait(false);
 
             return configurations
                 .Select(x => (x.TimeType, semerkandPrayerTimes.GetZonedDateTimeForTimeType(x.TimeType)))
                 .ToList();
         }
 
-        private async Task<SemerkandPrayerTimes> getPrayerTimesInternal(ZonedDateTime date, string countryName, string cityName, string timezoneName, CancellationToken cancellationToken)
+        private async Task<SemerkandDailyPrayerTimes> getPrayerTimesInternal(ZonedDateTime date, string countryName, string cityName, string timezoneName, CancellationToken cancellationToken)
         {
             int countryID = await getCountryID(countryName, throwIfNotFound: true, cancellationToken).ConfigureAwait(false);
             int cityID = await getCityID(cityName, countryID, throwIfNotFound: true, cancellationToken).ConfigureAwait(false);
 
-            SemerkandPrayerTimes prayerTimes =
+            SemerkandDailyPrayerTimes prayerTimes =
                 await getPrayerTimesByDateAndCityID(
                     date,
                     timezoneName,
@@ -90,13 +90,13 @@ namespace PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Semerkand.Se
 
         internal const int MAX_EXTENT_OF_RETRIEVED_DAYS = 5;
 
-        private async Task<SemerkandPrayerTimes> getPrayerTimesByDateAndCityID(ZonedDateTime date, string timezone, int cityID, CancellationToken cancellationToken)
+        private async Task<SemerkandDailyPrayerTimes> getPrayerTimesByDateAndCityID(ZonedDateTime date, string timezone, int cityID, CancellationToken cancellationToken)
         {
             var lockTuple = (date, cityID);
 
             using (await getPrayerTimesLocker.LockAsync(lockTuple, cancellationToken).ConfigureAwait(false))
             {
-                SemerkandPrayerTimes prayerTimes =
+                SemerkandDailyPrayerTimes prayerTimes =
                     await semerkandDBAccess.GetTimesByDateAndCityID(
                         date,
                         cityID,
@@ -113,7 +113,7 @@ namespace PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Semerkand.Se
                     var dateTimeZone = DateTimeZoneProviders.Tzdb[timezone];
                     var firstDayOfYear = new LocalDate(date.Year, 1, 1);
 
-                    List<SemerkandPrayerTimes> prayerTimesLst =
+                    List<SemerkandDailyPrayerTimes> prayerTimesLst =
                         timesResponseDTOs
                             .Select(x => x.ToSemerkandPrayerTimes(cityID, dateTimeZone, firstDayOfYear))
                             .Where(x => date.ToInstant() <= x.Date.ToInstant() && x.Date.ToInstant() < date.Plus(Duration.FromDays(MAX_EXTENT_OF_RETRIEVED_DAYS)).ToInstant())

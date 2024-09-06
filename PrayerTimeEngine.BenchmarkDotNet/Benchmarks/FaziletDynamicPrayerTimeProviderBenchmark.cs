@@ -55,7 +55,7 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
 
             // throw exceptions when the calculator tries using the api
             IFaziletApiService mockedFaziletApiService = Substitute.For<IFaziletApiService>();
-            mockedFaziletApiService.ReturnsForAll<Task<FaziletPrayerTimes>>((callInfo) => throw new Exception("Don't use this!"));
+            mockedFaziletApiService.ReturnsForAll<Task<FaziletDailyPrayerTimes>>((callInfo) => throw new Exception("Don't use this!"));
 
             return new FaziletDynamicPrayerTimeProvider(
                     new FaziletDBAccess(dbContextFactory),
@@ -71,7 +71,7 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
             var faziletDbAccessMock = Substitute.For<IFaziletDBAccess>();
             faziletDbAccessMock.GetCountries(Arg.Any<CancellationToken>()).Returns([]);
             faziletDbAccessMock.GetCitiesByCountryID(Arg.Any<int>(), Arg.Any<CancellationToken>()).Returns([]);
-            faziletDbAccessMock.GetTimesByDateAndCityID(Arg.Any<ZonedDateTime>(), Arg.Any<int>(), Arg.Any<CancellationToken>()).ReturnsNull<FaziletPrayerTimes>();
+            faziletDbAccessMock.GetTimesByDateAndCityID(Arg.Any<ZonedDateTime>(), Arg.Any<int>(), Arg.Any<CancellationToken>()).ReturnsNull<FaziletDailyPrayerTimes>();
 
             return new FaziletDynamicPrayerTimeProvider(
                     // returns null per default
