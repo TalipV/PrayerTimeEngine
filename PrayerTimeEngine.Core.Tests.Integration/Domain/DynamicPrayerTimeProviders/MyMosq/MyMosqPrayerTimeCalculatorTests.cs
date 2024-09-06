@@ -5,9 +5,9 @@ using PrayerTimeEngine.Core.Tests.Common.TestData;
 using PrayerTimeEngine.Core.Data.WebSocket;
 using PrayerTimeEngine.Core.Data.WebSocket.Interfaces;
 using System.Net.WebSockets;
-using PrayerTimeEngine.Core.Domain.MosquePrayerTimeProviders.Models;
-using PrayerTimeEngine.Core.Domain.MosquePrayerTimeProviders.Providers.MyMosq.Services;
-using PrayerTimeEngine.Core.Domain.MosquePrayerTimeProviders.Providers.MyMosq.Interfaces;
+using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.MyMosq.Interfaces;
+using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.MyMosq.Services;
+using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Models;
 
 namespace PrayerTimeEngine.Core.Tests.Integration.Domain.DynamicPrayerTimeProviders.MyMosq
 {
@@ -26,12 +26,12 @@ namespace PrayerTimeEngine.Core.Tests.Integration.Domain.DynamicPrayerTimeProvid
                     serviceCollection.AddSingleton<IMyMosqApiService, MyMosqApiService>();
                     serviceCollection.AddSingleton<IWebSocketClientFactory, WebSocketClientFactory>();
                     serviceCollection.AddSingleton(factory => SubstitutionHelper.GetMockedMyMosqWebSocketClient());
-                    serviceCollection.AddSingleton<MyMosqPrayerTimeService>();
+                    serviceCollection.AddSingleton<MyMosqMosquePrayerTimeProvider>();
                 });
             var date = new LocalDate(2024, 8, 30);
             string externalID = "1239";
 
-            MyMosqPrayerTimeService myMosqPrayerTimeService = serviceProvider.GetRequiredService<MyMosqPrayerTimeService>();
+            MyMosqMosquePrayerTimeProvider myMosqPrayerTimeService = serviceProvider.GetRequiredService<MyMosqMosquePrayerTimeProvider>();
 
             // ACT
             IMosquePrayerTimes result = await myMosqPrayerTimeService.GetPrayerTimesAsync(date, externalID, default);
@@ -77,11 +77,11 @@ namespace PrayerTimeEngine.Core.Tests.Integration.Domain.DynamicPrayerTimeProvid
                     {
                         return new WebSocketClient(new ClientWebSocket());
                     });
-                    serviceCollection.AddTransient<MyMosqPrayerTimeService>();
+                    serviceCollection.AddTransient<MyMosqMosquePrayerTimeProvider>();
                 });
 
             var date = new LocalDate(2024, 8, 30);
-            MyMosqPrayerTimeService myMosqPrayerTimeService = serviceProvider.GetRequiredService<MyMosqPrayerTimeService>();
+            MyMosqMosquePrayerTimeProvider myMosqPrayerTimeService = serviceProvider.GetRequiredService<MyMosqMosquePrayerTimeProvider>();
 
             // ACT & ASSERT
             IMosquePrayerTimes result = await myMosqPrayerTimeService.GetPrayerTimesAsync(date, externalID, default);

@@ -1,8 +1,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using NodaTime;
-using PrayerTimeEngine.Core.Domain.MosquePrayerTimeProviders.Models;
-using PrayerTimeEngine.Core.Domain.MosquePrayerTimeProviders.Providers.Mawaqit.Interfaces;
-using PrayerTimeEngine.Core.Domain.MosquePrayerTimeProviders.Providers.Mawaqit.Services;
+using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Models;
+using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.Mawaqit.Interfaces;
+using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.Mawaqit.Services;
 using PrayerTimeEngine.Core.Tests.Common;
 using PrayerTimeEngine.Core.Tests.Common.TestData;
 
@@ -20,11 +20,11 @@ namespace PrayerTimeEngine.Core.Tests.Integration.Domain.DynamicPrayerTimeProvid
                     serviceCollection.AddSingleton(GetHandledDbContextFactory());
                     serviceCollection.AddSingleton<IMawaqitDBAccess, MawaqitDBAccess>();
                     serviceCollection.AddSingleton(SubstitutionHelper.GetMockedMawaqitApiService());
-                    serviceCollection.AddSingleton<MawaqitPrayerTimeService>();
+                    serviceCollection.AddSingleton<MawaqitMosquePrayerTimeProvider>();
                 });
             var date = new LocalDate(2024, 8, 29);
             string externalID = "hamza-koln";
-            MawaqitPrayerTimeService mawaqitPrayerTimeService = serviceProvider.GetRequiredService<MawaqitPrayerTimeService>();
+            MawaqitMosquePrayerTimeProvider mawaqitPrayerTimeService = serviceProvider.GetRequiredService<MawaqitMosquePrayerTimeProvider>();
 
             // ACT
             IMosquePrayerTimes result = await mawaqitPrayerTimeService.GetPrayerTimesAsync(date, externalID, default);

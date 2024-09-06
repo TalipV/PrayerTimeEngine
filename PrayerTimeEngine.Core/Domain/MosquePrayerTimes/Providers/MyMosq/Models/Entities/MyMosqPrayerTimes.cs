@@ -1,9 +1,9 @@
 using NodaTime;
 using PrayerTimeEngine.Core.Data.EntityFramework;
-using PrayerTimeEngine.Core.Domain.MosquePrayerTimeProviders.Models;
+using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Models;
 using System.ComponentModel.DataAnnotations;
 
-namespace PrayerTimeEngine.Core.Domain.MosquePrayerTimeProviders.Providers.MyMosq.Models.Entities;
+namespace PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.MyMosq.Models.Entities;
 
 public class MyMosqPrayerTimes : IMosquePrayerTimes, IInsertedAt
 {

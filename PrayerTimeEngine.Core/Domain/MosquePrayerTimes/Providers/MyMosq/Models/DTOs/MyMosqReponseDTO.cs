@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace PrayerTimeEngine.Core.Domain.MosquePrayerTimeProviders.Providers.MyMosq.Models.DTOs;
+namespace PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.MyMosq.Models.DTOs;
 
 public class MyMosqResponseDTO
 {

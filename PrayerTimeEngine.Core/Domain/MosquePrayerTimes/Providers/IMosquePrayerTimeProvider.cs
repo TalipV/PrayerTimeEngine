@@ -1,7 +1,7 @@
 ﻿using NodaTime;
-using PrayerTimeEngine.Core.Domain.MosquePrayerTimeProviders.Models;
+using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Models;
 
-namespace PrayerTimeEngine.Core.Domain.MosquePrayerTimeProviders.Providers
+namespace PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers
 {
     public interface IMosquePrayerTimeProvider
     {

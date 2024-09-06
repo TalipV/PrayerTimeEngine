@@ -1,14 +1,14 @@
 ﻿using NodaTime;
 using AsyncKeyedLock;
-using PrayerTimeEngine.Core.Domain.MosquePrayerTimeProviders.Models;
-using PrayerTimeEngine.Core.Domain.MosquePrayerTimeProviders.Providers.Mawaqit.Models.Entities;
-using PrayerTimeEngine.Core.Domain.MosquePrayerTimeProviders.Providers.Mawaqit.Interfaces;
+using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.MyMosq.Interfaces;
+using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.MyMosq.Models.Entities;
+using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Models;
 
-namespace PrayerTimeEngine.Core.Domain.MosquePrayerTimeProviders.Providers.Mawaqit.Services
+namespace PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.MyMosq.Services
 {
-    public class MawaqitPrayerTimeService(
-            IMawaqitDBAccess mawaqitDBAccess,
-            IMawaqitApiService mawaqitApiService
+    public class MyMosqMosquePrayerTimeProvider(
+        IMyMosqDBAccess myMosqDBAccess,
+        IMyMosqApiService myMosqApiService
     ) : IMosquePrayerTimeProvider
     {
         private static readonly AsyncKeyedLocker<string> getPrayerTimesLocker = new(o =>
@@ -23,18 +23,18 @@ namespace PrayerTimeEngine.Core.Domain.MosquePrayerTimeProviders.Providers.Mawaq
         {
             using (await getPrayerTimesLocker.LockAsync(externalID, cancellationToken).ConfigureAwait(false))
             {
-                MawaqitPrayerTimes prayerTimes = await mawaqitDBAccess.GetPrayerTimesAsync(date, externalID, cancellationToken).ConfigureAwait(false);
+                MyMosqPrayerTimes prayerTimes = await myMosqDBAccess.GetPrayerTimesAsync(date, externalID, cancellationToken).ConfigureAwait(false);
 
                 if (prayerTimes is null)
                 {
-                    var responseDto = await mawaqitApiService.GetPrayerTimesAsync(externalID, cancellationToken);
+                    var responseDto = await myMosqApiService.GetPrayerTimesAsync(date, externalID, cancellationToken);
 
-                    List<MawaqitPrayerTimes> prayerTimesLst =
-                        responseDto.ToMawaqitPrayerTimes(externalID)
+                    List<MyMosqPrayerTimes> prayerTimesLst = responseDto
+                        .Select(x => x.ToMyMosqPrayerTimes(externalID))
                         .Where(x => date <= x.Date && x.Date < date.PlusDays(MAX_EXTENT_OF_RETRIEVED_DAYS))
                         .ToList();
 
-                    await mawaqitDBAccess.InsertPrayerTimesAsync(prayerTimesLst, cancellationToken).ConfigureAwait(false);
+                    await myMosqDBAccess.InsertPrayerTimesAsync(prayerTimesLst, cancellationToken).ConfigureAwait(false);
                     prayerTimes = prayerTimesLst.FirstOrDefault(x => x.Date == date)
                         ?? throw new Exception($"Prayer times for the {date} could not be found for an unknown reason.");
                 }

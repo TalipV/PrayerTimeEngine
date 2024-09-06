@@ -1,9 +1,8 @@
 ﻿using NodaTime;
 using NSubstitute;
-using PrayerTimeEngine.Core.Domain.MosquePrayerTimeProviders.Models;
-using PrayerTimeEngine.Core.Domain.MosquePrayerTimeProviders.Providers.MyMosq.Interfaces;
-using PrayerTimeEngine.Core.Domain.MosquePrayerTimeProviders.Providers.MyMosq.Models.Entities;
-using PrayerTimeEngine.Core.Domain.MosquePrayerTimeProviders.Providers.MyMosq.Services;
+using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Models;
+using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.MyMosq.Interfaces;
+using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.MyMosq.Services;
 using PrayerTimeEngine.Core.Tests.Common;
 
 namespace PrayerTimeEngine.Core.Tests.Unit.Domain.DynamicPrayerTimeProviders.MyMosq
@@ -12,7 +11,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.DynamicPrayerTimeProviders.MyM
     {
         private readonly IMyMosqDBAccess _myMosqDBAccessMock;
         private readonly IMyMosqApiService _myMosqApiServiceMock;
-        private readonly MyMosqPrayerTimeService _myMosqPrayerTimeService;
+        private readonly MyMosqMosquePrayerTimeProvider _myMosqPrayerTimeService;
 
         public MyMosqDynamicPrayerTimeProviderTests()
         {
@@ -20,7 +19,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.DynamicPrayerTimeProviders.MyM
             _myMosqApiServiceMock = Substitute.For<IMyMosqApiService>();
 
             _myMosqPrayerTimeService =
-                new MyMosqPrayerTimeService(
+                new MyMosqMosquePrayerTimeProvider(
                     _myMosqDBAccessMock,
                     _myMosqApiServiceMock);
         }
