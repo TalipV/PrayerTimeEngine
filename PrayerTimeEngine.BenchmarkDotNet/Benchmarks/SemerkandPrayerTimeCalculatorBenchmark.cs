@@ -17,7 +17,6 @@ using PrayerTimeEngine.Core.Tests.Common.TestData;
 using PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Models.Entities;
 using PrayerTimeEngine.Core.Common;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Internal;
 
 namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
 {
