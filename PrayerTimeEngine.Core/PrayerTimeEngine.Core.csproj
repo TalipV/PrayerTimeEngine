@@ -40,7 +40,6 @@
 
   <ItemGroup>
     <Folder Include="Domain\DynamicPrayerTimes\Providers\Mosques\" />
-    <Folder Include="Domain\MosquePrayerTimes\" />
   </ItemGroup>
 
 </Project>

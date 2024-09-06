@@ -68,7 +68,7 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
 
             // throw exceptions when the calculator tries using the api
             IMuwaqqitApiService mockedMuwaqqitApiService = Substitute.For<IMuwaqqitApiService>();
-            mockedMuwaqqitApiService.ReturnsForAll<Task<MuwaqqitPrayerTimes>>((callInfo) => throw new Exception("Don't use this!"));
+            mockedMuwaqqitApiService.ReturnsForAll<Task<MuwaqqitDailyPrayerTimes>>((callInfo) => throw new Exception("Don't use this!"));
 
             return new MuwaqqitDynamicPrayerTimeProvider(
                     new MuwaqqitDBAccess(dbContextFactory),

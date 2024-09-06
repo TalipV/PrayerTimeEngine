@@ -70,7 +70,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.DynamicPrayerTimeProviderManag
             muwaqqitPrayerTimeServiceMock.GetUnsupportedTimeTypes().Returns([]);
 
             // ACT
-            PrayerTimesBundle result = await _dynamicPrayerTimeProviderManager.CalculatePrayerTimesAsync(profile.ID, zonedDate, default);
+            PrayerTimesCollection result = await _dynamicPrayerTimeProviderManager.CalculatePrayerTimesAsync(profile.ID, zonedDate, default);
 
             // ASSERT
             result.Should().NotBeNull();

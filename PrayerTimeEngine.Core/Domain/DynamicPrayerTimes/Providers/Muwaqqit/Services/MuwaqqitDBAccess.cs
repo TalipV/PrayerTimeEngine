@@ -10,7 +10,7 @@ namespace PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Muwaqqit.Ser
             IDbContextFactory<AppDbContext> dbContextFactory
         ) : IMuwaqqitDBAccess, IPrayerTimeCacheCleaner
     {
-        public async Task<List<MuwaqqitPrayerTimes>> GetAllTimes(CancellationToken cancellationToken)
+        public async Task<List<MuwaqqitDailyPrayerTimes>> GetAllTimes(CancellationToken cancellationToken)
         {
             using (AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken))
             {
@@ -21,7 +21,7 @@ namespace PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Muwaqqit.Ser
             }
         }
 
-        private static readonly Func<AppDbContext, ZonedDateTime, decimal, decimal, double, double, double, double, IAsyncEnumerable<MuwaqqitPrayerTimes>> compiledQuery_GetPrayerTimesAsync =
+        private static readonly Func<AppDbContext, ZonedDateTime, decimal, decimal, double, double, double, double, IAsyncEnumerable<MuwaqqitDailyPrayerTimes>> compiledQuery_GetPrayerTimesAsync =
             EF.CompileAsyncQuery(
                 (AppDbContext context, ZonedDateTime date, decimal longitude, decimal latitude, double fajrDegree, double ishaDegree, double ishtibaqDegree, double asrKarahaDegree) =>
                     context.MuwaqqitPrayerTimes.AsNoTracking()
@@ -34,7 +34,7 @@ namespace PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Muwaqqit.Ser
                         && x.IshtibaqDegree == ishtibaqDegree
                         && x.AsrKarahaDegree == asrKarahaDegree));
 
-        public async Task<MuwaqqitPrayerTimes> GetPrayerTimesAsync(
+        public async Task<MuwaqqitDailyPrayerTimes> GetPrayerTimesAsync(
             ZonedDateTime date,
             decimal longitude,
             decimal latitude,
@@ -52,7 +52,7 @@ namespace PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Muwaqqit.Ser
             }
         }
 
-        public async Task InsertPrayerTimesAsync(IEnumerable<MuwaqqitPrayerTimes> muwaqqitPrayerTimesLst, CancellationToken cancellationToken)
+        public async Task InsertPrayerTimesAsync(IEnumerable<MuwaqqitDailyPrayerTimes> muwaqqitPrayerTimesLst, CancellationToken cancellationToken)
         {
             using (AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken))
             {

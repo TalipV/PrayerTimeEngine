@@ -23,14 +23,14 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
         {
             var runtimeEntityType = model.AddEntityType(
                 "PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Models.Entities.MuwaqqitPrayerTimes",
-                typeof(MuwaqqitPrayerTimes),
+                typeof(MuwaqqitDailyPrayerTimes),
                 baseEntityType);
 
             var iD = runtimeEntityType.AddProperty(
                 "ID",
                 typeof(int),
-                propertyInfo: typeof(MuwaqqitPrayerTimes).GetProperty("ID", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                fieldInfo: typeof(MuwaqqitPrayerTimes).GetField("<ID>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                propertyInfo: typeof(MuwaqqitDailyPrayerTimes).GetProperty("ID", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(MuwaqqitDailyPrayerTimes).GetField("<ID>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 valueGenerated: ValueGenerated.OnAdd,
                 afterSaveBehavior: PropertySaveBehavior.Throw,
                 sentinel: 0);
@@ -53,8 +53,8 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
             var asr = runtimeEntityType.AddProperty(
                 "Asr",
                 typeof(ZonedDateTime),
-                propertyInfo: typeof(MuwaqqitPrayerTimes).GetProperty("Asr", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                fieldInfo: typeof(MuwaqqitPrayerTimes).GetField("<Asr>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
+                propertyInfo: typeof(MuwaqqitDailyPrayerTimes).GetProperty("Asr", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(MuwaqqitDailyPrayerTimes).GetField("<Asr>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
             asr.TypeMapping = SqliteStringTypeMapping.Default.Clone(
                 comparer: new ValueComparer<ZonedDateTime>(
                     (ZonedDateTime v1, ZonedDateTime v2) => v1.Equals(v2),
@@ -81,8 +81,8 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
             var asrKaraha = runtimeEntityType.AddProperty(
                 "AsrKaraha",
                 typeof(ZonedDateTime),
-                propertyInfo: typeof(MuwaqqitPrayerTimes).GetProperty("AsrKaraha", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                fieldInfo: typeof(MuwaqqitPrayerTimes).GetField("<AsrKaraha>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
+                propertyInfo: typeof(MuwaqqitDailyPrayerTimes).GetProperty("AsrKaraha", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(MuwaqqitDailyPrayerTimes).GetField("<AsrKaraha>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
             asrKaraha.TypeMapping = SqliteStringTypeMapping.Default.Clone(
                 comparer: new ValueComparer<ZonedDateTime>(
                     (ZonedDateTime v1, ZonedDateTime v2) => v1.Equals(v2),
@@ -109,8 +109,8 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
             var asrKarahaDegree = runtimeEntityType.AddProperty(
                 "AsrKarahaDegree",
                 typeof(double),
-                propertyInfo: typeof(MuwaqqitPrayerTimes).GetProperty("AsrKarahaDegree", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                fieldInfo: typeof(MuwaqqitPrayerTimes).GetField("<AsrKarahaDegree>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                propertyInfo: typeof(MuwaqqitDailyPrayerTimes).GetProperty("AsrKarahaDegree", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(MuwaqqitDailyPrayerTimes).GetField("<AsrKarahaDegree>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 sentinel: 0.0);
             asrKarahaDegree.TypeMapping = DoubleTypeMapping.Default.Clone(
                 comparer: new ValueComparer<double>(
@@ -131,8 +131,8 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
             var asrMithlayn = runtimeEntityType.AddProperty(
                 "AsrMithlayn",
                 typeof(ZonedDateTime),
-                propertyInfo: typeof(MuwaqqitPrayerTimes).GetProperty("AsrMithlayn", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                fieldInfo: typeof(MuwaqqitPrayerTimes).GetField("<AsrMithlayn>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
+                propertyInfo: typeof(MuwaqqitDailyPrayerTimes).GetProperty("AsrMithlayn", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(MuwaqqitDailyPrayerTimes).GetField("<AsrMithlayn>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
             asrMithlayn.TypeMapping = SqliteStringTypeMapping.Default.Clone(
                 comparer: new ValueComparer<ZonedDateTime>(
                     (ZonedDateTime v1, ZonedDateTime v2) => v1.Equals(v2),
@@ -159,8 +159,8 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
             var date = runtimeEntityType.AddProperty(
                 "Date",
                 typeof(ZonedDateTime),
-                propertyInfo: typeof(MuwaqqitPrayerTimes).GetProperty("Date", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                fieldInfo: typeof(MuwaqqitPrayerTimes).GetField("<Date>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
+                propertyInfo: typeof(MuwaqqitDailyPrayerTimes).GetProperty("Date", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(MuwaqqitDailyPrayerTimes).GetField("<Date>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
             date.TypeMapping = SqliteStringTypeMapping.Default.Clone(
                 comparer: new ValueComparer<ZonedDateTime>(
                     (ZonedDateTime v1, ZonedDateTime v2) => v1.Equals(v2),
@@ -187,8 +187,8 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
             var dhuhr = runtimeEntityType.AddProperty(
                 "Dhuhr",
                 typeof(ZonedDateTime),
-                propertyInfo: typeof(MuwaqqitPrayerTimes).GetProperty("Dhuhr", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                fieldInfo: typeof(MuwaqqitPrayerTimes).GetField("<Dhuhr>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
+                propertyInfo: typeof(MuwaqqitDailyPrayerTimes).GetProperty("Dhuhr", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(MuwaqqitDailyPrayerTimes).GetField("<Dhuhr>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
             dhuhr.TypeMapping = SqliteStringTypeMapping.Default.Clone(
                 comparer: new ValueComparer<ZonedDateTime>(
                     (ZonedDateTime v1, ZonedDateTime v2) => v1.Equals(v2),
@@ -215,8 +215,8 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
             var duha = runtimeEntityType.AddProperty(
                 "Duha",
                 typeof(ZonedDateTime),
-                propertyInfo: typeof(MuwaqqitPrayerTimes).GetProperty("Duha", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                fieldInfo: typeof(MuwaqqitPrayerTimes).GetField("<Duha>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
+                propertyInfo: typeof(MuwaqqitDailyPrayerTimes).GetProperty("Duha", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(MuwaqqitDailyPrayerTimes).GetField("<Duha>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
             duha.TypeMapping = SqliteStringTypeMapping.Default.Clone(
                 comparer: new ValueComparer<ZonedDateTime>(
                     (ZonedDateTime v1, ZonedDateTime v2) => v1.Equals(v2),
@@ -243,8 +243,8 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
             var fajr = runtimeEntityType.AddProperty(
                 "Fajr",
                 typeof(ZonedDateTime),
-                propertyInfo: typeof(MuwaqqitPrayerTimes).GetProperty("Fajr", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                fieldInfo: typeof(MuwaqqitPrayerTimes).GetField("<Fajr>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
+                propertyInfo: typeof(MuwaqqitDailyPrayerTimes).GetProperty("Fajr", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(MuwaqqitDailyPrayerTimes).GetField("<Fajr>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
             fajr.TypeMapping = SqliteStringTypeMapping.Default.Clone(
                 comparer: new ValueComparer<ZonedDateTime>(
                     (ZonedDateTime v1, ZonedDateTime v2) => v1.Equals(v2),
@@ -271,8 +271,8 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
             var fajrDegree = runtimeEntityType.AddProperty(
                 "FajrDegree",
                 typeof(double),
-                propertyInfo: typeof(MuwaqqitPrayerTimes).GetProperty("FajrDegree", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                fieldInfo: typeof(MuwaqqitPrayerTimes).GetField("<FajrDegree>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                propertyInfo: typeof(MuwaqqitDailyPrayerTimes).GetProperty("FajrDegree", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(MuwaqqitDailyPrayerTimes).GetField("<FajrDegree>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 sentinel: 0.0);
             fajrDegree.TypeMapping = DoubleTypeMapping.Default.Clone(
                 comparer: new ValueComparer<double>(
@@ -293,8 +293,8 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
             var insertInstant = runtimeEntityType.AddProperty(
                 "InsertInstant",
                 typeof(Instant?),
-                propertyInfo: typeof(MuwaqqitPrayerTimes).GetProperty("InsertInstant", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                fieldInfo: typeof(MuwaqqitPrayerTimes).GetField("<InsertInstant>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                propertyInfo: typeof(MuwaqqitDailyPrayerTimes).GetProperty("InsertInstant", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(MuwaqqitDailyPrayerTimes).GetField("<InsertInstant>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 nullable: true);
             insertInstant.TypeMapping = SqliteStringTypeMapping.Default.Clone(
                 comparer: new ValueComparer<Instant?>(
@@ -321,8 +321,8 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
             var isha = runtimeEntityType.AddProperty(
                 "Isha",
                 typeof(ZonedDateTime),
-                propertyInfo: typeof(MuwaqqitPrayerTimes).GetProperty("Isha", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                fieldInfo: typeof(MuwaqqitPrayerTimes).GetField("<Isha>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
+                propertyInfo: typeof(MuwaqqitDailyPrayerTimes).GetProperty("Isha", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(MuwaqqitDailyPrayerTimes).GetField("<Isha>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
             isha.TypeMapping = SqliteStringTypeMapping.Default.Clone(
                 comparer: new ValueComparer<ZonedDateTime>(
                     (ZonedDateTime v1, ZonedDateTime v2) => v1.Equals(v2),
@@ -349,8 +349,8 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
             var ishaDegree = runtimeEntityType.AddProperty(
                 "IshaDegree",
                 typeof(double),
-                propertyInfo: typeof(MuwaqqitPrayerTimes).GetProperty("IshaDegree", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                fieldInfo: typeof(MuwaqqitPrayerTimes).GetField("<IshaDegree>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                propertyInfo: typeof(MuwaqqitDailyPrayerTimes).GetProperty("IshaDegree", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(MuwaqqitDailyPrayerTimes).GetField("<IshaDegree>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 sentinel: 0.0);
             ishaDegree.TypeMapping = DoubleTypeMapping.Default.Clone(
                 comparer: new ValueComparer<double>(
@@ -371,8 +371,8 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
             var ishtibaq = runtimeEntityType.AddProperty(
                 "Ishtibaq",
                 typeof(ZonedDateTime),
-                propertyInfo: typeof(MuwaqqitPrayerTimes).GetProperty("Ishtibaq", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                fieldInfo: typeof(MuwaqqitPrayerTimes).GetField("<Ishtibaq>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
+                propertyInfo: typeof(MuwaqqitDailyPrayerTimes).GetProperty("Ishtibaq", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(MuwaqqitDailyPrayerTimes).GetField("<Ishtibaq>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
             ishtibaq.TypeMapping = SqliteStringTypeMapping.Default.Clone(
                 comparer: new ValueComparer<ZonedDateTime>(
                     (ZonedDateTime v1, ZonedDateTime v2) => v1.Equals(v2),
@@ -399,8 +399,8 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
             var ishtibaqDegree = runtimeEntityType.AddProperty(
                 "IshtibaqDegree",
                 typeof(double),
-                propertyInfo: typeof(MuwaqqitPrayerTimes).GetProperty("IshtibaqDegree", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                fieldInfo: typeof(MuwaqqitPrayerTimes).GetField("<IshtibaqDegree>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                propertyInfo: typeof(MuwaqqitDailyPrayerTimes).GetProperty("IshtibaqDegree", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(MuwaqqitDailyPrayerTimes).GetField("<IshtibaqDegree>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 sentinel: 0.0);
             ishtibaqDegree.TypeMapping = DoubleTypeMapping.Default.Clone(
                 comparer: new ValueComparer<double>(
@@ -421,24 +421,24 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
             var latitude = runtimeEntityType.AddProperty(
                 "Latitude",
                 typeof(decimal),
-                propertyInfo: typeof(MuwaqqitPrayerTimes).GetProperty("Latitude", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                fieldInfo: typeof(MuwaqqitPrayerTimes).GetField("<Latitude>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                propertyInfo: typeof(MuwaqqitDailyPrayerTimes).GetProperty("Latitude", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(MuwaqqitDailyPrayerTimes).GetField("<Latitude>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 sentinel: 0m);
             latitude.TypeMapping = SqliteDecimalTypeMapping.Default;
 
             var longitude = runtimeEntityType.AddProperty(
                 "Longitude",
                 typeof(decimal),
-                propertyInfo: typeof(MuwaqqitPrayerTimes).GetProperty("Longitude", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                fieldInfo: typeof(MuwaqqitPrayerTimes).GetField("<Longitude>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                propertyInfo: typeof(MuwaqqitDailyPrayerTimes).GetProperty("Longitude", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(MuwaqqitDailyPrayerTimes).GetField("<Longitude>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 sentinel: 0m);
             longitude.TypeMapping = SqliteDecimalTypeMapping.Default;
 
             var maghrib = runtimeEntityType.AddProperty(
                 "Maghrib",
                 typeof(ZonedDateTime),
-                propertyInfo: typeof(MuwaqqitPrayerTimes).GetProperty("Maghrib", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                fieldInfo: typeof(MuwaqqitPrayerTimes).GetField("<Maghrib>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
+                propertyInfo: typeof(MuwaqqitDailyPrayerTimes).GetProperty("Maghrib", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(MuwaqqitDailyPrayerTimes).GetField("<Maghrib>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
             maghrib.TypeMapping = SqliteStringTypeMapping.Default.Clone(
                 comparer: new ValueComparer<ZonedDateTime>(
                     (ZonedDateTime v1, ZonedDateTime v2) => v1.Equals(v2),
@@ -465,8 +465,8 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
             var nextFajr = runtimeEntityType.AddProperty(
                 "NextFajr",
                 typeof(ZonedDateTime),
-                propertyInfo: typeof(MuwaqqitPrayerTimes).GetProperty("NextFajr", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                fieldInfo: typeof(MuwaqqitPrayerTimes).GetField("<NextFajr>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
+                propertyInfo: typeof(MuwaqqitDailyPrayerTimes).GetProperty("NextFajr", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(MuwaqqitDailyPrayerTimes).GetField("<NextFajr>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
             nextFajr.TypeMapping = SqliteStringTypeMapping.Default.Clone(
                 comparer: new ValueComparer<ZonedDateTime>(
                     (ZonedDateTime v1, ZonedDateTime v2) => v1.Equals(v2),
@@ -493,8 +493,8 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
             var shuruq = runtimeEntityType.AddProperty(
                 "Shuruq",
                 typeof(ZonedDateTime),
-                propertyInfo: typeof(MuwaqqitPrayerTimes).GetProperty("Shuruq", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                fieldInfo: typeof(MuwaqqitPrayerTimes).GetField("<Shuruq>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
+                propertyInfo: typeof(MuwaqqitDailyPrayerTimes).GetProperty("Shuruq", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(MuwaqqitDailyPrayerTimes).GetField("<Shuruq>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
             shuruq.TypeMapping = SqliteStringTypeMapping.Default.Clone(
                 comparer: new ValueComparer<ZonedDateTime>(
                     (ZonedDateTime v1, ZonedDateTime v2) => v1.Equals(v2),

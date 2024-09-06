@@ -52,7 +52,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.DynamicPrayerTimeProviders.Faz
             _faziletDBAccessMock.GetCountryIDByName(Arg.Is("Deutschland"), Arg.Any<CancellationToken>()).Returns(1);
             _faziletDBAccessMock.GetCityIDByName(Arg.Is(1), Arg.Is("Berlin"), Arg.Any<CancellationToken>()).Returns(1);
 
-            var times = new FaziletPrayerTimes
+            var times = new FaziletDailyPrayerTimes
             {
                 CityID = 1,
                 Date = dateInUtc,

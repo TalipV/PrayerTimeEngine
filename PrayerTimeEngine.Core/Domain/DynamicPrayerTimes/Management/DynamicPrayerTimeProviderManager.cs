@@ -19,15 +19,15 @@ namespace PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Management
             IEnumerable<IPrayerTimeCacheCleaner> cacheCleaners
         ) : IDynamicPrayerTimeProviderManager
     {
-        private readonly ConcurrentDictionary<(ZonedDateTime, int), (Profile, PrayerTimesBundle)> _cachedDateAndProfileIDToPrayerTimeBundle = new();
+        private readonly ConcurrentDictionary<(ZonedDateTime, int), (Profile, PrayerTimesCollection)> _cachedDateAndProfileIDToPrayerTimeBundle = new();
 
         private bool tryGetCachedCalculation(
             Profile profile,
             ZonedDateTime date,
-            out PrayerTimesBundle prayerTimeEntity)
+            out PrayerTimesCollection prayerTimeEntity)
         {
             // no cache
-            if (!_cachedDateAndProfileIDToPrayerTimeBundle.TryGetValue((date, profile.ID), out (Profile, PrayerTimesBundle) cachedValue))
+            if (!_cachedDateAndProfileIDToPrayerTimeBundle.TryGetValue((date, profile.ID), out (Profile, PrayerTimesCollection) cachedValue))
             {
                 prayerTimeEntity = null;
                 return false;
@@ -44,18 +44,18 @@ namespace PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Management
             return true;
         }
 
-        public async Task<PrayerTimesBundle> CalculatePrayerTimesAsync(int profileID, ZonedDateTime date, CancellationToken cancellationToken)
+        public async Task<PrayerTimesCollection> CalculatePrayerTimesAsync(int profileID, ZonedDateTime date, CancellationToken cancellationToken)
         {
             date = date.LocalDateTime.Date.AtStartOfDayInZone(date.Zone);
             Profile profile = await profileService.GetUntrackedReferenceOfProfile(profileID, cancellationToken).ConfigureAwait(false);
 
-            if (tryGetCachedCalculation(profile, date, out PrayerTimesBundle prayerTimeEntity))
+            if (tryGetCachedCalculation(profile, date, out PrayerTimesCollection prayerTimeEntity))
             {
                 prayerTimeEntity.DataCalculationTimestamp = systemInfoService.GetCurrentZonedDateTime();
                 return prayerTimeEntity;
             }
 
-            prayerTimeEntity = new PrayerTimesBundle();
+            prayerTimeEntity = new PrayerTimesCollection();
 
             var complexTypeCalculations =
                 await calculateInternal(profile, date, cancellationToken).ConfigureAwait(false);
@@ -144,7 +144,7 @@ namespace PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Management
             return (await Task.WhenAll(calculatorTasks).ConfigureAwait(false)).SelectMany(x => x).ToList();
         }
 
-        private IEnumerable<(ETimeType, ZonedDateTime?)> calculateSimpleTypes(Profile profile, PrayerTimesBundle prayerTimeEntity)
+        private IEnumerable<(ETimeType, ZonedDateTime?)> calculateSimpleTypes(Profile profile, PrayerTimesCollection prayerTimeEntity)
         {
             if (prayerTimeEntity.Dhuhr?.Start is not null
                 && profileService.GetTimeConfig(profile, ETimeType.DuhaEnd) is GenericSettingConfiguration duhaConfig

@@ -123,7 +123,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.DynamicPrayerTimeProviders.Faz
             var gerCity2 = new FaziletCity { ID = 2, CountryID = germany.ID, Name = "Hamburg", Country = germany };
             germany.Cities = [gerCity1, gerCity2];
 
-            var city1Times1 = new FaziletPrayerTimes
+            var city1Times1 = new FaziletDailyPrayerTimes
             {
                 CityID = gerCity1.ID,
                 Date = dateInUtc,
@@ -136,7 +136,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.DynamicPrayerTimeProviders.Faz
                 Isha = dateInUtc.PlusHours(20),
             };
 
-            var city1Times2 = new FaziletPrayerTimes
+            var city1Times2 = new FaziletDailyPrayerTimes
             {
                 CityID = gerCity1.ID,
                 Date = dateInUtc.Plus(Duration.FromDays(1)),
@@ -149,7 +149,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.DynamicPrayerTimeProviders.Faz
                 Isha = dateInUtc.PlusHours(24 + 23),
             };
 
-            var city2Times1 = new FaziletPrayerTimes
+            var city2Times1 = new FaziletDailyPrayerTimes
             {
                 CityID = gerCity2.ID,
                 Date = dateInUtc,
@@ -187,7 +187,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.DynamicPrayerTimeProviders.Faz
             var gerCity2 = new FaziletCity { ID = 2, CountryID = germany.ID, Name = "Hamburg", Country = germany };
             germany.Cities = [gerCity1, gerCity2];
 
-            var city1Times1 = new FaziletPrayerTimes
+            var city1Times1 = new FaziletDailyPrayerTimes
             {
                 CityID = gerCity1.ID,
                 Date = dateInUtc,
@@ -200,7 +200,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.DynamicPrayerTimeProviders.Faz
                 Isha = dateInUtc.PlusHours(20),
             };
 
-            var city1Times2 = new FaziletPrayerTimes
+            var city1Times2 = new FaziletDailyPrayerTimes
             {
                 CityID = gerCity1.ID,
                 Date = dateInUtc.Plus(Duration.FromDays(1)),
@@ -213,7 +213,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.DynamicPrayerTimeProviders.Faz
                 Isha = dateInUtc.PlusHours(24 + 23),
             };
 
-            var city2Times1 = new FaziletPrayerTimes
+            var city2Times1 = new FaziletDailyPrayerTimes
             {
                 CityID = gerCity2.ID,
                 Date = dateInUtc,
@@ -314,7 +314,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.DynamicPrayerTimeProviders.Faz
             await TestArrangeDbContext.FaziletCountries.AddAsync(austria);
             await TestArrangeDbContext.SaveChangesAsync();
 
-            var time1 = new FaziletPrayerTimes
+            var time1 = new FaziletDailyPrayerTimes
             {
                 CityID = 1,
                 Date = dateInUtc.Plus(Duration.FromDays(1)),
@@ -326,7 +326,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.DynamicPrayerTimeProviders.Faz
                 Maghrib = dateInUtc,
                 Isha = dateInUtc,
             };
-            var time2 = new FaziletPrayerTimes
+            var time2 = new FaziletDailyPrayerTimes
             {
                 CityID = 2,
                 Date = dateInUtc.Plus(Duration.FromDays(2)),
@@ -338,7 +338,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.DynamicPrayerTimeProviders.Faz
                 Maghrib = dateInUtc,
                 Isha = dateInUtc,
             };
-            var time3 = new FaziletPrayerTimes
+            var time3 = new FaziletDailyPrayerTimes
             {
                 CityID = 1,
                 Date = dateInUtc.Plus(Duration.FromDays(3)),

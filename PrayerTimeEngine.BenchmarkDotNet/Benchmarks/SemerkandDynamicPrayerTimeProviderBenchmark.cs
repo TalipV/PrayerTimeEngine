@@ -56,7 +56,7 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
 
             // throw exceptions when the calculator tries using the api
             ISemerkandApiService mockedSemerkandApiService = Substitute.For<ISemerkandApiService>();
-            mockedSemerkandApiService.ReturnsForAll<Task<SemerkandPrayerTimes>>((callInfo) => throw new Exception("Don't use this!"));
+            mockedSemerkandApiService.ReturnsForAll<Task<SemerkandDailyPrayerTimes>>((callInfo) => throw new Exception("Don't use this!"));
 
             return new SemerkandDynamicPrayerTimeProvider(
                     new SemerkandDBAccess(dbContextFactory),
@@ -72,7 +72,7 @@ namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks
             var semerkandDbAccessMock = Substitute.For<ISemerkandDBAccess>();
             semerkandDbAccessMock.GetCountries(Arg.Any<CancellationToken>()).Returns([]);
             semerkandDbAccessMock.GetCitiesByCountryID(Arg.Any<int>(), Arg.Any<CancellationToken>()).Returns([]);
-            semerkandDbAccessMock.GetTimesByDateAndCityID(Arg.Any<ZonedDateTime>(), Arg.Any<int>(), Arg.Any<CancellationToken>()).ReturnsNull<SemerkandPrayerTimes>();
+            semerkandDbAccessMock.GetTimesByDateAndCityID(Arg.Any<ZonedDateTime>(), Arg.Any<int>(), Arg.Any<CancellationToken>()).ReturnsNull<SemerkandDailyPrayerTimes>();
 
             return new SemerkandDynamicPrayerTimeProvider(
                     // returns null per default

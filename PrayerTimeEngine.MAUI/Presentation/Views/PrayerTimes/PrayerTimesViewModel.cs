@@ -18,6 +18,6 @@ namespace PrayerTimeEngine.Presentation.Views.PrayerTimes
 
         public MainPageViewModel MainPageViewModel { get; set; }
         public Profile Profile { get; set; }
-        public PrayerTimesBundle PrayerTimeBundle { get; set; }
+        public PrayerTimesCollection PrayerTimeBundle { get; set; }
     }
 }

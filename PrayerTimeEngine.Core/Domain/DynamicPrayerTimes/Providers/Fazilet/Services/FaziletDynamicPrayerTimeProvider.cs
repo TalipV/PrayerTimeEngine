@@ -50,7 +50,7 @@ namespace PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Serv
             string countryName = faziletLocationData.CountryName;
             string cityName = faziletLocationData.CityName;
 
-            FaziletPrayerTimes faziletPrayerTimes =
+            FaziletDailyPrayerTimes faziletPrayerTimes =
                 await getPrayerTimesInternal(
                     date,
                     countryName,
@@ -61,12 +61,12 @@ namespace PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Serv
                 .ToList();
         }
 
-        private async Task<FaziletPrayerTimes> getPrayerTimesInternal(ZonedDateTime date, string countryName, string cityName, CancellationToken cancellationToken)
+        private async Task<FaziletDailyPrayerTimes> getPrayerTimesInternal(ZonedDateTime date, string countryName, string cityName, CancellationToken cancellationToken)
         {
             int countryID = await getCountryID(countryName, throwIfNotFound: true, cancellationToken).ConfigureAwait(false);
             int cityID = await getCityID(cityName, countryID, throwIfNotFound: true, cancellationToken).ConfigureAwait(false);
 
-            FaziletPrayerTimes prayerTimes = await getPrayerTimesByDateAndCityID(date, cityID, cancellationToken).ConfigureAwait(false)
+            FaziletDailyPrayerTimes prayerTimes = await getPrayerTimesByDateAndCityID(date, cityID, cancellationToken).ConfigureAwait(false)
                 ?? throw new Exception($"Prayer times for the {date} could not be found for an unknown reason.");
 
             prayerTimes.NextFajr = (await getPrayerTimesByDateAndCityID(date.Plus(Duration.FromDays(1)), cityID, cancellationToken).ConfigureAwait(false))?.Fajr;
@@ -81,13 +81,13 @@ namespace PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Serv
             o.PoolInitialFill = 1;
         });
 
-        private async Task<FaziletPrayerTimes> getPrayerTimesByDateAndCityID(ZonedDateTime date, int cityID, CancellationToken cancellationToken)
+        private async Task<FaziletDailyPrayerTimes> getPrayerTimesByDateAndCityID(ZonedDateTime date, int cityID, CancellationToken cancellationToken)
         {
             var lockTuple = (date, cityID);
 
             using (await getPrayerTimesLocker.LockAsync(lockTuple, cancellationToken).ConfigureAwait(false))
             {
-                FaziletPrayerTimes prayerTimes = await faziletDBAccess.GetTimesByDateAndCityID(date, cityID, cancellationToken).ConfigureAwait(false);
+                FaziletDailyPrayerTimes prayerTimes = await faziletDBAccess.GetTimesByDateAndCityID(date, cityID, cancellationToken).ConfigureAwait(false);
 
                 if (prayerTimes is null)
                 {

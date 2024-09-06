@@ -139,7 +139,7 @@ namespace PrayerTimeEngine.Services.PrayerTimeSummaryNotification
                 _systemInfoService.GetCurrentInstant()
                     .InZone(DateTimeZoneProviders.Tzdb[profile.PlaceInfo.TimezoneInfo.Name]);
 
-            PrayerTimesBundle prayerTimeBundle = 
+            PrayerTimesCollection prayerTimeBundle = 
                 await _prayerTimeDynamicPrayerTimeProviderManager.CalculatePrayerTimesAsync(
                     profile.ID, 
                     now, 
@@ -148,9 +148,9 @@ namespace PrayerTimeEngine.Services.PrayerTimeSummaryNotification
             ZonedDateTime? nextTime = null;
             string timeName = "-";
             string additionalInfo = string.Empty;
-            PrayerTime _lastTime = null;
+            AbstractPrayerTime _lastTime = null;
 
-            foreach (PrayerTime prayerTime in prayerTimeBundle.AllPrayerTimes)
+            foreach (AbstractPrayerTime prayerTime in prayerTimeBundle.AllPrayerTimes)
             {
                 if (prayerTime is DuhaPrayerTime)
                     continue;

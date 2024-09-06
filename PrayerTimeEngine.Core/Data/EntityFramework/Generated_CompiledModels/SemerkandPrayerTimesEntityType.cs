@@ -23,14 +23,14 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
         {
             var runtimeEntityType = model.AddEntityType(
                 "PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Models.Entities.SemerkandPrayerTimes",
-                typeof(SemerkandPrayerTimes),
+                typeof(SemerkandDailyPrayerTimes),
                 baseEntityType);
 
             var iD = runtimeEntityType.AddProperty(
                 "ID",
                 typeof(int),
-                propertyInfo: typeof(SemerkandPrayerTimes).GetProperty("ID", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                fieldInfo: typeof(SemerkandPrayerTimes).GetField("<ID>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                propertyInfo: typeof(SemerkandDailyPrayerTimes).GetProperty("ID", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(SemerkandDailyPrayerTimes).GetField("<ID>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 valueGenerated: ValueGenerated.OnAdd,
                 afterSaveBehavior: PropertySaveBehavior.Throw,
                 sentinel: 0);
@@ -53,8 +53,8 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
             var asr = runtimeEntityType.AddProperty(
                 "Asr",
                 typeof(ZonedDateTime),
-                propertyInfo: typeof(SemerkandPrayerTimes).GetProperty("Asr", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                fieldInfo: typeof(SemerkandPrayerTimes).GetField("<Asr>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
+                propertyInfo: typeof(SemerkandDailyPrayerTimes).GetProperty("Asr", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(SemerkandDailyPrayerTimes).GetField("<Asr>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
             asr.TypeMapping = SqliteStringTypeMapping.Default.Clone(
                 comparer: new ValueComparer<ZonedDateTime>(
                     (ZonedDateTime v1, ZonedDateTime v2) => v1.Equals(v2),
@@ -81,8 +81,8 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
             var cityID = runtimeEntityType.AddProperty(
                 "CityID",
                 typeof(int),
-                propertyInfo: typeof(SemerkandPrayerTimes).GetProperty("CityID", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                fieldInfo: typeof(SemerkandPrayerTimes).GetField("<CityID>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                propertyInfo: typeof(SemerkandDailyPrayerTimes).GetProperty("CityID", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(SemerkandDailyPrayerTimes).GetField("<CityID>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 sentinel: 0);
             cityID.TypeMapping = IntTypeMapping.Default.Clone(
                 comparer: new ValueComparer<int>(
@@ -103,8 +103,8 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
             var date = runtimeEntityType.AddProperty(
                 "Date",
                 typeof(ZonedDateTime),
-                propertyInfo: typeof(SemerkandPrayerTimes).GetProperty("Date", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                fieldInfo: typeof(SemerkandPrayerTimes).GetField("<Date>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
+                propertyInfo: typeof(SemerkandDailyPrayerTimes).GetProperty("Date", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(SemerkandDailyPrayerTimes).GetField("<Date>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
             date.TypeMapping = SqliteStringTypeMapping.Default.Clone(
                 comparer: new ValueComparer<ZonedDateTime>(
                     (ZonedDateTime v1, ZonedDateTime v2) => v1.Equals(v2),
@@ -131,8 +131,8 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
             var dayOfYear = runtimeEntityType.AddProperty(
                 "DayOfYear",
                 typeof(int),
-                propertyInfo: typeof(SemerkandPrayerTimes).GetProperty("DayOfYear", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                fieldInfo: typeof(SemerkandPrayerTimes).GetField("<DayOfYear>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                propertyInfo: typeof(SemerkandDailyPrayerTimes).GetProperty("DayOfYear", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(SemerkandDailyPrayerTimes).GetField("<DayOfYear>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 sentinel: 0);
             dayOfYear.TypeMapping = IntTypeMapping.Default.Clone(
                 comparer: new ValueComparer<int>(
@@ -153,8 +153,8 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
             var dhuhr = runtimeEntityType.AddProperty(
                 "Dhuhr",
                 typeof(ZonedDateTime),
-                propertyInfo: typeof(SemerkandPrayerTimes).GetProperty("Dhuhr", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                fieldInfo: typeof(SemerkandPrayerTimes).GetField("<Dhuhr>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
+                propertyInfo: typeof(SemerkandDailyPrayerTimes).GetProperty("Dhuhr", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(SemerkandDailyPrayerTimes).GetField("<Dhuhr>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
             dhuhr.TypeMapping = SqliteStringTypeMapping.Default.Clone(
                 comparer: new ValueComparer<ZonedDateTime>(
                     (ZonedDateTime v1, ZonedDateTime v2) => v1.Equals(v2),
@@ -181,8 +181,8 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
             var fajr = runtimeEntityType.AddProperty(
                 "Fajr",
                 typeof(ZonedDateTime),
-                propertyInfo: typeof(SemerkandPrayerTimes).GetProperty("Fajr", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                fieldInfo: typeof(SemerkandPrayerTimes).GetField("<Fajr>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
+                propertyInfo: typeof(SemerkandDailyPrayerTimes).GetProperty("Fajr", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(SemerkandDailyPrayerTimes).GetField("<Fajr>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
             fajr.TypeMapping = SqliteStringTypeMapping.Default.Clone(
                 comparer: new ValueComparer<ZonedDateTime>(
                     (ZonedDateTime v1, ZonedDateTime v2) => v1.Equals(v2),
@@ -209,8 +209,8 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
             var insertInstant = runtimeEntityType.AddProperty(
                 "InsertInstant",
                 typeof(Instant?),
-                propertyInfo: typeof(SemerkandPrayerTimes).GetProperty("InsertInstant", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                fieldInfo: typeof(SemerkandPrayerTimes).GetField("<InsertInstant>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                propertyInfo: typeof(SemerkandDailyPrayerTimes).GetProperty("InsertInstant", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(SemerkandDailyPrayerTimes).GetField("<InsertInstant>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 nullable: true);
             insertInstant.TypeMapping = SqliteStringTypeMapping.Default.Clone(
                 comparer: new ValueComparer<Instant?>(
@@ -237,8 +237,8 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
             var isha = runtimeEntityType.AddProperty(
                 "Isha",
                 typeof(ZonedDateTime),
-                propertyInfo: typeof(SemerkandPrayerTimes).GetProperty("Isha", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                fieldInfo: typeof(SemerkandPrayerTimes).GetField("<Isha>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
+                propertyInfo: typeof(SemerkandDailyPrayerTimes).GetProperty("Isha", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(SemerkandDailyPrayerTimes).GetField("<Isha>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
             isha.TypeMapping = SqliteStringTypeMapping.Default.Clone(
                 comparer: new ValueComparer<ZonedDateTime>(
                     (ZonedDateTime v1, ZonedDateTime v2) => v1.Equals(v2),
@@ -265,8 +265,8 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
             var maghrib = runtimeEntityType.AddProperty(
                 "Maghrib",
                 typeof(ZonedDateTime),
-                propertyInfo: typeof(SemerkandPrayerTimes).GetProperty("Maghrib", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                fieldInfo: typeof(SemerkandPrayerTimes).GetField("<Maghrib>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
+                propertyInfo: typeof(SemerkandDailyPrayerTimes).GetProperty("Maghrib", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(SemerkandDailyPrayerTimes).GetField("<Maghrib>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
             maghrib.TypeMapping = SqliteStringTypeMapping.Default.Clone(
                 comparer: new ValueComparer<ZonedDateTime>(
                     (ZonedDateTime v1, ZonedDateTime v2) => v1.Equals(v2),
@@ -293,8 +293,8 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
             var nextFajr = runtimeEntityType.AddProperty(
                 "NextFajr",
                 typeof(ZonedDateTime?),
-                propertyInfo: typeof(SemerkandPrayerTimes).GetProperty("NextFajr", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                fieldInfo: typeof(SemerkandPrayerTimes).GetField("<NextFajr>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                propertyInfo: typeof(SemerkandDailyPrayerTimes).GetProperty("NextFajr", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(SemerkandDailyPrayerTimes).GetField("<NextFajr>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 nullable: true);
             nextFajr.TypeMapping = SqliteStringTypeMapping.Default.Clone(
                 comparer: new ValueComparer<ZonedDateTime?>(
@@ -321,8 +321,8 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
             var shuruq = runtimeEntityType.AddProperty(
                 "Shuruq",
                 typeof(ZonedDateTime),
-                propertyInfo: typeof(SemerkandPrayerTimes).GetProperty("Shuruq", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                fieldInfo: typeof(SemerkandPrayerTimes).GetField("<Shuruq>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
+                propertyInfo: typeof(SemerkandDailyPrayerTimes).GetProperty("Shuruq", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(SemerkandDailyPrayerTimes).GetField("<Shuruq>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
             shuruq.TypeMapping = SqliteStringTypeMapping.Default.Clone(
                 comparer: new ValueComparer<ZonedDateTime>(
                     (ZonedDateTime v1, ZonedDateTime v2) => v1.Equals(v2),

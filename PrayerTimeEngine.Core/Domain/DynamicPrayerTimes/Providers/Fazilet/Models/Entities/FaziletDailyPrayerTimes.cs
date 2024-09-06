@@ -1,31 +1,26 @@
 ﻿using NodaTime;
 using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Data.EntityFramework;
-using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Models;
+using PrayerTimeEngine.Core.Domain.Models;
 using System.ComponentModel.DataAnnotations;
 
-namespace PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Semerkand.Models.Entities
+namespace PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Models.Entities
 {
-    public class SemerkandPrayerTimes : IDynamicPrayerTimes, IInsertedAt
+    public class FaziletDailyPrayerTimes : IDailyPrayerTimes, IInsertedAt
     {
         [Key]
         public int ID { get; set; }
 
-        public int DayOfYear { get; set; }
         public required ZonedDateTime Date { get; set; }
         public required int CityID { get; set; }
         public Instant? InsertInstant { get; set; }
 
+        public required ZonedDateTime Imsak { get; set; }
         public required ZonedDateTime Fajr { get; set; }
-
         public required ZonedDateTime Shuruq { get; set; }
-
         public required ZonedDateTime Dhuhr { get; set; }
-
         public required ZonedDateTime Asr { get; set; }
-
         public required ZonedDateTime Maghrib { get; set; }
-
         public required ZonedDateTime Isha { get; set; }
         public ZonedDateTime? NextFajr { get; set; }
 

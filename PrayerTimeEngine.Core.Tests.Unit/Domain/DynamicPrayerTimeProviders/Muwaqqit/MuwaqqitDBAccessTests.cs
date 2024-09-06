@@ -25,7 +25,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.DynamicPrayerTimeProviders.Muw
             // ARRANGE
             var date = new LocalDate(2023, 7, 30);
             var dateTimeZone = TestDataHelper.EUROPE_VIENNA_TIME_ZONE;
-            var muwaqqitTime = new MuwaqqitPrayerTimes
+            var muwaqqitTime = new MuwaqqitDailyPrayerTimes
             {
                 Date = date.AtStartOfDayInZone(dateTimeZone),
                 Latitude = 47.2803835M,
@@ -71,7 +71,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.DynamicPrayerTimeProviders.Muw
             // ARRANGE
             var date = new LocalDate(2023, 7, 31);
             var dateTimeZone = TestDataHelper.EUROPE_VIENNA_TIME_ZONE;
-            var newMuwaqqitTime = new MuwaqqitPrayerTimes
+            var newMuwaqqitTime = new MuwaqqitDailyPrayerTimes
             {
                 Date = date.AtStartOfDayInZone(dateTimeZone),
                 Latitude = 47.2803835M,

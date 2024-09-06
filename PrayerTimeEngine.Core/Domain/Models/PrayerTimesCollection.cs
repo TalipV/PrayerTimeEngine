@@ -1,17 +1,18 @@
 ﻿using NodaTime;
 using PrayerTimeEngine.Core.Common.Enum;
+using PrayerTimeEngine.Core.Domain.Models.PrayerTimes;
 using PropertyChanged;
 using System.Text.Json.Serialization;
 
 namespace PrayerTimeEngine.Core.Domain.Models
 {
     [AddINotifyPropertyChangedInterface]
-    public class PrayerTimesBundle
+    public class PrayerTimesCollection
     {
         public ZonedDateTime? DataCalculationTimestamp { get; set; }
 
         [JsonIgnore]
-        public List<PrayerTime> AllPrayerTimes
+        public List<AbstractPrayerTime> AllPrayerTimes
         {
             get
             {
@@ -28,7 +29,7 @@ namespace PrayerTimeEngine.Core.Domain.Models
 
         public override bool Equals(object obj)
         {
-            if (obj is not PrayerTimesBundle otherPrayerTimeBundle)
+            if (obj is not PrayerTimesCollection otherPrayerTimeBundle)
                 return false;
 
             return this.Fajr.Equals(otherPrayerTimeBundle.Fajr)

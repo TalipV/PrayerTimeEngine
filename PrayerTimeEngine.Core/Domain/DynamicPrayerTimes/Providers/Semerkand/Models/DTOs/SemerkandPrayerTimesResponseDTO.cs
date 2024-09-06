@@ -34,11 +34,11 @@ namespace PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Semerkand.Mo
         [JsonConverter(typeof(LocalTimeConverter))]
         public LocalTime Isha { get; set; }
 
-        internal SemerkandPrayerTimes ToSemerkandPrayerTimes(int cityID, DateTimeZone dateTimeZone, LocalDate firstDayOfYear)
+        internal SemerkandDailyPrayerTimes ToSemerkandPrayerTimes(int cityID, DateTimeZone dateTimeZone, LocalDate firstDayOfYear)
         {
             LocalDate localDate = firstDayOfYear.PlusDays(DayOfYear - 1);
 
-            return new SemerkandPrayerTimes
+            return new SemerkandDailyPrayerTimes
             {
                 DayOfYear = DayOfYear,
                 CityID = cityID,

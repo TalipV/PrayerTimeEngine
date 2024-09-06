@@ -26,15 +26,15 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework
         public DbSet<ProfilePlaceInfo> PlaceInfos { get; set; }
         public DbSet<TimezoneInfo> TimezoneInfos { get; set; }
 
-        public DbSet<MuwaqqitPrayerTimes> MuwaqqitPrayerTimes { get; set; }
+        public DbSet<MuwaqqitDailyPrayerTimes> MuwaqqitPrayerTimes { get; set; }
 
         public DbSet<FaziletCountry> FaziletCountries { get; set; }
         public DbSet<FaziletCity> FaziletCities { get; set; }
-        public DbSet<FaziletPrayerTimes> FaziletPrayerTimes { get; set; }
+        public DbSet<FaziletDailyPrayerTimes> FaziletPrayerTimes { get; set; }
 
         public DbSet<SemerkandCountry> SemerkandCountries { get; set; }
         public DbSet<SemerkandCity> SemerkandCities { get; set; }
-        public DbSet<SemerkandPrayerTimes> SemerkandPrayerTimes { get; set; }
+        public DbSet<SemerkandDailyPrayerTimes> SemerkandPrayerTimes { get; set; }
 
         public DbSet<MawaqitPrayerTimes> MawaqitPrayerTimes { get; set; }
         public DbSet<MyMosqPrayerTimes> MyMosqPrayerTimes { get; set; }

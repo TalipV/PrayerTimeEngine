@@ -210,9 +210,9 @@ namespace PrayerTimeEngine.Core.Tests.Common.TestData
             return profile;
         }
 
-        public static PrayerTimesBundle CreateNewTestPrayerTimesBundle()
+        public static PrayerTimesCollection CreateNewTestPrayerTimesBundle()
         {
-            var bundle = new PrayerTimesBundle();
+            var bundle = new PrayerTimesCollection();
             var zone = EUROPE_VIENNA_TIME_ZONE;
 
             bundle.Fajr.Start = new LocalDateTime(2023, 1, 1, 2, 0, 0).InZone(zone, Resolvers.StrictResolver);

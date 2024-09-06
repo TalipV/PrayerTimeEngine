@@ -7,15 +7,15 @@ using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Semerkand.Servic
 
 namespace PrayerTimeEngine.Core.Tests.Unit.Domain.DynamicPrayerTimeProviders
 {
-    public class PrayerTimeServiceFactoryTests
+    public class DynamicPrayerTimeProviderFactoryTests
     {
         private readonly IServiceProvider serviceProviderMock;
-        private readonly DynamicPrayerTimeProviderFactory _prayerTimeServiceFactory;
+        private readonly DynamicPrayerTimeProviderFactory _dynamicPrayerTimeProviderFactory;
 
-        public PrayerTimeServiceFactoryTests()
+        public DynamicPrayerTimeProviderFactoryTests()
         {
             serviceProviderMock = Substitute.For<IServiceProvider>();
-            _prayerTimeServiceFactory = new DynamicPrayerTimeProviderFactory(serviceProviderMock);
+            _dynamicPrayerTimeProviderFactory = new DynamicPrayerTimeProviderFactory(serviceProviderMock);
         }
 
         #region GetDynamicPrayerTimeProviderByDynamicPrayerTimeProvider
@@ -38,7 +38,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.DynamicPrayerTimeProviders
             // which are not really important for the test anyway so...
             try
             {
-                _prayerTimeServiceFactory.GetDynamicPrayerTimeProviderByDynamicPrayerTimeProvider(dynamicPrayerTimeProviderType);
+                _dynamicPrayerTimeProviderFactory.GetDynamicPrayerTimeProviderByDynamicPrayerTimeProvider(dynamicPrayerTimeProviderType);
             }
             catch { }
 
@@ -53,7 +53,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.DynamicPrayerTimeProviders
         public void GetDynamicPrayerTimeProviderByDynamicPrayerTimeProvider_DynamicPrayerTimeProviderNone_ArgumentException()
         {
             // ARRANGE & ACT
-            Action action = () => _prayerTimeServiceFactory.GetDynamicPrayerTimeProviderByDynamicPrayerTimeProvider(EDynamicPrayerTimeProviderType.None);
+            Action action = () => _dynamicPrayerTimeProviderFactory.GetDynamicPrayerTimeProviderByDynamicPrayerTimeProvider(EDynamicPrayerTimeProviderType.None);
 
             // ASSERT
             action.Should().Throw<ArgumentException>();

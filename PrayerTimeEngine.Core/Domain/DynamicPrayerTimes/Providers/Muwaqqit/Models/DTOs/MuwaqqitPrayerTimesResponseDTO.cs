@@ -80,9 +80,9 @@ namespace PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Muwaqqit.Mod
         [JsonConverter(typeof(LocalDateConverter))]
         public LocalDate Date { get; set; }
 
-        public MuwaqqitPrayerTimes ToMuwaqqitPrayerTimes()
+        public MuwaqqitDailyPrayerTimes ToMuwaqqitPrayerTimes()
         {
-            return new MuwaqqitPrayerTimes
+            return new MuwaqqitDailyPrayerTimes
             {
                 Date = Date.AtStartOfDayInZone(Timezone),
                 Longitude = Longitude,

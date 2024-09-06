@@ -53,7 +53,7 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.DynamicPrayerTimeProviders.Muw
                 ishtibaqDegree: -8,
                 asrKarahaDegree: 3.5,
                 cancellationToken: default);
-            MuwaqqitPrayerTimes time = response.ToMuwaqqitPrayerTimes();
+            MuwaqqitDailyPrayerTimes time = response.ToMuwaqqitPrayerTimes();
 
             // ASSERT
             time.Should().NotBeNull();

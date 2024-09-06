@@ -481,7 +481,7 @@ namespace PrayerTimeEngine.Presentation.Pages.Main
             return locationDataWithDynamicPrayerTimeProvider;
         }
 
-        public PrayerTime GetDisplayPrayerTime()
+        public AbstractPrayerTime GetDisplayPrayerTime()
         {
             var prayerTimeBundle = CurrentProfileWithModel?.PrayerTimeBundle;
 

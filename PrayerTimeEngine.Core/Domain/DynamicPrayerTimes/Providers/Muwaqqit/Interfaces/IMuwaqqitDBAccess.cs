@@ -5,7 +5,7 @@ namespace PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Muwaqqit.Int
 {
     public interface IMuwaqqitDBAccess
     {
-        Task<MuwaqqitPrayerTimes> GetPrayerTimesAsync(
+        Task<MuwaqqitDailyPrayerTimes> GetPrayerTimesAsync(
             ZonedDateTime date,
             decimal longitude,
             decimal latitude,
@@ -14,6 +14,6 @@ namespace PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Muwaqqit.Int
             double ishtibaqDegree,
             double asrKarahaDegree, CancellationToken cancellationToken);
 
-        Task InsertPrayerTimesAsync(IEnumerable<MuwaqqitPrayerTimes> muwaqqitPrayerTimesLst, CancellationToken cancellationToken);
+        Task InsertPrayerTimesAsync(IEnumerable<MuwaqqitDailyPrayerTimes> muwaqqitPrayerTimesLst, CancellationToken cancellationToken);
     }
 }
