@@ -26,9 +26,9 @@ public static class TestDataHelper
     public static readonly DateTimeZone EUROPE_VIENNA_TIME_ZONE = DateTimeZoneProviders.Tzdb["Europe/Vienna"];
     public static readonly DateTimeZone EUROPE_BERLIN_TIME_ZONE = DateTimeZoneProviders.Tzdb["Europe/Berlin"];
 
-    public static Profile CreateNewCompleteTestProfile(int profileID = 1)
+    public static DynamicProfile CreateNewCompleteTestProfile(int profileID = 1)
     {
-        var profile = new Profile
+        var profile = new DynamicProfile
         {
             ID = profileID,
             Name = "Standard-Profil",

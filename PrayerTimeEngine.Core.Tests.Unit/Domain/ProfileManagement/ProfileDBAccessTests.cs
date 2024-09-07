@@ -97,7 +97,7 @@ public class ProfileDBAccessTests : BaseTest
 
         // ASSERT
         var savedProfile =
-            TestAssertDbContext.Profiles
+            TestAssertDbContext.DynamicProfiles
             .Include(x => x.PlaceInfo).ThenInclude(x => x.TimezoneInfo)
             .Include(x => x.TimeConfigs)
             .Include(x => x.LocationConfigs)
@@ -197,7 +197,7 @@ public class ProfileDBAccessTests : BaseTest
         profile.SequenceNo.Should().Be(1, "this is a precondition");
 
         // ACT
-        Profile copiedProfile = await _profileDBAccess.CopyProfile(profile, default);
+        DynamicProfile copiedProfile = (await _profileDBAccess.CopyProfile(profile, default) as DynamicProfile);
 
         // ASSERT
         copiedProfile.Should().NotBeNull();
@@ -278,7 +278,7 @@ public class ProfileDBAccessTests : BaseTest
         // ASSERT
         var profiles = 
             await TestAssertDbContext
-                .Profiles
+                .DynamicProfiles
                 .Include(x => x.PlaceInfo).ThenInclude(x => x.TimezoneInfo)
                 .Include(x => x.LocationConfigs)
                 .Include(x => x.TimeConfigs)

@@ -219,7 +219,7 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
             var profile = declaringEntityType.AddNavigation("Profile",
                 runtimeForeignKey,
                 onDependent: true,
-                typeof(Profile),
+                typeof(DynamicProfile),
                 propertyInfo: typeof(ProfilePlaceInfo).GetProperty("Profile", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 fieldInfo: typeof(ProfilePlaceInfo).GetField("<Profile>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
 
@@ -227,8 +227,8 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
                 runtimeForeignKey,
                 onDependent: false,
                 typeof(ProfilePlaceInfo),
-                propertyInfo: typeof(Profile).GetProperty("PlaceInfo", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                fieldInfo: typeof(Profile).GetField("<PlaceInfo>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
+                propertyInfo: typeof(DynamicProfile).GetProperty("PlaceInfo", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(DynamicProfile).GetField("<PlaceInfo>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
 
             return runtimeForeignKey;
         }

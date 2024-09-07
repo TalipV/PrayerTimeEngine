@@ -42,7 +42,7 @@ public class ProfileServiceTests : BaseTest
         // in the UI the data is loaded without tracking (i.e. intended for read only)
         // changes have to be made on separate entities with tracking to keep the mechanisms clean
         var profile =
-            dbContext.Profiles
+            dbContext.DynamicProfiles
                 .Include(x => x.LocationConfigs)
                 .Include(x => x.TimeConfigs)
                 .Include(x => x.PlaceInfo).ThenInclude(x => x.TimezoneInfo)
@@ -119,7 +119,7 @@ public class ProfileServiceTests : BaseTest
         dbContext.SaveChangesAsync().Throws(new Exception("Test exception during commit"));
 
         var profile =
-            dbContext.Profiles
+            dbContext.DynamicProfiles
                 .Include(x => x.LocationConfigs)
                 .Include(x => x.TimeConfigs)
                 .Include(x => x.PlaceInfo).ThenInclude(x => x.TimezoneInfo)
@@ -200,7 +200,7 @@ public class ProfileServiceTests : BaseTest
         await TestArrangeDbContext.SaveChangesAsync();
 
         var profile =
-            TestArrangeDbContext.Profiles
+            TestArrangeDbContext.DynamicProfiles
                 .Include(x => x.LocationConfigs)
                 .Include(x => x.TimeConfigs)
                 .AsNoTracking()

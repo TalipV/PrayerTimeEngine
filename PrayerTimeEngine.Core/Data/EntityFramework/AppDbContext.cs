@@ -21,6 +21,8 @@ public class AppDbContext(
         ISystemInfoService systemInfoService
     ) : DbContext(options)
 {
+    public static readonly JsonSerializerOptions SerializerOptions = new();
+
     public DbSet<Profile> Profiles { get; set; }
     public DbSet<DynamicProfile> DynamicProfiles { get; set; }
     public DbSet<MosqueProfile> MosqueProfiles { get; set; }
@@ -42,8 +44,6 @@ public class AppDbContext(
     public DbSet<MawaqitPrayerTimes> MawaqitPrayerTimes { get; set; }
     public DbSet<MyMosqPrayerTimes> MyMosqPrayerTimes { get; set; }
 
-    private static readonly JsonSerializerOptions _someJsonOptions = new();
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder
@@ -56,8 +56,8 @@ public class AppDbContext(
             .Entity<ProfileTimeConfig>()
             .Property(x => x.CalculationConfiguration)
             .HasConversion(
-                x => JsonSerializer.Serialize(x, _someJsonOptions),
-                x => JsonSerializer.Deserialize<GenericSettingConfiguration>(x, _someJsonOptions)
+                x => JsonSerializer.Serialize(x, SerializerOptions),
+                x => JsonSerializer.Deserialize<GenericSettingConfiguration>(x, SerializerOptions)
             );
 
         modelBuilder
@@ -70,8 +70,8 @@ public class AppDbContext(
             .Entity<ProfileLocationConfig>()
             .Property(x => x.LocationData)
             .HasConversion(
-                x => JsonSerializer.Serialize(x, _someJsonOptions),
-                x => JsonSerializer.Deserialize<BaseLocationData>(x, _someJsonOptions)
+                x => JsonSerializer.Serialize(x, SerializerOptions),
+                x => JsonSerializer.Deserialize<BaseLocationData>(x, SerializerOptions)
             );
 
         foreach (var type in appDbContextMetaData.GetDbSetPropertyTypes())

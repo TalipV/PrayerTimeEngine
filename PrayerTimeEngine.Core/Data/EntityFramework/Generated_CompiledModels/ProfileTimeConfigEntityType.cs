@@ -13,7 +13,6 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NodaTime;
 using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Common.Extension;
-using PrayerTimeEngine.Core.Data.EntityFramework.Configurations;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Models;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
 
@@ -75,13 +74,13 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
                     (string v) => v.GetHashCode(),
                     (string v) => v),
                 converter: new ValueConverter<GenericSettingConfiguration, string>(
-                    (GenericSettingConfiguration x) => JsonSerializer.Serialize(x, ProfileTimeConfigConfiguration.JsonOptions),
-                    (string x) => JsonSerializer.Deserialize<GenericSettingConfiguration>(x, ProfileTimeConfigConfiguration.JsonOptions)),
+                    (GenericSettingConfiguration x) => JsonSerializer.Serialize(x, AppDbContext.SerializerOptions),
+                    (string x) => JsonSerializer.Deserialize<GenericSettingConfiguration>(x, AppDbContext.SerializerOptions)),
                 jsonValueReaderWriter: new JsonConvertedValueReaderWriter<GenericSettingConfiguration, string>(
                     JsonStringReaderWriter.Instance,
                     new ValueConverter<GenericSettingConfiguration, string>(
-                        (GenericSettingConfiguration x) => JsonSerializer.Serialize(x, ProfileTimeConfigConfiguration.JsonOptions),
-                        (string x) => JsonSerializer.Deserialize<GenericSettingConfiguration>(x, ProfileTimeConfigConfiguration.JsonOptions))));
+                        (GenericSettingConfiguration x) => JsonSerializer.Serialize(x, AppDbContext.SerializerOptions),
+                        (string x) => JsonSerializer.Deserialize<GenericSettingConfiguration>(x, AppDbContext.SerializerOptions))));
 
             var insertInstant = runtimeEntityType.AddProperty(
                 "InsertInstant",
@@ -184,7 +183,7 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
             var profile = declaringEntityType.AddNavigation("Profile",
                 runtimeForeignKey,
                 onDependent: true,
-                typeof(Profile),
+                typeof(DynamicProfile),
                 propertyInfo: typeof(ProfileTimeConfig).GetProperty("Profile", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 fieldInfo: typeof(ProfileTimeConfig).GetField("<Profile>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
 
@@ -192,8 +191,8 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
                 runtimeForeignKey,
                 onDependent: false,
                 typeof(ICollection<ProfileTimeConfig>),
-                propertyInfo: typeof(Profile).GetProperty("TimeConfigs", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                fieldInfo: typeof(Profile).GetField("<TimeConfigs>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
+                propertyInfo: typeof(DynamicProfile).GetProperty("TimeConfigs", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(DynamicProfile).GetField("<TimeConfigs>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
 
             return runtimeForeignKey;
         }

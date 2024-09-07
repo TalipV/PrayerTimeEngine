@@ -13,7 +13,6 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NodaTime;
 using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Common.Extension;
-using PrayerTimeEngine.Core.Data.EntityFramework.Configurations;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Models;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
 
@@ -133,13 +132,13 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
                     (string v) => v.GetHashCode(),
                     (string v) => v),
                 converter: new ValueConverter<BaseLocationData, string>(
-                    (BaseLocationData x) => JsonSerializer.Serialize(x, ProfileLocationConfigConfiguration.JsonOptions),
-                    (string x) => JsonSerializer.Deserialize<BaseLocationData>(x, ProfileLocationConfigConfiguration.JsonOptions)),
+                    (BaseLocationData x) => JsonSerializer.Serialize(x, AppDbContext.SerializerOptions),
+                    (string x) => JsonSerializer.Deserialize<BaseLocationData>(x, AppDbContext.SerializerOptions)),
                 jsonValueReaderWriter: new JsonConvertedValueReaderWriter<BaseLocationData, string>(
                     JsonStringReaderWriter.Instance,
                     new ValueConverter<BaseLocationData, string>(
-                        (BaseLocationData x) => JsonSerializer.Serialize(x, ProfileLocationConfigConfiguration.JsonOptions),
-                        (string x) => JsonSerializer.Deserialize<BaseLocationData>(x, ProfileLocationConfigConfiguration.JsonOptions))));
+                        (BaseLocationData x) => JsonSerializer.Serialize(x, AppDbContext.SerializerOptions),
+                        (string x) => JsonSerializer.Deserialize<BaseLocationData>(x, AppDbContext.SerializerOptions))));
 
             var profileID = runtimeEntityType.AddProperty(
                 "ProfileID",
@@ -184,7 +183,7 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
             var profile = declaringEntityType.AddNavigation("Profile",
                 runtimeForeignKey,
                 onDependent: true,
-                typeof(Profile),
+                typeof(DynamicProfile),
                 propertyInfo: typeof(ProfileLocationConfig).GetProperty("Profile", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 fieldInfo: typeof(ProfileLocationConfig).GetField("<Profile>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
 
@@ -192,8 +191,8 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
                 runtimeForeignKey,
                 onDependent: false,
                 typeof(ICollection<ProfileLocationConfig>),
-                propertyInfo: typeof(Profile).GetProperty("LocationConfigs", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                fieldInfo: typeof(Profile).GetField("<LocationConfigs>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
+                propertyInfo: typeof(DynamicProfile).GetProperty("LocationConfigs", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(DynamicProfile).GetField("<LocationConfigs>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
 
             return runtimeForeignKey;
         }
