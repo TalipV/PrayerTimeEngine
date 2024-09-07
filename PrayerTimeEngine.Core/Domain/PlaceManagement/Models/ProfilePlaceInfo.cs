@@ -13,7 +13,7 @@ public class ProfilePlaceInfo : BasicPlaceInfo, IInsertedAt
     public int ID { get; set; }
     public Instant? InsertInstant { get; set; }
     public int ProfileID { get; set; }
-    public Profile Profile { get; set; }
+    public DynamicProfile Profile { get; set; }
 
     public required TimezoneInfo TimezoneInfo { get; set; }
 

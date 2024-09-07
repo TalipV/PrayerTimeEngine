@@ -47,9 +47,14 @@ public class DynamicPrayerTimeProviderManager(
     public async Task<PrayerTimesCollection> CalculatePrayerTimesAsync(int profileID, ZonedDateTime date, CancellationToken cancellationToken)
     {
         date = date.LocalDateTime.Date.AtStartOfDayInZone(date.Zone);
-        Profile profile = await profileService.GetUntrackedReferenceOfProfile(profileID, cancellationToken).ConfigureAwait(false);
 
-        if (tryGetCachedCalculation(profile, date, out PrayerTimesCollection prayerTimeEntity))
+        Profile profile = await profileService.GetUntrackedReferenceOfProfile(profileID, cancellationToken).ConfigureAwait(false)
+            ?? throw new Exception($"The Profile with the ID '{profileID}' could not be found");
+
+        DynamicProfile dynamicProfile = profile as DynamicProfile
+            ?? throw new Exception($"The Profile with the ID '{profileID}' is not a {nameof(DynamicProfile)}");
+
+        if (tryGetCachedCalculation(dynamicProfile, date, out PrayerTimesCollection prayerTimeEntity))
         {
             prayerTimeEntity.DataCalculationTimestamp = systemInfoService.GetCurrentZonedDateTime();
             return prayerTimeEntity;
@@ -58,14 +63,14 @@ public class DynamicPrayerTimeProviderManager(
         prayerTimeEntity = new PrayerTimesCollection();
 
         var complexTypeCalculations =
-            await calculateInternal(profile, date, cancellationToken).ConfigureAwait(false);
+            await calculateInternal(dynamicProfile, date, cancellationToken).ConfigureAwait(false);
 
         var allCalculations =
             complexTypeCalculations
                 .Select(x => (x.TimeType, (ZonedDateTime?)x.ZonedDateTime))
                 // left as (non-list) IEnumerable because it has to run after
                 // the complex calculations landed in prayerTimeEntity
-                .Concat(calculateSimpleTypes(profile, prayerTimeEntity));
+                .Concat(calculateSimpleTypes(dynamicProfile, prayerTimeEntity));
 
         foreach ((ETimeType timeType, ZonedDateTime? zonedDateTime) in allCalculations)
         {
@@ -75,7 +80,7 @@ public class DynamicPrayerTimeProviderManager(
 
         prayerTimeEntity.DataCalculationTimestamp = systemInfoService.GetCurrentZonedDateTime();
 
-        _cachedDateAndProfileIDToPrayerTimeBundle[(date, profile.ID)] = (profile, prayerTimeEntity);
+        _cachedDateAndProfileIDToPrayerTimeBundle[(date, dynamicProfile.ID)] = (dynamicProfile, prayerTimeEntity);
 
         cleanUpOldCacheData(cancellationToken);
 
@@ -100,20 +105,20 @@ public class DynamicPrayerTimeProviderManager(
     }
 
     private async Task<List<(ETimeType TimeType, ZonedDateTime ZonedDateTime)>> calculateInternal(
-        Profile profile,
+        DynamicProfile dynamicProfile,
         ZonedDateTime date,
         CancellationToken cancellationToken)
     {
         List<Task<List<(ETimeType, ZonedDateTime)>>> calculatorTasks = [];
 
-        foreach (var timeConfigsByCalcSource in profileService.GetActiveComplexTimeConfigs(profile).GroupBy(x => x.Source))
+        foreach (var timeConfigsByCalcSource in profileService.GetActiveComplexTimeConfigs(dynamicProfile).GroupBy(x => x.Source))
         {
             EDynamicPrayerTimeProviderType dynamicPrayerTimeProviderType = timeConfigsByCalcSource.Key;
             List<GenericSettingConfiguration> configs = [.. timeConfigsByCalcSource];
 
             IDynamicPrayerTimeProvider dynamicPrayerTimeProvider = prayerTimeServiceFactory.GetDynamicPrayerTimeProviderByDynamicPrayerTimeProvider(dynamicPrayerTimeProviderType);
             throwIfConfigsHaveUnsupportedTimeTypes(dynamicPrayerTimeProvider, dynamicPrayerTimeProviderType, configs);
-            BaseLocationData locationData = profileService.GetLocationConfig(profile, dynamicPrayerTimeProviderType);
+            BaseLocationData locationData = profileService.GetLocationConfig(dynamicProfile, dynamicPrayerTimeProviderType);
 
             try
             {
@@ -144,10 +149,10 @@ public class DynamicPrayerTimeProviderManager(
         return (await Task.WhenAll(calculatorTasks).ConfigureAwait(false)).SelectMany(x => x).ToList();
     }
 
-    private IEnumerable<(ETimeType, ZonedDateTime?)> calculateSimpleTypes(Profile profile, PrayerTimesCollection prayerTimeEntity)
+    private IEnumerable<(ETimeType, ZonedDateTime?)> calculateSimpleTypes(DynamicProfile dynamicProfile, PrayerTimesCollection prayerTimeEntity)
     {
         if (prayerTimeEntity.Dhuhr?.Start is not null
-            && profileService.GetTimeConfig(profile, ETimeType.DuhaEnd) is GenericSettingConfiguration duhaConfig
+            && profileService.GetTimeConfig(dynamicProfile, ETimeType.DuhaEnd) is GenericSettingConfiguration duhaConfig
             && duhaConfig.IsTimeShown)
         {
             yield return (
@@ -156,7 +161,7 @@ public class DynamicPrayerTimeProviderManager(
         }
 
         if (prayerTimeEntity.Maghrib?.Start is not null
-            && profileService.GetTimeConfig(profile, ETimeType.MaghribSufficientTime) is GenericSettingConfiguration maghribSufficientTimeConfig
+            && profileService.GetTimeConfig(dynamicProfile, ETimeType.MaghribSufficientTime) is GenericSettingConfiguration maghribSufficientTimeConfig
             && maghribSufficientTimeConfig.IsTimeShown)
         {
             yield return (

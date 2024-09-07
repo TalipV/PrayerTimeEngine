@@ -33,112 +33,9 @@ public class ProfileService(
         return profileDBAccess.SaveProfile(profile, cancellationToken);
     }
 
-    public GenericSettingConfiguration GetTimeConfig(Profile profile, ETimeType timeType)
+    private static DynamicProfile getDefaultProfile()
     {
-        return profile.TimeConfigs.FirstOrDefault(x => x.TimeType == timeType)?.CalculationConfiguration;
-    }
-
-    public BaseLocationData GetLocationConfig(Profile profile, EDynamicPrayerTimeProviderType dynamicPrayerTimeProviderType)
-    {
-        return profile.LocationConfigs.FirstOrDefault(x => x.DynamicPrayerTimeProvider == dynamicPrayerTimeProviderType)?.LocationData;
-    }
-
-    public Task UpdateLocationConfig(
-        Profile profile,
-        ProfilePlaceInfo placeInfo,
-        List<(EDynamicPrayerTimeProviderType DynamicPrayerTimeProvider, BaseLocationData LocationData)> locationDataByDynamicPrayerTimeProvider,
-        CancellationToken cancellationToken)
-    {
-        return profileDBAccess.UpdateLocationConfig(profile, placeInfo, locationDataByDynamicPrayerTimeProvider, cancellationToken);
-    }
-
-    public Task UpdateTimeConfig(Profile profile, ETimeType timeType, GenericSettingConfiguration settings, CancellationToken cancellationToken)
-    {
-        return profileDBAccess.UpdateTimeConfig(profile, timeType, settings, cancellationToken);
-    }
-
-    public string GetLocationDataDisplayText(Profile profile)
-    {
-        if (profile is null)
-            return string.Empty;
-
-        MuwaqqitLocationData muwaqqitLocationData = GetLocationConfig(profile, EDynamicPrayerTimeProviderType.Muwaqqit) as MuwaqqitLocationData;
-        FaziletLocationData faziletLocationData = GetLocationConfig(profile, EDynamicPrayerTimeProviderType.Fazilet) as FaziletLocationData;
-        SemerkandLocationData semerkandLocationData = GetLocationConfig(profile, EDynamicPrayerTimeProviderType.Semerkand) as SemerkandLocationData;
-
-        return $"""
-                Muwaqqit:
-                    - Coordinates:  
-                    ({muwaqqitLocationData?.Latitude} / {muwaqqitLocationData?.Longitude})
-                    - Timezone:     
-                    '{muwaqqitLocationData?.TimezoneName}'
-                
-                Fazilet:
-                    - Country 
-                    '{faziletLocationData?.CountryName}'
-                    - City 
-                    '{faziletLocationData?.CityName}'
-                
-                Semerkand:
-                    - Country 
-                    '{semerkandLocationData?.CountryName}'
-                    - City 
-                    '{semerkandLocationData?.CityName}'
-                """;
-    }
-
-    public string GetPrayerTimeConfigDisplayText(Profile profile)
-    {
-        var outputText = new StringBuilder();
-
-        foreach (KeyValuePair<EPrayerType, List<ETimeType>> item in timeTypeAttributeService.PrayerTypeToTimeTypes)
-        {
-            EPrayerType prayerType = item.Key;
-            outputText.AppendLine(prayerType.ToString());
-
-            foreach (ETimeType timeType in item.Value)
-            {
-                if (!timeTypeAttributeService.ConfigurableTypes.Contains(timeType))
-                    continue;
-
-                GenericSettingConfiguration config = GetTimeConfig(profile, timeType);
-                outputText.Append(Environment.NewLine);
-                outputText.Append($"- {timeType} mit {config.Source}");
-                if (config is MuwaqqitDegreeCalculationConfiguration degreeConfig)
-                {
-                    outputText.Append($" ({degreeConfig.Degree}°)");
-                }
-
-                if (config.MinuteAdjustment != 0)
-                {
-                    outputText.Append($", {config.MinuteAdjustment:N0}min");
-                }
-            }
-
-            outputText.AppendLine();
-            outputText.AppendLine();
-        }
-
-        return outputText.ToString();
-    }
-
-    public List<GenericSettingConfiguration> GetActiveComplexTimeConfigs(Profile profile)
-    {
-        return timeTypeAttributeService
-            .ComplexTypes
-            .Select(x => GetTimeConfig(profile, x))
-            .Where(config =>
-                config is GenericSettingConfiguration
-                {
-                    Source: not EDynamicPrayerTimeProviderType.None,
-                    IsTimeShown: true
-                })
-            .ToList();
-    }
-
-    private static Profile getDefaultProfile()
-    {
-        var profile = new Profile
+        var profile = new DynamicProfile
         {
             ID = 1,
             Name = "Standard-Profil",
@@ -367,5 +264,108 @@ public class ProfileService(
     public Task DeleteProfile(Profile profile, CancellationToken cancellationToken)
     {
         return profileDBAccess.DeleteProfile(profile, cancellationToken);
+    }
+
+    public GenericSettingConfiguration GetTimeConfig(DynamicProfile profile, ETimeType timeType)
+    {
+        return profile.TimeConfigs.FirstOrDefault(x => x.TimeType == timeType)?.CalculationConfiguration;
+    }
+
+    public BaseLocationData GetLocationConfig(DynamicProfile profile, EDynamicPrayerTimeProviderType dynamicPrayerTimeProviderType)
+    {
+        return profile.LocationConfigs.FirstOrDefault(x => x.DynamicPrayerTimeProvider == dynamicPrayerTimeProviderType)?.LocationData;
+    }
+
+    public Task UpdateLocationConfig(
+        DynamicProfile profile,
+        ProfilePlaceInfo placeInfo,
+        List<(EDynamicPrayerTimeProviderType DynamicPrayerTimeProvider, BaseLocationData LocationData)> locationDataByDynamicPrayerTimeProvider,
+        CancellationToken cancellationToken)
+    {
+        return profileDBAccess.UpdateLocationConfig(profile, placeInfo, locationDataByDynamicPrayerTimeProvider, cancellationToken);
+    }
+
+    public Task UpdateTimeConfig(DynamicProfile profile, ETimeType timeType, GenericSettingConfiguration settings, CancellationToken cancellationToken)
+    {
+        return profileDBAccess.UpdateTimeConfig(profile, timeType, settings, cancellationToken);
+    }
+
+    public string GetLocationDataDisplayText(DynamicProfile profile)
+    {
+        if (profile is null)
+            return string.Empty;
+
+        MuwaqqitLocationData muwaqqitLocationData = GetLocationConfig(profile, EDynamicPrayerTimeProviderType.Muwaqqit) as MuwaqqitLocationData;
+        FaziletLocationData faziletLocationData = GetLocationConfig(profile, EDynamicPrayerTimeProviderType.Fazilet) as FaziletLocationData;
+        SemerkandLocationData semerkandLocationData = GetLocationConfig(profile, EDynamicPrayerTimeProviderType.Semerkand) as SemerkandLocationData;
+
+        return $"""
+                Muwaqqit:
+                    - Coordinates:  
+                    ({muwaqqitLocationData?.Latitude} / {muwaqqitLocationData?.Longitude})
+                    - Timezone:     
+                    '{muwaqqitLocationData?.TimezoneName}'
+                
+                Fazilet:
+                    - Country 
+                    '{faziletLocationData?.CountryName}'
+                    - City 
+                    '{faziletLocationData?.CityName}'
+                
+                Semerkand:
+                    - Country 
+                    '{semerkandLocationData?.CountryName}'
+                    - City 
+                    '{semerkandLocationData?.CityName}'
+                """;
+    }
+
+    public string GetPrayerTimeConfigDisplayText(DynamicProfile profile)
+    {
+        var outputText = new StringBuilder();
+
+        foreach (KeyValuePair<EPrayerType, List<ETimeType>> item in timeTypeAttributeService.PrayerTypeToTimeTypes)
+        {
+            EPrayerType prayerType = item.Key;
+            outputText.AppendLine(prayerType.ToString());
+
+            foreach (ETimeType timeType in item.Value)
+            {
+                if (!timeTypeAttributeService.ConfigurableTypes.Contains(timeType))
+                    continue;
+
+                GenericSettingConfiguration config = GetTimeConfig(profile, timeType);
+                outputText.Append(Environment.NewLine);
+                outputText.Append($"- {timeType} mit {config.Source}");
+                if (config is MuwaqqitDegreeCalculationConfiguration degreeConfig)
+                {
+                    outputText.Append($" ({degreeConfig.Degree}°)");
+                }
+
+                if (config.MinuteAdjustment != 0)
+                {
+                    outputText.Append($", {config.MinuteAdjustment:N0}min");
+                }
+            }
+
+            outputText.AppendLine();
+            outputText.AppendLine();
+        }
+
+        return outputText.ToString();
+    }
+
+    public List<GenericSettingConfiguration> GetActiveComplexTimeConfigs(DynamicProfile profile)
+    {
+        return timeTypeAttributeService
+            .ComplexTypes
+            .Select(x => GetTimeConfig(profile, x))
+            .Where(config =>
+                config is GenericSettingConfiguration
+                {
+                    Source: not EDynamicPrayerTimeProviderType.None,
+                    IsTimeShown: true
+                })
+            .ToList();
     }
 }
