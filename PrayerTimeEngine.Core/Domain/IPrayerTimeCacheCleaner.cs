@@ -1,9 +1,8 @@
 ﻿using NodaTime;
 
-namespace PrayerTimeEngine.Core.Domain
+namespace PrayerTimeEngine.Core.Domain;
+
+public interface IPrayerTimeCacheCleaner
 {
-    public interface IPrayerTimeCacheCleaner
-    {
-        Task DeleteCacheDataAsync(ZonedDateTime deleteBeforeDate, CancellationToken cancellationToken);
-    }
+    Task DeleteCacheDataAsync(ZonedDateTime deleteBeforeDate, CancellationToken cancellationToken);
 }

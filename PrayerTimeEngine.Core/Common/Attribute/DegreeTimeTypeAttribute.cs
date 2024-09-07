@@ -1,6 +1,5 @@
-﻿namespace PrayerTimeEngine.Core.Common.Attribute
+﻿namespace PrayerTimeEngine.Core.Common.Attribute;
+
+public class DegreeTimeTypeAttribute : System.Attribute
 {
-    public class DegreeTimeTypeAttribute : System.Attribute
-    {
-    }
 }

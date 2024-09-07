@@ -1,7 +1,6 @@
-﻿namespace PrayerTimeEngine.Core.Domain.Models.PrayerTimes
+﻿namespace PrayerTimeEngine.Core.Domain.Models.PrayerTimes;
+
+public class DhuhrPrayerTime : AbstractPrayerTime
 {
-    public class DhuhrPrayerTime : AbstractPrayerTime
-    {
-        public override string Name => "Dhuhr";
-    }
+    public override string Name => "Dhuhr";
 }

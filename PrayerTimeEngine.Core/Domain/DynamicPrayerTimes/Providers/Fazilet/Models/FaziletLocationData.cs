@@ -1,32 +1,31 @@
 ﻿using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Models;
 
-namespace PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Models
+namespace PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Models;
+
+public class FaziletLocationData : BaseLocationData
 {
-    public class FaziletLocationData : BaseLocationData
+    public required string CountryName { get; init; }
+    public required string CityName { get; init; }
+
+    public override EDynamicPrayerTimeProviderType Source => EDynamicPrayerTimeProviderType.Fazilet;
+
+    public override bool Equals(object obj)
     {
-        public required string CountryName { get; init; }
-        public required string CityName { get; init; }
+        if (obj is not FaziletLocationData otherLocationData)
+            return false;
 
-        public override EDynamicPrayerTimeProviderType Source => EDynamicPrayerTimeProviderType.Fazilet;
+        return CountryName == otherLocationData.CountryName
+            && CityName == otherLocationData.CityName;
+    }
 
-        public override bool Equals(object obj)
-        {
-            if (obj is not FaziletLocationData otherLocationData)
-                return false;
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(CountryName, CityName);
+    }
 
-            return CountryName == otherLocationData.CountryName
-                && CityName == otherLocationData.CityName;
-        }
-
-        public override int GetHashCode()
-        {
-            return HashCode.Combine(CountryName, CityName);
-        }
-
-        public override string ToString()
-        {
-            return $"{Source}: {CountryName}, {CityName}";
-        }
+    public override string ToString()
+    {
+        return $"{Source}: {CountryName}, {CityName}";
     }
 }

@@ -1,10 +1,9 @@
 ﻿using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers;
 
-namespace PrayerTimeEngine.Core.Domain.DynamicPrayerTimes
+namespace PrayerTimeEngine.Core.Domain.DynamicPrayerTimes;
+
+public interface IDynamicPrayerTimeProviderFactory
 {
-    public interface IDynamicPrayerTimeProviderFactory
-    {
-        IDynamicPrayerTimeProvider GetDynamicPrayerTimeProviderByDynamicPrayerTimeProvider(EDynamicPrayerTimeProviderType source);
-    }
+    IDynamicPrayerTimeProvider GetDynamicPrayerTimeProviderByDynamicPrayerTimeProvider(EDynamicPrayerTimeProviderType source);
 }

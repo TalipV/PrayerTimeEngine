@@ -1,12 +1,11 @@
-﻿namespace PrayerTimeEngine.Core.Common.Enum
+﻿namespace PrayerTimeEngine.Core.Common.Enum;
+
+public enum EPrayerType
 {
-    public enum EPrayerType
-    {
-        Fajr,
-        Duha,
-        Dhuhr,
-        Asr,
-        Maghrib,
-        Isha
-    }
+    Fajr,
+    Duha,
+    Dhuhr,
+    Asr,
+    Maghrib,
+    Isha
 }
