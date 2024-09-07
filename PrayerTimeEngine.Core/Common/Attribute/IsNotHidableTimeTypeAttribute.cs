@@ -1,6 +1,5 @@
-﻿namespace PrayerTimeEngine.Core.Common.Attribute
+﻿namespace PrayerTimeEngine.Core.Common.Attribute;
+
+public class IsNotHidableTimeTypeAttribute : System.Attribute
 {
-    public class IsNotHidableTimeTypeAttribute : System.Attribute
-    {
-    }
 }

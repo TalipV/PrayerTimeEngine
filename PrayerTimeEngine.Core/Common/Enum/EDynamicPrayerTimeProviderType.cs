@@ -1,11 +1,10 @@
-﻿namespace PrayerTimeEngine.Core.Common.Enum
+﻿namespace PrayerTimeEngine.Core.Common.Enum;
+
+public enum EDynamicPrayerTimeProviderType
 {
-    public enum EDynamicPrayerTimeProviderType
-    {
-        None,
-        Muwaqqit,
-        Fazilet,
-        Semerkand,
-        //AlAdhan
-    }
+    None,
+    Muwaqqit,
+    Fazilet,
+    Semerkand,
+    //AlAdhan
 }

@@ -1,10 +1,9 @@
 ﻿using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers;
 
-namespace PrayerTimeEngine.Core.Domain.MosquePrayerTimes
+namespace PrayerTimeEngine.Core.Domain.MosquePrayerTimes;
+
+public interface IMosquePrayerTimeProviderFactory
 {
-    public interface IMosquePrayerTimeProviderFactory
-    {
-        IMosquePrayerTimeProvider GetDynamicPrayerTimeProviderByDynamicPrayerTimeProvider(EMosquePrayerTimeProviderType source);
-    }
+    IMosquePrayerTimeProvider GetDynamicPrayerTimeProviderByDynamicPrayerTimeProvider(EMosquePrayerTimeProviderType source);
 }

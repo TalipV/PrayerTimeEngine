@@ -1,11 +1,10 @@
 ﻿using NodaTime;
 
-namespace PrayerTimeEngine.Core.Domain.Models.PrayerTimes
+namespace PrayerTimeEngine.Core.Domain.Models.PrayerTimes;
+
+public class FajrPrayerTime : AbstractPrayerTime
 {
-    public class FajrPrayerTime : AbstractPrayerTime
-    {
-        public override string Name => "Fajr";
-        public ZonedDateTime? Ghalas { get; set; }
-        public ZonedDateTime? Karaha { get; set; }
-    }
+    public override string Name => "Fajr";
+    public ZonedDateTime? Ghalas { get; set; }
+    public ZonedDateTime? Karaha { get; set; }
 }

@@ -1,12 +1,11 @@
 ﻿using NodaTime;
 
-namespace PrayerTimeEngine.Core.Domain.Models.PrayerTimes
+namespace PrayerTimeEngine.Core.Domain.Models.PrayerTimes;
+
+public class IshaPrayerTime : AbstractPrayerTime
 {
-    public class IshaPrayerTime : AbstractPrayerTime
-    {
-        public override string Name => "Isha";
-        public ZonedDateTime? FirstThirdOfNight { get; set; }
-        public ZonedDateTime? MiddleOfNight { get; set; }
-        public ZonedDateTime? SecondThirdOfNight { get; set; }
-    }
+    public override string Name => "Isha";
+    public ZonedDateTime? FirstThirdOfNight { get; set; }
+    public ZonedDateTime? MiddleOfNight { get; set; }
+    public ZonedDateTime? SecondThirdOfNight { get; set; }
 }

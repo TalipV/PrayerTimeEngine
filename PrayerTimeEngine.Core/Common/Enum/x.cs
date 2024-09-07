@@ -1,9 +1,8 @@
-﻿namespace PrayerTimeEngine.Core.Common.Enum
+﻿namespace PrayerTimeEngine.Core.Common.Enum;
+
+public enum EMosquePrayerTimeProviderType
 {
-    public enum EMosquePrayerTimeProviderType
-    {
-        None,
-        Mawaqit,
-        MyMosq
-    }
+    None,
+    Mawaqit,
+    MyMosq
 }

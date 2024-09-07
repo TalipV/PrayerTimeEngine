@@ -1,6 +1,5 @@
-﻿namespace PrayerTimeEngine.Core.Common.Attribute
+﻿namespace PrayerTimeEngine.Core.Common.Attribute;
+
+public class SimpleTimeTypeAttribute : System.Attribute
 {
-    public class SimpleTimeTypeAttribute : System.Attribute
-    {
-    }
 }

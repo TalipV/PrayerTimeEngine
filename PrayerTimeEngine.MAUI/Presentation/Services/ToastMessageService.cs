@@ -1,44 +1,43 @@
 ﻿using CommunityToolkit.Maui.Alerts;
 using CommunityToolkit.Maui.Core;
 
-namespace PrayerTimeEngine.Presentation.Services
+namespace PrayerTimeEngine.Presentation.Services;
+
+public class ToastMessageService(IDispatcher dispatcher)
 {
-    public class ToastMessageService(IDispatcher dispatcher)
+    public void Show(string text)
     {
-        public void Show(string text)
+        dispatcher.Dispatch(async () =>
         {
-            dispatcher.Dispatch(async () =>
-            {
-                await Toast.Make(
-                        message: text,
-                        duration: ToastDuration.Short,
-                        textSize: 14)
-                .Show();
-            });
-        }
+            await Toast.Make(
+                    message: text,
+                    duration: ToastDuration.Short,
+                    textSize: 14)
+            .Show();
+        });
+    }
 
-        public void ShowWarning(string text)
+    public void ShowWarning(string text)
+    {
+        dispatcher.Dispatch(async () =>
         {
-            dispatcher.Dispatch(async () =>
-            {
-                await Toast.Make(
-                        message: $"WARNUNG: {text}",
-                        duration: ToastDuration.Short,
-                        textSize: 14)
-                .Show();
-            });
-        }
+            await Toast.Make(
+                    message: $"WARNUNG: {text}",
+                    duration: ToastDuration.Short,
+                    textSize: 14)
+            .Show();
+        });
+    }
 
-        public void ShowError(string text)
+    public void ShowError(string text)
+    {
+        dispatcher.Dispatch(async () =>
         {
-            dispatcher.Dispatch(async () =>
-            {
-                await Toast.Make(
-                        message: $"FEHLER: {text}",
-                        duration: ToastDuration.Short,
-                        textSize: 14)
-                .Show();
-            });
-        }
+            await Toast.Make(
+                    message: $"FEHLER: {text}",
+                    duration: ToastDuration.Short,
+                    textSize: 14)
+            .Show();
+        });
     }
 }

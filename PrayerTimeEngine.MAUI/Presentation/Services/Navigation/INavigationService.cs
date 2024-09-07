@@ -2,63 +2,61 @@
 using PrayerTimeEngine.Presentation.Pages.Main;
 using PrayerTimeEngine.Presentation.Pages.Settings.SettingsHandler;
 
-namespace PrayerTimeEngine.Presentation.Services.Navigation
+namespace PrayerTimeEngine.Presentation.Services.Navigation;
+
+public interface INavigationService
 {
-    public interface INavigationService
+    Task NavigateTo<TViewModel>(params object[] parameter) where TViewModel : CustomBaseViewModel;
+    Task NavigateBack();
+}
+
+public class NavigationService : INavigationService
+{
+    private readonly IServiceProvider _serviceProvider;
+    private readonly Dictionary<Type, Type> _mapping;
+
+    public NavigationService(IServiceProvider serviceProvider)
     {
-        Task NavigateTo<TViewModel>(params object[] parameter) where TViewModel : CustomBaseViewModel;
-        Task NavigateBack();
+        _serviceProvider = serviceProvider;
+        _mapping = [];
+
+        CreatePageViewModelMappings();
     }
 
-    public class NavigationService : INavigationService
+    private void CreatePageViewModelMappings()
     {
-        private readonly IServiceProvider _serviceProvider;
-        private readonly Dictionary<Type, Type> _mapping;
+        _mapping.Add(typeof(MainPageViewModel), typeof(MainPage));
+        _mapping.Add(typeof(SettingsHandlerPageViewModel), typeof(SettingsHandlerPage));
+        _mapping.Add(typeof(DatabaseTablesPageViewModel), typeof(DatabaseTablesPage));
+    }
 
-        public NavigationService(IServiceProvider serviceProvider)
+    public async Task NavigateTo<TViewModel>(params object[] parameter) where TViewModel : CustomBaseViewModel
+    {
+        var targetType = _mapping[typeof(TViewModel)];
+
+        if (Application.Current.MainPage is NavigationPage navigationPage)
         {
-            _serviceProvider = serviceProvider;
-            _mapping = [];
+            var page = (Page)_serviceProvider.GetRequiredService(targetType);
 
-            CreatePageViewModelMappings();
-        }
-
-        private void CreatePageViewModelMappings()
-        {
-            _mapping.Add(typeof(MainPageViewModel), typeof(MainPage));
-            _mapping.Add(typeof(SettingsHandlerPageViewModel), typeof(SettingsHandlerPage));
-            _mapping.Add(typeof(DatabaseTablesPageViewModel), typeof(DatabaseTablesPage));
-        }
-
-        public async Task NavigateTo<TViewModel>(params object[] parameter) where TViewModel : CustomBaseViewModel
-        {
-            var targetType = _mapping[typeof(TViewModel)];
-
-            if (Application.Current.MainPage is NavigationPage navigationPage)
+            if (page.BindingContext is TViewModel viewModel)
             {
-                var page = (Page)_serviceProvider.GetRequiredService(targetType);
-
-                if (page.BindingContext is TViewModel viewModel)
-                {
-                    viewModel.Initialize(parameter);
-                }
-
-                await navigationPage.PushAsync(page).ConfigureAwait(false);
+                viewModel.Initialize(parameter);
             }
-            else
-            {
-                throw new Exception("Application.Current.MainPage is not of type NavigationPage");
-            }
+
+            await navigationPage.PushAsync(page).ConfigureAwait(false);
         }
-
-
-        public async Task NavigateBack()
+        else
         {
-            if (Application.Current.MainPage is NavigationPage navigationPage)
-            {
-                await navigationPage.PopAsync().ConfigureAwait(false);
-            }
+            throw new Exception("Application.Current.MainPage is not of type NavigationPage");
         }
     }
 
+
+    public async Task NavigateBack()
+    {
+        if (Application.Current.MainPage is NavigationPage navigationPage)
+        {
+            await navigationPage.PopAsync().ConfigureAwait(false);
+        }
+    }
 }

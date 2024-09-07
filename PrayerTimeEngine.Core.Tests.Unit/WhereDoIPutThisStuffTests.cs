@@ -1,10 +1,9 @@
-﻿namespace PrayerTimeEngine.Core.Tests.Unit
+﻿namespace PrayerTimeEngine.Core.Tests.Unit;
+
+public class WhereDoIPutThisStuffTests
 {
-    public class WhereDoIPutThisStuffTests
+    [Fact]
+    public void PrayerTimeBundle_SetSpecificPrayerTimeDateTime_X_X()
     {
-        [Fact]
-        public void PrayerTimeBundle_SetSpecificPrayerTimeDateTime_X_X()
-        {
-        }
     }
 }

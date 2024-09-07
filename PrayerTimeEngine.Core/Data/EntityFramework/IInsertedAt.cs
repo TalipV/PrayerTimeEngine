@@ -1,9 +1,8 @@
 ﻿using NodaTime;
 
-namespace PrayerTimeEngine.Core.Data.EntityFramework
+namespace PrayerTimeEngine.Core.Data.EntityFramework;
+
+public interface IInsertedAt
 {
-    public interface IInsertedAt
-    {
-        Instant? InsertInstant { get; set; }
-    }
+    Instant? InsertInstant { get; set; }
 }
