@@ -13,7 +13,7 @@ public class ProfileTimeConfig : IInsertedAt
     public Instant? InsertInstant { get; set; }
 
     public int ProfileID { get; set; }
-    public Profile Profile { get; set; }
+    public DynamicProfile Profile { get; set; }
     public ETimeType TimeType { get; set; }
     public GenericSettingConfiguration CalculationConfiguration { get; set; }
 

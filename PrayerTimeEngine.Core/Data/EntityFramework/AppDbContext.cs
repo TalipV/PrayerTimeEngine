@@ -2,7 +2,7 @@
 using NodaTime;
 using PrayerTimeEngine.Core.Common;
 using PrayerTimeEngine.Core.Common.Extension;
-using PrayerTimeEngine.Core.Data.EntityFramework.Configurations;
+using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Models;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Models.Entities;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Muwaqqit.Models.Entities;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Semerkand.Models.Entities;
@@ -11,6 +11,7 @@ using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.MyMosq.Models.Ent
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Models;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
 using System.Reflection;
+using System.Text.Json;
 
 namespace PrayerTimeEngine.Core.Data.EntityFramework;
 
@@ -21,6 +22,8 @@ public class AppDbContext(
     ) : DbContext(options)
 {
     public DbSet<Profile> Profiles { get; set; }
+    public DbSet<DynamicProfile> DynamicProfiles { get; set; }
+    public DbSet<MosqueProfile> MosqueProfiles { get; set; }
     public DbSet<ProfileLocationConfig> ProfileLocations { get; set; }
     public DbSet<ProfileTimeConfig> ProfileConfigs { get; set; }
     public DbSet<ProfilePlaceInfo> PlaceInfos { get; set; }
@@ -39,10 +42,37 @@ public class AppDbContext(
     public DbSet<MawaqitPrayerTimes> MawaqitPrayerTimes { get; set; }
     public DbSet<MyMosqPrayerTimes> MyMosqPrayerTimes { get; set; }
 
+    private static readonly JsonSerializerOptions _someJsonOptions = new();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.ApplyConfiguration(new ProfileTimeConfigConfiguration());
-        modelBuilder.ApplyConfiguration(new ProfileLocationConfigConfiguration());
+        modelBuilder
+            .Entity<ProfileTimeConfig>()
+            .HasOne(x => x.Profile)
+            .WithMany(x => x.TimeConfigs)
+            .HasForeignKey(x => x.ProfileID);
+
+        modelBuilder
+            .Entity<ProfileTimeConfig>()
+            .Property(x => x.CalculationConfiguration)
+            .HasConversion(
+                x => JsonSerializer.Serialize(x, _someJsonOptions),
+                x => JsonSerializer.Deserialize<GenericSettingConfiguration>(x, _someJsonOptions)
+            );
+
+        modelBuilder
+            .Entity<ProfileLocationConfig>()
+            .HasOne(x => x.Profile)
+            .WithMany(x => x.LocationConfigs)
+            .HasForeignKey(x => x.ProfileID);
+
+        modelBuilder
+            .Entity<ProfileLocationConfig>()
+            .Property(x => x.LocationData)
+            .HasConversion(
+                x => JsonSerializer.Serialize(x, _someJsonOptions),
+                x => JsonSerializer.Deserialize<BaseLocationData>(x, _someJsonOptions)
+            );
 
         foreach (var type in appDbContextMetaData.GetDbSetPropertyTypes())
         {
@@ -60,6 +90,11 @@ public class AppDbContext(
             .HasOne(x => x.Country)
             .WithMany(x => x.Cities)
             .HasForeignKey(x => x.CountryID);
+
+        modelBuilder.Entity<Profile>()
+            .HasDiscriminator<bool>(nameof(Profile.IsMosqueProfile))
+            .HasValue<DynamicProfile>(false)
+            .HasValue<MosqueProfile>(true);
 
         modelBuilder
             .Entity<ProfilePlaceInfo>()

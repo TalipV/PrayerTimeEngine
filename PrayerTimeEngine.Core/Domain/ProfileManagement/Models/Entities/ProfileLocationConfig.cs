@@ -12,7 +12,7 @@ public class ProfileLocationConfig : IInsertedAt
     public int ID { get; set; }
     public Instant? InsertInstant { get; set; }
     public int ProfileID { get; set; }
-    public Profile Profile { get; set; }
+    public DynamicProfile Profile { get; set; }
     public EDynamicPrayerTimeProviderType DynamicPrayerTimeProvider { get; set; }
     public BaseLocationData LocationData { get; set; }
     public override bool Equals(object obj)
