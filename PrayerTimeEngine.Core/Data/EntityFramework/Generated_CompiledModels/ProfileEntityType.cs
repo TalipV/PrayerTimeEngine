@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore.Sqlite.Storage.Internal;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.EntityFrameworkCore.Storage.Json;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Microsoft.EntityFrameworkCore.ValueGeneration;
 using NodaTime;
 using PrayerTimeEngine.Core.Common.Extension;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
@@ -23,7 +24,8 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
             var runtimeEntityType = model.AddEntityType(
                 "PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities.Profile",
                 typeof(Profile),
-                baseEntityType);
+                baseEntityType,
+                discriminatorProperty: "IsMosqueProfile");
 
             var iD = runtimeEntityType.AddProperty(
                 "ID",
@@ -82,6 +84,8 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
                 typeof(bool),
                 propertyInfo: typeof(Profile).GetProperty("IsMosqueProfile", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 fieldInfo: typeof(Profile).GetField("<IsMosqueProfile>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                afterSaveBehavior: PropertySaveBehavior.Throw,
+                valueGeneratorFactory: new DiscriminatorValueGeneratorFactory().Create,
                 sentinel: false);
             isMosqueProfile.TypeMapping = BoolTypeMapping.Default.Clone(
                 comparer: new ValueComparer<bool>(
@@ -139,6 +143,7 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
         public static void CreateAnnotations(RuntimeEntityType runtimeEntityType)
         {
             runtimeEntityType.AddAnnotation("Relational:FunctionName", null);
+            runtimeEntityType.AddAnnotation("Relational:MappingStrategy", "TPH");
             runtimeEntityType.AddAnnotation("Relational:Schema", null);
             runtimeEntityType.AddAnnotation("Relational:SqlQuery", null);
             runtimeEntityType.AddAnnotation("Relational:TableName", "Profiles");

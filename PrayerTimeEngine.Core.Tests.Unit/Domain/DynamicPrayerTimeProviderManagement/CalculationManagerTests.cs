@@ -42,7 +42,7 @@ public class DynamicPrayerTimeProviderManagerTests : BaseTest
     public async Task CalculatePrayerTimesAsync_OneComplexCalculation_CalculatedSuccessfully()
     {
         // ARRANGE
-        Profile profile = TestDataHelper.CreateNewCompleteTestProfile();
+        var profile = TestDataHelper.CreateNewCompleteTestProfile();
         ZonedDateTime zonedDate = new LocalDate(2024, 1, 1).AtStartOfDayInZone(DateTimeZone.Utc);
 
         var muwaqqitLocationData = Substitute.ForPartsOf<BaseLocationData>();

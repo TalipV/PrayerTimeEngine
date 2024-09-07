@@ -17,7 +17,7 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.8");
 
-            modelBuilder.Entity("PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Models.Entities.FaziletCity", b =>
+            modelBuilder.Entity("PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Models.Entities.FaziletCity", b =>
                 {
                     b.Property<int>("ID")
                         .HasColumnType("INTEGER");
@@ -38,7 +38,7 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_Migrations
                     b.ToTable("FaziletCities");
                 });
 
-            modelBuilder.Entity("PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Models.Entities.FaziletCountry", b =>
+            modelBuilder.Entity("PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Models.Entities.FaziletCountry", b =>
                 {
                     b.Property<int>("ID")
                         .HasColumnType("INTEGER");
@@ -54,7 +54,7 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_Migrations
                     b.ToTable("FaziletCountries");
                 });
 
-            modelBuilder.Entity("PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Models.Entities.FaziletPrayerTimes", b =>
+            modelBuilder.Entity("PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Models.Entities.FaziletDailyPrayerTimes", b =>
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
@@ -106,149 +106,7 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_Migrations
                     b.ToTable("FaziletPrayerTimes");
                 });
 
-            modelBuilder.Entity("PrayerTimeEngine.Core.Domain.Calculators.Mosques.Mawaqit.Models.Entities.MawaqitPrayerTimes", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Asr")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("AsrCongregation")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Date")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Dhuhr")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("DhuhrCongregation")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("ExternalID")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Fajr")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("FajrCongregation")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("InsertInstant")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Isha")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("IshaCongregation")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Jumuah")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Jumuah2")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Maghrib")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("MaghribCongregation")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Shuruq")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("ID");
-
-                    b.ToTable("MawaqitPrayerTimes");
-                });
-
-            modelBuilder.Entity("PrayerTimeEngine.Core.Domain.Calculators.Mosques.MyMosq.Models.Entities.MyMosqPrayerTimes", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Asr")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("AsrCongregation")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Date")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Dhuhr")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("DhuhrCongregation")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("ExternalID")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Fajr")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("FajrCongregation")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("InsertInstant")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Isha")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("IshaCongregation")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Jumuah")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Jumuah2")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Maghrib")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("MaghribCongregation")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Shuruq")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("ID");
-
-                    b.ToTable("MyMosqPrayerTimes");
-                });
-
-            modelBuilder.Entity("PrayerTimeEngine.Core.Domain.Calculators.Muwaqqit.Models.Entities.MuwaqqitPrayerTimes", b =>
+            modelBuilder.Entity("PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Muwaqqit.Models.Entities.MuwaqqitDailyPrayerTimes", b =>
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
@@ -328,7 +186,7 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_Migrations
                     b.ToTable("MuwaqqitPrayerTimes");
                 });
 
-            modelBuilder.Entity("PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Models.Entities.SemerkandCity", b =>
+            modelBuilder.Entity("PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Semerkand.Models.Entities.SemerkandCity", b =>
                 {
                     b.Property<int>("ID")
                         .HasColumnType("INTEGER");
@@ -349,7 +207,7 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_Migrations
                     b.ToTable("SemerkandCities");
                 });
 
-            modelBuilder.Entity("PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Models.Entities.SemerkandCountry", b =>
+            modelBuilder.Entity("PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Semerkand.Models.Entities.SemerkandCountry", b =>
                 {
                     b.Property<int>("ID")
                         .HasColumnType("INTEGER");
@@ -365,7 +223,7 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_Migrations
                     b.ToTable("SemerkandCountries");
                 });
 
-            modelBuilder.Entity("PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Models.Entities.SemerkandPrayerTimes", b =>
+            modelBuilder.Entity("PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Semerkand.Models.Entities.SemerkandDailyPrayerTimes", b =>
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
@@ -414,6 +272,148 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_Migrations
                     b.HasKey("ID");
 
                     b.ToTable("SemerkandPrayerTimes");
+                });
+
+            modelBuilder.Entity("PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.Mawaqit.Models.Entities.MawaqitPrayerTimes", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Asr")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("AsrCongregation")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Date")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Dhuhr")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("DhuhrCongregation")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ExternalID")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Fajr")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("FajrCongregation")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("InsertInstant")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Isha")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("IshaCongregation")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Jumuah")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Jumuah2")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Maghrib")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("MaghribCongregation")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Shuruq")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("MawaqitPrayerTimes");
+                });
+
+            modelBuilder.Entity("PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.MyMosq.Models.Entities.MyMosqPrayerTimes", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Asr")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("AsrCongregation")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Date")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Dhuhr")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("DhuhrCongregation")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ExternalID")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Fajr")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("FajrCongregation")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("InsertInstant")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Isha")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("IshaCongregation")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Jumuah")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Jumuah2")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Maghrib")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("MaghribCongregation")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Shuruq")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("MyMosqPrayerTimes");
                 });
 
             modelBuilder.Entity("PrayerTimeEngine.Core.Domain.PlaceManagement.Models.ProfilePlaceInfo", b =>
@@ -512,6 +512,10 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_Migrations
                     b.HasKey("ID");
 
                     b.ToTable("Profiles");
+
+                    b.HasDiscriminator<bool>("IsMosqueProfile");
+
+                    b.UseTphMappingStrategy();
                 });
 
             modelBuilder.Entity("PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities.ProfileLocationConfig", b =>
@@ -564,9 +568,26 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_Migrations
                     b.ToTable("ProfileConfigs");
                 });
 
-            modelBuilder.Entity("PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Models.Entities.FaziletCity", b =>
+            modelBuilder.Entity("PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities.DynamicProfile", b =>
                 {
-                    b.HasOne("PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Models.Entities.FaziletCountry", "Country")
+                    b.HasBaseType("PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities.Profile");
+
+                    b.HasDiscriminator().HasValue(false);
+                });
+
+            modelBuilder.Entity("PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities.MosqueProfile", b =>
+                {
+                    b.HasBaseType("PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities.Profile");
+
+                    b.Property<string>("ExternalID")
+                        .HasColumnType("TEXT");
+
+                    b.HasDiscriminator().HasValue(true);
+                });
+
+            modelBuilder.Entity("PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Models.Entities.FaziletCity", b =>
+                {
+                    b.HasOne("PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Models.Entities.FaziletCountry", "Country")
                         .WithMany("Cities")
                         .HasForeignKey("CountryID")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -575,9 +596,9 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_Migrations
                     b.Navigation("Country");
                 });
 
-            modelBuilder.Entity("PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Models.Entities.SemerkandCity", b =>
+            modelBuilder.Entity("PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Semerkand.Models.Entities.SemerkandCity", b =>
                 {
-                    b.HasOne("PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Models.Entities.SemerkandCountry", "Country")
+                    b.HasOne("PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Semerkand.Models.Entities.SemerkandCountry", "Country")
                         .WithMany("Cities")
                         .HasForeignKey("CountryID")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -588,7 +609,7 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_Migrations
 
             modelBuilder.Entity("PrayerTimeEngine.Core.Domain.PlaceManagement.Models.ProfilePlaceInfo", b =>
                 {
-                    b.HasOne("PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities.Profile", "Profile")
+                    b.HasOne("PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities.DynamicProfile", "Profile")
                         .WithOne("PlaceInfo")
                         .HasForeignKey("PrayerTimeEngine.Core.Domain.PlaceManagement.Models.ProfilePlaceInfo", "ProfileID")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -605,7 +626,7 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_Migrations
 
             modelBuilder.Entity("PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities.ProfileLocationConfig", b =>
                 {
-                    b.HasOne("PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities.Profile", "Profile")
+                    b.HasOne("PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities.DynamicProfile", "Profile")
                         .WithMany("LocationConfigs")
                         .HasForeignKey("ProfileID")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -616,7 +637,7 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_Migrations
 
             modelBuilder.Entity("PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities.ProfileTimeConfig", b =>
                 {
-                    b.HasOne("PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities.Profile", "Profile")
+                    b.HasOne("PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities.DynamicProfile", "Profile")
                         .WithMany("TimeConfigs")
                         .HasForeignKey("ProfileID")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -625,17 +646,17 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_Migrations
                     b.Navigation("Profile");
                 });
 
-            modelBuilder.Entity("PrayerTimeEngine.Core.Domain.Calculators.Fazilet.Models.Entities.FaziletCountry", b =>
+            modelBuilder.Entity("PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Models.Entities.FaziletCountry", b =>
                 {
                     b.Navigation("Cities");
                 });
 
-            modelBuilder.Entity("PrayerTimeEngine.Core.Domain.Calculators.Semerkand.Models.Entities.SemerkandCountry", b =>
+            modelBuilder.Entity("PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Semerkand.Models.Entities.SemerkandCountry", b =>
                 {
                     b.Navigation("Cities");
                 });
 
-            modelBuilder.Entity("PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities.Profile", b =>
+            modelBuilder.Entity("PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities.DynamicProfile", b =>
                 {
                     b.Navigation("LocationConfigs");
 
