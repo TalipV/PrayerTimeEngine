@@ -44,7 +44,7 @@ public class SettingsHandlerPageViewModel(
             throw new ArgumentException($"{nameof(parameter)} does not contain exactly two values");
         }
 
-        if (parameter[0] is not Profile profile)
+        if (parameter[0] is not DynamicProfile profile)
         {
             throw new ArgumentException($"{nameof(parameter)}[0] is not a {nameof(Profile)}");
         }

@@ -135,37 +135,52 @@ public class SubstitutionHelper
     {
         var mockWebSocketClient = Substitute.For<IWebSocketClient>();
 
-        var filePath = Path.Combine(TestDataHelper.MYMOSQ_TEST_DATA_FILE_PATH, "MyMosq_WebSocketMessage_20240830_1239.txt");
-        var fileContent = File.ReadAllText(filePath);
-
-        var messages = new Queue<string>(fileContent.Split(WEB_SOCKET_MESSAGE_SEPARATOR_TEXT));
-
-        mockWebSocketClient.ReceiveAsync(Arg.Any<ArraySegment<byte>>(), Arg.Any<CancellationToken>())
+        mockWebSocketClient.SendAsync(Arg.Any<ArraySegment<byte>>(), Arg.Any<WebSocketMessageType>(), Arg.Any<bool>(), Arg.Any<CancellationToken>())
             .Returns(callInfo =>
             {
                 ArraySegment<byte> arraySegment = callInfo.Arg<ArraySegment<byte>>();
-                var token = callInfo.Arg<CancellationToken>();
+                string inputMessage = Encoding.UTF8.GetString(arraySegment.Array, arraySegment.Offset, arraySegment.Count);
 
-                if (messages.Count == 0)
-                {
-                    // unfortunately, the server suddenly stops reacting and leaves us hanging
-                    // => I (currently) use this as the end of the transmission (yes.. I know)
-                    Thread.Sleep(2000);
+                var filePath = Path.Combine(
+                    TestDataHelper.MYMOSQ_TEST_DATA_FILE_PATH,
+                    inputMessage.Contains("""
+                                        "p": "/prayerTimes/1239"
+                                        """)
+                        ? "MyMosq_WebSocketMessage_20240830_1239.txt"
+                        : "MyMosq_WebSocketMessage_20240830_InvalidMosqueID.txt");
+                var fileContent = File.ReadAllText(filePath);
 
-                    if (token.IsCancellationRequested) 
+                var messages = new Queue<string>(fileContent.Split(WEB_SOCKET_MESSAGE_SEPARATOR_TEXT));
+
+                mockWebSocketClient.ReceiveAsync(Arg.Any<ArraySegment<byte>>(), Arg.Any<CancellationToken>())
+                    .Returns(callInfo =>
                     {
-                        mockWebSocketClient.State.Returns(WebSocketState.Aborted);
-                        token.ThrowIfCancellationRequested();
-                    }
+                        ArraySegment<byte> arraySegment = callInfo.Arg<ArraySegment<byte>>();
+                        var token = callInfo.Arg<CancellationToken>();
 
-                    return new WebSocketReceiveResult(count: 0, messageType: WebSocketMessageType.Text, endOfMessage: true);
-                }
+                        if (messages.Count == 0)
+                        {
+                            // unfortunately, the server suddenly stops reacting and leaves us hanging
+                            // => I (currently) use this as the end of the transmission (yes.. I know)
+                            Thread.Sleep(2000);
 
-                var message = messages.Dequeue();
-                var byteArray = Encoding.UTF8.GetBytes(message);
-                Array.Copy(byteArray, arraySegment.Array, byteArray.Length);
+                            if (token.IsCancellationRequested)
+                            {
+                                mockWebSocketClient.State.Returns(WebSocketState.Aborted);
+                                token.ThrowIfCancellationRequested();
+                            }
 
-                return new WebSocketReceiveResult(count: byteArray.Length, messageType: WebSocketMessageType.Text, endOfMessage: true);
+                            return new WebSocketReceiveResult(count: 0, messageType: WebSocketMessageType.Text, endOfMessage: true);
+                        }
+
+                        var message = messages.Dequeue();
+                        var byteArray = Encoding.UTF8.GetBytes(message);
+                        Array.Copy(byteArray, arraySegment.Array, byteArray.Length);
+
+                        return new WebSocketReceiveResult(count: byteArray.Length, messageType: WebSocketMessageType.Text, endOfMessage: true);
+                    });
+
+                return Task.CompletedTask;
             });
 
         mockWebSocketClient.State.Returns(WebSocketState.Open);

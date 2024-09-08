@@ -1246,6 +1246,8 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
             var defaultTableMappings10 = new List<TableMappingBase<ColumnMappingBase>>();
             dynamicProfile.SetRuntimeAnnotation("Relational:DefaultMappings", defaultTableMappings10);
             var prayerTimeEngineCoreDomainProfileManagementModelsEntitiesProfileTableBase = new TableBase("PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities.Profile", null, relationalModel);
+            var discriminatorColumnBase = new ColumnBase<ColumnMappingBase>("Discriminator", "TEXT", prayerTimeEngineCoreDomainProfileManagementModelsEntitiesProfileTableBase);
+            prayerTimeEngineCoreDomainProfileManagementModelsEntitiesProfileTableBase.Columns.Add("Discriminator", discriminatorColumnBase);
             var externalIDColumnBase2 = new ColumnBase<ColumnMappingBase>("ExternalID", "TEXT", prayerTimeEngineCoreDomainProfileManagementModelsEntitiesProfileTableBase)
             {
                 IsNullable = true
@@ -1258,8 +1260,11 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
                 IsNullable = true
             };
             prayerTimeEngineCoreDomainProfileManagementModelsEntitiesProfileTableBase.Columns.Add("InsertInstant", insertInstantColumnBase10);
-            var isMosqueProfileColumnBase = new ColumnBase<ColumnMappingBase>("IsMosqueProfile", "INTEGER", prayerTimeEngineCoreDomainProfileManagementModelsEntitiesProfileTableBase);
-            prayerTimeEngineCoreDomainProfileManagementModelsEntitiesProfileTableBase.Columns.Add("IsMosqueProfile", isMosqueProfileColumnBase);
+            var mosqueProviderTypeColumnBase = new ColumnBase<ColumnMappingBase>("MosqueProviderType", "INTEGER", prayerTimeEngineCoreDomainProfileManagementModelsEntitiesProfileTableBase)
+            {
+                IsNullable = true
+            };
+            prayerTimeEngineCoreDomainProfileManagementModelsEntitiesProfileTableBase.Columns.Add("MosqueProviderType", mosqueProviderTypeColumnBase);
             var nameColumnBase4 = new ColumnBase<ColumnMappingBase>("Name", "TEXT", prayerTimeEngineCoreDomainProfileManagementModelsEntitiesProfileTableBase)
             {
                 IsNullable = true
@@ -1272,8 +1277,8 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
             prayerTimeEngineCoreDomainProfileManagementModelsEntitiesProfileTableBase.AddTypeMapping(prayerTimeEngineCoreDomainProfileManagementModelsEntitiesProfileMappingBase, false);
             defaultTableMappings10.Add(prayerTimeEngineCoreDomainProfileManagementModelsEntitiesProfileMappingBase);
             RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)iDColumnBase10, dynamicProfile.FindProperty("ID")!, prayerTimeEngineCoreDomainProfileManagementModelsEntitiesProfileMappingBase);
+            RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)discriminatorColumnBase, dynamicProfile.FindProperty("Discriminator")!, prayerTimeEngineCoreDomainProfileManagementModelsEntitiesProfileMappingBase);
             RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)insertInstantColumnBase10, dynamicProfile.FindProperty("InsertInstant")!, prayerTimeEngineCoreDomainProfileManagementModelsEntitiesProfileMappingBase);
-            RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)isMosqueProfileColumnBase, dynamicProfile.FindProperty("IsMosqueProfile")!, prayerTimeEngineCoreDomainProfileManagementModelsEntitiesProfileMappingBase);
             RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)nameColumnBase4, dynamicProfile.FindProperty("Name")!, prayerTimeEngineCoreDomainProfileManagementModelsEntitiesProfileMappingBase);
             RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)sequenceNoColumnBase, dynamicProfile.FindProperty("SequenceNo")!, prayerTimeEngineCoreDomainProfileManagementModelsEntitiesProfileMappingBase);
 
@@ -1282,6 +1287,8 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
             var profilesTable = new Table("Profiles", null, relationalModel);
             var iDColumn10 = new Column("ID", "INTEGER", profilesTable);
             profilesTable.Columns.Add("ID", iDColumn10);
+            var discriminatorColumn = new Column("Discriminator", "TEXT", profilesTable);
+            profilesTable.Columns.Add("Discriminator", discriminatorColumn);
             var externalIDColumn2 = new Column("ExternalID", "TEXT", profilesTable)
             {
                 IsNullable = true
@@ -1292,8 +1299,11 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
                 IsNullable = true
             };
             profilesTable.Columns.Add("InsertInstant", insertInstantColumn10);
-            var isMosqueProfileColumn = new Column("IsMosqueProfile", "INTEGER", profilesTable);
-            profilesTable.Columns.Add("IsMosqueProfile", isMosqueProfileColumn);
+            var mosqueProviderTypeColumn = new Column("MosqueProviderType", "INTEGER", profilesTable)
+            {
+                IsNullable = true
+            };
+            profilesTable.Columns.Add("MosqueProviderType", mosqueProviderTypeColumn);
             var nameColumn4 = new Column("Name", "TEXT", profilesTable)
             {
                 IsNullable = true
@@ -1317,8 +1327,8 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
             profilesTable.AddTypeMapping(profilesTableMapping, false);
             tableMappings10.Add(profilesTableMapping);
             RelationalModel.CreateColumnMapping(iDColumn10, dynamicProfile.FindProperty("ID")!, profilesTableMapping);
+            RelationalModel.CreateColumnMapping(discriminatorColumn, dynamicProfile.FindProperty("Discriminator")!, profilesTableMapping);
             RelationalModel.CreateColumnMapping(insertInstantColumn10, dynamicProfile.FindProperty("InsertInstant")!, profilesTableMapping);
-            RelationalModel.CreateColumnMapping(isMosqueProfileColumn, dynamicProfile.FindProperty("IsMosqueProfile")!, profilesTableMapping);
             RelationalModel.CreateColumnMapping(nameColumn4, dynamicProfile.FindProperty("Name")!, profilesTableMapping);
             RelationalModel.CreateColumnMapping(sequenceNoColumn, dynamicProfile.FindProperty("SequenceNo")!, profilesTableMapping);
 
@@ -1330,9 +1340,10 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
             prayerTimeEngineCoreDomainProfileManagementModelsEntitiesProfileTableBase.AddTypeMapping(prayerTimeEngineCoreDomainProfileManagementModelsEntitiesProfileMappingBase0, false);
             defaultTableMappings11.Add(prayerTimeEngineCoreDomainProfileManagementModelsEntitiesProfileMappingBase0);
             RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)iDColumnBase10, mosqueProfile.FindProperty("ID")!, prayerTimeEngineCoreDomainProfileManagementModelsEntitiesProfileMappingBase0);
+            RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)discriminatorColumnBase, mosqueProfile.FindProperty("Discriminator")!, prayerTimeEngineCoreDomainProfileManagementModelsEntitiesProfileMappingBase0);
             RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)externalIDColumnBase2, mosqueProfile.FindProperty("ExternalID")!, prayerTimeEngineCoreDomainProfileManagementModelsEntitiesProfileMappingBase0);
             RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)insertInstantColumnBase10, mosqueProfile.FindProperty("InsertInstant")!, prayerTimeEngineCoreDomainProfileManagementModelsEntitiesProfileMappingBase0);
-            RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)isMosqueProfileColumnBase, mosqueProfile.FindProperty("IsMosqueProfile")!, prayerTimeEngineCoreDomainProfileManagementModelsEntitiesProfileMappingBase0);
+            RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)mosqueProviderTypeColumnBase, mosqueProfile.FindProperty("MosqueProviderType")!, prayerTimeEngineCoreDomainProfileManagementModelsEntitiesProfileMappingBase0);
             RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)nameColumnBase4, mosqueProfile.FindProperty("Name")!, prayerTimeEngineCoreDomainProfileManagementModelsEntitiesProfileMappingBase0);
             RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)sequenceNoColumnBase, mosqueProfile.FindProperty("SequenceNo")!, prayerTimeEngineCoreDomainProfileManagementModelsEntitiesProfileMappingBase0);
 
@@ -1345,9 +1356,10 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
             profilesTable.AddTypeMapping(profilesTableMapping0, false);
             tableMappings11.Add(profilesTableMapping0);
             RelationalModel.CreateColumnMapping(iDColumn10, mosqueProfile.FindProperty("ID")!, profilesTableMapping0);
+            RelationalModel.CreateColumnMapping(discriminatorColumn, mosqueProfile.FindProperty("Discriminator")!, profilesTableMapping0);
             RelationalModel.CreateColumnMapping(externalIDColumn2, mosqueProfile.FindProperty("ExternalID")!, profilesTableMapping0);
             RelationalModel.CreateColumnMapping(insertInstantColumn10, mosqueProfile.FindProperty("InsertInstant")!, profilesTableMapping0);
-            RelationalModel.CreateColumnMapping(isMosqueProfileColumn, mosqueProfile.FindProperty("IsMosqueProfile")!, profilesTableMapping0);
+            RelationalModel.CreateColumnMapping(mosqueProviderTypeColumn, mosqueProfile.FindProperty("MosqueProviderType")!, profilesTableMapping0);
             RelationalModel.CreateColumnMapping(nameColumn4, mosqueProfile.FindProperty("Name")!, profilesTableMapping0);
             RelationalModel.CreateColumnMapping(sequenceNoColumn, mosqueProfile.FindProperty("SequenceNo")!, profilesTableMapping0);
 
@@ -1359,8 +1371,8 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
             prayerTimeEngineCoreDomainProfileManagementModelsEntitiesProfileTableBase.AddTypeMapping(prayerTimeEngineCoreDomainProfileManagementModelsEntitiesProfileMappingBase1, false);
             defaultTableMappings12.Add(prayerTimeEngineCoreDomainProfileManagementModelsEntitiesProfileMappingBase1);
             RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)iDColumnBase10, profile.FindProperty("ID")!, prayerTimeEngineCoreDomainProfileManagementModelsEntitiesProfileMappingBase1);
+            RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)discriminatorColumnBase, profile.FindProperty("Discriminator")!, prayerTimeEngineCoreDomainProfileManagementModelsEntitiesProfileMappingBase1);
             RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)insertInstantColumnBase10, profile.FindProperty("InsertInstant")!, prayerTimeEngineCoreDomainProfileManagementModelsEntitiesProfileMappingBase1);
-            RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)isMosqueProfileColumnBase, profile.FindProperty("IsMosqueProfile")!, prayerTimeEngineCoreDomainProfileManagementModelsEntitiesProfileMappingBase1);
             RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)nameColumnBase4, profile.FindProperty("Name")!, prayerTimeEngineCoreDomainProfileManagementModelsEntitiesProfileMappingBase1);
             RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)sequenceNoColumnBase, profile.FindProperty("SequenceNo")!, prayerTimeEngineCoreDomainProfileManagementModelsEntitiesProfileMappingBase1);
 
@@ -1373,8 +1385,8 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
             profilesTable.AddTypeMapping(profilesTableMapping1, false);
             tableMappings12.Add(profilesTableMapping1);
             RelationalModel.CreateColumnMapping(iDColumn10, profile.FindProperty("ID")!, profilesTableMapping1);
+            RelationalModel.CreateColumnMapping(discriminatorColumn, profile.FindProperty("Discriminator")!, profilesTableMapping1);
             RelationalModel.CreateColumnMapping(insertInstantColumn10, profile.FindProperty("InsertInstant")!, profilesTableMapping1);
-            RelationalModel.CreateColumnMapping(isMosqueProfileColumn, profile.FindProperty("IsMosqueProfile")!, profilesTableMapping1);
             RelationalModel.CreateColumnMapping(nameColumn4, profile.FindProperty("Name")!, profilesTableMapping1);
             RelationalModel.CreateColumnMapping(sequenceNoColumn, profile.FindProperty("SequenceNo")!, profilesTableMapping1);
 

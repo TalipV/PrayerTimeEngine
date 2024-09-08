@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Maui.Storage;
 using Microsoft.Extensions.Logging;
 using PrayerTimeEngine.Core.Common;
+using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Presentation.Pages.Main;
 using PrayerTimeEngine.Presentation.Services;
 
@@ -8,9 +9,9 @@ namespace PrayerTimeEngine.Presentation;
 
 // I just wanted to put this logic somewhere else
 internal class MainPageOptionsMenuService(
-        ToastMessageService toastMessageService, 
         MainPage page,
         MainPageViewModel viewModel,
+        ToastMessageService toastMessageService, 
         ILogger<MainPageOptionsMenuService> logger,
         IPreferenceService preferenceService
     )
@@ -35,10 +36,9 @@ internal class MainPageOptionsMenuService(
     private const string _backText = "Zurück";
     private const string _cancelText = "Abbrechen";
 
-    public async Task openOptionsMenu()
+    public async Task openGeneralOptionsMenu()
     {
         bool doRepeat;
-
         try
         {
             do
@@ -166,6 +166,51 @@ internal class MainPageOptionsMenuService(
         {
             logger.LogError(exception, "Error in options menu");
             toastMessageService.ShowError(exception.Message);
+        }
+    }
+
+    public async Task OpenProfileOptionsMenu()
+    {
+        switch (await page.DisplayActionSheet(
+                            title: "Profilverwaltung",
+                            cancel: "Abbrechen",
+                            destruction: null,
+                            "Neues Profil erstellen",
+                            "Neues Moschee-Profil erstellen",
+                            "Profil löschen"))
+        {
+            case "Neues Profil erstellen":
+                await viewModel.CreateNewProfile();
+                break;
+            case "Neues Moschee-Profil erstellen":
+
+                var items = Enum.GetValues(typeof(EMosquePrayerTimeProviderType)).OfType<EMosquePrayerTimeProviderType>().ToList();
+                items.Remove(EMosquePrayerTimeProviderType.None);
+
+                string selectedItemText = await page.DisplayActionSheet(
+                    title: "Moschee-App auswählen",
+                    cancel: "Abbrechen",
+                    destruction: null,
+                    items.Select(x => x.ToString()).ToArray()
+                   );
+
+                EMosquePrayerTimeProviderType selectedItem = items.FirstOrDefault(x => x.ToString() == selectedItemText);
+
+                if (selectedItem != EMosquePrayerTimeProviderType.None)
+                {
+                    string externalID = await page.DisplayPromptAsync(
+                        title: "Kennung",
+                        message: "Kennung der jeweiligen Moschee eingeben",
+                        initialValue: "",
+                        keyboard: Keyboard.Text) ?? "";
+
+                    await viewModel.CreateNewMosqueProfile(selectedItem, externalID);
+                }
+
+                break;
+            case "Profil löschen":
+                await viewModel.DeleteCurrentProfile();
+                break;
         }
     }
 

@@ -242,4 +242,22 @@ public class ProfileDBAccess(
         timeConfig.Profile = profile;
         timeConfig.CalculationConfiguration = settings;
     }
+
+    public async Task<MosqueProfile> CreateNewMosqueProfile(EMosquePrayerTimeProviderType providerType, string externalID, CancellationToken cancellationToken)
+    {
+        using (AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken))
+        {
+            MosqueProfile newMosqueProfile = new MosqueProfile
+            {
+                Name = $"{providerType}: {externalID}",
+                ExternalID = externalID,
+                MosqueProviderType = providerType,
+            };
+
+            await dbContext.MosqueProfiles.AddAsync(newMosqueProfile, cancellationToken);
+            await dbContext.SaveChangesAsync(cancellationToken);
+
+            return newMosqueProfile;
+        }
+    }
 }

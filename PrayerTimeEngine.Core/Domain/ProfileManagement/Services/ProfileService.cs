@@ -1,4 +1,5 @@
-﻿using PrayerTimeEngine.Core.Common.Enum;
+﻿using NodaTime;
+using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Models;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Models;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Muwaqqit.Models;
@@ -367,5 +368,21 @@ public class ProfileService(
                     IsTimeShown: true
                 })
             .ToList();
+    }
+
+    public Task<MosqueProfile> CreateNewMosqueProfile(EMosquePrayerTimeProviderType providerType, string externalID, CancellationToken cancellationToken)
+    {
+        return profileDBAccess.CreateNewMosqueProfile(providerType, externalID, cancellationToken);
+    }
+
+    public DateTimeZone GetDateTimeZone(Profile profile)
+    {
+        return profile switch
+        {
+            DynamicProfile dynamicProfile => DateTimeZoneProviders.Tzdb[dynamicProfile.PlaceInfo.TimezoneInfo.Name],
+            // MosqueProfiles don't have place infos and the calculation only relies on LocalDateTime part of zonedDateTime
+            MosqueProfile => DateTimeZone.Utc,
+            _ => throw new InvalidOperationException($"Unknown profile type '{profile.GetType().FullName}'")
+        };
     }
 }

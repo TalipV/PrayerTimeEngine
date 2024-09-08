@@ -288,4 +288,31 @@ public class ProfileDBAccessTests : BaseTest
     }
 
     #endregion DeleteProfile
+
+    #region CreateNewMosqueProfile
+
+    [Fact]
+    [Trait("Method", "CreateNewMosqueProfile")]
+    public async Task CreateNewMosqueProfile_CreateMosqueProfile_Success()
+    {
+        // ARRANGE & ACT
+        MosqueProfile copiedProfile = 
+            await _profileDBAccess.CreateNewMosqueProfile(
+                EMosquePrayerTimeProviderType.Mawaqit, 
+                "test-mosque", 
+                default);
+
+        // ASSERT
+        MosqueProfile savedMosqueProfile = await TestAssertDbContext.MosqueProfiles.FirstOrDefaultAsync(x => x.ID == copiedProfile.ID, default);
+        
+        copiedProfile.Should().NotBeNull();
+        copiedProfile.ExternalID.Should().Be("test-mosque");
+        copiedProfile.MosqueProviderType.Should().Be(EMosquePrayerTimeProviderType.Mawaqit);
+        
+        savedMosqueProfile.Should().NotBeNull();
+        savedMosqueProfile.ExternalID.Should().Be("test-mosque");
+        savedMosqueProfile.MosqueProviderType.Should().Be(EMosquePrayerTimeProviderType.Mawaqit);
+    }
+
+    #endregion CreateNewMosqueProfile
 }

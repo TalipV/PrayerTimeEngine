@@ -15,6 +15,27 @@ public class MawaqitApiServiceTests : BaseTest
     public MawaqitApiServiceTests()
     {
         _mockHttpMessageHandler = new MockHttpMessageHandler();
+
+        _mockHttpMessageHandler.HandleRequestFunc =
+            (request) =>
+            {
+                if (request.RequestUri.AbsoluteUri.EndsWith("hamza-koln"))
+                {
+                    Stream responseStream = File.OpenRead(Path.Combine(TestDataHelper.MAWAQIT_TEST_DATA_FILE_PATH, "Mawaqit_ResponsePageContent_20240829_hamza-koln.txt"));
+
+                    return new HttpResponseMessage
+                    {
+                        StatusCode = HttpStatusCode.OK,
+                        Content = new StreamContent(responseStream)
+                    };
+                }
+
+                return new HttpResponseMessage
+                {
+                    StatusCode = HttpStatusCode.NotFound,
+                };
+            };
+
         var httpClient = new HttpClient(_mockHttpMessageHandler)
         {
             BaseAddress = new Uri("https://mawaqit.net/fr")
@@ -28,18 +49,6 @@ public class MawaqitApiServiceTests : BaseTest
         // ARRANGE
         var date = new LocalDate(2024, 8, 29);
         string externalID = "hamza-koln";
-
-        _mockHttpMessageHandler.HandleRequestFunc =
-            (request) =>
-            {
-                Stream responseStream = File.OpenRead(Path.Combine(TestDataHelper.MAWAQIT_TEST_DATA_FILE_PATH, "Mawaqit_ResponsePageContent_20240829_hamza-koln.txt"));
-
-                return new HttpResponseMessage
-                {
-                    StatusCode = HttpStatusCode.OK,
-                    Content = new StreamContent(responseStream)
-                };
-            };
 
         // ACT
         var response = await _mawaqitApiService.GetPrayerTimesAsync(externalID, cancellationToken: default);
@@ -68,5 +77,33 @@ public class MawaqitApiServiceTests : BaseTest
 
         time.Jumuah.Should().Be(new LocalTime(14, 30, 00));
         time.Jumuah2.Should().BeNull();
+    }
+
+    [Fact]
+    public async Task ValidateData_ValidExternalID_ReturnTrue()
+    {
+        // ARRANGE
+        var date = new LocalDate(2024, 8, 30);
+        string externalID = "hamza-koln";
+
+        // ACT
+        bool response = await _mawaqitApiService.ValidateData(externalID, cancellationToken: default);
+
+        // ASSERT
+        response.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task ValidateData_InvalidExternalID_ReturnFalse()
+    {
+        // ARRANGE
+        var date = new LocalDate(2024, 8, 30);
+        string externalID = "InvalidExternalID";
+
+        // ACT
+        bool response = await _mawaqitApiService.ValidateData(externalID, cancellationToken: default);
+
+        // ASSERT
+        response.Should().BeFalse();
     }
 }

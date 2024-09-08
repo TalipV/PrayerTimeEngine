@@ -140,9 +140,10 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_Migrations
                     ID = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     Name = table.Column<string>(type: "TEXT", nullable: true),
-                    IsMosqueProfile = table.Column<bool>(type: "INTEGER", nullable: false),
                     SequenceNo = table.Column<int>(type: "INTEGER", nullable: false),
                     InsertInstant = table.Column<string>(type: "TEXT", nullable: true),
+                    Discriminator = table.Column<string>(type: "TEXT", maxLength: 21, nullable: false),
+                    MosqueProviderType = table.Column<int>(type: "INTEGER", nullable: true),
                     ExternalID = table.Column<string>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>

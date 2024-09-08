@@ -13,9 +13,10 @@ public abstract class Profile : IInsertedAt
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int ID { get; set; }
     public string Name { get; set; }
-    public bool IsMosqueProfile { get; set; }
     public int SequenceNo { get; set; }
     public Instant? InsertInstant { get; set; }
+
+    public abstract string GetDisplayText();
 
     public override bool Equals(object obj)
     {
@@ -24,8 +25,7 @@ public abstract class Profile : IInsertedAt
 
         if (ID != otherProfile.ID
             || SequenceNo != otherProfile.SequenceNo
-            || Name != otherProfile.Name
-            || IsMosqueProfile != otherProfile.IsMosqueProfile)
+            || Name != otherProfile.Name)
         {
             return false;
         }
@@ -35,6 +35,6 @@ public abstract class Profile : IInsertedAt
 
     public override int GetHashCode()
     {
-        return HashCode.Combine(ID, SequenceNo, Name, IsMosqueProfile);
+        return HashCode.Combine(ID, SequenceNo, Name);
     }
 }

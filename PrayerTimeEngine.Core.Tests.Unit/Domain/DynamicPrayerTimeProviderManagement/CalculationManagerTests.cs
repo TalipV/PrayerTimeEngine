@@ -6,7 +6,6 @@ using PrayerTimeEngine.Core.Domain.Models;
 using PrayerTimeEngine.Core.Common.Enum;
 using Microsoft.Extensions.Logging;
 using PrayerTimeEngine.Core.Tests.Common.TestData;
-using PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
 using PrayerTimeEngine.Core.Common;
 using PrayerTimeEngine.Core.Domain;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Models;

@@ -42,4 +42,9 @@ public class MawaqitMosquePrayerTimeProvider(
             return prayerTimes;
         }
     }
+
+    public Task<bool> ValidateData(string externalID, CancellationToken cancellationToken)
+    {
+        return mawaqitApiService.ValidateData(externalID, cancellationToken);
+    }
 }

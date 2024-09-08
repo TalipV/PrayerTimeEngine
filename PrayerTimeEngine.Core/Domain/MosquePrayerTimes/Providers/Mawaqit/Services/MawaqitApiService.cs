@@ -39,4 +39,10 @@ public partial class MawaqitApiService(
 
     [GeneratedRegex(@"var confData = (.*?);", RegexOptions.Singleline)]
     private static partial Regex confDataExtractionRegex();
+
+    public async Task<bool> ValidateData(string externalID, CancellationToken cancellationToken)
+    {
+        var response = await httpClient.GetAsync(externalID, cancellationToken);
+        return response.StatusCode != System.Net.HttpStatusCode.NotFound;
+    }
 }

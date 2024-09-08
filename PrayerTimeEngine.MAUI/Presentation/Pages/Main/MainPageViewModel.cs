@@ -7,6 +7,7 @@ using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Data.EntityFramework;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Models;
+using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Management;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Interfaces;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Models;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Interfaces;
@@ -27,8 +28,9 @@ namespace PrayerTimeEngine.Presentation.Pages.Main;
 public class MainPageViewModel(
         IDispatcher dispatcher,
         ToastMessageService toastMessageService,
-        ISystemInfoService _systemInfoService,
+        ISystemInfoService systemInfoService,
         IDynamicPrayerTimeProviderFactory prayerTimeServiceFactory,
+        IMosquePrayerTimeProviderManager mosquePrayerTimeProviderManager,
         IPlaceService placeService,
         IProfileService profileService,
         INavigationService navigationService,
@@ -55,8 +57,7 @@ public class MainPageViewModel(
             return CurrentProfileWithModel?.Profile;
         }
     }
-    public string ProfileDisplayText => $"{CurrentProfile?.PlaceInfo?.City ?? "-"}, {CurrentProfile?.SequenceNo ?? -1}";
-
+    public string ProfileDisplayText => this.CurrentProfile?.GetDisplayText() ?? "-";
 
     [OnChangedMethod(nameof(onSelectedPlaceChanged))]
     public string SelectedPlaceText { get; set; }
@@ -161,7 +162,7 @@ public class MainPageViewModel(
             _placeSearchCancellationTokenSource?.Cancel();
             _placeSearchCancellationTokenSource = currentTokenSource;
 
-            string languageCode = _systemInfoService.GetSystemCulture().TwoLetterISOLanguageName;
+            string languageCode = systemInfoService.GetSystemCulture().TwoLetterISOLanguageName;
             return await placeService.SearchPlacesAsync(searchText, languageCode, currentTokenSource.Token);
         }
         catch (OperationCanceledException)
@@ -189,6 +190,106 @@ public class MainPageViewModel(
         await refreshData();
     }
 
+    public async Task CreateNewProfile()
+    {
+        try
+        {
+            CancellationToken cancellationToken = default;
+
+            var copiedProfile = await profileService.CopyProfile(CurrentProfile, cancellationToken);
+            await reloadProfiles(copiedProfile.ID);
+        }
+        catch (Exception exception)
+        {
+            logger.LogError(exception, "Error while creating a new profile");
+            toastMessageService.ShowError(exception.Message);
+        }
+    }
+
+    public async Task CreateNewMosqueProfile(EMosquePrayerTimeProviderType selectedItem, string externalID)
+    {
+        try
+        {
+            CancellationToken cancellationToken = default;
+
+            bool isValid = await mosquePrayerTimeProviderManager.ValidateData(selectedItem, externalID, cancellationToken);
+
+            if (!isValid)
+            {
+                return;
+            }
+
+            var newMosqueProfile = await profileService.CreateNewMosqueProfile(selectedItem, externalID, cancellationToken);
+            await reloadProfiles(newMosqueProfile.ID);
+        }
+        catch (Exception exception)
+        {
+            logger.LogError(exception, "Error while creating a new mosque profile");
+            toastMessageService.ShowError(exception.Message);
+        }
+    }
+
+    public async Task DeleteCurrentProfile()
+    {
+        try
+        {
+            CancellationToken cancellationToken = default;
+
+            await profileService.DeleteProfile(CurrentProfile, cancellationToken);
+            await reloadProfiles();
+        }
+        catch (Exception exception)
+        {
+            logger.LogError(exception, "Error while deleting current profile");
+            toastMessageService.ShowError(exception.Message);
+        }
+    }
+
+    public async Task ShowDatabaseTable()
+    {
+        await navigationService.NavigateTo<DatabaseTablesPageViewModel>();
+    }
+
+    public string GetPrayerTimeConfigDisplayText()
+    {
+        try
+        {
+            if (CurrentProfile is not DynamicProfile dynamicProfile)
+            {
+                return $"Not supported for '{CurrentProfile?.GetType().Name ?? "NULL"}'!";
+            }
+
+            return profileService.GetPrayerTimeConfigDisplayText(dynamicProfile);
+        }
+        catch (Exception exception)
+        {
+            logger.LogError(exception, "Error while deleting current profile");
+            toastMessageService.ShowError(exception.Message);
+
+            return $"ERROR: {exception.Message}";
+        }
+    }
+
+    public string GetLocationDataDisplayText()
+    {
+        try
+        {
+            if (CurrentProfile is not DynamicProfile dynamicProfile)
+            {
+                return $"Not supported for '{CurrentProfile?.GetType().Name ?? "NULL"}'!";
+            }
+
+            return profileService.GetLocationDataDisplayText(dynamicProfile);
+        }
+        catch (Exception exception)
+        {
+            logger.LogError(exception, "Error while deleting current profile");
+            toastMessageService.ShowError(exception.Message);
+
+            return $"ERROR: {exception.Message}";
+        }
+    }
+
     #endregion public methods
 
     #region private methods
@@ -212,39 +313,6 @@ public class MainPageViewModel(
             ProfilesWithModel.FirstOrDefault(x => x.Profile.ID == selectedProfile)
             ?? CurrentProfileWithModel
             ?? ProfilesWithModel.First();
-    }
-
-    public async Task CreateNewProfile()
-    {
-        CancellationToken cancellationToken = default;
-
-        var copiedProfile = await profileService.CopyProfile(CurrentProfile, cancellationToken);
-        await reloadProfiles(copiedProfile.ID);
-    }
-
-    public async Task CreateNewMosqueProfile()
-    {
-        CancellationToken cancellationToken = default;
-
-        var copiedProfile = await profileService.CopyProfile(CurrentProfile, cancellationToken);
-
-        var dbContextFactory = MauiProgram.ServiceProvider.GetRequiredService<IDbContextFactory<AppDbContext>>();
-        using (AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(default))
-        {
-            dbContext.Entry(copiedProfile).State = EntityState.Unchanged;
-            copiedProfile.IsMosqueProfile = true;
-            await dbContext.SaveChangesAsync();
-        }
-
-        await reloadProfiles(copiedProfile.ID);
-    }
-
-    public async Task DeleteCurrentProfile()
-    {
-        CancellationToken cancellationToken = default;
-
-        await profileService.DeleteProfile(CurrentProfile, cancellationToken);
-        await reloadProfiles();
     }
 
     // concurrent loading is prevent in that subsequent loading requests are ignored when a previous one is currently running
@@ -277,9 +345,10 @@ public class MainPageViewModel(
                 loadingTimesCancellationTokenSource?.Dispose();
                 loadingTimesCancellationTokenSource = new CancellationTokenSource();
 
+                DateTimeZone dateTimeZone = profileService.GetDateTimeZone(currentProfile);
                 ZonedDateTime zonedDateTime =
-                    _systemInfoService.GetCurrentInstant()
-                        .InZone(DateTimeZoneProviders.Tzdb[currentProfile.PlaceInfo.TimezoneInfo.Name]);
+                    systemInfoService.GetCurrentInstant()
+                        .InZone(dateTimeZone);
 
                 await CurrentProfileWithModel.RefreshData(zonedDateTime, loadingTimesCancellationTokenSource.Token);
 
@@ -315,9 +384,12 @@ public class MainPageViewModel(
 
     private IPrayerTimeViewModel getPrayerTimeViewModel(Profile profile)
     {
-        IPrayerTimeViewModel viewModel = profile.IsMosqueProfile
-            ? MauiProgram.ServiceProvider.GetRequiredService<MosquePrayerTimeViewModel>()
-            : MauiProgram.ServiceProvider.GetRequiredService<DynamicPrayerTimeViewModel>();
+        IPrayerTimeViewModel viewModel = profile switch
+        {
+            MosqueProfile => MauiProgram.ServiceProvider.GetRequiredService<MosquePrayerTimeViewModel>(),
+            DynamicProfile => MauiProgram.ServiceProvider.GetRequiredService<DynamicPrayerTimeViewModel>(),
+            _ => throw new InvalidOperationException($"Unknown profile type '{profile.GetType().FullName}'")
+        };
 
         viewModel.MainPageViewModel = this;
         viewModel.Profile = profile;
@@ -396,7 +468,7 @@ public class MainPageViewModel(
         {
             BasicPlaceInfo SelectedPlace = FoundPlaces.FirstOrDefault(x => x.DisplayText == selectedPlaceText);
 
-            Profile currentProfile = CurrentProfile;
+            DynamicProfile currentProfile = CurrentProfile as DynamicProfile;
 
             if (currentProfile is null || SelectedPlace is null)
                 return;
@@ -475,21 +547,6 @@ public class MainPageViewModel(
         }
 
         return locationDataWithDynamicPrayerTimeProvider;
-    }
-
-    public async Task ShowDatabaseTable()
-    {
-        await navigationService.NavigateTo<DatabaseTablesPageViewModel>();
-    }
-
-    public string GetPrayerTimeConfigDisplayText()
-    {
-        return profileService.GetPrayerTimeConfigDisplayText(CurrentProfile);
-    }
-
-    internal string GetLocationDataDisplayText()
-    {
-        return profileService.GetLocationDataDisplayText(CurrentProfile);
     }
 
     #endregion private methods
