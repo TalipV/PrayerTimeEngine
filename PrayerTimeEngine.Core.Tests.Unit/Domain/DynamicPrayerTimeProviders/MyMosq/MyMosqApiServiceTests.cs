@@ -55,4 +55,32 @@ public class MyMosqApiServiceTests : BaseTest
         time.Jumuah.Should().Be(new LocalTime(0, 0, 0));
         time.Jumuah2.Should().Be(new LocalTime(0, 0, 0));
     }
+
+    [Fact]
+    public async Task ValidateData_ValidExternalID_ReturnTrue()
+    {
+        // ARRANGE
+        var date = new LocalDate(2024, 8, 30);
+        string externalID = "1239";
+
+        // ACT
+        bool response = await _myMosqApiService.ValidateData(externalID, cancellationToken: default);
+
+        // ASSERT
+        response.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task ValidateData_InvalidExternalID_ReturnFalse()
+    {
+        // ARRANGE
+        var date = new LocalDate(2024, 8, 30);
+        string externalID = "InvalidExternalID";
+
+        // ACT
+        bool response = await _myMosqApiService.ValidateData(externalID, cancellationToken: default);
+
+        // ASSERT
+        response.Should().BeFalse();
+    }
 }

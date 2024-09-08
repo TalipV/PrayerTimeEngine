@@ -5,4 +5,5 @@ namespace PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.Mawaqit.Inter
 public interface IMawaqitApiService
 {
     Task<MawaqitResponseDTO> GetPrayerTimesAsync(string externalID, CancellationToken cancellationToken);
+    Task<bool> ValidateData(string externalID, CancellationToken cancellationToken);
 }

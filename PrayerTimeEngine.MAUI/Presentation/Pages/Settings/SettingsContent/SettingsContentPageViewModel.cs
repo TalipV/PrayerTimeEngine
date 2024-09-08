@@ -67,13 +67,13 @@ public class SettingsContentPageViewModel(
 
     public ISettingConfigurationViewModel CustomSettingConfigurationViewModel { get; set; }
 
-    public Profile Profile { get; set; }
+    public DynamicProfile Profile { get; set; }
 
     #endregion properties
 
     #region public methods
 
-    public void Initialize(Profile profile, ETimeType timeType)
+    public void Initialize(DynamicProfile profile, ETimeType timeType)
     {
         TabTitle = $"{timeType}";
         TimeType = timeType;

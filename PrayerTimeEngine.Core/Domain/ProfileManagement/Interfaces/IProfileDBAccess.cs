@@ -16,4 +16,5 @@ public interface IProfileDBAccess
     public Task<Profile> GetUntrackedReferenceOfProfile(int profileID, CancellationToken cancellationToken);
     public Task<Profile> CopyProfile(Profile profile, CancellationToken cancellationToken);
     public Task DeleteProfile(Profile profile, CancellationToken cancellationToken);
+    Task<MosqueProfile> CreateNewMosqueProfile(EMosquePrayerTimeProviderType providerType, string externalID, CancellationToken cancellationToken);
 }

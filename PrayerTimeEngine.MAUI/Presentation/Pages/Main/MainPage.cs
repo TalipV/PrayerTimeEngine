@@ -54,7 +54,7 @@ public partial class MainPage : ContentPage
             .Add(
                 new TapGestureRecognizer
                 {
-                    Command = new Command(async () => await _mainPageOptionsMenuService.openOptionsMenu().ConfigureAwait(false)),
+                    Command = new Command(async () => await _mainPageOptionsMenuService.openGeneralOptionsMenu().ConfigureAwait(false)),
                     NumberOfTapsRequired = 2,
                 });
 
@@ -62,27 +62,7 @@ public partial class MainPage : ContentPage
             .Add(
                 new TapGestureRecognizer
                 {
-                    Command = new Command(async () =>
-                    {
-                        switch (await DisplayActionSheet(
-                            title: "Profilverwaltung",
-                            cancel: "Abbrechen",
-                            destruction: null,
-                            "Neues Profil erstellen",
-                            "Neues Moschee-Profil erstellen",
-                            "Profil löschen"))
-                        {
-                            case "Neues Profil erstellen":
-                                await _viewModel.CreateNewProfile();
-                                break;
-                            case"Neues Moschee-Profil erstellen":
-                                await _viewModel.CreateNewMosqueProfile();
-                                break;
-                            case "Profil löschen":
-                                await _viewModel.DeleteCurrentProfile();
-                                break;
-                        }
-                    }),
+                    Command = new Command(async () => await _mainPageOptionsMenuService.OpenProfileOptionsMenu().ConfigureAwait(false)),
                     NumberOfTapsRequired = 2,
                 });
     }
@@ -151,8 +131,8 @@ public partial class MainPage : ContentPage
             VerticalTextAlignment = TextAlignment.Center
         };
         _lastUpdatedTextInfo.SetBinding(
-            Label.TextProperty, 
-            new Binding($"{nameof(MainPageViewModel.CurrentProfileWithModel)}.{nameof(DynamicPrayerTimeViewModel.PrayerTimesCollection)}.{nameof(PrayerTimesCollection.DataCalculationTimestamp)}", 
+            Label.TextProperty,
+            new Binding($"{nameof(MainPageViewModel.CurrentProfileWithModel)}.{nameof(DynamicPrayerTimeViewModel.PrayerTimesCollection)}.{nameof(PrayerTimesCollection.DataCalculationTimestamp)}",
             stringFormat: "{0:dd.MM, HH:mm:ss}"));
         titleGrid.AddWithSpan(_lastUpdatedTextInfo, row: 0, column: 0);
 

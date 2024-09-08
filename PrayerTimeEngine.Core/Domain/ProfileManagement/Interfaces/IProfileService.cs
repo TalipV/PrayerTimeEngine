@@ -1,4 +1,5 @@
-﻿using PrayerTimeEngine.Core.Common.Enum;
+﻿using NodaTime;
+using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Models;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Models;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
@@ -24,4 +25,6 @@ public interface IProfileService
     public string GetPrayerTimeConfigDisplayText(DynamicProfile profile);
 
     List<GenericSettingConfiguration> GetActiveComplexTimeConfigs(DynamicProfile profile);
+    Task<MosqueProfile> CreateNewMosqueProfile(EMosquePrayerTimeProviderType selectedItem, string externalID, CancellationToken cancellationToken);
+    DateTimeZone GetDateTimeZone(Profile profile);
 }

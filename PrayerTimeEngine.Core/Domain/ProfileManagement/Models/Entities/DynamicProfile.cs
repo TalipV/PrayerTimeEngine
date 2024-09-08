@@ -8,6 +8,11 @@ public class DynamicProfile : Profile
     public ICollection<ProfileTimeConfig> TimeConfigs { get; set; }
     public ICollection<ProfileLocationConfig> LocationConfigs { get; set; }
 
+    public override string GetDisplayText()
+    {
+        return $"{PlaceInfo?.City ?? "-"}, {SequenceNo}";
+    }
+
     public override bool Equals(object obj)
     {
         if (obj is not DynamicProfile otherProfile)

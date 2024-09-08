@@ -91,11 +91,6 @@ public class AppDbContext(
             .WithMany(x => x.Cities)
             .HasForeignKey(x => x.CountryID);
 
-        modelBuilder.Entity<Profile>()
-            .HasDiscriminator<bool>(nameof(Profile.IsMosqueProfile))
-            .HasValue<DynamicProfile>(false)
-            .HasValue<MosqueProfile>(true);
-
         modelBuilder
             .Entity<ProfilePlaceInfo>()
             .HasOne(x => x.Profile)

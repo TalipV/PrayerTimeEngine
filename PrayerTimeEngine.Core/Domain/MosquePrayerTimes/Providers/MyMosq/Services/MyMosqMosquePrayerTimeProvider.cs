@@ -42,4 +42,9 @@ public class MyMosqMosquePrayerTimeProvider(
             return prayerTimes;
         }
     }
+
+    public Task<bool> ValidateData(string externalID, CancellationToken cancellationToken)
+    {
+        return myMosqApiService.ValidateData(externalID, cancellationToken);
+    }
 }

@@ -497,11 +497,13 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("InsertInstant")
+                    b.Property<string>("Discriminator")
+                        .IsRequired()
+                        .HasMaxLength(21)
                         .HasColumnType("TEXT");
 
-                    b.Property<bool>("IsMosqueProfile")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("InsertInstant")
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Name")
                         .HasColumnType("TEXT");
@@ -513,7 +515,7 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_Migrations
 
                     b.ToTable("Profiles");
 
-                    b.HasDiscriminator<bool>("IsMosqueProfile");
+                    b.HasDiscriminator().HasValue("Profile");
 
                     b.UseTphMappingStrategy();
                 });
@@ -572,7 +574,7 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_Migrations
                 {
                     b.HasBaseType("PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities.Profile");
 
-                    b.HasDiscriminator().HasValue(false);
+                    b.HasDiscriminator().HasValue("DynamicProfile");
                 });
 
             modelBuilder.Entity("PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities.MosqueProfile", b =>
@@ -582,7 +584,10 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_Migrations
                     b.Property<string>("ExternalID")
                         .HasColumnType("TEXT");
 
-                    b.HasDiscriminator().HasValue(true);
+                    b.Property<int>("MosqueProviderType")
+                        .HasColumnType("INTEGER");
+
+                    b.HasDiscriminator().HasValue("MosqueProfile");
                 });
 
             modelBuilder.Entity("PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Models.Entities.FaziletCity", b =>

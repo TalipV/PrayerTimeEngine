@@ -43,7 +43,7 @@ public class DynamicPrayerTimeViewModel(
 
     public async Task RefreshData(ZonedDateTime zonedDateTime, CancellationToken cancellationToken)
     {
-        await showHideSpecificTimes(Profile);
+        await showHideSpecificTimes(Profile as DynamicProfile);
 
         PrayerTimesCollection =
             await dynamicPrayerTimeProviderManager.CalculatePrayerTimesAsync(
@@ -52,7 +52,7 @@ public class DynamicPrayerTimeViewModel(
                 cancellationToken);
     }
 
-    private async Task showHideSpecificTimes(Profile profile)
+    private async Task showHideSpecificTimes(DynamicProfile profile)
     {
         if (profile is null)
             return;
@@ -70,7 +70,7 @@ public class DynamicPrayerTimeViewModel(
         });
     }
 
-    private bool isCalculationShown(Profile profile, ETimeType timeData)
+    private bool isCalculationShown(DynamicProfile profile, ETimeType timeData)
     {
         return profileService.GetTimeConfig(profile, timeData)?.IsTimeShown == true;
     }

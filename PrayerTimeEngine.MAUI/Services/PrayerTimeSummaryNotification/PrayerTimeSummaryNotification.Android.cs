@@ -92,7 +92,7 @@ public class PrayerTimeSummaryNotification : Service
             try
             {
                 var notificationBuilder = GetNotificationBuilder();
-                notificationBuilder.SetContentTitle((await _profileService.GetProfiles(default)).First().PlaceInfo.City);
+                notificationBuilder.SetContentTitle(((await _profileService.GetProfiles(default)).First() as DynamicProfile).PlaceInfo.City);
                 notificationBuilder.SetContentText(await getRemainingTimeText(cancellationTokenSource.Token));
 
                 var context = Android.App.Application.Context;
@@ -138,7 +138,7 @@ public class PrayerTimeSummaryNotification : Service
 
         ZonedDateTime now =
             _systemInfoService.GetCurrentInstant()
-                .InZone(DateTimeZoneProviders.Tzdb[profile.PlaceInfo.TimezoneInfo.Name]);
+                .InZone(DateTimeZoneProviders.Tzdb[(profile as DynamicProfile).PlaceInfo.TimezoneInfo.Name]);
 
         PrayerTimesCollection prayerTimeBundle = 
             await _prayerTimeDynamicPrayerTimeProviderManager.CalculatePrayerTimesAsync(

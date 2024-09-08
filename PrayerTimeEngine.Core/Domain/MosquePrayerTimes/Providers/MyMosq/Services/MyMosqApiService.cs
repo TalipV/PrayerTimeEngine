@@ -1,4 +1,5 @@
 ﻿using System.Net.WebSockets;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
@@ -18,8 +19,36 @@ public class MyMosqApiService(
 
     public async Task<List<MyMosqPrayerTimesDTO>> GetPrayerTimesAsync(LocalDate date, string externalID, CancellationToken cancellationToken)
     {
-        using IWebSocketClient _webSocketClient = webSocketClientFactory.CreateWebSocketClient();
-        await _webSocketClient.ConnectAsync(new Uri(URL), cancellationToken);
+        string finaleMessage = "";
+        await foreach (string currentMessage in readResponseMessages(externalID, cancellationToken))
+        {
+            if (currentMessage.Contains("Asr"))
+            {
+                finaleMessage +=
+                    currentMessage
+                    .Replace("""{"t":"d","d":{"r":2,"b":{"s":"ok","d":""", "")
+                    .Replace("}}}}}", "}}");
+            }
+        }
+
+        finaleMessage =
+            Regex.Replace(finaleMessage,
+                pattern: $$$"""
+                            "{{{date.Year}}}[0-9][0-9][0-9][0-9]":{
+                            """,
+                replacement: "{")
+            .Replace(
+                oldValue: "{{\"Asr\"",
+                newValue: "{\"prayerTimes\":[{\"Asr\"")
+            .Replace("}}", "}]}");
+
+        return JsonSerializer.Deserialize<MyMosqResponseDTO>(json: finaleMessage).PrayerTimes;
+    }
+
+    private async IAsyncEnumerable<string> readResponseMessages(string externalID, [EnumeratorCancellation] CancellationToken cancellationToken)
+    {
+        using IWebSocketClient webSocketClient = webSocketClientFactory.CreateWebSocketClient();
+        await webSocketClient.ConnectAsync(new Uri(URL), cancellationToken);
 
         string message = $$"""
         {
@@ -35,54 +64,40 @@ public class MyMosqApiService(
         """;
 
         var bytesToSend = Encoding.UTF8.GetBytes(message);
-        await _webSocketClient.SendAsync(new ArraySegment<byte>(bytesToSend), WebSocketMessageType.Text, true, cancellationToken);
+        var arraySegment = new ArraySegment<byte>(bytesToSend);
+        await webSocketClient.SendAsync(arraySegment, WebSocketMessageType.Text, true, cancellationToken);
 
         byte[] buffer = new byte[1024];
-        string finaleMessage = "";
-
-        while (_webSocketClient.State == WebSocketState.Open)
+        while (webSocketClient.State == WebSocketState.Open)
         {
             WebSocketReceiveResult result;
             do
             {
+                cancellationToken.ThrowIfCancellationRequested();
+
                 CancellationToken token = new CancellationTokenSource(1000).Token;
                 try
                 {
-                    result = await _webSocketClient.ReceiveAsync(new ArraySegment<byte>(buffer), token);
+                    result = await webSocketClient.ReceiveAsync(new ArraySegment<byte>(buffer), token);
                 }
                 catch { break; }
 
-                string currentMessage = Encoding.UTF8.GetString(buffer, 0, result.Count);
-
-                if (currentMessage.Contains("Asr"))
-                {
-                    finaleMessage +=
-                        currentMessage
-                        .Replace("""{"t":"d","d":{"r":2,"b":{"s":"ok","d":""", "")
-                        .Replace("}}}}}", "}}")
-                        ;
-                }
+                yield return Encoding.UTF8.GetString(buffer, 0, result.Count);
             }
             while (!result.EndOfMessage);
         }
+    }
 
-        finaleMessage =
-            Regex.Replace(finaleMessage,
-                pattern: $$$"""
-                            "{{{date.Year}}}[0-9][0-9][0-9][0-9]":{
-                            """,
-                replacement: "{")
-            .Replace(
-                oldValue:
-                    """
-                    {{"Asr"
-                    """,
-                newValue:
-                    """
-                    {"prayerTimes":[{"Asr"
-                    """)
-            .Replace("}}", "}]}");
+    public async Task<bool> ValidateData(string externalID, CancellationToken cancellationToken)
+    {
+        List<string> responseMessages = await readResponseMessages(externalID, cancellationToken).ToListAsync(cancellationToken);
 
-        return JsonSerializer.Deserialize<MyMosqResponseDTO>(json: finaleMessage).PrayerTimes;
+        // invalid pages send normal responses but don't contain any time data
+        if (responseMessages.Count == 2 && responseMessages[1].EndsWith("\"d\":null}}}"))
+        {
+            return false;
+        }
+
+        return true;
     }
 }

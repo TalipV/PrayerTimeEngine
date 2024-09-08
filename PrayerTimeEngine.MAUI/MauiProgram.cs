@@ -83,14 +83,13 @@ namespace PrayerTimeEngine;
  * - Consistent naming of awaitable methods with or without Async suffix
  * - Also check navigation properties back and forth in Equals override? Mixed approaches currently
  * - Change "DBAccess" to "Repository" and make sure the code there really is only about db access / repository
- */
-
-/* TODO late:
  * - Check for possibly unsafe concurrent actions (fast user interactions, app crashes and other special cases) 
+ * - Make MyMosqApiService more robust and try to read inputs as jsons
  * - Logging
  * - Comments
  * - Translation
  * - Check MVVM
+ * - CancellationTokens implementieren, die default setzen
  */
 
 /* TODO tests:

@@ -66,6 +66,9 @@
     <None Update="TestData\MyMosqTestData\MyMosq_WebSocketMessage_20240830_1239.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="TestData\MyMosqTestData\MyMosq_WebSocketMessage_20240830_InvalidMosqueID.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="TestData\SemerkandTestData\Semerkand_TestCityData_Austria.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

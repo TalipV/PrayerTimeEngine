@@ -17,8 +17,8 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
                 "PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities.DynamicProfile",
                 typeof(DynamicProfile),
                 baseEntityType,
-                discriminatorProperty: "IsMosqueProfile",
-                discriminatorValue: false);
+                discriminatorProperty: "Discriminator",
+                discriminatorValue: "DynamicProfile");
 
             return runtimeEntityType;
         }
