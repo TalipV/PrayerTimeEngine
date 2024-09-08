@@ -27,4 +27,5 @@ public interface IProfileService
     List<GenericSettingConfiguration> GetActiveComplexTimeConfigs(DynamicProfile profile);
     Task<MosqueProfile> CreateNewMosqueProfile(EMosquePrayerTimeProviderType selectedItem, string externalID, CancellationToken cancellationToken);
     DateTimeZone GetDateTimeZone(Profile profile);
+    Task ChangeProfileName(Profile profile, string newProfileName, CancellationToken cancellationToken);
 }

@@ -4,7 +4,6 @@ using PrayerTimeEngine.Core.Common;
 using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Models;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers;
-using PrayerTimeEngine.Core.Domain.Models;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Interfaces;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
 using System.Collections.Concurrent;
@@ -19,15 +18,15 @@ public class DynamicPrayerTimeProviderManager(
         IEnumerable<IPrayerTimeCacheCleaner> cacheCleaners
     ) : IDynamicPrayerTimeProviderManager
 {
-    private readonly ConcurrentDictionary<(ZonedDateTime, int), (Profile, PrayerTimesCollection)> _cachedDateAndProfileIDToPrayerTimeBundle = new();
+    private readonly ConcurrentDictionary<(ZonedDateTime, int), (Profile, DynamicPrayerTimesSet)> _cachedDateAndProfileIDToPrayerTimeBundle = new();
 
     private bool tryGetCachedCalculation(
         Profile profile,
         ZonedDateTime date,
-        out PrayerTimesCollection prayerTimeEntity)
+        out DynamicPrayerTimesSet prayerTimeEntity)
     {
         // no cache
-        if (!_cachedDateAndProfileIDToPrayerTimeBundle.TryGetValue((date, profile.ID), out (Profile, PrayerTimesCollection) cachedValue))
+        if (!_cachedDateAndProfileIDToPrayerTimeBundle.TryGetValue((date, profile.ID), out (Profile, DynamicPrayerTimesSet) cachedValue))
         {
             prayerTimeEntity = null;
             return false;
@@ -44,7 +43,7 @@ public class DynamicPrayerTimeProviderManager(
         return true;
     }
 
-    public async Task<PrayerTimesCollection> CalculatePrayerTimesAsync(int profileID, ZonedDateTime date, CancellationToken cancellationToken)
+    public async Task<DynamicPrayerTimesSet> CalculatePrayerTimesAsync(int profileID, ZonedDateTime date, CancellationToken cancellationToken)
     {
         date = date.LocalDateTime.Date.AtStartOfDayInZone(date.Zone);
 
@@ -54,13 +53,13 @@ public class DynamicPrayerTimeProviderManager(
         DynamicProfile dynamicProfile = profile as DynamicProfile
             ?? throw new Exception($"The Profile with the ID '{profileID}' is not a {nameof(DynamicProfile)}");
 
-        if (tryGetCachedCalculation(dynamicProfile, date, out PrayerTimesCollection prayerTimeEntity))
+        if (tryGetCachedCalculation(dynamicProfile, date, out DynamicPrayerTimesSet prayerTimeEntity))
         {
             prayerTimeEntity.DataCalculationTimestamp = systemInfoService.GetCurrentZonedDateTime();
             return prayerTimeEntity;
         }
 
-        prayerTimeEntity = new PrayerTimesCollection();
+        prayerTimeEntity = new DynamicPrayerTimesSet();
 
         var complexTypeCalculations =
             await calculateInternal(dynamicProfile, date, cancellationToken).ConfigureAwait(false);
@@ -149,7 +148,7 @@ public class DynamicPrayerTimeProviderManager(
         return (await Task.WhenAll(calculatorTasks).ConfigureAwait(false)).SelectMany(x => x).ToList();
     }
 
-    private IEnumerable<(ETimeType, ZonedDateTime?)> calculateSimpleTypes(DynamicProfile dynamicProfile, PrayerTimesCollection prayerTimeEntity)
+    private IEnumerable<(ETimeType, ZonedDateTime?)> calculateSimpleTypes(DynamicProfile dynamicProfile, DynamicPrayerTimesSet prayerTimeEntity)
     {
         if (prayerTimeEntity.Dhuhr?.Start is not null
             && profileService.GetTimeConfig(dynamicProfile, ETimeType.DuhaEnd) is GenericSettingConfiguration duhaConfig

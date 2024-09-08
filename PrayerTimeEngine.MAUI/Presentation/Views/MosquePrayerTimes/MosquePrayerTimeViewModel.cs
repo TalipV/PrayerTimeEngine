@@ -4,8 +4,9 @@ using PrayerTimeEngine.Presentation.Pages.Main;
 using PropertyChanged;
 using PrayerTimeEngine.Core.Domain.Models;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Management;
+using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Models;
 
-namespace PrayerTimeEngine.Presentation.Views.MosquePrayerTime;
+namespace PrayerTimeEngine.Presentation.Views.MosquePrayerTimes;
 
 [AddINotifyPropertyChangedInterface]
 public class MosquePrayerTimeViewModel(
@@ -14,24 +15,22 @@ public class MosquePrayerTimeViewModel(
 {
     public MainPageViewModel MainPageViewModel { get; set; }
     public Profile Profile { get; set; }
-    public PrayerTimesCollection PrayerTimesCollection { get; set; }
+    public IPrayerTimesSet PrayerTimesSet { get; set; }
 
     public AbstractPrayerTime GetDisplayPrayerTime(Instant instant)
     {
-        var prayerTimeBundle = this.PrayerTimesCollection;
-
-        if (prayerTimeBundle is null)
+        if (PrayerTimesSet is not MosquePrayerTimesSet mosquePrayerTimesSet)
         {
             return null;
         }
 
-        return prayerTimeBundle.AllPrayerTimes.FirstOrDefault(x => x.Start?.ToInstant() <= instant && instant <= x.End?.ToInstant())
-            ?? prayerTimeBundle.AllPrayerTimes.OrderBy(x => x.Start?.ToInstant()).FirstOrDefault(x => x.Start?.ToInstant() > instant);
+        // TODO
+        return null;
     }
 
     public async Task RefreshData(ZonedDateTime zonedDateTime, CancellationToken cancellationToken)
     {
-        PrayerTimesCollection =
+        PrayerTimesSet =
             await mosquePrayerTimeProviderManager.CalculatePrayerTimesAsync(
                 Profile.ID,
                 zonedDateTime,

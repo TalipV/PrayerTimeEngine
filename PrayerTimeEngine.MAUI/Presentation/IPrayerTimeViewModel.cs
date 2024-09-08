@@ -9,7 +9,7 @@ public interface IPrayerTimeViewModel
 {
     MainPageViewModel MainPageViewModel { get; set; }
     Profile Profile { get; set; }
-    PrayerTimesCollection PrayerTimesCollection { get; set; }
+    IPrayerTimesSet PrayerTimesSet { get; set; }
 
     Task RefreshData(ZonedDateTime zonedDateTime, CancellationToken cancellationToken);
     AbstractPrayerTime GetDisplayPrayerTime(Instant instant);

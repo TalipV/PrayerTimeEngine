@@ -147,6 +147,8 @@ public class ProfileDBAccess(
                 dynamicProfile.PlaceInfo.ProfileID = dynamicProfile.ID;
                 dynamicProfile.PlaceInfo.Profile = dynamicProfile;
 
+                dynamicProfile.Name = $"{dynamicProfile.PlaceInfo?.City ?? "-"}, {dynamicProfile.SequenceNo}";
+
                 await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
             }
             finally
@@ -247,7 +249,7 @@ public class ProfileDBAccess(
     {
         using (AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken))
         {
-            MosqueProfile newMosqueProfile = new MosqueProfile
+            var newMosqueProfile = new MosqueProfile
             {
                 Name = $"{providerType}: {externalID}",
                 ExternalID = externalID,
@@ -258,6 +260,29 @@ public class ProfileDBAccess(
             await dbContext.SaveChangesAsync(cancellationToken);
 
             return newMosqueProfile;
+        }
+    }
+
+    public async Task ChangeProfileName(Profile inputProfile, string newProfileName, CancellationToken cancellationToken)
+    {
+        using (AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken))
+        {
+            Profile trackedProfile =
+                await dbContext.Profiles
+                    .FirstOrDefaultAsync(x => x.ID == inputProfile.ID, cancellationToken)
+                    .ConfigureAwait(false);
+            try
+            {
+                trackedProfile.Name = newProfileName;
+                await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+            }
+            finally
+            {
+                // or a new db context for this reloading stuff?
+                dbContext.ChangeTracker.Clear();
+
+                await dbContext.Entry(inputProfile).ReloadAsync(cancellationToken).ConfigureAwait(false);
+            }
         }
     }
 }

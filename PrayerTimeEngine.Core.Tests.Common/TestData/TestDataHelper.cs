@@ -5,7 +5,6 @@ using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Models;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Models;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Muwaqqit.Models;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Semerkand.Models;
-using PrayerTimeEngine.Core.Domain.Models;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Models;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
 
@@ -210,9 +209,9 @@ public static class TestDataHelper
         return profile;
     }
 
-    public static PrayerTimesCollection CreateNewTestPrayerTimesBundle()
+    public static DynamicPrayerTimesSet CreateNewTestPrayerTimesBundle()
     {
-        var bundle = new PrayerTimesCollection();
+        var bundle = new DynamicPrayerTimesSet();
         var zone = EUROPE_VIENNA_TIME_ZONE;
 
         bundle.Fajr.Start = new LocalDateTime(2023, 1, 1, 2, 0, 0).InZone(zone, Resolvers.StrictResolver);

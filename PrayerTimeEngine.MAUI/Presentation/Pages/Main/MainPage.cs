@@ -2,10 +2,11 @@
 using NodaTime;
 using OnScreenSizeMarkup.Maui.Helpers;
 using PrayerTimeEngine.Core.Common;
-using PrayerTimeEngine.Core.Domain.Models;
+using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Models;
+using PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
 using PrayerTimeEngine.Presentation.Services;
 using PrayerTimeEngine.Presentation.Views;
-using PrayerTimeEngine.Presentation.Views.MosquePrayerTime;
+using PrayerTimeEngine.Presentation.Views.MosquePrayerTimes;
 using PrayerTimeEngine.Presentation.Views.PrayerTimes;
 using UraniumUI.Material.Controls;
 
@@ -33,9 +34,9 @@ public partial class MainPage : ContentPage
         _systemInfoService = systemInfoService;
         _mainPageOptionsMenuService =
             new MainPageOptionsMenuService(
-                toastMessageService,
                 this,
                 viewModel,
+                toastMessageService,
                 MauiProgram.ServiceProvider.GetRequiredService<ILogger<MainPageOptionsMenuService>>(),
                 preferenceService);
 
@@ -54,7 +55,7 @@ public partial class MainPage : ContentPage
             .Add(
                 new TapGestureRecognizer
                 {
-                    Command = new Command(async () => await _mainPageOptionsMenuService.openGeneralOptionsMenu().ConfigureAwait(false)),
+                    Command = new Command(async () => await _mainPageOptionsMenuService.OpenGeneralOptionsMenu().ConfigureAwait(false)),
                     NumberOfTapsRequired = 2,
                 });
 
@@ -132,7 +133,7 @@ public partial class MainPage : ContentPage
         };
         _lastUpdatedTextInfo.SetBinding(
             Label.TextProperty,
-            new Binding($"{nameof(MainPageViewModel.CurrentProfileWithModel)}.{nameof(DynamicPrayerTimeViewModel.PrayerTimesCollection)}.{nameof(PrayerTimesCollection.DataCalculationTimestamp)}",
+            new Binding($"{nameof(MainPageViewModel.CurrentProfileWithModel)}.{nameof(IPrayerTimeViewModel.PrayerTimesSet)}.{nameof(DynamicPrayerTimesSet.DataCalculationTimestamp)}",
             stringFormat: "{0:dd.MM, HH:mm:ss}"));
         titleGrid.AddWithSpan(_lastUpdatedTextInfo, row: 0, column: 0);
 
@@ -142,7 +143,7 @@ public partial class MainPage : ContentPage
             HorizontalTextAlignment = TextAlignment.End,
             VerticalTextAlignment = TextAlignment.Center
         };
-        _profileDisplayNameTextInfo.SetBinding(Label.TextProperty, nameof(MainPageViewModel.ProfileDisplayText));
+        _profileDisplayNameTextInfo.SetBinding(Label.TextProperty, $"{nameof(MainPageViewModel.CurrentProfile)}.{nameof(Profile.Name)}");
         titleGrid.AddWithSpan(_profileDisplayNameTextInfo, row: 0, column: 1);
 
         NavigationPage.SetTitleView(this, titleGrid);

@@ -1,6 +1,7 @@
 ﻿using NodaTime;
 using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Management;
+using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Models;
 using PrayerTimeEngine.Core.Domain.Models;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Interfaces;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
@@ -18,7 +19,7 @@ public class DynamicPrayerTimeViewModel(
 {
     public MainPageViewModel MainPageViewModel { get; set; }
     public Profile Profile { get; set; }
-    public PrayerTimesCollection PrayerTimesCollection { get; set; }
+    public IPrayerTimesSet PrayerTimesSet { get; set; }
 
     public bool ShowFajrGhalas { get; set; }
     public bool ShowFajrRedness { get; set; }
@@ -29,23 +30,26 @@ public class DynamicPrayerTimeViewModel(
 
     public AbstractPrayerTime GetDisplayPrayerTime(Instant instant)
     {
-        var prayerTimeBundle = this.PrayerTimesCollection;
-
-        // only show data when no information is lacking
-        if (prayerTimeBundle is null || prayerTimeBundle.AllPrayerTimes.Any(x => x.Start is null || x.End is null))
+        if (this.PrayerTimesSet is not DynamicPrayerTimesSet dynamicPrayerTimesSet)
         {
             return null;
         }
 
-        return prayerTimeBundle.AllPrayerTimes.FirstOrDefault(x => x.Start.Value.ToInstant() <= instant && instant <= x.End.Value.ToInstant())
-            ?? prayerTimeBundle.AllPrayerTimes.OrderBy(x => x.Start.Value.ToInstant()).FirstOrDefault(x => x.Start.Value.ToInstant() > instant);
+        // only show data when no information is lacking
+        if (dynamicPrayerTimesSet is null || dynamicPrayerTimesSet.AllPrayerTimes.Any(x => x.Start is null || x.End is null))
+        {
+            return null;
+        }
+
+        return dynamicPrayerTimesSet.AllPrayerTimes.FirstOrDefault(x => x.Start.Value.ToInstant() <= instant && instant <= x.End.Value.ToInstant())
+            ?? dynamicPrayerTimesSet.AllPrayerTimes.OrderBy(x => x.Start.Value.ToInstant()).FirstOrDefault(x => x.Start.Value.ToInstant() > instant);
     }
 
     public async Task RefreshData(ZonedDateTime zonedDateTime, CancellationToken cancellationToken)
     {
         await showHideSpecificTimes(Profile as DynamicProfile);
 
-        PrayerTimesCollection =
+        PrayerTimesSet =
             await dynamicPrayerTimeProviderManager.CalculatePrayerTimesAsync(
                 Profile.ID,
                 zonedDateTime,

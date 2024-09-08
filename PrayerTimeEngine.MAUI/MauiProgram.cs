@@ -37,7 +37,7 @@ using PrayerTimeEngine.Presentation.Pages.Settings.SettingsHandler;
 using PrayerTimeEngine.Presentation.Services;
 using PrayerTimeEngine.Presentation.Services.Navigation;
 using PrayerTimeEngine.Presentation.Services.SettingsContentPageFactory;
-using PrayerTimeEngine.Presentation.Views.MosquePrayerTime;
+using PrayerTimeEngine.Presentation.Views.MosquePrayerTimes;
 using PrayerTimeEngine.Presentation.Views.PrayerTimes;
 using PrayerTimeEngine.Services;
 using Refit;
@@ -90,6 +90,7 @@ namespace PrayerTimeEngine;
  * - Translation
  * - Check MVVM
  * - CancellationTokens implementieren, die default setzen
+ * - "MosquePrayerTimes" and variations used for all kinds of things! Better names!
  */
 
 /* TODO tests:

@@ -36,7 +36,7 @@ internal class MainPageOptionsMenuService(
     private const string _backText = "Zurück";
     private const string _cancelText = "Abbrechen";
 
-    public async Task openGeneralOptionsMenu()
+    public async Task OpenGeneralOptionsMenu()
     {
         bool doRepeat;
         try
@@ -140,9 +140,6 @@ internal class MainPageOptionsMenuService(
                                 if (!await page.DisplayAlert("Bestätigung", "Daten wirklich zurücksetzen?", "Ja", _cancelText))
                                     break;
 
-                                //if (File.Exists(AppConfig.DATABASE_PATH))
-                                //    File.Delete(AppConfig.DATABASE_PATH);
-
                                 preferenceService.SetDoReset();
 
                                 Application.Current.Quit();
@@ -177,11 +174,13 @@ internal class MainPageOptionsMenuService(
                             destruction: null,
                             "Neues Profil erstellen",
                             "Neues Moschee-Profil erstellen",
+                            "Profilnamen bearbeiten",
                             "Profil löschen"))
         {
             case "Neues Profil erstellen":
                 await viewModel.CreateNewProfile();
                 break;
+
             case "Neues Moschee-Profil erstellen":
 
                 var items = Enum.GetValues(typeof(EMosquePrayerTimeProviderType)).OfType<EMosquePrayerTimeProviderType>().ToList();
@@ -208,6 +207,22 @@ internal class MainPageOptionsMenuService(
                 }
 
                 break;
+
+            case "Profilnamen bearbeiten":
+                string currentProfileName = viewModel.CurrentProfile?.Name ?? "";
+                string newProfileName = 
+                    await page.DisplayPromptAsync("Profilname:",
+                    message: "",
+                    initialValue: currentProfileName,
+                    keyboard: Keyboard.Text) ?? "";
+
+                if (!string.IsNullOrWhiteSpace(newProfileName))
+                {
+                    await viewModel.ChangeProfileName(newProfileName);
+                }
+
+                break;
+
             case "Profil löschen":
                 await viewModel.DeleteCurrentProfile();
                 break;
