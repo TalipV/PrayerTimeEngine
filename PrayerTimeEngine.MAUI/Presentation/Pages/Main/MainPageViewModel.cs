@@ -16,7 +16,7 @@ using PrayerTimeEngine.Presentation.Pages.DatabaseTables;
 using PrayerTimeEngine.Presentation.Pages.Settings.SettingsHandler;
 using PrayerTimeEngine.Presentation.Services;
 using PrayerTimeEngine.Presentation.Services.Navigation;
-using PrayerTimeEngine.Presentation.Views.MosquePrayerTime;
+using PrayerTimeEngine.Presentation.Views.MosquePrayerTimes;
 using PrayerTimeEngine.Presentation.Views.PrayerTimes;
 using PrayerTimeEngine.Services.PrayerTimeSummaryNotification;
 using PropertyChanged;
@@ -57,7 +57,6 @@ public class MainPageViewModel(
             return CurrentProfileWithModel?.Profile;
         }
     }
-    public string ProfileDisplayText => this.CurrentProfile?.GetDisplayText() ?? "-";
 
     [OnChangedMethod(nameof(onSelectedPlaceChanged))]
     public string SelectedPlaceText { get; set; }
@@ -288,6 +287,26 @@ public class MainPageViewModel(
 
             return $"ERROR: {exception.Message}";
         }
+    }
+
+    public Task ChangeProfileName(string newProfileName)
+    {
+        CancellationToken cancellationToken = default;
+
+        try
+        {
+            if (CurrentProfile != null)
+            {
+                return profileService.ChangeProfileName(CurrentProfile, newProfileName, cancellationToken);
+            }
+        }
+        catch (Exception exception)
+        {
+            logger.LogError(exception, "Error while changing the name of a profile");
+            toastMessageService.ShowError(exception.Message);
+        }
+
+        return Task.CompletedTask;
     }
 
     #endregion public methods

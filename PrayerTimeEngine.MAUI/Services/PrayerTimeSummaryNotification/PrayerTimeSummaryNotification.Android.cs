@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using NodaTime;
 using PrayerTimeEngine.Core.Common;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Management;
+using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Models;
 using PrayerTimeEngine.Core.Domain.Models;
 using PrayerTimeEngine.Core.Domain.Models.PrayerTimes;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Interfaces;
@@ -140,7 +141,7 @@ public class PrayerTimeSummaryNotification : Service
             _systemInfoService.GetCurrentInstant()
                 .InZone(DateTimeZoneProviders.Tzdb[(profile as DynamicProfile).PlaceInfo.TimezoneInfo.Name]);
 
-        PrayerTimesCollection prayerTimeBundle = 
+        DynamicPrayerTimesSet prayerTimeBundle = 
             await _prayerTimeDynamicPrayerTimeProviderManager.CalculatePrayerTimesAsync(
                 profile.ID, 
                 now, 

@@ -1,17 +1,16 @@
 ﻿using NodaTime;
 using PrayerTimeEngine.Core.Common.Enum;
+using PrayerTimeEngine.Core.Domain.Models;
 using PrayerTimeEngine.Core.Domain.Models.PrayerTimes;
 using PropertyChanged;
-using System.Text.Json.Serialization;
 
-namespace PrayerTimeEngine.Core.Domain.Models;
+namespace PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Models;
 
 [AddINotifyPropertyChangedInterface]
-public class PrayerTimesCollection
+public class DynamicPrayerTimesSet : IPrayerTimesSet
 {
     public ZonedDateTime? DataCalculationTimestamp { get; set; }
 
-    [JsonIgnore]
     public List<AbstractPrayerTime> AllPrayerTimes
     {
         get
@@ -29,15 +28,15 @@ public class PrayerTimesCollection
 
     public override bool Equals(object obj)
     {
-        if (obj is not PrayerTimesCollection otherPrayerTimeBundle)
+        if (obj is not DynamicPrayerTimesSet otherDynamicPrayerTimesSet)
             return false;
 
-        return this.Fajr.Equals(otherPrayerTimeBundle.Fajr)
-            && this.Duha.Equals(otherPrayerTimeBundle.Duha)
-            && this.Dhuhr.Equals(otherPrayerTimeBundle.Dhuhr)
-            && this.Asr.Equals(otherPrayerTimeBundle.Asr)
-            && this.Maghrib.Equals(otherPrayerTimeBundle.Maghrib)
-            && this.Isha.Equals(otherPrayerTimeBundle.Isha);
+        return Fajr.Equals(otherDynamicPrayerTimesSet.Fajr)
+            && Duha.Equals(otherDynamicPrayerTimesSet.Duha)
+            && Dhuhr.Equals(otherDynamicPrayerTimesSet.Dhuhr)
+            && Asr.Equals(otherDynamicPrayerTimesSet.Asr)
+            && Maghrib.Equals(otherDynamicPrayerTimesSet.Maghrib)
+            && Isha.Equals(otherDynamicPrayerTimesSet.Isha);
     }
 
     public override int GetHashCode()

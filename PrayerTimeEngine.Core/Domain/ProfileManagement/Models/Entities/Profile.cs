@@ -16,8 +16,6 @@ public abstract class Profile : IInsertedAt
     public int SequenceNo { get; set; }
     public Instant? InsertInstant { get; set; }
 
-    public abstract string GetDisplayText();
-
     public override bool Equals(object obj)
     {
         if (obj is not Profile otherProfile)

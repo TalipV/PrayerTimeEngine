@@ -2,7 +2,6 @@
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Interfaces;
 using NSubstitute;
 using NodaTime;
-using PrayerTimeEngine.Core.Domain.Models;
 using PrayerTimeEngine.Core.Common.Enum;
 using Microsoft.Extensions.Logging;
 using PrayerTimeEngine.Core.Tests.Common.TestData;
@@ -69,7 +68,7 @@ public class DynamicPrayerTimeProviderManagerTests : BaseTest
         muwaqqitPrayerTimeServiceMock.GetUnsupportedTimeTypes().Returns([]);
 
         // ACT
-        PrayerTimesCollection result = await _dynamicPrayerTimeProviderManager.CalculatePrayerTimesAsync(profile.ID, zonedDate, default);
+        DynamicPrayerTimesSet result = await _dynamicPrayerTimeProviderManager.CalculatePrayerTimesAsync(profile.ID, zonedDate, default);
 
         // ASSERT
         result.Should().NotBeNull();

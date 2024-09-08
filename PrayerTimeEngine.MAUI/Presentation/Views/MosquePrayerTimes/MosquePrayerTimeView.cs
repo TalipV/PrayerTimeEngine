@@ -1,7 +1,7 @@
 ﻿using OnScreenSizeMarkup.Maui.Helpers;
-using PrayerTimeEngine.Core.Domain.Models;
+using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Models;
 
-namespace PrayerTimeEngine.Presentation.Views.MosquePrayerTime;
+namespace PrayerTimeEngine.Presentation.Views.MosquePrayerTimes;
 
 public class MosquePrayerTimeView : ContentView
 {
@@ -44,29 +44,28 @@ public class MosquePrayerTimeView : ContentView
 
         int startRowNo = 1;
 
-        string bindingBeginning = $"{nameof(MosquePrayerTimeViewModel.PrayerTimesCollection)}";
-
-        string bindingText = $"{nameof(MosquePrayerTimeViewModel.PrayerTimesCollection)}.{nameof(PrayerTimesCollection.Fajr)}.{nameof(AbstractPrayerTime.DurationDisplayText)}";
+        string bindingText = $"{nameof(MosquePrayerTimeViewModel.PrayerTimesSet)}.{nameof(MosquePrayerTimesSet.Fajr)}.{nameof(MosquePrayerTime.Start)}";
         addPrayerTimeUI(mainGrid, "Fajr", durationBinding: bindingText,
             startRowNo: startRowNo, startColumnNo: 0);
 
-        //bindingText = $"{nameof(MosquePrayerTimeViewModel.PrayerTimesCollection)}.{nameof(PrayerTimesCollection.Jumuah)}.{nameof(AbstractPrayerTime.DurationDisplayText)}";
-        //addPrayerTimeUI(mainGrid, "Duha", durationBinding: $"{bindingText}.{nameof(AbstractPrayerTime.DurationDisplayText)}",
-        //    startRowNo: startRowNo, startColumnNo: 3);
+        bindingText = $"{nameof(MosquePrayerTimeViewModel.PrayerTimesSet)}.{nameof(MosquePrayerTimesSet.Jumuah)}.{nameof(MosquePrayerTime.Start)}";
+        addPrayerTimeUI(mainGrid, "Jumu'ah", durationBinding: bindingText,
+            startRowNo: startRowNo, startColumnNo: 3,
+            subtime1Name: "Jumuah2", subtime1Binding: $"{nameof(MosquePrayerTimeViewModel.PrayerTimesSet)}.{nameof(MosquePrayerTimesSet.Jumuah2)}.{nameof(MosquePrayerTime.Start)}");
 
-        bindingText = $"{nameof(MosquePrayerTimeViewModel.PrayerTimesCollection)}.{nameof(PrayerTimesCollection.Dhuhr)}.{nameof(AbstractPrayerTime.DurationDisplayText)}";
+        bindingText = $"{nameof(MosquePrayerTimeViewModel.PrayerTimesSet)}.{nameof(MosquePrayerTimesSet.Dhuhr)}.{nameof(MosquePrayerTime.Start)}";
         addPrayerTimeUI(mainGrid, "Dhuhr", durationBinding: bindingText,
             startRowNo: startRowNo + 4, startColumnNo: 0);
 
-        bindingText = $"{nameof(MosquePrayerTimeViewModel.PrayerTimesCollection)}.{nameof(PrayerTimesCollection.Asr)}.{nameof(AbstractPrayerTime.DurationDisplayText)}";
+        bindingText = $"{nameof(MosquePrayerTimeViewModel.PrayerTimesSet)}.{nameof(MosquePrayerTimesSet.Asr)}.{nameof(MosquePrayerTime.Start)}";
         addPrayerTimeUI(mainGrid, "Asr", durationBinding: bindingText,
             startRowNo: startRowNo + 4, startColumnNo: 3);
 
-        bindingText = $"{nameof(MosquePrayerTimeViewModel.PrayerTimesCollection)}.{nameof(PrayerTimesCollection.Maghrib)}.{nameof(AbstractPrayerTime.DurationDisplayText)}";
+        bindingText = $"{nameof(MosquePrayerTimeViewModel.PrayerTimesSet)}.{nameof(MosquePrayerTimesSet.Maghrib)}.{nameof(MosquePrayerTime.Start)}";
         addPrayerTimeUI(mainGrid, "Maghrib", durationBinding: bindingText,
             startRowNo: startRowNo + 8, startColumnNo: 0);
 
-        bindingText = $"{nameof(MosquePrayerTimeViewModel.PrayerTimesCollection)}.{nameof(PrayerTimesCollection.Isha)}.{nameof(AbstractPrayerTime.DurationDisplayText)}";
+        bindingText = $"{nameof(MosquePrayerTimeViewModel.PrayerTimesSet)}.{nameof(MosquePrayerTimesSet.Isha)}.{nameof(MosquePrayerTime.Start)}";
         addPrayerTimeUI(mainGrid, "Isha", durationBinding: bindingText,
             startRowNo: startRowNo + 8, startColumnNo: 3);
 
@@ -77,7 +76,9 @@ public class MosquePrayerTimeView : ContentView
         Grid grid,
         string prayerName,
         string durationBinding,
-        int startRowNo, int startColumnNo)
+        int startRowNo, int startColumnNo,
+        string subtime1Binding = null, string subtime1Name = null,
+        string subtime2Binding = null, string subtime2Name = null)
     {
         List<Label> timeTextViews = [];
         List<Label> timeDisplayTextViews = [];
@@ -105,6 +106,57 @@ public class MosquePrayerTimeView : ContentView
 
         timeTextViews.Add(prayerNameLabel);
         timeDisplayTextViews.Add(prayerDurationLabel);
+
+        if (!string.IsNullOrEmpty(subtime1Binding))
+        {
+            var subtime1Label = new Label
+            {
+                Text = subtime1Name,
+                TextColor = Colors.Black,
+                HorizontalOptions = LayoutOptions.Start,
+                VerticalOptions = LayoutOptions.Center
+            };
+
+            var subtime1DisplayText = new Label
+            {
+                TextColor = Colors.Black,
+                HorizontalOptions = LayoutOptions.Center,
+                VerticalOptions = LayoutOptions.Center
+            };
+            subtime1DisplayText.SetBinding(Label.TextProperty, new Binding(subtime1Binding, stringFormat: "{0:HH:mm:ss}"));
+
+            grid.AddWithSpan(subtime1Label, startRowNo + 2, startColumnNo);
+            grid.AddWithSpan(subtime1DisplayText, startRowNo + 2, startColumnNo + 1);
+
+            subTimeTextViews.Add(subtime1Label);
+            subTimeDisplayTextViews.Add(subtime1DisplayText);
+        }
+
+        if (!string.IsNullOrEmpty(subtime2Binding))
+        {
+            var subtime2Label = new Label
+            {
+                Text = subtime2Name,
+                TextColor = Colors.Black,
+                HorizontalOptions = LayoutOptions.Start,
+                VerticalOptions = LayoutOptions.Start
+            };
+
+            var subtime2DisplayText = new Label
+            {
+                TextColor = Colors.Black,
+                HorizontalOptions = LayoutOptions.Center,
+                VerticalOptions = LayoutOptions.Start
+            };
+
+            subtime2DisplayText.SetBinding(Label.TextProperty, new Binding(subtime2Binding, stringFormat: "{0:HH:mm:ss}"));
+
+            grid.AddWithSpan(subtime2Label, startRowNo + 3, startColumnNo);
+            grid.AddWithSpan(subtime2DisplayText, startRowNo + 3, startColumnNo + 1);
+
+            subTimeTextViews.Add(subtime2Label);
+            subTimeDisplayTextViews.Add(subtime2DisplayText);
+        }
 
         if (OperatingSystem.IsWindows())
         {

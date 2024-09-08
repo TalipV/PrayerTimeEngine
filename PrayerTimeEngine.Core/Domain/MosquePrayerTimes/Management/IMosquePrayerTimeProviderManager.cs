@@ -1,11 +1,11 @@
 ﻿using NodaTime;
 using PrayerTimeEngine.Core.Common.Enum;
-using PrayerTimeEngine.Core.Domain.Models;
+using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Models;
 
 namespace PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Management;
 
 public interface IMosquePrayerTimeProviderManager
 {
-    public Task<PrayerTimesCollection> CalculatePrayerTimesAsync(int profileID, ZonedDateTime zoneDate, CancellationToken cancellationToken);
+    public Task<MosquePrayerTimesSet> CalculatePrayerTimesAsync(int profileID, ZonedDateTime zoneDate, CancellationToken cancellationToken);
     Task<bool> ValidateData(EMosquePrayerTimeProviderType mosquePrayerTimeProviderType, string externalID, CancellationToken cancellationToken);
 }

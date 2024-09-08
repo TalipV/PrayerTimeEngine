@@ -1,4 +1,4 @@
-﻿using PrayerTimeEngine.Presentation.Views.MosquePrayerTime;
+﻿using PrayerTimeEngine.Presentation.Views.MosquePrayerTimes;
 using PrayerTimeEngine.Presentation.Views.PrayerTimes;
 
 namespace PrayerTimeEngine.Presentation;

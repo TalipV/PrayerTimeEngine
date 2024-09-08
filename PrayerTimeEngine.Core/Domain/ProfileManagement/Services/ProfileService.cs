@@ -385,4 +385,9 @@ public class ProfileService(
             _ => throw new InvalidOperationException($"Unknown profile type '{profile.GetType().FullName}'")
         };
     }
+
+    public Task ChangeProfileName(Profile profile, string newProfileName, CancellationToken cancellationToken)
+    {
+        return profileDBAccess.ChangeProfileName(profile, newProfileName, cancellationToken);
+    }
 }

@@ -7,11 +7,6 @@ public class MosqueProfile : Profile
     public EMosquePrayerTimeProviderType MosqueProviderType { get; set; } = EMosquePrayerTimeProviderType.None;
     public string ExternalID { get; set; }
 
-    public override string GetDisplayText()
-    {
-        return this.Name;
-    }
-
     public override bool Equals(object obj)
     {
         if (obj is not MosqueProfile otherProfile)
