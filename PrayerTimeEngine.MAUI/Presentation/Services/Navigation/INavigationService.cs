@@ -22,11 +22,6 @@ public class NavigationService(
             [typeof(DatabaseTablesPageViewModel)] = typeof(DatabaseTablesPage),
         };
 
-    private static Dictionary<Type, Type> getMappingValues()
-    {
-        return ;
-    }
-
     public async Task NavigateTo<TViewModel>(params object[] parameter) where TViewModel : CustomBaseViewModel
     {
         var targetType = _mapping[typeof(TViewModel)];
