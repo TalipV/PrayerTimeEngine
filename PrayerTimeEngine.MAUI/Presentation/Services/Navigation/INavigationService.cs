@@ -10,24 +10,21 @@ public interface INavigationService
     Task NavigateBack();
 }
 
-public class NavigationService : INavigationService
+public class NavigationService(
+        IServiceProvider serviceProvider
+    ) : INavigationService
 {
-    private readonly IServiceProvider _serviceProvider;
-    private readonly Dictionary<Type, Type> _mapping;
+    private readonly Dictionary<Type, Type> _mapping =
+        new()
+        {
+            [typeof(MainPageViewModel)] = typeof(MainPage),
+            [typeof(SettingsHandlerPageViewModel)] = typeof(SettingsHandlerPage),
+            [typeof(DatabaseTablesPageViewModel)] = typeof(DatabaseTablesPage),
+        };
 
-    public NavigationService(IServiceProvider serviceProvider)
+    private static Dictionary<Type, Type> getMappingValues()
     {
-        _serviceProvider = serviceProvider;
-        _mapping = [];
-
-        CreatePageViewModelMappings();
-    }
-
-    private void CreatePageViewModelMappings()
-    {
-        _mapping.Add(typeof(MainPageViewModel), typeof(MainPage));
-        _mapping.Add(typeof(SettingsHandlerPageViewModel), typeof(SettingsHandlerPage));
-        _mapping.Add(typeof(DatabaseTablesPageViewModel), typeof(DatabaseTablesPage));
+        return ;
     }
 
     public async Task NavigateTo<TViewModel>(params object[] parameter) where TViewModel : CustomBaseViewModel
@@ -36,7 +33,7 @@ public class NavigationService : INavigationService
 
         if (Application.Current.MainPage is NavigationPage navigationPage)
         {
-            var page = (Page)_serviceProvider.GetRequiredService(targetType);
+            var page = (Page)serviceProvider.GetRequiredService(targetType);
 
             if (page.BindingContext is TViewModel viewModel)
             {
