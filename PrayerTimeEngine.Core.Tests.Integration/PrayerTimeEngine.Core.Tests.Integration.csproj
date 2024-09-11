@@ -11,8 +11,11 @@
 
   <ItemGroup>
     <Compile Remove="Data\**" />
+    <Compile Remove="Domain\Management\**" />
     <EmbeddedResource Remove="Data\**" />
+    <EmbeddedResource Remove="Domain\Management\**" />
     <None Remove="Data\**" />
+    <None Remove="Domain\Management\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -35,11 +38,6 @@
     <ProjectReference Include="..\PrayerTimeEngine.Core.Tests.Common\PrayerTimeEngine.Core.Tests.Common.csproj" />
     <ProjectReference Include="..\PrayerTimeEngine.Core.Tests.Unit\PrayerTimeEngine.Core.Tests.Unit.csproj" />
     <ProjectReference Include="..\PrayerTimeEngine.Core\PrayerTimeEngine.Core.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Domain\DynamicPrayerTimeProviderManager\" />
-    <Folder Include="Domain\PlaceManagement\" />
   </ItemGroup>
 
   <ItemGroup>

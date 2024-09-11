@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 using PrayerTimeEngine.Core.Common.Attribute;
 using PrayerTimeEngine.Core.Common.Enum;
+using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes;
 
 namespace PrayerTimeEngine.Core.Domain;
 

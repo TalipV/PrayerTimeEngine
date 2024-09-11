@@ -1,4 +1,4 @@
-﻿using PrayerTimeEngine.Core.Common.Enum;
+﻿using PrayerTimeEngine.Core.Domain.MosquePrayerTimes;
 
 namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
 

@@ -8,6 +8,8 @@ using Microsoft.EntityFrameworkCore;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Models;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Models;
+using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes;
+using PrayerTimeEngine.Core.Domain.MosquePrayerTimes;
 
 namespace PrayerTimeEngine.Core.Tests.Unit.Domain.ProfileManagement;
 

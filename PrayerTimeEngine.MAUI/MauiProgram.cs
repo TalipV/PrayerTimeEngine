@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Maui;
+using CommunityToolkit.Maui.Markup;
 using MetroLog.MicrosoftExtensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -123,6 +124,7 @@ public static class MauiProgram
         MauiAppBuilder builder = MauiApp.CreateBuilder();
         builder
             .UseMauiApp<App>()
+            .UseMauiCommunityToolkitMarkup()
             .UseMauiCommunityToolkit(options =>
             {
                 options.SetShouldEnableSnackbarOnWindows(true);
@@ -324,6 +326,8 @@ public static class MauiProgram
 
     private static void addPresentationLayerServices(IServiceCollection serviceCollection)
     {
+        serviceCollection.AddTransient<IBrowser>(factory => Browser.Default);
+
         serviceCollection.AddTransient<INavigationService, NavigationService>();
         serviceCollection.AddTransient<ToastMessageService>();
 

@@ -7,6 +7,7 @@ using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Data.EntityFramework;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Models;
+using PrayerTimeEngine.Core.Domain.MosquePrayerTimes;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Management;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Interfaces;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Models;
@@ -27,6 +28,7 @@ namespace PrayerTimeEngine.Presentation.Pages.Main;
 [AddINotifyPropertyChangedInterface]
 public class MainPageViewModel(
         IDispatcher dispatcher,
+        IBrowser browser,
         ToastMessageService toastMessageService,
         ISystemInfoService systemInfoService,
         IDynamicPrayerTimeProviderFactory prayerTimeServiceFactory,
@@ -76,10 +78,8 @@ public class MainPageViewModel(
         }
     }
     public bool IsLoadingPrayerTimesOrSelectedPlace => IsLoadingPrayerTimes || IsLoadingSelectedPlace;
-    public bool IsNotLoadingPrayerTimesOrSelectedPlace => !IsLoadingPrayerTimesOrSelectedPlace;
 
     public bool IsLoadingSelectedPlace { get; set; }
-    public bool IsNotLoadingSelectedPlace => !IsLoadingSelectedPlace;
 
     [OnChangedMethod(nameof(onPlaceSearchTextChanged))]
     public string PlaceSearchText { get; set; }
@@ -307,6 +307,24 @@ public class MainPageViewModel(
         }
 
         return Task.CompletedTask;
+    }
+
+    public Task OpenMosqueInternetPage()
+    {
+        if (CurrentProfile is not MosqueProfile mosque)
+            return Task.CompletedTask;
+
+        string url = mosque.MosqueProviderType switch
+        {
+            EMosquePrayerTimeProviderType.Mawaqit => $"https://mawaqit.net/de/{mosque.ExternalID}",
+            EMosquePrayerTimeProviderType.MyMosq => $"https://mymosq.com/mosque/{mosque.ExternalID}",
+            _ => null
+        };
+
+        if (string.IsNullOrWhiteSpace(url))
+            return Task.CompletedTask;
+
+        return browser.OpenAsync(new Uri(url));
     }
 
     #endregion public methods

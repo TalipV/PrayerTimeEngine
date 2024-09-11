@@ -1,4 +1,4 @@
-﻿using PrayerTimeEngine.Core.Common.Enum;
+﻿using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes;
 
 namespace PrayerTimeEngine.Core.Common.Attribute;
 

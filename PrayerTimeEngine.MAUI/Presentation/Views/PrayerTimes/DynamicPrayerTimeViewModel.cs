@@ -28,8 +28,10 @@ public class DynamicPrayerTimeViewModel(
     public bool ShowIshtibaq { get; set; }
     public bool ShowMaghribSufficientTime { get; set; }
 
-    public AbstractPrayerTime GetDisplayPrayerTime(Instant instant)
+    public AbstractPrayerTime GetDisplayPrayerTime(ZonedDateTime zonedDateTime)
     {
+        Instant instant = zonedDateTime.ToInstant();
+
         if (this.PrayerTimesSet is not DynamicPrayerTimesSet dynamicPrayerTimesSet)
         {
             return null;
