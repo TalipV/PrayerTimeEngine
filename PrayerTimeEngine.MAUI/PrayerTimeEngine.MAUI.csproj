@@ -100,6 +100,7 @@
 
   <ItemGroup>
     <PackageReference Include="AsyncAwaitBestPractices" Version="8.0.0" />
+    <PackageReference Include="CommunityToolkit.Maui.Markup" Version="4.1.0" />
     <PackageReference Include="Debounce.Core" Version="1.0.0" />
     <PackageReference Include="MethodTimer.Fody" Version="3.2.2" PrivateAssets="All" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.8" />

@@ -1,12 +1,12 @@
-﻿using System.Net.WebSockets;
+﻿using NodaTime;
+using PrayerTimeEngine.Core.Data.WebSocket.Interfaces;
+using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.MyMosq.Interfaces;
+using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.MyMosq.Models.DTOs;
+using System.Net.WebSockets;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
-using NodaTime;
-using PrayerTimeEngine.Core.Data.WebSocket.Interfaces;
-using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.MyMosq.Interfaces;
-using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.MyMosq.Models.DTOs;
 
 namespace PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.MyMosq.Services;
 
@@ -42,7 +42,21 @@ public class MyMosqApiService(
                 newValue: "{\"prayerTimes\":[{\"Asr\"")
             .Replace("}}", "}]}");
 
-        return JsonSerializer.Deserialize<MyMosqResponseDTO>(json: finaleMessage).PrayerTimes;
+        var prayerTimes = JsonSerializer.Deserialize<MyMosqResponseDTO>(json: finaleMessage).PrayerTimes;
+        fixPrayerTimes(prayerTimes);
+        return prayerTimes;
+    }
+    public async Task<bool> ValidateData(string externalID, CancellationToken cancellationToken)
+    {
+        List<string> responseMessages = await readResponseMessages(externalID, cancellationToken).ToListAsync(cancellationToken);
+
+        // invalid pages send normal responses but don't contain any time data
+        if (responseMessages.Count == 2 && responseMessages[1].EndsWith("\"d\":null}}}"))
+        {
+            return false;
+        }
+
+        return true;
     }
 
     private async IAsyncEnumerable<string> readResponseMessages(string externalID, [EnumeratorCancellation] CancellationToken cancellationToken)
@@ -88,16 +102,37 @@ public class MyMosqApiService(
         }
     }
 
-    public async Task<bool> ValidateData(string externalID, CancellationToken cancellationToken)
+    /// <summary>
+    /// For some reason, the jumu'ah values provided by this API are always empty 
+    /// and the jumuah values are found in the dhuhr values of friday. 
+    /// This method makes fills all the jumu'ah values for each day with the Dhuhr value 
+    /// of the next friday.. and other things. 
+    /// </summary>
+    private static void fixPrayerTimes(List<MyMosqPrayerTimesDTO> prayerTimes)
     {
-        List<string> responseMessages = await readResponseMessages(externalID, cancellationToken).ToListAsync(cancellationToken);
-
-        // invalid pages send normal responses but don't contain any time data
-        if (responseMessages.Count == 2 && responseMessages[1].EndsWith("\"d\":null}}}"))
+        // replace "0:00" jumu'ah with NULL
+        foreach (var day in prayerTimes)
         {
-            return false;
+            if (day.Jumuah == new LocalTime(0, 0))
+                day.Jumuah = null;
+
+            if (day.Jumuah2 == new LocalTime(0, 0))
+                day.Jumuah2 = null;
         }
 
-        return true;
+        var fridays = prayerTimes
+            .Where(x => x.Date.DayOfWeek == IsoDayOfWeek.Friday)
+            .OrderBy(x => x.Date)
+            .ToList();
+
+        foreach (var day in prayerTimes)
+        {
+            MyMosqPrayerTimesDTO nextFriday = fridays.FirstOrDefault(f => f.Date > day.Date);
+
+            if (nextFriday != null)
+            {
+                day.Jumuah ??= nextFriday.Dhuhr;
+            }
+        }
     }
 }

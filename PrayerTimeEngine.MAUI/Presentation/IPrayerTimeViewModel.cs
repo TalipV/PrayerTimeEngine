@@ -12,5 +12,5 @@ public interface IPrayerTimeViewModel
     IPrayerTimesSet PrayerTimesSet { get; set; }
 
     Task RefreshData(ZonedDateTime zonedDateTime, CancellationToken cancellationToken);
-    AbstractPrayerTime GetDisplayPrayerTime(Instant instant);
+    AbstractPrayerTime GetDisplayPrayerTime(ZonedDateTime zonedDateTime);
 }

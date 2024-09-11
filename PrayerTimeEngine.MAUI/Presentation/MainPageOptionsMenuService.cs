@@ -1,7 +1,8 @@
 ﻿using CommunityToolkit.Maui.Storage;
 using Microsoft.Extensions.Logging;
 using PrayerTimeEngine.Core.Common;
-using PrayerTimeEngine.Core.Common.Enum;
+using PrayerTimeEngine.Core.Domain.MosquePrayerTimes;
+using PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
 using PrayerTimeEngine.Presentation.Pages.Main;
 using PrayerTimeEngine.Presentation.Services;
 
@@ -168,14 +169,23 @@ internal class MainPageOptionsMenuService(
 
     public async Task OpenProfileOptionsMenu()
     {
+        List<string> options = [
+                "Neues Profil erstellen",
+                "Neues Moschee-Profil erstellen",
+                "Profilnamen bearbeiten",
+                "Profil löschen"
+            ];
+
+        if (viewModel.CurrentProfile is MosqueProfile mosqueProfile)
+        {
+            options.Add("Internetseite der Moschee-Zeiten öffnen");
+        }
+
         switch (await page.DisplayActionSheet(
                             title: "Profilverwaltung",
                             cancel: "Abbrechen",
                             destruction: null,
-                            "Neues Profil erstellen",
-                            "Neues Moschee-Profil erstellen",
-                            "Profilnamen bearbeiten",
-                            "Profil löschen"))
+                            buttons: [.. options]))
         {
             case "Neues Profil erstellen":
                 await viewModel.CreateNewProfile();
@@ -225,6 +235,10 @@ internal class MainPageOptionsMenuService(
 
             case "Profil löschen":
                 await viewModel.DeleteCurrentProfile();
+                break;
+
+            case "Internetseite der Moschee-Zeiten öffnen":
+                await viewModel.OpenMosqueInternetPage();
                 break;
         }
     }

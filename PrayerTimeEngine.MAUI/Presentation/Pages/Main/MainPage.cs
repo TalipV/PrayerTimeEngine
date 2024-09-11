@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using CommunityToolkit.Maui.Markup;
+using Microsoft.Extensions.Logging;
 using NodaTime;
 using OnScreenSizeMarkup.Maui.Helpers;
 using PrayerTimeEngine.Core.Common;
@@ -72,8 +73,8 @@ public partial class MainPage : ContentPage
     {
         _dispatcher.Dispatch(() =>
         {
-            Instant instant = _systemInfoService.GetCurrentInstant();
-            prayerTimeGraphicView.DisplayPrayerTime = _viewModel.CurrentProfileWithModel.GetDisplayPrayerTime(instant);
+            ZonedDateTime zonedDateTime = _systemInfoService.GetCurrentZonedDateTime();
+            prayerTimeGraphicView.DisplayPrayerTime = _viewModel.CurrentProfileWithModel.GetDisplayPrayerTime(zonedDateTime);
             prayerTimeGraphicViewBaseView.Invalidate();
         });
     }
@@ -116,7 +117,6 @@ public partial class MainPage : ContentPage
 
     private Grid createUI()
     {
-        // NavigationPage TitleView
         var titleGrid = new Grid
         {
             ColumnDefinitions =
@@ -126,62 +126,66 @@ public partial class MainPage : ContentPage
             }
         };
 
-        _lastUpdatedTextInfo = new Label
-        {
-            HorizontalTextAlignment = TextAlignment.Start,
-            VerticalTextAlignment = TextAlignment.Center
-        };
-        _lastUpdatedTextInfo.SetBinding(
-            Label.TextProperty,
-            new Binding($"{nameof(MainPageViewModel.CurrentProfileWithModel)}.{nameof(IPrayerTimeViewModel.PrayerTimesSet)}.{nameof(DynamicPrayerTimesSet.DataCalculationTimestamp)}",
-            stringFormat: "{0:dd.MM, HH:mm:ss}"));
-        titleGrid.AddWithSpan(_lastUpdatedTextInfo, row: 0, column: 0);
+        _lastUpdatedTextInfo = new Label()
+            .Column(0).Row(0)
+            .Start()
+            .CenterVertical()
+            .Bind(
+                Label.TextProperty,
+                path: $"{nameof(MainPageViewModel.CurrentProfileWithModel)}.{nameof(IPrayerTimeViewModel.PrayerTimesSet)}.{nameof(DynamicPrayerTimesSet.DataCalculationTimestamp)}",
+                stringFormat: "{0:dd.MM, HH:mm:ss}");
 
-        _profileDisplayNameTextInfo = new Label
-        {
-            Padding = new Thickness(0, 0, 20, 0),
-            HorizontalTextAlignment = TextAlignment.End,
-            VerticalTextAlignment = TextAlignment.Center
-        };
-        _profileDisplayNameTextInfo.SetBinding(Label.TextProperty, $"{nameof(MainPageViewModel.CurrentProfile)}.{nameof(Profile.Name)}");
-        titleGrid.AddWithSpan(_profileDisplayNameTextInfo, row: 0, column: 1);
+        titleGrid.Add(_lastUpdatedTextInfo);
+
+        _profileDisplayNameTextInfo = new Label()
+            .Column(1).Row(0)
+            .Paddings(0, 0, 20, 0)
+            .TextEnd()
+            .CenterVertical()
+            .Bind(Label.TextProperty, $"{nameof(MainPageViewModel.CurrentProfile)}.{nameof(Profile.Name)}");
+
+        titleGrid.Add(_profileDisplayNameTextInfo);
 
         NavigationPage.SetTitleView(this, titleGrid);
 
-        var searchBox = new AutoCompleteTextField
-        {
-            Title = "Search",
-            VerticalOptions = LayoutOptions.Center,
-            BorderColor = Colors.Black,
-            InputBackgroundColor = Colors.LightGray,
-            TextColor = Colors.Black,
-            TitleColor = Colors.Black,
-        };
-        searchBox.SetBinding(AutoCompleteTextField.ItemsSourceProperty, nameof(MainPageViewModel.FoundPlacesSelectionTexts));
-        searchBox.SetBinding(AutoCompleteTextField.SelectedTextProperty, nameof(MainPageViewModel.SelectedPlaceText));
-        searchBox.SetBinding(AutoCompleteTextField.TextProperty, nameof(MainPageViewModel.PlaceSearchText));
-        searchBox.SetBinding(IsEnabledProperty, nameof(MainPageViewModel.IsNotLoadingPrayerTimesOrSelectedPlace));
+        var searchBox = 
+            new AutoCompleteTextField
+            {
+                Title = "Search",
+                VerticalOptions = LayoutOptions.Center,
+                BorderColor = Colors.Black,
+                InputBackgroundColor = Colors.LightGray,
+                TextColor = Colors.Black,
+                TitleColor = Colors.Black,
+            }
+            .Bind(AutoCompleteTextField.ItemsSourceProperty, nameof(MainPageViewModel.FoundPlacesSelectionTexts))
+            .Bind(AutoCompleteTextField.SelectedTextProperty, nameof(MainPageViewModel.SelectedPlaceText))
+            .Bind(AutoCompleteTextField.TextProperty, nameof(MainPageViewModel.PlaceSearchText))
+            .Bind<AutoCompleteTextField, bool, bool>(
+                IsEnabledProperty,
+                nameof(MainPageViewModel.IsLoadingPrayerTimesOrSelectedPlace),
+                convert: value => !value);
 
         var prayerTimesGridView = new DynamicPrayerTimeView(_viewModel);
 
         var mainGrid = new Grid
         {
-            Padding = new Thickness(10, 20, 10, 20),
             RowDefinitions =
             {
                 new RowDefinition { Height = new GridLength(2, GridUnitType.Star) },
                 new RowDefinition { Height = new GridLength(11, GridUnitType.Star) },
                 new RowDefinition { Height = new GridLength(7, GridUnitType.Star) },
             }
-        };
+        }
+        .Paddings(10, 20, 10, 20);
 
         // Graphics View
         prayerTimeGraphicView = new PrayerTimeGraphicView();
         prayerTimeGraphicViewBaseView = new GraphicsView
         {
             Drawable = prayerTimeGraphicView
-        };
-        prayerTimeGraphicViewBaseView.SetBinding(OpacityProperty, new Binding(nameof(MainPageViewModel.LoadingStatusOpacityValue)));
+        }
+        .Bind(OpacityProperty, nameof(MainPageViewModel.LoadingStatusOpacityValue));
 
         _carouselView = new CarouselView
         {
@@ -190,14 +194,12 @@ public partial class MainPage : ContentPage
                 MosquePrayerTimeTemplate = new DataTemplate(() => new MosquePrayerTimeView()),
                 PrayerTimesTemplate = new DataTemplate(() => new DynamicPrayerTimeView(_viewModel))
             },
-            HorizontalOptions = LayoutOptions.Fill,
-            VerticalOptions = LayoutOptions.Fill,
             Loop = false
-        };
-
-        // Bind the SelectedItem to CurrentProfile
-        _carouselView.SetBinding(ItemsView.ItemsSourceProperty, new Binding(nameof(MainPageViewModel.ProfilesWithModel), mode: BindingMode.TwoWay));
-        _carouselView.SetBinding(CarouselView.CurrentItemProperty, new Binding(nameof(MainPageViewModel.CurrentProfileWithModel), mode: BindingMode.TwoWay));
+        }
+        .FillHorizontal()
+        .FillVertical()
+        .Bind(ItemsView.ItemsSourceProperty, nameof(MainPageViewModel.ProfilesWithModel), mode: BindingMode.TwoWay)
+        .Bind(CarouselView.CurrentItemProperty, nameof(MainPageViewModel.CurrentProfileWithModel), mode: BindingMode.TwoWay);
 
         mainGrid.AddWithSpan(searchBox, row: 0, column: 0);
         mainGrid.AddWithSpan(_carouselView, row: 1, column: 0);
@@ -213,10 +215,6 @@ public partial class MainPage : ContentPage
         // Large: Galaxy S22 Ultra, iPhone 14 Pro Max
         // Medium: Google Pixel 5
         // ************************
-
-#if DEBUG
-        //this.searchBar.Text = DebugUtil.GetScreenSizeCategoryName();
-#endif
 
         // STATUS TEXTS
         new List<Label>()

@@ -17,6 +17,7 @@ using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Models;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Models.Entities;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Interfaces;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Services;
+using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes;
 
 namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks;
 

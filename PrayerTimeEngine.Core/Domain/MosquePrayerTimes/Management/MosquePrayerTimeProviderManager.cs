@@ -1,6 +1,5 @@
 ﻿using NodaTime;
 using PrayerTimeEngine.Core.Common;
-using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Models;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Interfaces;
