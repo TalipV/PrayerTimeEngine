@@ -1,4 +1,5 @@
 ﻿using Microsoft.Maui.Controls.Shapes;
+using static CommunityToolkit.Maui.Markup.GridRowsColumns;
 
 namespace PrayerTimeEngine.Presentation.Pages.Settings.SettingsContent;
 
@@ -30,23 +31,21 @@ public partial class SettingsContentPage : ContentPage
         var grid = new Grid
         {
             Padding = new Thickness(15),
-            RowDefinitions =
-                [
-                    new RowDefinition { Height = GridLength.Auto },
-                    new RowDefinition { Height = GridLength.Auto },
-                    new RowDefinition { Height = GridLength.Auto },
-                    new RowDefinition { Height = GridLength.Auto },
-                    new RowDefinition { Height = new GridLength(1, GridUnitType.Star) },
-                    new RowDefinition { Height = new GridLength(4, GridUnitType.Star) },
-                    new RowDefinition { Height = new GridLength(4, GridUnitType.Star) }
-                ],
-            ColumnDefinitions =
-                [
-                    new ColumnDefinition { Width = GridLength.Auto },
-                    new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) },
-                    new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) },
-                    new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) }
-                ]
+            RowDefinitions = Rows.Define(
+                    GridLength.Auto,
+                    GridLength.Auto,
+                    GridLength.Auto,
+                    GridLength.Auto,
+                    GridLength.Star,
+                    new GridLength(4, GridUnitType.Star),
+                    new GridLength(4, GridUnitType.Star)
+                ),
+            ColumnDefinitions = Columns.Define(
+                    GridLength.Auto,
+                    GridLength.Star,
+                    GridLength.Star,
+                    GridLength.Star
+                )
         };
 
         _dynamicPrayerTimeProviderPickerLabel = new Label { Text = "Calculation Source" };

@@ -25,7 +25,7 @@ public class MawaqitDBAccessTests : BaseTest
         var date = new LocalDate(2024, 8, 29);
         string externalID = "hamza-koln";
 
-        var mawaqitTime = new MawaqitPrayerTimes
+        var mawaqitTime = new MawaqitMosqueDailyPrayerTimes
         {
             ID = 0,
             Date = date,
@@ -62,7 +62,7 @@ public class MawaqitDBAccessTests : BaseTest
         var date = new LocalDate(2024, 8, 29);
         string externalID = "hamza-koln";
 
-        var newMawaqitTime = new MawaqitPrayerTimes
+        var newMawaqitTime = new MawaqitMosqueDailyPrayerTimes
         {
             Date = date,
             ExternalID = externalID,

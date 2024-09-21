@@ -8,13 +8,13 @@ using PrayerTimeEngine.Core.Tests.Common;
 
 namespace PrayerTimeEngine.Core.Tests.Unit.Domain.MosquePrayerTimes.Providers.MyMosq;
 
-public class MyMosqDynamicPrayerTimeProviderTests : BaseTest
+public class MyMosqMosquePrayerTimeProviderTests : BaseTest
 {
     private readonly IMyMosqDBAccess _myMosqDBAccessMock;
     private readonly IMyMosqApiService _myMosqApiServiceMock;
     private readonly MyMosqMosquePrayerTimeProvider _myMosqPrayerTimeService;
 
-    public MyMosqDynamicPrayerTimeProviderTests()
+    public MyMosqMosquePrayerTimeProviderTests()
     {
         _myMosqDBAccessMock = Substitute.For<IMyMosqDBAccess>();
         _myMosqApiServiceMock = Substitute.For<IMyMosqApiService>();
@@ -34,7 +34,7 @@ public class MyMosqDynamicPrayerTimeProviderTests : BaseTest
         var date = new LocalDate(2024, 8, 30);
         string externalID = "1239";
 
-        var times = new MyMosqPrayerTimes
+        var times = new MyMosqMosqueDailyPrayerTimes
         {
             ID = 0,
             Date = new LocalDate(2024, 8, 29),
@@ -61,7 +61,7 @@ public class MyMosqDynamicPrayerTimeProviderTests : BaseTest
             .Returns(times);
 
         // ACT
-        IMosquePrayerTimes calculationResult = await _myMosqPrayerTimeService.GetPrayerTimesAsync(date, externalID, default);
+        IMosqueDailyPrayerTimes calculationResult = await _myMosqPrayerTimeService.GetPrayerTimesAsync(date, externalID, default);
 
         // ASSERT
         calculationResult.Should().NotBeNull();

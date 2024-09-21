@@ -11,20 +11,27 @@ public class DynamicPrayerTimesSet : IPrayerTimesSet
 {
     public ZonedDateTime? DataCalculationTimestamp { get; set; }
 
-    public List<AbstractPrayerTime> AllPrayerTimes
+    public List<(EPrayerType PrayerType, GenericPrayerTime Times)> AllPrayerTimes
     {
         get
         {
-            return [Fajr, Duha, Dhuhr, Asr, Maghrib, Isha];
+            return [
+                (EPrayerType.Fajr, Fajr),
+                (EPrayerType.Duha, Duha),
+                (EPrayerType.Dhuhr, Dhuhr),
+                (EPrayerType.Asr, Asr),
+                (EPrayerType.Maghrib, Maghrib),
+                (EPrayerType.Isha, Isha)
+            ];
         }
     }
 
-    public FajrPrayerTime Fajr { get; init; } = new();
-    public DuhaPrayerTime Duha { get; init; } = new();
-    public DhuhrPrayerTime Dhuhr { get; init; } = new();
-    public AsrPrayerTime Asr { get; init; } = new();
-    public MaghribPrayerTime Maghrib { get; init; } = new();
-    public IshaPrayerTime Isha { get; init; } = new();
+    public FajrPrayerTime Fajr { get; } = new();
+    public DuhaPrayerTime Duha { get; } = new();
+    public GenericPrayerTime Dhuhr { get; } = new();
+    public AsrPrayerTime Asr { get; } = new();
+    public MaghribPrayerTime Maghrib { get; } = new();
+    public IshaPrayerTime Isha { get; } = new();
 
     public override bool Equals(object obj)
     {

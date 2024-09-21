@@ -17,8 +17,7 @@ using PrayerTimeEngine.Presentation.Pages.DatabaseTables;
 using PrayerTimeEngine.Presentation.Pages.Settings.SettingsHandler;
 using PrayerTimeEngine.Presentation.Services;
 using PrayerTimeEngine.Presentation.Services.Navigation;
-using PrayerTimeEngine.Presentation.Views.MosquePrayerTimes;
-using PrayerTimeEngine.Presentation.Views.PrayerTimes;
+using PrayerTimeEngine.Presentation.Views;
 using PrayerTimeEngine.Services.PrayerTimeSummaryNotification;
 using PropertyChanged;
 using System.Windows.Input;
@@ -33,6 +32,7 @@ public class MainPageViewModel(
         ISystemInfoService systemInfoService,
         IDynamicPrayerTimeProviderFactory prayerTimeServiceFactory,
         IMosquePrayerTimeProviderManager mosquePrayerTimeProviderManager,
+        PrayerTimeViewModelFactory prayerTimeViewModelFactory,
         IPlaceService placeService,
         IProfileService profileService,
         INavigationService navigationService,
@@ -297,7 +297,9 @@ public class MainPageViewModel(
         {
             if (CurrentProfile != null)
             {
-                return profileService.ChangeProfileName(CurrentProfile, newProfileName, cancellationToken);
+                Task task = profileService.ChangeProfileName(CurrentProfile, newProfileName, cancellationToken);
+                OnPropertyChanged(nameof(CurrentProfile));
+                return task;
             }
         }
         catch (Exception exception)
@@ -339,7 +341,7 @@ public class MainPageViewModel(
         try
         {
             _suspendOnCurrentProfileWithModelChanged = true;
-            ProfilesWithModel = profiles.Select(getPrayerTimeViewModel).ToList();
+            ProfilesWithModel = profiles.Select(prayerTimeViewModelFactory.Create).ToList();
         }
         finally
         {
@@ -417,21 +419,6 @@ public class MainPageViewModel(
         }
 
         logger.LogInformation("Refreshing data finished. ({RefreshCallID})", refreshCallID);
-    }
-
-    private IPrayerTimeViewModel getPrayerTimeViewModel(Profile profile)
-    {
-        IPrayerTimeViewModel viewModel = profile switch
-        {
-            MosqueProfile => MauiProgram.ServiceProvider.GetRequiredService<MosquePrayerTimeViewModel>(),
-            DynamicProfile => MauiProgram.ServiceProvider.GetRequiredService<DynamicPrayerTimeViewModel>(),
-            _ => throw new InvalidOperationException($"Unknown profile type '{profile.GetType().FullName}'")
-        };
-
-        viewModel.MainPageViewModel = this;
-        viewModel.Profile = profile;
-
-        return viewModel;
     }
 
     private async Task onBeforeFirstLoad()

@@ -10,26 +10,37 @@ using System.Text.RegularExpressions;
 
 namespace PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.MyMosq.Services;
 
-public class MyMosqApiService(
+public partial class MyMosqApiService(
         IWebSocketClientFactory webSocketClientFactory
     ) : IMyMosqApiService
 {
-    private const string URL =
-        "wss://s-euw1b-nss-200.europe-west1.firebasedatabase.app/.ws?v=5&p=1:734647730920:web:7632560710973b246b3f5d&ns=takvim-ch-default-rtdb";
+    [GeneratedRegex(@"[^\s""]+\.firebasedatabase\.app")]
+    private static partial Regex getWebSocketBaseURLExtractionRegex();
+
+    private const string WEBSOCKET_DEFAULT_BASE_URL = "s-euw1b-nss-200.europe-west1.firebasedatabase.app";
+    private const string WEBSOCKET_URL_TEMPLATE = "wss://{0}/.ws?v=5&p=1:734647730920:web:7632560710973b246b3f5d&ns=takvim-ch-default-rtdb";
+
+    private const string EXTERNAL_ID_PLACEHOLDER_KEY = "EXTERNAL_ID_PLACEHOLDER";
+    private static readonly string INITIAL_MESSAGE_TEMPLATE = $$"""
+        {
+            "t": "d",
+            "d": {
+                "r": 2,
+                "a": "g",
+                "b": {
+                    "p": "/prayerTimes/{{EXTERNAL_ID_PLACEHOLDER_KEY}}"
+                }
+            }
+        }
+        """;
 
     public async Task<List<MyMosqPrayerTimesDTO>> GetPrayerTimesAsync(LocalDate date, string externalID, CancellationToken cancellationToken)
     {
-        string finaleMessage = "";
-        await foreach (string currentMessage in readResponseMessages(externalID, cancellationToken))
-        {
-            if (currentMessage.Contains("Asr"))
-            {
-                finaleMessage +=
-                    currentMessage
-                    .Replace("""{"t":"d","d":{"r":2,"b":{"s":"ok","d":""", "")
-                    .Replace("}}}}}", "}}");
-            }
-        }
+        string finaleMessage = string.Join(
+            string.Empty, 
+            await readResponseMessages(externalID, cancellationToken).Where(x => x.Contains("Asr")).ToListAsync(cancellationToken));
+        
+        finaleMessage = JsonDocument.Parse(finaleMessage).RootElement.GetProperty("d").GetProperty("b").GetProperty("d").ToString();
 
         finaleMessage =
             Regex.Replace(finaleMessage,
@@ -46,7 +57,10 @@ public class MyMosqApiService(
         fixPrayerTimes(prayerTimes);
         return prayerTimes;
     }
-    public async Task<bool> ValidateData(string externalID, CancellationToken cancellationToken)
+
+    public async Task<bool> ValidateData(
+        string externalID, 
+        CancellationToken cancellationToken)
     {
         List<string> responseMessages = await readResponseMessages(externalID, cancellationToken).ToListAsync(cancellationToken);
 
@@ -59,25 +73,17 @@ public class MyMosqApiService(
         return true;
     }
 
-    private async IAsyncEnumerable<string> readResponseMessages(string externalID, [EnumeratorCancellation] CancellationToken cancellationToken)
+    private async IAsyncEnumerable<string> readResponseMessages(
+        string externalID, 
+        [EnumeratorCancellation] CancellationToken cancellationToken)
     {
+        string initialMessage = INITIAL_MESSAGE_TEMPLATE.Replace(EXTERNAL_ID_PLACEHOLDER_KEY, externalID);
+        string baseUrl = await getCorrectWebSocketURLAsync(initialMessage, cancellationToken);
+
         using IWebSocketClient webSocketClient = webSocketClientFactory.CreateWebSocketClient();
-        await webSocketClient.ConnectAsync(new Uri(URL), cancellationToken);
+        await webSocketClient.ConnectAsync(new Uri(string.Format(WEBSOCKET_URL_TEMPLATE, baseUrl)), cancellationToken);
 
-        string message = $$"""
-        {
-        	"t": "d",
-        	"d": {
-        		"r": 2,
-        		"a": "g",
-        		"b": {
-        			"p": "/prayerTimes/{{externalID}}"
-        		}
-        	}
-        }
-        """;
-
-        var bytesToSend = Encoding.UTF8.GetBytes(message);
+        var bytesToSend = Encoding.UTF8.GetBytes(initialMessage);
         var arraySegment = new ArraySegment<byte>(bytesToSend);
         await webSocketClient.SendAsync(arraySegment, WebSocketMessageType.Text, true, cancellationToken);
 
@@ -89,17 +95,50 @@ public class MyMosqApiService(
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
-                CancellationToken token = new CancellationTokenSource(1000).Token;
                 try
                 {
+                    CancellationToken token = new CancellationTokenSource(1000).Token;
                     result = await webSocketClient.ReceiveAsync(new ArraySegment<byte>(buffer), token);
                 }
-                catch { break; }
+                catch (OperationCanceledException)
+                {
+                    break;
+                }
 
                 yield return Encoding.UTF8.GetString(buffer, 0, result.Count);
             }
             while (!result.EndOfMessage);
         }
+    }
+
+    private async Task<string> getCorrectWebSocketURLAsync(string initialMessage, CancellationToken cancellationToken)
+    {
+        string defaultUrl = string.Format(WEBSOCKET_URL_TEMPLATE, WEBSOCKET_DEFAULT_BASE_URL);
+
+        using IWebSocketClient webSocketClient = webSocketClientFactory.CreateWebSocketClient();
+        await webSocketClient.ConnectAsync(new Uri(defaultUrl), cancellationToken);
+
+        var bytesToSend = Encoding.UTF8.GetBytes(initialMessage);
+        var arraySegment = new ArraySegment<byte>(bytesToSend);
+        await webSocketClient.SendAsync(arraySegment, WebSocketMessageType.Text, true, cancellationToken);
+
+        byte[] buffer = new byte[1024];
+        WebSocketReceiveResult result;
+
+        cancellationToken.ThrowIfCancellationRequested();
+        result = await webSocketClient.ReceiveAsync(new ArraySegment<byte>(buffer), cancellationToken);
+        cancellationToken.ThrowIfCancellationRequested();
+
+        string textValue = Encoding.UTF8.GetString(buffer, 0, result.Count);
+        var regex = getWebSocketBaseURLExtractionRegex();
+        Match match = regex.Match(textValue);
+
+        if (!match.Success)
+        {
+            throw new Exception("Base URL could not be determined!");
+        }
+
+        return match.Value;
     }
 
     /// <summary>

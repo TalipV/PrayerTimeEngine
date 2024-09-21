@@ -2,7 +2,7 @@
 
 namespace PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Models;
 
-public interface IMosquePrayerTimes
+public interface IMosqueDailyPrayerTimes
 {
     public string ExternalID { get; }
     public Instant? InsertInstant { get; }

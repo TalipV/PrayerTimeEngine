@@ -2,8 +2,7 @@
 
 namespace PrayerTimeEngine.Core.Domain.Models.PrayerTimes;
 
-public class DuhaPrayerTime : AbstractPrayerTime
+public class DuhaPrayerTime : GenericPrayerTime
 {
-    public override string Name => "Duha";
     public ZonedDateTime? QuarterOfDay { get; set; }
 }

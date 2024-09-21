@@ -2,9 +2,8 @@
 
 namespace PrayerTimeEngine.Core.Domain.Models.PrayerTimes;
 
-public class MaghribPrayerTime : AbstractPrayerTime
+public class MaghribPrayerTime : GenericPrayerTime
 {
-    public override string Name => "Maghrib";
     public ZonedDateTime? SufficientTime { get; set; }
     public ZonedDateTime? Ishtibaq { get; set; }
 }

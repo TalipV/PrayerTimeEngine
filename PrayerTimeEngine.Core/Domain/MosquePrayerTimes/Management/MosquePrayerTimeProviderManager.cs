@@ -26,7 +26,7 @@ public class MosquePrayerTimeProviderManager(
         IMosquePrayerTimeProvider provider = 
             mosquePrayerTimeProviderFactory.GetDynamicPrayerTimeProviderByDynamicPrayerTimeProvider(mosqueProfile.MosqueProviderType);
         
-        IMosquePrayerTimes times = 
+        IMosqueDailyPrayerTimes times = 
             await provider.GetPrayerTimesAsync(
                 date.LocalDateTime.Date,
                 mosqueProfile.ExternalID, 
@@ -38,27 +38,37 @@ public class MosquePrayerTimeProviderManager(
         return prayerTimesCollection;
     }
 
-    private static MosquePrayerTimesSet getPrayerTimesCollection(IMosquePrayerTimes times)
+    private MosquePrayerTimesSet getPrayerTimesCollection(IMosqueDailyPrayerTimes times)
     {
+        // TODO fix this. The Profile should know its own time zone!
+        var timeZone = systemInfoService.GetSystemTimeZone();
+
         var prayerTimesCollection = new MosquePrayerTimesSet();
 
-        prayerTimesCollection.Fajr.Start = times.Fajr;
-        prayerTimesCollection.Fajr.End = times.Shuruq;
+        prayerTimesCollection.Fajr.Start = times.Fajr.On(times.Date).InZoneStrictly(timeZone);
+        prayerTimesCollection.Fajr.CongregationStartOffset = (int)Period.Between(times.Fajr, times.FajrCongregation, PeriodUnits.Minutes).Minutes;
+        prayerTimesCollection.Fajr.End = times.Shuruq.On(times.Date).InZoneStrictly(timeZone);
 
-        prayerTimesCollection.Dhuhr.Start = times.Dhuhr;
-        prayerTimesCollection.Dhuhr.End = times.Asr;
+        prayerTimesCollection.Dhuhr.Start = times.Dhuhr.On(times.Date).InZoneStrictly(timeZone);
+        prayerTimesCollection.Dhuhr.CongregationStartOffset = (int)Period.Between(times.Dhuhr, times.DhuhrCongregation, PeriodUnits.Minutes).Minutes;
+        prayerTimesCollection.Dhuhr.End = times.Asr.On(times.Date).InZoneStrictly(timeZone);
 
-        prayerTimesCollection.Asr.Start = times.Asr;
-        prayerTimesCollection.Asr.End = times.Maghrib;
+        prayerTimesCollection.Asr.Start = times.Asr.On(times.Date).InZoneStrictly(timeZone);
+        prayerTimesCollection.Asr.CongregationStartOffset = (int)Period.Between(times.Asr, times.AsrCongregation, PeriodUnits.Minutes).Minutes;
+        prayerTimesCollection.Asr.End = times.Maghrib.On(times.Date).InZoneStrictly(timeZone);
 
-        prayerTimesCollection.Maghrib.Start = times.Maghrib;
-        prayerTimesCollection.Maghrib.End = times.Isha;
+        prayerTimesCollection.Maghrib.Start = times.Maghrib.On(times.Date).InZoneStrictly(timeZone);
+        prayerTimesCollection.Maghrib.CongregationStartOffset = (int)Period.Between(times.Maghrib, times.MaghribCongregation, PeriodUnits.Minutes).Minutes;
+        prayerTimesCollection.Maghrib.End = times.Isha.On(times.Date).InZoneStrictly(timeZone);
 
-        prayerTimesCollection.Isha.Start = times.Isha;
-        //prayerTimesCollection.Isha.End = times.Fajr;
+        prayerTimesCollection.Isha.Start = times.Isha.On(times.Date).InZoneStrictly(timeZone);
+        prayerTimesCollection.Isha.CongregationStartOffset = (int)Period.Between(times.Isha, times.IshaCongregation, PeriodUnits.Minutes).Minutes;
 
-        prayerTimesCollection.Jumuah.Start = times.Jumuah ?? new LocalTime(0, 0);
-        prayerTimesCollection.Jumuah2.Start = times.Jumuah2 ?? new LocalTime(0, 0);
+        // TODO fix this. Doesn't make sense.. but let's go with it for now
+        prayerTimesCollection.Isha.End = times.Fajr.On(times.Date).InZoneStrictly(timeZone);
+
+        prayerTimesCollection.Jumuah.Start = (times.Jumuah ?? new LocalTime(0, 0)).On(times.Date).InZoneStrictly(timeZone);
+        prayerTimesCollection.Jumuah2.Start = (times.Jumuah2 ?? new LocalTime(0, 0)).On(times.Date).InZoneStrictly(timeZone);
 
         return prayerTimesCollection;
     }

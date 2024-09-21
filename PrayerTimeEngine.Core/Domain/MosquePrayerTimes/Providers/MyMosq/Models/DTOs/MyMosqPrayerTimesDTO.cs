@@ -67,9 +67,9 @@ public class MyMosqPrayerTimesDTO
     [JsonPropertyName("Jummah3")]
     public LocalTime? Jumuah2 { get; set; }
 
-    internal MyMosqPrayerTimes ToMyMosqPrayerTimes(string externalID)
+    internal MyMosqMosqueDailyPrayerTimes ToMyMosqPrayerTimes(string externalID)
     {
-        return new MyMosqPrayerTimes
+        return new MyMosqMosqueDailyPrayerTimes
         {
             ExternalID = externalID.ToString(),
             Date = Date,

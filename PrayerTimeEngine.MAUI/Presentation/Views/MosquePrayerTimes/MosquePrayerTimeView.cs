@@ -1,5 +1,8 @@
-﻿using OnScreenSizeMarkup.Maui.Helpers;
+﻿using CommunityToolkit.Maui.Markup;
+using OnScreenSizeMarkup.Maui.Helpers;
+using PrayerTimeEngine.Core.Domain.Models;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Models;
+using static CommunityToolkit.Maui.Markup.GridRowsColumns;
 
 namespace PrayerTimeEngine.Presentation.Views.MosquePrayerTimes;
 
@@ -14,60 +17,48 @@ public class MosquePrayerTimeView : ContentView
     {
         var mainGrid = new Grid
         {
-            Padding = new Thickness(10, 20, 10, 20),
-            RowDefinitions =
-            {
-                new RowDefinition { Height = new GridLength(2, GridUnitType.Star) },
-                new RowDefinition { Height = new GridLength(2, GridUnitType.Star) },
-                new RowDefinition { Height = new GridLength(1, GridUnitType.Star) },
-                new RowDefinition { Height = new GridLength(1, GridUnitType.Star) },
-                new RowDefinition { Height = new GridLength(2, GridUnitType.Star) },
-                new RowDefinition { Height = new GridLength(2, GridUnitType.Star) },
-                new RowDefinition { Height = new GridLength(1, GridUnitType.Star) },
-                new RowDefinition { Height = new GridLength(1, GridUnitType.Star) },
-                new RowDefinition { Height = new GridLength(2, GridUnitType.Star) },
-                new RowDefinition { Height = new GridLength(2, GridUnitType.Star) },
-                new RowDefinition { Height = new GridLength(1, GridUnitType.Star) },
-                new RowDefinition { Height = new GridLength(1, GridUnitType.Star) },
-                new RowDefinition { Height = new GridLength(1, GridUnitType.Star) },
-                new RowDefinition { Height = new GridLength(1, GridUnitType.Star) },
-            },
-            ColumnDefinitions =
-            {
-                new ColumnDefinition { Width = new GridLength(3, GridUnitType.Star) },
-                new ColumnDefinition { Width = new GridLength(4, GridUnitType.Star) },
-                new ColumnDefinition { Width = new GridLength(2, GridUnitType.Star) },
-                new ColumnDefinition { Width = new GridLength(3, GridUnitType.Star) },
-                new ColumnDefinition { Width = new GridLength(4, GridUnitType.Star) }
-            }
-        };
+            RowDefinitions = Rows.Define(
+                new GridLength(2, GridUnitType.Star),
+                new GridLength(2, GridUnitType.Star),
+                GridLength.Star,
+                GridLength.Star,
+                GridLength.Star,
+                new GridLength(2, GridUnitType.Star),
+                new GridLength(2, GridUnitType.Star),
+                GridLength.Star,
+                GridLength.Star,
+                new GridLength(2, GridUnitType.Star),
+                new GridLength(2, GridUnitType.Star),
+                GridLength.Star,
+                GridLength.Star,
+                GridLength.Star,
+                GridLength.Star
+            ),
+            ColumnDefinitions = Columns.Define(
+                new GridLength(3, GridUnitType.Star),
+                new GridLength(4, GridUnitType.Star),
+                new GridLength(2, GridUnitType.Star),
+                new GridLength(3, GridUnitType.Star),
+                new GridLength(4, GridUnitType.Star)
+            )
+        }
+        .Paddings(10, 20, 10, 20);
 
         int startRowNo = 1;
 
-        string bindingText = $"{nameof(MosquePrayerTimeViewModel.PrayerTimesSet)}.{nameof(MosquePrayerTimesSet.Fajr)}.{nameof(MosquePrayerTime.Start)}";
-        addPrayerTimeUI(mainGrid, "Fajr", durationBinding: bindingText,
-            startRowNo: startRowNo, startColumnNo: 0);
-
-        bindingText = $"{nameof(MosquePrayerTimeViewModel.PrayerTimesSet)}.{nameof(MosquePrayerTimesSet.Jumuah)}.{nameof(MosquePrayerTime.Start)}";
-        addPrayerTimeUI(mainGrid, "Jumu'ah", durationBinding: bindingText,
-            startRowNo: startRowNo, startColumnNo: 3,
-            subtime1Name: "Jumuah2", subtime1Binding: $"{nameof(MosquePrayerTimeViewModel.PrayerTimesSet)}.{nameof(MosquePrayerTimesSet.Jumuah2)}.{nameof(MosquePrayerTime.Start)}");
-
-        bindingText = $"{nameof(MosquePrayerTimeViewModel.PrayerTimesSet)}.{nameof(MosquePrayerTimesSet.Dhuhr)}.{nameof(MosquePrayerTime.Start)}";
-        addPrayerTimeUI(mainGrid, "Dhuhr", durationBinding: bindingText,
-            startRowNo: startRowNo + 4, startColumnNo: 0);
-
-        bindingText = $"{nameof(MosquePrayerTimeViewModel.PrayerTimesSet)}.{nameof(MosquePrayerTimesSet.Asr)}.{nameof(MosquePrayerTime.Start)}";
-        addPrayerTimeUI(mainGrid, "Asr", durationBinding: bindingText,
-            startRowNo: startRowNo + 4, startColumnNo: 3);
-
-        bindingText = $"{nameof(MosquePrayerTimeViewModel.PrayerTimesSet)}.{nameof(MosquePrayerTimesSet.Maghrib)}.{nameof(MosquePrayerTime.Start)}";
-        addPrayerTimeUI(mainGrid, "Maghrib", durationBinding: bindingText,
-            startRowNo: startRowNo + 8, startColumnNo: 0);
-
-        bindingText = $"{nameof(MosquePrayerTimeViewModel.PrayerTimesSet)}.{nameof(MosquePrayerTimesSet.Isha)}.{nameof(MosquePrayerTime.Start)}";
-        addPrayerTimeUI(mainGrid, "Isha", durationBinding: bindingText,
-            startRowNo: startRowNo + 8, startColumnNo: 3);
+        addPrayerTimeUI(mainGrid, "Fajr", nameof(MosquePrayerTimesSet.Fajr),
+            startRowNo, startColumnNo: 0);
+        addPrayerTimeUI(mainGrid, "Jumu'ah", nameof(MosquePrayerTimesSet.Jumuah),
+            startRowNo, startColumnNo: 3,
+            subtime1Name: "Jumuah2", subtime1Binding: $"{nameof(MosquePrayerTimesSet.Jumuah2)}.{nameof(GenericPrayerTime.Start)}");
+        addPrayerTimeUI(mainGrid, "Dhuhr", nameof(MosquePrayerTimesSet.Dhuhr),
+            startRowNo + 4, startColumnNo: 0);
+        addPrayerTimeUI(mainGrid, "Asr", nameof(MosquePrayerTimesSet.Asr),
+            startRowNo + 4, startColumnNo: 3);
+        addPrayerTimeUI(mainGrid, "Maghrib", nameof(MosquePrayerTimesSet.Maghrib),
+            startRowNo + 8, startColumnNo: 0);
+        addPrayerTimeUI(mainGrid, "Isha", nameof(MosquePrayerTimesSet.Isha),
+            startRowNo + 8, startColumnNo: 3);
 
         return mainGrid;
     }
@@ -75,10 +66,9 @@ public class MosquePrayerTimeView : ContentView
     private static void addPrayerTimeUI(
         Grid grid,
         string prayerName,
-        string durationBinding,
+        string bindingText,
         int startRowNo, int startColumnNo,
-        string subtime1Binding = null, string subtime1Name = null,
-        string subtime2Binding = null, string subtime2Name = null)
+        string subtime1Binding = null, string subtime1Name = null)
     {
         List<Label> timeTextViews = [];
         List<Label> timeDisplayTextViews = [];
@@ -101,7 +91,22 @@ public class MosquePrayerTimeView : ContentView
             HorizontalOptions = LayoutOptions.Start,
             VerticalOptions = LayoutOptions.Start
         };
-        prayerDurationLabel.SetBinding(Label.TextProperty, new Binding(durationBinding, stringFormat: "{0:HH:mm:ss}"));
+        prayerDurationLabel.Bind(
+            Label.TextProperty,
+            $"{nameof(MosquePrayerTimeViewModel.PrayerTimesSet)}.{bindingText}",
+            convert: (MosquePrayerTime prayerTime) =>
+            {
+                if (prayerTime.Start == null)
+                    return "xx:xx";
+
+                string time = prayerTime.Start.Value.ToString("HH:mm", null);
+                string offsetText = prayerTime.CongregationStartOffset > 0 
+                    ? $"({prayerTime.Start.Value.PlusMinutes(prayerTime.CongregationStartOffset).ToString("HH:mm", null)})" 
+                    : "";
+
+                return $"{time} {offsetText}";
+            });
+
         grid.AddWithSpan(prayerDurationLabel, startRowNo + 1, startColumnNo, columnSpan: 2);
 
         timeTextViews.Add(prayerNameLabel);
@@ -130,32 +135,6 @@ public class MosquePrayerTimeView : ContentView
 
             subTimeTextViews.Add(subtime1Label);
             subTimeDisplayTextViews.Add(subtime1DisplayText);
-        }
-
-        if (!string.IsNullOrEmpty(subtime2Binding))
-        {
-            var subtime2Label = new Label
-            {
-                Text = subtime2Name,
-                TextColor = Colors.Black,
-                HorizontalOptions = LayoutOptions.Start,
-                VerticalOptions = LayoutOptions.Start
-            };
-
-            var subtime2DisplayText = new Label
-            {
-                TextColor = Colors.Black,
-                HorizontalOptions = LayoutOptions.Center,
-                VerticalOptions = LayoutOptions.Start
-            };
-
-            subtime2DisplayText.SetBinding(Label.TextProperty, new Binding(subtime2Binding, stringFormat: "{0:HH:mm:ss}"));
-
-            grid.AddWithSpan(subtime2Label, startRowNo + 3, startColumnNo);
-            grid.AddWithSpan(subtime2DisplayText, startRowNo + 3, startColumnNo + 1);
-
-            subTimeTextViews.Add(subtime2Label);
-            subTimeDisplayTextViews.Add(subtime2DisplayText);
         }
 
         if (OperatingSystem.IsWindows())

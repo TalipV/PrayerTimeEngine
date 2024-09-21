@@ -1,4 +1,5 @@
 ﻿using NodaTime;
+using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Domain.Models;
 using PropertyChanged;
 
@@ -9,16 +10,21 @@ public class MosquePrayerTimesSet : IPrayerTimesSet
 {
     public ZonedDateTime? DataCalculationTimestamp { get; set; }
 
-    public List<MosquePrayerTime> AllPrayerTimes
+    public List<(EPrayerType PrayerType, GenericPrayerTime Times)> AllPrayerTimes
     {
         get
         {
-            return [Fajr, Duha, Dhuhr, Asr, Maghrib, Isha];
+            return [
+                (EPrayerType.Fajr, Fajr), 
+                (EPrayerType.Dhuhr, Dhuhr), 
+                (EPrayerType.Asr, Asr), 
+                (EPrayerType.Maghrib, Maghrib), 
+                (EPrayerType.Isha, Isha)
+            ];
         }
     }
 
     public MosquePrayerTime Fajr { get; init; } = new();
-    public MosquePrayerTime Duha { get; init; } = new();
     public MosquePrayerTime Dhuhr { get; init; } = new();
     public MosquePrayerTime Asr { get; init; } = new();
     public MosquePrayerTime Maghrib { get; init; } = new();
@@ -32,7 +38,6 @@ public class MosquePrayerTimesSet : IPrayerTimesSet
             return false;
 
         return object.Equals(Fajr, otherMosquePrayerTimesSet.Fajr)
-            && object.Equals(Duha, otherMosquePrayerTimesSet.Duha)
             && object.Equals(Dhuhr, otherMosquePrayerTimesSet.Dhuhr)
             && object.Equals(Asr, otherMosquePrayerTimesSet.Asr)
             && object.Equals(Maghrib, otherMosquePrayerTimesSet.Maghrib)
@@ -43,6 +48,6 @@ public class MosquePrayerTimesSet : IPrayerTimesSet
 
     public override int GetHashCode()
     {
-        return HashCode.Combine(Fajr, Duha, Dhuhr, Asr, Maghrib, Isha, HashCode.Combine(Jumuah, Jumuah2));
+        return HashCode.Combine(Fajr, Dhuhr, Asr, Maghrib, Isha, HashCode.Combine(Jumuah, Jumuah2));
     }
 }

@@ -26,7 +26,7 @@ public class NavigationService(
     {
         var targetType = _mapping[typeof(TViewModel)];
 
-        if (Application.Current.MainPage is NavigationPage navigationPage)
+        if (Application.Current.Windows[0].Page is NavigationPage navigationPage)
         {
             var page = (Page)serviceProvider.GetRequiredService(targetType);
 
@@ -46,7 +46,7 @@ public class NavigationService(
 
     public async Task NavigateBack()
     {
-        if (Application.Current.MainPage is NavigationPage navigationPage)
+        if (Application.Current.Windows[0].Page is NavigationPage navigationPage)
         {
             await navigationPage.PopAsync().ConfigureAwait(false);
         }

@@ -23,8 +23,8 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
             var semerkandCity = SemerkandCityEntityType.Create(this);
             var semerkandCountry = SemerkandCountryEntityType.Create(this);
             var semerkandDailyPrayerTimes = SemerkandDailyPrayerTimesEntityType.Create(this);
-            var mawaqitPrayerTimes = MawaqitPrayerTimesEntityType.Create(this);
-            var myMosqPrayerTimes = MyMosqPrayerTimesEntityType.Create(this);
+            var mawaqitMosqueDailyPrayerTimes = MawaqitMosqueDailyPrayerTimesEntityType.Create(this);
+            var myMosqMosqueDailyPrayerTimes = MyMosqMosqueDailyPrayerTimesEntityType.Create(this);
             var profilePlaceInfo = ProfilePlaceInfoEntityType.Create(this);
             var timezoneInfo = TimezoneInfoEntityType.Create(this);
             var profile = ProfileEntityType.Create(this);
@@ -47,8 +47,8 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
             SemerkandCityEntityType.CreateAnnotations(semerkandCity);
             SemerkandCountryEntityType.CreateAnnotations(semerkandCountry);
             SemerkandDailyPrayerTimesEntityType.CreateAnnotations(semerkandDailyPrayerTimes);
-            MawaqitPrayerTimesEntityType.CreateAnnotations(mawaqitPrayerTimes);
-            MyMosqPrayerTimesEntityType.CreateAnnotations(myMosqPrayerTimes);
+            MawaqitMosqueDailyPrayerTimesEntityType.CreateAnnotations(mawaqitMosqueDailyPrayerTimes);
+            MyMosqMosqueDailyPrayerTimesEntityType.CreateAnnotations(myMosqMosqueDailyPrayerTimes);
             ProfilePlaceInfoEntityType.CreateAnnotations(profilePlaceInfo);
             TimezoneInfoEntityType.CreateAnnotations(timezoneInfo);
             ProfileEntityType.CreateAnnotations(profile);
@@ -689,81 +689,81 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
             RelationalModel.CreateColumnMapping(nextFajrColumn1, semerkandDailyPrayerTimes.FindProperty("NextFajr")!, semerkandPrayerTimesTableMapping);
             RelationalModel.CreateColumnMapping(shuruqColumn1, semerkandDailyPrayerTimes.FindProperty("Shuruq")!, semerkandPrayerTimesTableMapping);
 
-            var mawaqitPrayerTimes = FindEntityType("PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.Mawaqit.Models.Entities.MawaqitPrayerTimes")!;
+            var mawaqitMosqueDailyPrayerTimes = FindEntityType("PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.Mawaqit.Models.Entities.MawaqitMosqueDailyPrayerTimes")!;
 
             var defaultTableMappings6 = new List<TableMappingBase<ColumnMappingBase>>();
-            mawaqitPrayerTimes.SetRuntimeAnnotation("Relational:DefaultMappings", defaultTableMappings6);
-            var prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitPrayerTimesTableBase = new TableBase("PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.Mawaqit.Models.Entities.MawaqitPrayerTimes", null, relationalModel);
-            var asrColumnBase2 = new ColumnBase<ColumnMappingBase>("Asr", "TEXT", prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitPrayerTimesTableBase);
-            prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitPrayerTimesTableBase.Columns.Add("Asr", asrColumnBase2);
-            var asrCongregationColumnBase = new ColumnBase<ColumnMappingBase>("AsrCongregation", "TEXT", prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitPrayerTimesTableBase);
-            prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitPrayerTimesTableBase.Columns.Add("AsrCongregation", asrCongregationColumnBase);
-            var dateColumnBase2 = new ColumnBase<ColumnMappingBase>("Date", "TEXT", prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitPrayerTimesTableBase);
-            prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitPrayerTimesTableBase.Columns.Add("Date", dateColumnBase2);
-            var dhuhrColumnBase2 = new ColumnBase<ColumnMappingBase>("Dhuhr", "TEXT", prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitPrayerTimesTableBase);
-            prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitPrayerTimesTableBase.Columns.Add("Dhuhr", dhuhrColumnBase2);
-            var dhuhrCongregationColumnBase = new ColumnBase<ColumnMappingBase>("DhuhrCongregation", "TEXT", prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitPrayerTimesTableBase);
-            prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitPrayerTimesTableBase.Columns.Add("DhuhrCongregation", dhuhrCongregationColumnBase);
-            var externalIDColumnBase = new ColumnBase<ColumnMappingBase>("ExternalID", "TEXT", prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitPrayerTimesTableBase)
+            mawaqitMosqueDailyPrayerTimes.SetRuntimeAnnotation("Relational:DefaultMappings", defaultTableMappings6);
+            var prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitMosqueDailyPrayerTimesTableBase = new TableBase("PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.Mawaqit.Models.Entities.MawaqitMosqueDailyPrayerTimes", null, relationalModel);
+            var asrColumnBase2 = new ColumnBase<ColumnMappingBase>("Asr", "TEXT", prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitMosqueDailyPrayerTimesTableBase);
+            prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitMosqueDailyPrayerTimesTableBase.Columns.Add("Asr", asrColumnBase2);
+            var asrCongregationColumnBase = new ColumnBase<ColumnMappingBase>("AsrCongregation", "TEXT", prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitMosqueDailyPrayerTimesTableBase);
+            prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitMosqueDailyPrayerTimesTableBase.Columns.Add("AsrCongregation", asrCongregationColumnBase);
+            var dateColumnBase2 = new ColumnBase<ColumnMappingBase>("Date", "TEXT", prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitMosqueDailyPrayerTimesTableBase);
+            prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitMosqueDailyPrayerTimesTableBase.Columns.Add("Date", dateColumnBase2);
+            var dhuhrColumnBase2 = new ColumnBase<ColumnMappingBase>("Dhuhr", "TEXT", prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitMosqueDailyPrayerTimesTableBase);
+            prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitMosqueDailyPrayerTimesTableBase.Columns.Add("Dhuhr", dhuhrColumnBase2);
+            var dhuhrCongregationColumnBase = new ColumnBase<ColumnMappingBase>("DhuhrCongregation", "TEXT", prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitMosqueDailyPrayerTimesTableBase);
+            prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitMosqueDailyPrayerTimesTableBase.Columns.Add("DhuhrCongregation", dhuhrCongregationColumnBase);
+            var externalIDColumnBase = new ColumnBase<ColumnMappingBase>("ExternalID", "TEXT", prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitMosqueDailyPrayerTimesTableBase)
             {
                 IsNullable = true
             };
-            prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitPrayerTimesTableBase.Columns.Add("ExternalID", externalIDColumnBase);
-            var fajrColumnBase2 = new ColumnBase<ColumnMappingBase>("Fajr", "TEXT", prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitPrayerTimesTableBase);
-            prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitPrayerTimesTableBase.Columns.Add("Fajr", fajrColumnBase2);
-            var fajrCongregationColumnBase = new ColumnBase<ColumnMappingBase>("FajrCongregation", "TEXT", prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitPrayerTimesTableBase);
-            prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitPrayerTimesTableBase.Columns.Add("FajrCongregation", fajrCongregationColumnBase);
-            var iDColumnBase6 = new ColumnBase<ColumnMappingBase>("ID", "INTEGER", prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitPrayerTimesTableBase);
-            prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitPrayerTimesTableBase.Columns.Add("ID", iDColumnBase6);
-            var insertInstantColumnBase6 = new ColumnBase<ColumnMappingBase>("InsertInstant", "TEXT", prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitPrayerTimesTableBase)
+            prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitMosqueDailyPrayerTimesTableBase.Columns.Add("ExternalID", externalIDColumnBase);
+            var fajrColumnBase2 = new ColumnBase<ColumnMappingBase>("Fajr", "TEXT", prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitMosqueDailyPrayerTimesTableBase);
+            prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitMosqueDailyPrayerTimesTableBase.Columns.Add("Fajr", fajrColumnBase2);
+            var fajrCongregationColumnBase = new ColumnBase<ColumnMappingBase>("FajrCongregation", "TEXT", prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitMosqueDailyPrayerTimesTableBase);
+            prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitMosqueDailyPrayerTimesTableBase.Columns.Add("FajrCongregation", fajrCongregationColumnBase);
+            var iDColumnBase6 = new ColumnBase<ColumnMappingBase>("ID", "INTEGER", prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitMosqueDailyPrayerTimesTableBase);
+            prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitMosqueDailyPrayerTimesTableBase.Columns.Add("ID", iDColumnBase6);
+            var insertInstantColumnBase6 = new ColumnBase<ColumnMappingBase>("InsertInstant", "TEXT", prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitMosqueDailyPrayerTimesTableBase)
             {
                 IsNullable = true
             };
-            prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitPrayerTimesTableBase.Columns.Add("InsertInstant", insertInstantColumnBase6);
-            var ishaColumnBase2 = new ColumnBase<ColumnMappingBase>("Isha", "TEXT", prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitPrayerTimesTableBase);
-            prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitPrayerTimesTableBase.Columns.Add("Isha", ishaColumnBase2);
-            var ishaCongregationColumnBase = new ColumnBase<ColumnMappingBase>("IshaCongregation", "TEXT", prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitPrayerTimesTableBase);
-            prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitPrayerTimesTableBase.Columns.Add("IshaCongregation", ishaCongregationColumnBase);
-            var jumuahColumnBase = new ColumnBase<ColumnMappingBase>("Jumuah", "TEXT", prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitPrayerTimesTableBase)
+            prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitMosqueDailyPrayerTimesTableBase.Columns.Add("InsertInstant", insertInstantColumnBase6);
+            var ishaColumnBase2 = new ColumnBase<ColumnMappingBase>("Isha", "TEXT", prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitMosqueDailyPrayerTimesTableBase);
+            prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitMosqueDailyPrayerTimesTableBase.Columns.Add("Isha", ishaColumnBase2);
+            var ishaCongregationColumnBase = new ColumnBase<ColumnMappingBase>("IshaCongregation", "TEXT", prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitMosqueDailyPrayerTimesTableBase);
+            prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitMosqueDailyPrayerTimesTableBase.Columns.Add("IshaCongregation", ishaCongregationColumnBase);
+            var jumuahColumnBase = new ColumnBase<ColumnMappingBase>("Jumuah", "TEXT", prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitMosqueDailyPrayerTimesTableBase)
             {
                 IsNullable = true
             };
-            prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitPrayerTimesTableBase.Columns.Add("Jumuah", jumuahColumnBase);
-            var jumuah2ColumnBase = new ColumnBase<ColumnMappingBase>("Jumuah2", "TEXT", prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitPrayerTimesTableBase)
+            prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitMosqueDailyPrayerTimesTableBase.Columns.Add("Jumuah", jumuahColumnBase);
+            var jumuah2ColumnBase = new ColumnBase<ColumnMappingBase>("Jumuah2", "TEXT", prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitMosqueDailyPrayerTimesTableBase)
             {
                 IsNullable = true
             };
-            prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitPrayerTimesTableBase.Columns.Add("Jumuah2", jumuah2ColumnBase);
-            var maghribColumnBase2 = new ColumnBase<ColumnMappingBase>("Maghrib", "TEXT", prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitPrayerTimesTableBase);
-            prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitPrayerTimesTableBase.Columns.Add("Maghrib", maghribColumnBase2);
-            var maghribCongregationColumnBase = new ColumnBase<ColumnMappingBase>("MaghribCongregation", "TEXT", prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitPrayerTimesTableBase);
-            prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitPrayerTimesTableBase.Columns.Add("MaghribCongregation", maghribCongregationColumnBase);
-            var shuruqColumnBase2 = new ColumnBase<ColumnMappingBase>("Shuruq", "TEXT", prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitPrayerTimesTableBase);
-            prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitPrayerTimesTableBase.Columns.Add("Shuruq", shuruqColumnBase2);
-            relationalModel.DefaultTables.Add("PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.Mawaqit.Models.Entities.MawaqitPrayerTimes", prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitPrayerTimesTableBase);
-            var prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitPrayerTimesMappingBase = new TableMappingBase<ColumnMappingBase>(mawaqitPrayerTimes, prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitPrayerTimesTableBase, true);
-            prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitPrayerTimesTableBase.AddTypeMapping(prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitPrayerTimesMappingBase, false);
-            defaultTableMappings6.Add(prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitPrayerTimesMappingBase);
-            RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)iDColumnBase6, mawaqitPrayerTimes.FindProperty("ID")!, prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitPrayerTimesMappingBase);
-            RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)asrColumnBase2, mawaqitPrayerTimes.FindProperty("Asr")!, prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitPrayerTimesMappingBase);
-            RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)asrCongregationColumnBase, mawaqitPrayerTimes.FindProperty("AsrCongregation")!, prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitPrayerTimesMappingBase);
-            RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)dateColumnBase2, mawaqitPrayerTimes.FindProperty("Date")!, prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitPrayerTimesMappingBase);
-            RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)dhuhrColumnBase2, mawaqitPrayerTimes.FindProperty("Dhuhr")!, prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitPrayerTimesMappingBase);
-            RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)dhuhrCongregationColumnBase, mawaqitPrayerTimes.FindProperty("DhuhrCongregation")!, prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitPrayerTimesMappingBase);
-            RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)externalIDColumnBase, mawaqitPrayerTimes.FindProperty("ExternalID")!, prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitPrayerTimesMappingBase);
-            RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)fajrColumnBase2, mawaqitPrayerTimes.FindProperty("Fajr")!, prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitPrayerTimesMappingBase);
-            RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)fajrCongregationColumnBase, mawaqitPrayerTimes.FindProperty("FajrCongregation")!, prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitPrayerTimesMappingBase);
-            RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)insertInstantColumnBase6, mawaqitPrayerTimes.FindProperty("InsertInstant")!, prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitPrayerTimesMappingBase);
-            RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)ishaColumnBase2, mawaqitPrayerTimes.FindProperty("Isha")!, prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitPrayerTimesMappingBase);
-            RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)ishaCongregationColumnBase, mawaqitPrayerTimes.FindProperty("IshaCongregation")!, prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitPrayerTimesMappingBase);
-            RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)jumuahColumnBase, mawaqitPrayerTimes.FindProperty("Jumuah")!, prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitPrayerTimesMappingBase);
-            RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)jumuah2ColumnBase, mawaqitPrayerTimes.FindProperty("Jumuah2")!, prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitPrayerTimesMappingBase);
-            RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)maghribColumnBase2, mawaqitPrayerTimes.FindProperty("Maghrib")!, prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitPrayerTimesMappingBase);
-            RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)maghribCongregationColumnBase, mawaqitPrayerTimes.FindProperty("MaghribCongregation")!, prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitPrayerTimesMappingBase);
-            RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)shuruqColumnBase2, mawaqitPrayerTimes.FindProperty("Shuruq")!, prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitPrayerTimesMappingBase);
+            prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitMosqueDailyPrayerTimesTableBase.Columns.Add("Jumuah2", jumuah2ColumnBase);
+            var maghribColumnBase2 = new ColumnBase<ColumnMappingBase>("Maghrib", "TEXT", prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitMosqueDailyPrayerTimesTableBase);
+            prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitMosqueDailyPrayerTimesTableBase.Columns.Add("Maghrib", maghribColumnBase2);
+            var maghribCongregationColumnBase = new ColumnBase<ColumnMappingBase>("MaghribCongregation", "TEXT", prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitMosqueDailyPrayerTimesTableBase);
+            prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitMosqueDailyPrayerTimesTableBase.Columns.Add("MaghribCongregation", maghribCongregationColumnBase);
+            var shuruqColumnBase2 = new ColumnBase<ColumnMappingBase>("Shuruq", "TEXT", prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitMosqueDailyPrayerTimesTableBase);
+            prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitMosqueDailyPrayerTimesTableBase.Columns.Add("Shuruq", shuruqColumnBase2);
+            relationalModel.DefaultTables.Add("PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.Mawaqit.Models.Entities.MawaqitMosqueDailyPrayerTimes", prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitMosqueDailyPrayerTimesTableBase);
+            var prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitMosqueDailyPrayerTimesMappingBase = new TableMappingBase<ColumnMappingBase>(mawaqitMosqueDailyPrayerTimes, prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitMosqueDailyPrayerTimesTableBase, true);
+            prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitMosqueDailyPrayerTimesTableBase.AddTypeMapping(prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitMosqueDailyPrayerTimesMappingBase, false);
+            defaultTableMappings6.Add(prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitMosqueDailyPrayerTimesMappingBase);
+            RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)iDColumnBase6, mawaqitMosqueDailyPrayerTimes.FindProperty("ID")!, prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitMosqueDailyPrayerTimesMappingBase);
+            RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)asrColumnBase2, mawaqitMosqueDailyPrayerTimes.FindProperty("Asr")!, prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitMosqueDailyPrayerTimesMappingBase);
+            RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)asrCongregationColumnBase, mawaqitMosqueDailyPrayerTimes.FindProperty("AsrCongregation")!, prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitMosqueDailyPrayerTimesMappingBase);
+            RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)dateColumnBase2, mawaqitMosqueDailyPrayerTimes.FindProperty("Date")!, prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitMosqueDailyPrayerTimesMappingBase);
+            RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)dhuhrColumnBase2, mawaqitMosqueDailyPrayerTimes.FindProperty("Dhuhr")!, prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitMosqueDailyPrayerTimesMappingBase);
+            RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)dhuhrCongregationColumnBase, mawaqitMosqueDailyPrayerTimes.FindProperty("DhuhrCongregation")!, prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitMosqueDailyPrayerTimesMappingBase);
+            RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)externalIDColumnBase, mawaqitMosqueDailyPrayerTimes.FindProperty("ExternalID")!, prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitMosqueDailyPrayerTimesMappingBase);
+            RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)fajrColumnBase2, mawaqitMosqueDailyPrayerTimes.FindProperty("Fajr")!, prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitMosqueDailyPrayerTimesMappingBase);
+            RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)fajrCongregationColumnBase, mawaqitMosqueDailyPrayerTimes.FindProperty("FajrCongregation")!, prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitMosqueDailyPrayerTimesMappingBase);
+            RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)insertInstantColumnBase6, mawaqitMosqueDailyPrayerTimes.FindProperty("InsertInstant")!, prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitMosqueDailyPrayerTimesMappingBase);
+            RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)ishaColumnBase2, mawaqitMosqueDailyPrayerTimes.FindProperty("Isha")!, prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitMosqueDailyPrayerTimesMappingBase);
+            RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)ishaCongregationColumnBase, mawaqitMosqueDailyPrayerTimes.FindProperty("IshaCongregation")!, prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitMosqueDailyPrayerTimesMappingBase);
+            RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)jumuahColumnBase, mawaqitMosqueDailyPrayerTimes.FindProperty("Jumuah")!, prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitMosqueDailyPrayerTimesMappingBase);
+            RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)jumuah2ColumnBase, mawaqitMosqueDailyPrayerTimes.FindProperty("Jumuah2")!, prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitMosqueDailyPrayerTimesMappingBase);
+            RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)maghribColumnBase2, mawaqitMosqueDailyPrayerTimes.FindProperty("Maghrib")!, prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitMosqueDailyPrayerTimesMappingBase);
+            RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)maghribCongregationColumnBase, mawaqitMosqueDailyPrayerTimes.FindProperty("MaghribCongregation")!, prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitMosqueDailyPrayerTimesMappingBase);
+            RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)shuruqColumnBase2, mawaqitMosqueDailyPrayerTimes.FindProperty("Shuruq")!, prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMawaqitModelsEntitiesMawaqitMosqueDailyPrayerTimesMappingBase);
 
             var tableMappings6 = new List<TableMapping>();
-            mawaqitPrayerTimes.SetRuntimeAnnotation("Relational:TableMappings", tableMappings6);
+            mawaqitMosqueDailyPrayerTimes.SetRuntimeAnnotation("Relational:TableMappings", tableMappings6);
             var mawaqitPrayerTimesTable = new Table("MawaqitPrayerTimes", null, relationalModel);
             var iDColumn6 = new Column("ID", "INTEGER", mawaqitPrayerTimesTable);
             mawaqitPrayerTimesTable.Columns.Add("ID", iDColumn6);
@@ -814,108 +814,108 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
             var pK_MawaqitPrayerTimes = new UniqueConstraint("PK_MawaqitPrayerTimes", mawaqitPrayerTimesTable, new[] { iDColumn6 });
             mawaqitPrayerTimesTable.PrimaryKey = pK_MawaqitPrayerTimes;
             var pK_MawaqitPrayerTimesUc = RelationalModel.GetKey(this,
-                "PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.Mawaqit.Models.Entities.MawaqitPrayerTimes",
+                "PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.Mawaqit.Models.Entities.MawaqitMosqueDailyPrayerTimes",
                 new[] { "ID" });
             pK_MawaqitPrayerTimes.MappedKeys.Add(pK_MawaqitPrayerTimesUc);
             RelationalModel.GetOrCreateUniqueConstraints(pK_MawaqitPrayerTimesUc).Add(pK_MawaqitPrayerTimes);
             mawaqitPrayerTimesTable.UniqueConstraints.Add("PK_MawaqitPrayerTimes", pK_MawaqitPrayerTimes);
             relationalModel.Tables.Add(("MawaqitPrayerTimes", null), mawaqitPrayerTimesTable);
-            var mawaqitPrayerTimesTableMapping = new TableMapping(mawaqitPrayerTimes, mawaqitPrayerTimesTable, true);
+            var mawaqitPrayerTimesTableMapping = new TableMapping(mawaqitMosqueDailyPrayerTimes, mawaqitPrayerTimesTable, true);
             mawaqitPrayerTimesTable.AddTypeMapping(mawaqitPrayerTimesTableMapping, false);
             tableMappings6.Add(mawaqitPrayerTimesTableMapping);
-            RelationalModel.CreateColumnMapping(iDColumn6, mawaqitPrayerTimes.FindProperty("ID")!, mawaqitPrayerTimesTableMapping);
-            RelationalModel.CreateColumnMapping(asrColumn2, mawaqitPrayerTimes.FindProperty("Asr")!, mawaqitPrayerTimesTableMapping);
-            RelationalModel.CreateColumnMapping(asrCongregationColumn, mawaqitPrayerTimes.FindProperty("AsrCongregation")!, mawaqitPrayerTimesTableMapping);
-            RelationalModel.CreateColumnMapping(dateColumn2, mawaqitPrayerTimes.FindProperty("Date")!, mawaqitPrayerTimesTableMapping);
-            RelationalModel.CreateColumnMapping(dhuhrColumn2, mawaqitPrayerTimes.FindProperty("Dhuhr")!, mawaqitPrayerTimesTableMapping);
-            RelationalModel.CreateColumnMapping(dhuhrCongregationColumn, mawaqitPrayerTimes.FindProperty("DhuhrCongregation")!, mawaqitPrayerTimesTableMapping);
-            RelationalModel.CreateColumnMapping(externalIDColumn, mawaqitPrayerTimes.FindProperty("ExternalID")!, mawaqitPrayerTimesTableMapping);
-            RelationalModel.CreateColumnMapping(fajrColumn2, mawaqitPrayerTimes.FindProperty("Fajr")!, mawaqitPrayerTimesTableMapping);
-            RelationalModel.CreateColumnMapping(fajrCongregationColumn, mawaqitPrayerTimes.FindProperty("FajrCongregation")!, mawaqitPrayerTimesTableMapping);
-            RelationalModel.CreateColumnMapping(insertInstantColumn6, mawaqitPrayerTimes.FindProperty("InsertInstant")!, mawaqitPrayerTimesTableMapping);
-            RelationalModel.CreateColumnMapping(ishaColumn2, mawaqitPrayerTimes.FindProperty("Isha")!, mawaqitPrayerTimesTableMapping);
-            RelationalModel.CreateColumnMapping(ishaCongregationColumn, mawaqitPrayerTimes.FindProperty("IshaCongregation")!, mawaqitPrayerTimesTableMapping);
-            RelationalModel.CreateColumnMapping(jumuahColumn, mawaqitPrayerTimes.FindProperty("Jumuah")!, mawaqitPrayerTimesTableMapping);
-            RelationalModel.CreateColumnMapping(jumuah2Column, mawaqitPrayerTimes.FindProperty("Jumuah2")!, mawaqitPrayerTimesTableMapping);
-            RelationalModel.CreateColumnMapping(maghribColumn2, mawaqitPrayerTimes.FindProperty("Maghrib")!, mawaqitPrayerTimesTableMapping);
-            RelationalModel.CreateColumnMapping(maghribCongregationColumn, mawaqitPrayerTimes.FindProperty("MaghribCongregation")!, mawaqitPrayerTimesTableMapping);
-            RelationalModel.CreateColumnMapping(shuruqColumn2, mawaqitPrayerTimes.FindProperty("Shuruq")!, mawaqitPrayerTimesTableMapping);
+            RelationalModel.CreateColumnMapping(iDColumn6, mawaqitMosqueDailyPrayerTimes.FindProperty("ID")!, mawaqitPrayerTimesTableMapping);
+            RelationalModel.CreateColumnMapping(asrColumn2, mawaqitMosqueDailyPrayerTimes.FindProperty("Asr")!, mawaqitPrayerTimesTableMapping);
+            RelationalModel.CreateColumnMapping(asrCongregationColumn, mawaqitMosqueDailyPrayerTimes.FindProperty("AsrCongregation")!, mawaqitPrayerTimesTableMapping);
+            RelationalModel.CreateColumnMapping(dateColumn2, mawaqitMosqueDailyPrayerTimes.FindProperty("Date")!, mawaqitPrayerTimesTableMapping);
+            RelationalModel.CreateColumnMapping(dhuhrColumn2, mawaqitMosqueDailyPrayerTimes.FindProperty("Dhuhr")!, mawaqitPrayerTimesTableMapping);
+            RelationalModel.CreateColumnMapping(dhuhrCongregationColumn, mawaqitMosqueDailyPrayerTimes.FindProperty("DhuhrCongregation")!, mawaqitPrayerTimesTableMapping);
+            RelationalModel.CreateColumnMapping(externalIDColumn, mawaqitMosqueDailyPrayerTimes.FindProperty("ExternalID")!, mawaqitPrayerTimesTableMapping);
+            RelationalModel.CreateColumnMapping(fajrColumn2, mawaqitMosqueDailyPrayerTimes.FindProperty("Fajr")!, mawaqitPrayerTimesTableMapping);
+            RelationalModel.CreateColumnMapping(fajrCongregationColumn, mawaqitMosqueDailyPrayerTimes.FindProperty("FajrCongregation")!, mawaqitPrayerTimesTableMapping);
+            RelationalModel.CreateColumnMapping(insertInstantColumn6, mawaqitMosqueDailyPrayerTimes.FindProperty("InsertInstant")!, mawaqitPrayerTimesTableMapping);
+            RelationalModel.CreateColumnMapping(ishaColumn2, mawaqitMosqueDailyPrayerTimes.FindProperty("Isha")!, mawaqitPrayerTimesTableMapping);
+            RelationalModel.CreateColumnMapping(ishaCongregationColumn, mawaqitMosqueDailyPrayerTimes.FindProperty("IshaCongregation")!, mawaqitPrayerTimesTableMapping);
+            RelationalModel.CreateColumnMapping(jumuahColumn, mawaqitMosqueDailyPrayerTimes.FindProperty("Jumuah")!, mawaqitPrayerTimesTableMapping);
+            RelationalModel.CreateColumnMapping(jumuah2Column, mawaqitMosqueDailyPrayerTimes.FindProperty("Jumuah2")!, mawaqitPrayerTimesTableMapping);
+            RelationalModel.CreateColumnMapping(maghribColumn2, mawaqitMosqueDailyPrayerTimes.FindProperty("Maghrib")!, mawaqitPrayerTimesTableMapping);
+            RelationalModel.CreateColumnMapping(maghribCongregationColumn, mawaqitMosqueDailyPrayerTimes.FindProperty("MaghribCongregation")!, mawaqitPrayerTimesTableMapping);
+            RelationalModel.CreateColumnMapping(shuruqColumn2, mawaqitMosqueDailyPrayerTimes.FindProperty("Shuruq")!, mawaqitPrayerTimesTableMapping);
 
-            var myMosqPrayerTimes = FindEntityType("PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.MyMosq.Models.Entities.MyMosqPrayerTimes")!;
+            var myMosqMosqueDailyPrayerTimes = FindEntityType("PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.MyMosq.Models.Entities.MyMosqMosqueDailyPrayerTimes")!;
 
             var defaultTableMappings7 = new List<TableMappingBase<ColumnMappingBase>>();
-            myMosqPrayerTimes.SetRuntimeAnnotation("Relational:DefaultMappings", defaultTableMappings7);
-            var prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqPrayerTimesTableBase = new TableBase("PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.MyMosq.Models.Entities.MyMosqPrayerTimes", null, relationalModel);
-            var asrColumnBase3 = new ColumnBase<ColumnMappingBase>("Asr", "TEXT", prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqPrayerTimesTableBase);
-            prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqPrayerTimesTableBase.Columns.Add("Asr", asrColumnBase3);
-            var asrCongregationColumnBase0 = new ColumnBase<ColumnMappingBase>("AsrCongregation", "TEXT", prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqPrayerTimesTableBase);
-            prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqPrayerTimesTableBase.Columns.Add("AsrCongregation", asrCongregationColumnBase0);
-            var dateColumnBase3 = new ColumnBase<ColumnMappingBase>("Date", "TEXT", prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqPrayerTimesTableBase);
-            prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqPrayerTimesTableBase.Columns.Add("Date", dateColumnBase3);
-            var dhuhrColumnBase3 = new ColumnBase<ColumnMappingBase>("Dhuhr", "TEXT", prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqPrayerTimesTableBase);
-            prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqPrayerTimesTableBase.Columns.Add("Dhuhr", dhuhrColumnBase3);
-            var dhuhrCongregationColumnBase0 = new ColumnBase<ColumnMappingBase>("DhuhrCongregation", "TEXT", prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqPrayerTimesTableBase);
-            prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqPrayerTimesTableBase.Columns.Add("DhuhrCongregation", dhuhrCongregationColumnBase0);
-            var externalIDColumnBase0 = new ColumnBase<ColumnMappingBase>("ExternalID", "TEXT", prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqPrayerTimesTableBase)
+            myMosqMosqueDailyPrayerTimes.SetRuntimeAnnotation("Relational:DefaultMappings", defaultTableMappings7);
+            var prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqMosqueDailyPrayerTimesTableBase = new TableBase("PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.MyMosq.Models.Entities.MyMosqMosqueDailyPrayerTimes", null, relationalModel);
+            var asrColumnBase3 = new ColumnBase<ColumnMappingBase>("Asr", "TEXT", prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqMosqueDailyPrayerTimesTableBase);
+            prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqMosqueDailyPrayerTimesTableBase.Columns.Add("Asr", asrColumnBase3);
+            var asrCongregationColumnBase0 = new ColumnBase<ColumnMappingBase>("AsrCongregation", "TEXT", prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqMosqueDailyPrayerTimesTableBase);
+            prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqMosqueDailyPrayerTimesTableBase.Columns.Add("AsrCongregation", asrCongregationColumnBase0);
+            var dateColumnBase3 = new ColumnBase<ColumnMappingBase>("Date", "TEXT", prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqMosqueDailyPrayerTimesTableBase);
+            prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqMosqueDailyPrayerTimesTableBase.Columns.Add("Date", dateColumnBase3);
+            var dhuhrColumnBase3 = new ColumnBase<ColumnMappingBase>("Dhuhr", "TEXT", prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqMosqueDailyPrayerTimesTableBase);
+            prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqMosqueDailyPrayerTimesTableBase.Columns.Add("Dhuhr", dhuhrColumnBase3);
+            var dhuhrCongregationColumnBase0 = new ColumnBase<ColumnMappingBase>("DhuhrCongregation", "TEXT", prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqMosqueDailyPrayerTimesTableBase);
+            prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqMosqueDailyPrayerTimesTableBase.Columns.Add("DhuhrCongregation", dhuhrCongregationColumnBase0);
+            var externalIDColumnBase0 = new ColumnBase<ColumnMappingBase>("ExternalID", "TEXT", prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqMosqueDailyPrayerTimesTableBase)
             {
                 IsNullable = true
             };
-            prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqPrayerTimesTableBase.Columns.Add("ExternalID", externalIDColumnBase0);
-            var fajrColumnBase3 = new ColumnBase<ColumnMappingBase>("Fajr", "TEXT", prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqPrayerTimesTableBase);
-            prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqPrayerTimesTableBase.Columns.Add("Fajr", fajrColumnBase3);
-            var fajrCongregationColumnBase0 = new ColumnBase<ColumnMappingBase>("FajrCongregation", "TEXT", prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqPrayerTimesTableBase);
-            prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqPrayerTimesTableBase.Columns.Add("FajrCongregation", fajrCongregationColumnBase0);
-            var iDColumnBase7 = new ColumnBase<ColumnMappingBase>("ID", "INTEGER", prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqPrayerTimesTableBase);
-            prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqPrayerTimesTableBase.Columns.Add("ID", iDColumnBase7);
-            var insertInstantColumnBase7 = new ColumnBase<ColumnMappingBase>("InsertInstant", "TEXT", prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqPrayerTimesTableBase)
+            prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqMosqueDailyPrayerTimesTableBase.Columns.Add("ExternalID", externalIDColumnBase0);
+            var fajrColumnBase3 = new ColumnBase<ColumnMappingBase>("Fajr", "TEXT", prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqMosqueDailyPrayerTimesTableBase);
+            prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqMosqueDailyPrayerTimesTableBase.Columns.Add("Fajr", fajrColumnBase3);
+            var fajrCongregationColumnBase0 = new ColumnBase<ColumnMappingBase>("FajrCongregation", "TEXT", prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqMosqueDailyPrayerTimesTableBase);
+            prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqMosqueDailyPrayerTimesTableBase.Columns.Add("FajrCongregation", fajrCongregationColumnBase0);
+            var iDColumnBase7 = new ColumnBase<ColumnMappingBase>("ID", "INTEGER", prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqMosqueDailyPrayerTimesTableBase);
+            prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqMosqueDailyPrayerTimesTableBase.Columns.Add("ID", iDColumnBase7);
+            var insertInstantColumnBase7 = new ColumnBase<ColumnMappingBase>("InsertInstant", "TEXT", prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqMosqueDailyPrayerTimesTableBase)
             {
                 IsNullable = true
             };
-            prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqPrayerTimesTableBase.Columns.Add("InsertInstant", insertInstantColumnBase7);
-            var ishaColumnBase3 = new ColumnBase<ColumnMappingBase>("Isha", "TEXT", prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqPrayerTimesTableBase);
-            prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqPrayerTimesTableBase.Columns.Add("Isha", ishaColumnBase3);
-            var ishaCongregationColumnBase0 = new ColumnBase<ColumnMappingBase>("IshaCongregation", "TEXT", prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqPrayerTimesTableBase);
-            prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqPrayerTimesTableBase.Columns.Add("IshaCongregation", ishaCongregationColumnBase0);
-            var jumuahColumnBase0 = new ColumnBase<ColumnMappingBase>("Jumuah", "TEXT", prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqPrayerTimesTableBase)
+            prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqMosqueDailyPrayerTimesTableBase.Columns.Add("InsertInstant", insertInstantColumnBase7);
+            var ishaColumnBase3 = new ColumnBase<ColumnMappingBase>("Isha", "TEXT", prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqMosqueDailyPrayerTimesTableBase);
+            prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqMosqueDailyPrayerTimesTableBase.Columns.Add("Isha", ishaColumnBase3);
+            var ishaCongregationColumnBase0 = new ColumnBase<ColumnMappingBase>("IshaCongregation", "TEXT", prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqMosqueDailyPrayerTimesTableBase);
+            prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqMosqueDailyPrayerTimesTableBase.Columns.Add("IshaCongregation", ishaCongregationColumnBase0);
+            var jumuahColumnBase0 = new ColumnBase<ColumnMappingBase>("Jumuah", "TEXT", prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqMosqueDailyPrayerTimesTableBase)
             {
                 IsNullable = true
             };
-            prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqPrayerTimesTableBase.Columns.Add("Jumuah", jumuahColumnBase0);
-            var jumuah2ColumnBase0 = new ColumnBase<ColumnMappingBase>("Jumuah2", "TEXT", prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqPrayerTimesTableBase)
+            prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqMosqueDailyPrayerTimesTableBase.Columns.Add("Jumuah", jumuahColumnBase0);
+            var jumuah2ColumnBase0 = new ColumnBase<ColumnMappingBase>("Jumuah2", "TEXT", prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqMosqueDailyPrayerTimesTableBase)
             {
                 IsNullable = true
             };
-            prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqPrayerTimesTableBase.Columns.Add("Jumuah2", jumuah2ColumnBase0);
-            var maghribColumnBase3 = new ColumnBase<ColumnMappingBase>("Maghrib", "TEXT", prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqPrayerTimesTableBase);
-            prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqPrayerTimesTableBase.Columns.Add("Maghrib", maghribColumnBase3);
-            var maghribCongregationColumnBase0 = new ColumnBase<ColumnMappingBase>("MaghribCongregation", "TEXT", prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqPrayerTimesTableBase);
-            prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqPrayerTimesTableBase.Columns.Add("MaghribCongregation", maghribCongregationColumnBase0);
-            var shuruqColumnBase3 = new ColumnBase<ColumnMappingBase>("Shuruq", "TEXT", prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqPrayerTimesTableBase);
-            prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqPrayerTimesTableBase.Columns.Add("Shuruq", shuruqColumnBase3);
-            relationalModel.DefaultTables.Add("PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.MyMosq.Models.Entities.MyMosqPrayerTimes", prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqPrayerTimesTableBase);
-            var prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqPrayerTimesMappingBase = new TableMappingBase<ColumnMappingBase>(myMosqPrayerTimes, prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqPrayerTimesTableBase, true);
-            prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqPrayerTimesTableBase.AddTypeMapping(prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqPrayerTimesMappingBase, false);
-            defaultTableMappings7.Add(prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqPrayerTimesMappingBase);
-            RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)iDColumnBase7, myMosqPrayerTimes.FindProperty("ID")!, prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqPrayerTimesMappingBase);
-            RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)asrColumnBase3, myMosqPrayerTimes.FindProperty("Asr")!, prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqPrayerTimesMappingBase);
-            RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)asrCongregationColumnBase0, myMosqPrayerTimes.FindProperty("AsrCongregation")!, prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqPrayerTimesMappingBase);
-            RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)dateColumnBase3, myMosqPrayerTimes.FindProperty("Date")!, prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqPrayerTimesMappingBase);
-            RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)dhuhrColumnBase3, myMosqPrayerTimes.FindProperty("Dhuhr")!, prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqPrayerTimesMappingBase);
-            RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)dhuhrCongregationColumnBase0, myMosqPrayerTimes.FindProperty("DhuhrCongregation")!, prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqPrayerTimesMappingBase);
-            RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)externalIDColumnBase0, myMosqPrayerTimes.FindProperty("ExternalID")!, prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqPrayerTimesMappingBase);
-            RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)fajrColumnBase3, myMosqPrayerTimes.FindProperty("Fajr")!, prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqPrayerTimesMappingBase);
-            RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)fajrCongregationColumnBase0, myMosqPrayerTimes.FindProperty("FajrCongregation")!, prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqPrayerTimesMappingBase);
-            RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)insertInstantColumnBase7, myMosqPrayerTimes.FindProperty("InsertInstant")!, prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqPrayerTimesMappingBase);
-            RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)ishaColumnBase3, myMosqPrayerTimes.FindProperty("Isha")!, prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqPrayerTimesMappingBase);
-            RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)ishaCongregationColumnBase0, myMosqPrayerTimes.FindProperty("IshaCongregation")!, prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqPrayerTimesMappingBase);
-            RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)jumuahColumnBase0, myMosqPrayerTimes.FindProperty("Jumuah")!, prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqPrayerTimesMappingBase);
-            RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)jumuah2ColumnBase0, myMosqPrayerTimes.FindProperty("Jumuah2")!, prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqPrayerTimesMappingBase);
-            RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)maghribColumnBase3, myMosqPrayerTimes.FindProperty("Maghrib")!, prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqPrayerTimesMappingBase);
-            RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)maghribCongregationColumnBase0, myMosqPrayerTimes.FindProperty("MaghribCongregation")!, prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqPrayerTimesMappingBase);
-            RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)shuruqColumnBase3, myMosqPrayerTimes.FindProperty("Shuruq")!, prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqPrayerTimesMappingBase);
+            prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqMosqueDailyPrayerTimesTableBase.Columns.Add("Jumuah2", jumuah2ColumnBase0);
+            var maghribColumnBase3 = new ColumnBase<ColumnMappingBase>("Maghrib", "TEXT", prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqMosqueDailyPrayerTimesTableBase);
+            prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqMosqueDailyPrayerTimesTableBase.Columns.Add("Maghrib", maghribColumnBase3);
+            var maghribCongregationColumnBase0 = new ColumnBase<ColumnMappingBase>("MaghribCongregation", "TEXT", prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqMosqueDailyPrayerTimesTableBase);
+            prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqMosqueDailyPrayerTimesTableBase.Columns.Add("MaghribCongregation", maghribCongregationColumnBase0);
+            var shuruqColumnBase3 = new ColumnBase<ColumnMappingBase>("Shuruq", "TEXT", prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqMosqueDailyPrayerTimesTableBase);
+            prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqMosqueDailyPrayerTimesTableBase.Columns.Add("Shuruq", shuruqColumnBase3);
+            relationalModel.DefaultTables.Add("PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.MyMosq.Models.Entities.MyMosqMosqueDailyPrayerTimes", prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqMosqueDailyPrayerTimesTableBase);
+            var prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqMosqueDailyPrayerTimesMappingBase = new TableMappingBase<ColumnMappingBase>(myMosqMosqueDailyPrayerTimes, prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqMosqueDailyPrayerTimesTableBase, true);
+            prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqMosqueDailyPrayerTimesTableBase.AddTypeMapping(prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqMosqueDailyPrayerTimesMappingBase, false);
+            defaultTableMappings7.Add(prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqMosqueDailyPrayerTimesMappingBase);
+            RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)iDColumnBase7, myMosqMosqueDailyPrayerTimes.FindProperty("ID")!, prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqMosqueDailyPrayerTimesMappingBase);
+            RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)asrColumnBase3, myMosqMosqueDailyPrayerTimes.FindProperty("Asr")!, prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqMosqueDailyPrayerTimesMappingBase);
+            RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)asrCongregationColumnBase0, myMosqMosqueDailyPrayerTimes.FindProperty("AsrCongregation")!, prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqMosqueDailyPrayerTimesMappingBase);
+            RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)dateColumnBase3, myMosqMosqueDailyPrayerTimes.FindProperty("Date")!, prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqMosqueDailyPrayerTimesMappingBase);
+            RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)dhuhrColumnBase3, myMosqMosqueDailyPrayerTimes.FindProperty("Dhuhr")!, prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqMosqueDailyPrayerTimesMappingBase);
+            RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)dhuhrCongregationColumnBase0, myMosqMosqueDailyPrayerTimes.FindProperty("DhuhrCongregation")!, prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqMosqueDailyPrayerTimesMappingBase);
+            RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)externalIDColumnBase0, myMosqMosqueDailyPrayerTimes.FindProperty("ExternalID")!, prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqMosqueDailyPrayerTimesMappingBase);
+            RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)fajrColumnBase3, myMosqMosqueDailyPrayerTimes.FindProperty("Fajr")!, prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqMosqueDailyPrayerTimesMappingBase);
+            RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)fajrCongregationColumnBase0, myMosqMosqueDailyPrayerTimes.FindProperty("FajrCongregation")!, prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqMosqueDailyPrayerTimesMappingBase);
+            RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)insertInstantColumnBase7, myMosqMosqueDailyPrayerTimes.FindProperty("InsertInstant")!, prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqMosqueDailyPrayerTimesMappingBase);
+            RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)ishaColumnBase3, myMosqMosqueDailyPrayerTimes.FindProperty("Isha")!, prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqMosqueDailyPrayerTimesMappingBase);
+            RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)ishaCongregationColumnBase0, myMosqMosqueDailyPrayerTimes.FindProperty("IshaCongregation")!, prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqMosqueDailyPrayerTimesMappingBase);
+            RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)jumuahColumnBase0, myMosqMosqueDailyPrayerTimes.FindProperty("Jumuah")!, prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqMosqueDailyPrayerTimesMappingBase);
+            RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)jumuah2ColumnBase0, myMosqMosqueDailyPrayerTimes.FindProperty("Jumuah2")!, prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqMosqueDailyPrayerTimesMappingBase);
+            RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)maghribColumnBase3, myMosqMosqueDailyPrayerTimes.FindProperty("Maghrib")!, prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqMosqueDailyPrayerTimesMappingBase);
+            RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)maghribCongregationColumnBase0, myMosqMosqueDailyPrayerTimes.FindProperty("MaghribCongregation")!, prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqMosqueDailyPrayerTimesMappingBase);
+            RelationalModel.CreateColumnMapping((ColumnBase<ColumnMappingBase>)shuruqColumnBase3, myMosqMosqueDailyPrayerTimes.FindProperty("Shuruq")!, prayerTimeEngineCoreDomainMosquePrayerTimesProvidersMyMosqModelsEntitiesMyMosqMosqueDailyPrayerTimesMappingBase);
 
             var tableMappings7 = new List<TableMapping>();
-            myMosqPrayerTimes.SetRuntimeAnnotation("Relational:TableMappings", tableMappings7);
+            myMosqMosqueDailyPrayerTimes.SetRuntimeAnnotation("Relational:TableMappings", tableMappings7);
             var myMosqPrayerTimesTable = new Table("MyMosqPrayerTimes", null, relationalModel);
             var iDColumn7 = new Column("ID", "INTEGER", myMosqPrayerTimesTable);
             myMosqPrayerTimesTable.Columns.Add("ID", iDColumn7);
@@ -966,32 +966,32 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
             var pK_MyMosqPrayerTimes = new UniqueConstraint("PK_MyMosqPrayerTimes", myMosqPrayerTimesTable, new[] { iDColumn7 });
             myMosqPrayerTimesTable.PrimaryKey = pK_MyMosqPrayerTimes;
             var pK_MyMosqPrayerTimesUc = RelationalModel.GetKey(this,
-                "PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.MyMosq.Models.Entities.MyMosqPrayerTimes",
+                "PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.MyMosq.Models.Entities.MyMosqMosqueDailyPrayerTimes",
                 new[] { "ID" });
             pK_MyMosqPrayerTimes.MappedKeys.Add(pK_MyMosqPrayerTimesUc);
             RelationalModel.GetOrCreateUniqueConstraints(pK_MyMosqPrayerTimesUc).Add(pK_MyMosqPrayerTimes);
             myMosqPrayerTimesTable.UniqueConstraints.Add("PK_MyMosqPrayerTimes", pK_MyMosqPrayerTimes);
             relationalModel.Tables.Add(("MyMosqPrayerTimes", null), myMosqPrayerTimesTable);
-            var myMosqPrayerTimesTableMapping = new TableMapping(myMosqPrayerTimes, myMosqPrayerTimesTable, true);
+            var myMosqPrayerTimesTableMapping = new TableMapping(myMosqMosqueDailyPrayerTimes, myMosqPrayerTimesTable, true);
             myMosqPrayerTimesTable.AddTypeMapping(myMosqPrayerTimesTableMapping, false);
             tableMappings7.Add(myMosqPrayerTimesTableMapping);
-            RelationalModel.CreateColumnMapping(iDColumn7, myMosqPrayerTimes.FindProperty("ID")!, myMosqPrayerTimesTableMapping);
-            RelationalModel.CreateColumnMapping(asrColumn3, myMosqPrayerTimes.FindProperty("Asr")!, myMosqPrayerTimesTableMapping);
-            RelationalModel.CreateColumnMapping(asrCongregationColumn0, myMosqPrayerTimes.FindProperty("AsrCongregation")!, myMosqPrayerTimesTableMapping);
-            RelationalModel.CreateColumnMapping(dateColumn3, myMosqPrayerTimes.FindProperty("Date")!, myMosqPrayerTimesTableMapping);
-            RelationalModel.CreateColumnMapping(dhuhrColumn3, myMosqPrayerTimes.FindProperty("Dhuhr")!, myMosqPrayerTimesTableMapping);
-            RelationalModel.CreateColumnMapping(dhuhrCongregationColumn0, myMosqPrayerTimes.FindProperty("DhuhrCongregation")!, myMosqPrayerTimesTableMapping);
-            RelationalModel.CreateColumnMapping(externalIDColumn0, myMosqPrayerTimes.FindProperty("ExternalID")!, myMosqPrayerTimesTableMapping);
-            RelationalModel.CreateColumnMapping(fajrColumn3, myMosqPrayerTimes.FindProperty("Fajr")!, myMosqPrayerTimesTableMapping);
-            RelationalModel.CreateColumnMapping(fajrCongregationColumn0, myMosqPrayerTimes.FindProperty("FajrCongregation")!, myMosqPrayerTimesTableMapping);
-            RelationalModel.CreateColumnMapping(insertInstantColumn7, myMosqPrayerTimes.FindProperty("InsertInstant")!, myMosqPrayerTimesTableMapping);
-            RelationalModel.CreateColumnMapping(ishaColumn3, myMosqPrayerTimes.FindProperty("Isha")!, myMosqPrayerTimesTableMapping);
-            RelationalModel.CreateColumnMapping(ishaCongregationColumn0, myMosqPrayerTimes.FindProperty("IshaCongregation")!, myMosqPrayerTimesTableMapping);
-            RelationalModel.CreateColumnMapping(jumuahColumn0, myMosqPrayerTimes.FindProperty("Jumuah")!, myMosqPrayerTimesTableMapping);
-            RelationalModel.CreateColumnMapping(jumuah2Column0, myMosqPrayerTimes.FindProperty("Jumuah2")!, myMosqPrayerTimesTableMapping);
-            RelationalModel.CreateColumnMapping(maghribColumn3, myMosqPrayerTimes.FindProperty("Maghrib")!, myMosqPrayerTimesTableMapping);
-            RelationalModel.CreateColumnMapping(maghribCongregationColumn0, myMosqPrayerTimes.FindProperty("MaghribCongregation")!, myMosqPrayerTimesTableMapping);
-            RelationalModel.CreateColumnMapping(shuruqColumn3, myMosqPrayerTimes.FindProperty("Shuruq")!, myMosqPrayerTimesTableMapping);
+            RelationalModel.CreateColumnMapping(iDColumn7, myMosqMosqueDailyPrayerTimes.FindProperty("ID")!, myMosqPrayerTimesTableMapping);
+            RelationalModel.CreateColumnMapping(asrColumn3, myMosqMosqueDailyPrayerTimes.FindProperty("Asr")!, myMosqPrayerTimesTableMapping);
+            RelationalModel.CreateColumnMapping(asrCongregationColumn0, myMosqMosqueDailyPrayerTimes.FindProperty("AsrCongregation")!, myMosqPrayerTimesTableMapping);
+            RelationalModel.CreateColumnMapping(dateColumn3, myMosqMosqueDailyPrayerTimes.FindProperty("Date")!, myMosqPrayerTimesTableMapping);
+            RelationalModel.CreateColumnMapping(dhuhrColumn3, myMosqMosqueDailyPrayerTimes.FindProperty("Dhuhr")!, myMosqPrayerTimesTableMapping);
+            RelationalModel.CreateColumnMapping(dhuhrCongregationColumn0, myMosqMosqueDailyPrayerTimes.FindProperty("DhuhrCongregation")!, myMosqPrayerTimesTableMapping);
+            RelationalModel.CreateColumnMapping(externalIDColumn0, myMosqMosqueDailyPrayerTimes.FindProperty("ExternalID")!, myMosqPrayerTimesTableMapping);
+            RelationalModel.CreateColumnMapping(fajrColumn3, myMosqMosqueDailyPrayerTimes.FindProperty("Fajr")!, myMosqPrayerTimesTableMapping);
+            RelationalModel.CreateColumnMapping(fajrCongregationColumn0, myMosqMosqueDailyPrayerTimes.FindProperty("FajrCongregation")!, myMosqPrayerTimesTableMapping);
+            RelationalModel.CreateColumnMapping(insertInstantColumn7, myMosqMosqueDailyPrayerTimes.FindProperty("InsertInstant")!, myMosqPrayerTimesTableMapping);
+            RelationalModel.CreateColumnMapping(ishaColumn3, myMosqMosqueDailyPrayerTimes.FindProperty("Isha")!, myMosqPrayerTimesTableMapping);
+            RelationalModel.CreateColumnMapping(ishaCongregationColumn0, myMosqMosqueDailyPrayerTimes.FindProperty("IshaCongregation")!, myMosqPrayerTimesTableMapping);
+            RelationalModel.CreateColumnMapping(jumuahColumn0, myMosqMosqueDailyPrayerTimes.FindProperty("Jumuah")!, myMosqPrayerTimesTableMapping);
+            RelationalModel.CreateColumnMapping(jumuah2Column0, myMosqMosqueDailyPrayerTimes.FindProperty("Jumuah2")!, myMosqPrayerTimesTableMapping);
+            RelationalModel.CreateColumnMapping(maghribColumn3, myMosqMosqueDailyPrayerTimes.FindProperty("Maghrib")!, myMosqPrayerTimesTableMapping);
+            RelationalModel.CreateColumnMapping(maghribCongregationColumn0, myMosqMosqueDailyPrayerTimes.FindProperty("MaghribCongregation")!, myMosqPrayerTimesTableMapping);
+            RelationalModel.CreateColumnMapping(shuruqColumn3, myMosqMosqueDailyPrayerTimes.FindProperty("Shuruq")!, myMosqPrayerTimesTableMapping);
 
             var profilePlaceInfo = FindEntityType("PrayerTimeEngine.Core.Domain.PlaceManagement.Models.ProfilePlaceInfo")!;
 

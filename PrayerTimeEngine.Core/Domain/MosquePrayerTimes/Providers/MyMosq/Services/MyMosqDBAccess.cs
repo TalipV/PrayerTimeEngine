@@ -10,13 +10,13 @@ public class MyMosqDBAccess(
         IDbContextFactory<AppDbContext> dbContextFactory
     ) : IMyMosqDBAccess, IPrayerTimeCacheCleaner
 {
-    private static readonly Func<AppDbContext, LocalDate, string, IAsyncEnumerable<MyMosqPrayerTimes>> compiledQuery_GetPrayerTimesAsync =
+    private static readonly Func<AppDbContext, LocalDate, string, IAsyncEnumerable<MyMosqMosqueDailyPrayerTimes>> compiledQuery_GetPrayerTimesAsync =
         EF.CompileAsyncQuery(
             (AppDbContext context, LocalDate date, string externalID) =>
                 context.MyMosqPrayerTimes.AsNoTracking()
             .Where(x => x.Date == date && x.ExternalID == externalID));
 
-    public async Task<MyMosqPrayerTimes> GetPrayerTimesAsync(LocalDate date, string externalID, CancellationToken cancellationToken)
+    public async Task<MyMosqMosqueDailyPrayerTimes> GetPrayerTimesAsync(LocalDate date, string externalID, CancellationToken cancellationToken)
     {
         using (AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken))
         {
@@ -26,7 +26,7 @@ public class MyMosqDBAccess(
         }
     }
 
-    public async Task InsertPrayerTimesAsync(List<MyMosqPrayerTimes> prayerTimesLst, CancellationToken cancellationToken)
+    public async Task InsertPrayerTimesAsync(List<MyMosqMosqueDailyPrayerTimes> prayerTimesLst, CancellationToken cancellationToken)
     {
         using (AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken))
         {

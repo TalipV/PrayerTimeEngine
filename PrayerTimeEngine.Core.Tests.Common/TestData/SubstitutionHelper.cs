@@ -5,6 +5,7 @@ using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Interfac
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Muwaqqit.Interfaces;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Semerkand.Interfaces;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.Mawaqit.Interfaces;
+using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.MyMosq.Services;
 using Refit;
 using System.Net;
 using System.Net.WebSockets;
@@ -131,7 +132,7 @@ public class SubstitutionHelper
 
     private const string WEB_SOCKET_MESSAGE_SEPARATOR_TEXT = "#CUSTOM-SEPARATOR#";
 
-    public static IWebSocketClient GetMockedMyMosqWebSocketClient()
+    private static IWebSocketClient getMockedMyMosqWebSocketClient()
     {
         var mockWebSocketClient = Substitute.For<IWebSocketClient>();
 
@@ -188,4 +189,11 @@ public class SubstitutionHelper
         return mockWebSocketClient;
     }
 
+    public static MyMosqApiService GetMockedMyMosqApiService()
+    {
+        var _mockWebSocketClient = getMockedMyMosqWebSocketClient();
+        var _mockWebSocketClientFactory = Substitute.For<IWebSocketClientFactory>();
+        _mockWebSocketClientFactory.CreateWebSocketClient().Returns(_mockWebSocketClient);
+        return new MyMosqApiService(_mockWebSocketClientFactory);
+    }
 }

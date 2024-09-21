@@ -1,6 +1,4 @@
 ﻿using NodaTime;
-using NSubstitute;
-using PrayerTimeEngine.Core.Data.WebSocket.Interfaces;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.MyMosq.Models.Entities;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.MyMosq.Services;
 using PrayerTimeEngine.Core.Tests.Common;
@@ -10,16 +8,11 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.MosquePrayerTimes.Providers.My
 
 public class MyMosqApiServiceTests : BaseTest
 {
-    private readonly IWebSocketClient _mockWebSocketClient;
-    private readonly IWebSocketClientFactory _mockWebSocketClientFactory;
     private readonly MyMosqApiService _myMosqApiService;
 
     public MyMosqApiServiceTests()
     {
-        _mockWebSocketClient = SubstitutionHelper.GetMockedMyMosqWebSocketClient();
-        _mockWebSocketClientFactory = Substitute.For<IWebSocketClientFactory>();
-        _mockWebSocketClientFactory.CreateWebSocketClient().Returns(_mockWebSocketClient);
-        _myMosqApiService = new MyMosqApiService(_mockWebSocketClientFactory);
+        _myMosqApiService = SubstitutionHelper.GetMockedMyMosqApiService();
     }
 
     [Fact]
@@ -32,7 +25,7 @@ public class MyMosqApiServiceTests : BaseTest
         // ACT
         var response = await _myMosqApiService.GetPrayerTimesAsync(date, externalID, cancellationToken: default);
         var times = response.Select(x => x.ToMyMosqPrayerTimes(externalID)).ToList();
-        MyMosqPrayerTimes time = times.FirstOrDefault(x => x.Date == date);
+        MyMosqMosqueDailyPrayerTimes time = times.FirstOrDefault(x => x.Date == date);
 
         // ASSERT
         time.Should().NotBeNull();

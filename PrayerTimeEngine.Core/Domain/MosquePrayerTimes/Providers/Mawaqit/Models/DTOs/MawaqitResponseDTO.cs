@@ -53,7 +53,7 @@ public class MawaqitResponseDTO
     [JsonPropertyName("iqamaCalendar")]
     public List<Dictionary<string, List<string>>> IqamahTimeValuesForDays { get; set; }
 
-    public IEnumerable<MawaqitPrayerTimes> ToMawaqitPrayerTimes(string externalID)
+    public IEnumerable<MawaqitMosqueDailyPrayerTimes> ToMawaqitPrayerTimes(string externalID)
     {
         if (PrayerTimeDays.Count != 12 || IqamahTimeValuesForDays.Count != 12)
         {
@@ -90,7 +90,7 @@ public class MawaqitResponseDTO
                 LocalTime maghrib = localTimeParser.Parse(prayerTimeDay[4]).Value;
                 LocalTime isha = localTimeParser.Parse(prayerTimeDay[5]).Value;
 
-                yield return new MawaqitPrayerTimes
+                yield return new MawaqitMosqueDailyPrayerTimes
                 {
                     ExternalID = externalID,
                     Date = currentDay,

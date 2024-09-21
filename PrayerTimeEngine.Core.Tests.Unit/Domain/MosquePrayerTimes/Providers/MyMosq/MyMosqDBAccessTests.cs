@@ -25,7 +25,7 @@ public class MyMosqDBAccessTests : BaseTest
         var date = new LocalDate(2024, 8, 30);
         string externalID = "1239";
 
-        var myMosqTime = new MyMosqPrayerTimes
+        var myMosqTime = new MyMosqMosqueDailyPrayerTimes
         {
             ID = 0,
             Date = date,
@@ -62,7 +62,7 @@ public class MyMosqDBAccessTests : BaseTest
         var date = new LocalDate(2024, 8, 30);
         string externalID = "1239";
 
-        var newMyMosqTime = new MyMosqPrayerTimes
+        var newMyMosqTime = new MyMosqMosqueDailyPrayerTimes
         {
             Date = date,
             ExternalID = externalID,
