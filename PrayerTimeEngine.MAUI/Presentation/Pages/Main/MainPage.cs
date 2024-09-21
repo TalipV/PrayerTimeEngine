@@ -1,15 +1,18 @@
-﻿using CommunityToolkit.Maui.Markup;
+﻿using CommunityToolkit.Maui.Extensions;
+using CommunityToolkit.Maui.Markup;
 using Microsoft.Extensions.Logging;
+using Microsoft.Maui.Controls;
 using NodaTime;
 using OnScreenSizeMarkup.Maui.Helpers;
 using PrayerTimeEngine.Core.Common;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Models;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
 using PrayerTimeEngine.Presentation.Services;
-using PrayerTimeEngine.Presentation.Views;
 using PrayerTimeEngine.Presentation.Views.MosquePrayerTimes;
+using PrayerTimeEngine.Presentation.Views.PrayerTimeGraphic;
 using PrayerTimeEngine.Presentation.Views.PrayerTimes;
 using UraniumUI.Material.Controls;
+using static CommunityToolkit.Maui.Markup.GridRowsColumns;
 
 namespace PrayerTimeEngine.Presentation.Pages.Main;
 
@@ -26,7 +29,8 @@ public partial class MainPage : ContentPage
             MainPageViewModel viewModel,
             ToastMessageService toastMessageService,
             IPreferenceService preferenceService,
-            ISystemInfoService systemInfoService
+            ISystemInfoService systemInfoService,
+            PrayerTimeGraphicView prayerTimeGraphicView
         )
     {
         BindingContext = _viewModel = viewModel;
@@ -40,6 +44,8 @@ public partial class MainPage : ContentPage
                 toastMessageService,
                 MauiProgram.ServiceProvider.GetRequiredService<ILogger<MainPageOptionsMenuService>>(),
                 preferenceService);
+
+        _prayerTimeGraphicView = prayerTimeGraphicView;
 
         if (_preferenceService.CheckAndResetDoReset())
         {
@@ -73,9 +79,9 @@ public partial class MainPage : ContentPage
     {
         _dispatcher.Dispatch(() =>
         {
-            ZonedDateTime zonedDateTime = _systemInfoService.GetCurrentZonedDateTime();
-            prayerTimeGraphicView.DisplayPrayerTime = _viewModel.CurrentProfileWithModel.GetDisplayPrayerTime(zonedDateTime);
-            prayerTimeGraphicViewBaseView.Invalidate();
+            Instant instant = _systemInfoService.GetCurrentInstant();
+            _prayerTimeGraphicView.PrayerTimeGraphicTime = _viewModel.CurrentProfileWithModel.CreatePrayerTimeGraphicTimeVO(instant);
+            _prayerTimeGraphicViewBaseView.Invalidate();
         });
     }
 
@@ -111,25 +117,22 @@ public partial class MainPage : ContentPage
 
     private Label _lastUpdatedTextInfo;
     private Label _profileDisplayNameTextInfo;
-    private PrayerTimeGraphicView prayerTimeGraphicView;
-    private GraphicsView prayerTimeGraphicViewBaseView;
+    private PrayerTimeGraphicView _prayerTimeGraphicView;
+    private GraphicsView _prayerTimeGraphicViewBaseView;
     private CarouselView _carouselView;
 
     private Grid createUI()
     {
         var titleGrid = new Grid
         {
-            ColumnDefinitions =
-            {
-                new ColumnDefinition { Width = GridLength.Star },
-                new ColumnDefinition { Width = GridLength.Star }
-            }
+            ColumnDefinitions = Columns.Define(
+                GridLength.Star, 
+                GridLength.Star)
         };
 
         _lastUpdatedTextInfo = new Label()
             .Column(0).Row(0)
-            .Start()
-            .CenterVertical()
+            .Start().CenterVertical()
             .Bind(
                 Label.TextProperty,
                 path: $"{nameof(MainPageViewModel.CurrentProfileWithModel)}.{nameof(IPrayerTimeViewModel.PrayerTimesSet)}.{nameof(DynamicPrayerTimesSet.DataCalculationTimestamp)}",
@@ -138,15 +141,19 @@ public partial class MainPage : ContentPage
         titleGrid.Add(_lastUpdatedTextInfo);
 
         _profileDisplayNameTextInfo = new Label()
-            .Column(1).Row(0)
-            .Paddings(0, 0, 20, 0)
-            .TextEnd()
-            .CenterVertical()
+            .Column(1).Row(0).Paddings(0, 0, 20, 0)
+            .TextEnd().CenterVertical()
             .Bind(Label.TextProperty, $"{nameof(MainPageViewModel.CurrentProfile)}.{nameof(Profile.Name)}");
 
         titleGrid.Add(_profileDisplayNameTextInfo);
 
         NavigationPage.SetTitleView(this, titleGrid);
+
+        // TODO fix: The grid doesn't fill the whole width when running on Windows.
+        // Quick fix
+#if WINDOWS
+        titleGrid.WidthRequest = 415;
+#endif
 
         var searchBox = 
             new AutoCompleteTextField
@@ -166,24 +173,20 @@ public partial class MainPage : ContentPage
                 nameof(MainPageViewModel.IsLoadingPrayerTimesOrSelectedPlace),
                 convert: value => !value);
 
-        var prayerTimesGridView = new DynamicPrayerTimeView(_viewModel);
-
         var mainGrid = new Grid
         {
-            RowDefinitions =
-            {
-                new RowDefinition { Height = new GridLength(2, GridUnitType.Star) },
-                new RowDefinition { Height = new GridLength(11, GridUnitType.Star) },
-                new RowDefinition { Height = new GridLength(7, GridUnitType.Star) },
-            }
+            RowDefinitions = Rows.Define(
+                new GridLength(2, GridUnitType.Star),
+                new GridLength(11, GridUnitType.Star),
+                new GridLength(7, GridUnitType.Star)
+            )
         }
         .Paddings(10, 20, 10, 20);
 
         // Graphics View
-        prayerTimeGraphicView = new PrayerTimeGraphicView();
-        prayerTimeGraphicViewBaseView = new GraphicsView
+        _prayerTimeGraphicViewBaseView = new GraphicsView
         {
-            Drawable = prayerTimeGraphicView
+            Drawable = _prayerTimeGraphicView
         }
         .Bind(OpacityProperty, nameof(MainPageViewModel.LoadingStatusOpacityValue));
 
@@ -203,12 +206,30 @@ public partial class MainPage : ContentPage
 
         mainGrid.AddWithSpan(searchBox, row: 0, column: 0);
         mainGrid.AddWithSpan(_carouselView, row: 1, column: 0);
-        mainGrid.AddWithSpan(prayerTimeGraphicViewBaseView, row: 2, column: 0);
+        mainGrid.AddWithSpan(_prayerTimeGraphicViewBaseView, row: 2, column: 0);
 
         mainGrid.SetBinding(OpacityProperty, new Binding(nameof(MainPageViewModel.LoadingStatusOpacityValue)));
 
         if (OperatingSystem.IsWindows())
         {
+            // swiping carousel view doesn't work on Windows so this workaround will have to do, at least for now
+            this._prayerTimeGraphicViewBaseView.GestureRecognizers
+                .Add(
+                    new TapGestureRecognizer
+                    {
+                        Command = new Command(() =>
+                        {
+                            var viewModels = this._carouselView.ItemsSource.OfType<IPrayerTimeViewModel>().ToList();
+
+                            var currentViewModel = this._carouselView.CurrentItem as IPrayerTimeViewModel;
+                            var firstViewModel = viewModels.First();
+
+                            var nextItemIndex = viewModels.IndexOf(currentViewModel ?? firstViewModel) + 1;
+                            this._carouselView.CurrentItem = viewModels.ElementAtOrDefault(nextItemIndex) ?? firstViewModel;
+                        }),
+                        NumberOfTapsRequired = 2,
+                    });
+
             return mainGrid;
         }
 

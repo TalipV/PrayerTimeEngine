@@ -5,6 +5,6 @@ namespace PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.MyMosq.Interf
 
 public interface IMyMosqDBAccess
 {
-    Task<MyMosqPrayerTimes> GetPrayerTimesAsync(LocalDate date, string externalID, CancellationToken cancellationToken);
-    Task InsertPrayerTimesAsync(List<MyMosqPrayerTimes> prayerTimesLst, CancellationToken cancellationToken);
+    Task<MyMosqMosqueDailyPrayerTimes> GetPrayerTimesAsync(LocalDate date, string externalID, CancellationToken cancellationToken);
+    Task InsertPrayerTimesAsync(List<MyMosqMosqueDailyPrayerTimes> prayerTimesLst, CancellationToken cancellationToken);
 }

@@ -9,27 +9,27 @@ using Microsoft.EntityFrameworkCore.Storage.Json;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NodaTime;
 using PrayerTimeEngine.Core.Common.Extension;
-using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.Mawaqit.Models.Entities;
+using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.MyMosq.Models.Entities;
 
 #pragma warning disable 219, 612, 618
 #nullable disable
 
 namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
 {
-    internal partial class MawaqitPrayerTimesEntityType
+    internal partial class MyMosqMosqueDailyPrayerTimesEntityType
     {
         public static RuntimeEntityType Create(RuntimeModel model, RuntimeEntityType baseEntityType = null)
         {
             var runtimeEntityType = model.AddEntityType(
-                "PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.Mawaqit.Models.Entities.MawaqitPrayerTimes",
-                typeof(MawaqitMosqueDailyPrayerTimes),
+                "PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.MyMosq.Models.Entities.MyMosqMosqueDailyPrayerTimes",
+                typeof(MyMosqMosqueDailyPrayerTimes),
                 baseEntityType);
 
             var iD = runtimeEntityType.AddProperty(
                 "ID",
                 typeof(int),
-                propertyInfo: typeof(MawaqitMosqueDailyPrayerTimes).GetProperty("ID", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                fieldInfo: typeof(MawaqitMosqueDailyPrayerTimes).GetField("<ID>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                propertyInfo: typeof(MyMosqMosqueDailyPrayerTimes).GetProperty("ID", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(MyMosqMosqueDailyPrayerTimes).GetField("<ID>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 valueGenerated: ValueGenerated.OnAdd,
                 afterSaveBehavior: PropertySaveBehavior.Throw,
                 sentinel: 0);
@@ -52,8 +52,8 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
             var asr = runtimeEntityType.AddProperty(
                 "Asr",
                 typeof(LocalTime),
-                propertyInfo: typeof(MawaqitMosqueDailyPrayerTimes).GetProperty("Asr", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                fieldInfo: typeof(MawaqitMosqueDailyPrayerTimes).GetField("<Asr>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
+                propertyInfo: typeof(MyMosqMosqueDailyPrayerTimes).GetProperty("Asr", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(MyMosqMosqueDailyPrayerTimes).GetField("<Asr>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
             asr.TypeMapping = SqliteStringTypeMapping.Default.Clone(
                 comparer: new ValueComparer<LocalTime>(
                     (LocalTime v1, LocalTime v2) => v1.Equals(v2),
@@ -80,8 +80,8 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
             var asrCongregation = runtimeEntityType.AddProperty(
                 "AsrCongregation",
                 typeof(LocalTime),
-                propertyInfo: typeof(MawaqitMosqueDailyPrayerTimes).GetProperty("AsrCongregation", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                fieldInfo: typeof(MawaqitMosqueDailyPrayerTimes).GetField("<AsrCongregation>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
+                propertyInfo: typeof(MyMosqMosqueDailyPrayerTimes).GetProperty("AsrCongregation", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(MyMosqMosqueDailyPrayerTimes).GetField("<AsrCongregation>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
             asrCongregation.TypeMapping = SqliteStringTypeMapping.Default.Clone(
                 comparer: new ValueComparer<LocalTime>(
                     (LocalTime v1, LocalTime v2) => v1.Equals(v2),
@@ -108,8 +108,8 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
             var date = runtimeEntityType.AddProperty(
                 "Date",
                 typeof(LocalDate),
-                propertyInfo: typeof(MawaqitMosqueDailyPrayerTimes).GetProperty("Date", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                fieldInfo: typeof(MawaqitMosqueDailyPrayerTimes).GetField("<Date>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
+                propertyInfo: typeof(MyMosqMosqueDailyPrayerTimes).GetProperty("Date", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(MyMosqMosqueDailyPrayerTimes).GetField("<Date>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
             date.TypeMapping = SqliteStringTypeMapping.Default.Clone(
                 comparer: new ValueComparer<LocalDate>(
                     (LocalDate v1, LocalDate v2) => v1.Equals(v2),
@@ -136,8 +136,8 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
             var dhuhr = runtimeEntityType.AddProperty(
                 "Dhuhr",
                 typeof(LocalTime),
-                propertyInfo: typeof(MawaqitMosqueDailyPrayerTimes).GetProperty("Dhuhr", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                fieldInfo: typeof(MawaqitMosqueDailyPrayerTimes).GetField("<Dhuhr>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
+                propertyInfo: typeof(MyMosqMosqueDailyPrayerTimes).GetProperty("Dhuhr", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(MyMosqMosqueDailyPrayerTimes).GetField("<Dhuhr>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
             dhuhr.TypeMapping = SqliteStringTypeMapping.Default.Clone(
                 comparer: new ValueComparer<LocalTime>(
                     (LocalTime v1, LocalTime v2) => v1.Equals(v2),
@@ -164,8 +164,8 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
             var dhuhrCongregation = runtimeEntityType.AddProperty(
                 "DhuhrCongregation",
                 typeof(LocalTime),
-                propertyInfo: typeof(MawaqitMosqueDailyPrayerTimes).GetProperty("DhuhrCongregation", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                fieldInfo: typeof(MawaqitMosqueDailyPrayerTimes).GetField("<DhuhrCongregation>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
+                propertyInfo: typeof(MyMosqMosqueDailyPrayerTimes).GetProperty("DhuhrCongregation", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(MyMosqMosqueDailyPrayerTimes).GetField("<DhuhrCongregation>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
             dhuhrCongregation.TypeMapping = SqliteStringTypeMapping.Default.Clone(
                 comparer: new ValueComparer<LocalTime>(
                     (LocalTime v1, LocalTime v2) => v1.Equals(v2),
@@ -192,16 +192,16 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
             var externalID = runtimeEntityType.AddProperty(
                 "ExternalID",
                 typeof(string),
-                propertyInfo: typeof(MawaqitMosqueDailyPrayerTimes).GetProperty("ExternalID", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                fieldInfo: typeof(MawaqitMosqueDailyPrayerTimes).GetField("<ExternalID>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                propertyInfo: typeof(MyMosqMosqueDailyPrayerTimes).GetProperty("ExternalID", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(MyMosqMosqueDailyPrayerTimes).GetField("<ExternalID>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 nullable: true);
             externalID.TypeMapping = SqliteStringTypeMapping.Default;
 
             var fajr = runtimeEntityType.AddProperty(
                 "Fajr",
                 typeof(LocalTime),
-                propertyInfo: typeof(MawaqitMosqueDailyPrayerTimes).GetProperty("Fajr", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                fieldInfo: typeof(MawaqitMosqueDailyPrayerTimes).GetField("<Fajr>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
+                propertyInfo: typeof(MyMosqMosqueDailyPrayerTimes).GetProperty("Fajr", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(MyMosqMosqueDailyPrayerTimes).GetField("<Fajr>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
             fajr.TypeMapping = SqliteStringTypeMapping.Default.Clone(
                 comparer: new ValueComparer<LocalTime>(
                     (LocalTime v1, LocalTime v2) => v1.Equals(v2),
@@ -228,8 +228,8 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
             var fajrCongregation = runtimeEntityType.AddProperty(
                 "FajrCongregation",
                 typeof(LocalTime),
-                propertyInfo: typeof(MawaqitMosqueDailyPrayerTimes).GetProperty("FajrCongregation", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                fieldInfo: typeof(MawaqitMosqueDailyPrayerTimes).GetField("<FajrCongregation>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
+                propertyInfo: typeof(MyMosqMosqueDailyPrayerTimes).GetProperty("FajrCongregation", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(MyMosqMosqueDailyPrayerTimes).GetField("<FajrCongregation>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
             fajrCongregation.TypeMapping = SqliteStringTypeMapping.Default.Clone(
                 comparer: new ValueComparer<LocalTime>(
                     (LocalTime v1, LocalTime v2) => v1.Equals(v2),
@@ -256,8 +256,8 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
             var insertInstant = runtimeEntityType.AddProperty(
                 "InsertInstant",
                 typeof(Instant?),
-                propertyInfo: typeof(MawaqitMosqueDailyPrayerTimes).GetProperty("InsertInstant", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                fieldInfo: typeof(MawaqitMosqueDailyPrayerTimes).GetField("<InsertInstant>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                propertyInfo: typeof(MyMosqMosqueDailyPrayerTimes).GetProperty("InsertInstant", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(MyMosqMosqueDailyPrayerTimes).GetField("<InsertInstant>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 nullable: true);
             insertInstant.TypeMapping = SqliteStringTypeMapping.Default.Clone(
                 comparer: new ValueComparer<Instant?>(
@@ -284,8 +284,8 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
             var isha = runtimeEntityType.AddProperty(
                 "Isha",
                 typeof(LocalTime),
-                propertyInfo: typeof(MawaqitMosqueDailyPrayerTimes).GetProperty("Isha", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                fieldInfo: typeof(MawaqitMosqueDailyPrayerTimes).GetField("<Isha>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
+                propertyInfo: typeof(MyMosqMosqueDailyPrayerTimes).GetProperty("Isha", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(MyMosqMosqueDailyPrayerTimes).GetField("<Isha>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
             isha.TypeMapping = SqliteStringTypeMapping.Default.Clone(
                 comparer: new ValueComparer<LocalTime>(
                     (LocalTime v1, LocalTime v2) => v1.Equals(v2),
@@ -312,8 +312,8 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
             var ishaCongregation = runtimeEntityType.AddProperty(
                 "IshaCongregation",
                 typeof(LocalTime),
-                propertyInfo: typeof(MawaqitMosqueDailyPrayerTimes).GetProperty("IshaCongregation", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                fieldInfo: typeof(MawaqitMosqueDailyPrayerTimes).GetField("<IshaCongregation>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
+                propertyInfo: typeof(MyMosqMosqueDailyPrayerTimes).GetProperty("IshaCongregation", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(MyMosqMosqueDailyPrayerTimes).GetField("<IshaCongregation>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
             ishaCongregation.TypeMapping = SqliteStringTypeMapping.Default.Clone(
                 comparer: new ValueComparer<LocalTime>(
                     (LocalTime v1, LocalTime v2) => v1.Equals(v2),
@@ -340,8 +340,8 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
             var jumuah = runtimeEntityType.AddProperty(
                 "Jumuah",
                 typeof(LocalTime?),
-                propertyInfo: typeof(MawaqitMosqueDailyPrayerTimes).GetProperty("Jumuah", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                fieldInfo: typeof(MawaqitMosqueDailyPrayerTimes).GetField("<Jumuah>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                propertyInfo: typeof(MyMosqMosqueDailyPrayerTimes).GetProperty("Jumuah", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(MyMosqMosqueDailyPrayerTimes).GetField("<Jumuah>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 nullable: true);
             jumuah.TypeMapping = SqliteStringTypeMapping.Default.Clone(
                 comparer: new ValueComparer<LocalTime?>(
@@ -368,8 +368,8 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
             var jumuah2 = runtimeEntityType.AddProperty(
                 "Jumuah2",
                 typeof(LocalTime?),
-                propertyInfo: typeof(MawaqitMosqueDailyPrayerTimes).GetProperty("Jumuah2", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                fieldInfo: typeof(MawaqitMosqueDailyPrayerTimes).GetField("<Jumuah2>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                propertyInfo: typeof(MyMosqMosqueDailyPrayerTimes).GetProperty("Jumuah2", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(MyMosqMosqueDailyPrayerTimes).GetField("<Jumuah2>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 nullable: true);
             jumuah2.TypeMapping = SqliteStringTypeMapping.Default.Clone(
                 comparer: new ValueComparer<LocalTime?>(
@@ -396,8 +396,8 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
             var maghrib = runtimeEntityType.AddProperty(
                 "Maghrib",
                 typeof(LocalTime),
-                propertyInfo: typeof(MawaqitMosqueDailyPrayerTimes).GetProperty("Maghrib", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                fieldInfo: typeof(MawaqitMosqueDailyPrayerTimes).GetField("<Maghrib>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
+                propertyInfo: typeof(MyMosqMosqueDailyPrayerTimes).GetProperty("Maghrib", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(MyMosqMosqueDailyPrayerTimes).GetField("<Maghrib>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
             maghrib.TypeMapping = SqliteStringTypeMapping.Default.Clone(
                 comparer: new ValueComparer<LocalTime>(
                     (LocalTime v1, LocalTime v2) => v1.Equals(v2),
@@ -424,8 +424,8 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
             var maghribCongregation = runtimeEntityType.AddProperty(
                 "MaghribCongregation",
                 typeof(LocalTime),
-                propertyInfo: typeof(MawaqitMosqueDailyPrayerTimes).GetProperty("MaghribCongregation", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                fieldInfo: typeof(MawaqitMosqueDailyPrayerTimes).GetField("<MaghribCongregation>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
+                propertyInfo: typeof(MyMosqMosqueDailyPrayerTimes).GetProperty("MaghribCongregation", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(MyMosqMosqueDailyPrayerTimes).GetField("<MaghribCongregation>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
             maghribCongregation.TypeMapping = SqliteStringTypeMapping.Default.Clone(
                 comparer: new ValueComparer<LocalTime>(
                     (LocalTime v1, LocalTime v2) => v1.Equals(v2),
@@ -452,8 +452,8 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
             var shuruq = runtimeEntityType.AddProperty(
                 "Shuruq",
                 typeof(LocalTime),
-                propertyInfo: typeof(MawaqitMosqueDailyPrayerTimes).GetProperty("Shuruq", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                fieldInfo: typeof(MawaqitMosqueDailyPrayerTimes).GetField("<Shuruq>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
+                propertyInfo: typeof(MyMosqMosqueDailyPrayerTimes).GetProperty("Shuruq", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(MyMosqMosqueDailyPrayerTimes).GetField("<Shuruq>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
             shuruq.TypeMapping = SqliteStringTypeMapping.Default.Clone(
                 comparer: new ValueComparer<LocalTime>(
                     (LocalTime v1, LocalTime v2) => v1.Equals(v2),
@@ -489,7 +489,7 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
             runtimeEntityType.AddAnnotation("Relational:FunctionName", null);
             runtimeEntityType.AddAnnotation("Relational:Schema", null);
             runtimeEntityType.AddAnnotation("Relational:SqlQuery", null);
-            runtimeEntityType.AddAnnotation("Relational:TableName", "MawaqitPrayerTimes");
+            runtimeEntityType.AddAnnotation("Relational:TableName", "MyMosqPrayerTimes");
             runtimeEntityType.AddAnnotation("Relational:ViewName", null);
             runtimeEntityType.AddAnnotation("Relational:ViewSchema", null);
 

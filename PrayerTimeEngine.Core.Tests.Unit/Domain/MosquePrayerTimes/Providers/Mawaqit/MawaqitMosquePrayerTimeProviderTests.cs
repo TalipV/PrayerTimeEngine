@@ -34,7 +34,7 @@ public class MawaqitDynamicPrayerTimeProviderTests : BaseTest
         var date = new LocalDate(2024, 8, 29);
         string externalID = "hamza-koln";
 
-        var times = new MawaqitPrayerTimes
+        var times = new MawaqitMosqueDailyPrayerTimes
         {
             ID = 0,
             Date = new LocalDate(2024, 8, 29),
@@ -61,7 +61,7 @@ public class MawaqitDynamicPrayerTimeProviderTests : BaseTest
             .Returns(times);
 
         // ACT
-        IMosquePrayerTimes calculationResult =
+        IMosqueDailyPrayerTimes calculationResult =
             await _mawaqitPrayerTimeService.GetPrayerTimesAsync(date, externalID, default);
 
         // ASSERT

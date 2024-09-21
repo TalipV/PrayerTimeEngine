@@ -16,12 +16,12 @@ using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.Mawaqit.Models.En
 
 namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
 {
-    internal partial class MawaqitPrayerTimesEntityType
+    internal partial class MawaqitMosqueDailyPrayerTimesEntityType
     {
         public static RuntimeEntityType Create(RuntimeModel model, RuntimeEntityType baseEntityType = null)
         {
             var runtimeEntityType = model.AddEntityType(
-                "PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.Mawaqit.Models.Entities.MawaqitPrayerTimes",
+                "PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.Mawaqit.Models.Entities.MawaqitMosqueDailyPrayerTimes",
                 typeof(MawaqitMosqueDailyPrayerTimes),
                 baseEntityType);
 

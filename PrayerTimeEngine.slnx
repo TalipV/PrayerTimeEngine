@@ -1,0 +1,26 @@
+<Solution>
+  <Configurations>
+    <Platform Name="Any CPU" />
+    <Platform Name="x64" />
+  </Configurations>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+    <File Path="SharedGlobalSettings.cs" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="PrayerTimeEngine.Core.Tests.Common\PrayerTimeEngine.Core.Tests.Common.csproj" />
+    <Project Path="PrayerTimeEngine.Core.Tests.Integration\PrayerTimeEngine.Core.Tests.Integration.csproj" />
+    <Project Path="PrayerTimeEngine.Core.Tests.Unit\PrayerTimeEngine.Core.Tests.Unit.csproj" />
+  </Folder>
+  <Project Path="PrayerTimeEngine.BenchmarkDotNet\PrayerTimeEngine.BenchmarkDotNet.csproj" />
+  <Project Path="PrayerTimeEngine.Core\PrayerTimeEngine.Core.csproj" />
+  <Project Path="PrayerTimeEngine.MAUI\PrayerTimeEngine.MAUI.csproj">
+    <Platform Solution="Debug|x64" Project="x64" />
+    <Build Solution="Release|x64" Project="false" />
+    <Deploy Solution="*|Any CPU" />
+    <Deploy Solution="Debug|x64" />
+  </Project>
+  <Properties Name="Visual Studio">
+    <Property Name="OpenWith" Value="Visual Studio Version 17" />
+  </Properties>
+</Solution>

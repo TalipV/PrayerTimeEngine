@@ -1,23 +1,23 @@
 ﻿using BenchmarkDotNet.Attributes;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using NodaTime;
 using NSubstitute;
+using NSubstitute.Extensions;
+using NSubstitute.ReturnsExtensions;
+using PrayerTimeEngine.Core.Common;
 using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Data.EntityFramework;
-using System.Data.Common;
-using NSubstitute.Extensions;
-using PrayerTimeEngine.Core.Domain.PlaceManagement.Interfaces;
-using Microsoft.Extensions.Logging;
-using NSubstitute.ReturnsExtensions;
-using PrayerTimeEngine.Core.Tests.Common.TestData;
-using PrayerTimeEngine.Core.Common;
-using Microsoft.EntityFrameworkCore.Infrastructure;
+using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Models;
+using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Interfaces;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Models;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Models.Entities;
-using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Interfaces;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Services;
-using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes;
+using PrayerTimeEngine.Core.Domain.PlaceManagement.Interfaces;
+using PrayerTimeEngine.Core.Tests.Common.TestData;
+using System.Data.Common;
 
 namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks;
 
@@ -88,29 +88,34 @@ public class FaziletDynamicPrayerTimeProviderBenchmark
     [GlobalSetup]
     public static void Setup()
     {
+        _dbContextKeepAliveSqlConnection = new SqliteConnection("Data Source=:memory:");
+        _dbContextKeepAliveSqlConnection.Open();
 
+        // Create the initial DbContext to initialize the database schema
+        var dbContext = getDbContext();
+        dbContext.Database.EnsureCreated();
+
+        var dbContextFactoryMock = Substitute.For<IDbContextFactory<AppDbContext>>();
+        dbContextFactoryMock.CreateDbContext().Returns(callInfo => getDbContext());
+        dbContextFactoryMock.CreateDbContextAsync().Returns(callInfo => Task.FromResult(getDbContext()));
+
+        _faziletDynamicPrayerTimeProvider_DataFromDbStorage = getFaziletDynamicPrayerTimeProvider_DataFromDbStorage(dbContextFactoryMock);
+        _faziletDynamicPrayerTimeProvider_DataFromApi = getFaziletDynamicPrayerTimeProvider_DataFromApi();
+    }
+
+    private static AppDbContext getDbContext()
+    {
         var dbOptions = new DbContextOptionsBuilder()
-            .UseSqlite($"Data Source=:memory:")
+            .UseSqlite(_dbContextKeepAliveSqlConnection) // Use the existing connection
             .Options;
 
-        var mockableDbContext =
-            Substitute.ForPartsOf<AppDbContext>(
+        var dbContext =
+            new AppDbContext(
                 dbOptions,
                 new AppDbContextMetaData(),
                 Substitute.For<ISystemInfoService>());
 
-        var mockableDbContextDatabase = Substitute.ForPartsOf<DatabaseFacade>(mockableDbContext);
-        mockableDbContext.Configure().Database.Returns(mockableDbContextDatabase);
-        _dbContextKeepAliveSqlConnection = mockableDbContext.Database.GetDbConnection();
-        _dbContextKeepAliveSqlConnection.Open();
-        mockableDbContext.Database.EnsureCreated();
-
-        var dbContextFactoryMock = Substitute.For<IDbContextFactory<AppDbContext>>();
-        dbContextFactoryMock.CreateDbContext().Returns(mockableDbContext);
-        dbContextFactoryMock.CreateDbContextAsync().Returns(callInfo => Task.FromResult(mockableDbContext));
-
-        _faziletDynamicPrayerTimeProvider_DataFromDbStorage = getFaziletDynamicPrayerTimeProvider_DataFromDbStorage(dbContextFactoryMock);
-        _faziletDynamicPrayerTimeProvider_DataFromApi = getFaziletDynamicPrayerTimeProvider_DataFromApi();
+        return dbContext;
     }
 
     private static FaziletDynamicPrayerTimeProvider _faziletDynamicPrayerTimeProvider_DataFromDbStorage = null;

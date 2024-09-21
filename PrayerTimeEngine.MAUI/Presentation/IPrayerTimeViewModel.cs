@@ -1,16 +1,15 @@
 ﻿using NodaTime;
 using PrayerTimeEngine.Core.Domain.Models;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
-using PrayerTimeEngine.Presentation.Pages.Main;
+using PrayerTimeEngine.Presentation.Views.PrayerTimeGraphic.VOs;
 
 namespace PrayerTimeEngine.Presentation;
 
 public interface IPrayerTimeViewModel
 {
-    MainPageViewModel MainPageViewModel { get; set; }
-    Profile Profile { get; set; }
-    IPrayerTimesSet PrayerTimesSet { get; set; }
+    Profile Profile { get; }
+    IPrayerTimesSet PrayerTimesSet { get; }
 
     Task RefreshData(ZonedDateTime zonedDateTime, CancellationToken cancellationToken);
-    AbstractPrayerTime GetDisplayPrayerTime(ZonedDateTime zonedDateTime);
+    PrayerTimeGraphicTimeVO CreatePrayerTimeGraphicTimeVO(Instant instant);
 }

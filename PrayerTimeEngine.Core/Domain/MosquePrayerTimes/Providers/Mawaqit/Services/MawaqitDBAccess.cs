@@ -10,13 +10,13 @@ public class MawaqitDBAccess(
         IDbContextFactory<AppDbContext> dbContextFactory
     ) : IMawaqitDBAccess, IPrayerTimeCacheCleaner
 {
-    private static readonly Func<AppDbContext, LocalDate, string, IAsyncEnumerable<MawaqitPrayerTimes>> compiledQuery_GetPrayerTimesAsync =
+    private static readonly Func<AppDbContext, LocalDate, string, IAsyncEnumerable<MawaqitMosqueDailyPrayerTimes>> compiledQuery_GetPrayerTimesAsync =
         EF.CompileAsyncQuery(
             (AppDbContext context, LocalDate date, string externalID) =>
                 context.MawaqitPrayerTimes.AsNoTracking()
                 .Where(x => x.Date == date && x.ExternalID == externalID));
 
-    public async Task<MawaqitPrayerTimes> GetPrayerTimesAsync(LocalDate date, string externalID, CancellationToken cancellationToken)
+    public async Task<MawaqitMosqueDailyPrayerTimes> GetPrayerTimesAsync(LocalDate date, string externalID, CancellationToken cancellationToken)
     {
         using (AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken))
         {
@@ -26,7 +26,7 @@ public class MawaqitDBAccess(
         }
     }
 
-    public async Task InsertPrayerTimesAsync(List<MawaqitPrayerTimes> prayerTimesLst, CancellationToken cancellationToken)
+    public async Task InsertPrayerTimesAsync(List<MawaqitMosqueDailyPrayerTimes> prayerTimesLst, CancellationToken cancellationToken)
     {
         using (AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken))
         {

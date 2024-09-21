@@ -1,23 +1,22 @@
-﻿using NodaTime;
+﻿using PrayerTimeEngine.Core.Domain.Models;
 
 namespace PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Models;
 
-public class MosquePrayerTime
+public class MosquePrayerTime : GenericPrayerTime
 {
-    public LocalTime Start {  get; set; }
-    public LocalTime End {  get; set; }
+    public int CongregationStartOffset { get; set; }
 
     public override bool Equals(object obj)
     {
-        if (obj is not MosquePrayerTime otherMosquePrayerTime)
+        if (obj is not MosquePrayerTime otherTime)
             return false;
 
-        return object.Equals(Start, otherMosquePrayerTime.Start)
-            && object.Equals(End, otherMosquePrayerTime.End);
+        return base.Equals(obj)
+            && this.CongregationStartOffset == otherTime.CongregationStartOffset;
     }
 
     public override int GetHashCode()
     {
-        return HashCode.Combine(Start, End);
+        return HashCode.Combine(base.GetHashCode(), CongregationStartOffset);
     }
 }

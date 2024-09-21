@@ -5,6 +5,6 @@ namespace PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers;
 
 public interface IMosquePrayerTimeProvider
 {
-    Task<IMosquePrayerTimes> GetPrayerTimesAsync(LocalDate date, string externalID, CancellationToken cancellationToken);
+    Task<IMosqueDailyPrayerTimes> GetPrayerTimesAsync(LocalDate date, string externalID, CancellationToken cancellationToken);
     Task<bool> ValidateData(string externalID, CancellationToken cancellationToken);
 }

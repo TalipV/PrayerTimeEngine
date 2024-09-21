@@ -41,8 +41,8 @@ public class AppDbContext(
     public DbSet<SemerkandCity> SemerkandCities { get; set; }
     public DbSet<SemerkandDailyPrayerTimes> SemerkandPrayerTimes { get; set; }
 
-    public DbSet<MawaqitPrayerTimes> MawaqitPrayerTimes { get; set; }
-    public DbSet<MyMosqPrayerTimes> MyMosqPrayerTimes { get; set; }
+    public DbSet<MawaqitMosqueDailyPrayerTimes> MawaqitPrayerTimes { get; set; }
+    public DbSet<MyMosqMosqueDailyPrayerTimes> MyMosqPrayerTimes { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

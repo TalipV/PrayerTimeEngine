@@ -38,7 +38,9 @@ using PrayerTimeEngine.Presentation.Pages.Settings.SettingsHandler;
 using PrayerTimeEngine.Presentation.Services;
 using PrayerTimeEngine.Presentation.Services.Navigation;
 using PrayerTimeEngine.Presentation.Services.SettingsContentPageFactory;
+using PrayerTimeEngine.Presentation.Views;
 using PrayerTimeEngine.Presentation.Views.MosquePrayerTimes;
+using PrayerTimeEngine.Presentation.Views.PrayerTimeGraphic;
 using PrayerTimeEngine.Presentation.Views.PrayerTimes;
 using PrayerTimeEngine.Services;
 using Refit;
@@ -92,6 +94,7 @@ namespace PrayerTimeEngine;
  * - Check MVVM
  * - CancellationTokens implementieren, die default setzen
  * - "MosquePrayerTimes" and variations used for all kinds of things! Better names!
+ * - Check if using multiple profiles from differing timezones works fine (graphic, mosque times, swiping back and forth, ...)
  */
 
 /* TODO tests:
@@ -333,7 +336,9 @@ public static class MauiProgram
 
         serviceCollection.AddTransient<MainPage>();
         serviceCollection.AddTransient<MainPageViewModel>();
+        serviceCollection.AddTransient<PrayerTimeGraphicView>();
 
+        serviceCollection.AddTransient<PrayerTimeViewModelFactory>();
         serviceCollection.AddTransient<DynamicPrayerTimeViewModel>();
         serviceCollection.AddTransient<MosquePrayerTimeViewModel>();
 

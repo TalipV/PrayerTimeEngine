@@ -19,17 +19,17 @@ public class MawaqitMosquePrayerTimeProvider(
 
     internal const int MAX_EXTENT_OF_RETRIEVED_DAYS = 5;
 
-    public async Task<IMosquePrayerTimes> GetPrayerTimesAsync(LocalDate date, string externalID, CancellationToken cancellationToken)
+    public async Task<IMosqueDailyPrayerTimes> GetPrayerTimesAsync(LocalDate date, string externalID, CancellationToken cancellationToken)
     {
         using (await getPrayerTimesLocker.LockAsync(externalID, cancellationToken).ConfigureAwait(false))
         {
-            MawaqitPrayerTimes prayerTimes = await mawaqitDBAccess.GetPrayerTimesAsync(date, externalID, cancellationToken).ConfigureAwait(false);
+            MawaqitMosqueDailyPrayerTimes prayerTimes = await mawaqitDBAccess.GetPrayerTimesAsync(date, externalID, cancellationToken).ConfigureAwait(false);
 
             if (prayerTimes is null)
             {
                 var responseDto = await mawaqitApiService.GetPrayerTimesAsync(externalID, cancellationToken);
 
-                List<MawaqitPrayerTimes> prayerTimesLst =
+                List<MawaqitMosqueDailyPrayerTimes> prayerTimesLst =
                     responseDto.ToMawaqitPrayerTimes(externalID)
                     .Where(x => date <= x.Date && x.Date < date.PlusDays(MAX_EXTENT_OF_RETRIEVED_DAYS))
                     .ToList();

@@ -4,10 +4,10 @@ using Android.OS;
 using Microsoft.Extensions.Logging;
 using NodaTime;
 using PrayerTimeEngine.Core.Common;
+using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Management;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Models;
 using PrayerTimeEngine.Core.Domain.Models;
-using PrayerTimeEngine.Core.Domain.Models.PrayerTimes;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Interfaces;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
 
@@ -150,11 +150,11 @@ public class PrayerTimeSummaryNotification : Service
         ZonedDateTime? nextTime = null;
         string timeName = "-";
         string additionalInfo = string.Empty;
-        AbstractPrayerTime _lastTime = null;
+        (EPrayerType prayerType, GenericPrayerTime prayerTime) _lastTimeInfo = default;
 
-        foreach (AbstractPrayerTime prayerTime in prayerTimeBundle.AllPrayerTimes)
+        foreach ((EPrayerType prayerType, GenericPrayerTime prayerTime) in prayerTimeBundle.AllPrayerTimes)
         {
-            if (prayerTime is DuhaPrayerTime)
+            if (prayerType == EPrayerType.Duha)
                 continue;
 
             if (prayerTime.End is not null
@@ -162,7 +162,7 @@ public class PrayerTimeSummaryNotification : Service
                 && (nextTime is null || prayerTime.End.Value.ToInstant() < nextTime.Value.ToInstant()))
             {
                 nextTime = prayerTime.End;
-                timeName = $"{prayerTime.Name}-End";
+                timeName = $"{prayerType}-End";
             }
 
             if (prayerTime.Start is not null
@@ -170,15 +170,15 @@ public class PrayerTimeSummaryNotification : Service
                 && (nextTime is null || prayerTime.Start.Value.ToInstant() < nextTime.Value.ToInstant()))
             {
                 nextTime = prayerTime.Start;
-                timeName = $"{prayerTime.Name}-Start";
+                timeName = $"{prayerType}-Start";
 
-                if (_lastTime is not null && _lastTime.End is not null)
+                if (_lastTimeInfo != default && _lastTimeInfo.prayerTime.End is not null)
                 {
-                    additionalInfo = $"{(now - _lastTime.End.Value).ToString("HH:mm:ss", null)} since {_lastTime.Name}-End";
+                    additionalInfo = $"{(now - _lastTimeInfo.prayerTime.End.Value).ToString("HH:mm:ss", null)} since {_lastTimeInfo.prayerType}-End";
                 }
             }
 
-            _lastTime = prayerTime;
+            _lastTimeInfo = (prayerType, prayerTime);
         }
 
         if (nextTime is null)
