@@ -238,6 +238,17 @@ public class SemerkandDynamicPrayerTimeProvider(
                 TimezoneName = place.TimezoneInfo.Name
             };
         }
+        else if (await getCityID(place.City, countryID, throwIfNotFound: false, cancellationToken).ConfigureAwait(false) != -1)
+        {
+            logger.LogDebug("Semerkand found location: {Country}, {City}", countryName, place.City);
+
+            return new SemerkandLocationData
+            {
+                CountryName = countryName,
+                CityName = place.City,
+                TimezoneName = place.TimezoneInfo.Name
+            };
+        }
 
         return null;
     }
