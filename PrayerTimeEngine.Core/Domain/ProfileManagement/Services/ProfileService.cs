@@ -216,7 +216,7 @@ public class ProfileService(
                     ProfileID = profile.ID,
                     Profile = profile,
                     // ### keine Erfahrung, aber Sicherheitsabstand
-                    CalculationConfiguration = new GenericSettingConfiguration { Source = EDynamicPrayerTimeProviderType.Semerkand, MinuteAdjustment = -5, TimeType = ETimeType.MaghribEnd }
+                    CalculationConfiguration = new GenericSettingConfiguration { Source = EDynamicPrayerTimeProviderType.Semerkand, MinuteAdjustment = -10, TimeType = ETimeType.MaghribEnd }
                 },
                 new()
                 {
