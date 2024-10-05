@@ -115,7 +115,7 @@
     <PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="9.0.0-rc.1.24453.9" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.0-rc.1.24431.7" />
     <PackageReference Include="System.Private.Uri" Version="4.3.2" />
-    <PackageReference Include="UraniumUI.Material" Version="2.10.1" />
+    <PackageReference Include="UraniumUI.Material" Version="2.10.2" />
   </ItemGroup>
 
 	<ItemGroup>
