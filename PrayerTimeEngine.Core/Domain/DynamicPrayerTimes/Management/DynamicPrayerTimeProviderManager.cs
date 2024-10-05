@@ -119,6 +119,10 @@ public class DynamicPrayerTimeProviderManager(
             throwIfConfigsHaveUnsupportedTimeTypes(dynamicPrayerTimeProvider, dynamicPrayerTimeProviderType, configs);
             BaseLocationData locationData = profileService.GetLocationConfig(dynamicProfile, dynamicPrayerTimeProviderType);
 
+            // missing location info only means that the associated times are not calculated (i.e. remain at null)
+            if (locationData == null)
+                continue;
+
             try
             {
                 var calculatorTask =

@@ -73,6 +73,7 @@ namespace PrayerTimeEngine;
  * - remove AppDbContextModel _useOldBehavior31751 temp fix
  * - FIXED? Calculation relevant data like the Profile with its configs may change in the middle of the calculation process due to shared references
  * - MyMosq: "DhuhrTIME" is earlier than "Dhuhr" but "Fajr" is earlier than "FajrTIME". Bug?? One of them has to be the time for the congregation/iqama and the other one the actual prayer time
+ * - Fazilet & Semerkand place search should also try german country names and/or city names
  */
 
 /* TODO general:
