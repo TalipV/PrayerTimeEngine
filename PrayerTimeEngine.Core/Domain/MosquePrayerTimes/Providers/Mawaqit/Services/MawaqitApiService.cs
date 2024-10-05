@@ -6,6 +6,9 @@ using System.Text.RegularExpressions;
 
 namespace PrayerTimeEngine.Core.Domain.Calculators.Mosques.Mawaqit.Services;
 
+// Returns list of mosques for specific location search text with all the mosque data but only today's times
+// https://mawaqit.net/api/2.0/mosque/search?word=ABCDE&fields=slug%2Clabel
+
 public partial class MawaqitApiService(
         HttpClient httpClient
     ) : IMawaqitApiService
