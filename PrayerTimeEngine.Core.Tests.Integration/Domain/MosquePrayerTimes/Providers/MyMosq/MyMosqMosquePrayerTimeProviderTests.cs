@@ -84,4 +84,36 @@ public class MyMosqMosquePrayerTimeProviderTests : BaseTest
         // ACT & ASSERT
         IMosqueDailyPrayerTimes result = await myMosqPrayerTimeService.GetPrayerTimesAsync(date, externalID, default);
     }
+
+    // to check the fragile API implementation with a live API call because why not
+    [Theory]
+    [InlineData("1239")]
+    [InlineData("1145")]
+    [InlineData("1140")]
+    public async Task ValidateData_DifferentExternalIDsWithLiveApi_ValidData(string externalID)
+    {
+        // ARRANGE
+        ServiceProvider serviceProvider = createServiceProvider(
+            configureServiceCollection: serviceCollection =>
+            {
+                serviceCollection.AddSingleton(GetHandledDbContextFactory());
+                serviceCollection.AddTransient<IMyMosqDBAccess, MyMosqDBAccess>();
+                serviceCollection.AddTransient<IMyMosqApiService, MyMosqApiService>();
+                serviceCollection.AddSingleton<IWebSocketClientFactory, WebSocketClientFactory>();
+                serviceCollection.AddTransient<IWebSocketClient, WebSocketClient>(factory =>
+                {
+                    return new WebSocketClient(new ClientWebSocket());
+                });
+                serviceCollection.AddTransient<MyMosqMosquePrayerTimeProvider>();
+            });
+
+        var date = new LocalDate(2024, 8, 30);
+        MyMosqMosquePrayerTimeProvider myMosqPrayerTimeService = serviceProvider.GetRequiredService<MyMosqMosquePrayerTimeProvider>();
+
+        // ACT
+        bool result = await myMosqPrayerTimeService.ValidateData(externalID, default);
+
+        // ASSERT
+        result.Should().BeTrue();
+    }
 }
