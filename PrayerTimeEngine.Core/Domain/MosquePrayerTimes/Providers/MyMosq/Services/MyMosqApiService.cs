@@ -17,7 +17,8 @@ public partial class MyMosqApiService(
     [GeneratedRegex(@"[^\s""]+\.firebasedatabase\.app")]
     private static partial Regex getWebSocketBaseURLExtractionRegex();
 
-    private const string WEBSOCKET_DEFAULT_BASE_URL = "s-euw1b-nss-200.europe-west1.firebasedatabase.app";
+    private const string WEBSOCKET_DEFAULT_BASE_URL = "s-euw1b-nss-209.europe-west1.firebasedatabase.app";
+
     private const string WEBSOCKET_URL_TEMPLATE = "wss://{0}/.ws?v=5&p=1:734647730920:web:7632560710973b246b3f5d&ns=takvim-ch-default-rtdb";
 
     private const string EXTERNAL_ID_PLACEHOLDER_KEY = "EXTERNAL_ID_PLACEHOLDER";
