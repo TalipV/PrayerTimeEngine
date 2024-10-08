@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using PrayerTimeEngine.Services.Notifications;
 
-namespace PrayerTimeEngine.Services.PrayerTimeSummaryNotification;
+namespace PrayerTimeEngine.Services.Notifications;
 
 public class NotificationService(
         ILogger<NotificationService> logger,
