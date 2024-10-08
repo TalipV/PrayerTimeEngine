@@ -11,9 +11,9 @@ using PrayerTimeEngine.Core.Domain.Models;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Interfaces;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
 
-namespace PrayerTimeEngine.Services.PrayerTimeSummaryNotification;
+namespace PrayerTimeEngine.Platforms.Android.Notifications;
 
-[Service(ForegroundServiceType = Android.Content.PM.ForegroundService.TypeDataSync, Enabled = true)]
+[Service(ForegroundServiceType = global::Android.Content.PM.ForegroundService.TypeDataSync, Enabled = true)]
 public class PrayerTimeSummaryNotification : Service
 {
     internal const string CHANNEL_ID = "prayer_time_channel";
@@ -25,14 +25,14 @@ public class PrayerTimeSummaryNotification : Service
 
     private readonly IProfileService _profileService;
     private readonly IDynamicPrayerTimeProviderManager _prayerTimeDynamicPrayerTimeProviderManager;
-    private readonly ILogger<PrayerTimeSummaryNotificationManager> _prayerTimeSummaryNotificationManager;
+    private readonly ILogger<PrayerTimeSummaryNotification> _logger;
     private readonly ISystemInfoService _systemInfoService;
 
     public PrayerTimeSummaryNotification()
     {
         _profileService = MauiProgram.ServiceProvider.GetRequiredService<IProfileService>();
         _prayerTimeDynamicPrayerTimeProviderManager = MauiProgram.ServiceProvider.GetRequiredService<IDynamicPrayerTimeProviderManager>();
-        _prayerTimeSummaryNotificationManager = MauiProgram.ServiceProvider.GetRequiredService<ILogger<PrayerTimeSummaryNotificationManager>>();
+        _logger = MauiProgram.ServiceProvider.GetRequiredService<ILogger<PrayerTimeSummaryNotification>>();
         _systemInfoService = MauiProgram.ServiceProvider.GetRequiredService<ISystemInfoService>();
 
         updateTimer = new System.Timers.Timer(TIMER_FREQUENCY_MS);
@@ -57,16 +57,16 @@ public class PrayerTimeSummaryNotification : Service
 
         try
         {
-            _prayerTimeSummaryNotificationManager.LogInformation("Try start foreground service");
+            _logger.LogInformation("Try start foreground service");
 
             if (OperatingSystem.IsAndroidVersionAtLeast(29))
-                StartForeground(notificationId, initialNotification, Android.Content.PM.ForegroundService.TypeDataSync);
+                StartForeground(notificationId, initialNotification, global::Android.Content.PM.ForegroundService.TypeDataSync);
             else
                 StartForeground(notificationId, initialNotification);
         }
         catch (Exception ex)
         {
-            _prayerTimeSummaryNotificationManager.LogError(ex, "Error during starting of foreground service");
+            _logger.LogError(ex, "Error during starting of foreground service");
         }
 
         return StartCommandResult.Sticky;
@@ -96,7 +96,7 @@ public class PrayerTimeSummaryNotification : Service
                 notificationBuilder.SetContentTitle(((await _profileService.GetProfiles(default)).First() as DynamicProfile).PlaceInfo.City);
                 notificationBuilder.SetContentText(await getRemainingTimeText(cancellationTokenSource.Token));
 
-                var context = Android.App.Application.Context;
+                var context = global::Android.App.Application.Context;
                 var notificationManager = context.GetSystemService(NotificationService) as NotificationManager;
                 notificationManager.Notify(notificationId, notificationBuilder.Build());
             }
@@ -116,7 +116,7 @@ public class PrayerTimeSummaryNotification : Service
         {
             string title = "PrayerTimeEngine";
 
-            var context = Android.App.Application.Context;
+            var context = global::Android.App.Application.Context;
             Intent intent = context.PackageManager.GetLaunchIntentForPackage(context.PackageName);
             PendingIntent pendingIntent = PendingIntent.GetActivity(context, 0, intent, PendingIntentFlags.Immutable);
 
@@ -141,10 +141,10 @@ public class PrayerTimeSummaryNotification : Service
             _systemInfoService.GetCurrentInstant()
                 .InZone(DateTimeZoneProviders.Tzdb[(profile as DynamicProfile).PlaceInfo.TimezoneInfo.Name]);
 
-        DynamicPrayerTimesSet prayerTimeBundle = 
+        DynamicPrayerTimesSet prayerTimeBundle =
             await _prayerTimeDynamicPrayerTimeProviderManager.CalculatePrayerTimesAsync(
-                profile.ID, 
-                now, 
+                profile.ID,
+                now,
                 cancellationToken);
 
         ZonedDateTime? nextTime = null;

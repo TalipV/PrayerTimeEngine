@@ -33,6 +33,7 @@ public class MainPageViewModel(
         IDynamicPrayerTimeProviderFactory prayerTimeServiceFactory,
         IMosquePrayerTimeProviderManager mosquePrayerTimeProviderManager,
         PrayerTimeViewModelFactory prayerTimeViewModelFactory,
+        NotificationService prayerTimeNotificationManager,
         IPlaceService placeService,
         IProfileService profileService,
         INavigationService navigationService,
@@ -448,14 +449,8 @@ public class MainPageViewModel(
         {
             double startUpTimeMS = (DateTime.Now - MauiProgram.StartDateTime).TotalMilliseconds;
             toastMessageService.Show($"{startUpTimeMS:N0}ms to start!");
-#if ANDROID
-            dispatcher.Dispatch(
-                async () =>
-                {
-                    var notificationManager = MauiProgram.ServiceProvider.GetRequiredService<PrayerTimeSummaryNotificationManager>();
-                    await notificationManager.TryStartPersistentNotification();
-                });
-#endif
+
+            dispatcher.Dispatch(async () => await prayerTimeNotificationManager.StartPrayerTimeSummaryNotification());
         }
         catch (Exception exception)
         {

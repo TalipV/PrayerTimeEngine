@@ -14,7 +14,7 @@ public class PostNotifications : BasePlatformPermission
 
             return
             [
-                (Manifest.Permission.PostNotifications, true)
+                (androidPermission: Manifest.Permission.PostNotifications, isRuntime: true)
             ];
         }
     }
