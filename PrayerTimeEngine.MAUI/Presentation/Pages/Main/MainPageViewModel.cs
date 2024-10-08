@@ -18,7 +18,7 @@ using PrayerTimeEngine.Presentation.Pages.Settings.SettingsHandler;
 using PrayerTimeEngine.Presentation.Services;
 using PrayerTimeEngine.Presentation.Services.Navigation;
 using PrayerTimeEngine.Presentation.Views;
-using PrayerTimeEngine.Services.PrayerTimeSummaryNotification;
+using PrayerTimeEngine.Services.Notifications;
 using PropertyChanged;
 using System.Windows.Input;
 

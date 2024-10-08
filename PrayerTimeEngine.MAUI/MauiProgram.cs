@@ -233,6 +233,7 @@ public static class MauiProgram
             return new WebSocketClient(new ClientWebSocket());
         });
 
+        serviceCollection.AddTransient<NotificationService>();
         serviceCollection.AddSingleton<ISystemInfoService, SystemInfoService>();
         serviceCollection.AddTransient<IPreferenceService, PreferenceService>();
         serviceCollection.AddSingleton<TimeTypeAttributeService>();
@@ -260,21 +261,9 @@ public static class MauiProgram
                 sp.GetRequiredService<ILogger<PlaceService>>());
         });
 
-        serviceCollection.AddTransient<Services.PrayerTimeSummaryNotification.NotificationService>();
-        
-        serviceCollection.AddTransient<IPrayerTimeSummaryNotificationHandler>(factory =>
-        {
-#if ANDROID
-            return factory.GetService<Platforms.Android.Notifications.PrayerTimeSummaryNotificationHandler>();
-#else
-            var mock = NSubstitute.Substitute.For<IPrayerTimeSummaryNotificationHandler>();
-            NSubstitute.SubstituteExtensions.Returns(mock.ExecuteAsync(), Task.CompletedTask);
-            return mock;
-#endif
-        });
-
         addCalculatorServices(serviceCollection);
         addPresentationLayerServices(serviceCollection);
+        addPlatformSpecificServices(serviceCollection);
     }
 
     private static void addCalculatorServices(IServiceCollection serviceCollection)
@@ -362,5 +351,18 @@ public static class MauiProgram
 
         serviceCollection.AddTransient<DatabaseTablesPage>();
         serviceCollection.AddTransient<DatabaseTablesPageViewModel>();
+    }
+
+    private static void addPlatformSpecificServices(IServiceCollection serviceCollection)
+    {
+        var prayerTimeSummaryNotificationHandlerMock = NSubstitute.Substitute.For<IPrayerTimeSummaryNotificationHandler>();
+        NSubstitute.SubstituteExtensions.Returns(prayerTimeSummaryNotificationHandlerMock.ExecuteAsync(), Task.CompletedTask);
+
+#if ANDROID
+        serviceCollection.AddTransient<IPrayerTimeSummaryNotificationHandler, Platforms.Android.Notifications.PrayerTimeSummaryNotificationHandler>();
+#else
+        // TODO implement for other platforms someday (at least iOS)
+        serviceCollection.AddTransient<IPrayerTimeSummaryNotificationHandler>(factory => prayerTimeSummaryNotificationHandlerMock);
+#endif
     }
 }
