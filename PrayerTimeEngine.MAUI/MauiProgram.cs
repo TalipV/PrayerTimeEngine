@@ -43,6 +43,7 @@ using PrayerTimeEngine.Presentation.Views.MosquePrayerTimes;
 using PrayerTimeEngine.Presentation.Views.PrayerTimeGraphic;
 using PrayerTimeEngine.Presentation.Views.PrayerTimes;
 using PrayerTimeEngine.Services;
+using PrayerTimeEngine.Services.Notifications;
 using Refit;
 using System.Diagnostics;
 using System.Net.WebSockets;
@@ -83,7 +84,6 @@ namespace PrayerTimeEngine;
  * - Transactions when saving country data and city data to prevent partial safes (or rethink the whole thing)
  * - PlaceService and ProfileService with no or default CancellationToken?
  * - Consider Muwaqqit API changes and maybe additionally use old API endpoint
- * - Remove #IF ANDROID (and similiar) statements from main code by abstracting logic with interfaces so that OS specific stuff is handled in DI factory code here
  * - Consistent naming of awaitable methods with or without Async suffix
  * - Also check navigation properties back and forth in Equals override? Mixed approaches currently
  * - Change "DBAccess" to "Repository" and make sure the code there really is only about db access / repository
@@ -260,9 +260,18 @@ public static class MauiProgram
                 sp.GetRequiredService<ILogger<PlaceService>>());
         });
 
+        serviceCollection.AddTransient<Services.PrayerTimeSummaryNotification.NotificationService>();
+        
+        serviceCollection.AddTransient<IPrayerTimeSummaryNotificationHandler>(factory =>
+        {
 #if ANDROID
-        serviceCollection.AddSingleton<Services.PrayerTimeSummaryNotification.PrayerTimeSummaryNotificationManager>();
+            return factory.GetService<Platforms.Android.Notifications.PrayerTimeSummaryNotificationHandler>();
+#else
+            var mock = NSubstitute.Substitute.For<IPrayerTimeSummaryNotificationHandler>();
+            NSubstitute.SubstituteExtensions.Returns(mock.ExecuteAsync(), Task.CompletedTask);
+            return mock;
 #endif
+        });
 
         addCalculatorServices(serviceCollection);
         addPresentationLayerServices(serviceCollection);

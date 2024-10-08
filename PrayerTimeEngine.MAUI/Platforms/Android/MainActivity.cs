@@ -1,7 +1,7 @@
 ﻿using Android.App;
 using Android.Content.PM;
 using Android.OS;
-using PrayerTimeEngine.Services.PrayerTimeSummaryNotification;
+using PrayerTimeEngine.Platforms.Android.Notifications;
 
 namespace PrayerTimeEngine.Platforms.Android;
 
@@ -29,7 +29,7 @@ public class MainActivity : MauiAppCompatActivity
         channel.SetSound(null, null);
         channel.EnableVibration(false);
 
-        var notificationManager = (NotificationManager) GetSystemService(NotificationService);
+        var notificationManager = (NotificationManager) base.GetSystemService(NotificationService);
         notificationManager.CreateNotificationChannel(channel);
     }
 }
