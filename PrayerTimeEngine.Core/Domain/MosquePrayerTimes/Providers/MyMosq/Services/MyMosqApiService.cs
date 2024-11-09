@@ -44,9 +44,10 @@ public partial class MyMosqApiService(
         finaleMessage = JsonDocument.Parse(finaleMessage).RootElement.GetProperty("d").GetProperty("b").GetProperty("d").ToString();
 
         finaleMessage =
+            // replace things like '"20251203":{' with '{'
             Regex.Replace(finaleMessage,
                 pattern: $$$"""
-                            "{{{date.Year}}}[0-9][0-9][0-9][0-9]":{
+                            "[0-9]{8}":{
                             """,
                 replacement: "{")
             .Replace(
