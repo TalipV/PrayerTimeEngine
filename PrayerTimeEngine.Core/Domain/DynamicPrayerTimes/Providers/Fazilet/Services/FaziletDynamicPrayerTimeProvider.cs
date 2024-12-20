@@ -199,8 +199,8 @@ public class FaziletDynamicPrayerTimeProvider(
                 TimezoneInfo = place.TimezoneInfo
             };
 
-        string countryName = turkishPlaceInfo.Country;
-        string cityName = turkishPlaceInfo.City;
+        string countryName = turkishPlaceInfo.Country ?? "";
+        string cityName = turkishPlaceInfo.City ?? "";
 
         // QUICK FIX...
         countryName = countryName.Replace("İ", "I");
