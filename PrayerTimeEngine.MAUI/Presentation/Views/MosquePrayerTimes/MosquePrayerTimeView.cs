@@ -99,12 +99,26 @@ public class MosquePrayerTimeView : ContentView
                 if (prayerTime.Start == null)
                     return "xx:xx";
 
-                string time = prayerTime.Start.Value.ToString("HH:mm", null);
-                string offsetText = prayerTime.CongregationStartOffset > 0 
-                    ? $"({prayerTime.Start.Value.PlusMinutes(prayerTime.CongregationStartOffset).ToString("HH:mm", null)})" 
+                string startTime = prayerTime.Start?.ToString("HH:mm", null) ?? "xx.xx";
+                string endTime = prayerTime.End?.ToString("HH:mm", null) ?? "xx.xx";
+                string congregationTime = prayerTime.CongregationStartOffset > 0 
+                    ? prayerTime.Start?.PlusMinutes(prayerTime.CongregationStartOffset).ToString("HH:mm", null) ?? "xx.xx"
                     : "";
 
-                return $"{time} {offsetText}";
+                string fullTimeText = startTime;
+
+                // TODO improve
+                if (prayerName == "Fajr")
+                {
+                    fullTimeText += $"-{endTime}";
+                }
+
+                if (!string.IsNullOrWhiteSpace(congregationTime))
+                {
+                    fullTimeText += $" ({congregationTime})";
+                }
+
+                return fullTimeText;
             });
 
         grid.AddWithSpan(prayerDurationLabel, startRowNo + 1, startColumnNo, columnSpan: 2);
