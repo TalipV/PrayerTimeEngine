@@ -69,6 +69,7 @@ namespace PrayerTimeEngine;
  * - Semerkand sometimes puts "*" in the json for their times which is not handled in the app (e.g. "*23:54")
  * - Semerkand sometimes has countries and cities with duplicate names
  * 
+ * - REMOVE bypassed SSL validation for ISemerkandApiService
  * - Exception for single calculation source failing to provide location info prevents rest
  * - Exception for single calculation prevents all the other calculations (rethink this and make tests)
  * - Exception for single calculation only disables that calculation but subsequent calculations rely on cached values and don't retry
@@ -291,6 +292,11 @@ public static class MauiProgram
             {
                 config.Timeout = TimeSpan.FromSeconds(HTTP_REQUEST_TIMEOUT_SECONDS);
                 config.BaseAddress = new Uri("https://semerkandtakvimi.semerkandmobile.com/");
+            })
+            .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
+            {
+                // TODO: REMOVE, because Semerkand will hopefully fix this soon
+                ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true
             })
             .AddStandardResilienceHandler(); 
         serviceCollection.AddTransient<SemerkandDynamicPrayerTimeProvider>();
