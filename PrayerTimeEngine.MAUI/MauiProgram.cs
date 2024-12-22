@@ -69,7 +69,8 @@ namespace PrayerTimeEngine;
  * - Semerkand sometimes puts "*" in the json for their times which is not handled in the app (e.g. "*23:54")
  * - Semerkand sometimes has countries and cities with duplicate names
  * 
- * - Exception for single calculation prevents all the other calculations (rough fix already done)
+ * - Exception for single calculation source failing to provide location info prevents rest
+ * - Exception for single calculation prevents all the other calculations (rethink this and make tests)
  * - Exception for single calculation only disables that calculation but subsequent calculations rely on cached values and don't retry
  * - remove AppDbContextModel _useOldBehavior31751 temp fix
  * - FIXED? Calculation relevant data like the Profile with its configs may change in the middle of the calculation process due to shared references

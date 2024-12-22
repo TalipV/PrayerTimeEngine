@@ -33,7 +33,7 @@ public class DynamicPrayerTimeProviderManager(
         }
 
         // there is only a cache for a different profile config
-        if (!cachedValue.Item1.Equals(profile))
+        if (!Equals(cachedValue.Item1, profile))
         {
             prayerTimeEntity = null;
             return false;
@@ -129,8 +129,17 @@ public class DynamicPrayerTimeProviderManager(
                     dynamicPrayerTimeProvider.GetPrayerTimesAsync(date, locationData, configs, cancellationToken)
                         .ContinueWith(task =>
                         {
+                            // exception case
                             if (!task.IsCompletedSuccessfully)
-                                return task.GetAwaiter().GetResult();
+                            {
+                                // getting the result throws exception
+                                //return task.GetAwaiter().GetResult();
+
+                                // TODO: delegate error info outside
+                                // by just setting null for this calculator's calculation values
+                                // without stopping the execution flow with an exception
+                                return [];
+                            }
 
                             return task.GetAwaiter().GetResult()
                                 .Select(calculation =>

@@ -38,12 +38,12 @@ public class DynamicPrayerTimesSet : IPrayerTimesSet
         if (obj is not DynamicPrayerTimesSet otherDynamicPrayerTimesSet)
             return false;
 
-        return Fajr.Equals(otherDynamicPrayerTimesSet.Fajr)
-            && Duha.Equals(otherDynamicPrayerTimesSet.Duha)
-            && Dhuhr.Equals(otherDynamicPrayerTimesSet.Dhuhr)
-            && Asr.Equals(otherDynamicPrayerTimesSet.Asr)
-            && Maghrib.Equals(otherDynamicPrayerTimesSet.Maghrib)
-            && Isha.Equals(otherDynamicPrayerTimesSet.Isha);
+        return Equals(Fajr, otherDynamicPrayerTimesSet.Fajr)
+            && Equals(Duha, otherDynamicPrayerTimesSet.Duha)
+            && Equals(Dhuhr, otherDynamicPrayerTimesSet.Dhuhr)
+            && Equals(Asr, otherDynamicPrayerTimesSet.Asr)
+            && Equals(Maghrib, otherDynamicPrayerTimesSet.Maghrib)
+            && Equals(Isha, otherDynamicPrayerTimesSet.Isha);
     }
 
     public override int GetHashCode()

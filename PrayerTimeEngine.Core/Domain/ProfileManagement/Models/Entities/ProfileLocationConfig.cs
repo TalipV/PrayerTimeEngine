@@ -22,9 +22,9 @@ public class ProfileLocationConfig : IInsertedAt
 
         return ID == otherLocationConfig.ID
             && ProfileID == otherLocationConfig.ProfileID
-            // && object.Equals(otherLocationConfig.Profile) why not check it here? why check objects of related data in other Equals implementations?
+            // && Equals(otherLocationConfig.Profile) why not check it here? why check objects of related data in other Equals implementations?
             && DynamicPrayerTimeProvider == otherLocationConfig.DynamicPrayerTimeProvider
-            && LocationData.Equals(otherLocationConfig.LocationData);
+            && Equals(LocationData, otherLocationConfig.LocationData);
     }
 
     public override int GetHashCode()

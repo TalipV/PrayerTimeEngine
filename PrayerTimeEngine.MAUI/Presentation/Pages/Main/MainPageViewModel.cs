@@ -557,10 +557,17 @@ public class MainPageViewModel(
             if (dynamicPrayerTimeProvider == EDynamicPrayerTimeProviderType.None)
                 continue;
 
-            BaseLocationData locationConfig =
-                await prayerTimeServiceFactory
+            BaseLocationData locationConfig = null;
+            try
+            {
+                locationConfig = await prayerTimeServiceFactory
                     .GetDynamicPrayerTimeProviderByDynamicPrayerTimeProvider(dynamicPrayerTimeProvider)
                     .GetLocationInfo(completePlaceInfo, cancellationToken);
+            }
+            catch
+            {
+                // TODO handle properly
+            }
 
             locationDataWithDynamicPrayerTimeProvider.Add((dynamicPrayerTimeProvider, locationConfig));
         }
