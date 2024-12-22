@@ -24,9 +24,9 @@ public class ProfileTimeConfig : IInsertedAt
 
         return ID == otherTimeConfig.ID
             && ProfileID == otherTimeConfig.ProfileID
-            // && object.Equals(otherLocationConfig.Profile) why not check it here? why check objects of related data in other Equals implementations?
+            // && Equals(otherLocationConfig.Profile) why not check it here? why check objects of related data in other Equals implementations?
             && TimeType == otherTimeConfig.TimeType
-            && CalculationConfiguration.Equals(otherTimeConfig.CalculationConfiguration);
+            && Equals(CalculationConfiguration, otherTimeConfig.CalculationConfiguration);
     }
 
     public override int GetHashCode()

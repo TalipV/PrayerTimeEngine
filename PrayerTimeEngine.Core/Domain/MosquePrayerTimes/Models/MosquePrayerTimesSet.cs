@@ -37,13 +37,13 @@ public class MosquePrayerTimesSet : IPrayerTimesSet
         if (obj is not MosquePrayerTimesSet otherMosquePrayerTimesSet)
             return false;
 
-        return object.Equals(Fajr, otherMosquePrayerTimesSet.Fajr)
-            && object.Equals(Dhuhr, otherMosquePrayerTimesSet.Dhuhr)
-            && object.Equals(Asr, otherMosquePrayerTimesSet.Asr)
-            && object.Equals(Maghrib, otherMosquePrayerTimesSet.Maghrib)
-            && object.Equals(Isha, otherMosquePrayerTimesSet.Isha)
-            && object.Equals(Jumuah, otherMosquePrayerTimesSet.Jumuah)
-            && object.Equals(Jumuah2, otherMosquePrayerTimesSet.Jumuah2);
+        return Equals(Fajr, otherMosquePrayerTimesSet.Fajr)
+            && Equals(Dhuhr, otherMosquePrayerTimesSet.Dhuhr)
+            && Equals(Asr, otherMosquePrayerTimesSet.Asr)
+            && Equals(Maghrib, otherMosquePrayerTimesSet.Maghrib)
+            && Equals(Isha, otherMosquePrayerTimesSet.Isha)
+            && Equals(Jumuah, otherMosquePrayerTimesSet.Jumuah)
+            && Equals(Jumuah2, otherMosquePrayerTimesSet.Jumuah2);
     }
 
     public override int GetHashCode()

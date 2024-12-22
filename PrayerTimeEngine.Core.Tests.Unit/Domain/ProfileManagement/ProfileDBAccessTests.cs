@@ -179,8 +179,8 @@ public class ProfileDBAccessTests : BaseTest
         await _profileDBAccess.UpdateTimeConfig(profile, ETimeType.FajrEnd, genericSettingConfiguration, default);
 
         // ASSERT
-        profile.TimeConfigs.Should().Contain(x => x.CalculationConfiguration.Equals(genericSettingConfiguration));
-        profile.TimeConfigs.First(x => x.CalculationConfiguration.Equals(genericSettingConfiguration)).CalculationConfiguration.Should().BeEquivalentTo(genericSettingConfiguration);
+        profile.TimeConfigs.Should().Contain(x => Equals(x.CalculationConfiguration, genericSettingConfiguration));
+        profile.TimeConfigs.First(x => Equals(x.CalculationConfiguration, genericSettingConfiguration)).CalculationConfiguration.Should().BeEquivalentTo(genericSettingConfiguration);
     }
 
     #endregion UpdateTimeConfig
