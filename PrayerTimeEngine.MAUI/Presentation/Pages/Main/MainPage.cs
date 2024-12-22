@@ -133,6 +133,7 @@ public partial class MainPage : ContentPage
         _lastUpdatedTextInfo = new Label()
             .Column(0).Row(0)
             .Start().CenterVertical()
+            .MinWidth(20) // otherwise we can't reach the menu by tapping an empty label
             .Bind(
                 Label.TextProperty,
                 path: $"{nameof(MainPageViewModel.CurrentProfileWithModel)}.{nameof(IPrayerTimeViewModel.PrayerTimesSet)}.{nameof(DynamicPrayerTimesSet.DataCalculationTimestamp)}",
@@ -143,6 +144,7 @@ public partial class MainPage : ContentPage
         _profileDisplayNameTextInfo = new Label()
             .Column(1).Row(0).Paddings(0, 0, 20, 0)
             .TextEnd().CenterVertical()
+            .MinWidth(20) // otherwise we can't reach the menu by tapping an empty label
             .Bind(Label.TextProperty, $"{nameof(MainPageViewModel.CurrentProfile)}.{nameof(Profile.Name)}");
 
         titleGrid.Add(_profileDisplayNameTextInfo);

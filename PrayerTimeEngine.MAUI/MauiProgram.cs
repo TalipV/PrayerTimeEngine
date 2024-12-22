@@ -318,9 +318,11 @@ public static class MauiProgram
         serviceCollection.AddTransient<IPrayerTimeCacheCleaner, MawaqitDBAccess>();
         serviceCollection.AddTransient<IMawaqitApiService, MawaqitApiService>(factory =>
         {
-            HttpClient httpClient = new HttpClient();
-            httpClient.Timeout = TimeSpan.FromSeconds(HTTP_REQUEST_TIMEOUT_SECONDS);
-            httpClient.BaseAddress = new Uri("https://mawaqit.net/de/");
+            var httpClient = new HttpClient
+            {
+                Timeout = TimeSpan.FromSeconds(HTTP_REQUEST_TIMEOUT_SECONDS),
+                BaseAddress = new Uri("https://mawaqit.net/de/")
+            };
             return new MawaqitApiService(httpClient);
         });
         serviceCollection.AddTransient<MawaqitMosquePrayerTimeProvider>();
