@@ -16,7 +16,7 @@
   <ItemGroup>
     <PackageReference Include="AsyncAwaitBestPractices" Version="9.0.0" />
     <PackageReference Include="AsyncKeyedLock" Version="7.1.4" />
-    <PackageReference Include="HtmlAgilityPack" Version="1.11.71" />
+    <PackageReference Include="HtmlAgilityPack" Version="1.11.72" />
     <PackageReference Include="MethodTimer.Fody" Version="3.2.2" PrivateAssets="All" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.0">
       <PrivateAssets>all</PrivateAssets>

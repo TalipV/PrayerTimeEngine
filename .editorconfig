@@ -1,2 +1,4 @@
 [*.cs]
 csharp_style_namespace_declarations = file_scoped:warning
+# "Collection initialization can be simplified"
+dotnet_diagnostic.IDE0305.severity = none
