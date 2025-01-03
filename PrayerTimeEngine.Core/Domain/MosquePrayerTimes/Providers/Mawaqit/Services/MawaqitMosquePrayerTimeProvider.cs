@@ -1,8 +1,8 @@
-﻿using NodaTime;
-using AsyncKeyedLock;
-using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.Mawaqit.Models.Entities;
-using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.Mawaqit.Interfaces;
+﻿using AsyncKeyedLock;
+using NodaTime;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Models;
+using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.Mawaqit.Interfaces;
+using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.Mawaqit.Models.Entities;
 
 namespace PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.Mawaqit.Services;
 

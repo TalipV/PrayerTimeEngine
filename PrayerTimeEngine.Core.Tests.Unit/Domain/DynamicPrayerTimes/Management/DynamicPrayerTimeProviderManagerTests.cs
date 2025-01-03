@@ -1,17 +1,17 @@
-﻿using PrayerTimeEngine.Core.Tests.Common;
-using PrayerTimeEngine.Core.Domain.ProfileManagement.Interfaces;
-using NSubstitute;
+﻿using Microsoft.Extensions.Logging;
 using NodaTime;
-using PrayerTimeEngine.Core.Common.Enum;
-using Microsoft.Extensions.Logging;
-using PrayerTimeEngine.Core.Tests.Common.TestData;
+using NSubstitute;
 using PrayerTimeEngine.Core.Common;
+using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Domain;
-using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Models;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes;
-using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Management;
+using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Models;
+using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Muwaqqit.Models;
+using PrayerTimeEngine.Core.Domain.ProfileManagement.Interfaces;
+using PrayerTimeEngine.Core.Tests.Common;
+using PrayerTimeEngine.Core.Tests.Common.TestData;
 
 namespace PrayerTimeEngine.Core.Tests.Unit.Domain.DynamicPrayerTimes.Management;
 

@@ -1,8 +1,8 @@
 ﻿using NodaTime;
-using PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
-using PropertyChanged;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Management;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Models;
+using PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
+using PropertyChanged;
 
 namespace PrayerTimeEngine.Presentation.Views.MosquePrayerTimes;
 

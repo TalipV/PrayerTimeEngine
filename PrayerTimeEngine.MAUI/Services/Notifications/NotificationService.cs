@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Logging;
-using PrayerTimeEngine.Services.Notifications;
 
 namespace PrayerTimeEngine.Services.Notifications;
 

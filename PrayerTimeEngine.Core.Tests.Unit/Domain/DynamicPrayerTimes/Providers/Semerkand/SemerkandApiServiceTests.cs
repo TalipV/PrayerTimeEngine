@@ -1,9 +1,9 @@
-﻿using PrayerTimeEngine.Core.Tests.Common;
-using System.Net;
-using NodaTime;
+﻿using NodaTime;
+using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Semerkand.Interfaces;
+using PrayerTimeEngine.Core.Tests.Common;
 using PrayerTimeEngine.Core.Tests.Common.TestData;
 using Refit;
-using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Semerkand.Interfaces;
+using System.Net;
 
 namespace PrayerTimeEngine.Core.Tests.Unit.Domain.DynamicPrayerTimes.Providers.Semerkand;
 

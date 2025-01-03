@@ -1,7 +1,5 @@
-﻿using CommunityToolkit.Maui.Extensions;
-using CommunityToolkit.Maui.Markup;
+﻿using CommunityToolkit.Maui.Markup;
 using Microsoft.Extensions.Logging;
-using Microsoft.Maui.Controls;
 using NodaTime;
 using OnScreenSizeMarkup.Maui.Helpers;
 using PrayerTimeEngine.Core.Common;

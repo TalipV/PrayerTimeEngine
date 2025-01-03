@@ -1,15 +1,15 @@
-﻿using PrayerTimeEngine.Core.Domain.ProfileManagement.Services;
-using PrayerTimeEngine.Core.Data.EntityFramework;
-using PrayerTimeEngine.Core.Tests.Common;
+﻿using Microsoft.EntityFrameworkCore;
 using PrayerTimeEngine.Core.Common.Enum;
-using PrayerTimeEngine.Core.Tests.Common.TestData;
-using PrayerTimeEngine.Core.Domain.PlaceManagement.Models;
-using Microsoft.EntityFrameworkCore;
-using PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
+using PrayerTimeEngine.Core.Data.EntityFramework;
+using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Models;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Models;
-using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes;
+using PrayerTimeEngine.Core.Domain.PlaceManagement.Models;
+using PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
+using PrayerTimeEngine.Core.Domain.ProfileManagement.Services;
+using PrayerTimeEngine.Core.Tests.Common;
+using PrayerTimeEngine.Core.Tests.Common.TestData;
 
 namespace PrayerTimeEngine.Core.Tests.Unit.Domain.ProfileManagement;
 

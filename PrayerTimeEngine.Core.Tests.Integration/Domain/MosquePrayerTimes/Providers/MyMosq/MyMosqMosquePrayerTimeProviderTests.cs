@@ -1,13 +1,13 @@
 using Microsoft.Extensions.DependencyInjection;
 using NodaTime;
-using PrayerTimeEngine.Core.Tests.Common;
-using PrayerTimeEngine.Core.Tests.Common.TestData;
 using PrayerTimeEngine.Core.Data.WebSocket;
 using PrayerTimeEngine.Core.Data.WebSocket.Interfaces;
-using System.Net.WebSockets;
+using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Models;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.MyMosq.Interfaces;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.MyMosq.Services;
-using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Models;
+using PrayerTimeEngine.Core.Tests.Common;
+using PrayerTimeEngine.Core.Tests.Common.TestData;
+using System.Net.WebSockets;
 
 namespace PrayerTimeEngine.Core.Tests.Integration.Domain.MosquePrayerTimes.Providers.MyMosq;
 
