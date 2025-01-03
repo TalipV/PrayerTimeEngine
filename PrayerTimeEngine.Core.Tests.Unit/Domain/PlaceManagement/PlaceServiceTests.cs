@@ -1,13 +1,13 @@
 ﻿using Microsoft.Extensions.Logging;
 using NSubstitute;
-using PrayerTimeEngine.Core.Domain.PlaceManagement.Services;
-using PrayerTimeEngine.Core.Tests.Common;
-using System.Net;
-using PrayerTimeEngine.Core.Tests.Common.TestData;
-using PrayerTimeEngine.Core.Domain.PlaceManagement.Models;
-using Refit;
 using PrayerTimeEngine.Core.Common;
+using PrayerTimeEngine.Core.Domain.PlaceManagement.Models;
+using PrayerTimeEngine.Core.Domain.PlaceManagement.Services;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Services.LocationIQ;
+using PrayerTimeEngine.Core.Tests.Common;
+using PrayerTimeEngine.Core.Tests.Common.TestData;
+using Refit;
+using System.Net;
 
 namespace PrayerTimeEngine.Core.Tests.Unit.Domain.PlaceManagement;
 

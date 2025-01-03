@@ -1,13 +1,13 @@
-﻿using Microsoft.Extensions.Logging;
-using PrayerTimeEngine.Core.Common.Enum;
+﻿using AsyncKeyedLock;
+using Microsoft.Extensions.Logging;
 using NodaTime;
-using AsyncKeyedLock;
-using PrayerTimeEngine.Core.Domain.PlaceManagement.Interfaces;
-using PrayerTimeEngine.Core.Domain.PlaceManagement.Models;
+using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Models;
+using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Interfaces;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Models;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Models.Entities;
-using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Interfaces;
+using PrayerTimeEngine.Core.Domain.PlaceManagement.Interfaces;
+using PrayerTimeEngine.Core.Domain.PlaceManagement.Models;
 
 namespace PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Services;
 
