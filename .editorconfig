@@ -1,4 +1,15 @@
 [*.cs]
 csharp_style_namespace_declarations = file_scoped:warning
+
 # "Collection initialization can be simplified"
 dotnet_diagnostic.IDE0305.severity = none
+
+# AllowUnsafeBlock is requested for some WinRT ABI things but I don't know the consequences 
+# and that didn't make the messages go away
+dotnet_diagnostic.CsWinRT1030.severity = none
+
+# "Use simple 'using' statement" but the explicit scope makes it clearer in my opinion
+dotnet_diagnostic.IDE0063.severity = none
+
+# Naming Styles
+dotnet_diagnostic.IDE1006.severity = none

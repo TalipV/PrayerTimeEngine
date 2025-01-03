@@ -16,14 +16,9 @@
     </PackageReference>
   </ItemGroup>
 
-
   <ItemGroup>
     <ProjectReference Include="..\PrayerTimeEngine.Core.Tests.Common\PrayerTimeEngine.Core.Tests.Common.csproj" />
     <ProjectReference Include="..\PrayerTimeEngine.Core\PrayerTimeEngine.Core.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Include="..\SharedGlobalSettings.cs" Link="Properties\SharedGlobalSettings.cs" />
   </ItemGroup>
 
 </Project>

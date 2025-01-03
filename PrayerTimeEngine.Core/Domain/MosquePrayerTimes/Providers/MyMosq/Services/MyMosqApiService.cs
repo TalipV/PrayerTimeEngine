@@ -43,13 +43,7 @@ public partial class MyMosqApiService(
         
         finaleMessage = JsonDocument.Parse(finaleMessage).RootElement.GetProperty("d").GetProperty("b").GetProperty("d").ToString();
 
-        finaleMessage =
-            // replace things like '"20251203":{' with '{'
-            Regex.Replace(finaleMessage,
-                pattern: $$$"""
-                            "[0-9]{8}":{
-                            """,
-                replacement: "{")
+        finaleMessage = DateKeyNameRemovalRegex().Replace(finaleMessage, replacement: "{") // replace things like '"20251203":{' with '{'
             .Replace(
                 oldValue: "{{\"Asr\"",
                 newValue: "{\"prayerTimes\":[{\"Asr\"")
@@ -176,4 +170,7 @@ public partial class MyMosqApiService(
             }
         }
     }
+
+    [GeneratedRegex("\"[0-9]{8}\":{")]
+    private static partial Regex DateKeyNameRemovalRegex();
 }

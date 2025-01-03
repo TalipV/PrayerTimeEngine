@@ -90,7 +90,6 @@ public class MyMosqApiServiceTests : BaseTest
     public async Task ValidateData_ValidExternalID_ReturnTrue()
     {
         // ARRANGE
-        var date = new LocalDate(2024, 8, 30);
         string externalID = "1239";
 
         // ACT
@@ -104,7 +103,6 @@ public class MyMosqApiServiceTests : BaseTest
     public async Task ValidateData_InvalidExternalID_ReturnFalse()
     {
         // ARRANGE
-        var date = new LocalDate(2024, 8, 30);
         string externalID = "InvalidExternalID";
 
         // ACT

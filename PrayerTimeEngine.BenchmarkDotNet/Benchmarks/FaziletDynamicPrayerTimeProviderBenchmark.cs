@@ -83,7 +83,7 @@ public class FaziletDynamicPrayerTimeProviderBenchmark
             );
     }
 
-    private static DbConnection _dbContextKeepAliveSqlConnection;
+    private static SqliteConnection _dbContextKeepAliveSqlConnection;
 
     [GlobalSetup]
     public static void Setup()
@@ -121,7 +121,6 @@ public class FaziletDynamicPrayerTimeProviderBenchmark
     private static FaziletDynamicPrayerTimeProvider _faziletDynamicPrayerTimeProvider_DataFromDbStorage = null;
     private static FaziletDynamicPrayerTimeProvider _faziletDynamicPrayerTimeProvider_DataFromApi = null;
 
-#pragma warning disable CA1822 // Mark members as static
     [Benchmark]
     public List<(ETimeType TimeType, ZonedDateTime ZonedDateTime)> FaziletDynamicPrayerTimeProvider_GetDataFromDb()
     {
@@ -155,5 +154,4 @@ public class FaziletDynamicPrayerTimeProviderBenchmark
 
         return result;
     }
-#pragma warning restore CA1822 // Mark members as static
 }

@@ -23,7 +23,7 @@ public class MyMosqMosquePrayerTimeProviderBenchmark
 {
     #region data
 
-    private static readonly LocalDate _localDate = new LocalDate(2024, 8, 30);
+    private static readonly LocalDate _localDate = new (2024, 8, 30);
     private static readonly string _externalID = "1239";
 
     #endregion data
@@ -65,7 +65,7 @@ public class MyMosqMosquePrayerTimeProviderBenchmark
             );
     }
 
-    private static DbConnection _dbContextKeepAliveSqlConnection;
+    private static SqliteConnection _dbContextKeepAliveSqlConnection;
 
     [GlobalSetup]
     public static void Setup()
@@ -103,7 +103,6 @@ public class MyMosqMosquePrayerTimeProviderBenchmark
     private static MyMosqMosquePrayerTimeProvider _myMosqMosquePrayerTimeProvider_DataFromDbStorage = null;
     private static MyMosqMosquePrayerTimeProvider _myMosqMosquePrayerTimeProvider_DataFromApi = null;
 
-#pragma warning disable CA1822 // Mark members as static
     [Benchmark]
     public IMosqueDailyPrayerTimes MyMosqMosquePrayerTimeProvider_GetDataFromDb()
     {
@@ -125,5 +124,4 @@ public class MyMosqMosquePrayerTimeProviderBenchmark
 
         return result;
     }
-#pragma warning restore CA1822 // Mark members as static
 }

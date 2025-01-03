@@ -17,8 +17,9 @@
     <ProjectReference Include="..\PrayerTimeEngine.Core\PrayerTimeEngine.Core.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Compile Include="..\SharedGlobalSettings.cs" Link="Properties\SharedGlobalSettings.cs" />
-  </ItemGroup>
+  <PropertyGroup>
+    <!--Benchmark methods had warnings on them because they are not static which they have to be though-->
+    <NoWarn>CA1822</NoWarn>
+  </PropertyGroup>
 
 </Project>

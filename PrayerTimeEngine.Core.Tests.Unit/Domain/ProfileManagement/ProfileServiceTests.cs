@@ -23,13 +23,10 @@ public class ProfileServiceTests : BaseTest
         _profileService = new ProfileService(_profileDBAccessMock, new TimeTypeAttributeService());
     }
 
-    public static TheoryData<ETimeType> configurableTimeTypeValues => new(
-        values: new TimeTypeAttributeService().ConfigurableTypes);
+    public static TheoryData<ETimeType> configurableTimeTypeValues => [.. new TimeTypeAttributeService().ConfigurableTypes];
 
-    public static TheoryData<EDynamicPrayerTimeProviderType> dynamicPrayerTimeProviderValues => new(
-        values: Enum.GetValues(typeof(EDynamicPrayerTimeProviderType))
-                .OfType<EDynamicPrayerTimeProviderType>()
-                .Where(x => x != EDynamicPrayerTimeProviderType.None));
+    public static TheoryData<EDynamicPrayerTimeProviderType> dynamicPrayerTimeProviderValues => 
+        [.. Enum.GetValues<EDynamicPrayerTimeProviderType>().Where(x => x != EDynamicPrayerTimeProviderType.None)];
 
     #region GetProfiles
 

@@ -33,9 +33,5 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-
-  <ItemGroup>
-    <Compile Include="..\SharedGlobalSettings.cs" Link="Properties\SharedGlobalSettings.cs" />
-  </ItemGroup>
   
 </Project>

@@ -134,8 +134,8 @@ public class PrayerTimeGraphicView(
         Instant startDateTime, Instant endDateTime,
         ESubTimeType type)
     {
-        float leftPos = 0.0f;
-        float width = 0.0f;
+        float leftPos;
+        float width;
 
         float regularWidth = innerBackgroundRectangle.Right - innerBackgroundRectangle.Width / 2.0F;
 

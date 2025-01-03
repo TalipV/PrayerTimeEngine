@@ -20,7 +20,7 @@ public class BasicPlaceInfo
     {
         get
         {
-            StringBuilder stringBuilder = new StringBuilder();
+            var stringBuilder = new StringBuilder();
 
             stringBuilder.Append(Country);
             stringBuilder.Append(", ");

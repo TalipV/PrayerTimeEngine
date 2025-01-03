@@ -18,7 +18,7 @@ public abstract class CustomBaseViewModel : BaseViewModel
 }
 
 [AddINotifyPropertyChangedInterface]
-public class SettingsHandlerPageViewModel(
+public partial class SettingsHandlerPageViewModel(
         SettingsContentPageFactory settingsContentPageFactory,
         TimeTypeAttributeService timeTypeAttributeService
     ) : CustomBaseViewModel

@@ -25,7 +25,7 @@ using System.Windows.Input;
 namespace PrayerTimeEngine.Presentation.Pages.Main;
 
 [AddINotifyPropertyChangedInterface]
-public class MainPageViewModel(
+public partial class MainPageViewModel(
         IDispatcher dispatcher,
         IBrowser browser,
         ToastMessageService toastMessageService,
@@ -487,9 +487,7 @@ public class MainPageViewModel(
         {
             BasicPlaceInfo SelectedPlace = FoundPlaces.FirstOrDefault(x => x.DisplayText == selectedPlaceText);
 
-            DynamicProfile currentProfile = CurrentProfile as DynamicProfile;
-
-            if (currentProfile is null || SelectedPlace is null)
+            if (CurrentProfile is not DynamicProfile currentProfile || SelectedPlace is null)
                 return;
 
             await dispatcher.DispatchAsync(() => resetPlaceInput());
