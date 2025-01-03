@@ -60,7 +60,7 @@ public class MawaqitResponseDTO
             throw new Exception("Expected 12 months for both lists");
         }
 
-        LocalDate firstDayOfCurrentYear = new LocalDate(DateTime.Today.Year, 1, 1);
+        var firstDayOfCurrentYear = new LocalDate(DateTime.Today.Year, 1, 1);
 
         for (int i = 0; i < 12; i++)
         {

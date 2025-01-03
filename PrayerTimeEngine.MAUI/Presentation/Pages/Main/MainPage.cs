@@ -115,7 +115,7 @@ public partial class MainPage : ContentPage
 
     private Label _lastUpdatedTextInfo;
     private Label _profileDisplayNameTextInfo;
-    private PrayerTimeGraphicView _prayerTimeGraphicView;
+    private readonly PrayerTimeGraphicView _prayerTimeGraphicView;
     private GraphicsView _prayerTimeGraphicViewBaseView;
     private CarouselView _carouselView;
 

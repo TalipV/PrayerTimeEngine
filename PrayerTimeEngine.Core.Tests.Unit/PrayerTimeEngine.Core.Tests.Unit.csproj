@@ -22,8 +22,4 @@
     <ProjectReference Include="..\PrayerTimeEngine.Core\PrayerTimeEngine.Core.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Compile Include="..\SharedGlobalSettings.cs" Link="Properties\SharedGlobalSettings.cs" />
-  </ItemGroup>
-
 </Project>

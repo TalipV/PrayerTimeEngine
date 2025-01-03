@@ -23,7 +23,7 @@ public class MawaqitMosquePrayerTimeProviderBenchmark
 {
     #region data
 
-    private static readonly LocalDate _localDate = new LocalDate(2024, 8, 29);
+    private static readonly LocalDate _localDate = new(2024, 8, 29);
     private static readonly string _externalID = "hamza-koln";
 
     #endregion data
@@ -65,7 +65,7 @@ public class MawaqitMosquePrayerTimeProviderBenchmark
             );
     }
 
-    private static DbConnection _dbContextKeepAliveSqlConnection;
+    private static SqliteConnection _dbContextKeepAliveSqlConnection;
 
     [GlobalSetup]
     public static void Setup()
@@ -103,7 +103,6 @@ public class MawaqitMosquePrayerTimeProviderBenchmark
     private static MawaqitMosquePrayerTimeProvider _mawaqitMosquePrayerTimeProvider_DataFromDbStorage = null;
     private static MawaqitMosquePrayerTimeProvider _mawaqitMosquePrayerTimeProvider_DataFromApi = null;
 
-#pragma warning disable CA1822 // Mark members as static
     [Benchmark]
     public IMosqueDailyPrayerTimes MawaqitMosquePrayerTimeProvider_GetDataFromDb()
     {
@@ -125,5 +124,4 @@ public class MawaqitMosquePrayerTimeProviderBenchmark
 
         return result;
     }
-#pragma warning restore CA1822 // Mark members as static
 }

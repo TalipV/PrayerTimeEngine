@@ -26,7 +26,6 @@
     <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">26.0</SupportedOSPlatformVersion>
     <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.22000.0</SupportedOSPlatformVersion>
     <TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.22000.0</TargetPlatformMinVersion>
-
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net9.0-ios|AnyCPU'">
@@ -119,10 +118,6 @@
 
   <ItemGroup>
     <Folder Include="Platforms\Android\Resources\xml\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Include="..\SharedGlobalSettings.cs" Link="Properties\SharedGlobalSettings.cs" />
   </ItemGroup>
 
   <ItemGroup>

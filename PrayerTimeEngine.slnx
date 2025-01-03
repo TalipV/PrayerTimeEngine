@@ -5,7 +5,6 @@
   </Configurations>
   <Folder Name="/Solution Items/">
     <File Path=".editorconfig" />
-    <File Path="SharedGlobalSettings.cs" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="PrayerTimeEngine.Core.Tests.Common\PrayerTimeEngine.Core.Tests.Common.csproj" />
@@ -20,7 +19,4 @@
     <Deploy Solution="*|Any CPU" />
     <Deploy Solution="Debug|x64" />
   </Project>
-  <Properties Name="Visual Studio">
-    <Property Name="OpenWith" Value="Visual Studio Version 17" />
-  </Properties>
 </Solution>

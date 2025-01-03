@@ -9,7 +9,7 @@ using static CommunityToolkit.Maui.Markup.GridRowsColumns;
 
 namespace PrayerTimeEngine.Presentation.Views.PrayerTimes;
 
-public class DynamicPrayerTimeView : ContentView
+public partial class DynamicPrayerTimeView : ContentView
 {
     private readonly MainPageViewModel _mainPageViewModel;
 

@@ -84,7 +84,7 @@ public class SemerkandDynamicPrayerTimeProviderBenchmark
             );
     }
 
-    private static DbConnection _dbContextKeepAliveSqlConnection;
+    private static SqliteConnection _dbContextKeepAliveSqlConnection;
 
     [GlobalSetup]
     public static void Setup()
@@ -122,7 +122,6 @@ public class SemerkandDynamicPrayerTimeProviderBenchmark
     private static SemerkandDynamicPrayerTimeProvider _semerkandDynamicPrayerTimeProvider_DataFromDbStorage = null;
     private static SemerkandDynamicPrayerTimeProvider _semerkandDynamicPrayerTimeProvider_DataFromApi = null;
 
-#pragma warning disable CA1822 // Mark members as static
     [Benchmark]
     public List<(ETimeType TimeType, ZonedDateTime ZonedDateTime)> SemerkandDynamicPrayerTimeProvider_GetDataFromDb()
     {
@@ -156,5 +155,4 @@ public class SemerkandDynamicPrayerTimeProviderBenchmark
 
         return result;
     }
-#pragma warning restore CA1822 // Mark members as static
 }

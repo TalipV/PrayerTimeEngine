@@ -6,7 +6,7 @@ using static CommunityToolkit.Maui.Markup.GridRowsColumns;
 
 namespace PrayerTimeEngine.Presentation.Views.MosquePrayerTimes;
 
-public class MosquePrayerTimeView : ContentView
+public partial class MosquePrayerTimeView : ContentView
 {
     public MosquePrayerTimeView()
     {

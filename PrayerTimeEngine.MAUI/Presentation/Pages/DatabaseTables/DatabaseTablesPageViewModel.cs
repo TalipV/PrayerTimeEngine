@@ -5,7 +5,7 @@ using PropertyChanged;
 
 namespace PrayerTimeEngine.Presentation.Pages.DatabaseTables;
 
-public class DatabaseTablesPageViewModel(
+public partial class DatabaseTablesPageViewModel(
         AppDbContext appDbContext
     ) : CustomBaseViewModel
 {

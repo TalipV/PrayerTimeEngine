@@ -193,7 +193,7 @@ internal class MainPageOptionsMenuService(
 
             case "Neues Moschee-Profil erstellen":
 
-                var items = Enum.GetValues(typeof(EMosquePrayerTimeProviderType)).OfType<EMosquePrayerTimeProviderType>().ToList();
+                var items = Enum.GetValues<EMosquePrayerTimeProviderType>().ToList();
                 items.Remove(EMosquePrayerTimeProviderType.None);
 
                 string selectedItemText = await page.DisplayActionSheet(

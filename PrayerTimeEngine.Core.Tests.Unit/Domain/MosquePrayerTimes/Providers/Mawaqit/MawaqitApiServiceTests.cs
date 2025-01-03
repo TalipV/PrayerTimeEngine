@@ -14,27 +14,28 @@ public class MawaqitApiServiceTests : BaseTest
 
     public MawaqitApiServiceTests()
     {
-        _mockHttpMessageHandler = new MockHttpMessageHandler();
-
-        _mockHttpMessageHandler.HandleRequestFunc =
-            (request) =>
-            {
-                if (request.RequestUri.AbsoluteUri.EndsWith("hamza-koln"))
-                {
-                    Stream responseStream = File.OpenRead(Path.Combine(TestDataHelper.MAWAQIT_TEST_DATA_FILE_PATH, "Mawaqit_ResponsePageContent_20240829_hamza-koln.txt"));
-
-                    return new HttpResponseMessage
+        _mockHttpMessageHandler = new MockHttpMessageHandler
+        {
+            HandleRequestFunc =
+                (request) =>
                     {
-                        StatusCode = HttpStatusCode.OK,
-                        Content = new StreamContent(responseStream)
-                    };
-                }
+                        if (request.RequestUri.AbsoluteUri.EndsWith("hamza-koln"))
+                        {
+                            Stream responseStream = File.OpenRead(Path.Combine(TestDataHelper.MAWAQIT_TEST_DATA_FILE_PATH, "Mawaqit_ResponsePageContent_20240829_hamza-koln.txt"));
 
-                return new HttpResponseMessage
-                {
-                    StatusCode = HttpStatusCode.NotFound,
-                };
-            };
+                            return new HttpResponseMessage
+                            {
+                                StatusCode = HttpStatusCode.OK,
+                                Content = new StreamContent(responseStream)
+                            };
+                        }
+
+                        return new HttpResponseMessage
+                        {
+                            StatusCode = HttpStatusCode.NotFound,
+                        };
+                    }
+        };
 
         var httpClient = new HttpClient(_mockHttpMessageHandler)
         {
@@ -118,7 +119,6 @@ public class MawaqitApiServiceTests : BaseTest
     public async Task ValidateData_ValidExternalID_ReturnTrue()
     {
         // ARRANGE
-        var date = new LocalDate(2024, 8, 30);
         string externalID = "hamza-koln";
 
         // ACT
@@ -132,7 +132,6 @@ public class MawaqitApiServiceTests : BaseTest
     public async Task ValidateData_InvalidExternalID_ReturnFalse()
     {
         // ARRANGE
-        var date = new LocalDate(2024, 8, 30);
         string externalID = "InvalidExternalID";
 
         // ACT

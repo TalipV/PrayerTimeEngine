@@ -88,7 +88,7 @@ public class MuwaqqitDynamicPrayerTimeProviderBenchmark
             );
     }
 
-    private static DbConnection _dbContextKeepAliveSqlConnection;
+    private static SqliteConnection _dbContextKeepAliveSqlConnection;
 
     [GlobalSetup]
     public static void Setup()
@@ -126,7 +126,6 @@ public class MuwaqqitDynamicPrayerTimeProviderBenchmark
     private static MuwaqqitDynamicPrayerTimeProvider _muwaqqitDynamicPrayerTimeProvider_DataFromDbStorage = null;
     private static MuwaqqitDynamicPrayerTimeProvider _muwaqqitDynamicPrayerTimeProvider_DataFromApi = null;
 
-#pragma warning disable CA1822 // Mark members as static
     [Benchmark]
     public List<(ETimeType TimeType, ZonedDateTime ZonedDateTime)> MuwaqqitDynamicPrayerTimeProvider_GetDataFromDb()
     {
@@ -160,5 +159,4 @@ public class MuwaqqitDynamicPrayerTimeProviderBenchmark
 
         return result;
     }
-#pragma warning restore CA1822 // Mark members as static
 }

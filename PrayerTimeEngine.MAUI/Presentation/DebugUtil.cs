@@ -53,6 +53,6 @@ public class DebugUtil
 
     public static string GenerateDebugID()
     {
-        return Guid.NewGuid().ToString().Substring(0, 5);
+        return Guid.NewGuid().ToString()[..5];
     }
 }

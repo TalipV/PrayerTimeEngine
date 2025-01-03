@@ -9,9 +9,11 @@ public static class MethodTimeLogger
     public static ILogger logger;
 
     // temporary solution of course
-    public static readonly ConcurrentBag<string> _notLoggedStuff = new ();
+    public static readonly ConcurrentBag<string> _notLoggedStuff = [];
 
+#pragma warning disable IDE0060 // Remove unused parameter
     public static void Log(MethodBase methodBase, TimeSpan timeSpan, string message)
+#pragma warning restore IDE0060 // Remove unused parameter
     {
         if (logger is null)
         {
@@ -20,8 +22,8 @@ public static class MethodTimeLogger
             return;
         }
 
-        foreach (var item in _notLoggedStuff.Reverse())
-            logger.LogInformation(item);
+        foreach (var notLoggedMessage in _notLoggedStuff.Reverse())
+            logger.LogInformation("{Message}", notLoggedMessage);
 
         _notLoggedStuff.Clear();
 
