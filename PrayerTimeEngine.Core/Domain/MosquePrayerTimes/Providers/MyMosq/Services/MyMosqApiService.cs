@@ -38,9 +38,9 @@ public partial class MyMosqApiService(
     public async Task<List<MyMosqPrayerTimesDTO>> GetPrayerTimesAsync(LocalDate date, string externalID, CancellationToken cancellationToken)
     {
         string finaleMessage = string.Join(
-            string.Empty, 
+            string.Empty,
             await readResponseMessages(externalID, cancellationToken).Where(x => x.Contains("Asr")).ToListAsync(cancellationToken));
-        
+
         finaleMessage = JsonDocument.Parse(finaleMessage).RootElement.GetProperty("d").GetProperty("b").GetProperty("d").ToString();
 
         finaleMessage = DateKeyNameRemovalRegex().Replace(finaleMessage, replacement: "{") // replace things like '"20251203":{' with '{'
@@ -55,7 +55,7 @@ public partial class MyMosqApiService(
     }
 
     public async Task<bool> ValidateData(
-        string externalID, 
+        string externalID,
         CancellationToken cancellationToken)
     {
         List<string> responseMessages = await readResponseMessages(externalID, cancellationToken).ToListAsync(cancellationToken);
@@ -70,7 +70,7 @@ public partial class MyMosqApiService(
     }
 
     private async IAsyncEnumerable<string> readResponseMessages(
-        string externalID, 
+        string externalID,
         [EnumeratorCancellation] CancellationToken cancellationToken)
     {
         string initialMessage = INITIAL_MESSAGE_TEMPLATE.Replace(EXTERNAL_ID_PLACEHOLDER_KEY, externalID);

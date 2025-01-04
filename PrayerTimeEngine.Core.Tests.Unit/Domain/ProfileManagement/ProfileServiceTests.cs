@@ -25,7 +25,7 @@ public class ProfileServiceTests : BaseTest
 
     public static TheoryData<ETimeType> configurableTimeTypeValues => [.. new TimeTypeAttributeService().ConfigurableTypes];
 
-    public static TheoryData<EDynamicPrayerTimeProviderType> dynamicPrayerTimeProviderValues => 
+    public static TheoryData<EDynamicPrayerTimeProviderType> dynamicPrayerTimeProviderValues =>
         [.. Enum.GetValues<EDynamicPrayerTimeProviderType>().Where(x => x != EDynamicPrayerTimeProviderType.None)];
 
     #region GetProfiles
@@ -169,7 +169,7 @@ public class ProfileServiceTests : BaseTest
         // ARRANGE
         var profile = TestDataHelper.CreateNewCompleteTestProfile();
         List<(EDynamicPrayerTimeProviderType, BaseLocationData)> locationData = [(EDynamicPrayerTimeProviderType.Muwaqqit, Substitute.ForPartsOf<BaseLocationData>())];
-        
+
         var placeInfo =
             new ProfilePlaceInfo
             {
@@ -279,8 +279,8 @@ public class ProfileServiceTests : BaseTest
             config.IsTimeShown.Should().BeTrue();
             config.Source.Should().NotBe(EDynamicPrayerTimeProviderType.None);
         });
-    }        
-    
+    }
+
     [Fact]
     [Trait("Method", "GetActiveComplexTimeConfigs")]
     public void GetActiveComplexTimeConfigs_ProfileWithNoConfigs_ShouldReturnNothing()

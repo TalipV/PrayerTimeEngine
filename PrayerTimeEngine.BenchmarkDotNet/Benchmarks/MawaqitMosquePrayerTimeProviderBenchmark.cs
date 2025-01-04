@@ -35,8 +35,8 @@ public class MawaqitMosquePrayerTimeProviderBenchmark
                 new MawaqitDBAccess(dbContextFactory),
                 SubstitutionHelper.GetMockedMawaqitApiService()
             ).GetPrayerTimesAsync(
-                _localDate, 
-                _externalID, 
+                _localDate,
+                _externalID,
                 default).GetAwaiter().GetResult();
 
         // throw exceptions when the calculator tries using the api
@@ -54,8 +54,8 @@ public class MawaqitMosquePrayerTimeProviderBenchmark
         // db doesn't return any data
         var mawaqitDbAccessMock = Substitute.For<IMawaqitDBAccess>();
         mawaqitDbAccessMock.GetPrayerTimesAsync(
-            Arg.Any<LocalDate>(), 
-            Arg.Any<string>(), 
+            Arg.Any<LocalDate>(),
+            Arg.Any<string>(),
             Arg.Any<CancellationToken>()).ReturnsNull<MawaqitMosqueDailyPrayerTimes>();
 
         return new MawaqitMosquePrayerTimeProvider(

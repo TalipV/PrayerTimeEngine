@@ -348,7 +348,7 @@ public partial class MainPageViewModel(
         {
             _suspendOnCurrentProfileWithModelChanged = oldValue;
         }
-        
+
         CurrentProfileWithModel =
             ProfilesWithModel.FirstOrDefault(x => x.Profile.ID == selectedProfile)
             ?? CurrentProfileWithModel

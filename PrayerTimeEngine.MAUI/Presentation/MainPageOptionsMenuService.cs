@@ -12,7 +12,7 @@ namespace PrayerTimeEngine.Presentation;
 internal class MainPageOptionsMenuService(
         MainPage page,
         MainPageViewModel viewModel,
-        ToastMessageService toastMessageService, 
+        ToastMessageService toastMessageService,
         ILogger<MainPageOptionsMenuService> logger,
         IPreferenceService preferenceService
     )
@@ -220,7 +220,7 @@ internal class MainPageOptionsMenuService(
 
             case "Profilnamen bearbeiten":
                 string currentProfileName = viewModel.CurrentProfile?.Name ?? "";
-                string newProfileName = 
+                string newProfileName =
                     await page.DisplayPromptAsync("Profilname:",
                     message: "",
                     initialValue: currentProfileName,

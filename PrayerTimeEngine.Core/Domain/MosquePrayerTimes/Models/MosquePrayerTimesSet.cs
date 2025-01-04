@@ -15,10 +15,10 @@ public class MosquePrayerTimesSet : IPrayerTimesSet
         get
         {
             return [
-                (EPrayerType.Fajr, Fajr), 
-                (EPrayerType.Dhuhr, Dhuhr), 
-                (EPrayerType.Asr, Asr), 
-                (EPrayerType.Maghrib, Maghrib), 
+                (EPrayerType.Fajr, Fajr),
+                (EPrayerType.Dhuhr, Dhuhr),
+                (EPrayerType.Asr, Asr),
+                (EPrayerType.Maghrib, Maghrib),
                 (EPrayerType.Isha, Isha)
             ];
         }

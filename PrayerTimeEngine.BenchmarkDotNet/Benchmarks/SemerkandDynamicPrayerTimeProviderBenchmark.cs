@@ -127,7 +127,7 @@ public class SemerkandDynamicPrayerTimeProviderBenchmark
         var result = _semerkandDynamicPrayerTimeProvider_DataFromDbStorage.GetPrayerTimesAsync(
             _zonedDateTime,
             locationData: _locationData,
-            configurations: _configs, 
+            configurations: _configs,
             cancellationToken: default).GetAwaiter().GetResult();
 
         if (result.Count != 1)
@@ -144,7 +144,7 @@ public class SemerkandDynamicPrayerTimeProviderBenchmark
         var result = _semerkandDynamicPrayerTimeProvider_DataFromApi.GetPrayerTimesAsync(
             _zonedDateTime,
             locationData: _locationData,
-            configurations: _configs, 
+            configurations: _configs,
             cancellationToken: default).GetAwaiter().GetResult();
 
         if (result.Count != 1)

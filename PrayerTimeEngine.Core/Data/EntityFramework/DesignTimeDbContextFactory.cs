@@ -12,7 +12,7 @@ public class DesignTimeDbContextFactory : IDesignTimeDbContextFactory<AppDbConte
         optionsBuilder.UseSqlite("Data Source=:memory:");
 
         return new AppDbContext(
-            optionsBuilder.Options, 
+            optionsBuilder.Options,
             new AppDbContextMetaData(),
             NSubstitute.Substitute.For<ISystemInfoService>());
     }

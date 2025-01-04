@@ -23,13 +23,13 @@ public class MosquePrayerTimeProviderManager(
         MosqueProfile mosqueProfile = profile as MosqueProfile
             ?? throw new Exception($"The Profile with the ID '{profileID}' is not a {nameof(MosqueProfile)}");
 
-        IMosquePrayerTimeProvider provider = 
+        IMosquePrayerTimeProvider provider =
             mosquePrayerTimeProviderFactory.GetDynamicPrayerTimeProviderByDynamicPrayerTimeProvider(mosqueProfile.MosqueProviderType);
-        
-        IMosqueDailyPrayerTimes times = 
+
+        IMosqueDailyPrayerTimes times =
             await provider.GetPrayerTimesAsync(
                 date.LocalDateTime.Date,
-                mosqueProfile.ExternalID, 
+                mosqueProfile.ExternalID,
                 cancellationToken).ConfigureAwait(false);
 
         var prayerTimesCollection = getPrayerTimesCollection(times);
@@ -75,7 +75,7 @@ public class MosquePrayerTimeProviderManager(
 
     public async Task<bool> ValidateData(EMosquePrayerTimeProviderType mosquePrayerTimeProviderType, string externalID, CancellationToken cancellationToken)
     {
-        IMosquePrayerTimeProvider provider = 
+        IMosquePrayerTimeProvider provider =
             mosquePrayerTimeProviderFactory.GetDynamicPrayerTimeProviderByDynamicPrayerTimeProvider(mosquePrayerTimeProviderType);
 
         return await provider.ValidateData(externalID, cancellationToken);
