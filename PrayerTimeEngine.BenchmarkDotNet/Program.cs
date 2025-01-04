@@ -1,7 +1,7 @@
 ﻿using BenchmarkDotNet.Running;
 using PrayerTimeEngine.BenchmarkDotNet.Benchmarks;
 
-Type[] types = 
+Type[] types =
     [
         typeof(SemerkandDynamicPrayerTimeProviderBenchmark),
         typeof(FaziletDynamicPrayerTimeProviderBenchmark),

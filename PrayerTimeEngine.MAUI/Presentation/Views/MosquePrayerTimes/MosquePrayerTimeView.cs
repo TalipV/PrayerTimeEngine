@@ -101,7 +101,7 @@ public partial class MosquePrayerTimeView : ContentView
 
                 string startTime = prayerTime.Start?.ToString("HH:mm", null) ?? "xx.xx";
                 string endTime = prayerTime.End?.ToString("HH:mm", null) ?? "xx.xx";
-                string congregationTime = prayerTime.CongregationStartOffset > 0 
+                string congregationTime = prayerTime.CongregationStartOffset > 0
                     ? prayerTime.Start?.PlusMinutes(prayerTime.CongregationStartOffset).ToString("HH:mm", null) ?? "xx.xx"
                     : "";
 

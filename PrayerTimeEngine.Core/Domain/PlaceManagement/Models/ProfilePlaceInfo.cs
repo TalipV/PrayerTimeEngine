@@ -24,7 +24,7 @@ public class ProfilePlaceInfo : BasicPlaceInfo, IInsertedAt
             return false;
         }
 
-        if(ID != other.ID || ProfileID != other.ProfileID || !Equals(TimezoneInfo, other.TimezoneInfo))
+        if (ID != other.ID || ProfileID != other.ProfileID || !Equals(TimezoneInfo, other.TimezoneInfo))
         {
             return false;
         }

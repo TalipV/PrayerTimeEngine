@@ -29,7 +29,7 @@ public class MainActivity : MauiAppCompatActivity
         channel.SetSound(null, null);
         channel.EnableVibration(false);
 
-        var notificationManager = (NotificationManager) base.GetSystemService(NotificationService);
+        var notificationManager = (NotificationManager)base.GetSystemService(NotificationService);
         notificationManager.CreateNotificationChannel(channel);
     }
 }

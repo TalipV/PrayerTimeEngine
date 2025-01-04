@@ -7,7 +7,7 @@ using PropertyChanged;
 namespace PrayerTimeEngine.Presentation.Views;
 
 [AddINotifyPropertyChangedInterface]
-public abstract class BasePrayerTimeViewModel<ProfileType, PrayerTimeSetType> (
+public abstract class BasePrayerTimeViewModel<ProfileType, PrayerTimeSetType>(
         ProfileType profile
     ) : IPrayerTimeViewModel
     where ProfileType : Profile
@@ -38,7 +38,7 @@ public abstract class BasePrayerTimeViewModel<ProfileType, PrayerTimeSetType> (
             currentPrayerTime = PrayerTimesSet.AllPrayerTimes
                     .OrderBy(x => x.Times.Start?.ToInstant())
                     .FirstOrDefault(x => x.Times.Start?.ToInstant() > instant);
-        
+
         if (currentPrayerTime == default || currentPrayerTime.Times?.Start is null || currentPrayerTime.Times?.End is null)
             return null;
 

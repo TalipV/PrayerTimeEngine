@@ -124,7 +124,7 @@ public partial class MainPage : ContentPage
         var titleGrid = new Grid
         {
             ColumnDefinitions = Columns.Define(
-                GridLength.Star, 
+                GridLength.Star,
                 GridLength.Star)
         };
 
@@ -155,7 +155,7 @@ public partial class MainPage : ContentPage
         titleGrid.WidthRequest = 415;
 #endif
 
-        var searchBox = 
+        var searchBox =
             new AutoCompleteTextField
             {
                 Title = "Search",

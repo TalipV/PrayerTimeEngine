@@ -131,7 +131,7 @@ public class MuwaqqitDynamicPrayerTimeProviderBenchmark
         var result = _muwaqqitDynamicPrayerTimeProvider_DataFromDbStorage.GetPrayerTimesAsync(
             _zonedDateTime,
             locationData: _locationData,
-            configurations: _configs, 
+            configurations: _configs,
             cancellationToken: default).GetAwaiter().GetResult();
 
         if (result.Count != 16)
@@ -148,7 +148,7 @@ public class MuwaqqitDynamicPrayerTimeProviderBenchmark
         var result = _muwaqqitDynamicPrayerTimeProvider_DataFromApi.GetPrayerTimesAsync(
             _zonedDateTime,
             locationData: _locationData,
-            configurations: _configs, 
+            configurations: _configs,
             cancellationToken: default).GetAwaiter().GetResult();
 
         if (result.Count != 16)

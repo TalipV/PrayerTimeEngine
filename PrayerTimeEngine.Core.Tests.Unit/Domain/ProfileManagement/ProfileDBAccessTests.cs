@@ -69,8 +69,8 @@ public class ProfileDBAccessTests : BaseTest
         profile.Should().BeEquivalentTo(untracktedProfile);
         ReferenceEquals(profile, untracktedProfile).Should().BeFalse(because: "they should be equal but not exactly the same");
         TestAssertDbContext.Entry(untracktedProfile).State.Should().Be(Microsoft.EntityFrameworkCore.EntityState.Detached);
-    }        
-    
+    }
+
     [Fact]
     [Trait("Method", "GetUntrackedReferenceOfProfile")]
     public async Task GetUntrackedReferenceOfProfile_NonExistingProfile_NothingReturned()
@@ -278,7 +278,7 @@ public class ProfileDBAccessTests : BaseTest
         await _profileDBAccess.DeleteProfile(profile, default);
 
         // ASSERT
-        var profiles = 
+        var profiles =
             await TestAssertDbContext
                 .DynamicProfiles
                 .Include(x => x.PlaceInfo).ThenInclude(x => x.TimezoneInfo)
@@ -298,19 +298,19 @@ public class ProfileDBAccessTests : BaseTest
     public async Task CreateNewMosqueProfile_CreateMosqueProfile_Success()
     {
         // ARRANGE & ACT
-        MosqueProfile copiedProfile = 
+        MosqueProfile copiedProfile =
             await _profileDBAccess.CreateNewMosqueProfile(
-                EMosquePrayerTimeProviderType.Mawaqit, 
-                "test-mosque", 
+                EMosquePrayerTimeProviderType.Mawaqit,
+                "test-mosque",
                 default);
 
         // ASSERT
         MosqueProfile savedMosqueProfile = await TestAssertDbContext.MosqueProfiles.FirstOrDefaultAsync(x => x.ID == copiedProfile.ID, default);
-        
+
         copiedProfile.Should().NotBeNull();
         copiedProfile.ExternalID.Should().Be("test-mosque");
         copiedProfile.MosqueProviderType.Should().Be(EMosquePrayerTimeProviderType.Mawaqit);
-        
+
         savedMosqueProfile.Should().NotBeNull();
         savedMosqueProfile.ExternalID.Should().Be("test-mosque");
         savedMosqueProfile.MosqueProviderType.Should().Be(EMosquePrayerTimeProviderType.Mawaqit);

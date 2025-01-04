@@ -75,8 +75,8 @@ public class ProfileDBAccess(
             Profile clonedProfile = dbContext.DetachedClone(profile);
             clonedProfile.ID = default;
             clonedProfile.SequenceNo = dbContext.Profiles.Select(x => x.SequenceNo).Max() + 1;
-            
-            if (clonedProfile is DynamicProfile clonedDynamicProfile 
+
+            if (clonedProfile is DynamicProfile clonedDynamicProfile
                 && profile is DynamicProfile dynamicProfile)
             {
                 clonedDynamicProfile.PlaceInfo = dbContext.DetachedClone(dynamicProfile.PlaceInfo);

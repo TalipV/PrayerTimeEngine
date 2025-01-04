@@ -168,7 +168,7 @@ public class ProfileServiceTests : BaseTest
 
         // ASSERT
         await updateLocationConfigFunc.Should().ThrowAsync<Exception>().WithMessage("Test exception during commit");
-        
+
         profile.PlaceInfo.Should().NotBeNull();
         profile.PlaceInfo.Should().NotBe(newPlaceInfo);
         profile.PlaceInfo.Should().Be(oldPlaceInfo);

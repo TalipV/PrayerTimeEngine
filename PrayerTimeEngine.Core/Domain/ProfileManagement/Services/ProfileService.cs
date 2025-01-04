@@ -48,12 +48,12 @@ public class ProfileService(
                 Latitude = 47.2803835M,
                 Longitude = 11.41337M,
                 InfoLanguageCode = "de",
-                Country = "Österreich", 
-                City = "Innsbruck", 
+                Country = "Österreich",
+                City = "Innsbruck",
                 CityDistrict = "",
-                PostCode = "6020", 
+                PostCode = "6020",
                 Street = "",
-                TimezoneInfo  = new TimezoneInfo
+                TimezoneInfo = new TimezoneInfo
                 {
                     DisplayName = "CEST",
                     Name = "Europe/Vienna",

@@ -33,13 +33,13 @@ public class PlaceService(
         return new ProfilePlaceInfo()
         {
             ExternalID = basicPlaceInfo.ExternalID,
-            Longitude = basicPlaceInfo.Longitude, 
+            Longitude = basicPlaceInfo.Longitude,
             Latitude = basicPlaceInfo.Latitude,
             InfoLanguageCode = basicPlaceInfo.InfoLanguageCode,
-            Country = basicPlaceInfo.Country, 
-            City = basicPlaceInfo.City, 
+            Country = basicPlaceInfo.Country,
+            City = basicPlaceInfo.City,
             CityDistrict = basicPlaceInfo.CityDistrict,
-            PostCode = basicPlaceInfo.PostCode, 
+            PostCode = basicPlaceInfo.PostCode,
             Street = basicPlaceInfo.Street,
             TimezoneInfo = new TimezoneInfo
             {

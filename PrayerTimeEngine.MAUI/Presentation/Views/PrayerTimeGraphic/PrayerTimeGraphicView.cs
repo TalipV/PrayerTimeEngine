@@ -1,6 +1,6 @@
 ﻿using NodaTime;
 using PrayerTimeEngine.Core.Common;
-using PrayerTimeEngine.Presentation.Views.PrayerTimeGraphic.VOs;  
+using PrayerTimeEngine.Presentation.Views.PrayerTimeGraphic.VOs;
 
 namespace PrayerTimeEngine.Presentation.Views.PrayerTimeGraphic;
 
@@ -16,7 +16,7 @@ public class PrayerTimeGraphicView(
     private readonly Color PrayerSubTimeBorderColor = Color.FromArgb("#f3eae3");
     private readonly Color PrayerSubTimeTextColor = Colors.Black;
 
-    public PrayerTimeGraphicTimeVO PrayerTimeGraphicTime {  get; set; }
+    public PrayerTimeGraphicTimeVO PrayerTimeGraphicTime { get; set; }
 
     public void Draw(ICanvas canvas, RectF fullRectangle)
     {

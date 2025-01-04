@@ -158,7 +158,7 @@ public static class MauiProgram
     class LoggingLayout : MetroLog.Layouts.Layout
     {
         public override string GetFormattedString(MetroLog.LogWriteContext context, MetroLog.LogEventInfo info)
-        {   
+        {
             var text = new StringBuilder($"███ {info.Level}|{info.TimeStamp:HH:mm:ss:fff}|{info.Logger}|{info.Message}");
 
             if (info.Exception is not null)
@@ -179,7 +179,7 @@ public static class MauiProgram
             .AddFilter((loggerProviderFullName, loggerFullName, level) =>
             {
                 // temp fix, these log too much for my taste
-                if (loggerFullName.StartsWith("Microsoft.EntityFrameworkCore") 
+                if (loggerFullName.StartsWith("Microsoft.EntityFrameworkCore")
                     || loggerFullName.StartsWith("System.Net.Http.HttpClient.Refit.Implementation.Generated")
                     || loggerFullName == "Polly")
                 {
@@ -226,7 +226,7 @@ public static class MauiProgram
             //options.LogTo(Console.WriteLine, LogLevel.Trace);
         },
         lifetime: ServiceLifetime.Singleton);
-        
+
         serviceCollection.AddSingleton<AppDbContextMetaData>();
 
         serviceCollection.AddTransient<IWebSocketClientFactory, WebSocketClientFactory>();
@@ -258,7 +258,7 @@ public static class MauiProgram
             };
 
             return new PlaceService(
-                RestService.For<ILocationIQApiService>(httpClient), 
+                RestService.For<ILocationIQApiService>(httpClient),
                 sp.GetRequiredService<ISystemInfoService>(),
                 sp.GetRequiredService<ILogger<PlaceService>>());
         });
@@ -298,7 +298,7 @@ public static class MauiProgram
                 // TODO: REMOVE, because Semerkand will hopefully fix this soon
                 ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true
             })
-            .AddStandardResilienceHandler(); 
+            .AddStandardResilienceHandler();
         serviceCollection.AddTransient<SemerkandDynamicPrayerTimeProvider>();
 
         // MUWAQQIT

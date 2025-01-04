@@ -126,7 +126,7 @@ public class FaziletDynamicPrayerTimeProviderBenchmark
         var result = _faziletDynamicPrayerTimeProvider_DataFromDbStorage.GetPrayerTimesAsync(
             _zonedDateTime,
             locationData: _locationData,
-            configurations: _configs, 
+            configurations: _configs,
             cancellationToken: default).GetAwaiter().GetResult();
 
         if (result.Count != 1)
@@ -143,7 +143,7 @@ public class FaziletDynamicPrayerTimeProviderBenchmark
         var result = _faziletDynamicPrayerTimeProvider_DataFromApi.GetPrayerTimesAsync(
             _zonedDateTime,
             locationData: _locationData,
-            configurations: _configs, 
+            configurations: _configs,
             cancellationToken: default).GetAwaiter().GetResult();
 
         if (result.Count != 1)

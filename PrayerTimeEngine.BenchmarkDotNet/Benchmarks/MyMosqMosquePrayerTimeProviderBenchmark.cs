@@ -22,7 +22,7 @@ public class MyMosqMosquePrayerTimeProviderBenchmark
 {
     #region data
 
-    private static readonly LocalDate _localDate = new (2024, 8, 30);
+    private static readonly LocalDate _localDate = new(2024, 8, 30);
     private static readonly string _externalID = "1239";
 
     #endregion data
@@ -35,8 +35,8 @@ public class MyMosqMosquePrayerTimeProviderBenchmark
                 new MyMosqDBAccess(dbContextFactory),
                 SubstitutionHelper.GetMockedMyMosqApiService()
             ).GetPrayerTimesAsync(
-                _localDate, 
-                _externalID, 
+                _localDate,
+                _externalID,
                 default).GetAwaiter().GetResult();
 
         // throw exceptions when the calculator tries using the api
@@ -54,8 +54,8 @@ public class MyMosqMosquePrayerTimeProviderBenchmark
         // db doesn't return any data
         var myMosqDBAccessMock = Substitute.For<IMyMosqDBAccess>();
         myMosqDBAccessMock.GetPrayerTimesAsync(
-            Arg.Any<LocalDate>(), 
-            Arg.Any<string>(), 
+            Arg.Any<LocalDate>(),
+            Arg.Any<string>(),
             Arg.Any<CancellationToken>()).ReturnsNull<MyMosqMosqueDailyPrayerTimes>();
 
         return new MyMosqMosquePrayerTimeProvider(

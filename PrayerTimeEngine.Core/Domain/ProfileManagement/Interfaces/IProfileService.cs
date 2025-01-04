@@ -12,7 +12,7 @@ public interface IProfileService
 {
     public Task<List<Profile>> GetProfiles(CancellationToken cancellationToken);
     Task<Profile> GetUntrackedReferenceOfProfile(int profileID, CancellationToken cancellationToken);
-    
+
     public Task SaveProfile(Profile profile, CancellationToken cancellationToken);
     Task DeleteProfile(Profile profile, CancellationToken cancellationToken);
     Task<Profile> CopyProfile(Profile profile, CancellationToken cancellationToken);
