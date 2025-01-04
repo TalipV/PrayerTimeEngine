@@ -13,7 +13,6 @@ using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.Mawaqit.Models.DT
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.Mawaqit.Models.Entities;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.Mawaqit.Services;
 using PrayerTimeEngine.Core.Tests.Common.TestData;
-using System.Data.Common;
 
 namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks;
 

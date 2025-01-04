@@ -17,7 +17,6 @@ using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Semerkand.Models
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Semerkand.Services;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Interfaces;
 using PrayerTimeEngine.Core.Tests.Common.TestData;
-using System.Data.Common;
 
 namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks;
 
