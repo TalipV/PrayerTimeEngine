@@ -53,7 +53,7 @@ public class MawaqitApiServiceTests : BaseTest
 
         // ACT
         var response = await _mawaqitApiService.GetPrayerTimesAsync(externalID, cancellationToken: default);
-        var times = response.ToMawaqitPrayerTimes(externalID).ToList();
+        var times = response.ToMawaqitPrayerTimes(2024, externalID).ToList();
         MawaqitMosqueDailyPrayerTimes time = times.FirstOrDefault(x => x.Date == date);
 
         // ASSERT
@@ -89,7 +89,7 @@ public class MawaqitApiServiceTests : BaseTest
 
         // ACT
         var response = await _mawaqitApiService.GetPrayerTimesAsync(externalID, cancellationToken: default);
-        var times = response.ToMawaqitPrayerTimes(externalID).ToList();
+        var times = response.ToMawaqitPrayerTimes(2024, externalID).ToList();
 
         // ASSERT
         times.Should().HaveCount(366);
