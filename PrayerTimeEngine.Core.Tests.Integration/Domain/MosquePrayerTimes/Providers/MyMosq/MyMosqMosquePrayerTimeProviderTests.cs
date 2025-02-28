@@ -78,7 +78,8 @@ public class MyMosqMosquePrayerTimeProviderTests : BaseTest
                 serviceCollection.AddTransient<MyMosqMosquePrayerTimeProvider>();
             });
 
-        var date = new LocalDate(2024, 8, 30);
+        // just some date but it has to be this year because the API returns data only for the current year
+        var date = new LocalDate(DateTime.Today.Year, 1, 1);
         MyMosqMosquePrayerTimeProvider myMosqPrayerTimeService = serviceProvider.GetRequiredService<MyMosqMosquePrayerTimeProvider>();
 
         // ACT & ASSERT
