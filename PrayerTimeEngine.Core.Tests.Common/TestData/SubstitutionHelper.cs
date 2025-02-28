@@ -1,4 +1,6 @@
-﻿using NSubstitute;
+﻿using NodaTime;
+using NSubstitute;
+using PrayerTimeEngine.Core.Common;
 using PrayerTimeEngine.Core.Data.WebSocket.Interfaces;
 using PrayerTimeEngine.Core.Domain.Calculators.Mosques.Mawaqit.Services;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Interfaces;
@@ -7,6 +9,7 @@ using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Semerkand.Interf
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.Mawaqit.Interfaces;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.MyMosq.Services;
 using Refit;
+using System.Globalization;
 using System.Net;
 using System.Net.WebSockets;
 using System.Text;
@@ -195,5 +198,15 @@ public class SubstitutionHelper
         var _mockWebSocketClientFactory = Substitute.For<IWebSocketClientFactory>();
         _mockWebSocketClientFactory.CreateWebSocketClient().Returns(_mockWebSocketClient);
         return new MyMosqApiService(_mockWebSocketClientFactory);
+    }
+
+    public static ISystemInfoService GetMockedSystemInfoService(ZonedDateTime zonedDateTime)
+    {
+        var mock = Substitute.For<ISystemInfoService>();
+        mock.GetCurrentInstant().Returns(zonedDateTime.ToInstant());
+        mock.GetCurrentZonedDateTime().Returns(zonedDateTime);
+        mock.GetSystemTimeZone().Returns(zonedDateTime.Zone);
+        mock.GetSystemCulture().Returns(CultureInfo.InvariantCulture);
+        return mock;
     }
 }

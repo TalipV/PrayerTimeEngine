@@ -1,5 +1,6 @@
 ﻿using AsyncKeyedLock;
 using NodaTime;
+using PrayerTimeEngine.Core.Common;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Models;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.Mawaqit.Interfaces;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.Mawaqit.Models.Entities;
@@ -8,7 +9,8 @@ namespace PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.Mawaqit.Servi
 
 public class MawaqitMosquePrayerTimeProvider(
         IMawaqitDBAccess mawaqitDBAccess,
-        IMawaqitApiService mawaqitApiService
+        IMawaqitApiService mawaqitApiService,
+        ISystemInfoService systemInfoService
 ) : IMosquePrayerTimeProvider
 {
     private static readonly AsyncKeyedLocker<string> getPrayerTimesLocker = new(o =>
@@ -29,8 +31,9 @@ public class MawaqitMosquePrayerTimeProvider(
             {
                 var responseDto = await mawaqitApiService.GetPrayerTimesAsync(externalID, cancellationToken);
 
-                List<MawaqitMosqueDailyPrayerTimes> prayerTimesLst =
-                    responseDto.ToMawaqitPrayerTimes(externalID)
+                int currentYear = systemInfoService.GetCurrentZonedDateTime().Year;
+
+                List<MawaqitMosqueDailyPrayerTimes> prayerTimesLst = responseDto.ToMawaqitPrayerTimes(currentYear, externalID)
                     .Where(x => date <= x.Date && x.Date < date.PlusDays(MAX_EXTENT_OF_RETRIEVED_DAYS))
                     .ToList();
 
