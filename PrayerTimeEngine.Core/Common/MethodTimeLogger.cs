@@ -6,7 +6,7 @@ namespace PrayerTimeEngine.Core.Common;
 
 public static class MethodTimeLogger
 {
-    public static ILogger logger;
+    public static ILogger Logger { get; set; }
 
     // temporary solution of course
     public static readonly ConcurrentBag<string> _notLoggedStuff = [];
@@ -15,7 +15,7 @@ public static class MethodTimeLogger
     public static void Log(MethodBase methodBase, TimeSpan timeSpan, string message)
 #pragma warning restore IDE0060 // Remove unused parameter
     {
-        if (logger is null)
+        if (Logger is null)
         {
             _notLoggedStuff.Add(
                 $"TIME-LOGGER: {Environment.NewLine}{methodBase.DeclaringType}.{methodBase.Name}, {Environment.NewLine}{timeSpan.TotalMilliseconds:N0} ms");
@@ -23,11 +23,11 @@ public static class MethodTimeLogger
         }
 
         foreach (var notLoggedMessage in _notLoggedStuff.Reverse())
-            logger.LogInformation("{Message}", notLoggedMessage);
+            Logger.LogInformation("{Message}", notLoggedMessage);
 
         _notLoggedStuff.Clear();
 
-        logger?.LogInformation(
+        Logger?.LogInformation(
             "TIME-LOGGER: \r\n{DeclaringType}.{MethodName}, \r\n{Milliseconds} ms",
             methodBase.DeclaringType,
             methodBase.Name,

@@ -33,7 +33,8 @@ public class MawaqitMosquePrayerTimeProviderBenchmark
         // to make sure that before the benchmark the data is gotten from the APIService and stored in the db
         new MawaqitMosquePrayerTimeProvider(
                 new MawaqitDBAccess(dbContextFactory),
-                SubstitutionHelper.GetMockedMawaqitApiService()
+                SubstitutionHelper.GetMockedMawaqitApiService(),
+                SubstitutionHelper.GetMockedSystemInfoService(new LocalDate(1996, 10, 30).AtStartOfDayInZone(DateTimeZone.Utc))
             ).GetPrayerTimesAsync(
                 _localDate,
                 _externalID,
@@ -45,7 +46,8 @@ public class MawaqitMosquePrayerTimeProviderBenchmark
 
         return new MawaqitMosquePrayerTimeProvider(
                 new MawaqitDBAccess(dbContextFactory),
-                mockedMawaqitApiService
+                mockedMawaqitApiService,
+                SubstitutionHelper.GetMockedSystemInfoService(new LocalDate(1996, 10, 30).AtStartOfDayInZone(DateTimeZone.Utc))
             );
     }
 
@@ -60,7 +62,8 @@ public class MawaqitMosquePrayerTimeProviderBenchmark
 
         return new MawaqitMosquePrayerTimeProvider(
                 mawaqitDbAccessMock,
-                SubstitutionHelper.GetMockedMawaqitApiService()
+                SubstitutionHelper.GetMockedMawaqitApiService(),
+                SubstitutionHelper.GetMockedSystemInfoService(new LocalDate(1996, 10, 30).AtStartOfDayInZone(DateTimeZone.Utc))
             );
     }
 
