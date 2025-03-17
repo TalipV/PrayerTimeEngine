@@ -150,7 +150,7 @@ public static class MauiProgram
         MauiApp mauiApp = builder.Build();
         ServiceProvider = mauiApp.Services;
 
-        MethodTimeLogger.logger = mauiApp.Services.GetRequiredService<ILogger<App>>();
+        MethodTimeLogger.Logger = mauiApp.Services.GetRequiredService<ILogger<App>>();
 
         return mauiApp;
     }
