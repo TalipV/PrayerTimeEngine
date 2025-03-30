@@ -110,6 +110,6 @@ public class FaziletDynamicPrayerTimeProviderTests : BaseTest
 
         // ASSERT
         result.Should().NotBeNull();
-        result.FirstOrDefault(x => x.TimeType == ETimeType.IshaEnd).ZonedDateTime.LocalDateTime.Should().Be(new LocalDateTime(2025, 3, 30, 1, 2, 3));
+        result.FirstOrDefault(x => x.TimeType == ETimeType.IshaEnd).ZonedDateTime.LocalDateTime.Should().Be(new LocalDateTime(2025, 3, 31, 05, 21, 00));
     }
 }
