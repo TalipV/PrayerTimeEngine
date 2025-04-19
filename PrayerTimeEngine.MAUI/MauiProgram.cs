@@ -80,6 +80,7 @@ namespace PrayerTimeEngine;
  */
 
 /* TODO general:
+ * - Reconsider IDailyPrayerTimes properties ('Date' as a ZonedDateTime?? Why carry DateTimeZone info redundantely?)
  * - Performance
  * - Multiple profiles
  * - Decrease count of reloads (e.g. mere app switch shouldn't always require reload)

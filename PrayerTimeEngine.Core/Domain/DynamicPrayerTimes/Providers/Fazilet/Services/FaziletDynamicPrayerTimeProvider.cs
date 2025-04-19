@@ -96,7 +96,7 @@ public class FaziletDynamicPrayerTimeProvider(
                 var prayerTimesLst = prayerTimesResponseDTO.PrayerTimes.Select(x => x.ToFaziletPrayerTimes(cityID, timeZone)).ToList();
                 await faziletDBAccess.InsertPrayerTimesAsync(prayerTimesLst, cancellationToken).ConfigureAwait(false);
 
-                prayerTimes = prayerTimesLst.FirstOrDefault(x => x.Date == date);
+                prayerTimes = prayerTimesLst.FirstOrDefault(x => x.Date.Date == date.Date);
             }
 
             return prayerTimes;
