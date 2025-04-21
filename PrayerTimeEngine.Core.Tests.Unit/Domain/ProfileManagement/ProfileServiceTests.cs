@@ -81,8 +81,8 @@ public class ProfileServiceTests : BaseTest
         await _profileService.SaveProfile(profile, default);
 
         // ASSERT
-        _profileDBAccessMock.ReceivedWithAnyArgs(1).Awaiting(x => x.SaveProfile(default, default));
-        _profileDBAccessMock.Received(1).Awaiting(x => x.SaveProfile(Arg.Is(profile), Arg.Any<CancellationToken>()));
+        await _profileDBAccessMock.ReceivedWithAnyArgs(1).SaveProfile(default, default);
+        await _profileDBAccessMock.Received(1).SaveProfile(Arg.Is(profile), Arg.Any<CancellationToken>());
     }
 
     #endregion SaveProfile
@@ -194,8 +194,8 @@ public class ProfileServiceTests : BaseTest
         await _profileService.UpdateLocationConfig(profile, placeInfo, locationData, default);
 
         // ASSERT
-        _profileDBAccessMock.ReceivedWithAnyArgs(1).Awaiting(x => x.UpdateLocationConfig(default, default, default, default));
-        _profileDBAccessMock.Received(1).Awaiting(x => x.UpdateLocationConfig(Arg.Is(profile), Arg.Is(placeInfo), Arg.Is(locationData), Arg.Any<CancellationToken>()));
+        await _profileDBAccessMock.ReceivedWithAnyArgs(1).UpdateLocationConfig(default, default, default, default);
+        await _profileDBAccessMock.Received(1).UpdateLocationConfig(Arg.Is(profile), Arg.Is(placeInfo), Arg.Is(locationData), Arg.Any<CancellationToken>());
     }
 
     #endregion UpdateLocationConfig
@@ -214,8 +214,8 @@ public class ProfileServiceTests : BaseTest
         await _profileService.UpdateTimeConfig(profile, ETimeType.FajrStart, setting, default);
 
         // ASSERT
-        _profileDBAccessMock.ReceivedWithAnyArgs(1).Awaiting(x => x.UpdateTimeConfig(default, default, default, default));
-        _profileDBAccessMock.Received(1).Awaiting(x => x.UpdateTimeConfig(Arg.Is(profile), Arg.Is(ETimeType.FajrStart), Arg.Is(setting), Arg.Any<CancellationToken>()));
+        await _profileDBAccessMock.ReceivedWithAnyArgs(1).UpdateTimeConfig(default, default, default, default);
+        await _profileDBAccessMock.Received(1).UpdateTimeConfig(Arg.Is(profile), Arg.Is(ETimeType.FajrStart), Arg.Is(setting), Arg.Any<CancellationToken>());
     }
 
     #endregion UpdateTimeConfig

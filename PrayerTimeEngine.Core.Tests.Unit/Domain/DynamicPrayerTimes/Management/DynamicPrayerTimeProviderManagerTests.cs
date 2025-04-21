@@ -75,13 +75,12 @@ public class DynamicPrayerTimeProviderManagerTests : BaseTest
 
         result.Fajr.Start.Should().Be(zonedDate.PlusHours(4));
 
-        muwaqqitPrayerTimeServiceMock.Awaiting(x => x.ReceivedWithAnyArgs(1).GetPrayerTimesAsync(default, default, default, default));
-        muwaqqitPrayerTimeServiceMock
-            .Awaiting(x => x.Received(1).GetPrayerTimesAsync(
+        await muwaqqitPrayerTimeServiceMock.ReceivedWithAnyArgs(1).GetPrayerTimesAsync(default, default, default, default);
+        await muwaqqitPrayerTimeServiceMock.Received(1).GetPrayerTimesAsync(
                 Arg.Is(zonedDate),
                 Arg.Is(muwaqqitLocationData),
                 Arg.Is<List<GenericSettingConfiguration>>(x => x.Contains(muwaqqitConfig)),
-                Arg.Any<CancellationToken>()));
+                Arg.Any<CancellationToken>());
     }
 
     #endregion CalculatePrayerTimesAsync
