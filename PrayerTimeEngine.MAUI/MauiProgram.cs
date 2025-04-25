@@ -117,6 +117,7 @@ namespace PrayerTimeEngine;
  * --- MuwaqqitDBAccess
  * # DynamicPrayerTimeProviderManager
  * # MyMosqPrayerTimes & MawaqitPrayerTimes: One test each to validate their respective scraped JSON inputs (i.e. every time text is a valid time and so on)
+ * # ProfileService: One test for UpdateLocationInfo which considers the different Fazilet/Semerkand place info custom things
  */
 
 public static class MauiProgram

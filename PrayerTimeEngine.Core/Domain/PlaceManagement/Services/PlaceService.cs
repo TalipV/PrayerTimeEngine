@@ -131,6 +131,7 @@ public class PlaceService(
             Latitude = decimal.Parse(locationIQPlace.Latitude, CultureInfo.InvariantCulture),
             InfoLanguageCode = languageCode,
             Country = locationIQPlace.Address.Country,
+            State = locationIQPlace.Address.State,
             City = locationIQPlace.Address.City,
             CityDistrict = locationIQPlace.Address.Suburb,
             PostCode = locationIQPlace.Address.Postcode,

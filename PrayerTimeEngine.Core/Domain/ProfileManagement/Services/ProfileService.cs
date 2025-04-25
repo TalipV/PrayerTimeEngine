@@ -15,6 +15,7 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Services;
 
 public class ProfileService(
         IProfileDBAccess profileDBAccess,
+        IDynamicPrayerTimeProviderFactory dynamicPrayerTimeProviderFactory,
         TimeTypeAttributeService timeTypeAttributeService
     ) : IProfileService
 {
@@ -279,13 +280,34 @@ public class ProfileService(
         return profile.LocationConfigs.FirstOrDefault(x => x.DynamicPrayerTimeProvider == dynamicPrayerTimeProviderType)?.LocationData;
     }
 
-    public Task UpdateLocationConfig(
+    public async Task UpdateLocationConfig(
         DynamicProfile profile,
         ProfilePlaceInfo placeInfo,
-        List<(EDynamicPrayerTimeProviderType DynamicPrayerTimeProvider, BaseLocationData LocationData)> locationDataByDynamicPrayerTimeProvider,
         CancellationToken cancellationToken)
     {
-        return profileDBAccess.UpdateLocationConfig(profile, placeInfo, locationDataByDynamicPrayerTimeProvider, cancellationToken);
+        var locationDataByDynamicPrayerTimeProvider = new List<(EDynamicPrayerTimeProviderType, BaseLocationData)>();
+
+        foreach (var dynamicPrayerTimeProvider in Enum.GetValues<EDynamicPrayerTimeProviderType>())
+        {
+            if (dynamicPrayerTimeProvider == EDynamicPrayerTimeProviderType.None)
+                continue;
+
+            BaseLocationData locationConfig = null;
+            try
+            {
+                locationConfig = await dynamicPrayerTimeProviderFactory
+                    .GetDynamicPrayerTimeProviderByDynamicPrayerTimeProvider(dynamicPrayerTimeProvider)
+                    .GetLocationInfo(placeInfo, cancellationToken);
+            }
+            catch
+            {
+                // TODO handle properly
+            }
+
+            locationDataByDynamicPrayerTimeProvider.Add((dynamicPrayerTimeProvider, locationConfig));
+        }
+
+        await profileDBAccess.UpdateLocationConfig(profile, placeInfo, locationDataByDynamicPrayerTimeProvider, cancellationToken);
     }
 
     public Task UpdateTimeConfig(DynamicProfile profile, ETimeType timeType, GenericSettingConfiguration settings, CancellationToken cancellationToken)

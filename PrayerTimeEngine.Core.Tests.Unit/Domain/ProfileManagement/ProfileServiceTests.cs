@@ -15,12 +15,14 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.ProfileManagement;
 public class ProfileServiceTests : BaseTest
 {
     private readonly IProfileDBAccess _profileDBAccessMock;
+    private readonly IDynamicPrayerTimeProviderFactory _dynamicPrayerTimeProviderFactory;
     private readonly ProfileService _profileService;
 
     public ProfileServiceTests()
     {
         _profileDBAccessMock = Substitute.For<IProfileDBAccess>();
-        _profileService = new ProfileService(_profileDBAccessMock, new TimeTypeAttributeService());
+        _dynamicPrayerTimeProviderFactory = Substitute.For<IDynamicPrayerTimeProviderFactory>();
+        _profileService = new ProfileService(_profileDBAccessMock, _dynamicPrayerTimeProviderFactory, new TimeTypeAttributeService());
     }
 
     public static TheoryData<ETimeType> configurableTimeTypeValues => [.. new TimeTypeAttributeService().ConfigurableTypes];
@@ -168,7 +170,9 @@ public class ProfileServiceTests : BaseTest
     {
         // ARRANGE
         var profile = TestDataHelper.CreateNewCompleteTestProfile();
-        List<(EDynamicPrayerTimeProviderType, BaseLocationData)> locationData = [(EDynamicPrayerTimeProviderType.Muwaqqit, Substitute.ForPartsOf<BaseLocationData>())];
+        var expectedDynamicPrayerTimeProviderType = Enum.GetValues<EDynamicPrayerTimeProviderType>()
+            .Where(x => x != EDynamicPrayerTimeProviderType.None)
+            .ToHashSet();
 
         var placeInfo =
             new ProfilePlaceInfo
@@ -191,11 +195,15 @@ public class ProfileServiceTests : BaseTest
             };
 
         // ACT
-        await _profileService.UpdateLocationConfig(profile, placeInfo, locationData, default);
+        await _profileService.UpdateLocationConfig(profile, placeInfo, default);
 
         // ASSERT
         await _profileDBAccessMock.ReceivedWithAnyArgs(1).UpdateLocationConfig(default, default, default, default);
-        await _profileDBAccessMock.Received(1).UpdateLocationConfig(Arg.Is(profile), Arg.Is(placeInfo), Arg.Is(locationData), Arg.Any<CancellationToken>());
+        await _profileDBAccessMock.Received(1).UpdateLocationConfig(
+            Arg.Is(profile), 
+            Arg.Is(placeInfo), 
+            Arg.Is<List<(EDynamicPrayerTimeProviderType, BaseLocationData)>>(x => x.Select(x => x.Item1).ToHashSet().SetEquals(expectedDynamicPrayerTimeProviderType)), 
+            Arg.Any<CancellationToken>());
     }
 
     #endregion UpdateLocationConfig
