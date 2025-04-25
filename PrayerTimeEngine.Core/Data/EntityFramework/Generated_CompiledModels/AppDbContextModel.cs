@@ -17,10 +17,7 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
         {
             var model = new AppDbContextModel();
 
-            // the thread seems to produce something like a dead lock at startup
-            // --> use the old behavior
-            // TODO remove as soon as fixed
-            if (true || _useOldBehavior31751)
+            if (_useOldBehavior31751)
             {
                 model.Initialize();
             }
@@ -37,7 +34,7 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
             }
 
             model.Customize();
-            _instance = model;
+            _instance = (AppDbContextModel)model.FinalizeModel();
         }
 
         private static AppDbContextModel _instance;
