@@ -3,9 +3,11 @@ using PrayerTimeEngine.Core.Data.WebSocket.Interfaces;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.MyMosq.Interfaces;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.MyMosq.Models.DTOs;
 using System.Net.WebSockets;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 
 namespace PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.MyMosq.Services;
@@ -35,11 +37,21 @@ public partial class MyMosqApiService(
         }
         """;
 
+    private static readonly string[] _jsonPropertiesMyMosqPrayerTimesDTO = typeof(MyMosqPrayerTimesDTO)
+        .GetProperties()
+        .Select(p => p.GetCustomAttribute<JsonPropertyNameAttribute>()?.Name)
+        .Where(n => n != null)
+        .ToArray();
+
     public async Task<List<MyMosqPrayerTimesDTO>> GetPrayerTimesAsync(LocalDate date, string externalID, CancellationToken cancellationToken)
     {
         string finaleMessage = string.Join(
             string.Empty,
-            await readResponseMessages(externalID, cancellationToken).Where(x => x.Contains("Asr")).ToListAsync(cancellationToken));
+            await readResponseMessages(externalID, cancellationToken)
+            // the best (or only easiest?) way to filter out irrelevant messages and to only keep the ones which send the prayer times
+            .Where(responseMessageSection => _jsonPropertiesMyMosqPrayerTimesDTO
+                .Any(relevantDtoJsonPropertyName => responseMessageSection.Contains(relevantDtoJsonPropertyName)))
+            .ToListAsync(cancellationToken));
 
         finaleMessage = JsonDocument.Parse(finaleMessage).RootElement.GetProperty("d").GetProperty("b").GetProperty("d").ToString();
 
