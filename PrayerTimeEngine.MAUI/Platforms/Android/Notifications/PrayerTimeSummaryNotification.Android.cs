@@ -13,7 +13,10 @@ using PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
 
 namespace PrayerTimeEngine.Platforms.Android.Notifications;
 
-[Service(ForegroundServiceType = global::Android.Content.PM.ForegroundService.TypeDataSync, Enabled = true)]
+[Service(
+    ForegroundServiceType = global::Android.Content.PM.ForegroundService.TypeSpecialUse,
+    Enabled = true,
+    Exported = true)]
 public class PrayerTimeSummaryNotification : Service
 {
     internal const string CHANNEL_ID = "prayer_time_channel";
@@ -59,8 +62,10 @@ public class PrayerTimeSummaryNotification : Service
         {
             _logger.LogInformation("Try start foreground service");
 
-            if (OperatingSystem.IsAndroidVersionAtLeast(29))
-                StartForeground(notificationId, initialNotification, global::Android.Content.PM.ForegroundService.TypeDataSync);
+            if (OperatingSystem.IsAndroidVersionAtLeast(34))
+                StartForeground(notificationId, initialNotification, global::Android.Content.PM.ForegroundService.TypeSpecialUse);
+            else if (OperatingSystem.IsAndroidVersionAtLeast(29))
+                StartForeground(notificationId, initialNotification, global::Android.Content.PM.ForegroundService.TypeNone);
             else
                 StartForeground(notificationId, initialNotification);
         }
