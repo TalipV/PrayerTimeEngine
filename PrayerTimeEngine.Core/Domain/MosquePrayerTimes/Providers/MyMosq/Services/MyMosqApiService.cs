@@ -3,11 +3,9 @@ using PrayerTimeEngine.Core.Data.WebSocket.Interfaces;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.MyMosq.Interfaces;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.MyMosq.Models.DTOs;
 using System.Net.WebSockets;
-using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 
 namespace PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.MyMosq.Services;
@@ -37,21 +35,21 @@ public partial class MyMosqApiService(
         }
         """;
 
-    private static readonly string[] _jsonPropertiesMyMosqPrayerTimesDTO = typeof(MyMosqPrayerTimesDTO)
-        .GetProperties()
-        .Select(p => p.GetCustomAttribute<JsonPropertyNameAttribute>()?.Name)
-        .Where(n => n != null)
-        .ToArray();
+    private const string PAYLOAD_END_FOR_VALID_INPUT = "}}}}}";
+    private const string PAYLOAD_END_FOR_INVALID_INPUT = "\"d\":null}}}";
 
     public async Task<List<MyMosqPrayerTimesDTO>> GetPrayerTimesAsync(LocalDate date, string externalID, CancellationToken cancellationToken)
     {
-        string finaleMessage = string.Join(
-            string.Empty,
-            await readResponseMessages(externalID, cancellationToken)
-            // the best (or only easiest?) way to filter out irrelevant messages and to only keep the ones which send the prayer times
-            .Where(responseMessageSection => _jsonPropertiesMyMosqPrayerTimesDTO
-                .Any(relevantDtoJsonPropertyName => responseMessageSection.Contains(relevantDtoJsonPropertyName)))
-            .ToListAsync(cancellationToken));
+        List<string> responseMessages = await readResponseMessages(externalID, cancellationToken)
+            .ToListAsync(cancellationToken).ConfigureAwait(false);
+
+        if (!areResponseMessagesValid(responseMessages))
+        {
+            throw new InvalidOperationException($"The externalID '{externalID}' led to an invalid response without prayer time data.");
+        }
+
+        // the first two messages don't contain our prayer time infos
+        string finaleMessage = string.Join(string.Empty, responseMessages.Skip(2));
 
         finaleMessage = JsonDocument.Parse(finaleMessage).RootElement.GetProperty("d").GetProperty("b").GetProperty("d").ToString();
 
@@ -71,9 +69,13 @@ public partial class MyMosqApiService(
         CancellationToken cancellationToken)
     {
         List<string> responseMessages = await readResponseMessages(externalID, cancellationToken).ToListAsync(cancellationToken);
+        return areResponseMessagesValid(responseMessages);
+    }
 
+    private static bool areResponseMessagesValid(List<string> responseMessages)
+    {
         // invalid pages send normal responses but don't contain any time data
-        if (responseMessages.Count == 2 && responseMessages[1].EndsWith("\"d\":null}}}"))
+        if (responseMessages.Count == 2 && responseMessages[1].EndsWith(PAYLOAD_END_FOR_INVALID_INPUT))
         {
             return false;
         }
@@ -96,26 +98,25 @@ public partial class MyMosqApiService(
         await webSocketClient.SendAsync(arraySegment, WebSocketMessageType.Text, true, cancellationToken);
 
         byte[] buffer = new byte[1024];
+
         while (webSocketClient.State == WebSocketState.Open)
         {
             WebSocketReceiveResult result;
+            string lastReadMessageSection;
+
             do
             {
-                cancellationToken.ThrowIfCancellationRequested();
-
-                try
-                {
-                    CancellationToken token = new CancellationTokenSource(1000).Token;
-                    result = await webSocketClient.ReceiveAsync(new ArraySegment<byte>(buffer), token);
-                }
-                catch (OperationCanceledException)
-                {
-                    break;
-                }
-
-                yield return Encoding.UTF8.GetString(buffer, 0, result.Count);
+                result = await webSocketClient.ReceiveAsync(new ArraySegment<byte>(buffer), cancellationToken);
+                lastReadMessageSection = Encoding.UTF8.GetString(buffer, 0, result.Count);
+                yield return lastReadMessageSection;
             }
             while (!result.EndOfMessage);
+
+            // Firebase doesn't close the socket or mark the end, so we check for the known ending to detect full payload.
+            // Without this the next loop would get stuck forever at "ReceiveAsync"
+            if (lastReadMessageSection.EndsWith(PAYLOAD_END_FOR_INVALID_INPUT)
+                || lastReadMessageSection.EndsWith(PAYLOAD_END_FOR_VALID_INPUT))
+                break;
         }
     }
 
@@ -131,19 +132,15 @@ public partial class MyMosqApiService(
         await webSocketClient.SendAsync(arraySegment, WebSocketMessageType.Text, true, cancellationToken);
 
         byte[] buffer = new byte[1024];
-        WebSocketReceiveResult result;
 
-        cancellationToken.ThrowIfCancellationRequested();
-        result = await webSocketClient.ReceiveAsync(new ArraySegment<byte>(buffer), cancellationToken);
-        cancellationToken.ThrowIfCancellationRequested();
-
+        WebSocketReceiveResult result = await webSocketClient.ReceiveAsync(new ArraySegment<byte>(buffer), cancellationToken);
         string textValue = Encoding.UTF8.GetString(buffer, 0, result.Count);
         var regex = getWebSocketBaseURLExtractionRegex();
         Match match = regex.Match(textValue);
 
         if (!match.Success)
         {
-            throw new Exception("Base URL could not be determined!");
+            throw new InvalidOperationException("WebSocket base URL could not be extracted from the Firebase response.");
         }
 
         return match.Value;

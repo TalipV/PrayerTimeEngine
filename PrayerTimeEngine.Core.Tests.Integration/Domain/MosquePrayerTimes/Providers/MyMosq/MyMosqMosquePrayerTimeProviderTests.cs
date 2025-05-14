@@ -88,10 +88,12 @@ public class MyMosqMosquePrayerTimeProviderTests : BaseTest
 
     // to check the fragile API implementation with a live API call because why not
     [Theory]
-    [InlineData("1239")]
-    [InlineData("1145")]
-    [InlineData("1140")]
-    public async Task ValidateData_DifferentExternalIDsWithLiveApi_ValidData(string externalID)
+    [InlineData("1239", true)]
+    [InlineData("1145", true)]
+    [InlineData("1140", true)]
+    [InlineData("123497839", false)]
+    public async Task ValidateData_DifferentExternalIDsWithLiveApi_ValidatedAsExpected(
+        string externalID, bool isValid)
     {
         // ARRANGE
         ServiceProvider serviceProvider = createServiceProvider(
@@ -115,6 +117,6 @@ public class MyMosqMosquePrayerTimeProviderTests : BaseTest
         bool result = await myMosqPrayerTimeService.ValidateData(externalID, default);
 
         // ASSERT
-        result.Should().BeTrue();
+        result.Should().Be(isValid);
     }
 }
