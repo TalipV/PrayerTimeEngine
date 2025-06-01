@@ -168,7 +168,7 @@ public static class MauiProgram
                 text.Append($"|Exception:'{info.Exception.Message}' AT '{info.Exception.StackTrace}'");
             }
 
-            text.Append($"|StackTrace: {new StackTrace()}");
+            //text.Append($"|StackTrace: {new StackTrace()}");
 
             return text.ToString();
         }
