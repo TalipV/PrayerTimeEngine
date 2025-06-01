@@ -68,7 +68,7 @@ public class DynamicPrayerTimeProviderManagerTests : BaseTest
         muwaqqitPrayerTimeServiceMock.GetUnsupportedTimeTypes().Returns([]);
 
         // ACT
-        DynamicPrayerTimesSet result = await _dynamicPrayerTimeProviderManager.CalculatePrayerTimesAsync(profile.ID, zonedDate, default);
+        DynamicPrayerTimesDay result = await _dynamicPrayerTimeProviderManager.CalculatePrayerTimesAsync(profile.ID, zonedDate, default);
 
         // ASSERT
         result.Should().NotBeNull();

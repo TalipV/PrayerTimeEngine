@@ -11,10 +11,10 @@ public abstract class BasePrayerTimeViewModel<ProfileType, PrayerTimeSetType>(
         ProfileType profile
     ) : IPrayerTimeViewModel
     where ProfileType : Profile
-    where PrayerTimeSetType : IPrayerTimesSet
+    where PrayerTimeSetType : IPrayerTimesDay
 {
     protected ProfileType ProfileActual { get; } = profile;
-    public IPrayerTimesSet PrayerTimesSet { get; private set; }
+    public IPrayerTimesDay PrayerTimesSet { get; private set; }
     public Profile Profile => ProfileActual;
 
     public abstract Task<PrayerTimeSetType> GetPrayerTimesSet(ZonedDateTime zonedDateTime, CancellationToken cancellationToken);

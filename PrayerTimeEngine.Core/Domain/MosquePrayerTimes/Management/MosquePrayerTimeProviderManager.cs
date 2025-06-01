@@ -13,7 +13,7 @@ public class MosquePrayerTimeProviderManager(
         ISystemInfoService systemInfoService
     ) : IMosquePrayerTimeProviderManager
 {
-    public async Task<MosquePrayerTimesSet> CalculatePrayerTimesAsync(int profileID, ZonedDateTime date, CancellationToken cancellationToken)
+    public async Task<MosquePrayerTimesDay> CalculatePrayerTimesAsync(int profileID, ZonedDateTime date, CancellationToken cancellationToken)
     {
         date = date.LocalDateTime.Date.AtStartOfDayInZone(date.Zone);
 
@@ -38,12 +38,12 @@ public class MosquePrayerTimeProviderManager(
         return prayerTimesCollection;
     }
 
-    private MosquePrayerTimesSet getPrayerTimesCollection(IMosqueDailyPrayerTimes times)
+    private MosquePrayerTimesDay getPrayerTimesCollection(IMosqueDailyPrayerTimes times)
     {
         // TODO fix this. The Profile should know its own time zone!
         var timeZone = systemInfoService.GetSystemTimeZone();
 
-        var prayerTimesCollection = new MosquePrayerTimesSet();
+        var prayerTimesCollection = new MosquePrayerTimesDay();
 
         prayerTimesCollection.Fajr.Start = times.Fajr.On(times.Date).InZoneStrictly(timeZone);
         prayerTimesCollection.Fajr.CongregationStartOffset = (int)Period.Between(times.Fajr, times.FajrCongregation, PeriodUnits.Minutes).Minutes;
