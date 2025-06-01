@@ -159,8 +159,8 @@ public class PrayerTimeSummaryNotification : Service
 
         foreach ((EPrayerType prayerType, GenericPrayerTime prayerTime) in prayerTimeBundle.AllPrayerTimes)
         {
-            if (prayerType == EPrayerType.Duha)
-                continue;
+            //if (prayerType == EPrayerType.Duha)
+            //    continue;
 
             if (prayerTime.End is not null
                 && now.ToInstant() < prayerTime.End.Value.ToInstant()
