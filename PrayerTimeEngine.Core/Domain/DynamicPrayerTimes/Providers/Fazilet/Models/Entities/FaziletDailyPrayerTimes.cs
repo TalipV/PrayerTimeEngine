@@ -38,7 +38,7 @@ public class FaziletDailyPrayerTimes : IDailyPrayerTimes, IInsertedAt
             ETimeType.MaghribStart => Maghrib,
             ETimeType.MaghribEnd => Isha,
             ETimeType.IshaStart => Isha,
-            ETimeType.IshaEnd => NextFajr ?? new ZonedDateTime(Instant.MinValue, DateTimeZone.Utc),
+            ETimeType.IshaEnd => NextFajr ?? Isha,
             _ => throw new ArgumentException($"Invalid {nameof(timeType)} value: {timeType}."),
         };
     }
