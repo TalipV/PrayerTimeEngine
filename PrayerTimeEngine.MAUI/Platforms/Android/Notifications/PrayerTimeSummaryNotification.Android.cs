@@ -146,7 +146,7 @@ public class PrayerTimeSummaryNotification : Service
             _systemInfoService.GetCurrentInstant()
                 .InZone(DateTimeZoneProviders.Tzdb[(profile as DynamicProfile).PlaceInfo.TimezoneInfo.Name]);
 
-        DynamicPrayerTimesSet prayerTimeBundle =
+        DynamicPrayerTimesDay prayerTimeBundle =
             await _prayerTimeDynamicPrayerTimeProviderManager.CalculatePrayerTimesAsync(
                 profile.ID,
                 now,

@@ -8,7 +8,7 @@ namespace PrayerTimeEngine.Presentation;
 public interface IPrayerTimeViewModel
 {
     Profile Profile { get; }
-    IPrayerTimesSet PrayerTimesSet { get; }
+    IPrayerTimesDay PrayerTimesSet { get; }
 
     Task RefreshData(ZonedDateTime zonedDateTime, CancellationToken cancellationToken);
     PrayerTimeGraphicTimeVO CreatePrayerTimeGraphicTimeVO(Instant instant);

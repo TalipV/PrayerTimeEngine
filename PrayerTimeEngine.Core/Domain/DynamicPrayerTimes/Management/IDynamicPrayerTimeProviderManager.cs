@@ -5,5 +5,5 @@ namespace PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Management;
 
 public interface IDynamicPrayerTimeProviderManager
 {
-    public Task<DynamicPrayerTimesSet> CalculatePrayerTimesAsync(int profileID, ZonedDateTime zoneDate, CancellationToken cancellationToken);
+    public Task<DynamicPrayerTimesDay> CalculatePrayerTimesAsync(int profileID, ZonedDateTime zoneDate, CancellationToken cancellationToken);
 }

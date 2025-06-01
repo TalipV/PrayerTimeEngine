@@ -7,7 +7,7 @@ using PropertyChanged;
 namespace PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Models;
 
 [AddINotifyPropertyChangedInterface]
-public class DynamicPrayerTimesSet : IPrayerTimesSet
+public class DynamicPrayerTimesDay : IPrayerTimesDay
 {
     public ZonedDateTime? DataCalculationTimestamp { get; set; }
 
@@ -35,7 +35,7 @@ public class DynamicPrayerTimesSet : IPrayerTimesSet
 
     public override bool Equals(object obj)
     {
-        if (obj is not DynamicPrayerTimesSet otherDynamicPrayerTimesSet)
+        if (obj is not DynamicPrayerTimesDay otherDynamicPrayerTimesSet)
             return false;
 
         return Equals(Fajr, otherDynamicPrayerTimesSet.Fajr)

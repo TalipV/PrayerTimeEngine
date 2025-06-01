@@ -46,18 +46,18 @@ public partial class MosquePrayerTimeView : ContentView
 
         int startRowNo = 1;
 
-        addPrayerTimeUI(mainGrid, "Fajr", nameof(MosquePrayerTimesSet.Fajr),
+        addPrayerTimeUI(mainGrid, "Fajr", nameof(MosquePrayerTimesDay.Fajr),
             startRowNo, startColumnNo: 0);
-        addPrayerTimeUI(mainGrid, "Jumu'ah", nameof(MosquePrayerTimesSet.Jumuah),
+        addPrayerTimeUI(mainGrid, "Jumu'ah", nameof(MosquePrayerTimesDay.Jumuah),
             startRowNo, startColumnNo: 3,
-            subtime1Name: "Jumuah2", subtime1Binding: $"{nameof(MosquePrayerTimesSet.Jumuah2)}.{nameof(GenericPrayerTime.Start)}");
-        addPrayerTimeUI(mainGrid, "Dhuhr", nameof(MosquePrayerTimesSet.Dhuhr),
+            subtime1Name: "Jumuah2", subtime1Binding: $"{nameof(MosquePrayerTimesDay.Jumuah2)}.{nameof(GenericPrayerTime.Start)}");
+        addPrayerTimeUI(mainGrid, "Dhuhr", nameof(MosquePrayerTimesDay.Dhuhr),
             startRowNo + 4, startColumnNo: 0);
-        addPrayerTimeUI(mainGrid, "Asr", nameof(MosquePrayerTimesSet.Asr),
+        addPrayerTimeUI(mainGrid, "Asr", nameof(MosquePrayerTimesDay.Asr),
             startRowNo + 4, startColumnNo: 3);
-        addPrayerTimeUI(mainGrid, "Maghrib", nameof(MosquePrayerTimesSet.Maghrib),
+        addPrayerTimeUI(mainGrid, "Maghrib", nameof(MosquePrayerTimesDay.Maghrib),
             startRowNo + 8, startColumnNo: 0);
-        addPrayerTimeUI(mainGrid, "Isha", nameof(MosquePrayerTimesSet.Isha),
+        addPrayerTimeUI(mainGrid, "Isha", nameof(MosquePrayerTimesDay.Isha),
             startRowNo + 8, startColumnNo: 3);
 
         return mainGrid;
