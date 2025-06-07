@@ -22,7 +22,7 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
                 "PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Models.Entities.FaziletDailyPrayerTimes",
                 typeof(FaziletDailyPrayerTimes),
                 baseEntityType,
-                propertyCount: 12,
+                propertyCount: 13,
                 keyCount: 1);
 
             var iD = runtimeEntityType.AddProperty(
@@ -70,6 +70,16 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
                 string (ZonedDateTime x) => x.GetStringForDBColumn(),
                 ZonedDateTime (string x) => x.GetZonedDateTimeFromDBColumnString()));
             dhuhr.SetSentinelFromProviderValue("0001-01-01T00:00:00 UTC (+00)");
+
+            var duha = runtimeEntityType.AddProperty(
+                "Duha",
+                typeof(ZonedDateTime),
+                propertyInfo: typeof(FaziletDailyPrayerTimes).GetProperty("Duha", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(FaziletDailyPrayerTimes).GetField("<Duha>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
+            duha.SetValueConverter(new ValueConverter<ZonedDateTime, string>(
+                string (ZonedDateTime x) => x.GetStringForDBColumn(),
+                ZonedDateTime (string x) => x.GetZonedDateTimeFromDBColumnString()));
+            duha.SetSentinelFromProviderValue("0001-01-01T00:00:00 UTC (+00)");
 
             var fajr = runtimeEntityType.AddProperty(
                 "Fajr",
