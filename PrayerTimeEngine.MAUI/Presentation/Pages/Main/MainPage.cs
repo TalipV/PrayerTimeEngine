@@ -134,7 +134,7 @@ public partial class MainPage : ContentPage
             .MinWidth(20) // otherwise we can't reach the menu by tapping an empty label
             .Bind(
                 Label.TextProperty,
-                path: $"{nameof(MainPageViewModel.CurrentProfileWithModel)}.{nameof(IPrayerTimeViewModel.PrayerTimesSet)}.{nameof(DynamicPrayerTimesDay.DataCalculationTimestamp)}",
+                path: $"{nameof(MainPageViewModel.CurrentProfileWithModel)}.{nameof(IPrayerTimeViewModel.PrayerTimesSet)}.{nameof(DynamicPrayerTimesDaySet.DataCalculationTimestamp)}",
                 stringFormat: "{0:dd.MM, HH:mm:ss}");
 
         titleGrid.Add(_lastUpdatedTextInfo);

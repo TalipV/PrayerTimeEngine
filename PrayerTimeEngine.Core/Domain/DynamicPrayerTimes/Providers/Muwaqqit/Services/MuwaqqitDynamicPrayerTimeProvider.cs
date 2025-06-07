@@ -21,7 +21,7 @@ public class MuwaqqitDynamicPrayerTimeProvider(
         List<GenericSettingConfiguration> configurations,
         CancellationToken cancellationToken)
     {
-        // check configuration's calcultion sources?
+        // check configuration's calculation sources?
 
         if (locationData is not MuwaqqitLocationData muwaqqitLocationData)
         {

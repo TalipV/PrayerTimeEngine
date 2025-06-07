@@ -58,7 +58,8 @@ public class BasicPlaceInfo
             City == other.City &&
             CityDistrict == other.CityDistrict &&
             PostCode == other.PostCode &&
-            Street == other.Street;
+            Street == other.Street &&
+            State == other.State;
     }
 
     public override int GetHashCode()
@@ -66,6 +67,6 @@ public class BasicPlaceInfo
         // split up because the method doesn't accept more than 8 parameters
         return HashCode.Combine(
             HashCode.Combine(ExternalID, Longitude, Latitude, InfoLanguageCode, Country, City, CityDistrict),
-            PostCode, Street);
+            PostCode, Street, State);
     }
 }
