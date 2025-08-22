@@ -205,11 +205,6 @@ public class DynamicPrayerTimeProviderManager(
             yield return (
                 ETimeType.DuhaQuarterOfDay,
                 prayerTimeEntity.Fajr.Start.Value + quarterOfDayDuration);
-
-            Duration halfOfDayDuration = dayDuration / 2.0;
-            yield return (
-                ETimeType.DuhaHalfOfDay,
-                prayerTimeEntity.Fajr.Start.Value + halfOfDayDuration);
         }
 
         if (prayerTimeEntity.Isha?.End - prayerTimeEntity.Maghrib?.Start is Duration nightDuration)
