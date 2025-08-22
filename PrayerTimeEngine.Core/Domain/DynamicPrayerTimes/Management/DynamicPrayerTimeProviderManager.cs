@@ -92,7 +92,7 @@ public class DynamicPrayerTimeProviderManager(
     {
         var complexCalculationResults = await calculateComplexTypes(profile, date, ct).ConfigureAwait(false);
 
-        foreach (var (type, time) in complexCalculationResults.Where(x => x.Exception != null).SelectMany(x => x.Times))
+        foreach (var (type, time) in complexCalculationResults)
         {
             ct.ThrowIfCancellationRequested();
             targetSet.SetSpecificPrayerTimeDateTime(type, time);
