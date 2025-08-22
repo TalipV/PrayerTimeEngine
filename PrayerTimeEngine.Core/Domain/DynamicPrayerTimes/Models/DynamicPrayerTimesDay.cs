@@ -69,9 +69,6 @@ public class DynamicPrayerTimesDay
             case ETimeType.DuhaQuarterOfDay:
                 Duha.QuarterOfDay = zonedDateTime;
                 break;
-            case ETimeType.DuhaHalfOfDay:
-                Duha.HalfOfDay = zonedDateTime;
-                break;
 
             case ETimeType.DhuhrStart:
                 Dhuhr.Start = zonedDateTime;
