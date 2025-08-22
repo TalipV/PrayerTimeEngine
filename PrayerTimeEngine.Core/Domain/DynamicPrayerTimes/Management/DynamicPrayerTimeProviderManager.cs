@@ -44,7 +44,7 @@ public class DynamicPrayerTimeProviderManager(
         return true;
     }
 
-    public async Task<DynamicPrayerTimesDaySet> CalculatePrayerTimesAsync(int profileID, ZonedDateTime date, CancellationToken cancellationToken)
+    public async Task<CalculatePrayerTimesResultVO> CalculatePrayerTimesAsync(int profileID, ZonedDateTime date, CancellationToken cancellationToken)
     {
         date = date.LocalDateTime.Date.AtStartOfDayInZone(date.Zone);
 
@@ -57,7 +57,11 @@ public class DynamicPrayerTimeProviderManager(
         if (tryGetCachedCalculation(dynamicProfile, date, out DynamicPrayerTimesDaySet prayerTimeEntity))
         {
             prayerTimeEntity.DataCalculationTimestamp = systemInfoService.GetCurrentZonedDateTime();
-            return prayerTimeEntity;
+
+            return new CalculatePrayerTimesResultVO
+            {
+                DynamicPrayerTimesDaySet = prayerTimeEntity
+            };
         }
 
         prayerTimeEntity = new DynamicPrayerTimesDaySet
@@ -78,14 +82,17 @@ public class DynamicPrayerTimeProviderManager(
         // execute without awaiting because we don't want to await and block for this side quest
         cleanUpOldCacheData(cancellationToken).SafeFireAndForget(exception => logger.LogError(exception, "Error during cleanUpOldCacheData"));
 
-        return prayerTimeEntity;
+        return new CalculatePrayerTimesResultVO
+        {
+            DynamicPrayerTimesDaySet = prayerTimeEntity
+        };
     }
 
     private async Task calculateInternal(DynamicPrayerTimesDay targetSet, DynamicProfile profile, ZonedDateTime date, CancellationToken ct)
     {
-        var complex = await calculateComplexTypes(profile, date, ct).ConfigureAwait(false);
+        var complexCalculationResults = await calculateComplexTypes(profile, date, ct).ConfigureAwait(false);
 
-        foreach (var (type, time) in complex)
+        foreach (var (type, time) in complexCalculationResults.Where(x => x.Exception != null).SelectMany(x => x.Times))
         {
             ct.ThrowIfCancellationRequested();
             targetSet.SetSpecificPrayerTimeDateTime(type, time);
