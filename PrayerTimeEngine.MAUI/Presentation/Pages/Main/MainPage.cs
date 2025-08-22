@@ -78,6 +78,15 @@ public partial class MainPage : ContentPage
         _dispatcher.Dispatch(() =>
         {
             Instant instant = _systemInfoService.GetCurrentInstant();
+
+            // For debugging
+            //// 01:00 AM the following day
+            //instant = _systemInfoService.GetCurrentZonedDateTime()
+            //    .LocalDateTime.Date
+            //    .AtStartOfDayInZone(_systemInfoService.GetSystemTimeZone())
+            //    .PlusHours(25)
+            //    .ToInstant();
+
             _prayerTimeGraphicView.PrayerTimeGraphicTime = _viewModel.CurrentProfileWithModel.CreatePrayerTimeGraphicTimeVO(instant);
             _prayerTimeGraphicViewBaseView.Invalidate();
         });
@@ -134,7 +143,7 @@ public partial class MainPage : ContentPage
             .MinWidth(20) // otherwise we can't reach the menu by tapping an empty label
             .Bind(
                 Label.TextProperty,
-                path: $"{nameof(MainPageViewModel.CurrentProfileWithModel)}.{nameof(IPrayerTimeViewModel.PrayerTimesSet)}.{nameof(DynamicPrayerTimesSet.DataCalculationTimestamp)}",
+                path: $"{nameof(MainPageViewModel.CurrentProfileWithModel)}.{nameof(IPrayerTimeViewModel.PrayerTimesSet)}.{nameof(DynamicPrayerTimesDaySet.DataCalculationTimestamp)}",
                 stringFormat: "{0:dd.MM, HH:mm:ss}");
 
         titleGrid.Add(_lastUpdatedTextInfo);

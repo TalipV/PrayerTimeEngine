@@ -4,11 +4,8 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Sqlite.Storage.Internal;
-using Microsoft.EntityFrameworkCore.Storage;
-using Microsoft.EntityFrameworkCore.Storage.Json;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NodaTime;
 using PrayerTimeEngine.Core.Common.Extension;
@@ -21,14 +18,20 @@ using PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
 
 namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
 {
-    internal partial class ProfileLocationConfigEntityType
+    [EntityFrameworkInternal]
+    public partial class ProfileLocationConfigEntityType
     {
         public static RuntimeEntityType Create(RuntimeModel model, RuntimeEntityType baseEntityType = null)
         {
             var runtimeEntityType = model.AddEntityType(
                 "PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities.ProfileLocationConfig",
                 typeof(ProfileLocationConfig),
-                baseEntityType);
+                baseEntityType,
+                propertyCount: 5,
+                navigationCount: 1,
+                foreignKeyCount: 1,
+                unnamedIndexCount: 1,
+                keyCount: 1);
 
             var iD = runtimeEntityType.AddProperty(
                 "ID",
@@ -38,50 +41,12 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
                 valueGenerated: ValueGenerated.OnAdd,
                 afterSaveBehavior: PropertySaveBehavior.Throw,
                 sentinel: 0);
-            iD.TypeMapping = IntTypeMapping.Default.Clone(
-                comparer: new ValueComparer<int>(
-                    (int v1, int v2) => v1 == v2,
-                    (int v) => v,
-                    (int v) => v),
-                keyComparer: new ValueComparer<int>(
-                    (int v1, int v2) => v1 == v2,
-                    (int v) => v,
-                    (int v) => v),
-                providerValueComparer: new ValueComparer<int>(
-                    (int v1, int v2) => v1 == v2,
-                    (int v) => v,
-                    (int v) => v),
-                mappingInfo: new RelationalTypeMappingInfo(
-                    storeTypeName: "INTEGER"));
 
             var dynamicPrayerTimeProvider = runtimeEntityType.AddProperty(
                 "DynamicPrayerTimeProvider",
                 typeof(EDynamicPrayerTimeProviderType),
                 propertyInfo: typeof(ProfileLocationConfig).GetProperty("DynamicPrayerTimeProvider", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 fieldInfo: typeof(ProfileLocationConfig).GetField("<DynamicPrayerTimeProvider>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
-            dynamicPrayerTimeProvider.TypeMapping = IntTypeMapping.Default.Clone(
-                comparer: new ValueComparer<EDynamicPrayerTimeProviderType>(
-                    (EDynamicPrayerTimeProviderType v1, EDynamicPrayerTimeProviderType v2) => object.Equals((object)v1, (object)v2),
-                    (EDynamicPrayerTimeProviderType v) => v.GetHashCode(),
-                    (EDynamicPrayerTimeProviderType v) => v),
-                keyComparer: new ValueComparer<EDynamicPrayerTimeProviderType>(
-                    (EDynamicPrayerTimeProviderType v1, EDynamicPrayerTimeProviderType v2) => object.Equals((object)v1, (object)v2),
-                    (EDynamicPrayerTimeProviderType v) => v.GetHashCode(),
-                    (EDynamicPrayerTimeProviderType v) => v),
-                providerValueComparer: new ValueComparer<int>(
-                    (int v1, int v2) => v1 == v2,
-                    (int v) => v,
-                    (int v) => v),
-                mappingInfo: new RelationalTypeMappingInfo(
-                    storeTypeName: "INTEGER"),
-                converter: new ValueConverter<EDynamicPrayerTimeProviderType, int>(
-                    (EDynamicPrayerTimeProviderType value) => (int)value,
-                    (int value) => (EDynamicPrayerTimeProviderType)value),
-                jsonValueReaderWriter: new JsonConvertedValueReaderWriter<EDynamicPrayerTimeProviderType, int>(
-                    JsonInt32ReaderWriter.Instance,
-                    new ValueConverter<EDynamicPrayerTimeProviderType, int>(
-                        (EDynamicPrayerTimeProviderType value) => (int)value,
-                        (int value) => (EDynamicPrayerTimeProviderType)value)));
             dynamicPrayerTimeProvider.SetSentinelFromProviderValue(0);
 
             var insertInstant = runtimeEntityType.AddProperty(
@@ -90,27 +55,9 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
                 propertyInfo: typeof(ProfileLocationConfig).GetProperty("InsertInstant", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 fieldInfo: typeof(ProfileLocationConfig).GetField("<InsertInstant>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 nullable: true);
-            insertInstant.TypeMapping = SqliteStringTypeMapping.Default.Clone(
-                comparer: new ValueComparer<Instant?>(
-                    (Nullable<Instant> v1, Nullable<Instant> v2) => object.Equals((object)v1, (object)v2),
-                    (Nullable<Instant> v) => v.GetHashCode(),
-                    (Nullable<Instant> v) => v),
-                keyComparer: new ValueComparer<Instant?>(
-                    (Nullable<Instant> v1, Nullable<Instant> v2) => object.Equals((object)v1, (object)v2),
-                    (Nullable<Instant> v) => v.GetHashCode(),
-                    (Nullable<Instant> v) => v),
-                providerValueComparer: new ValueComparer<string>(
-                    (string v1, string v2) => v1 == v2,
-                    (string v) => v.GetHashCode(),
-                    (string v) => v),
-                converter: new ValueConverter<Instant?, string>(
-                    (Nullable<Instant> x) => x != null ? x.Value.GetStringForDBColumn() : null,
-                    (string x) => x != null ? (Nullable<Instant>)x.GetInstantFromDBColumnString() : null),
-                jsonValueReaderWriter: new JsonConvertedValueReaderWriter<Instant?, string>(
-                    JsonStringReaderWriter.Instance,
-                    new ValueConverter<Instant?, string>(
-                        (Nullable<Instant> x) => x != null ? x.Value.GetStringForDBColumn() : null,
-                        (string x) => x != null ? (Nullable<Instant>)x.GetInstantFromDBColumnString() : null)));
+            insertInstant.SetValueConverter(new ValueConverter<Instant?, string>(
+                string (Instant? x) => (x != null ? x.Value.GetStringForDBColumn() : null),
+                Instant? (string x) => (x != null ? ((Instant? )(x.GetInstantFromDBColumnString())) : null)));
 
             var locationData = runtimeEntityType.AddProperty(
                 "LocationData",
@@ -118,27 +65,9 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
                 propertyInfo: typeof(ProfileLocationConfig).GetProperty("LocationData", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 fieldInfo: typeof(ProfileLocationConfig).GetField("<LocationData>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 nullable: true);
-            locationData.TypeMapping = SqliteStringTypeMapping.Default.Clone(
-                comparer: new ValueComparer<BaseLocationData>(
-                    (BaseLocationData v1, BaseLocationData v2) => object.Equals(v1, v2),
-                    (BaseLocationData v) => v.GetHashCode(),
-                    (BaseLocationData v) => v),
-                keyComparer: new ValueComparer<BaseLocationData>(
-                    (BaseLocationData v1, BaseLocationData v2) => object.Equals(v1, v2),
-                    (BaseLocationData v) => v.GetHashCode(),
-                    (BaseLocationData v) => v),
-                providerValueComparer: new ValueComparer<string>(
-                    (string v1, string v2) => v1 == v2,
-                    (string v) => v.GetHashCode(),
-                    (string v) => v),
-                converter: new ValueConverter<BaseLocationData, string>(
-                    (BaseLocationData x) => JsonSerializer.Serialize(x, AppDbContext.SerializerOptions),
-                    (string x) => JsonSerializer.Deserialize<BaseLocationData>(x, AppDbContext.SerializerOptions)),
-                jsonValueReaderWriter: new JsonConvertedValueReaderWriter<BaseLocationData, string>(
-                    JsonStringReaderWriter.Instance,
-                    new ValueConverter<BaseLocationData, string>(
-                        (BaseLocationData x) => JsonSerializer.Serialize(x, AppDbContext.SerializerOptions),
-                        (string x) => JsonSerializer.Deserialize<BaseLocationData>(x, AppDbContext.SerializerOptions))));
+            locationData.SetValueConverter(new ValueConverter<BaseLocationData, string>(
+                string (BaseLocationData x) => JsonSerializer.Serialize(x, AppDbContext.SerializerOptions),
+                BaseLocationData (string x) => JsonSerializer.Deserialize<BaseLocationData>(x, AppDbContext.SerializerOptions)));
 
             var profileID = runtimeEntityType.AddProperty(
                 "ProfileID",
@@ -146,21 +75,6 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
                 propertyInfo: typeof(ProfileLocationConfig).GetProperty("ProfileID", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 fieldInfo: typeof(ProfileLocationConfig).GetField("<ProfileID>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 sentinel: 0);
-            profileID.TypeMapping = IntTypeMapping.Default.Clone(
-                comparer: new ValueComparer<int>(
-                    (int v1, int v2) => v1 == v2,
-                    (int v) => v,
-                    (int v) => v),
-                keyComparer: new ValueComparer<int>(
-                    (int v1, int v2) => v1 == v2,
-                    (int v) => v,
-                    (int v) => v),
-                providerValueComparer: new ValueComparer<int>(
-                    (int v1, int v2) => v1 == v2,
-                    (int v) => v,
-                    (int v) => v),
-                mappingInfo: new RelationalTypeMappingInfo(
-                    storeTypeName: "INTEGER"));
 
             var key = runtimeEntityType.AddKey(
                 new[] { iD });

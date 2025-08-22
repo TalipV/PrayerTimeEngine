@@ -17,7 +17,7 @@ public class DynamicPrayerTimeViewModel(
         IDispatcher dispatcher,
         IProfileService profileService,
         DynamicProfile profile
-    ) : BasePrayerTimeViewModel<DynamicProfile, DynamicPrayerTimesSet>(profile)
+    ) : BasePrayerTimeViewModel<DynamicProfile, DynamicPrayerTimesDaySet>(profile)
 {
     public bool ShowFajrGhalas { get; set; }
     public bool ShowFajrRedness { get; set; }
@@ -26,12 +26,12 @@ public class DynamicPrayerTimeViewModel(
     public bool ShowIshtibaq { get; set; }
     public bool ShowMaghribSufficientTime { get; set; }
 
-    public override Task<DynamicPrayerTimesSet> GetPrayerTimesSet(ZonedDateTime zonedDateTime, CancellationToken cancellationToken)
+    public override async Task<DynamicPrayerTimesDaySet> GetPrayerTimesSet(ZonedDateTime zonedDateTime, CancellationToken cancellationToken)
     {
-        return dynamicPrayerTimeProviderManager.CalculatePrayerTimesAsync(
+        return (await dynamicPrayerTimeProviderManager.CalculatePrayerTimesAsync(
             ProfileActual.ID,
             zonedDateTime,
-            cancellationToken);
+            cancellationToken)).DynamicPrayerTimesDaySet;
     }
 
     public override async Task RefreshData(ZonedDateTime zonedDateTime, CancellationToken cancellationToken)

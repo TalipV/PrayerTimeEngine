@@ -37,7 +37,7 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
             }
 
             model.Customize();
-            _instance = model;
+            _instance = (AppDbContextModel)model.FinalizeModel();
         }
 
         private static AppDbContextModel _instance;

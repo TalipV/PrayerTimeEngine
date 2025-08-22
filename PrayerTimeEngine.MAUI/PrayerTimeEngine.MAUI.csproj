@@ -99,21 +99,21 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="CommunityToolkit.Maui" Version="11.2.0" />
-    <PackageReference Include="CommunityToolkit.Maui.Markup" Version="6.0.0" />
+    <PackageReference Include="CommunityToolkit.Maui" Version="12.2.0" />
+    <PackageReference Include="CommunityToolkit.Maui.Markup" Version="6.0.1" />
     <PackageReference Include="Debounce.Core" Version="1.0.0" />
     <PackageReference Include="MethodTimer.Fody" Version="3.2.3" PrivateAssets="All" />
     <PackageReference Include="MetroLog.Maui" Version="2.1.0" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.0-preview.3.25171.5" />
-    <PackageReference Include="Microsoft.Extensions.Http" Version="10.0.0-preview.3.25171.5" />
-    <PackageReference Include="Microsoft.Extensions.Http.Resilience" Version="9.4.0" />
-    <PackageReference Include="Microsoft.Maui.Controls" Version="10.0.0-preview.3.25208.1" />
-    <PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="10.0.0-preview.3.25208.1" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.0-preview.7.25380.108" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="10.0.0-preview.7.25380.108" />
+    <PackageReference Include="Microsoft.Extensions.Http.Resilience" Version="9.8.0" />
+    <PackageReference Include="Microsoft.Maui.Controls" Version="10.0.0-preview.7.25406.3" />
+    <PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="10.0.0-preview.7.25406.3" />
     <PackageReference Include="OnScreenSizeMarkup.Maui" Version="3.0.18" />
-    <PackageReference Include="Plugin.Maui.DebugRainbows" Version="1.2.1" />
+    <PackageReference Include="Plugin.Maui.DebugRainbows" Version="1.2.2" />
     <PackageReference Include="PropertyChanged.Fody" Version="4.1.0" PrivateAssets="All" />
     <PackageReference Include="Refractored.MvvmHelpers" Version="1.6.2" />
-    <PackageReference Include="UraniumUI.Material" Version="2.11.1" />
+    <PackageReference Include="UraniumUI.Material" Version="2.12.1" />
   </ItemGroup>
 
   <ItemGroup>

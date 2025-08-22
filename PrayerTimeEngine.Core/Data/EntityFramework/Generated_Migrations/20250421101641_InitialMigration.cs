@@ -301,6 +301,7 @@ public partial class InitialMigration : Migration
                 Latitude = table.Column<decimal>(type: "TEXT", nullable: false),
                 InfoLanguageCode = table.Column<string>(type: "TEXT", nullable: true),
                 Country = table.Column<string>(type: "TEXT", nullable: true),
+                State = table.Column<string>(type: "TEXT", nullable: true),
                 City = table.Column<string>(type: "TEXT", nullable: true),
                 CityDistrict = table.Column<string>(type: "TEXT", nullable: true),
                 PostCode = table.Column<string>(type: "TEXT", nullable: true),

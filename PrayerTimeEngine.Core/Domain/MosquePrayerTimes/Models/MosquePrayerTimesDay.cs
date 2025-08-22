@@ -6,7 +6,7 @@ using PropertyChanged;
 namespace PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Models;
 
 [AddINotifyPropertyChangedInterface]
-public class MosquePrayerTimesSet : IPrayerTimesSet
+public class MosquePrayerTimesDay : IPrayerTimesDay
 {
     public ZonedDateTime? DataCalculationTimestamp { get; set; }
 
@@ -34,7 +34,7 @@ public class MosquePrayerTimesSet : IPrayerTimesSet
 
     public override bool Equals(object obj)
     {
-        if (obj is not MosquePrayerTimesSet otherMosquePrayerTimesSet)
+        if (obj is not MosquePrayerTimesDay otherMosquePrayerTimesSet)
             return false;
 
         return Equals(Fajr, otherMosquePrayerTimesSet.Fajr)

@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using AsyncAwaitBestPractices;
+using Microsoft.Extensions.Logging;
 using NodaTime;
 using PrayerTimeEngine.Core.Common;
 using PrayerTimeEngine.Core.Common.Enum;
@@ -18,15 +19,15 @@ public class DynamicPrayerTimeProviderManager(
         IEnumerable<IPrayerTimeCacheCleaner> cacheCleaners
     ) : IDynamicPrayerTimeProviderManager
 {
-    private readonly ConcurrentDictionary<(ZonedDateTime, int), (Profile, DynamicPrayerTimesSet)> _cachedDateAndProfileIDToPrayerTimeBundle = new();
+    private readonly ConcurrentDictionary<(ZonedDateTime, int), (Profile, DynamicPrayerTimesDaySet)> _cachedDateAndProfileIDToPrayerTimeBundle = new();
 
     private bool tryGetCachedCalculation(
         Profile profile,
         ZonedDateTime date,
-        out DynamicPrayerTimesSet prayerTimeEntity)
+        out DynamicPrayerTimesDaySet prayerTimeEntity)
     {
         // no cache
-        if (!_cachedDateAndProfileIDToPrayerTimeBundle.TryGetValue((date, profile.ID), out (Profile, DynamicPrayerTimesSet) cachedValue))
+        if (!_cachedDateAndProfileIDToPrayerTimeBundle.TryGetValue((date, profile.ID), out (Profile, DynamicPrayerTimesDaySet) cachedValue))
         {
             prayerTimeEntity = null;
             return false;
@@ -43,7 +44,7 @@ public class DynamicPrayerTimeProviderManager(
         return true;
     }
 
-    public async Task<DynamicPrayerTimesSet> CalculatePrayerTimesAsync(int profileID, ZonedDateTime date, CancellationToken cancellationToken)
+    public async Task<CalculatePrayerTimesResultVO> CalculatePrayerTimesAsync(int profileID, ZonedDateTime date, CancellationToken cancellationToken)
     {
         date = date.LocalDateTime.Date.AtStartOfDayInZone(date.Zone);
 
@@ -53,57 +54,74 @@ public class DynamicPrayerTimeProviderManager(
         DynamicProfile dynamicProfile = profile as DynamicProfile
             ?? throw new Exception($"The Profile with the ID '{profileID}' is not a {nameof(DynamicProfile)}");
 
-        if (tryGetCachedCalculation(dynamicProfile, date, out DynamicPrayerTimesSet prayerTimeEntity))
+        if (tryGetCachedCalculation(dynamicProfile, date, out DynamicPrayerTimesDaySet prayerTimeEntity))
         {
             prayerTimeEntity.DataCalculationTimestamp = systemInfoService.GetCurrentZonedDateTime();
-            return prayerTimeEntity;
+
+            return new CalculatePrayerTimesResultVO
+            {
+                DynamicPrayerTimesDaySet = prayerTimeEntity
+            };
         }
 
-        prayerTimeEntity = new DynamicPrayerTimesSet();
-
-        var complexTypeCalculations =
-            await calculateInternal(dynamicProfile, date, cancellationToken).ConfigureAwait(false);
-
-        var allCalculations =
-            complexTypeCalculations
-                .Select(x => (x.TimeType, (ZonedDateTime?)x.ZonedDateTime))
-                // left as (non-list) IEnumerable because it has to run after
-                // the complex calculations landed in prayerTimeEntity
-                .Concat(calculateSimpleTypes(dynamicProfile, prayerTimeEntity));
-
-        foreach ((ETimeType timeType, ZonedDateTime? zonedDateTime) in allCalculations)
+        prayerTimeEntity = new DynamicPrayerTimesDaySet
         {
-            cancellationToken.ThrowIfCancellationRequested();
-            prayerTimeEntity.SetSpecificPrayerTimeDateTime(timeType, zonedDateTime);
-        }
+            PreviousDay = new DynamicPrayerTimesDay(),
+            CurrentDay = new DynamicPrayerTimesDay(),
+            NextDay = new DynamicPrayerTimesDay(),
+        };
+
+        await calculateInternal(prayerTimeEntity.CurrentDay, dynamicProfile, date, cancellationToken);
+        await calculateInternal(prayerTimeEntity.PreviousDay, dynamicProfile, date.Plus(Duration.FromDays(-1)), cancellationToken);
+        await calculateInternal(prayerTimeEntity.NextDay, dynamicProfile, date.Plus(Duration.FromDays(1)), cancellationToken);
 
         prayerTimeEntity.DataCalculationTimestamp = systemInfoService.GetCurrentZonedDateTime();
 
         _cachedDateAndProfileIDToPrayerTimeBundle[(date, dynamicProfile.ID)] = (dynamicProfile, prayerTimeEntity);
 
-        cleanUpOldCacheData(cancellationToken);
+        // execute without awaiting because we don't want to await and block for this side quest
+        cleanUpOldCacheData(cancellationToken).SafeFireAndForget(exception => logger.LogError(exception, "Error during cleanUpOldCacheData"));
 
-        return prayerTimeEntity;
+        return new CalculatePrayerTimesResultVO
+        {
+            DynamicPrayerTimesDaySet = prayerTimeEntity
+        };
     }
 
-    private void cleanUpOldCacheData(CancellationToken cancellationToken)
+    private async Task calculateInternal(DynamicPrayerTimesDay targetSet, DynamicProfile profile, ZonedDateTime date, CancellationToken ct)
+    {
+        var complexCalculationResults = await calculateComplexTypes(profile, date, ct).ConfigureAwait(false);
+
+        foreach (var (type, time) in complexCalculationResults.Where(x => x.Exception != null).SelectMany(x => x.Times))
+        {
+            ct.ThrowIfCancellationRequested();
+            targetSet.SetSpecificPrayerTimeDateTime(type, time);
+        }
+
+        foreach (var (type, time) in calculateSimpleTypes(profile, targetSet))
+            targetSet.SetSpecificPrayerTimeDateTime(type, time);
+    }
+
+    private async Task cleanUpOldCacheData(CancellationToken cancellationToken)
     {
         ZonedDateTime deleteBeforeDate = systemInfoService.GetCurrentZonedDateTime().Minus(Duration.FromDays(3));
 
         foreach (IPrayerTimeCacheCleaner cacheCleaner in cacheCleaners)
         {
+            cancellationToken.ThrowIfCancellationRequested();
+
             try
             {
-                cacheCleaner.DeleteCacheDataAsync(deleteBeforeDate, cancellationToken);
+                await cacheCleaner.DeleteCacheDataAsync(deleteBeforeDate, cancellationToken).ConfigureAwait(false);
             }
-            catch (Exception ex)
+            catch (Exception exception) when (exception is not OperationCanceledException)
             {
-                logger.LogError(ex, "Error while trying to clean cache with {CacheCleanerFullName}", cacheCleaner.GetType().FullName);
+                logger.LogError(exception, "Error while trying to clean cache with {CacheCleanerFullName}", cacheCleaner.GetType().FullName);
             }
         }
     }
 
-    private async Task<List<(ETimeType TimeType, ZonedDateTime ZonedDateTime)>> calculateInternal(
+    private async Task<List<(ETimeType TimeType, ZonedDateTime ZonedDateTime)>> calculateComplexTypes(
         DynamicProfile dynamicProfile,
         ZonedDateTime date,
         CancellationToken cancellationToken)
@@ -161,7 +179,7 @@ public class DynamicPrayerTimeProviderManager(
         return (await Task.WhenAll(calculatorTasks).ConfigureAwait(false)).SelectMany(x => x).ToList();
     }
 
-    private IEnumerable<(ETimeType, ZonedDateTime?)> calculateSimpleTypes(DynamicProfile dynamicProfile, DynamicPrayerTimesSet prayerTimeEntity)
+    private IEnumerable<(ETimeType, ZonedDateTime?)> calculateSimpleTypes(DynamicProfile dynamicProfile, DynamicPrayerTimesDay prayerTimeEntity)
     {
         if (prayerTimeEntity.Dhuhr?.Start is not null
             && profileService.GetTimeConfig(dynamicProfile, ETimeType.DuhaEnd) is GenericSettingConfiguration duhaConfig
@@ -184,10 +202,14 @@ public class DynamicPrayerTimeProviderManager(
         if (prayerTimeEntity.Asr?.End - prayerTimeEntity.Fajr?.Start is Duration dayDuration)
         {
             Duration quarterOfDayDuration = dayDuration / 4.0;
-
             yield return (
                 ETimeType.DuhaQuarterOfDay,
                 prayerTimeEntity.Fajr.Start.Value + quarterOfDayDuration);
+
+            Duration halfOfDayDuration = dayDuration / 2.0;
+            yield return (
+                ETimeType.DuhaHalfOfDay,
+                prayerTimeEntity.Fajr.Start.Value + halfOfDayDuration);
         }
 
         if (prayerTimeEntity.Isha?.End - prayerTimeEntity.Maghrib?.Start is Duration nightDuration)

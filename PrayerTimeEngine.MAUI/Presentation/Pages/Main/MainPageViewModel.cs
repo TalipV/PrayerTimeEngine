@@ -6,7 +6,6 @@ using PrayerTimeEngine.Core.Common;
 using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Data.EntityFramework;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes;
-using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Models;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Management;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Interfaces;
@@ -30,7 +29,6 @@ public partial class MainPageViewModel(
         IBrowser browser,
         ToastMessageService toastMessageService,
         ISystemInfoService systemInfoService,
-        IDynamicPrayerTimeProviderFactory prayerTimeServiceFactory,
         IMosquePrayerTimeProviderManager mosquePrayerTimeProviderManager,
         PrayerTimeViewModelFactory prayerTimeViewModelFactory,
         NotificationService prayerTimeNotificationManager,
@@ -497,13 +495,11 @@ public partial class MainPageViewModel(
                 IsLoadingSelectedPlace = true;
 
                 ProfilePlaceInfo completePlaceInfo = await placeService.GetTimezoneInfo(SelectedPlace, cancellationToken: default);
-                var locationDataWithDynamicPrayerTimeProvider = await getDynamicPrayerTimeProviderWithLocationData(completePlaceInfo, cancellationToken: default);
 
                 await profileService.UpdateLocationConfig(
                     currentProfile,
                     completePlaceInfo,
-                    locationDataWithDynamicPrayerTimeProvider,
-                cancellationToken: default);
+                    cancellationToken: default);
 
                 // notify UI for updates
                 await dispatcher.DispatchAsync(() => OnPropertyChanged(nameof(CurrentProfile)));
@@ -544,33 +540,6 @@ public partial class MainPageViewModel(
         SelectedPlaceText = string.Empty;
         FoundPlaces = [];
         FoundPlacesSelectionTexts = [];
-    }
-
-    private async Task<List<(EDynamicPrayerTimeProviderType, BaseLocationData)>> getDynamicPrayerTimeProviderWithLocationData(ProfilePlaceInfo completePlaceInfo, CancellationToken cancellationToken)
-    {
-        var locationDataWithDynamicPrayerTimeProvider = new List<(EDynamicPrayerTimeProviderType, BaseLocationData)>();
-
-        foreach (var dynamicPrayerTimeProvider in Enum.GetValues<EDynamicPrayerTimeProviderType>())
-        {
-            if (dynamicPrayerTimeProvider == EDynamicPrayerTimeProviderType.None)
-                continue;
-
-            BaseLocationData locationConfig = null;
-            try
-            {
-                locationConfig = await prayerTimeServiceFactory
-                    .GetDynamicPrayerTimeProviderByDynamicPrayerTimeProvider(dynamicPrayerTimeProvider)
-                    .GetLocationInfo(completePlaceInfo, cancellationToken);
-            }
-            catch
-            {
-                // TODO handle properly
-            }
-
-            locationDataWithDynamicPrayerTimeProvider.Add((dynamicPrayerTimeProvider, locationConfig));
-        }
-
-        return locationDataWithDynamicPrayerTimeProvider;
     }
 
     #endregion private methods

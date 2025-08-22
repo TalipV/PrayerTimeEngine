@@ -8,9 +8,6 @@ using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Models;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Interfaces;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Models;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Services;
-using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Semerkand.Interfaces;
-using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Semerkand.Models;
-using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Semerkand.Services;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Interfaces;
 using PrayerTimeEngine.Core.Tests.Common;
 using PrayerTimeEngine.Core.Tests.Common.TestData;
@@ -76,8 +73,8 @@ public class FaziletDynamicPrayerTimeProviderTests : BaseTest
         result.FirstOrDefault(x => x.TimeType == ETimeType.IshaEnd).ZonedDateTime.LocalDateTime.Should().Be(new LocalDateTime(2023, 7, 30, 03, 27, 0));
     }
 
-    // The provided date was not properly considered when the whole set of the prayer times of the year were filtered. It was an NodaDateTime.Instant comparision
-    // and then some slight difference due to DST led to a slight difference in the Instant comparision. (31.03.2025 00:00:00 +02:00 and 31.03.2025 00:01:00 +02:00)
+    // The provided date was not properly considered when the whole set of the prayer times of the year were filtered. It was an NodaDateTime.Instant comparison
+    // and then some slight difference due to DST led to a slight difference in the Instant comparison. (31.03.2025 00:00:00 +02:00 and 31.03.2025 00:01:00 +02:00)
     // The day time should have been irrelevant to begin with.
     [Fact]
     public async Task GetPrayerTimesAsync_BugCaseIshaEndDSTTimeChange_IshaEndExtractedProperly()

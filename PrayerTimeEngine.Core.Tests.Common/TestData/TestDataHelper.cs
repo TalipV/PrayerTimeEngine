@@ -210,9 +210,9 @@ public static class TestDataHelper
         return profile;
     }
 
-    public static DynamicPrayerTimesSet CreateNewTestPrayerTimesBundle()
+    public static DynamicPrayerTimesDay CreateNewTestPrayerTimesBundle()
     {
-        var bundle = new DynamicPrayerTimesSet();
+        var bundle = new DynamicPrayerTimesDay();
         var zone = EUROPE_VIENNA_TIME_ZONE;
 
         bundle.Fajr.Start = new LocalDateTime(2023, 1, 1, 2, 0, 0).InZone(zone, Resolvers.StrictResolver);
