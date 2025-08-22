@@ -1,4 +1,5 @@
-﻿using NodaTime;
+﻿using Microsoft.Extensions.Logging;
+using NodaTime;
 using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Models;
@@ -16,7 +17,8 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Services;
 public class ProfileService(
         IProfileDBAccess profileDBAccess,
         IDynamicPrayerTimeProviderFactory dynamicPrayerTimeProviderFactory,
-        TimeTypeAttributeService timeTypeAttributeService
+        TimeTypeAttributeService timeTypeAttributeService,
+        ILogger<ProfileService> logger
     ) : IProfileService
 {
     public async Task<List<Profile>> GetProfiles(CancellationToken cancellationToken)
@@ -299,9 +301,9 @@ public class ProfileService(
                     .GetDynamicPrayerTimeProviderByDynamicPrayerTimeProvider(dynamicPrayerTimeProvider)
                     .GetLocationInfo(placeInfo, cancellationToken);
             }
-            catch
+            catch (Exception exception)
             {
-                // TODO handle properly
+                logger.LogError(exception, "Error while retrieving location info for {DynamicPrayerTimeProvider}", dynamicPrayerTimeProvider);
             }
 
             locationDataByDynamicPrayerTimeProvider.Add((dynamicPrayerTimeProvider, locationConfig));

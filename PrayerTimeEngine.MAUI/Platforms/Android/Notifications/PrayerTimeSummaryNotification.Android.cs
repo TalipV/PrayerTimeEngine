@@ -147,10 +147,10 @@ public class PrayerTimeSummaryNotification : Service
                 .InZone(DateTimeZoneProviders.Tzdb[(profile as DynamicProfile).PlaceInfo.TimezoneInfo.Name]);
 
         DynamicPrayerTimesDaySet prayerTimeBundle =
-            await _prayerTimeDynamicPrayerTimeProviderManager.CalculatePrayerTimesAsync(
+            (await _prayerTimeDynamicPrayerTimeProviderManager.CalculatePrayerTimesAsync(
                 profile.ID,
                 now,
-                cancellationToken);
+                cancellationToken)).DynamicPrayerTimesDaySet;
 
         ZonedDateTime? nextTime = null;
         string timeName = "-";

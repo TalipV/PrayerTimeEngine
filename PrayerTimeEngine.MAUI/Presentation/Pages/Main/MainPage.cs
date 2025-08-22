@@ -78,6 +78,15 @@ public partial class MainPage : ContentPage
         _dispatcher.Dispatch(() =>
         {
             Instant instant = _systemInfoService.GetCurrentInstant();
+
+            // For debugging
+            //// 01:00 AM the following day
+            //instant = _systemInfoService.GetCurrentZonedDateTime()
+            //    .LocalDateTime.Date
+            //    .AtStartOfDayInZone(_systemInfoService.GetSystemTimeZone())
+            //    .PlusHours(25)
+            //    .ToInstant();
+
             _prayerTimeGraphicView.PrayerTimeGraphicTime = _viewModel.CurrentProfileWithModel.CreatePrayerTimeGraphicTimeVO(instant);
             _prayerTimeGraphicViewBaseView.Invalidate();
         });

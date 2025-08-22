@@ -1,4 +1,5 @@
-﻿using NSubstitute;
+﻿using Microsoft.Extensions.Logging;
+using NSubstitute;
 using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Domain;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes;
@@ -22,7 +23,7 @@ public class ProfileServiceTests : BaseTest
     {
         _profileDBAccessMock = Substitute.For<IProfileDBAccess>();
         _dynamicPrayerTimeProviderFactory = Substitute.For<IDynamicPrayerTimeProviderFactory>();
-        _profileService = new ProfileService(_profileDBAccessMock, _dynamicPrayerTimeProviderFactory, new TimeTypeAttributeService());
+        _profileService = new ProfileService(_profileDBAccessMock, _dynamicPrayerTimeProviderFactory, new TimeTypeAttributeService(), Substitute.For<ILogger<ProfileService>>());
     }
 
     public static TheoryData<ETimeType> configurableTimeTypeValues => [.. new TimeTypeAttributeService().ConfigurableTypes];
