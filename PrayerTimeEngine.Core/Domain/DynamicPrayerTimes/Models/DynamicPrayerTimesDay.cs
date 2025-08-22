@@ -7,25 +7,8 @@ using PropertyChanged;
 namespace PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Models;
 
 [AddINotifyPropertyChangedInterface]
-public class DynamicPrayerTimesSet : IPrayerTimesSet
+public class DynamicPrayerTimesDay
 {
-    public ZonedDateTime? DataCalculationTimestamp { get; set; }
-
-    public List<(EPrayerType PrayerType, GenericPrayerTime Times)> AllPrayerTimes
-    {
-        get
-        {
-            return [
-                (EPrayerType.Fajr, Fajr),
-                (EPrayerType.Duha, Duha),
-                (EPrayerType.Dhuhr, Dhuhr),
-                (EPrayerType.Asr, Asr),
-                (EPrayerType.Maghrib, Maghrib),
-                (EPrayerType.Isha, Isha)
-            ];
-        }
-    }
-
     public FajrPrayerTime Fajr { get; } = new();
     public DuhaPrayerTime Duha { get; } = new();
     public GenericPrayerTime Dhuhr { get; } = new();
@@ -33,17 +16,26 @@ public class DynamicPrayerTimesSet : IPrayerTimesSet
     public MaghribPrayerTime Maghrib { get; } = new();
     public IshaPrayerTime Isha { get; } = new();
 
+    public virtual List<(EPrayerType, GenericPrayerTime)> AllPrayerTimes => [
+        (EPrayerType.Fajr, Fajr),
+        (EPrayerType.Duha, Duha),
+        (EPrayerType.Dhuhr, Dhuhr),
+        (EPrayerType.Asr, Asr),
+        (EPrayerType.Maghrib, Maghrib),
+        (EPrayerType.Isha, Isha),
+    ];
+
     public override bool Equals(object obj)
     {
-        if (obj is not DynamicPrayerTimesSet otherDynamicPrayerTimesSet)
+        if (obj is not DynamicPrayerTimesDay otherBasePrayerTimesSet)
             return false;
 
-        return Equals(Fajr, otherDynamicPrayerTimesSet.Fajr)
-            && Equals(Duha, otherDynamicPrayerTimesSet.Duha)
-            && Equals(Dhuhr, otherDynamicPrayerTimesSet.Dhuhr)
-            && Equals(Asr, otherDynamicPrayerTimesSet.Asr)
-            && Equals(Maghrib, otherDynamicPrayerTimesSet.Maghrib)
-            && Equals(Isha, otherDynamicPrayerTimesSet.Isha);
+        return Equals(Fajr, otherBasePrayerTimesSet.Fajr)
+            && Equals(Duha, otherBasePrayerTimesSet.Duha)
+            && Equals(Dhuhr, otherBasePrayerTimesSet.Dhuhr)
+            && Equals(Asr, otherBasePrayerTimesSet.Asr)
+            && Equals(Maghrib, otherBasePrayerTimesSet.Maghrib)
+            && Equals(Isha, otherBasePrayerTimesSet.Isha);
     }
 
     public override int GetHashCode()
@@ -76,6 +68,9 @@ public class DynamicPrayerTimesSet : IPrayerTimesSet
                 break;
             case ETimeType.DuhaQuarterOfDay:
                 Duha.QuarterOfDay = zonedDateTime;
+                break;
+            case ETimeType.DuhaHalfOfDay:
+                Duha.HalfOfDay = zonedDateTime;
                 break;
 
             case ETimeType.DhuhrStart:

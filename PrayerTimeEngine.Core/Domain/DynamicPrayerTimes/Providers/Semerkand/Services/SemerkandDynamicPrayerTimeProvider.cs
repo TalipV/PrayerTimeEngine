@@ -41,7 +41,7 @@ public class SemerkandDynamicPrayerTimeProvider(
         List<GenericSettingConfiguration> configurations,
         CancellationToken cancellationToken)
     {
-        // check configuration's calcultion sources?
+        // check configuration's calculation sources?
 
         if (locationData is not SemerkandLocationData semerkandLocationData)
         {
@@ -198,36 +198,35 @@ public class SemerkandDynamicPrayerTimeProvider(
     {
         ArgumentNullException.ThrowIfNull(place);
 
-        // if language is already turkish then use this place
-
-        var basicPlaceInfo = await placeService.GetPlaceBasedOnPlace(place, "tr", cancellationToken).ConfigureAwait(false);
-        var turkishPlaceInfo =
-            new ProfilePlaceInfo
-            {
-                ExternalID = basicPlaceInfo.ExternalID,
-                Longitude = basicPlaceInfo.Longitude,
-                Latitude = basicPlaceInfo.Latitude,
-                InfoLanguageCode = basicPlaceInfo.InfoLanguageCode,
-                Country = basicPlaceInfo.Country,
-                City = basicPlaceInfo.City,
-                CityDistrict = basicPlaceInfo.CityDistrict,
-                PostCode = basicPlaceInfo.PostCode,
-                Street = basicPlaceInfo.Street,
-                TimezoneInfo = place.TimezoneInfo
-            };
-
+        // TODO: if language is already turkish then use this place
+        BasicPlaceInfo turkishPlaceInfo = await placeService.GetPlaceBasedOnPlace(place, "tr", cancellationToken).ConfigureAwait(false);
+        
         string countryName = turkishPlaceInfo.Country ?? "";
-        string cityName = turkishPlaceInfo.City ?? "";
-
-        // QUICK FIX...
-        countryName = countryName.Replace("İ", "I");
-        cityName = cityName.Replace("İ", "I");
+        string cityName = turkishPlaceInfo.City ?? turkishPlaceInfo.State ?? "";
 
         logger.LogDebug("Semerkand search location: {Country}, {City}", countryName, cityName);
 
-        int countryID = await getCountryID(countryName, throwIfNotFound: false, cancellationToken).ConfigureAwait(false);
-        if (countryID != -1
-            && await getCityID(cityName, countryID, throwIfNotFound: false, cancellationToken).ConfigureAwait(false) != -1)
+        int countryID = await getCountryID(countryName, false, cancellationToken).ConfigureAwait(false);
+        if (countryID == -1)
+        {
+            // QUICK FIX...
+            countryName = countryName.Replace("İ", "I");
+            countryID = await getCountryID(countryName, false, cancellationToken).ConfigureAwait(false);
+        }
+
+        int cityID = -1;
+        if (countryID != -1)
+        {
+            cityID = await getCityID(cityName, countryID, false, cancellationToken).ConfigureAwait(false);
+            if (cityID == -1)
+            {
+                // QUICK FIX...
+                cityName = cityName.Replace("İ", "I");
+                cityID = await getCityID(cityName, countryID, false, cancellationToken).ConfigureAwait(false);
+            }
+        }
+
+        if (countryID != -1 && cityID != -1)
         {
             logger.LogDebug("Semerkand found location: {Country}, {City}", countryName, cityName);
 
@@ -235,17 +234,6 @@ public class SemerkandDynamicPrayerTimeProvider(
             {
                 CountryName = countryName,
                 CityName = cityName,
-                TimezoneName = place.TimezoneInfo.Name
-            };
-        }
-        else if (await getCityID(place.City, countryID, throwIfNotFound: false, cancellationToken).ConfigureAwait(false) != -1)
-        {
-            logger.LogDebug("Semerkand found location: {Country}, {City}", countryName, place.City);
-
-            return new SemerkandLocationData
-            {
-                CountryName = countryName,
-                CityName = place.City,
                 TimezoneName = place.TimezoneInfo.Name
             };
         }

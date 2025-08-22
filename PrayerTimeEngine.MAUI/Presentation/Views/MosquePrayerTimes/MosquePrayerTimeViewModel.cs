@@ -10,9 +10,9 @@ namespace PrayerTimeEngine.Presentation.Views.MosquePrayerTimes;
 public class MosquePrayerTimeViewModel(
         IMosquePrayerTimeProviderManager mosquePrayerTimeProviderManager,
         MosqueProfile profile
-    ) : BasePrayerTimeViewModel<MosqueProfile, MosquePrayerTimesSet>(profile)
+    ) : BasePrayerTimeViewModel<MosqueProfile, MosquePrayerTimesDay>(profile)
 {
-    public override Task<MosquePrayerTimesSet> GetPrayerTimesSet(ZonedDateTime zonedDateTime, CancellationToken cancellationToken)
+    public override Task<MosquePrayerTimesDay> GetPrayerTimesSet(ZonedDateTime zonedDateTime, CancellationToken cancellationToken)
     {
         return mosquePrayerTimeProviderManager.CalculatePrayerTimesAsync(
                 ProfileActual.ID,

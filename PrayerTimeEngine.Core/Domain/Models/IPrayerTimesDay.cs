@@ -3,7 +3,7 @@ using PrayerTimeEngine.Core.Common.Enum;
 
 namespace PrayerTimeEngine.Core.Domain.Models;
 
-public interface IPrayerTimesSet
+public interface IPrayerTimesDay
 {
     ZonedDateTime? DataCalculationTimestamp { get; }
 

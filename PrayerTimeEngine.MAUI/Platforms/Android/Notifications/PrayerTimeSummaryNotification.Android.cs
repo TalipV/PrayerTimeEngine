@@ -13,7 +13,10 @@ using PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
 
 namespace PrayerTimeEngine.Platforms.Android.Notifications;
 
-[Service(ForegroundServiceType = global::Android.Content.PM.ForegroundService.TypeDataSync, Enabled = true)]
+[Service(
+    ForegroundServiceType = global::Android.Content.PM.ForegroundService.TypeSpecialUse,
+    Enabled = true,
+    Exported = true)]
 public class PrayerTimeSummaryNotification : Service
 {
     internal const string CHANNEL_ID = "prayer_time_channel";
@@ -59,8 +62,10 @@ public class PrayerTimeSummaryNotification : Service
         {
             _logger.LogInformation("Try start foreground service");
 
-            if (OperatingSystem.IsAndroidVersionAtLeast(29))
-                StartForeground(notificationId, initialNotification, global::Android.Content.PM.ForegroundService.TypeDataSync);
+            if (OperatingSystem.IsAndroidVersionAtLeast(34))
+                StartForeground(notificationId, initialNotification, global::Android.Content.PM.ForegroundService.TypeSpecialUse);
+            else if (OperatingSystem.IsAndroidVersionAtLeast(29))
+                StartForeground(notificationId, initialNotification, global::Android.Content.PM.ForegroundService.TypeNone);
             else
                 StartForeground(notificationId, initialNotification);
         }
@@ -141,11 +146,11 @@ public class PrayerTimeSummaryNotification : Service
             _systemInfoService.GetCurrentInstant()
                 .InZone(DateTimeZoneProviders.Tzdb[(profile as DynamicProfile).PlaceInfo.TimezoneInfo.Name]);
 
-        DynamicPrayerTimesSet prayerTimeBundle =
-            await _prayerTimeDynamicPrayerTimeProviderManager.CalculatePrayerTimesAsync(
+        DynamicPrayerTimesDaySet prayerTimeBundle =
+            (await _prayerTimeDynamicPrayerTimeProviderManager.CalculatePrayerTimesAsync(
                 profile.ID,
                 now,
-                cancellationToken);
+                cancellationToken)).DynamicPrayerTimesDaySet;
 
         ZonedDateTime? nextTime = null;
         string timeName = "-";
@@ -154,8 +159,8 @@ public class PrayerTimeSummaryNotification : Service
 
         foreach ((EPrayerType prayerType, GenericPrayerTime prayerTime) in prayerTimeBundle.AllPrayerTimes)
         {
-            if (prayerType == EPrayerType.Duha)
-                continue;
+            //if (prayerType == EPrayerType.Duha)
+            //    continue;
 
             if (prayerTime.End is not null
                 && now.ToInstant() < prayerTime.End.Value.ToInstant()

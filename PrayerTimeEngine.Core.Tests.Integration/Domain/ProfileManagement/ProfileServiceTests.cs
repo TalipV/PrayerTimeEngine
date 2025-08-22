@@ -21,18 +21,24 @@ namespace PrayerTimeEngine.Core.Tests.Integration.Domain.ProfileManagement;
 
 public class ProfileServiceTests : BaseTest
 {
-    [Fact]
-    public async Task UpdateLocationConfig_SetsData_CorrectDataWithOriginalProfileUntouched()
+    private ServiceProvider getServiceProvider()
     {
-        // ARRANGE
-        ServiceProvider serviceProvider = createServiceProvider(
+        return createServiceProvider(
             serviceCollection =>
             {
                 serviceCollection.AddSingleton(GetHandledDbContextFactory());
                 serviceCollection.AddSingleton<TimeTypeAttributeService>();
                 serviceCollection.AddSingleton<IProfileDBAccess, ProfileDBAccess>();
                 serviceCollection.AddSingleton<IProfileService, ProfileService>();
+                serviceCollection.AddSingleton<IDynamicPrayerTimeProviderFactory, DynamicPrayerTimeProviderFactory>();
             });
+    }
+
+    [Fact]
+    public async Task UpdateLocationConfig_SetsData_CorrectDataWithOriginalProfileUntouched()
+    {
+        // ARRANGE
+        ServiceProvider serviceProvider = getServiceProvider();
 
         using var dbContext = serviceProvider.GetRequiredService<IDbContextFactory<AppDbContext>>().CreateDbContext();
         var profileService = serviceProvider.GetRequiredService<IProfileService>() as ProfileService;
@@ -97,14 +103,7 @@ public class ProfileServiceTests : BaseTest
     public async Task UpdateLocationConfig_SetsDataWithExceptionOnCommit_OldDataFullyRemains()
     {
         // ARRANGE
-        ServiceProvider serviceProvider = createServiceProvider(
-            serviceCollection =>
-            {
-                serviceCollection.AddSingleton(GetHandledDbContextFactory());
-                serviceCollection.AddSingleton<TimeTypeAttributeService>();
-                serviceCollection.AddSingleton<IProfileDBAccess, ProfileDBAccess>();
-                serviceCollection.AddSingleton<IProfileService, ProfileService>();
-            });
+        ServiceProvider serviceProvider = getServiceProvider();
 
         var dbContextFactory = serviceProvider.GetRequiredService<IDbContextFactory<AppDbContext>>();
         using var dbContext = dbContextFactory.CreateDbContext();
@@ -186,14 +185,7 @@ public class ProfileServiceTests : BaseTest
     public async Task UpdateTimeConfig_SetNewValue_Success()
     {
         // ARRANGE
-        ServiceProvider serviceProvider = createServiceProvider(
-            serviceCollection =>
-            {
-                serviceCollection.AddSingleton(GetHandledDbContextFactory());
-                serviceCollection.AddSingleton<TimeTypeAttributeService>();
-                serviceCollection.AddSingleton<IProfileDBAccess, ProfileDBAccess>();
-                serviceCollection.AddSingleton<IProfileService, ProfileService>();
-            });
+        ServiceProvider serviceProvider = getServiceProvider();
 
         var profileService = serviceProvider.GetRequiredService<IProfileService>() as ProfileService;
 
@@ -207,7 +199,7 @@ public class ProfileServiceTests : BaseTest
                 .AsNoTracking()
                 .Single();
 
-        var newSemerkandConfig =
+        var newSemerkandSettingConfig =
             new GenericSettingConfiguration
             {
                 Source = EDynamicPrayerTimeProviderType.Semerkand,
@@ -215,7 +207,7 @@ public class ProfileServiceTests : BaseTest
             };
 
         // ACT
-        await profileService.UpdateTimeConfig(profile, ETimeType.FajrStart, newSemerkandConfig, default);
+        await profileService.UpdateTimeConfig(profile, ETimeType.FajrStart, newSemerkandSettingConfig, default);
 
         // ASSERT
 
