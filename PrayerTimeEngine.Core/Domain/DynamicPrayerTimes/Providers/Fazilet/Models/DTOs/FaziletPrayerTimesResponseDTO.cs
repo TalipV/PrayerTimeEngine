@@ -53,7 +53,7 @@ public class FaziletPrayerTimesResponseDTO
             Imsak = Imsak.First().OffsetDateTime.InZone(timeZone),
             Fajr = Fajr.First().OffsetDateTime.InZone(timeZone),
             Shuruq = Shuruq.First().OffsetDateTime.InZone(timeZone),
-            Duha = Duha.First().OffsetDateTime.InZone(timeZone),
+            Duha = (Duha.FirstOrDefault() ?? Shuruq.First()).OffsetDateTime.InZone(timeZone),
             Dhuhr = Dhuhr.First().OffsetDateTime.InZone(timeZone),
             Asr = Asr.First().OffsetDateTime.InZone(timeZone),
             Maghrib = Maghrib.First().OffsetDateTime.InZone(timeZone),
