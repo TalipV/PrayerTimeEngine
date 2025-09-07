@@ -32,6 +32,8 @@ public class MosquePrayerTimesDay : IPrayerTimesDay
     public MosquePrayerTime Jumuah { get; init; } = new();
     public MosquePrayerTime Jumuah2 { get; init; } = new();
 
+    #region System.Object overrides
+
     public override bool Equals(object obj)
     {
         if (obj is not MosquePrayerTimesDay otherMosquePrayerTimesSet)
@@ -50,4 +52,6 @@ public class MosquePrayerTimesDay : IPrayerTimesDay
     {
         return HashCode.Combine(Fajr, Dhuhr, Asr, Maghrib, Isha, HashCode.Combine(Jumuah, Jumuah2));
     }
+
+    #endregion System.Object overrides
 }

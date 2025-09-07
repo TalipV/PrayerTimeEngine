@@ -43,6 +43,8 @@ public class BasicPlaceInfo
         }
     }
 
+    #region System.Object overrides
+
     public override bool Equals(object obj)
     {
         if (obj is not BasicPlaceInfo other)
@@ -69,4 +71,6 @@ public class BasicPlaceInfo
             HashCode.Combine(ExternalID, Longitude, Latitude, InfoLanguageCode, Country, City, CityDistrict),
             PostCode, Street, State);
     }
+
+    #endregion System.Object overrides
 }

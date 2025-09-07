@@ -16,6 +16,8 @@ public abstract class Profile : IInsertedAt
     public int SequenceNo { get; set; }
     public Instant? InsertInstant { get; set; }
 
+    #region System.Object overrides
+
     public override bool Equals(object obj)
     {
         if (obj is not Profile otherProfile)
@@ -35,4 +37,6 @@ public abstract class Profile : IInsertedAt
     {
         return HashCode.Combine(ID, SequenceNo, Name);
     }
+
+    #endregion System.Object overrides
 }

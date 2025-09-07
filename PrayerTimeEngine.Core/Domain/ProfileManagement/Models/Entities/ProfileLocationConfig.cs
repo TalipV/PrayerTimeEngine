@@ -15,6 +15,9 @@ public class ProfileLocationConfig : IInsertedAt
     public DynamicProfile Profile { get; set; }
     public EDynamicPrayerTimeProviderType DynamicPrayerTimeProvider { get; set; }
     public BaseLocationData LocationData { get; set; }
+
+    #region System.Object overrides
+
     public override bool Equals(object obj)
     {
         if (obj is not ProfileLocationConfig otherLocationConfig)
@@ -31,4 +34,6 @@ public class ProfileLocationConfig : IInsertedAt
     {
         return HashCode.Combine(ID, ProfileID, DynamicPrayerTimeProvider, LocationData);
     }
+
+    #endregion System.Object overrides
 }

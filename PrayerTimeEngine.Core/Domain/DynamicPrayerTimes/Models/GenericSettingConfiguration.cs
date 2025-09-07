@@ -13,6 +13,8 @@ public class GenericSettingConfiguration
     public int MinuteAdjustment { get; set; } = 0;
     public bool IsTimeShown { get; set; } = true;
 
+    #region System.Object overrides
+
     public override bool Equals(object obj)
     {
         if (obj is not GenericSettingConfiguration otherSettingConfig)
@@ -33,4 +35,6 @@ public class GenericSettingConfiguration
     {
         return $"{TimeType}, {Source}, {MinuteAdjustment} min, Shown: {IsTimeShown}";
     }
+
+    #endregion System.Object overrides
 }
