@@ -8,6 +8,8 @@ public class DynamicProfile : Profile
     public ICollection<ProfileTimeConfig> TimeConfigs { get; set; }
     public ICollection<ProfileLocationConfig> LocationConfigs { get; set; }
 
+    #region System.Object overrides
+
     public override bool Equals(object obj)
     {
         if (obj is not DynamicProfile otherProfile)
@@ -80,4 +82,6 @@ public class DynamicProfile : Profile
         // Combine aggregated hash codes with the existing hash
         return HashCode.Combine(mainHash, timeConfigsHash, locationConfigsHash);
     }
+
+    #endregion System.Object overrides
 }

@@ -7,6 +7,8 @@ public class MosqueProfile : Profile
     public EMosquePrayerTimeProviderType MosqueProviderType { get; set; } = EMosquePrayerTimeProviderType.None;
     public string ExternalID { get; set; }
 
+    #region System.Object overrides
+
     public override bool Equals(object obj)
     {
         if (obj is not MosqueProfile otherProfile)
@@ -23,4 +25,6 @@ public class MosqueProfile : Profile
     {
         return HashCode.Combine(base.GetHashCode(), this.ExternalID, this.MosqueProviderType);
     }
+
+    #endregion System.Object overrides
 }

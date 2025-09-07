@@ -6,6 +6,8 @@ public class MosquePrayerTime : GenericPrayerTime
 {
     public int CongregationStartOffset { get; set; }
 
+    #region System.Object overrides
+
     public override bool Equals(object obj)
     {
         if (obj is not MosquePrayerTime otherTime)
@@ -19,4 +21,6 @@ public class MosquePrayerTime : GenericPrayerTime
     {
         return HashCode.Combine(base.GetHashCode(), CongregationStartOffset);
     }
+
+    #endregion System.Object overrides
 }

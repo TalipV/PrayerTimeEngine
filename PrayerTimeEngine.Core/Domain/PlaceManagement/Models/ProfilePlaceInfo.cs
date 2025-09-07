@@ -17,6 +17,8 @@ public class ProfilePlaceInfo : BasicPlaceInfo, IInsertedAt
 
     public required TimezoneInfo TimezoneInfo { get; set; }
 
+    #region System.Object overrides
+
     public override bool Equals(object obj)
     {
         if (obj is not ProfilePlaceInfo other)
@@ -36,4 +38,6 @@ public class ProfilePlaceInfo : BasicPlaceInfo, IInsertedAt
     {
         return HashCode.Combine(base.GetHashCode(), ID, TimezoneInfo);
     }
+
+    #endregion System.Object overrides
 }

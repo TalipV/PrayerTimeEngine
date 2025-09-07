@@ -28,6 +28,8 @@ public class DynamicPrayerTimesDaySet : IPrayerTimesDay
         }
     }
 
+    #region System.Object overrides
+
     public override bool Equals(object obj)
     {
         if (obj is not DynamicPrayerTimesDaySet otherDynamicPrayerTimesSet)
@@ -42,5 +44,7 @@ public class DynamicPrayerTimesDaySet : IPrayerTimesDay
     {
         return HashCode.Combine(PreviousDay, CurrentDay, NextDay);
     }
+
+    #endregion System.Object overrides
 }
 

@@ -17,6 +17,8 @@ public class ProfileTimeConfig : IInsertedAt
     public ETimeType TimeType { get; set; }
     public GenericSettingConfiguration CalculationConfiguration { get; set; }
 
+    #region System.Object overrides
+
     public override bool Equals(object obj)
     {
         if (obj is not ProfileTimeConfig otherTimeConfig)
@@ -33,4 +35,6 @@ public class ProfileTimeConfig : IInsertedAt
     {
         return HashCode.Combine(ID, ProfileID, TimeType, CalculationConfiguration);
     }
+
+    #endregion System.Object overrides
 }

@@ -16,6 +16,8 @@ public class TimezoneInfo : IInsertedAt
     public string Name { get; set; }
     public int UtcOffsetSeconds { get; set; }
 
+    #region System.Object overrides
+
     public override bool Equals(object obj)
     {
         if (obj is not TimezoneInfo other)
@@ -33,4 +35,6 @@ public class TimezoneInfo : IInsertedAt
     {
         return HashCode.Combine(ID, DisplayName, Name, UtcOffsetSeconds);
     }
+
+    #endregion System.Object overrides
 }

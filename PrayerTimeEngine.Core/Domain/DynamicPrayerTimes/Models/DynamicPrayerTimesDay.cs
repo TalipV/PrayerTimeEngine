@@ -25,24 +25,6 @@ public class DynamicPrayerTimesDay
         (EPrayerType.Isha, Isha),
     ];
 
-    public override bool Equals(object obj)
-    {
-        if (obj is not DynamicPrayerTimesDay otherBasePrayerTimesSet)
-            return false;
-
-        return Equals(Fajr, otherBasePrayerTimesSet.Fajr)
-            && Equals(Duha, otherBasePrayerTimesSet.Duha)
-            && Equals(Dhuhr, otherBasePrayerTimesSet.Dhuhr)
-            && Equals(Asr, otherBasePrayerTimesSet.Asr)
-            && Equals(Maghrib, otherBasePrayerTimesSet.Maghrib)
-            && Equals(Isha, otherBasePrayerTimesSet.Isha);
-    }
-
-    public override int GetHashCode()
-    {
-        return HashCode.Combine(Fajr, Duha, Dhuhr, Asr, Maghrib, Isha);
-    }
-
     public void SetSpecificPrayerTimeDateTime(ETimeType timeType, ZonedDateTime? zonedDateTime)
     {
         switch (timeType)
@@ -122,4 +104,26 @@ public class DynamicPrayerTimesDay
                 throw new NotImplementedException();
         }
     }
+
+    #region System.Object overrides
+
+    public override bool Equals(object obj)
+    {
+        if (obj is not DynamicPrayerTimesDay otherBasePrayerTimesSet)
+            return false;
+
+        return Equals(Fajr, otherBasePrayerTimesSet.Fajr)
+            && Equals(Duha, otherBasePrayerTimesSet.Duha)
+            && Equals(Dhuhr, otherBasePrayerTimesSet.Dhuhr)
+            && Equals(Asr, otherBasePrayerTimesSet.Asr)
+            && Equals(Maghrib, otherBasePrayerTimesSet.Maghrib)
+            && Equals(Isha, otherBasePrayerTimesSet.Isha);
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(Fajr, Duha, Dhuhr, Asr, Maghrib, Isha);
+    }
+
+    #endregion System.Object overrides
 }
