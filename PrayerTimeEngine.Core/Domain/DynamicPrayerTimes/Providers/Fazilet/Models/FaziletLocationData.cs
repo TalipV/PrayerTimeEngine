@@ -9,6 +9,8 @@ public class FaziletLocationData : BaseLocationData
 
     public override EDynamicPrayerTimeProviderType Source => EDynamicPrayerTimeProviderType.Fazilet;
 
+    #region System.Object overrides
+
     public override bool Equals(object obj)
     {
         if (obj is not FaziletLocationData otherLocationData)
@@ -27,4 +29,6 @@ public class FaziletLocationData : BaseLocationData
     {
         return $"{Source}: {CountryName}, {CityName}";
     }
+
+    #endregion System.Object overrides
 }

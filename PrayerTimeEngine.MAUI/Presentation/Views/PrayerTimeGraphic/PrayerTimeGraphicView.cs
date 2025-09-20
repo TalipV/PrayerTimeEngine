@@ -86,12 +86,17 @@ public class PrayerTimeGraphicView(
 
     private float getRelativeDepthByInstant(Instant dateTime, RectF rectangle)
     {
+        if (dateTime <= PrayerTimeGraphicTime.Start.ToInstant())
+        {
+            return 0;
+        }
+
         float durationInSeconds = (float)(PrayerTimeGraphicTime.End.ToInstant() - PrayerTimeGraphicTime.Start.ToInstant()).TotalSeconds;
         float secondsSoFar = (float)(dateTime - PrayerTimeGraphicTime.Start.ToInstant()).TotalSeconds;
 
         float percentageOfDuration = secondsSoFar / durationInSeconds;
 
-        return rectangle.Height * percentageOfDuration;
+        return Math.Max(rectangle.Height * percentageOfDuration, 0);
     }
 
     private void drawPrayerTimeTexts(ICanvas canvas, RectF dirtyRect)

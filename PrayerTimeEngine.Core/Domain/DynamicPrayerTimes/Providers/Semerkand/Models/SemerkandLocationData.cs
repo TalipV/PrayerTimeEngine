@@ -9,6 +9,8 @@ public class SemerkandLocationData : BaseLocationData
     public required string TimezoneName { get; set; }
     public override EDynamicPrayerTimeProviderType Source => EDynamicPrayerTimeProviderType.Semerkand;
 
+    #region System.Object overrides
+
     public override bool Equals(object obj)
     {
         if (obj is not SemerkandLocationData otherLocationData)
@@ -28,5 +30,7 @@ public class SemerkandLocationData : BaseLocationData
     {
         return $"{Source}: {CountryName}, {CityName}, Timezone: {TimezoneName}";
     }
+
+    #endregion System.Object overrides
 }
 
