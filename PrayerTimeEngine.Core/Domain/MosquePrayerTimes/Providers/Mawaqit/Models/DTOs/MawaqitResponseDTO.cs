@@ -72,13 +72,14 @@ public class MawaqitResponseDTO
             LocalDate firstDayOfThisMonth = firstDayOfCurrentYear.PlusMonths(monthCounter);
             LocalDate lastDayOfThisMonth = firstDayOfThisMonth.PlusMonths(1).PlusDays(-1);
 
-            if (firstDayOfThisMonth.PlusDays(prayerTimeDaysItemOfMonth.Count - 1) != lastDayOfThisMonth)
-            {
-                throw new Exception($"{prayerTimeDaysItemOfMonth.Count} days were loaded for month {firstDayOfThisMonth.Month}");
-            }
-
             for (int dayCounter = 1; dayCounter <= prayerTimeDaysItemOfMonth.Count; dayCounter++)
             {
+                // unfortunately, the API does provide broken data like that
+                if (dayCounter > lastDayOfThisMonth.Day)
+            {
+                    break;
+            }
+
                 LocalDate currentDay = firstDayOfThisMonth.PlusDays(dayCounter - 1);
 
                 List<string> prayerTimeDay = prayerTimeDaysItemOfMonth["" + dayCounter];

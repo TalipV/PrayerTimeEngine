@@ -68,13 +68,18 @@ public class ProfileDBAccess(
         }
     }
 
+    private int getNextProfileSequenceNo(AppDbContext dbContext)
+    {
+        return dbContext.Profiles.Select(x => x.SequenceNo).Max() + 1;
+    }
+
     public async Task<Profile> CopyProfile(Profile profile, CancellationToken cancellationToken)
     {
         using (AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken))
         {
             Profile clonedProfile = dbContext.DetachedClone(profile);
             clonedProfile.ID = default;
-            clonedProfile.SequenceNo = dbContext.Profiles.Select(x => x.SequenceNo).Max() + 1;
+            clonedProfile.SequenceNo = getNextProfileSequenceNo(dbContext);
 
             if (clonedProfile is DynamicProfile clonedDynamicProfile
                 && profile is DynamicProfile dynamicProfile)
@@ -256,6 +261,7 @@ public class ProfileDBAccess(
                 Name = $"{providerType}: {externalID}",
                 ExternalID = externalID,
                 MosqueProviderType = providerType,
+                SequenceNo = getNextProfileSequenceNo(dbContext)
             };
 
             await dbContext.MosqueProfiles.AddAsync(newMosqueProfile, cancellationToken);

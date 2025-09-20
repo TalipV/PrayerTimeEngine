@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using PrayerTimeEngine.Core.Data.EntityFramework;
 using PrayerTimeEngine.Presentation.Pages.Settings.SettingsHandler;
 using PropertyChanged;

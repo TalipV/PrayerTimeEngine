@@ -26,12 +26,15 @@ public static class TestDataHelper
     public static readonly DateTimeZone EUROPE_VIENNA_TIME_ZONE = DateTimeZoneProviders.Tzdb["Europe/Vienna"];
     public static readonly DateTimeZone EUROPE_BERLIN_TIME_ZONE = DateTimeZoneProviders.Tzdb["Europe/Berlin"];
 
-    public static DynamicProfile CreateNewCompleteTestProfile(int profileID = 1)
+    public static DynamicProfile CreateNewCompleteTestProfile(
+        int profileID = 1, 
+        string profileName = "Standard-Profil",
+        int profileSequenceNo = 1)
     {
         var profile = new DynamicProfile
         {
             ID = profileID,
-            Name = "Standard-Profil",
+            Name = profileName,
             PlaceInfo = new ProfilePlaceInfo
             {
                 Latitude = 47.2803835M,
@@ -49,7 +52,7 @@ public static class TestDataHelper
                     UtcOffsetSeconds = 3600
                 }
             },
-            SequenceNo = 1,
+            SequenceNo = profileSequenceNo,
         };
 
         profile.LocationConfigs =
