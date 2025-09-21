@@ -368,4 +368,44 @@ public class FaziletDBAccessTests : BaseTest
         (await TestAssertDbContext.FaziletPrayerTimes.FindAsync(time2.ID)).Should().BeEquivalentTo(time2);
         (await TestAssertDbContext.FaziletPrayerTimes.FindAsync(time3.ID)).Should().BeEquivalentTo(time3);
     }
+
+    [Fact]
+    public async Task DeleteCacheDataAsync_RemoveOlderEntries_KeepNewerOnes()
+    {
+        // ARRANGE
+        var baseDate = new LocalDate(2023, 1, 1).AtStartOfDayInZone(DateTimeZone.Utc);
+        var country = new FaziletCountry { ID = 1, Name = "Deutschland" };
+        var city = new FaziletCity { ID = 1, CountryID = country.ID, Name = "Berlin", Country = country };
+        await TestArrangeDbContext.FaziletCountries.AddAsync(country);
+        await TestArrangeDbContext.FaziletCities.AddAsync(city);
+
+        ZonedDateTime oldDate = baseDate.Minus(Duration.FromDays(5));
+        ZonedDateTime newDate = baseDate.Plus(Duration.FromDays(1));
+
+        var oldTime = new FaziletDailyPrayerTimes
+        {
+            CityID = city.ID, Date = oldDate, 
+            Imsak = oldDate, Fajr = oldDate, Shuruq = oldDate, Duha = oldDate, 
+            Dhuhr = oldDate, Asr = oldDate, Maghrib = oldDate, Isha = oldDate,
+        };
+        var newTime = new FaziletDailyPrayerTimes
+        {
+            CityID = city.ID, Date = newDate,
+            Imsak = newDate, Fajr = newDate, Shuruq = newDate, Duha = newDate, 
+            Dhuhr = newDate, Asr = newDate, Maghrib = newDate, Isha = newDate,
+        };
+
+        await TestArrangeDbContext.FaziletPrayerTimes.AddRangeAsync(oldTime, newTime);
+        await TestArrangeDbContext.SaveChangesAsync();
+
+        (await TestArrangeDbContext.FaziletPrayerTimes.FindAsync(oldTime.ID)).Should().NotBeNull();
+        (await TestArrangeDbContext.FaziletPrayerTimes.FindAsync(newTime.ID)).Should().NotBeNull();
+
+        // ACT
+        await _faziletDBAccess.DeleteCacheDataAsync(baseDate, default);
+
+        // ASSERT
+        (await TestAssertDbContext.FaziletPrayerTimes.FindAsync(oldTime.ID)).Should().BeNull();
+        (await TestAssertDbContext.FaziletPrayerTimes.FindAsync(newTime.ID)).Should().NotBeNull();
+    }
 }
