@@ -24,7 +24,6 @@ public partial class MainPage : ContentPage
     public MainPage(
             IDispatcher dispatcher,
             MainPageViewModel viewModel,
-            ToastMessageService toastMessageService,
             IPreferenceService preferenceService,
             ISystemInfoService systemInfoService,
             PrayerTimeGraphicView prayerTimeGraphicView
@@ -38,7 +37,8 @@ public partial class MainPage : ContentPage
         // provide all constructor service params automatically through DI but add MainPage param ('this') manually
         _mainPageOptionsMenuService = ActivatorUtilities.CreateInstance<MainPageOptionsMenuService>(
                 MauiProgram.ServiceProvider,
-                this 
+                this,
+                viewModel
             );
 
         _prayerTimeGraphicView = prayerTimeGraphicView;
