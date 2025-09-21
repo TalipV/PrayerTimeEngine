@@ -6,6 +6,7 @@ using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Models;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Models;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Muwaqqit.Models;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Semerkand.Models;
+using PrayerTimeEngine.Core.Domain.MosquePrayerTimes;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Models;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
 
@@ -23,10 +24,12 @@ public static class TestDataHelper
 
     public static readonly string LOCATIONIQ_TEST_DATA_FILE_PATH = Path.Combine(BASE_TEST_DATA_FILE_PATH, "LocationIQTestData");
 
+    public static readonly string CONFIGURATION_TEST_DATA_FILE_PATH = Path.Combine(BASE_TEST_DATA_FILE_PATH, "Configuration");
+
     public static readonly DateTimeZone EUROPE_VIENNA_TIME_ZONE = DateTimeZoneProviders.Tzdb["Europe/Vienna"];
     public static readonly DateTimeZone EUROPE_BERLIN_TIME_ZONE = DateTimeZoneProviders.Tzdb["Europe/Berlin"];
 
-    public static DynamicProfile CreateNewCompleteTestProfile(
+    public static DynamicProfile CreateCompleteTestDynamicProfile(
         int profileID = 1, 
         string profileName = "Standard-Profil",
         int profileSequenceNo = 1)
@@ -60,22 +63,16 @@ public static class TestDataHelper
                 new()
                 {
                     DynamicPrayerTimeProvider = EDynamicPrayerTimeProviderType.Muwaqqit,
-                    ProfileID = profile.ID,
-                    Profile = profile,
                     LocationData = new MuwaqqitLocationData{ Latitude = 47.2803835M,Longitude = 11.41337M, TimezoneName = EUROPE_VIENNA_TIME_ZONE.Id }
                 },
                 new()
                 {
                     DynamicPrayerTimeProvider = EDynamicPrayerTimeProviderType.Fazilet,
-                    ProfileID = profile.ID,
-                    Profile = profile,
                     LocationData = new FaziletLocationData{ CountryName = "Avusturya",CityName = "Innsbruck" }
                 },
                 new()
                 {
                     DynamicPrayerTimeProvider = EDynamicPrayerTimeProviderType.Semerkand,
-                    ProfileID = profile.ID,
-                    Profile = profile,
                     LocationData = new SemerkandLocationData{ CountryName = "Avusturya", CityName = "Innsbruck", TimezoneName = EUROPE_VIENNA_TIME_ZONE.Id }
                 },
             ];
@@ -85,127 +82,91 @@ public static class TestDataHelper
                 new()
                 {
                     TimeType = ETimeType.FajrStart,
-                    ProfileID = profile.ID,
-                    Profile = profile,
                     CalculationConfiguration = new GenericSettingConfiguration { Source = EDynamicPrayerTimeProviderType.Fazilet, TimeType = ETimeType.FajrStart }
                 },
                 new()
                 {
                     TimeType = ETimeType.FajrEnd,
-                    ProfileID = profile.ID,
-                    Profile = profile,
                     CalculationConfiguration = new GenericSettingConfiguration { Source = EDynamicPrayerTimeProviderType.Semerkand, TimeType = ETimeType.FajrEnd }
                 },
                 new()
                 {
                     TimeType = ETimeType.FajrGhalas,
-                    ProfileID = profile.ID,
-                    Profile = profile,
                     CalculationConfiguration = new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.FajrGhalas, Degree = -8.5 }
                 },
                 new()
                 {
                     TimeType = ETimeType.FajrKaraha,
-                    ProfileID = profile.ID,
-                    Profile = profile,
                     CalculationConfiguration = new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.FajrKaraha, Degree = -4.0 }
                 },
                 new()
                 {
                     TimeType = ETimeType.DuhaStart,
-                    ProfileID = profile.ID,
-                    Profile = profile,
                     CalculationConfiguration = new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.DuhaStart, Degree = 5.0 }
                 },
                 new()
                 {
                     TimeType = ETimeType.DuhaEnd,
-                    ProfileID = profile.ID,
-                    Profile = profile,
                     CalculationConfiguration = new GenericSettingConfiguration { TimeType = ETimeType.DuhaEnd, MinuteAdjustment = -25 }
                 },
                 new()
                 {
                     TimeType = ETimeType.DhuhrStart,
-                    ProfileID = profile.ID,
-                    Profile = profile,
                     CalculationConfiguration = new GenericSettingConfiguration { Source = EDynamicPrayerTimeProviderType.Fazilet, TimeType = ETimeType.DhuhrStart }
                 },
                 new()
                 {
                     TimeType = ETimeType.DhuhrEnd,
-                    ProfileID = profile.ID,
-                    Profile = profile,
                     CalculationConfiguration = new GenericSettingConfiguration { Source = EDynamicPrayerTimeProviderType.Muwaqqit, TimeType = ETimeType.DhuhrEnd }
                 },
                 new()
                 {
                     TimeType = ETimeType.AsrStart,
-                    ProfileID = profile.ID,
-                    Profile = profile,
                     CalculationConfiguration = new GenericSettingConfiguration { Source = EDynamicPrayerTimeProviderType.Fazilet, TimeType = ETimeType.AsrStart }
                 },
                 new()
                 {
                     TimeType = ETimeType.AsrEnd,
-                    ProfileID = profile.ID,
-                    Profile = profile,
                     CalculationConfiguration = new GenericSettingConfiguration { Source = EDynamicPrayerTimeProviderType.Muwaqqit, TimeType = ETimeType.AsrEnd }
                 },
                 new()
                 {
                     TimeType = ETimeType.AsrMithlayn,
-                    ProfileID = profile.ID,
-                    Profile = profile,
                     CalculationConfiguration = new GenericSettingConfiguration { Source = EDynamicPrayerTimeProviderType.Muwaqqit, TimeType = ETimeType.AsrMithlayn }
                 },
                 new()
                 {
                     TimeType = ETimeType.AsrKaraha,
-                    ProfileID = profile.ID,
-                    Profile = profile,
                     CalculationConfiguration = new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.AsrKaraha, Degree = 5.0 }
                 },
                 new()
                 {
                     TimeType = ETimeType.MaghribStart,
-                    ProfileID = profile.ID,
-                    Profile = profile,
                     CalculationConfiguration = new GenericSettingConfiguration { Source = EDynamicPrayerTimeProviderType.Fazilet, TimeType = ETimeType.MaghribStart }
                 },
                 new()
                 {
                     TimeType = ETimeType.MaghribEnd,
-                    ProfileID = profile.ID,
-                    Profile = profile,
                     CalculationConfiguration = new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.MaghribEnd, Degree = -15.0 }
                 },
                 new()
                 {
                     TimeType = ETimeType.MaghribSufficientTime,
-                    ProfileID = profile.ID,
-                    Profile = profile,
                     CalculationConfiguration = new GenericSettingConfiguration { TimeType = ETimeType.MaghribSufficientTime, MinuteAdjustment = 20 }
                 },
                 new()
                 {
                     TimeType = ETimeType.MaghribIshtibaq,
-                    ProfileID = profile.ID,
-                    Profile = profile,
                     CalculationConfiguration = new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.MaghribIshtibaq, Degree = -10.0 }
                 },
                 new()
                 {
                     TimeType = ETimeType.IshaStart,
-                    ProfileID = profile.ID,
-                    Profile = profile,
                     CalculationConfiguration = new GenericSettingConfiguration { Source = EDynamicPrayerTimeProviderType.Fazilet, TimeType = ETimeType.IshaStart }
                 },
                 new()
                 {
                     TimeType = ETimeType.IshaEnd,
-                    ProfileID = profile.ID,
-                    Profile = profile,
                     CalculationConfiguration = new GenericSettingConfiguration { Source = EDynamicPrayerTimeProviderType.Semerkand, TimeType = ETimeType.IshaEnd }
                 }
             ];
@@ -213,7 +174,26 @@ public static class TestDataHelper
         return profile;
     }
 
-    public static DynamicPrayerTimesDay CreateNewTestPrayerTimesBundle()
+    public static MosqueProfile CreateCompleteTestMosqueProfile(
+        int profileID = 1,
+        string profileName = "Moschee-Profil",
+        int profileSequenceNo = 1,
+        EMosquePrayerTimeProviderType mosquePrayerTimeProviderType = EMosquePrayerTimeProviderType.Mawaqit,
+        string externalID = "12345")
+    {
+        var profile = new MosqueProfile
+        {
+            ID = profileID,
+            Name = profileName,
+            MosqueProviderType = mosquePrayerTimeProviderType,
+            ExternalID = externalID,
+            SequenceNo = profileSequenceNo,
+        };
+
+        return profile;
+    }
+
+    public static DynamicPrayerTimesDay CreateTestDynamicPrayerTimesDay()
     {
         var bundle = new DynamicPrayerTimesDay();
         var zone = EUROPE_VIENNA_TIME_ZONE;

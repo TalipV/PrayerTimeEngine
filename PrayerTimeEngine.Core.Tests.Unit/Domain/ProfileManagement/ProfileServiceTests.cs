@@ -54,9 +54,9 @@ public class ProfileServiceTests : BaseTest
     public async Task GetProfiles_ThreeProfilesInDb_ReturnTheThree()
     {
         // ARRANGE
-        var profile1 = TestDataHelper.CreateNewCompleteTestProfile();
-        var profile2 = TestDataHelper.CreateNewCompleteTestProfile();
-        var profile3 = TestDataHelper.CreateNewCompleteTestProfile();
+        var profile1 = TestDataHelper.CreateCompleteTestDynamicProfile();
+        var profile2 = TestDataHelper.CreateCompleteTestDynamicProfile();
+        var profile3 = TestDataHelper.CreateCompleteTestDynamicProfile();
         _profileDBAccessMock.GetProfiles(Arg.Any<CancellationToken>()).Returns([profile1, profile2, profile3]);
 
         // ACT
@@ -78,7 +78,7 @@ public class ProfileServiceTests : BaseTest
     public async Task SaveProfile_SaveSomeProfile_DbSaveTriggeredForProfile()
     {
         // ARRANGE
-        var profile = TestDataHelper.CreateNewCompleteTestProfile();
+        var profile = TestDataHelper.CreateCompleteTestDynamicProfile();
 
         // ACT
         await _profileService.SaveProfile(profile, default);
@@ -98,7 +98,7 @@ public class ProfileServiceTests : BaseTest
     public void GetTimeConfig_ExistingTimeConfig_ShouldReturnConfig(ETimeType timeType)
     {
         // ARRANGE
-        var profile = TestDataHelper.CreateNewCompleteTestProfile();
+        var profile = TestDataHelper.CreateCompleteTestDynamicProfile();
 
         // ACT
         GenericSettingConfiguration result = _profileService.GetTimeConfig(profile, timeType);
@@ -114,7 +114,7 @@ public class ProfileServiceTests : BaseTest
     public void GetTimeConfig_NonExistingTimeConfig_ShouldReturnNull(ETimeType timeType)
     {
         // ARRANGE
-        var profile = TestDataHelper.CreateNewCompleteTestProfile();
+        var profile = TestDataHelper.CreateCompleteTestDynamicProfile();
         profile.TimeConfigs.Remove(profile.TimeConfigs.First(x => x.TimeType == timeType));
 
         // ACT
@@ -134,7 +134,7 @@ public class ProfileServiceTests : BaseTest
     public void GetLocationConfig_MatchFound_ReturnValue(EDynamicPrayerTimeProviderType source)
     {
         // ARRANGE
-        var profile = TestDataHelper.CreateNewCompleteTestProfile();
+        var profile = TestDataHelper.CreateCompleteTestDynamicProfile();
 
         // ACT
         BaseLocationData result = _profileService.GetLocationConfig(profile, source);
@@ -150,7 +150,7 @@ public class ProfileServiceTests : BaseTest
     public void GetLocationConfig_NoMatchFound_ReturnNull(EDynamicPrayerTimeProviderType source)
     {
         // ARRANGE
-        var profile = TestDataHelper.CreateNewCompleteTestProfile();
+        var profile = TestDataHelper.CreateCompleteTestDynamicProfile();
         profile.LocationConfigs.Should().Contain(x => x.DynamicPrayerTimeProvider == source);
         profile.LocationConfigs.Remove(profile.LocationConfigs.First(x => x.DynamicPrayerTimeProvider == source));
 
@@ -170,7 +170,7 @@ public class ProfileServiceTests : BaseTest
     public async Task UpdateLocationConfig_UpdateProfileLocationData_DbUpdateTriggeredForProfileLocationData()
     {
         // ARRANGE
-        var profile = TestDataHelper.CreateNewCompleteTestProfile();
+        var profile = TestDataHelper.CreateCompleteTestDynamicProfile();
         var expectedDynamicPrayerTimeProviderType = Enum.GetValues<EDynamicPrayerTimeProviderType>()
             .Where(x => x != EDynamicPrayerTimeProviderType.None)
             .ToHashSet();
@@ -216,7 +216,7 @@ public class ProfileServiceTests : BaseTest
     public async Task UpdateTimeConfig_UpdateProfileConfig_DbUpdateTriggeredForProfileConfig()
     {
         // ARRANGE
-        var profile = TestDataHelper.CreateNewCompleteTestProfile();
+        var profile = TestDataHelper.CreateCompleteTestDynamicProfile();
         var setting = new GenericSettingConfiguration { TimeType = ETimeType.FajrStart };
 
         // ACT
@@ -236,7 +236,7 @@ public class ProfileServiceTests : BaseTest
     public void GetLocationDataDisplayText_JustBasicExecution_NoExceptions()
     {
         // ARRANGE
-        var profile = TestDataHelper.CreateNewCompleteTestProfile();
+        var profile = TestDataHelper.CreateCompleteTestDynamicProfile();
 
         // ACT
         Action execution = () => _profileService.GetLocationDataDisplayText(profile);
@@ -254,7 +254,7 @@ public class ProfileServiceTests : BaseTest
     public void GetPrayerTimeConfigDisplayText_JustBasicExecution_NoExceptions()
     {
         // ARRANGE
-        var profile = TestDataHelper.CreateNewCompleteTestProfile();
+        var profile = TestDataHelper.CreateCompleteTestDynamicProfile();
 
         // ACT
         Action execution = () => _profileService.GetPrayerTimeConfigDisplayText(profile);
@@ -272,7 +272,7 @@ public class ProfileServiceTests : BaseTest
     public void GetActiveComplexTimeConfigs_ProfileWithMostlyActiveConfigs_ShouldReturnActiveConfigs()
     {
         // ARRANGE
-        var profile = TestDataHelper.CreateNewCompleteTestProfile();
+        var profile = TestDataHelper.CreateCompleteTestDynamicProfile();
 
         // make two of them inactive
         profile.TimeConfigs.First().CalculationConfiguration.IsTimeShown = false;
@@ -295,7 +295,7 @@ public class ProfileServiceTests : BaseTest
     public void GetActiveComplexTimeConfigs_ProfileWithNoConfigs_ShouldReturnNothing()
     {
         // ARRANGE
-        var profile = TestDataHelper.CreateNewCompleteTestProfile();
+        var profile = TestDataHelper.CreateCompleteTestDynamicProfile();
         profile.TimeConfigs.Clear();
 
         // ACT

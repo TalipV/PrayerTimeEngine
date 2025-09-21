@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.Mawaqit.Models.Entities;
 
-public class MawaqitMosqueDailyPrayerTimes : IMosqueDailyPrayerTimes, IInsertedAt
+public class MawaqitMosqueDailyPrayerTimes : IMosqueDailyPrayerTimes, IEntity
 {
     [Key]
     public int ID { get; set; }

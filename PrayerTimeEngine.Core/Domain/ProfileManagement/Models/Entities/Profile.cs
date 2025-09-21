@@ -7,7 +7,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
 
 [AddINotifyPropertyChangedInterface]
-public abstract class Profile : IInsertedAt
+public abstract class Profile : IEntity
 {
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]

@@ -1,5 +1,4 @@
 ﻿using CommunityToolkit.Maui.Markup;
-using Microsoft.Extensions.Logging;
 using NodaTime;
 using OnScreenSizeMarkup.Maui.Helpers;
 using PrayerTimeEngine.Core.Common;
@@ -35,13 +34,12 @@ public partial class MainPage : ContentPage
         _dispatcher = dispatcher;
         _preferenceService = preferenceService;
         _systemInfoService = systemInfoService;
-        _mainPageOptionsMenuService =
-            new MainPageOptionsMenuService(
-                this,
-                viewModel,
-                toastMessageService,
-                MauiProgram.ServiceProvider.GetRequiredService<ILogger<MainPageOptionsMenuService>>(),
-                preferenceService);
+
+        // provide all constructor service params automatically through DI but add MainPage param ('this') manually
+        _mainPageOptionsMenuService = ActivatorUtilities.CreateInstance<MainPageOptionsMenuService>(
+                MauiProgram.ServiceProvider,
+                this 
+            );
 
         _prayerTimeGraphicView = prayerTimeGraphicView;
 

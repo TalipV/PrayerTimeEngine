@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Muwaqqit.Models.Entities;
 
-public class MuwaqqitDailyPrayerTimes : IDailyPrayerTimes, IInsertedAt
+public class MuwaqqitDailyPrayerTimes : IDailyPrayerTimes, IEntity
 {
     [Key]
     public int ID { get; set; }

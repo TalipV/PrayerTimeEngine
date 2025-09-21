@@ -205,9 +205,9 @@ public class AppDbContext(
 
     private void setInsertInstant()
     {
-        List<IInsertedAt> insertedAtEntities = ChangeTracker.Entries()
-            .Where(e => e.State == EntityState.Added && e.Entity is IInsertedAt)
-            .Select(x => x.Entity).OfType<IInsertedAt>()
+        List<IEntity> insertedAtEntities = ChangeTracker.Entries()
+            .Where(e => e.State == EntityState.Added && e.Entity is IEntity)
+            .Select(x => x.Entity).OfType<IEntity>()
             .ToList();
 
         if (insertedAtEntities.Count == 0)
@@ -217,7 +217,7 @@ public class AppDbContext(
 
         Instant currentInstant = systemInfoService.GetCurrentInstant();
 
-        foreach (IInsertedAt entity in insertedAtEntities)
+        foreach (IEntity entity in insertedAtEntities)
         {
             entity.InsertInstant = currentInstant;
         }

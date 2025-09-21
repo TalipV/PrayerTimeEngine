@@ -28,6 +28,7 @@ public class FaziletDynamicPrayerTimeProvider(
             ETimeType.FajrGhalas,
             ETimeType.FajrKaraha,
             ETimeType.DuhaStart,
+            ETimeType.DuhaQuarterOfDay,
             ETimeType.DuhaEnd,
             ETimeType.AsrMithlayn,
             ETimeType.AsrKaraha,

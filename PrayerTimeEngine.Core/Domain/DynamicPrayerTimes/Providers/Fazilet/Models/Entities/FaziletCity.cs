@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Models.Entities;
 
-public class FaziletCity : IInsertedAt
+public class FaziletCity : IEntity
 {
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.None)]   // IDs come from API
