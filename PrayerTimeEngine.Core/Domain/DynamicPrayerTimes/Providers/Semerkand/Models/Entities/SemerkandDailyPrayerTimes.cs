@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Semerkand.Models.Entities;
 
-public class SemerkandDailyPrayerTimes : IDailyPrayerTimes, IInsertedAt
+public class SemerkandDailyPrayerTimes : IDailyPrayerTimes, IEntity
 {
     [Key]
     public int ID { get; set; }

@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
 
-public class ProfileTimeConfig : IInsertedAt
+public class ProfileTimeConfig : IEntity
 {
     [Key]
     public int ID { get; set; }

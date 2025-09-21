@@ -11,6 +11,7 @@ using PrayerTimeEngine.Core.Data.WebSocket;
 using PrayerTimeEngine.Core.Data.WebSocket.Interfaces;
 using PrayerTimeEngine.Core.Domain;
 using PrayerTimeEngine.Core.Domain.Calculators.Mosques.Mawaqit.Services;
+using PrayerTimeEngine.Core.Domain.ConfigurationManagement;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Management;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Interfaces;
@@ -45,7 +46,6 @@ using PrayerTimeEngine.Presentation.Views.PrayerTimes;
 using PrayerTimeEngine.Services;
 using PrayerTimeEngine.Services.Notifications;
 using Refit;
-using System.Diagnostics;
 using System.Net.WebSockets;
 using System.Text;
 using UraniumUI;
@@ -240,6 +240,7 @@ public static class MauiProgram
         serviceCollection.AddTransient<NotificationService>();
         serviceCollection.AddSingleton<ISystemInfoService, SystemInfoService>();
         serviceCollection.AddTransient<IPreferenceService, PreferenceService>();
+        serviceCollection.AddTransient<IConfigurationImportExportService, ConfigurationImportExportService>();
         serviceCollection.AddSingleton<TimeTypeAttributeService>();
 
         serviceCollection.AddTransient<IDynamicPrayerTimeProviderManager, DynamicPrayerTimeProviderManager>();

@@ -31,9 +31,9 @@ public class ProfileDBAccessTests : BaseTest
     public async Task GetProfiles_SavedThreeDifferentProfiles_RetrievedNormally()
     {
         // ARRANGE
-        var profile1 = TestDataHelper.CreateNewCompleteTestProfile(profileID: 1);
-        var profile2 = TestDataHelper.CreateNewCompleteTestProfile(profileID: 2);
-        var profile3 = TestDataHelper.CreateNewCompleteTestProfile(profileID: 3);
+        var profile1 = TestDataHelper.CreateCompleteTestDynamicProfile(profileID: 1);
+        var profile2 = TestDataHelper.CreateCompleteTestDynamicProfile(profileID: 2);
+        var profile3 = TestDataHelper.CreateCompleteTestDynamicProfile(profileID: 3);
         await TestArrangeDbContext.Profiles.AddAsync(profile1);
         await TestArrangeDbContext.Profiles.AddAsync(profile2);
         await TestArrangeDbContext.Profiles.AddAsync(profile3);
@@ -58,7 +58,7 @@ public class ProfileDBAccessTests : BaseTest
     public async Task GetUntrackedReferenceOfProfile_ExistingProfile_ProfileRetrieved()
     {
         // ARRANGE
-        var profile = TestDataHelper.CreateNewCompleteTestProfile();
+        var profile = TestDataHelper.CreateCompleteTestDynamicProfile();
         await TestArrangeDbContext.Profiles.AddAsync(profile);
         await TestArrangeDbContext.SaveChangesAsync();
 
@@ -92,7 +92,7 @@ public class ProfileDBAccessTests : BaseTest
     public async Task SaveProfile_BasicProfile_SavedInDb()
     {
         // ARRANGE
-        var profile = TestDataHelper.CreateNewCompleteTestProfile();
+        var profile = TestDataHelper.CreateCompleteTestDynamicProfile();
 
         // ACT
         await _profileDBAccess.SaveProfile(profile, default);
@@ -117,7 +117,7 @@ public class ProfileDBAccessTests : BaseTest
     public async Task UpdateLocationConfig_SingleLocation_OnlySingleLocationInProfile()
     {
         // ARRANGE
-        var profile = TestDataHelper.CreateNewCompleteTestProfile();
+        var profile = TestDataHelper.CreateCompleteTestDynamicProfile();
         await TestArrangeDbContext.Profiles.AddAsync(profile);
         await TestArrangeDbContext.SaveChangesAsync();
 
@@ -163,7 +163,7 @@ public class ProfileDBAccessTests : BaseTest
     public async Task UpdateTimeConfig_SingleUpdate_UpdatedAsExpected()
     {
         // ARRANGE
-        var profile = TestDataHelper.CreateNewCompleteTestProfile();
+        var profile = TestDataHelper.CreateCompleteTestDynamicProfile();
         await TestArrangeDbContext.Profiles.AddAsync(profile);
         await TestArrangeDbContext.SaveChangesAsync();
 
@@ -192,7 +192,7 @@ public class ProfileDBAccessTests : BaseTest
     public async Task CopyProfile_BasicTestProfile_NewProfileWithNewRelatedData()
     {
         // ARRANGE
-        var profile = TestDataHelper.CreateNewCompleteTestProfile();
+        var profile = TestDataHelper.CreateCompleteTestDynamicProfile();
         await TestArrangeDbContext.Profiles.AddAsync(profile);
         await TestArrangeDbContext.SaveChangesAsync();
         profile.ID.Should().Be(1, "this is a precondition");
@@ -267,7 +267,7 @@ public class ProfileDBAccessTests : BaseTest
     public async Task DeleteProfile_CopyTestProfileAndDeleteOriginalProfile_OriginalProfileDeleted()
     {
         // ARRANGE
-        var profile = TestDataHelper.CreateNewCompleteTestProfile();
+        var profile = TestDataHelper.CreateCompleteTestDynamicProfile();
         await TestArrangeDbContext.Profiles.AddAsync(profile);
         await TestArrangeDbContext.SaveChangesAsync();
         profile.ID.Should().Be(1, "this is a precondition");

@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PrayerTimeEngine.Core.Domain.PlaceManagement.Models;
 
-public class ProfilePlaceInfo : BasicPlaceInfo, IInsertedAt
+public class ProfilePlaceInfo : BasicPlaceInfo, IEntity
 {
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]

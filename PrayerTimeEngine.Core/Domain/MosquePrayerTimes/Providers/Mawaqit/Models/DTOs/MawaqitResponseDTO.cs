@@ -76,9 +76,9 @@ public class MawaqitResponseDTO
             {
                 // unfortunately, the API does provide broken data like that
                 if (dayCounter > lastDayOfThisMonth.Day)
-            {
+                {
                     break;
-            }
+                }
 
                 LocalDate currentDay = firstDayOfThisMonth.PlusDays(dayCounter - 1);
 

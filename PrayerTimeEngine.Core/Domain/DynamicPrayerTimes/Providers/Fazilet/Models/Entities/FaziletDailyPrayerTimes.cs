@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Models.Entities;
 
-public class FaziletDailyPrayerTimes : IDailyPrayerTimes, IInsertedAt
+public class FaziletDailyPrayerTimes : IDailyPrayerTimes, IEntity
 {
     [Key]
     public int ID { get; set; }

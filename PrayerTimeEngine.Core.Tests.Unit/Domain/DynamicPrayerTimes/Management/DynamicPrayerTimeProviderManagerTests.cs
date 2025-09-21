@@ -40,7 +40,7 @@ public class DynamicPrayerTimeProviderManagerTests : BaseTest
     public async Task CalculatePrayerTimesAsync_OneComplexCalculation_CalculatedSuccessfully()
     {
         // ARRANGE
-        var profile = TestDataHelper.CreateNewCompleteTestProfile();
+        var profile = TestDataHelper.CreateCompleteTestDynamicProfile();
         ZonedDateTime zonedDate = new LocalDate(2024, 1, 1).AtStartOfDayInZone(DateTimeZone.Utc);
         ZonedDateTime zonedDateOneDayBefore = zonedDate.Plus(Duration.FromDays(-1));
         ZonedDateTime zonedDateOneDayAfter = zonedDate.Plus(Duration.FromDays(1));
