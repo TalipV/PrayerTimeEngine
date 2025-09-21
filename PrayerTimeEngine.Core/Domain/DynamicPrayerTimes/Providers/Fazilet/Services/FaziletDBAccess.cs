@@ -145,10 +145,14 @@ public class FaziletDBAccess(
     {
         using (AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken))
         {
-            await dbContext.FaziletPrayerTimes
+            // TODO fix
+            // ZonedDateTime doesn't allow db side querying
+            var toBeDeletedTimes = (await dbContext.FaziletPrayerTimes.ToListAsync(cancellationToken).ConfigureAwait(false))
                 .Where(p => p.Date.ToInstant() < deleteBeforeDate.ToInstant())
-                .ExecuteDeleteAsync(cancellationToken)
-                .ConfigureAwait(false);
+                .ToList();
+
+            dbContext.FaziletPrayerTimes.RemoveRange(toBeDeletedTimes);
+            await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
         }
     }
 }

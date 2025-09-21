@@ -88,4 +88,50 @@ public class MyMosqDBAccessTests : BaseTest
         var insertedTime = await TestAssertDbContext.MyMosqPrayerTimes.FindAsync(newMyMosqTime.ID);
         insertedTime.Should().BeEquivalentTo(newMyMosqTime);
     }
+
+    [Fact]
+    public async Task DeleteCacheDataAsync_RemoveOlderEntries_KeepNewerOnes()
+    {
+        // ARRANGE
+        var baseDate = new LocalDate(2023, 1, 1).AtStartOfDayInZone(DateTimeZone.Utc);
+        ZonedDateTime oldDate = baseDate.Minus(Duration.FromDays(5));
+        ZonedDateTime newDate = baseDate.Plus(Duration.FromDays(1));
+
+        var oldTime = new MyMosqMosqueDailyPrayerTimes
+        {
+            Date = oldDate.Date,
+            ExternalID = "1", Fajr = oldDate.LocalDateTime.TimeOfDay, FajrCongregation = oldDate.LocalDateTime.TimeOfDay, 
+            Shuruq = oldDate.LocalDateTime.TimeOfDay, Dhuhr = oldDate.LocalDateTime.TimeOfDay, 
+            DhuhrCongregation = oldDate.LocalDateTime.TimeOfDay, Asr = oldDate.LocalDateTime.TimeOfDay, 
+            AsrCongregation = oldDate.LocalDateTime.TimeOfDay, Maghrib = oldDate.LocalDateTime.TimeOfDay, 
+            MaghribCongregation = oldDate.LocalDateTime.TimeOfDay, Isha = oldDate.LocalDateTime.TimeOfDay, 
+            IshaCongregation = oldDate.LocalDateTime.TimeOfDay, Jumuah = oldDate.LocalDateTime.TimeOfDay, 
+            Jumuah2 = oldDate.LocalDateTime.TimeOfDay,
+        };
+        var newTime = new MyMosqMosqueDailyPrayerTimes
+        {
+            Date = newDate.Date,
+            ExternalID = "1",
+            Fajr = newDate.LocalDateTime.TimeOfDay, FajrCongregation = newDate.LocalDateTime.TimeOfDay,
+            Shuruq = newDate.LocalDateTime.TimeOfDay, Dhuhr = newDate.LocalDateTime.TimeOfDay,
+            DhuhrCongregation = newDate.LocalDateTime.TimeOfDay, Asr = newDate.LocalDateTime.TimeOfDay,
+            AsrCongregation = newDate.LocalDateTime.TimeOfDay, Maghrib = newDate.LocalDateTime.TimeOfDay,
+            MaghribCongregation = newDate.LocalDateTime.TimeOfDay,Isha = newDate.LocalDateTime.TimeOfDay,
+            IshaCongregation = newDate.LocalDateTime.TimeOfDay, Jumuah = newDate.LocalDateTime.TimeOfDay, 
+            Jumuah2 = newDate.LocalDateTime.TimeOfDay,
+        };
+
+        await TestArrangeDbContext.MyMosqPrayerTimes.AddRangeAsync(oldTime, newTime);
+        await TestArrangeDbContext.SaveChangesAsync();
+
+        (await TestArrangeDbContext.MyMosqPrayerTimes.FindAsync(oldTime.ID)).Should().NotBeNull();
+        (await TestArrangeDbContext.MyMosqPrayerTimes.FindAsync(newTime.ID)).Should().NotBeNull();
+
+        // ACT
+        await _myMosqDBAccess.DeleteCacheDataAsync(baseDate, default);
+
+        // ASSERT
+        (await TestAssertDbContext.MyMosqPrayerTimes.FindAsync(oldTime.ID)).Should().BeNull();
+        (await TestAssertDbContext.MyMosqPrayerTimes.FindAsync(newTime.ID)).Should().NotBeNull();
+    }
 }
