@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using NSubstitute.Extensions;
@@ -9,6 +10,7 @@ using PrayerTimeEngine.Core.Domain;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Models;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Models;
+using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Services;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Muwaqqit.Models;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Semerkand.Models;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Models;
@@ -31,6 +33,7 @@ public class ProfileServiceTests : BaseTest
                 serviceCollection.AddSingleton<IProfileDBAccess, ProfileDBAccess>();
                 serviceCollection.AddSingleton<IProfileService, ProfileService>();
                 serviceCollection.AddSingleton<IDynamicPrayerTimeProviderFactory, DynamicPrayerTimeProviderFactory>();
+                serviceCollection.AddSingleton(Substitute.For<ILogger<ProfileService>>());
             });
     }
 
@@ -43,7 +46,7 @@ public class ProfileServiceTests : BaseTest
         using var dbContext = serviceProvider.GetRequiredService<IDbContextFactory<AppDbContext>>().CreateDbContext();
         var profileService = serviceProvider.GetRequiredService<IProfileService>() as ProfileService;
 
-        await dbContext.Profiles.AddAsync(TestDataHelper.CreateNewCompleteTestProfile());
+        await dbContext.Profiles.AddAsync(TestDataHelper.CreateCompleteTestDynamicProfile());
         await dbContext.SaveChangesAsync();
 
         // in the UI the data is loaded without tracking (i.e. intended for read only)
@@ -81,7 +84,7 @@ public class ProfileServiceTests : BaseTest
         };
 
         // ACT
-        await profileService.UpdateLocationConfig(profile, newPlaceInfo, newLocationDataByDynamicPrayerTimeProvider.Select(x => (x.Key, x.Value)).ToList(), default);
+        await profileService.UpdateLocationConfig(profile, newPlaceInfo, default);
 
         // ASSERT
         dbContext.ChangeTracker.HasChanges().Should().BeFalse();
@@ -113,7 +116,7 @@ public class ProfileServiceTests : BaseTest
 
         var profileService = serviceProvider.GetRequiredService<IProfileService>() as ProfileService;
 
-        await dbContext.Profiles.AddAsync(TestDataHelper.CreateNewCompleteTestProfile());
+        await dbContext.Profiles.AddAsync(TestDataHelper.CreateCompleteTestDynamicProfile());
         await dbContext.SaveChangesAsync();
 
         dbContext.SaveChangesAsync().Throws(new Exception("Test exception during commit"));
@@ -161,7 +164,6 @@ public class ProfileServiceTests : BaseTest
                 await profileService.UpdateLocationConfig(
                     profile: profile,
                     placeInfo: newPlaceInfo,
-                    locationDataByDynamicPrayerTimeProvider: newLocationDataByDynamicPrayerTimeProvider.Select(x => (x.Key, x.Value)).ToList(),
                     cancellationToken: default);
             };
 
@@ -189,7 +191,7 @@ public class ProfileServiceTests : BaseTest
 
         var profileService = serviceProvider.GetRequiredService<IProfileService>() as ProfileService;
 
-        await TestArrangeDbContext.Profiles.AddAsync(TestDataHelper.CreateNewCompleteTestProfile());
+        await TestArrangeDbContext.Profiles.AddAsync(TestDataHelper.CreateCompleteTestDynamicProfile());
         await TestArrangeDbContext.SaveChangesAsync();
 
         var profile =
