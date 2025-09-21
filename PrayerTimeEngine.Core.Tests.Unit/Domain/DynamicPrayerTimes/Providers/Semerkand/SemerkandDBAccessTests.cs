@@ -371,4 +371,54 @@ public class SemerkandDBAccessTests : BaseTest
         (await TestAssertDbContext.SemerkandPrayerTimes.FindAsync(time2.ID)).Should().BeEquivalentTo(time2);
         (await TestAssertDbContext.SemerkandPrayerTimes.FindAsync(time3.ID)).Should().BeEquivalentTo(time3);
     }
+
+    [Fact]
+    public async Task DeleteCacheDataAsync_RemoveOlderEntries_KeepNewerOnes()
+    {
+        // ARRANGE
+        var baseDate = new LocalDate(2023, 1, 1).AtStartOfDayInZone(DateTimeZone.Utc);
+        var country = new SemerkandCountry { ID = 1, Name = "Deutschland" };
+        var city = new SemerkandCity { ID = 1, CountryID = country.ID, Name = "Berlin", Country = country };
+        await TestArrangeDbContext.SemerkandCountries.AddAsync(country);
+        await TestArrangeDbContext.SemerkandCities.AddAsync(city);
+
+        ZonedDateTime oldDate = baseDate.Minus(Duration.FromDays(5));
+        ZonedDateTime newDate = baseDate.Plus(Duration.FromDays(1));
+
+        var oldTime = new SemerkandDailyPrayerTimes
+        {
+            CityID = city.ID,
+            Date = oldDate,
+            Fajr = oldDate,
+            Shuruq = oldDate,
+            Dhuhr = oldDate,
+            Asr = oldDate,
+            Maghrib = oldDate,
+            Isha = oldDate,
+        };
+        var newTime = new SemerkandDailyPrayerTimes
+        {
+            CityID = city.ID,
+            Date = newDate,
+            Fajr = newDate,
+            Shuruq = newDate,
+            Dhuhr = newDate,
+            Asr = newDate,
+            Maghrib = newDate,
+            Isha = newDate,
+        };
+
+        await TestArrangeDbContext.SemerkandPrayerTimes.AddRangeAsync(oldTime, newTime);
+        await TestArrangeDbContext.SaveChangesAsync();
+
+        (await TestArrangeDbContext.SemerkandPrayerTimes.FindAsync(oldTime.ID)).Should().NotBeNull();
+        (await TestArrangeDbContext.SemerkandPrayerTimes.FindAsync(newTime.ID)).Should().NotBeNull();
+
+        // ACT
+        await _semerkandDBAccess.DeleteCacheDataAsync(baseDate, default);
+
+        // ASSERT
+        (await TestAssertDbContext.SemerkandPrayerTimes.FindAsync(oldTime.ID)).Should().BeNull();
+        (await TestAssertDbContext.SemerkandPrayerTimes.FindAsync(newTime.ID)).Should().NotBeNull();
+    }
 }

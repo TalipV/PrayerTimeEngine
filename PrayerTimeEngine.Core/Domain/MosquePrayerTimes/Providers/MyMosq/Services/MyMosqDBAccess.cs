@@ -39,10 +39,14 @@ public class MyMosqDBAccess(
     {
         using (AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken))
         {
-            await dbContext.MyMosqPrayerTimes
+            // TODO fix
+            // db side querying doesn't work for some reason
+            var toBeDeletedTimes = (await dbContext.MyMosqPrayerTimes.ToListAsync(cancellationToken).ConfigureAwait(false))
                 .Where(p => p.Date < deleteBeforeDate.LocalDateTime.Date)
-                .ExecuteDeleteAsync(cancellationToken)
-                .ConfigureAwait(false);
+                .ToList();
+
+            dbContext.MyMosqPrayerTimes.RemoveRange(toBeDeletedTimes);
+            await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
         }
     }
 }
