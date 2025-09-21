@@ -141,10 +141,14 @@ public class SemerkandDBAccess(
     {
         using (AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken))
         {
-            await dbContext.SemerkandPrayerTimes
+            // TODO fix
+            // ZonedDateTime doesn't allow db side querying
+            var toBeDeletedTimes = (await dbContext.SemerkandPrayerTimes.ToListAsync(cancellationToken).ConfigureAwait(false))
                 .Where(p => p.Date.ToInstant() < deleteBeforeDate.ToInstant())
-                .ExecuteDeleteAsync(cancellationToken)
-                .ConfigureAwait(false);
+                .ToList();
+
+            dbContext.SemerkandPrayerTimes.RemoveRange(toBeDeletedTimes);
+            await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
         }
     }
 }

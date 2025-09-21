@@ -65,10 +65,14 @@ public class MuwaqqitDBAccess(
     {
         using (AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken))
         {
-            await dbContext.MuwaqqitPrayerTimes
+            // TODO fix
+            // ZonedDateTime doesn't allow db side querying
+            var toBeDeletedTimes = (await dbContext.MuwaqqitPrayerTimes.ToListAsync(cancellationToken).ConfigureAwait(false))
                 .Where(p => p.Date.ToInstant() < deleteBeforeDate.ToInstant())
-                .ExecuteDeleteAsync(cancellationToken)
-                .ConfigureAwait(false);
+                .ToList();
+
+            dbContext.MuwaqqitPrayerTimes.RemoveRange(toBeDeletedTimes);
+            await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
         }
     }
 }

@@ -100,4 +100,41 @@ public class MuwaqqitDBAccessTests : BaseTest
         var insertedTime = await TestAssertDbContext.MuwaqqitPrayerTimes.FindAsync(newMuwaqqitTime.ID);
         insertedTime.Should().BeEquivalentTo(newMuwaqqitTime, options => options.IgnoringCyclicReferences());
     }
+
+    [Fact]
+    public async Task DeleteCacheDataAsync_RemoveOlderEntries_KeepNewerOnes()
+    {
+        // ARRANGE
+        var baseDate = new LocalDate(2023, 1, 1).AtStartOfDayInZone(DateTimeZone.Utc);
+        ZonedDateTime oldDate = baseDate.Minus(Duration.FromDays(5));
+        ZonedDateTime newDate = baseDate.Plus(Duration.FromDays(1));
+
+        var oldTime = new MuwaqqitDailyPrayerTimes
+        {
+            Date = oldDate, 
+            Latitude = 1, Longitude = 1, FajrDegree = 1, IshaDegree = 1, IshtibaqDegree = 1, AsrKarahaDegree = 1, 
+            Fajr = oldDate, NextFajr = oldDate, Shuruq = oldDate, Duha = oldDate, Dhuhr = oldDate, Asr = oldDate, 
+            AsrMithlayn = oldDate, AsrKaraha = oldDate, Maghrib = oldDate, Ishtibaq = oldDate, Isha = oldDate,
+        };
+        var newTime = new MuwaqqitDailyPrayerTimes
+        {
+            Date = newDate, 
+            Latitude = 1, Longitude = 1, FajrDegree = 1, IshaDegree = 1, IshtibaqDegree = 1, AsrKarahaDegree = 1, 
+            Fajr = newDate, NextFajr = newDate, Shuruq = newDate, Duha = newDate, Dhuhr = newDate, Asr = newDate, 
+            AsrMithlayn = newDate, AsrKaraha = newDate, Maghrib = newDate, Ishtibaq = newDate, Isha = newDate,
+        };
+
+        await TestArrangeDbContext.MuwaqqitPrayerTimes.AddRangeAsync(oldTime, newTime);
+        await TestArrangeDbContext.SaveChangesAsync();
+
+        (await TestArrangeDbContext.MuwaqqitPrayerTimes.FindAsync(oldTime.ID)).Should().NotBeNull();
+        (await TestArrangeDbContext.MuwaqqitPrayerTimes.FindAsync(newTime.ID)).Should().NotBeNull();
+
+        // ACT
+        await _muwaqqitDBAccess.DeleteCacheDataAsync(baseDate, default);
+
+        // ASSERT
+        (await TestAssertDbContext.MuwaqqitPrayerTimes.FindAsync(oldTime.ID)).Should().BeNull();
+        (await TestAssertDbContext.MuwaqqitPrayerTimes.FindAsync(newTime.ID)).Should().NotBeNull();
+    }
 }
