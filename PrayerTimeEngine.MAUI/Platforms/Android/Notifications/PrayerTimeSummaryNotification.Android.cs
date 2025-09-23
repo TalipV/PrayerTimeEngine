@@ -1,6 +1,7 @@
 ﻿using Android.App;
 using Android.Content;
 using Android.OS;
+using AsyncAwaitBestPractices;
 using Microsoft.Extensions.Logging;
 using NodaTime;
 using PrayerTimeEngine.Core.Common;
@@ -97,9 +98,34 @@ public class PrayerTimeSummaryNotification : Service
         {
             try
             {
+                List<Profile> profiles = await _profileService.GetProfiles(cancellationTokenSource.Token);
+
+                // potential for performance improvement
+                DynamicProfile mainProfile = profiles.OfType<DynamicProfile>().FirstOrDefault();
+                Profile[] otherProfiles = profiles.Except([mainProfile]).ToArray();
+
+                if (otherProfiles.Length != 0)
+                {
+                    // add cancellation token for general shut down requests (timeout not really needed)
+                    ensureSureOtherProfilesLoadedOnceADay(otherProfiles, CancellationToken.None)
+                        .SafeFireAndForget(exception =>
+                        {
+                            _logger.LogError(exception, "Error while trying to load data of other profiles");
+                        });
+                }
+
                 var notificationBuilder = GetNotificationBuilder();
-                notificationBuilder.SetContentTitle(((await _profileService.GetProfiles(default)).First() as DynamicProfile).PlaceInfo.City);
-                notificationBuilder.SetContentText(await getRemainingTimeText(cancellationTokenSource.Token));
+
+                if (mainProfile == null)
+                {
+                    notificationBuilder.SetContentTitle("No dynamic profile");
+                    notificationBuilder.SetContentText("-");
+                }
+                else
+                {
+                    notificationBuilder.SetContentTitle(mainProfile.PlaceInfo.City);
+                    notificationBuilder.SetContentText(await getRemainingTimeText(mainProfile, cancellationTokenSource.Token));
+                }
 
                 var context = global::Android.App.Application.Context;
                 var notificationManager = context.GetSystemService(NotificationService) as NotificationManager;
@@ -137,11 +163,8 @@ public class PrayerTimeSummaryNotification : Service
         return _notificationBuilder;
     }
 
-    private async Task<string> getRemainingTimeText(CancellationToken cancellationToken)
+    private async Task<string> getRemainingTimeText(Profile profile, CancellationToken cancellationToken)
     {
-        // potential for performance improvement
-        Profile profile = (await _profileService.GetProfiles(cancellationToken)).First();
-
         ZonedDateTime now =
             _systemInfoService.GetCurrentInstant()
                 .InZone(DateTimeZoneProviders.Tzdb[(profile as DynamicProfile).PlaceInfo.TimezoneInfo.Name]);
@@ -190,5 +213,25 @@ public class PrayerTimeSummaryNotification : Service
             return "-";
 
         return $"{(nextTime.Value - now).ToString("HH:mm:ss", null)} until {timeName} ({nextTime.Value.ToString("HH:mm:ss", null)}) {additionalInfo}";
+    }
+
+    private LocalDate _lastLoadedDate = new LocalDate(2000, 1, 1);
+
+    private async Task ensureSureOtherProfilesLoadedOnceADay(Profile[] profiles, CancellationToken cancellationToken)
+    {
+        ZonedDateTime currentZonedDateTime = _systemInfoService.GetCurrentZonedDateTime();
+
+        if (profiles.Length == 0 || _lastLoadedDate == currentZonedDateTime.Date)
+        {
+            return;
+        }
+
+        foreach (Profile profile in profiles)
+        {
+            var providerManager = MauiProgram.ServiceProvider.GetRequiredService<IDynamicPrayerTimeProviderManager>();
+            await providerManager.CalculatePrayerTimesAsync(profile.ID, currentZonedDateTime, cancellationToken);
+        }
+
+        _lastLoadedDate = currentZonedDateTime.Date;
     }
 }
