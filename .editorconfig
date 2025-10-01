@@ -1,4 +1,4 @@
-[*.cs]
+[ "*.cs" ]
 csharp_style_namespace_declarations = file_scoped:warning
 
 # "Collection initialization can be simplified"
@@ -10,9 +10,15 @@ dotnet_diagnostic.CsWinRT1030.severity = none
 
 # "Use simple 'using' statement" but the explicit scope makes it clearer in my opinion
 dotnet_diagnostic.IDE0063.severity = none
-
+  
 # Naming Styles
 dotnet_diagnostic.IDE1006.severity = none
+  
+# 'Use new()'
+dotnet_diagnostic.IDE0090.severity = none
+
+# 'using statement can be simplified'
+dotnet_diagnostic.IDE0063.severity = none
 
 # "Avoid potentially expensive logging" for even the most irrelevant 'performance' considerations
 dotnet_diagnostic.CA1873.severity = none

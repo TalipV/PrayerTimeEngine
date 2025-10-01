@@ -77,7 +77,7 @@ public class ProfileDBAccess(
         }
     }
 
-    private async Task<int> getNextProfileSequenceNo(AppDbContext dbContext, CancellationToken cancellationToken)
+    private static async Task<int> getNextProfileSequenceNo(AppDbContext dbContext, CancellationToken cancellationToken)
     {
         int? maxSeq = await dbContext.Profiles
             .Select(x => (int?)x.SequenceNo)
