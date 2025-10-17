@@ -207,6 +207,12 @@ public class FaziletDynamicPrayerTimeProvider(
             {
                 // QUICK FIX...
                 cityName = cityName.Replace("İ", "I");
+
+                if (cityName == "Mekke")
+                    cityName = "Mekke-i Mükerreme";
+                else if (cityName == "Medine")
+                    cityName = "Medîne-i Münevvere";
+
                 cityID = await getCityID(cityName, countryID, false, cancellationToken).ConfigureAwait(false);
             }
         }
