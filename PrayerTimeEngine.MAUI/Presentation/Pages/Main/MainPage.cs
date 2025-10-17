@@ -7,7 +7,6 @@ using PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
 using PrayerTimeEngine.Presentation.Views.MosquePrayerTimes;
 using PrayerTimeEngine.Presentation.Views.PrayerTimeGraphic;
 using PrayerTimeEngine.Presentation.Views.PrayerTimes;
-using PrayerTimeEngine.Services;
 using UraniumUI.Material.Controls;
 using static CommunityToolkit.Maui.Markup.GridRowsColumns;
 
