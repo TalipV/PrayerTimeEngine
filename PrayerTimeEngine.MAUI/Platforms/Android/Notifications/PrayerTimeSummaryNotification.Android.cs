@@ -9,6 +9,7 @@ using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Management;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Models;
 using PrayerTimeEngine.Core.Domain.Models;
+using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Management;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Interfaces;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
 
@@ -228,8 +229,20 @@ public class PrayerTimeSummaryNotification : Service
 
         foreach (Profile profile in profiles)
         {
-            var providerManager = MauiProgram.ServiceProvider.GetRequiredService<IDynamicPrayerTimeProviderManager>();
-            await providerManager.CalculatePrayerTimesAsync(profile.ID, currentZonedDateTime, cancellationToken);
+            if (profile is DynamicProfile dynamicProfile)
+            {
+                var dynamicPrayerTimeProviderManager = MauiProgram.ServiceProvider.GetRequiredService<IDynamicPrayerTimeProviderManager>();
+                await dynamicPrayerTimeProviderManager.CalculatePrayerTimesAsync(dynamicProfile.ID, currentZonedDateTime, cancellationToken);
+            }
+            else if (profile is MosqueProfile mosqueProfile)
+            {
+                var mosquePrayerTimeProviderManager = MauiProgram.ServiceProvider.GetRequiredService<IMosquePrayerTimeProviderManager>();
+                await mosquePrayerTimeProviderManager.CalculatePrayerTimesAsync(mosqueProfile.ID, currentZonedDateTime, cancellationToken);
+            }
+            else
+            {
+                throw new NotImplementedException($"Type of profile '{profile?.GetType().ToString() ?? "NULL"}' is not implemented");
+            }
         }
 
         _lastLoadedDate = currentZonedDateTime.Date;
