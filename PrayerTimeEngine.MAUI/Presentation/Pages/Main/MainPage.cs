@@ -176,8 +176,8 @@ public partial class MainPage : ContentPage
             .Bind(AutoCompleteTextField.TextProperty, nameof(MainPageViewModel.PlaceSearchText))
             .Bind<AutoCompleteTextField, bool, bool>(
                 IsEnabledProperty,
-                nameof(MainPageViewModel.IsLoadingPrayerTimesOrSelectedPlace),
-                convert: value => !value);
+                nameof(MainPageViewModel.IsSearchBoxEnabled),
+                convert: value => value);
 
         var mainGrid = new Grid
         {

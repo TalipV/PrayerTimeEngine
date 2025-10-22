@@ -142,7 +142,7 @@ public partial class MosquePrayerTimeView : ContentView
                 HorizontalOptions = LayoutOptions.Center,
                 VerticalOptions = LayoutOptions.Center
             };
-            subtime1DisplayText.SetBinding(Label.TextProperty, new Binding(subtime1Binding, stringFormat: "{0:HH:mm:ss}"));
+            subtime1DisplayText.SetBinding(Label.TextProperty, new Binding($"{nameof(MosquePrayerTimeViewModel.PrayerTimesSet)}.{subtime1Binding}", stringFormat: "{0:HH:mm:ss}"));
 
             grid.AddWithSpan(subtime1Label, startRowNo + 2, startColumnNo);
             grid.AddWithSpan(subtime1DisplayText, startRowNo + 2, startColumnNo + 1);

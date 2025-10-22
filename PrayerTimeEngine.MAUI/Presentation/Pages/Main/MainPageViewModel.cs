@@ -80,6 +80,14 @@ public partial class MainPageViewModel(
 
     public bool IsLoadingSelectedPlace { get; set; }
 
+    public bool IsSearchBoxEnabled
+    {
+        get
+        {
+            return !IsLoadingPrayerTimesOrSelectedPlace && this.CurrentProfile is DynamicProfile;
+        }
+    }
+
     [OnChangedMethod(nameof(onPlaceSearchTextChanged))]
     public string PlaceSearchText { get; set; }
     public IEnumerable<BasicPlaceInfo> FoundPlaces { get; set; }
@@ -462,6 +470,8 @@ public partial class MainPageViewModel(
 
     private async void onCurrentProfileWithModelChanged()
     {
+        OnPropertyChanged(nameof(IsSearchBoxEnabled));
+
         if (_suspendOnCurrentProfileWithModelChanged || CurrentProfileWithModel == null)
         {
             return;
