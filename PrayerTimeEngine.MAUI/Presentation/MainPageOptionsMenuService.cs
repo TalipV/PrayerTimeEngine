@@ -140,6 +140,7 @@ internal class MainPageOptionsMenuService(
                                     OS: {DeviceInfo.Platform}, {DeviceInfo.VersionString}
                                     Auflösung: {DeviceDisplay.MainDisplayInfo.Height}x{DeviceDisplay.MainDisplayInfo.Width} (Dichte: {DeviceDisplay.MainDisplayInfo.Density})
                                     Kategorie der Größe: {DebugUtil.GetScreenSizeCategoryName()}
+                                    Zeitzone: {systemInfoService.GetSystemTimeZone().Id}
                                 """
                                     , "Ok");
                                 break;
