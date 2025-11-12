@@ -46,7 +46,7 @@ internal class MainPageOptionsMenuService(
     {
         if (viewModel.CurrentProfileWithModel == null)
         {
-            await page.DisplayAlert("Abbruch", "CurrentProfileWithModel ist NULL??", "OK");
+            await page.DisplayAlertAsync("Abbruch", "CurrentProfileWithModel ist NULL??", "OK");
             return;
         }
 
@@ -59,7 +59,7 @@ internal class MainPageOptionsMenuService(
             {
                 doRepeat = false;
 
-                switch (await page.DisplayActionSheet(
+                switch (await page.DisplayActionSheetAsync(
                     title: _optionsText,
                     cancel: _cancelText,
                     destruction: null,
@@ -69,7 +69,7 @@ internal class MainPageOptionsMenuService(
                 {
                     case _generalOptionText:
 
-                        switch (await page.DisplayActionSheet(
+                        switch (await page.DisplayActionSheetAsync(
                             title: _generalOptionText,
                             cancel: _backText,
                             destruction: null,
@@ -81,10 +81,10 @@ internal class MainPageOptionsMenuService(
                             _importConfiguration))
                         {
                             case _showTimeConfigsOverviewText:
-                                await page.DisplayAlert("Info", viewModel.GetPrayerTimeConfigDisplayText(), "Ok");
+                                await page.DisplayAlertAsync("Info", viewModel.GetPrayerTimeConfigDisplayText(), "Ok");
                                 break;
                             case _showLocationConfigsOverviewText:
-                                await page.DisplayAlert("Info", viewModel.GetLocationDataDisplayText(), "Ok");
+                                await page.DisplayAlertAsync("Info", viewModel.GetLocationDataDisplayText(), "Ok");
                                 break;
                             case _showLogsText:
                                 viewModel.GoToLogsPageCommand.Execute(null);
@@ -107,7 +107,7 @@ internal class MainPageOptionsMenuService(
 
                     case _technicalOptionText:
 
-                        switch (await page.DisplayActionSheet(
+                        switch (await page.DisplayActionSheetAsync(
                             title: _technicalOptionText,
                             cancel: _backText,
                             destruction: null,
@@ -132,7 +132,7 @@ internal class MainPageOptionsMenuService(
                                 break;
 
                             case _deviceInfoText:
-                                await page.DisplayAlert(
+                                await page.DisplayAlertAsync(
                                     "Geräteinformationen",
                                     $"""
                                     Modell: {DeviceInfo.Manufacturer.ToUpper()}, {DeviceInfo.Model}
@@ -151,7 +151,7 @@ internal class MainPageOptionsMenuService(
                         break;
                     case _systemOptionText:
 
-                        switch (await page.DisplayActionSheet(
+                        switch (await page.DisplayActionSheetAsync(
                             title: _systemOptionText,
                             cancel: _backText,
                             destruction: null,
@@ -159,7 +159,7 @@ internal class MainPageOptionsMenuService(
                             _closeAppText))
                         {
                             case _resetAppText:
-                                if (!await page.DisplayAlert("Bestätigung", "Daten wirklich zurücksetzen?", "Ja", _cancelText))
+                                if (!await page.DisplayAlertAsync("Bestätigung", "Daten wirklich zurücksetzen?", "Ja", _cancelText))
                                     break;
 
                                 preferenceService.SetDoReset();
@@ -199,7 +199,7 @@ internal class MainPageOptionsMenuService(
 
         if (viewModel.CurrentProfileWithModel == null)
         {
-            await page.DisplayAlert("Abbruch", "CurrentProfileWithModel ist NULL??", "OK");
+            await page.DisplayAlertAsync("Abbruch", "CurrentProfileWithModel ist NULL??", "OK");
             return;
         }
 
@@ -208,7 +208,7 @@ internal class MainPageOptionsMenuService(
             options.Add("Internetseite der Moschee-Zeiten öffnen");
         }
 
-        switch (await page.DisplayActionSheet(
+        switch (await page.DisplayActionSheetAsync(
                             title: "Profilverwaltung",
                             cancel: "Abbrechen",
                             destruction: null,
@@ -223,7 +223,7 @@ internal class MainPageOptionsMenuService(
                 var items = Enum.GetValues<EMosquePrayerTimeProviderType>().ToList();
                 items.Remove(EMosquePrayerTimeProviderType.None);
 
-                string selectedItemText = await page.DisplayActionSheet(
+                string selectedItemText = await page.DisplayActionSheetAsync(
                     title: "Moschee-App auswählen",
                     cancel: "Abbrechen",
                     destruction: null,
@@ -309,12 +309,12 @@ internal class MainPageOptionsMenuService(
             // Save the value
             DebugUtil.SetSizeValue(sizeValues);
 
-            await page.DisplayAlert("Erfolg", $"Gespeichert! App manuell wieder starten!", "OK");
+            await page.DisplayAlertAsync("Erfolg", $"Gespeichert! App manuell wieder starten!", "OK");
             Application.Current.Quit();
         }
         else
         {
-            await page.DisplayAlert("Eingabe ungültig", "Eingabe war ungültig", "OK");
+            await page.DisplayAlertAsync("Eingabe ungültig", "Eingabe war ungültig", "OK");
         }
     }
 
@@ -340,7 +340,7 @@ internal class MainPageOptionsMenuService(
 
         if (result.IsSuccessful)
         {
-            await page.DisplayAlert("Erfolg", "Der Export der Konfiguration war erfolgreich", "OK");
+            await page.DisplayAlertAsync("Erfolg", "Der Export der Konfiguration war erfolgreich", "OK");
         }
         else
         {
@@ -349,7 +349,7 @@ internal class MainPageOptionsMenuService(
                 "Error while writing export configuration to destination '{DestinationFilePath}'",
                 result.FilePath);
 
-            await page.DisplayAlert("Fehler", $"Fehler beim Exportieren: {result.Exception?.Message ?? "-"}", "OK");
+            await page.DisplayAlertAsync("Fehler", $"Fehler beim Exportieren: {result.Exception?.Message ?? "-"}", "OK");
         }
     }
 
@@ -373,7 +373,7 @@ internal class MainPageOptionsMenuService(
 
         if (pickedFile == null)
         {
-            await page.DisplayAlert("Abbruch", "Es wurde keine Datei ausgewählt", "OK");
+            await page.DisplayAlertAsync("Abbruch", "Es wurde keine Datei ausgewählt", "OK");
             return;
         }
 
@@ -388,7 +388,7 @@ internal class MainPageOptionsMenuService(
 
             await configurationImportExportService.Import(fileContent, cancellationToken);
 
-            await page.DisplayAlert("Erfolg", "Der Import der Konfiguration war erfolgreich", "OK");
+            await page.DisplayAlertAsync("Erfolg", "Der Import der Konfiguration war erfolgreich", "OK");
         }
         catch (Exception exception)
         {
@@ -397,7 +397,7 @@ internal class MainPageOptionsMenuService(
                 "Error while importing configuration '{FilePath}'",
                 pickedFile.FullPath);
 
-            await page.DisplayAlert("Fehler", $"Fehler beim Exportieren: {exception?.Message ?? "-"}", "OK");
+            await page.DisplayAlertAsync("Fehler", $"Fehler beim Exportieren: {exception?.Message ?? "-"}", "OK");
         }
     }
 
