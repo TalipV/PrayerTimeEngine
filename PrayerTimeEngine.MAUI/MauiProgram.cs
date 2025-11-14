@@ -56,7 +56,7 @@ namespace PrayerTimeEngine;
 
 
 /* CLI commands cheat sheet (executed in solution folder)
- * Generate Release APK:    dotnet publish -c release -f net8.0-android -p:false
+ * Generate Release APK:    dotnet publish -c release -f net10.0-android -p:false
  * EF Migration:            dotnet ef migrations add InitialMigration --output-dir Data\EntityFramework\Generated_Migrations --namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_Migrations --context PrayerTimeEngine.Core.Data.EntityFramework.AppDbContext --project PrayerTimeEngine.Core\PrayerTimeEngine.Core.csproj
  * EF Compiled Models:      dotnet ef dbcontext optimize --output-dir Data\EntityFramework\Generated_CompiledModels --namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels --context PrayerTimeEngine.Core.Data.EntityFramework.AppDbContext --project PrayerTimeEngine.Core\PrayerTimeEngine.Core.csproj
  */
