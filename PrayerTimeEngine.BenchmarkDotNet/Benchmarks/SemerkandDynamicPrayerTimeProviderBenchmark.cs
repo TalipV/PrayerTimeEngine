@@ -17,7 +17,6 @@ using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Semerkand.Models
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Semerkand.Services;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Interfaces;
 using PrayerTimeEngine.Core.Tests.Common.TestData;
-using System.Data.Common;
 
 namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks;
 
@@ -84,7 +83,7 @@ public class SemerkandDynamicPrayerTimeProviderBenchmark
             );
     }
 
-    private static DbConnection _dbContextKeepAliveSqlConnection;
+    private static SqliteConnection _dbContextKeepAliveSqlConnection;
 
     [GlobalSetup]
     public static void Setup()
@@ -122,14 +121,13 @@ public class SemerkandDynamicPrayerTimeProviderBenchmark
     private static SemerkandDynamicPrayerTimeProvider _semerkandDynamicPrayerTimeProvider_DataFromDbStorage = null;
     private static SemerkandDynamicPrayerTimeProvider _semerkandDynamicPrayerTimeProvider_DataFromApi = null;
 
-#pragma warning disable CA1822 // Mark members as static
     [Benchmark]
     public List<(ETimeType TimeType, ZonedDateTime ZonedDateTime)> SemerkandDynamicPrayerTimeProvider_GetDataFromDb()
     {
         var result = _semerkandDynamicPrayerTimeProvider_DataFromDbStorage.GetPrayerTimesAsync(
             _zonedDateTime,
             locationData: _locationData,
-            configurations: _configs, 
+            configurations: _configs,
             cancellationToken: default).GetAwaiter().GetResult();
 
         if (result.Count != 1)
@@ -146,7 +144,7 @@ public class SemerkandDynamicPrayerTimeProviderBenchmark
         var result = _semerkandDynamicPrayerTimeProvider_DataFromApi.GetPrayerTimesAsync(
             _zonedDateTime,
             locationData: _locationData,
-            configurations: _configs, 
+            configurations: _configs,
             cancellationToken: default).GetAwaiter().GetResult();
 
         if (result.Count != 1)
@@ -156,5 +154,4 @@ public class SemerkandDynamicPrayerTimeProviderBenchmark
 
         return result;
     }
-#pragma warning restore CA1822 // Mark members as static
 }

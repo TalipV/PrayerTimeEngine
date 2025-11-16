@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Semerkand.Models.Entities;
 
-public class SemerkandDailyPrayerTimes : IDailyPrayerTimes, IInsertedAt
+public class SemerkandDailyPrayerTimes : IDailyPrayerTimes, IEntity
 {
     [Key]
     public int ID { get; set; }
@@ -43,7 +43,7 @@ public class SemerkandDailyPrayerTimes : IDailyPrayerTimes, IInsertedAt
             ETimeType.MaghribStart => Maghrib,
             ETimeType.MaghribEnd => Isha,
             ETimeType.IshaStart => Isha,
-            ETimeType.IshaEnd => NextFajr ?? new ZonedDateTime(Instant.MinValue, DateTimeZone.Utc),
+            ETimeType.IshaEnd => NextFajr ?? Isha,
             _ => throw new ArgumentException($"Invalid {nameof(timeType)} value: {timeType}."),
         };
     }

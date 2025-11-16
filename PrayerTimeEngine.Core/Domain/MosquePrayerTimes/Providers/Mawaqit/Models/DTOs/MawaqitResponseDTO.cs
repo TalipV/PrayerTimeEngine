@@ -53,30 +53,37 @@ public class MawaqitResponseDTO
     [JsonPropertyName("iqamaCalendar")]
     public List<Dictionary<string, List<string>>> IqamahTimeValuesForDays { get; set; }
 
-    public IEnumerable<MawaqitMosqueDailyPrayerTimes> ToMawaqitPrayerTimes(string externalID)
+    public IEnumerable<MawaqitMosqueDailyPrayerTimes> ToMawaqitPrayerTimes(int year, string externalID)
     {
         if (PrayerTimeDays.Count != 12 || IqamahTimeValuesForDays.Count != 12)
         {
             throw new Exception("Expected 12 months for both lists");
         }
 
-        LocalDate firstDayOfCurrentYear = new LocalDate(DateTime.Today.Year, 1, 1);
+        var firstDayOfCurrentYear = new LocalDate(year, 1, 1);
 
-        for (int i = 0; i < 12; i++)
+        for (int monthCounter = 0; monthCounter < 12; monthCounter++)
         {
             // times per month
-            Dictionary<string, List<string>> prayerTimeDaysItem = PrayerTimeDays.ElementAt(i);
-            Dictionary<string, List<string>> iqamahTimeValuesForDaysItem = IqamahTimeValuesForDays.ElementAt(i);
+            Dictionary<string, List<string>> prayerTimeDaysItemOfMonth = PrayerTimeDays.ElementAt(monthCounter);
+            Dictionary<string, List<string>> iqamahTimeValuesForDaysItem = IqamahTimeValuesForDays.ElementAt(monthCounter);
 
             var localTimeParser = LocalTimePattern.CreateWithInvariantCulture("HH:mm");
-            LocalDate firstDayOfThisMonth = firstDayOfCurrentYear.PlusMonths(i);
+            LocalDate firstDayOfThisMonth = firstDayOfCurrentYear.PlusMonths(monthCounter);
+            LocalDate lastDayOfThisMonth = firstDayOfThisMonth.PlusMonths(1).PlusDays(-1);
 
-            for (int j = 1; j <= prayerTimeDaysItem.Count; j++)
+            for (int dayCounter = 1; dayCounter <= prayerTimeDaysItemOfMonth.Count; dayCounter++)
             {
-                LocalDate currentDay = firstDayOfThisMonth.PlusDays(j - 1);
+                // unfortunately, the API does provide broken data like that
+                if (dayCounter > lastDayOfThisMonth.Day)
+                {
+                    break;
+                }
 
-                List<string> prayerTimeDay = prayerTimeDaysItem["" + j];
-                List<string> iqamaTimeValueForDay = iqamahTimeValuesForDaysItem["" + j];
+                LocalDate currentDay = firstDayOfThisMonth.PlusDays(dayCounter - 1);
+
+                List<string> prayerTimeDay = prayerTimeDaysItemOfMonth["" + dayCounter];
+                List<string> iqamaTimeValueForDay = iqamahTimeValuesForDaysItem["" + dayCounter];
 
                 if (prayerTimeDay.Count != 6 || iqamaTimeValueForDay.Count != 5)
                 {

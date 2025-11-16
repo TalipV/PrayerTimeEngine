@@ -43,29 +43,48 @@ public class ProfileDBAccess(
         }
     }
 
-    public async Task SaveProfile(Profile profile, CancellationToken cancellationToken)
+    public Task SaveProfile(Profile profile, CancellationToken cancellationToken)
     {
-        using (AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken))
-        {
-            Profile foundProfile =
-                await includeGeneralData(dbContext.Profiles)
-                    .FirstOrDefaultAsync(x => x.ID == profile.ID, cancellationToken)
-                    .ConfigureAwait(false);
+        return SaveProfiles([profile], cancellationToken);
+    }
 
-            if (foundProfile != null)
+    public async Task SaveProfiles(ICollection<Profile> profiles, CancellationToken cancellationToken)
+    {
+        using (AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false))
+        {
+            foreach (Profile profile in profiles)
             {
-                if (foundProfile is DynamicProfile foundDynamicProfile)
+                Profile foundProfile = 
+                    await includeGeneralData(dbContext.Profiles)
+                        .FirstOrDefaultAsync(x => x.ID == profile.ID, cancellationToken)
+                        .ConfigureAwait(false);
+
+                if (foundProfile != null)
                 {
-                    dbContext.TimezoneInfos.Remove(foundDynamicProfile.PlaceInfo.TimezoneInfo);
-                    dbContext.PlaceInfos.Remove(foundDynamicProfile.PlaceInfo);
+                    if (foundProfile is DynamicProfile foundDynamicProfile)
+                    {
+                        dbContext.TimezoneInfos.Remove(foundDynamicProfile.PlaceInfo.TimezoneInfo);
+                        dbContext.PlaceInfos.Remove(foundDynamicProfile.PlaceInfo);
+                    }
+                    dbContext.Profiles.Remove(foundProfile);
+                    await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
                 }
-                dbContext.Profiles.Remove(foundProfile);
-                await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+
+                await dbContext.Profiles.AddAsync(profile, cancellationToken).ConfigureAwait(false);
             }
 
-            await dbContext.Profiles.AddAsync(profile, cancellationToken).ConfigureAwait(false);
             await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
         }
+    }
+
+    private static async Task<int> getNextProfileSequenceNo(AppDbContext dbContext, CancellationToken cancellationToken)
+    {
+        int? maxSeq = await dbContext.Profiles
+            .Select(x => (int?)x.SequenceNo)
+            .MaxAsync(cancellationToken)
+            .ConfigureAwait(false);
+
+        return (maxSeq ?? 0) + 1;
     }
 
     public async Task<Profile> CopyProfile(Profile profile, CancellationToken cancellationToken)
@@ -74,9 +93,9 @@ public class ProfileDBAccess(
         {
             Profile clonedProfile = dbContext.DetachedClone(profile);
             clonedProfile.ID = default;
-            clonedProfile.SequenceNo = dbContext.Profiles.Select(x => x.SequenceNo).Max() + 1;
-            
-            if (clonedProfile is DynamicProfile clonedDynamicProfile 
+            clonedProfile.SequenceNo = await getNextProfileSequenceNo(dbContext, cancellationToken).ConfigureAwait(false);
+
+            if (clonedProfile is DynamicProfile clonedDynamicProfile
                 && profile is DynamicProfile dynamicProfile)
             {
                 clonedDynamicProfile.PlaceInfo = dbContext.DetachedClone(dynamicProfile.PlaceInfo);
@@ -256,6 +275,7 @@ public class ProfileDBAccess(
                 Name = $"{providerType}: {externalID}",
                 ExternalID = externalID,
                 MosqueProviderType = providerType,
+                SequenceNo = await getNextProfileSequenceNo(dbContext, cancellationToken).ConfigureAwait(false)
             };
 
             await dbContext.MosqueProfiles.AddAsync(newMosqueProfile, cancellationToken);

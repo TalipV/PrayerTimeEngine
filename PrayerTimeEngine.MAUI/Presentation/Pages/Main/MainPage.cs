@@ -1,13 +1,9 @@
-﻿using CommunityToolkit.Maui.Extensions;
-using CommunityToolkit.Maui.Markup;
-using Microsoft.Extensions.Logging;
-using Microsoft.Maui.Controls;
+﻿using CommunityToolkit.Maui.Markup;
 using NodaTime;
 using OnScreenSizeMarkup.Maui.Helpers;
 using PrayerTimeEngine.Core.Common;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Models;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
-using PrayerTimeEngine.Presentation.Services;
 using PrayerTimeEngine.Presentation.Views.MosquePrayerTimes;
 using PrayerTimeEngine.Presentation.Views.PrayerTimeGraphic;
 using PrayerTimeEngine.Presentation.Views.PrayerTimes;
@@ -27,7 +23,6 @@ public partial class MainPage : ContentPage
     public MainPage(
             IDispatcher dispatcher,
             MainPageViewModel viewModel,
-            ToastMessageService toastMessageService,
             IPreferenceService preferenceService,
             ISystemInfoService systemInfoService,
             PrayerTimeGraphicView prayerTimeGraphicView
@@ -37,13 +32,13 @@ public partial class MainPage : ContentPage
         _dispatcher = dispatcher;
         _preferenceService = preferenceService;
         _systemInfoService = systemInfoService;
-        _mainPageOptionsMenuService =
-            new MainPageOptionsMenuService(
+
+        // provide all constructor service params automatically through DI but add MainPage param ('this') manually
+        _mainPageOptionsMenuService = ActivatorUtilities.CreateInstance<MainPageOptionsMenuService>(
+                MauiProgram.ServiceProvider,
                 this,
-                viewModel,
-                toastMessageService,
-                MauiProgram.ServiceProvider.GetRequiredService<ILogger<MainPageOptionsMenuService>>(),
-                preferenceService);
+                viewModel
+            );
 
         _prayerTimeGraphicView = prayerTimeGraphicView;
 
@@ -80,6 +75,15 @@ public partial class MainPage : ContentPage
         _dispatcher.Dispatch(() =>
         {
             Instant instant = _systemInfoService.GetCurrentInstant();
+
+            // For debugging
+            //// 01:00 AM the following day
+            //instant = _systemInfoService.GetCurrentZonedDateTime()
+            //    .LocalDateTime.Date
+            //    .AtStartOfDayInZone(_systemInfoService.GetSystemTimeZone())
+            //    .PlusHours(25)
+            //    .ToInstant();
+
             _prayerTimeGraphicView.PrayerTimeGraphicTime = _viewModel.CurrentProfileWithModel.CreatePrayerTimeGraphicTimeVO(instant);
             _prayerTimeGraphicViewBaseView.Invalidate();
         });
@@ -117,7 +121,7 @@ public partial class MainPage : ContentPage
 
     private Label _lastUpdatedTextInfo;
     private Label _profileDisplayNameTextInfo;
-    private PrayerTimeGraphicView _prayerTimeGraphicView;
+    private readonly PrayerTimeGraphicView _prayerTimeGraphicView;
     private GraphicsView _prayerTimeGraphicViewBaseView;
     private CarouselView _carouselView;
 
@@ -126,16 +130,17 @@ public partial class MainPage : ContentPage
         var titleGrid = new Grid
         {
             ColumnDefinitions = Columns.Define(
-                GridLength.Star, 
+                GridLength.Star,
                 GridLength.Star)
         };
 
         _lastUpdatedTextInfo = new Label()
             .Column(0).Row(0)
             .Start().CenterVertical()
+            .MinWidth(20) // otherwise we can't reach the menu by tapping an empty label
             .Bind(
                 Label.TextProperty,
-                path: $"{nameof(MainPageViewModel.CurrentProfileWithModel)}.{nameof(IPrayerTimeViewModel.PrayerTimesSet)}.{nameof(DynamicPrayerTimesSet.DataCalculationTimestamp)}",
+                path: $"{nameof(MainPageViewModel.CurrentProfileWithModel)}.{nameof(IPrayerTimeViewModel.PrayerTimesSet)}.{nameof(DynamicPrayerTimesDaySet.DataCalculationTimestamp)}",
                 stringFormat: "{0:dd.MM, HH:mm:ss}");
 
         titleGrid.Add(_lastUpdatedTextInfo);
@@ -143,6 +148,7 @@ public partial class MainPage : ContentPage
         _profileDisplayNameTextInfo = new Label()
             .Column(1).Row(0).Paddings(0, 0, 20, 0)
             .TextEnd().CenterVertical()
+            .MinWidth(20) // otherwise we can't reach the menu by tapping an empty label
             .Bind(Label.TextProperty, $"{nameof(MainPageViewModel.CurrentProfile)}.{nameof(Profile.Name)}");
 
         titleGrid.Add(_profileDisplayNameTextInfo);
@@ -155,7 +161,7 @@ public partial class MainPage : ContentPage
         titleGrid.WidthRequest = 415;
 #endif
 
-        var searchBox = 
+        var searchBox =
             new AutoCompleteTextField
             {
                 Title = "Search",
@@ -170,8 +176,8 @@ public partial class MainPage : ContentPage
             .Bind(AutoCompleteTextField.TextProperty, nameof(MainPageViewModel.PlaceSearchText))
             .Bind<AutoCompleteTextField, bool, bool>(
                 IsEnabledProperty,
-                nameof(MainPageViewModel.IsLoadingPrayerTimesOrSelectedPlace),
-                convert: value => !value);
+                nameof(MainPageViewModel.IsSearchBoxEnabled),
+                convert: value => value);
 
         var mainGrid = new Grid
         {

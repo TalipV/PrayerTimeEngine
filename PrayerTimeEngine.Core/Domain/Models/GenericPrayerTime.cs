@@ -7,6 +7,8 @@ public class GenericPrayerTime
     public ZonedDateTime? Start { get; set; }
     public ZonedDateTime? End { get; set; }
 
+    #region System.Object overrides
+
     public override bool Equals(object obj)
     {
         if (obj is not GenericPrayerTime otherTime)
@@ -20,4 +22,6 @@ public class GenericPrayerTime
     {
         return HashCode.Combine(Start, End);
     }
+
+    #endregion System.Object overrides
 }

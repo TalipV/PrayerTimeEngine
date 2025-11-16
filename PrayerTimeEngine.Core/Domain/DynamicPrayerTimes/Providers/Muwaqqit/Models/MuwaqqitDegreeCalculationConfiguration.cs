@@ -4,6 +4,8 @@ public class MuwaqqitDegreeCalculationConfiguration : MuwaqqitCalculationConfigu
 {
     public required double Degree { get; init; }
 
+    #region System.Object overrides
+
     public override bool Equals(object obj)
     {
         if (obj is not MuwaqqitDegreeCalculationConfiguration otherSettingConfig)
@@ -22,4 +24,6 @@ public class MuwaqqitDegreeCalculationConfiguration : MuwaqqitCalculationConfigu
     {
         return $"{base.ToString()}, Degree: {Degree}°";
     }
+
+    #endregion System.Object overrides
 }

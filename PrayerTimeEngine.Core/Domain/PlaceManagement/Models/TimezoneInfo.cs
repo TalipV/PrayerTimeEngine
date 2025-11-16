@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PrayerTimeEngine.Core.Domain.PlaceManagement.Models;
 
-public class TimezoneInfo : IInsertedAt
+public class TimezoneInfo : IEntity
 {
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -15,6 +15,8 @@ public class TimezoneInfo : IInsertedAt
     public string DisplayName { get; set; }
     public string Name { get; set; }
     public int UtcOffsetSeconds { get; set; }
+
+    #region System.Object overrides
 
     public override bool Equals(object obj)
     {
@@ -33,4 +35,6 @@ public class TimezoneInfo : IInsertedAt
     {
         return HashCode.Combine(ID, DisplayName, Name, UtcOffsetSeconds);
     }
+
+    #endregion System.Object overrides
 }

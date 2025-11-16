@@ -1,15 +1,15 @@
-﻿using PrayerTimeEngine.Core.Domain.ProfileManagement.Services;
-using PrayerTimeEngine.Core.Data.EntityFramework;
-using PrayerTimeEngine.Core.Tests.Common;
+﻿using Microsoft.EntityFrameworkCore;
 using PrayerTimeEngine.Core.Common.Enum;
-using PrayerTimeEngine.Core.Tests.Common.TestData;
-using PrayerTimeEngine.Core.Domain.PlaceManagement.Models;
-using Microsoft.EntityFrameworkCore;
-using PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
+using PrayerTimeEngine.Core.Data.EntityFramework;
+using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Models;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Models;
-using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes;
+using PrayerTimeEngine.Core.Domain.PlaceManagement.Models;
+using PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
+using PrayerTimeEngine.Core.Domain.ProfileManagement.Services;
+using PrayerTimeEngine.Core.Tests.Common;
+using PrayerTimeEngine.Core.Tests.Common.TestData;
 
 namespace PrayerTimeEngine.Core.Tests.Unit.Domain.ProfileManagement;
 
@@ -31,9 +31,9 @@ public class ProfileDBAccessTests : BaseTest
     public async Task GetProfiles_SavedThreeDifferentProfiles_RetrievedNormally()
     {
         // ARRANGE
-        var profile1 = TestDataHelper.CreateNewCompleteTestProfile(profileID: 1);
-        var profile2 = TestDataHelper.CreateNewCompleteTestProfile(profileID: 2);
-        var profile3 = TestDataHelper.CreateNewCompleteTestProfile(profileID: 3);
+        var profile1 = TestDataHelper.CreateCompleteTestDynamicProfile(profileID: 1);
+        var profile2 = TestDataHelper.CreateCompleteTestDynamicProfile(profileID: 2);
+        var profile3 = TestDataHelper.CreateCompleteTestDynamicProfile(profileID: 3);
         await TestArrangeDbContext.Profiles.AddAsync(profile1);
         await TestArrangeDbContext.Profiles.AddAsync(profile2);
         await TestArrangeDbContext.Profiles.AddAsync(profile3);
@@ -58,7 +58,7 @@ public class ProfileDBAccessTests : BaseTest
     public async Task GetUntrackedReferenceOfProfile_ExistingProfile_ProfileRetrieved()
     {
         // ARRANGE
-        var profile = TestDataHelper.CreateNewCompleteTestProfile();
+        var profile = TestDataHelper.CreateCompleteTestDynamicProfile();
         await TestArrangeDbContext.Profiles.AddAsync(profile);
         await TestArrangeDbContext.SaveChangesAsync();
 
@@ -69,8 +69,8 @@ public class ProfileDBAccessTests : BaseTest
         profile.Should().BeEquivalentTo(untracktedProfile);
         ReferenceEquals(profile, untracktedProfile).Should().BeFalse(because: "they should be equal but not exactly the same");
         TestAssertDbContext.Entry(untracktedProfile).State.Should().Be(Microsoft.EntityFrameworkCore.EntityState.Detached);
-    }        
-    
+    }
+
     [Fact]
     [Trait("Method", "GetUntrackedReferenceOfProfile")]
     public async Task GetUntrackedReferenceOfProfile_NonExistingProfile_NothingReturned()
@@ -92,7 +92,7 @@ public class ProfileDBAccessTests : BaseTest
     public async Task SaveProfile_BasicProfile_SavedInDb()
     {
         // ARRANGE
-        var profile = TestDataHelper.CreateNewCompleteTestProfile();
+        var profile = TestDataHelper.CreateCompleteTestDynamicProfile();
 
         // ACT
         await _profileDBAccess.SaveProfile(profile, default);
@@ -117,7 +117,7 @@ public class ProfileDBAccessTests : BaseTest
     public async Task UpdateLocationConfig_SingleLocation_OnlySingleLocationInProfile()
     {
         // ARRANGE
-        var profile = TestDataHelper.CreateNewCompleteTestProfile();
+        var profile = TestDataHelper.CreateCompleteTestDynamicProfile();
         await TestArrangeDbContext.Profiles.AddAsync(profile);
         await TestArrangeDbContext.SaveChangesAsync();
 
@@ -163,7 +163,7 @@ public class ProfileDBAccessTests : BaseTest
     public async Task UpdateTimeConfig_SingleUpdate_UpdatedAsExpected()
     {
         // ARRANGE
-        var profile = TestDataHelper.CreateNewCompleteTestProfile();
+        var profile = TestDataHelper.CreateCompleteTestDynamicProfile();
         await TestArrangeDbContext.Profiles.AddAsync(profile);
         await TestArrangeDbContext.SaveChangesAsync();
 
@@ -179,8 +179,8 @@ public class ProfileDBAccessTests : BaseTest
         await _profileDBAccess.UpdateTimeConfig(profile, ETimeType.FajrEnd, genericSettingConfiguration, default);
 
         // ASSERT
-        profile.TimeConfigs.Should().Contain(x => x.CalculationConfiguration.Equals(genericSettingConfiguration));
-        profile.TimeConfigs.First(x => x.CalculationConfiguration.Equals(genericSettingConfiguration)).CalculationConfiguration.Should().BeEquivalentTo(genericSettingConfiguration);
+        profile.TimeConfigs.Should().Contain(x => Equals(x.CalculationConfiguration, genericSettingConfiguration));
+        profile.TimeConfigs.First(x => Equals(x.CalculationConfiguration, genericSettingConfiguration)).CalculationConfiguration.Should().BeEquivalentTo(genericSettingConfiguration);
     }
 
     #endregion UpdateTimeConfig
@@ -192,7 +192,7 @@ public class ProfileDBAccessTests : BaseTest
     public async Task CopyProfile_BasicTestProfile_NewProfileWithNewRelatedData()
     {
         // ARRANGE
-        var profile = TestDataHelper.CreateNewCompleteTestProfile();
+        var profile = TestDataHelper.CreateCompleteTestDynamicProfile();
         await TestArrangeDbContext.Profiles.AddAsync(profile);
         await TestArrangeDbContext.SaveChangesAsync();
         profile.ID.Should().Be(1, "this is a precondition");
@@ -267,7 +267,7 @@ public class ProfileDBAccessTests : BaseTest
     public async Task DeleteProfile_CopyTestProfileAndDeleteOriginalProfile_OriginalProfileDeleted()
     {
         // ARRANGE
-        var profile = TestDataHelper.CreateNewCompleteTestProfile();
+        var profile = TestDataHelper.CreateCompleteTestDynamicProfile();
         await TestArrangeDbContext.Profiles.AddAsync(profile);
         await TestArrangeDbContext.SaveChangesAsync();
         profile.ID.Should().Be(1, "this is a precondition");
@@ -278,7 +278,7 @@ public class ProfileDBAccessTests : BaseTest
         await _profileDBAccess.DeleteProfile(profile, default);
 
         // ASSERT
-        var profiles = 
+        var profiles =
             await TestAssertDbContext
                 .DynamicProfiles
                 .Include(x => x.PlaceInfo).ThenInclude(x => x.TimezoneInfo)
@@ -298,19 +298,19 @@ public class ProfileDBAccessTests : BaseTest
     public async Task CreateNewMosqueProfile_CreateMosqueProfile_Success()
     {
         // ARRANGE & ACT
-        MosqueProfile copiedProfile = 
+        MosqueProfile copiedProfile =
             await _profileDBAccess.CreateNewMosqueProfile(
-                EMosquePrayerTimeProviderType.Mawaqit, 
-                "test-mosque", 
+                EMosquePrayerTimeProviderType.Mawaqit,
+                "test-mosque",
                 default);
 
         // ASSERT
         MosqueProfile savedMosqueProfile = await TestAssertDbContext.MosqueProfiles.FirstOrDefaultAsync(x => x.ID == copiedProfile.ID, default);
-        
+
         copiedProfile.Should().NotBeNull();
         copiedProfile.ExternalID.Should().Be("test-mosque");
         copiedProfile.MosqueProviderType.Should().Be(EMosquePrayerTimeProviderType.Mawaqit);
-        
+
         savedMosqueProfile.Should().NotBeNull();
         savedMosqueProfile.ExternalID.Should().Be("test-mosque");
         savedMosqueProfile.MosqueProviderType.Should().Be(EMosquePrayerTimeProviderType.Mawaqit);

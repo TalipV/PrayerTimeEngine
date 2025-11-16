@@ -1,7 +1,7 @@
-﻿using System.Reflection;
-using PrayerTimeEngine.Core.Common.Attribute;
+﻿using PrayerTimeEngine.Core.Common.Attribute;
 using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes;
+using System.Reflection;
 
 namespace PrayerTimeEngine.Core.Domain;
 
@@ -33,7 +33,7 @@ public class TimeTypeAttributeService
     {
         Type enumType = typeof(ETimeType);
 
-        foreach (ETimeType timeType in Enum.GetValues(typeof(ETimeType)))
+        foreach (ETimeType timeType in Enum.GetValues<ETimeType>())
         {
             MemberInfo[] memberInfos = enumType.GetMember(timeType.ToString());
             MemberInfo enumValueMemberInfo = memberInfos.FirstOrDefault(m => m.DeclaringType == enumType);

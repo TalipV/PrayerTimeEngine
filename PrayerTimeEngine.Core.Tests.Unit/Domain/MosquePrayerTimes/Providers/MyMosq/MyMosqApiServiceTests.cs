@@ -87,10 +87,23 @@ public class MyMosqApiServiceTests : BaseTest
     }
 
     [Fact]
-    public async Task ValidateData_ValidExternalID_ReturnTrue()
+    public async Task GetPrayerTimesAsync_InvalidExternalID_Throws()
     {
         // ARRANGE
         var date = new LocalDate(2024, 8, 30);
+        string externalID = "12345678";
+
+        // ACT
+        Func<Task> testAction = async () => await _myMosqApiService.GetPrayerTimesAsync(date, externalID, cancellationToken: default);
+
+        // ASSERT
+        await testAction.Should().ThrowExactlyAsync<InvalidOperationException>();
+    }
+
+    [Fact]
+    public async Task ValidateData_ValidExternalID_ReturnTrue()
+    {
+        // ARRANGE
         string externalID = "1239";
 
         // ACT
@@ -104,7 +117,6 @@ public class MyMosqApiServiceTests : BaseTest
     public async Task ValidateData_InvalidExternalID_ReturnFalse()
     {
         // ARRANGE
-        var date = new LocalDate(2024, 8, 30);
         string externalID = "InvalidExternalID";
 
         // ACT

@@ -11,6 +11,7 @@ using PrayerTimeEngine.Core.Data.WebSocket;
 using PrayerTimeEngine.Core.Data.WebSocket.Interfaces;
 using PrayerTimeEngine.Core.Domain;
 using PrayerTimeEngine.Core.Domain.Calculators.Mosques.Mawaqit.Services;
+using PrayerTimeEngine.Core.Domain.ConfigurationManagement;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Management;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Interfaces;
@@ -45,7 +46,6 @@ using PrayerTimeEngine.Presentation.Views.PrayerTimes;
 using PrayerTimeEngine.Services;
 using PrayerTimeEngine.Services.Notifications;
 using Refit;
-using System.Diagnostics;
 using System.Net.WebSockets;
 using System.Text;
 using UraniumUI;
@@ -56,7 +56,7 @@ namespace PrayerTimeEngine;
 
 
 /* CLI commands cheat sheet (executed in solution folder)
- * Generate Release APK:    dotnet publish -c release -f net8.0-android -p:false
+ * Generate Release APK:    dotnet publish -c release -f net10.0-android -p:false
  * EF Migration:            dotnet ef migrations add InitialMigration --output-dir Data\EntityFramework\Generated_Migrations --namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_Migrations --context PrayerTimeEngine.Core.Data.EntityFramework.AppDbContext --project PrayerTimeEngine.Core\PrayerTimeEngine.Core.csproj
  * EF Compiled Models:      dotnet ef dbcontext optimize --output-dir Data\EntityFramework\Generated_CompiledModels --namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels --context PrayerTimeEngine.Core.Data.EntityFramework.AppDbContext --project PrayerTimeEngine.Core\PrayerTimeEngine.Core.csproj
  */
@@ -69,7 +69,9 @@ namespace PrayerTimeEngine;
  * - Semerkand sometimes puts "*" in the json for their times which is not handled in the app (e.g. "*23:54")
  * - Semerkand sometimes has countries and cities with duplicate names
  * 
- * - Exception for single calculation prevents all the other calculations (rough fix already done)
+ * - REMOVE bypassed SSL validation for ISemerkandApiService
+ * - Exception for single calculation source failing to provide location info prevents rest
+ * - Exception for single calculation prevents all the other calculations (rethink this and make tests)
  * - Exception for single calculation only disables that calculation but subsequent calculations rely on cached values and don't retry
  * - remove AppDbContextModel _useOldBehavior31751 temp fix
  * - FIXED? Calculation relevant data like the Profile with its configs may change in the middle of the calculation process due to shared references
@@ -78,6 +80,7 @@ namespace PrayerTimeEngine;
  */
 
 /* TODO general:
+ * - Reconsider IDailyPrayerTimes properties ('Date' as a ZonedDateTime?? Why carry DateTimeZone info redundantely?)
  * - Performance
  * - Multiple profiles
  * - Decrease count of reloads (e.g. mere app switch shouldn't always require reload)
@@ -114,6 +117,7 @@ namespace PrayerTimeEngine;
  * --- MuwaqqitDBAccess
  * # DynamicPrayerTimeProviderManager
  * # MyMosqPrayerTimes & MawaqitPrayerTimes: One test each to validate their respective scraped JSON inputs (i.e. every time text is a valid time and so on)
+ * # ProfileService: One test for UpdateLocationInfo which considers the different Fazilet/Semerkand place info custom things
  */
 
 public static class MauiProgram
@@ -148,7 +152,7 @@ public static class MauiProgram
         MauiApp mauiApp = builder.Build();
         ServiceProvider = mauiApp.Services;
 
-        MethodTimeLogger.logger = mauiApp.Services.GetRequiredService<ILogger<App>>();
+        MethodTimeLogger.Logger = mauiApp.Services.GetRequiredService<ILogger<App>>();
 
         return mauiApp;
     }
@@ -156,7 +160,7 @@ public static class MauiProgram
     class LoggingLayout : MetroLog.Layouts.Layout
     {
         public override string GetFormattedString(MetroLog.LogWriteContext context, MetroLog.LogEventInfo info)
-        {   
+        {
             var text = new StringBuilder($"███ {info.Level}|{info.TimeStamp:HH:mm:ss:fff}|{info.Logger}|{info.Message}");
 
             if (info.Exception is not null)
@@ -164,7 +168,7 @@ public static class MauiProgram
                 text.Append($"|Exception:'{info.Exception.Message}' AT '{info.Exception.StackTrace}'");
             }
 
-            text.Append($"|StackTrace: {new StackTrace()}");
+            //text.Append($"|StackTrace: {new StackTrace()}");
 
             return text.ToString();
         }
@@ -177,7 +181,7 @@ public static class MauiProgram
             .AddFilter((loggerProviderFullName, loggerFullName, level) =>
             {
                 // temp fix, these log too much for my taste
-                if (loggerFullName.StartsWith("Microsoft.EntityFrameworkCore") 
+                if (loggerFullName.StartsWith("Microsoft.EntityFrameworkCore")
                     || loggerFullName.StartsWith("System.Net.Http.HttpClient.Refit.Implementation.Generated")
                     || loggerFullName == "Polly")
                 {
@@ -224,7 +228,7 @@ public static class MauiProgram
             //options.LogTo(Console.WriteLine, LogLevel.Trace);
         },
         lifetime: ServiceLifetime.Singleton);
-        
+
         serviceCollection.AddSingleton<AppDbContextMetaData>();
 
         serviceCollection.AddTransient<IWebSocketClientFactory, WebSocketClientFactory>();
@@ -236,6 +240,7 @@ public static class MauiProgram
         serviceCollection.AddTransient<NotificationService>();
         serviceCollection.AddSingleton<ISystemInfoService, SystemInfoService>();
         serviceCollection.AddTransient<IPreferenceService, PreferenceService>();
+        serviceCollection.AddTransient<IConfigurationImportExportService, ConfigurationImportExportService>();
         serviceCollection.AddSingleton<TimeTypeAttributeService>();
 
         serviceCollection.AddTransient<IDynamicPrayerTimeProviderManager, DynamicPrayerTimeProviderManager>();
@@ -256,7 +261,7 @@ public static class MauiProgram
             };
 
             return new PlaceService(
-                RestService.For<ILocationIQApiService>(httpClient), 
+                RestService.For<ILocationIQApiService>(httpClient),
                 sp.GetRequiredService<ISystemInfoService>(),
                 sp.GetRequiredService<ILogger<PlaceService>>());
         });
@@ -291,7 +296,12 @@ public static class MauiProgram
                 config.Timeout = TimeSpan.FromSeconds(HTTP_REQUEST_TIMEOUT_SECONDS);
                 config.BaseAddress = new Uri("https://semerkandtakvimi.semerkandmobile.com/");
             })
-            .AddStandardResilienceHandler(); 
+            .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
+            {
+                // TODO: REMOVE, because Semerkand will hopefully fix this soon
+                ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true
+            })
+            .AddStandardResilienceHandler();
         serviceCollection.AddTransient<SemerkandDynamicPrayerTimeProvider>();
 
         // MUWAQQIT
@@ -318,9 +328,11 @@ public static class MauiProgram
         serviceCollection.AddTransient<IPrayerTimeCacheCleaner, MawaqitDBAccess>();
         serviceCollection.AddTransient<IMawaqitApiService, MawaqitApiService>(factory =>
         {
-            HttpClient httpClient = new HttpClient();
-            httpClient.Timeout = TimeSpan.FromSeconds(HTTP_REQUEST_TIMEOUT_SECONDS);
-            httpClient.BaseAddress = new Uri("https://mawaqit.net/de/");
+            var httpClient = new HttpClient
+            {
+                Timeout = TimeSpan.FromSeconds(HTTP_REQUEST_TIMEOUT_SECONDS),
+                BaseAddress = new Uri("https://mawaqit.net/de/")
+            };
             return new MawaqitApiService(httpClient);
         });
         serviceCollection.AddTransient<MawaqitMosquePrayerTimeProvider>();

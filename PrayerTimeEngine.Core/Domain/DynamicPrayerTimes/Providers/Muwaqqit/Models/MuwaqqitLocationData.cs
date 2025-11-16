@@ -9,6 +9,8 @@ public class MuwaqqitLocationData : BaseLocationData
     public required string TimezoneName { get; set; }
     public override EDynamicPrayerTimeProviderType Source => EDynamicPrayerTimeProviderType.Muwaqqit;
 
+    #region System.Object overrides
+
     public override bool Equals(object obj)
     {
         if (obj is not MuwaqqitLocationData otherLocationData)
@@ -28,5 +30,7 @@ public class MuwaqqitLocationData : BaseLocationData
     {
         return $"{Source}: {TimezoneName}, {Latitude}°/{Longitude}°";
     }
+
+    #endregion System.Object overrides
 }
 

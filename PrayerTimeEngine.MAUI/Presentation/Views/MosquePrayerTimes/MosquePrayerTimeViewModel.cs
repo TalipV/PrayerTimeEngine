@@ -1,8 +1,8 @@
 ﻿using NodaTime;
-using PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
-using PropertyChanged;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Management;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Models;
+using PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
+using PropertyChanged;
 
 namespace PrayerTimeEngine.Presentation.Views.MosquePrayerTimes;
 
@@ -10,9 +10,9 @@ namespace PrayerTimeEngine.Presentation.Views.MosquePrayerTimes;
 public class MosquePrayerTimeViewModel(
         IMosquePrayerTimeProviderManager mosquePrayerTimeProviderManager,
         MosqueProfile profile
-    ) : BasePrayerTimeViewModel<MosqueProfile, MosquePrayerTimesSet>(profile)
+    ) : BasePrayerTimeViewModel<MosqueProfile, MosquePrayerTimesDay>(profile)
 {
-    public override Task<MosquePrayerTimesSet> GetPrayerTimesSet(ZonedDateTime zonedDateTime, CancellationToken cancellationToken)
+    public override Task<MosquePrayerTimesDay> GetPrayerTimesSet(ZonedDateTime zonedDateTime, CancellationToken cancellationToken)
     {
         return mosquePrayerTimeProviderManager.CalculatePrayerTimesAsync(
                 ProfileActual.ID,

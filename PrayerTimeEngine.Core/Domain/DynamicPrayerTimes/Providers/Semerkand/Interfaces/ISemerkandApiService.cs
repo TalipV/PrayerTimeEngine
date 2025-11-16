@@ -15,4 +15,8 @@ public interface ISemerkandApiService
 
     [Post("/salaattimes?cityId={cityID}&year={year}")]
     Task<List<SemerkandPrayerTimesResponseDTO>> GetTimesByCityID(int year, int cityID, CancellationToken cancellationToken);
+
+    // locationid 1, 2 and 3 were also available but I don't know what that refers to
+    //[Post("/availableyears?type=city&locationid=4")]
+    //Task<List<int>> GetAvailableYears(CancellationToken cancellationToken);
 }

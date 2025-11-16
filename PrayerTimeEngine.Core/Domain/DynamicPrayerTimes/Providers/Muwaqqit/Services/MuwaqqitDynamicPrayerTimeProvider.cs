@@ -1,11 +1,11 @@
-﻿using PrayerTimeEngine.Core.Common.Enum;
+﻿using AsyncKeyedLock;
 using NodaTime;
-using AsyncKeyedLock;
-using PrayerTimeEngine.Core.Domain.PlaceManagement.Models;
+using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Models;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Muwaqqit.Interfaces;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Muwaqqit.Models;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Muwaqqit.Models.Entities;
+using PrayerTimeEngine.Core.Domain.PlaceManagement.Models;
 
 namespace PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Muwaqqit.Services;
 
@@ -21,7 +21,7 @@ public class MuwaqqitDynamicPrayerTimeProvider(
         List<GenericSettingConfiguration> configurations,
         CancellationToken cancellationToken)
     {
-        // check configuration's calcultion sources?
+        // check configuration's calculation sources?
 
         if (locationData is not MuwaqqitLocationData muwaqqitLocationData)
         {

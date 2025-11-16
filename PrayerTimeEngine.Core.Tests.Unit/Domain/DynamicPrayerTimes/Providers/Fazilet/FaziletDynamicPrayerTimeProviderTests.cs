@@ -60,6 +60,7 @@ public class FaziletDynamicPrayerTimeProviderTests : BaseTest
             Imsak = dateInUtc.PlusHours(4),
             Fajr = dateInUtc.PlusHours(5),
             Shuruq = dateInUtc.PlusHours(7),
+            Duha = dateInUtc.PlusHours(8),
             Dhuhr = dateInUtc.PlusHours(12),
             Asr = dateInUtc.PlusHours(15),
             Maghrib = dateInUtc.PlusHours(18),

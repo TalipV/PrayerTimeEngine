@@ -1,13 +1,13 @@
 ﻿using Microsoft.Extensions.Logging;
 using NSubstitute;
-using PrayerTimeEngine.Core.Domain.PlaceManagement.Services;
-using PrayerTimeEngine.Core.Tests.Common;
-using System.Net;
-using PrayerTimeEngine.Core.Tests.Common.TestData;
-using PrayerTimeEngine.Core.Domain.PlaceManagement.Models;
-using Refit;
 using PrayerTimeEngine.Core.Common;
+using PrayerTimeEngine.Core.Domain.PlaceManagement.Models;
+using PrayerTimeEngine.Core.Domain.PlaceManagement.Services;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Services.LocationIQ;
+using PrayerTimeEngine.Core.Tests.Common;
+using PrayerTimeEngine.Core.Tests.Common.TestData;
+using Refit;
+using System.Net;
 
 namespace PrayerTimeEngine.Core.Tests.Unit.Domain.PlaceManagement;
 
@@ -24,7 +24,7 @@ public class PlaceServiceTests : BaseTest
             BaseAddress = new Uri("https://eu1.locationiq.com/v1/")
         };
         _placeService = new PlaceService(
-            RestService.For<ILocationIQApiService>(httpClient), 
+            RestService.For<ILocationIQApiService>(httpClient),
             Substitute.For<ISystemInfoService>(),
             Substitute.For<ILogger<PlaceService>>());
     }
@@ -48,9 +48,9 @@ public class PlaceServiceTests : BaseTest
         };
 
         // ACT
-        List<BasicPlaceInfo> result = 
+        List<BasicPlaceInfo> result =
             await _placeService.SearchPlacesAsync(
-                searchTerm: "Venloer Str. 160, 50823 Köln, Germany", 
+                searchTerm: "Venloer Str. 160, 50823 Köln, Germany",
                 language: "en",
                 cancellationToken: default);
 
@@ -97,7 +97,7 @@ public class PlaceServiceTests : BaseTest
             };
         };
 
-        var cologneCentralMosqueInfo = 
+        var cologneCentralMosqueInfo =
             new BasicPlaceInfo
             {
                 ExternalID = "151467218",
@@ -148,7 +148,7 @@ public class PlaceServiceTests : BaseTest
             };
         };
 
-        var somePlaceInfo = 
+        var somePlaceInfo =
             new BasicPlaceInfo
             {
                 ExternalID = "",

@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Semerkand.Models.Entities;
 
-public class SemerkandCountry : IInsertedAt
+public class SemerkandCountry : IEntity
 {
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.None)]   // IDs come from API

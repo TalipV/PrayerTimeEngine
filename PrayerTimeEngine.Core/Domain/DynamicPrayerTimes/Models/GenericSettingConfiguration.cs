@@ -1,6 +1,6 @@
-﻿using System.Text.Json.Serialization;
-using PrayerTimeEngine.Core.Common.Enum;
+﻿using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Muwaqqit.Models;
+using System.Text.Json.Serialization;
 
 namespace PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Models;
 
@@ -12,6 +12,8 @@ public class GenericSettingConfiguration
     public virtual EDynamicPrayerTimeProviderType Source { get; init; } = EDynamicPrayerTimeProviderType.None;
     public int MinuteAdjustment { get; set; } = 0;
     public bool IsTimeShown { get; set; } = true;
+
+    #region System.Object overrides
 
     public override bool Equals(object obj)
     {
@@ -33,4 +35,6 @@ public class GenericSettingConfiguration
     {
         return $"{TimeType}, {Source}, {MinuteAdjustment} min, Shown: {IsTimeShown}";
     }
+
+    #endregion System.Object overrides
 }

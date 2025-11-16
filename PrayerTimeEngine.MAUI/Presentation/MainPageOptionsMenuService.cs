@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Maui.Storage;
 using Microsoft.Extensions.Logging;
 using PrayerTimeEngine.Core.Common;
+using PrayerTimeEngine.Core.Domain.ConfigurationManagement;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
 using PrayerTimeEngine.Presentation.Pages.Main;
@@ -13,9 +14,11 @@ namespace PrayerTimeEngine.Presentation;
 internal class MainPageOptionsMenuService(
         MainPage page,
         MainPageViewModel viewModel,
-        ToastMessageService toastMessageService, 
-        ILogger<MainPageOptionsMenuService> logger,
-        IPreferenceService preferenceService
+        ToastMessageService toastMessageService,
+        IConfigurationImportExportService configurationImportExportService,
+        IPreferenceService preferenceService,
+        ISystemInfoService systemInfoService,
+        ILogger<MainPageOptionsMenuService> logger
     )
 {
     private const string _optionsText = "Optionen";
@@ -25,6 +28,8 @@ internal class MainPageOptionsMenuService(
     private const string _showLocationConfigsOverviewText = "Überblick: Ortsdaten";
     private const string _showLogsText = "Logs anzeigen";
     private const string _setCustomTextSizes = "Benutzerdefinierte Textgröße";
+    private const string _exportConfiguration = "Konfiguration exportieren";
+    private const string _importConfiguration = "Konfiguration importieren";
 
     private const string _technicalOptionText = "... Technisches";
     private const string _showDbTablesText = "DB-Tabellen anzeigen";
@@ -42,6 +47,14 @@ internal class MainPageOptionsMenuService(
 
     public async Task OpenGeneralOptionsMenu()
     {
+        if (viewModel.CurrentProfileWithModel == null)
+        {
+            await page.DisplayAlertAsync("Abbruch", "CurrentProfileWithModel ist NULL??", "OK");
+            return;
+        }
+
+        CancellationToken cancellationToken = CancellationToken.None;
+
         bool doRepeat;
         try
         {
@@ -49,7 +62,7 @@ internal class MainPageOptionsMenuService(
             {
                 doRepeat = false;
 
-                switch (await page.DisplayActionSheet(
+                switch (await page.DisplayActionSheetAsync(
                     title: _optionsText,
                     cancel: _cancelText,
                     destruction: null,
@@ -60,26 +73,34 @@ internal class MainPageOptionsMenuService(
                 {
                     case _generalOptionText:
 
-                        switch (await page.DisplayActionSheet(
+                        switch (await page.DisplayActionSheetAsync(
                             title: _generalOptionText,
                             cancel: _backText,
                             destruction: null,
                             _showTimeConfigsOverviewText,
                             _showLocationConfigsOverviewText,
                             _showLogsText,
-                            _setCustomTextSizes))
+                            _setCustomTextSizes,
+                            _exportConfiguration, 
+                            _importConfiguration))
                         {
                             case _showTimeConfigsOverviewText:
-                                await page.DisplayAlert("Info", viewModel.GetPrayerTimeConfigDisplayText(), "Ok");
+                                await page.DisplayAlertAsync("Info", viewModel.GetPrayerTimeConfigDisplayText(), "Ok");
                                 break;
                             case _showLocationConfigsOverviewText:
-                                await page.DisplayAlert("Info", viewModel.GetLocationDataDisplayText(), "Ok");
+                                await page.DisplayAlertAsync("Info", viewModel.GetLocationDataDisplayText(), "Ok");
                                 break;
                             case _showLogsText:
                                 viewModel.GoToLogsPageCommand.Execute(null);
                                 break;
                             case _setCustomTextSizes:
                                 showCustomTextSizesInputPopup();
+                                break;
+                            case _exportConfiguration:
+                                await exportConfiguration(cancellationToken);
+                                break;
+                            case _importConfiguration:
+                                await importConfiguration(cancellationToken);
                                 break;
                             case _backText:
                                 doRepeat = true;
@@ -90,7 +111,7 @@ internal class MainPageOptionsMenuService(
 
                     case _technicalOptionText:
 
-                        switch (await page.DisplayActionSheet(
+                        switch (await page.DisplayActionSheetAsync(
                             title: _technicalOptionText,
                             cancel: _backText,
                             destruction: null,
@@ -115,7 +136,7 @@ internal class MainPageOptionsMenuService(
                                 break;
 
                             case _deviceInfoText:
-                                await page.DisplayAlert(
+                                await page.DisplayAlertAsync(
                                     "Geräteinformationen",
                                     $"""
                                     Modell: {DeviceInfo.Manufacturer.ToUpper()}, {DeviceInfo.Model}
@@ -123,6 +144,7 @@ internal class MainPageOptionsMenuService(
                                     OS: {DeviceInfo.Platform}, {DeviceInfo.VersionString}
                                     Auflösung: {DeviceDisplay.MainDisplayInfo.Height}x{DeviceDisplay.MainDisplayInfo.Width} (Dichte: {DeviceDisplay.MainDisplayInfo.Density})
                                     Kategorie der Größe: {DebugUtil.GetScreenSizeCategoryName()}
+                                    Zeitzone: {systemInfoService.GetSystemTimeZone().Id}
                                 """
                                     , "Ok");
                                 break;
@@ -134,7 +156,7 @@ internal class MainPageOptionsMenuService(
                         break;
                     case _systemOptionText:
 
-                        switch (await page.DisplayActionSheet(
+                        switch (await page.DisplayActionSheetAsync(
                             title: _systemOptionText,
                             cancel: _backText,
                             destruction: null,
@@ -142,7 +164,7 @@ internal class MainPageOptionsMenuService(
                             _closeAppText))
                         {
                             case _resetAppText:
-                                if (!await page.DisplayAlert("Bestätigung", "Daten wirklich zurücksetzen?", "Ja", _cancelText))
+                                if (!await page.DisplayAlertAsync("Bestätigung", "Daten wirklich zurücksetzen?", "Ja", _cancelText))
                                     break;
 
                                 preferenceService.SetDoReset();
@@ -207,12 +229,18 @@ internal class MainPageOptionsMenuService(
                 "Profil löschen"
             ];
 
+        if (viewModel.CurrentProfileWithModel == null)
+        {
+            await page.DisplayAlertAsync("Abbruch", "CurrentProfileWithModel ist NULL??", "OK");
+            return;
+        }
+
         if (viewModel.CurrentProfile is MosqueProfile mosqueProfile)
         {
             options.Add("Internetseite der Moschee-Zeiten öffnen");
         }
 
-        switch (await page.DisplayActionSheet(
+        switch (await page.DisplayActionSheetAsync(
                             title: "Profilverwaltung",
                             cancel: "Abbrechen",
                             destruction: null,
@@ -224,10 +252,10 @@ internal class MainPageOptionsMenuService(
 
             case "Neues Moschee-Profil erstellen":
 
-                var items = Enum.GetValues(typeof(EMosquePrayerTimeProviderType)).OfType<EMosquePrayerTimeProviderType>().ToList();
+                var items = Enum.GetValues<EMosquePrayerTimeProviderType>().ToList();
                 items.Remove(EMosquePrayerTimeProviderType.None);
 
-                string selectedItemText = await page.DisplayActionSheet(
+                string selectedItemText = await page.DisplayActionSheetAsync(
                     title: "Moschee-App auswählen",
                     cancel: "Abbrechen",
                     destruction: null,
@@ -251,7 +279,7 @@ internal class MainPageOptionsMenuService(
 
             case "Profilnamen bearbeiten":
                 string currentProfileName = viewModel.CurrentProfile?.Name ?? "";
-                string newProfileName = 
+                string newProfileName =
                     await page.DisplayPromptAsync("Profilname:",
                     message: "",
                     initialValue: currentProfileName,
@@ -313,12 +341,96 @@ internal class MainPageOptionsMenuService(
             // Save the value
             DebugUtil.SetSizeValue(sizeValues);
 
-            await page.DisplayAlert("Erfolg", $"Gespeichert! App manuell wieder starten!", "OK");
+            await page.DisplayAlertAsync("Erfolg", $"Gespeichert! App manuell wieder starten!", "OK");
             Application.Current.Quit();
         }
         else
         {
-            await page.DisplayAlert("Eingabe ungültig", "Eingabe war ungültig", "OK");
+            await page.DisplayAlertAsync("Eingabe ungültig", "Eingabe war ungültig", "OK");
         }
     }
+
+    private async Task exportConfiguration(CancellationToken cancellationToken)
+    {
+        Profile[] profiles = viewModel.ProfilesWithModel.Select(x => x.Profile).ToArray();
+
+        string serializedConfiguration = configurationImportExportService.SerializeConfiguration(new Configuration
+        {
+            Profiles = profiles
+        });
+
+        FileSaverResult result = null;
+
+        using (var stream = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(serializedConfiguration)))
+        {
+            result = await FileSaver.Default.SaveAsync(
+                $"PrayerTimeEngine_Config_{systemInfoService.GetCurrentZonedDateTime().ToString("dd_MM_yyyy_HH:mm", null)}.txt",
+                stream,
+                cancellationToken
+            );
+        }
+
+        if (result.IsSuccessful)
+        {
+            await page.DisplayAlertAsync("Erfolg", "Der Export der Konfiguration war erfolgreich", "OK");
+        }
+        else
+        {
+            logger.LogError(
+                result.Exception,
+                "Error while writing export configuration to destination '{DestinationFilePath}'",
+                result.FilePath);
+
+            await page.DisplayAlertAsync("Fehler", $"Fehler beim Exportieren: {result.Exception?.Message ?? "-"}", "OK");
+        }
+    }
+
+    private static readonly FilePickerFileType _configImportFilePickerFileType = new FilePickerFileType(new Dictionary<DevicePlatform, IEnumerable<string>>
+    {
+        { DevicePlatform.WinUI, new[] { ".txt" } },
+        { DevicePlatform.MacCatalyst, new[] { "public.plain-text" } },
+        { DevicePlatform.iOS, new[] { "public.plain-text" } },
+        { DevicePlatform.Android, new[] { "text/plain" } }
+    });
+
+    private static readonly PickOptions _configImportPickOptions = new PickOptions
+    {
+        PickerTitle = "Bitte wählen Sie die Konfigurationsdatei aus",
+        FileTypes = _configImportFilePickerFileType
+    };
+
+    private async Task importConfiguration(CancellationToken cancellationToken)
+    {
+        FileResult pickedFile = await FilePicker.Default.PickAsync(_configImportPickOptions);
+
+        if (pickedFile == null)
+        {
+            await page.DisplayAlertAsync("Abbruch", "Es wurde keine Datei ausgewählt", "OK");
+            return;
+        }
+
+        try
+        {
+            string fileContent;
+            using (Stream stream = await pickedFile.OpenReadAsync())
+            using (var reader = new StreamReader(stream))
+            {
+                fileContent = await reader.ReadToEndAsync(cancellationToken);
+            }
+
+            await configurationImportExportService.Import(fileContent, cancellationToken);
+
+            await page.DisplayAlertAsync("Erfolg", "Der Import der Konfiguration war erfolgreich", "OK");
+        }
+        catch (Exception exception)
+        {
+            logger.LogError(
+                exception,
+                "Error while importing configuration '{FilePath}'",
+                pickedFile.FullPath);
+
+            await page.DisplayAlertAsync("Fehler", $"Fehler beim Exportieren: {exception?.Message ?? "-"}", "OK");
+        }
+    }
+
 }

@@ -7,7 +7,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
 
 [AddINotifyPropertyChangedInterface]
-public abstract class Profile : IInsertedAt
+public abstract class Profile : IEntity
 {
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -15,6 +15,8 @@ public abstract class Profile : IInsertedAt
     public string Name { get; set; }
     public int SequenceNo { get; set; }
     public Instant? InsertInstant { get; set; }
+
+    #region System.Object overrides
 
     public override bool Equals(object obj)
     {
@@ -35,4 +37,6 @@ public abstract class Profile : IInsertedAt
     {
         return HashCode.Combine(ID, SequenceNo, Name);
     }
+
+    #endregion System.Object overrides
 }
