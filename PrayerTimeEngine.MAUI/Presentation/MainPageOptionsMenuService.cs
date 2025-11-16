@@ -5,6 +5,7 @@ using PrayerTimeEngine.Core.Domain.MosquePrayerTimes;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
 using PrayerTimeEngine.Presentation.Pages.Main;
 using PrayerTimeEngine.Presentation.Services;
+using System.Text.Json;
 
 namespace PrayerTimeEngine.Presentation;
 
@@ -34,6 +35,8 @@ internal class MainPageOptionsMenuService(
     private const string _resetAppText = "App-Daten zurücksetzen";
     private const string _closeAppText = "App schließen";
 
+    private const string _goldPriceText = "Tool: Goldpreise";
+
     private const string _backText = "Zurück";
     private const string _cancelText = "Abbrechen";
 
@@ -52,7 +55,8 @@ internal class MainPageOptionsMenuService(
                     destruction: null,
                     _generalOptionText,
                     _technicalOptionText,
-                    _systemOptionText))
+                    _systemOptionText,
+                    _goldPriceText))
                 {
                     case _generalOptionText:
 
@@ -154,6 +158,13 @@ internal class MainPageOptionsMenuService(
                         }
 
                         break;
+                    case _goldPriceText:
+                        decimal goldEurPricePerGram = await getGoldGramEurAsync("fcdc9197a43a72f497fe20e4131542c0");
+                        await page.DisplayAlert("Info", $"""
+                            Goldpreis pro Gramm: {goldEurPricePerGram:N2}
+                            --> Nisab beträgt {(GOLD_NISAB_GRAMM * goldEurPricePerGram):N2} ({GOLD_NISAB_GRAMM:} g)
+                            """, "Ok");
+                        break;
                     case _cancelText:
                         break;
                 }
@@ -166,6 +177,27 @@ internal class MainPageOptionsMenuService(
             toastMessageService.ShowError(exception.Message);
         }
     }
+
+    private const decimal GOLD_NISAB_GRAMM = 84.7M;
+    private const decimal GOLD_NISAB_GRAMM = 84.7M;
+
+    private static async Task<decimal> getGoldGramEurAsync(string apiKey)
+    {
+        using var http = new HttpClient();
+        string url = $"https://api.metalpriceapi.com/v1/latest?api_key={apiKey}&base=EUR&currencies=XAU";
+        string json = await http.GetStringAsync(url);
+
+        JsonDocument data = System.Text.Json.JsonDocument.Parse(json);
+        decimal eurPerOunce = data.RootElement
+            .GetProperty("rates")
+            .GetProperty("EURXAU")
+            .GetDecimal();
+
+        decimal eurPerGramm = eurPerOunce / 31.1034768m;
+
+        return eurPerGramm;
+    }
+    
 
     public async Task OpenProfileOptionsMenu()
     {
