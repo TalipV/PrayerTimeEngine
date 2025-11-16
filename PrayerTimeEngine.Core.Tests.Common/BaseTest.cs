@@ -42,12 +42,12 @@ public abstract class BaseTest : IDisposable
     private AppDbContext getMockableAppDbContext(CallInfo callInfo)
     {
         // included Guid to be double safe from one test affecting another
-        var options = 
+        var options =
             new DbContextOptionsBuilder()
                 .UseSqlite($"Data Source=TestDb{_testSessionID:N};Mode=Memory;Cache=Shared")
                 .Options;
 
-        var mockableDbContext = 
+        var mockableDbContext =
             Substitute.ForPartsOf<AppDbContext>(
                 options,
                 new AppDbContextMetaData(),
@@ -75,7 +75,7 @@ public abstract class BaseTest : IDisposable
         _keepMemoryDbAliveDbConnection = database.GetDbConnection();
         _keepMemoryDbAliveDbConnection.Open();
         database.EnsureCreated();
-        
+
         return _dbContextFactoryMock;
     }
 

@@ -14,6 +14,8 @@ public class MawaqitMosquePrayerTimeProviderTests : BaseTest
     public async Task GetPrayerTimesAsync_NormalInput_PrayerTimesForThatDay()
     {
         // ARRANGE
+        var date = new LocalDate(2024, 8, 29);
+
         ServiceProvider serviceProvider = createServiceProvider(
             configureServiceCollection: serviceCollection =>
             {
@@ -21,11 +23,12 @@ public class MawaqitMosquePrayerTimeProviderTests : BaseTest
                 serviceCollection.AddSingleton<IMawaqitDBAccess, MawaqitDBAccess>();
                 serviceCollection.AddSingleton(SubstitutionHelper.GetMockedMawaqitApiService());
                 serviceCollection.AddSingleton<MawaqitMosquePrayerTimeProvider>();
+                serviceCollection.AddSingleton(SubstitutionHelper.GetMockedSystemInfoService(date.AtStartOfDayInZone(DateTimeZone.Utc)));
             });
-        var date = new LocalDate(2024, 8, 29);
+
         string externalID = "hamza-koln";
         MawaqitMosquePrayerTimeProvider mawaqitMosquePrayerTimeProvider = serviceProvider.GetRequiredService<MawaqitMosquePrayerTimeProvider>();
-
+        
         // ACT
         IMosqueDailyPrayerTimes result = await mawaqitMosquePrayerTimeProvider.GetPrayerTimesAsync(date, externalID, default);
 

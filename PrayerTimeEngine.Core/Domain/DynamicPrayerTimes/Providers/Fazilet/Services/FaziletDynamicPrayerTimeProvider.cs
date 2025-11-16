@@ -1,13 +1,13 @@
-﻿using Microsoft.Extensions.Logging;
-using PrayerTimeEngine.Core.Common.Enum;
+﻿using AsyncKeyedLock;
+using Microsoft.Extensions.Logging;
 using NodaTime;
-using AsyncKeyedLock;
-using PrayerTimeEngine.Core.Domain.PlaceManagement.Interfaces;
-using PrayerTimeEngine.Core.Domain.PlaceManagement.Models;
+using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Models;
+using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Interfaces;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Models;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Models.Entities;
-using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Interfaces;
+using PrayerTimeEngine.Core.Domain.PlaceManagement.Interfaces;
+using PrayerTimeEngine.Core.Domain.PlaceManagement.Models;
 
 namespace PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Services;
 
@@ -28,6 +28,7 @@ public class FaziletDynamicPrayerTimeProvider(
             ETimeType.FajrGhalas,
             ETimeType.FajrKaraha,
             ETimeType.DuhaStart,
+            ETimeType.DuhaQuarterOfDay,
             ETimeType.DuhaEnd,
             ETimeType.AsrMithlayn,
             ETimeType.AsrKaraha,
@@ -40,7 +41,7 @@ public class FaziletDynamicPrayerTimeProvider(
         List<GenericSettingConfiguration> configurations,
         CancellationToken cancellationToken)
     {
-        // check configuration's calcultion sources?
+        // check configuration's calculation sources?
 
         if (locationData is not FaziletLocationData faziletLocationData)
         {
@@ -96,7 +97,7 @@ public class FaziletDynamicPrayerTimeProvider(
                 var prayerTimesLst = prayerTimesResponseDTO.PrayerTimes.Select(x => x.ToFaziletPrayerTimes(cityID, timeZone)).ToList();
                 await faziletDBAccess.InsertPrayerTimesAsync(prayerTimesLst, cancellationToken).ConfigureAwait(false);
 
-                prayerTimes = prayerTimesLst.FirstOrDefault(x => x.Date == date);
+                prayerTimes = prayerTimesLst.FirstOrDefault(x => x.Date.Date == date.Date);
             }
 
             return prayerTimes;
@@ -182,35 +183,41 @@ public class FaziletDynamicPrayerTimeProvider(
     {
         ArgumentNullException.ThrowIfNull(place);
 
-        // if language is already turkish then use this place
-        var basicPlaceInfo = await placeService.GetPlaceBasedOnPlace(place, "tr", cancellationToken).ConfigureAwait(false);
-        var turkishPlaceInfo =
-            new ProfilePlaceInfo
-            {
-                ExternalID = basicPlaceInfo.ExternalID,
-                Longitude = basicPlaceInfo.Longitude,
-                Latitude = basicPlaceInfo.Latitude,
-                InfoLanguageCode = basicPlaceInfo.InfoLanguageCode,
-                Country = basicPlaceInfo.Country,
-                City = basicPlaceInfo.City,
-                CityDistrict = basicPlaceInfo.CityDistrict,
-                PostCode = basicPlaceInfo.PostCode,
-                Street = basicPlaceInfo.Street,
-                TimezoneInfo = place.TimezoneInfo
-            };
+        // TODO: if language is already turkish then use this place
+        BasicPlaceInfo turkishPlaceInfo = await placeService.GetPlaceBasedOnPlace(place, "tr", cancellationToken).ConfigureAwait(false);
 
         string countryName = turkishPlaceInfo.Country ?? "";
-        string cityName = turkishPlaceInfo.City ?? "";
-
-        // QUICK FIX...
-        countryName = countryName.Replace("İ", "I");
-        cityName = cityName.Replace("İ", "I");
+        string cityName = turkishPlaceInfo.City ?? turkishPlaceInfo.State ?? "";
 
         logger.LogDebug("Fazilet search location: {Country}, {City}", countryName, cityName);
 
-        int countryID = await getCountryID(countryName, throwIfNotFound: false, cancellationToken).ConfigureAwait(false);
-        if (countryID != -1
-            && await getCityID(cityName, countryID, throwIfNotFound: false, cancellationToken).ConfigureAwait(false) != -1)
+        int countryID = await getCountryID(countryName, false, cancellationToken).ConfigureAwait(false);
+        if (countryID == -1)
+        {
+            // QUICK FIX...
+            countryName = countryName.Replace("İ", "I");
+            countryID = await getCountryID(countryName, false, cancellationToken).ConfigureAwait(false);
+        }
+
+        int cityID = -1;
+        if (countryID != -1)
+        {
+            cityID = await getCityID(cityName, countryID, false, cancellationToken).ConfigureAwait(false);
+            if (cityID == -1)
+            {
+                // QUICK FIX...
+                cityName = cityName.Replace("İ", "I");
+
+                if (cityName == "Mekke")
+                    cityName = "Mekke-i Mükerreme";
+                else if (cityName == "Medine")
+                    cityName = "Medîne-i Münevvere";
+
+                cityID = await getCityID(cityName, countryID, false, cancellationToken).ConfigureAwait(false);
+            }
+        }
+
+        if (countryID != -1 && cityID != -1)
         {
             logger.LogDebug("Fazilet found location: {Country}, {City}", countryName, cityName);
 

@@ -13,7 +13,6 @@ using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.Mawaqit.Models.DT
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.Mawaqit.Models.Entities;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.Mawaqit.Services;
 using PrayerTimeEngine.Core.Tests.Common.TestData;
-using System.Data.Common;
 
 namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks;
 
@@ -23,7 +22,7 @@ public class MawaqitMosquePrayerTimeProviderBenchmark
 {
     #region data
 
-    private static readonly LocalDate _localDate = new LocalDate(2024, 8, 29);
+    private static readonly LocalDate _localDate = new(2024, 8, 29);
     private static readonly string _externalID = "hamza-koln";
 
     #endregion data
@@ -34,10 +33,11 @@ public class MawaqitMosquePrayerTimeProviderBenchmark
         // to make sure that before the benchmark the data is gotten from the APIService and stored in the db
         new MawaqitMosquePrayerTimeProvider(
                 new MawaqitDBAccess(dbContextFactory),
-                SubstitutionHelper.GetMockedMawaqitApiService()
+                SubstitutionHelper.GetMockedMawaqitApiService(),
+                SubstitutionHelper.GetMockedSystemInfoService(new LocalDate(1996, 10, 30).AtStartOfDayInZone(DateTimeZone.Utc))
             ).GetPrayerTimesAsync(
-                _localDate, 
-                _externalID, 
+                _localDate,
+                _externalID,
                 default).GetAwaiter().GetResult();
 
         // throw exceptions when the calculator tries using the api
@@ -46,7 +46,8 @@ public class MawaqitMosquePrayerTimeProviderBenchmark
 
         return new MawaqitMosquePrayerTimeProvider(
                 new MawaqitDBAccess(dbContextFactory),
-                mockedMawaqitApiService
+                mockedMawaqitApiService,
+                SubstitutionHelper.GetMockedSystemInfoService(new LocalDate(1996, 10, 30).AtStartOfDayInZone(DateTimeZone.Utc))
             );
     }
 
@@ -55,17 +56,18 @@ public class MawaqitMosquePrayerTimeProviderBenchmark
         // db doesn't return any data
         var mawaqitDbAccessMock = Substitute.For<IMawaqitDBAccess>();
         mawaqitDbAccessMock.GetPrayerTimesAsync(
-            Arg.Any<LocalDate>(), 
-            Arg.Any<string>(), 
+            Arg.Any<LocalDate>(),
+            Arg.Any<string>(),
             Arg.Any<CancellationToken>()).ReturnsNull<MawaqitMosqueDailyPrayerTimes>();
 
         return new MawaqitMosquePrayerTimeProvider(
                 mawaqitDbAccessMock,
-                SubstitutionHelper.GetMockedMawaqitApiService()
+                SubstitutionHelper.GetMockedMawaqitApiService(),
+                SubstitutionHelper.GetMockedSystemInfoService(new LocalDate(1996, 10, 30).AtStartOfDayInZone(DateTimeZone.Utc))
             );
     }
 
-    private static DbConnection _dbContextKeepAliveSqlConnection;
+    private static SqliteConnection _dbContextKeepAliveSqlConnection;
 
     [GlobalSetup]
     public static void Setup()
@@ -103,7 +105,6 @@ public class MawaqitMosquePrayerTimeProviderBenchmark
     private static MawaqitMosquePrayerTimeProvider _mawaqitMosquePrayerTimeProvider_DataFromDbStorage = null;
     private static MawaqitMosquePrayerTimeProvider _mawaqitMosquePrayerTimeProvider_DataFromApi = null;
 
-#pragma warning disable CA1822 // Mark members as static
     [Benchmark]
     public IMosqueDailyPrayerTimes MawaqitMosquePrayerTimeProvider_GetDataFromDb()
     {
@@ -125,5 +126,4 @@ public class MawaqitMosquePrayerTimeProviderBenchmark
 
         return result;
     }
-#pragma warning restore CA1822 // Mark members as static
 }

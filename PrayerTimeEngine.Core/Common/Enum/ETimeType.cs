@@ -32,7 +32,7 @@ public enum ETimeType
 
     #region Duha
 
-    [TimeTypeSupportedBy(EDynamicPrayerTimeProviderType.None, EDynamicPrayerTimeProviderType.Muwaqqit)]
+    [TimeTypeSupportedBy(EDynamicPrayerTimeProviderType.None, EDynamicPrayerTimeProviderType.Muwaqqit, EDynamicPrayerTimeProviderType.Fazilet)]
     [TimeTypeForPrayerType(EPrayerType.Duha)]
     [DegreeTimeType]
     [IsNotHidableTimeType]

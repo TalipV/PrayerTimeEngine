@@ -13,7 +13,6 @@ using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.MyMosq.Interfaces
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.MyMosq.Models.Entities;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.MyMosq.Services;
 using PrayerTimeEngine.Core.Tests.Common.TestData;
-using System.Data.Common;
 
 namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks;
 
@@ -23,7 +22,7 @@ public class MyMosqMosquePrayerTimeProviderBenchmark
 {
     #region data
 
-    private static readonly LocalDate _localDate = new LocalDate(2024, 8, 30);
+    private static readonly LocalDate _localDate = new(2024, 8, 30);
     private static readonly string _externalID = "1239";
 
     #endregion data
@@ -36,8 +35,8 @@ public class MyMosqMosquePrayerTimeProviderBenchmark
                 new MyMosqDBAccess(dbContextFactory),
                 SubstitutionHelper.GetMockedMyMosqApiService()
             ).GetPrayerTimesAsync(
-                _localDate, 
-                _externalID, 
+                _localDate,
+                _externalID,
                 default).GetAwaiter().GetResult();
 
         // throw exceptions when the calculator tries using the api
@@ -55,8 +54,8 @@ public class MyMosqMosquePrayerTimeProviderBenchmark
         // db doesn't return any data
         var myMosqDBAccessMock = Substitute.For<IMyMosqDBAccess>();
         myMosqDBAccessMock.GetPrayerTimesAsync(
-            Arg.Any<LocalDate>(), 
-            Arg.Any<string>(), 
+            Arg.Any<LocalDate>(),
+            Arg.Any<string>(),
             Arg.Any<CancellationToken>()).ReturnsNull<MyMosqMosqueDailyPrayerTimes>();
 
         return new MyMosqMosquePrayerTimeProvider(
@@ -65,7 +64,7 @@ public class MyMosqMosquePrayerTimeProviderBenchmark
             );
     }
 
-    private static DbConnection _dbContextKeepAliveSqlConnection;
+    private static SqliteConnection _dbContextKeepAliveSqlConnection;
 
     [GlobalSetup]
     public static void Setup()
@@ -103,7 +102,6 @@ public class MyMosqMosquePrayerTimeProviderBenchmark
     private static MyMosqMosquePrayerTimeProvider _myMosqMosquePrayerTimeProvider_DataFromDbStorage = null;
     private static MyMosqMosquePrayerTimeProvider _myMosqMosquePrayerTimeProvider_DataFromApi = null;
 
-#pragma warning disable CA1822 // Mark members as static
     [Benchmark]
     public IMosqueDailyPrayerTimes MyMosqMosquePrayerTimeProvider_GetDataFromDb()
     {
@@ -125,5 +123,4 @@ public class MyMosqMosquePrayerTimeProviderBenchmark
 
         return result;
     }
-#pragma warning restore CA1822 // Mark members as static
 }

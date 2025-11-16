@@ -11,6 +11,7 @@ public class BasicPlaceInfo
     public required string InfoLanguageCode { get; set; }
 
     public required string Country { get; set; }
+    public string State { get; set; }
     public required string City { get; set; }
     public required string CityDistrict { get; set; }
     public required string PostCode { get; set; }
@@ -20,7 +21,7 @@ public class BasicPlaceInfo
     {
         get
         {
-            StringBuilder stringBuilder = new StringBuilder();
+            var stringBuilder = new StringBuilder();
 
             stringBuilder.Append(Country);
             stringBuilder.Append(", ");
@@ -42,6 +43,8 @@ public class BasicPlaceInfo
         }
     }
 
+    #region System.Object overrides
+
     public override bool Equals(object obj)
     {
         if (obj is not BasicPlaceInfo other)
@@ -57,7 +60,8 @@ public class BasicPlaceInfo
             City == other.City &&
             CityDistrict == other.CityDistrict &&
             PostCode == other.PostCode &&
-            Street == other.Street;
+            Street == other.Street &&
+            State == other.State;
     }
 
     public override int GetHashCode()
@@ -65,6 +69,8 @@ public class BasicPlaceInfo
         // split up because the method doesn't accept more than 8 parameters
         return HashCode.Combine(
             HashCode.Combine(ExternalID, Longitude, Latitude, InfoLanguageCode, Country, City, CityDistrict),
-            PostCode, Street);
+            PostCode, Street, State);
     }
+
+    #endregion System.Object overrides
 }

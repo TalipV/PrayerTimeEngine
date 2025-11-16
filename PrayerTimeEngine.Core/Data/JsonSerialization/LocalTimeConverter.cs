@@ -1,7 +1,7 @@
-﻿using NodaTime.Text;
-using NodaTime;
-using System.Text.Json.Serialization;
+﻿using NodaTime;
+using NodaTime.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace PrayerTimeEngine.Core.Data.JsonSerialization;
 

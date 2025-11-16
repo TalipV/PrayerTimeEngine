@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
 
-public class ProfileLocationConfig : IInsertedAt
+public class ProfileLocationConfig : IEntity
 {
     [Key]
     public int ID { get; set; }
@@ -15,6 +15,9 @@ public class ProfileLocationConfig : IInsertedAt
     public DynamicProfile Profile { get; set; }
     public EDynamicPrayerTimeProviderType DynamicPrayerTimeProvider { get; set; }
     public BaseLocationData LocationData { get; set; }
+
+    #region System.Object overrides
+
     public override bool Equals(object obj)
     {
         if (obj is not ProfileLocationConfig otherLocationConfig)
@@ -22,13 +25,15 @@ public class ProfileLocationConfig : IInsertedAt
 
         return ID == otherLocationConfig.ID
             && ProfileID == otherLocationConfig.ProfileID
-            // && object.Equals(otherLocationConfig.Profile) why not check it here? why check objects of related data in other Equals implementations?
+            // && Equals(otherLocationConfig.Profile) why not check it here? why check objects of related data in other Equals implementations?
             && DynamicPrayerTimeProvider == otherLocationConfig.DynamicPrayerTimeProvider
-            && LocationData.Equals(otherLocationConfig.LocationData);
+            && Equals(LocationData, otherLocationConfig.LocationData);
     }
 
     public override int GetHashCode()
     {
         return HashCode.Combine(ID, ProfileID, DynamicPrayerTimeProvider, LocationData);
     }
+
+    #endregion System.Object overrides
 }

@@ -1,6 +1,7 @@
 ﻿using Android.App;
 using Android.Content;
 using Android.OS;
+using AsyncAwaitBestPractices;
 using Microsoft.Extensions.Logging;
 using NodaTime;
 using PrayerTimeEngine.Core.Common;
@@ -8,12 +9,16 @@ using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Management;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Models;
 using PrayerTimeEngine.Core.Domain.Models;
+using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Management;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Interfaces;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
 
 namespace PrayerTimeEngine.Platforms.Android.Notifications;
 
-[Service(ForegroundServiceType = global::Android.Content.PM.ForegroundService.TypeDataSync, Enabled = true)]
+[Service(
+    ForegroundServiceType = global::Android.Content.PM.ForegroundService.TypeSpecialUse,
+    Enabled = true,
+    Exported = true)]
 public class PrayerTimeSummaryNotification : Service
 {
     internal const string CHANNEL_ID = "prayer_time_channel";
@@ -59,8 +64,10 @@ public class PrayerTimeSummaryNotification : Service
         {
             _logger.LogInformation("Try start foreground service");
 
-            if (OperatingSystem.IsAndroidVersionAtLeast(29))
-                StartForeground(notificationId, initialNotification, global::Android.Content.PM.ForegroundService.TypeDataSync);
+            if (OperatingSystem.IsAndroidVersionAtLeast(34))
+                StartForeground(notificationId, initialNotification, global::Android.Content.PM.ForegroundService.TypeSpecialUse);
+            else if (OperatingSystem.IsAndroidVersionAtLeast(29))
+                StartForeground(notificationId, initialNotification, global::Android.Content.PM.ForegroundService.TypeNone);
             else
                 StartForeground(notificationId, initialNotification);
         }
@@ -92,9 +99,34 @@ public class PrayerTimeSummaryNotification : Service
         {
             try
             {
+                List<Profile> profiles = await _profileService.GetProfiles(cancellationTokenSource.Token);
+
+                // potential for performance improvement
+                DynamicProfile mainProfile = profiles.OfType<DynamicProfile>().FirstOrDefault();
+                Profile[] otherProfiles = profiles.Except([mainProfile]).ToArray();
+
+                if (otherProfiles.Length != 0)
+                {
+                    // add cancellation token for general shut down requests (timeout not really needed)
+                    ensureSureOtherProfilesLoadedOnceADay(otherProfiles, CancellationToken.None)
+                        .SafeFireAndForget(exception =>
+                        {
+                            _logger.LogError(exception, "Error while trying to load data of other profiles");
+                        });
+                }
+
                 var notificationBuilder = GetNotificationBuilder();
-                notificationBuilder.SetContentTitle(((await _profileService.GetProfiles(default)).First() as DynamicProfile).PlaceInfo.City);
-                notificationBuilder.SetContentText(await getRemainingTimeText(cancellationTokenSource.Token));
+
+                if (mainProfile == null)
+                {
+                    notificationBuilder.SetContentTitle("No dynamic profile");
+                    notificationBuilder.SetContentText("-");
+                }
+                else
+                {
+                    notificationBuilder.SetContentTitle(mainProfile.PlaceInfo.City);
+                    notificationBuilder.SetContentText(await getRemainingTimeText(mainProfile, cancellationTokenSource.Token));
+                }
 
                 var context = global::Android.App.Application.Context;
                 var notificationManager = context.GetSystemService(NotificationService) as NotificationManager;
@@ -132,20 +164,17 @@ public class PrayerTimeSummaryNotification : Service
         return _notificationBuilder;
     }
 
-    private async Task<string> getRemainingTimeText(CancellationToken cancellationToken)
+    private async Task<string> getRemainingTimeText(Profile profile, CancellationToken cancellationToken)
     {
-        // potential for performance improvement
-        Profile profile = (await _profileService.GetProfiles(cancellationToken)).First();
-
         ZonedDateTime now =
             _systemInfoService.GetCurrentInstant()
                 .InZone(DateTimeZoneProviders.Tzdb[(profile as DynamicProfile).PlaceInfo.TimezoneInfo.Name]);
 
-        DynamicPrayerTimesSet prayerTimeBundle =
-            await _prayerTimeDynamicPrayerTimeProviderManager.CalculatePrayerTimesAsync(
+        DynamicPrayerTimesDaySet prayerTimeBundle =
+            (await _prayerTimeDynamicPrayerTimeProviderManager.CalculatePrayerTimesAsync(
                 profile.ID,
                 now,
-                cancellationToken);
+                cancellationToken)).DynamicPrayerTimesDaySet;
 
         ZonedDateTime? nextTime = null;
         string timeName = "-";
@@ -154,8 +183,8 @@ public class PrayerTimeSummaryNotification : Service
 
         foreach ((EPrayerType prayerType, GenericPrayerTime prayerTime) in prayerTimeBundle.AllPrayerTimes)
         {
-            if (prayerType == EPrayerType.Duha)
-                continue;
+            //if (prayerType == EPrayerType.Duha)
+            //    continue;
 
             if (prayerTime.End is not null
                 && now.ToInstant() < prayerTime.End.Value.ToInstant()
@@ -185,5 +214,37 @@ public class PrayerTimeSummaryNotification : Service
             return "-";
 
         return $"{(nextTime.Value - now).ToString("HH:mm:ss", null)} until {timeName} ({nextTime.Value.ToString("HH:mm:ss", null)}) {additionalInfo}";
+    }
+
+    private LocalDate _lastLoadedDate = new LocalDate(2000, 1, 1);
+
+    private async Task ensureSureOtherProfilesLoadedOnceADay(Profile[] profiles, CancellationToken cancellationToken)
+    {
+        ZonedDateTime currentZonedDateTime = _systemInfoService.GetCurrentZonedDateTime();
+
+        if (profiles.Length == 0 || _lastLoadedDate == currentZonedDateTime.Date)
+        {
+            return;
+        }
+
+        foreach (Profile profile in profiles)
+        {
+            if (profile is DynamicProfile dynamicProfile)
+            {
+                var dynamicPrayerTimeProviderManager = MauiProgram.ServiceProvider.GetRequiredService<IDynamicPrayerTimeProviderManager>();
+                await dynamicPrayerTimeProviderManager.CalculatePrayerTimesAsync(dynamicProfile.ID, currentZonedDateTime, cancellationToken);
+            }
+            else if (profile is MosqueProfile mosqueProfile)
+            {
+                var mosquePrayerTimeProviderManager = MauiProgram.ServiceProvider.GetRequiredService<IMosquePrayerTimeProviderManager>();
+                await mosquePrayerTimeProviderManager.CalculatePrayerTimesAsync(mosqueProfile.ID, currentZonedDateTime, cancellationToken);
+            }
+            else
+            {
+                throw new NotImplementedException($"Type of profile '{profile?.GetType().ToString() ?? "NULL"}' is not implemented");
+            }
+        }
+
+        _lastLoadedDate = currentZonedDateTime.Date;
     }
 }

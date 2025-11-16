@@ -4,7 +4,7 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework;
 
 public class AppDbContextMetaData
 {
-    private readonly Lazy<List<Type>> _getDbSetPropertyTypesLazy = new Lazy<List<Type>>(getDbSetPropertyTypesInternal);
+    private readonly Lazy<List<Type>> _getDbSetPropertyTypesLazy = new(getDbSetPropertyTypesInternal);
 
     private static List<Type> getDbSetPropertyTypesInternal()
     {

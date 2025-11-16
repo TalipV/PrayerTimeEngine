@@ -17,26 +17,26 @@ public class SettingsContentPageViewModel(
 {
     #region static fields
 
-    public static readonly IReadOnlyCollection<double> FAJR_ISHA_SELECTABLE_DEGREES = new List<double>
-    {
-        -12.0, -12.5, -13.0, -13.5, -14.0,
-        -14.5, -15.0, -15.5, -16.0, -16.5,
-        -17.0, -17.5, -18.0, -18.5, -19.0,
-        -19.5, -20.0
-    }.AsReadOnly();
+    public static readonly IReadOnlyCollection<double> FAJR_ISHA_SELECTABLE_DEGREES = [
+            -12.0, -12.5, -13.0, -13.5, -14.0,
+            -14.5, -15.0, -15.5, -16.0, -16.5,
+            -17.0, -17.5, -18.0, -18.5, -19.0,
+            -19.5, -20.0
+        ];
 
-    public static readonly IReadOnlyCollection<double> MODERATE_SELECTABLE_DEGREES_NEGATIVE = new List<double>
-    {
-        -3.5, -4.0, -4.5, -5.0, -5.5, -6.0, -6.5, -7.0, -7.5, -8.0, -8.5, -9.0, -9.5, -10.0
-    }.AsReadOnly();
+    public static readonly IReadOnlyCollection<double> MODERATE_SELECTABLE_DEGREES_NEGATIVE = [
+            -3.5, -4.0, -4.5, -5.0, -5.5, -6.0,
+            -6.5, -7.0, -7.5, -8.0, -8.5, -9.0,
+            -9.5, -10.0
+        ];
 
-    public static readonly IReadOnlyCollection<double> ISHTIBAQ_SELECTABLE_DEGREES = new List<double>
-    {
-        -9.0, -9.5, -10.0, -10.5, -11.0
-    }.AsReadOnly();
+    public static readonly IReadOnlyCollection<double> ISHTIBAQ_SELECTABLE_DEGREES = [
+            -9.0, -9.5, -10.0, -10.5, -11.0
+        ];
 
-    public static readonly IReadOnlyCollection<double> MODERATE_SELECTABLE_DEGREES_POSITIVE =
-        MODERATE_SELECTABLE_DEGREES_NEGATIVE.Select(Math.Abs).ToList().AsReadOnly();
+    public static readonly IReadOnlyCollection<double> MODERATE_SELECTABLE_DEGREES_POSITIVE = [
+            ..MODERATE_SELECTABLE_DEGREES_NEGATIVE.Select(Math.Abs)
+        ];
 
     #endregion static fields
 

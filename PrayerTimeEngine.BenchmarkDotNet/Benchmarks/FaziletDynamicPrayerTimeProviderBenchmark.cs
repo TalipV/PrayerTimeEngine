@@ -17,7 +17,6 @@ using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Models.E
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Services;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Interfaces;
 using PrayerTimeEngine.Core.Tests.Common.TestData;
-using System.Data.Common;
 
 namespace PrayerTimeEngine.BenchmarkDotNet.Benchmarks;
 
@@ -83,7 +82,7 @@ public class FaziletDynamicPrayerTimeProviderBenchmark
             );
     }
 
-    private static DbConnection _dbContextKeepAliveSqlConnection;
+    private static SqliteConnection _dbContextKeepAliveSqlConnection;
 
     [GlobalSetup]
     public static void Setup()
@@ -121,14 +120,13 @@ public class FaziletDynamicPrayerTimeProviderBenchmark
     private static FaziletDynamicPrayerTimeProvider _faziletDynamicPrayerTimeProvider_DataFromDbStorage = null;
     private static FaziletDynamicPrayerTimeProvider _faziletDynamicPrayerTimeProvider_DataFromApi = null;
 
-#pragma warning disable CA1822 // Mark members as static
     [Benchmark]
     public List<(ETimeType TimeType, ZonedDateTime ZonedDateTime)> FaziletDynamicPrayerTimeProvider_GetDataFromDb()
     {
         var result = _faziletDynamicPrayerTimeProvider_DataFromDbStorage.GetPrayerTimesAsync(
             _zonedDateTime,
             locationData: _locationData,
-            configurations: _configs, 
+            configurations: _configs,
             cancellationToken: default).GetAwaiter().GetResult();
 
         if (result.Count != 1)
@@ -145,7 +143,7 @@ public class FaziletDynamicPrayerTimeProviderBenchmark
         var result = _faziletDynamicPrayerTimeProvider_DataFromApi.GetPrayerTimesAsync(
             _zonedDateTime,
             locationData: _locationData,
-            configurations: _configs, 
+            configurations: _configs,
             cancellationToken: default).GetAwaiter().GetResult();
 
         if (result.Count != 1)
@@ -155,5 +153,4 @@ public class FaziletDynamicPrayerTimeProviderBenchmark
 
         return result;
     }
-#pragma warning restore CA1822 // Mark members as static
 }

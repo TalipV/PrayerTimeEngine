@@ -3,12 +3,7 @@
 namespace PrayerTimeEngine.Core.Common.Attribute;
 
 [AttributeUsage(AttributeTargets.Field)]
-public class TimeTypeForPrayerTypeAttribute : System.Attribute
+public class TimeTypeForPrayerTypeAttribute(EPrayerType prayerTime) : System.Attribute
 {
-    public EPrayerType PrayerTime { get; private set; }
-
-    public TimeTypeForPrayerTypeAttribute(EPrayerType prayerTime)
-    {
-        PrayerTime = prayerTime;
-    }
+    public EPrayerType PrayerTime { get; private set; } = prayerTime;
 }

@@ -1,131 +1,119 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-	<PropertyGroup>
-    <TargetFrameworks>net9.0-android;net9.0-ios</TargetFrameworks>
-    <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net9.0-windows10.0.26100.0</TargetFrameworks>
-    <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('maccatalyst'))">$(TargetFrameworks);net9.0-maccatalyst</TargetFrameworks>
-		<OutputType>Exe</OutputType>
-		<RootNamespace>PrayerTimeEngine</RootNamespace>
+  <PropertyGroup>
+    <TargetFrameworks>net10.0-android;net10.0-ios</TargetFrameworks>
+    <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net10.0-windows10.0.26100.0</TargetFrameworks>
+    <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('maccatalyst'))">$(TargetFrameworks);net10.0-maccatalyst</TargetFrameworks>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>PrayerTimeEngine</RootNamespace>
     <UseMaui>true</UseMaui>
     <SingleProject>true</SingleProject>
-		<ImplicitUsings>enable</ImplicitUsings>
+    <ImplicitUsings>enable</ImplicitUsings>
 
-		<!-- Display name -->
-		<ApplicationTitle>PrayerTimeEngine</ApplicationTitle>
+    <!-- Display name -->
+    <ApplicationTitle>PrayerTimeEngine</ApplicationTitle>
 
-		<!-- App Identifier -->
-		<ApplicationId>com.companyname.prayertimeengine</ApplicationId>
-		<ApplicationIdGuid>c83b767d-745b-4d09-b7ca-65e9b6575d10</ApplicationIdGuid>
+    <!-- App Identifier -->
+    <ApplicationId>com.companyname.prayertimeengine</ApplicationId>
+    <ApplicationIdGuid>c83b767d-745b-4d09-b7ca-65e9b6575d10</ApplicationIdGuid>
 
-		<!-- Versions -->
-		<ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
-		<ApplicationVersion>1</ApplicationVersion>
+    <!-- Versions -->
+    <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
+    <ApplicationVersion>1</ApplicationVersion>
 
-    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">14.0</SupportedOSPlatformVersion>
-    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">14.0</SupportedOSPlatformVersion>
+    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">15.0</SupportedOSPlatformVersion>
+    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">15.0</SupportedOSPlatformVersion>
     <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">26.0</SupportedOSPlatformVersion>
     <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.22000.0</SupportedOSPlatformVersion>
     <TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.22000.0</TargetPlatformMinVersion>
-	
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net9.0-ios|AnyCPU'">
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net10.0-ios|AnyCPU'">
     <CreatePackage>false</CreatePackage>
   </PropertyGroup>
 
-	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-	  <IntermediateOutputPath></IntermediateOutputPath>
-		<DebugType>portable</DebugType>
-		<DebugSymbols>true</DebugSymbols>
-	  <Optimize></Optimize>
-	  <OutputPath></OutputPath>
-	  <DefineConstants></DefineConstants>
-	  <WarningLevel></WarningLevel>
-	  <TreatWarningsAsErrors></TreatWarningsAsErrors>
-	  <DocumentationFile></DocumentationFile>
-	  <ConsolePause>true</ConsolePause>
-	  <ExternalConsole>false</ExternalConsole>
-	  <Commandlineparameters></Commandlineparameters>
-	  <RunWithWarnings>true</RunWithWarnings>
-	  <NoWarn></NoWarn>
-	  <AllowUnsafeBlocks></AllowUnsafeBlocks>
-	  <CheckForOverflowUnderflow></CheckForOverflowUnderflow>
-	  <LangVersion>Default</LangVersion>
-	  <NoStdLib></NoStdLib>
-	  <PlatformTarget>anycpu</PlatformTarget>
-	  <WarningsNotAsErrors></WarningsNotAsErrors>
-	  <Nullable></Nullable>
-	</PropertyGroup>
-	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <IntermediateOutputPath></IntermediateOutputPath>
+    <DebugType>portable</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+    <Optimize></Optimize>
+    <OutputPath></OutputPath>
+    <DefineConstants></DefineConstants>
+    <WarningLevel></WarningLevel>
+    <TreatWarningsAsErrors></TreatWarningsAsErrors>
+    <DocumentationFile></DocumentationFile>
+    <ConsolePause>true</ConsolePause>
+    <ExternalConsole>false</ExternalConsole>
+    <Commandlineparameters></Commandlineparameters>
+    <RunWithWarnings>true</RunWithWarnings>
+    <NoWarn></NoWarn>
+    <AllowUnsafeBlocks></AllowUnsafeBlocks>
+    <CheckForOverflowUnderflow></CheckForOverflowUnderflow>
+    <LangVersion>Default</LangVersion>
+    <NoStdLib></NoStdLib>
+    <PlatformTarget>anycpu</PlatformTarget>
+    <WarningsNotAsErrors></WarningsNotAsErrors>
+    <Nullable></Nullable>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <RunAOTCompilation>True</RunAOTCompilation>
     <AndroidEnableProfiledAot>false</AndroidEnableProfiledAot>
     <EnableLLVM>true</EnableLLVM>
     <IntermediateOutputPath></IntermediateOutputPath>
     <DebugType>none</DebugType>
     <DebugSymbols>false</DebugSymbols>
-	  <Optimize></Optimize>
-	  <OutputPath></OutputPath>
-	  <DefineConstants></DefineConstants>
-	  <WarningLevel></WarningLevel>
-	  <TreatWarningsAsErrors></TreatWarningsAsErrors>
-	  <DocumentationFile></DocumentationFile>
-	  <ConsolePause>true</ConsolePause>
-	  <ExternalConsole>false</ExternalConsole>
-	  <Commandlineparameters></Commandlineparameters>
-	  <RunWithWarnings>true</RunWithWarnings>
-	  <NoWarn></NoWarn>
-	  <AllowUnsafeBlocks></AllowUnsafeBlocks>
-	  <CheckForOverflowUnderflow></CheckForOverflowUnderflow>
-	  <LangVersion>Default</LangVersion>
-	  <NoStdLib></NoStdLib>
-	  <PlatformTarget>anycpu</PlatformTarget>
-	  <WarningsNotAsErrors></WarningsNotAsErrors>
-	  <Nullable></Nullable>
-	</PropertyGroup>
-  
-	<ItemGroup>
-		<!-- App Icon -->
-		<MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#512BD4" />
-
-		<!-- Splash Screen -->
-		<MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#512BD4" BaseSize="128,128" />
-
-		<!-- Images -->
-
-		<!-- Custom Fonts -->
-		<MauiFont Include="Resources\Fonts\*" />
-
-		<!-- Raw Assets (also remove the "Resources\Raw" prefix) -->
-		<MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
-	</ItemGroup>
+    <Optimize></Optimize>
+    <OutputPath></OutputPath>
+    <DefineConstants></DefineConstants>
+    <WarningLevel></WarningLevel>
+    <TreatWarningsAsErrors></TreatWarningsAsErrors>
+    <DocumentationFile></DocumentationFile>
+    <ConsolePause>true</ConsolePause>
+    <ExternalConsole>false</ExternalConsole>
+    <Commandlineparameters></Commandlineparameters>
+    <RunWithWarnings>true</RunWithWarnings>
+    <NoWarn></NoWarn>
+    <AllowUnsafeBlocks></AllowUnsafeBlocks>
+    <CheckForOverflowUnderflow></CheckForOverflowUnderflow>
+    <LangVersion>Default</LangVersion>
+    <NoStdLib></NoStdLib>
+    <PlatformTarget>anycpu</PlatformTarget>
+    <WarningsNotAsErrors></WarningsNotAsErrors>
+    <Nullable></Nullable>
+  </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AsyncAwaitBestPractices" Version="9.0.0" />
-    <PackageReference Include="CommunityToolkit.Maui.Markup" Version="5.0.0" />
-    <PackageReference Include="Debounce.Core" Version="1.0.0" />
-    <PackageReference Include="MethodTimer.Fody" Version="3.2.2" PrivateAssets="All" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.10" />
-    <PackageReference Include="NodaTime" Version="3.2.0" />
-    <PackageReference Include="Plugin.Maui.DebugRainbows" Version="1.2.1" />
-    <PackageReference Include="PropertyChanged.Fody" Version="4.1.0" PrivateAssets="All" />
-    <PackageReference Include="Refractored.MvvmHelpers" Version="1.6.2" />
-    <PackageReference Include="CommunityToolkit.Maui" Version="9.1.1" />
-    <PackageReference Include="MetroLog.Maui" Version="2.1.0" />
-    <PackageReference Include="OnScreenSizeMarkup.Maui" Version="3.0.18" />
-    <PackageReference Include="Microsoft.Maui.Controls" Version="9.0.10" />
-    <PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="9.0.10" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.0" />
-    <PackageReference Include="System.Private.Uri" Version="4.3.2" />
-    <PackageReference Include="System.Text.Json" Version="9.0.0" />
-    <PackageReference Include="UraniumUI.Material" Version="2.10.2" />
+    <!-- App Icon -->
+    <MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#512BD4" />
+
+    <!-- Splash Screen -->
+    <MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#512BD4" BaseSize="128,128" />
+
+    <!-- Images -->
+
+    <!-- Custom Fonts -->
+    <MauiFont Include="Resources\Fonts\*" />
+
+    <!-- Raw Assets (also remove the "Resources\Raw" prefix) -->
+    <MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
   </ItemGroup>
 
-	<ItemGroup>
-	  <Folder Include="Platforms\Android\Resources\xml\" />
-	</ItemGroup>
-
   <ItemGroup>
-    <Compile Include="..\SharedGlobalSettings.cs" Link="Properties\SharedGlobalSettings.cs" />
+    <PackageReference Include="CommunityToolkit.Maui" Version="13.0.0" />
+    <PackageReference Include="CommunityToolkit.Maui.Markup" Version="7.0.0" />
+    <PackageReference Include="Debounce.Core" Version="1.0.0" />
+    <PackageReference Include="MethodTimer.Fody" Version="3.2.3" PrivateAssets="All" />
+    <PackageReference Include="MetroLog.Maui" Version="2.1.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="10.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Http.Resilience" Version="10.0.0" />
+    <PackageReference Include="Microsoft.Maui.Controls" Version="10.0.10" />
+    <PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="10.0.10" />
+    <PackageReference Include="OnScreenSizeMarkup.Maui" Version="3.0.18" />
+    <PackageReference Include="Plugin.Maui.DebugRainbows" Version="1.2.2" />
+    <PackageReference Include="PropertyChanged.Fody" Version="4.1.0" PrivateAssets="All" />
+    <PackageReference Include="Refractored.MvvmHelpers" Version="1.6.2" />
+    <PackageReference Include="UraniumUI.Material" Version="2.13.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -133,5 +121,4 @@
       <ReferenceSourceTarget>ProjectReference</ReferenceSourceTarget>
     </ProjectReference>
   </ItemGroup>
-
 </Project>

@@ -1,6 +1,6 @@
 ﻿using NodaTime;
 using PrayerTimeEngine.Core.Common;
-using PrayerTimeEngine.Presentation.Views.PrayerTimeGraphic.VOs;  
+using PrayerTimeEngine.Presentation.Views.PrayerTimeGraphic.VOs;
 
 namespace PrayerTimeEngine.Presentation.Views.PrayerTimeGraphic;
 
@@ -16,7 +16,7 @@ public class PrayerTimeGraphicView(
     private readonly Color PrayerSubTimeBorderColor = Color.FromArgb("#f3eae3");
     private readonly Color PrayerSubTimeTextColor = Colors.Black;
 
-    public PrayerTimeGraphicTimeVO PrayerTimeGraphicTime {  get; set; }
+    public PrayerTimeGraphicTimeVO PrayerTimeGraphicTime { get; set; }
 
     public void Draw(ICanvas canvas, RectF fullRectangle)
     {
@@ -86,12 +86,17 @@ public class PrayerTimeGraphicView(
 
     private float getRelativeDepthByInstant(Instant dateTime, RectF rectangle)
     {
+        if (dateTime <= PrayerTimeGraphicTime.Start.ToInstant())
+        {
+            return 0;
+        }
+
         float durationInSeconds = (float)(PrayerTimeGraphicTime.End.ToInstant() - PrayerTimeGraphicTime.Start.ToInstant()).TotalSeconds;
         float secondsSoFar = (float)(dateTime - PrayerTimeGraphicTime.Start.ToInstant()).TotalSeconds;
 
         float percentageOfDuration = secondsSoFar / durationInSeconds;
 
-        return rectangle.Height * percentageOfDuration;
+        return Math.Max(rectangle.Height * percentageOfDuration, 0);
     }
 
     private void drawPrayerTimeTexts(ICanvas canvas, RectF dirtyRect)
@@ -134,8 +139,8 @@ public class PrayerTimeGraphicView(
         Instant startDateTime, Instant endDateTime,
         ESubTimeType type)
     {
-        float leftPos = 0.0f;
-        float width = 0.0f;
+        float leftPos;
+        float width;
 
         float regularWidth = innerBackgroundRectangle.Right - innerBackgroundRectangle.Width / 2.0F;
 

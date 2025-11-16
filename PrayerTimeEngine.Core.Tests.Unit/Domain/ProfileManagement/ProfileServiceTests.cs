@@ -1,4 +1,5 @@
-﻿using NSubstitute;
+﻿using Microsoft.Extensions.Logging;
+using NSubstitute;
 using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Domain;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes;
@@ -15,21 +16,20 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.ProfileManagement;
 public class ProfileServiceTests : BaseTest
 {
     private readonly IProfileDBAccess _profileDBAccessMock;
+    private readonly IDynamicPrayerTimeProviderFactory _dynamicPrayerTimeProviderFactory;
     private readonly ProfileService _profileService;
 
     public ProfileServiceTests()
     {
         _profileDBAccessMock = Substitute.For<IProfileDBAccess>();
-        _profileService = new ProfileService(_profileDBAccessMock, new TimeTypeAttributeService());
+        _dynamicPrayerTimeProviderFactory = Substitute.For<IDynamicPrayerTimeProviderFactory>();
+        _profileService = new ProfileService(_profileDBAccessMock, _dynamicPrayerTimeProviderFactory, new TimeTypeAttributeService(), Substitute.For<ILogger<ProfileService>>());
     }
 
-    public static TheoryData<ETimeType> configurableTimeTypeValues => new(
-        values: new TimeTypeAttributeService().ConfigurableTypes);
+    public static TheoryData<ETimeType> configurableTimeTypeValues => [.. new TimeTypeAttributeService().ConfigurableTypes];
 
-    public static TheoryData<EDynamicPrayerTimeProviderType> dynamicPrayerTimeProviderValues => new(
-        values: Enum.GetValues(typeof(EDynamicPrayerTimeProviderType))
-                .OfType<EDynamicPrayerTimeProviderType>()
-                .Where(x => x != EDynamicPrayerTimeProviderType.None));
+    public static TheoryData<EDynamicPrayerTimeProviderType> dynamicPrayerTimeProviderValues =>
+        [.. Enum.GetValues<EDynamicPrayerTimeProviderType>().Where(x => x != EDynamicPrayerTimeProviderType.None)];
 
     #region GetProfiles
 
@@ -54,9 +54,9 @@ public class ProfileServiceTests : BaseTest
     public async Task GetProfiles_ThreeProfilesInDb_ReturnTheThree()
     {
         // ARRANGE
-        var profile1 = TestDataHelper.CreateNewCompleteTestProfile();
-        var profile2 = TestDataHelper.CreateNewCompleteTestProfile();
-        var profile3 = TestDataHelper.CreateNewCompleteTestProfile();
+        var profile1 = TestDataHelper.CreateCompleteTestDynamicProfile();
+        var profile2 = TestDataHelper.CreateCompleteTestDynamicProfile();
+        var profile3 = TestDataHelper.CreateCompleteTestDynamicProfile();
         _profileDBAccessMock.GetProfiles(Arg.Any<CancellationToken>()).Returns([profile1, profile2, profile3]);
 
         // ACT
@@ -78,14 +78,14 @@ public class ProfileServiceTests : BaseTest
     public async Task SaveProfile_SaveSomeProfile_DbSaveTriggeredForProfile()
     {
         // ARRANGE
-        var profile = TestDataHelper.CreateNewCompleteTestProfile();
+        var profile = TestDataHelper.CreateCompleteTestDynamicProfile();
 
         // ACT
         await _profileService.SaveProfile(profile, default);
 
         // ASSERT
-        _profileDBAccessMock.ReceivedWithAnyArgs(1).Awaiting(x => x.SaveProfile(default, default));
-        _profileDBAccessMock.Received(1).Awaiting(x => x.SaveProfile(Arg.Is(profile), Arg.Any<CancellationToken>()));
+        await _profileDBAccessMock.ReceivedWithAnyArgs(1).SaveProfile(default, default);
+        await _profileDBAccessMock.Received(1).SaveProfile(Arg.Is(profile), Arg.Any<CancellationToken>());
     }
 
     #endregion SaveProfile
@@ -98,7 +98,7 @@ public class ProfileServiceTests : BaseTest
     public void GetTimeConfig_ExistingTimeConfig_ShouldReturnConfig(ETimeType timeType)
     {
         // ARRANGE
-        var profile = TestDataHelper.CreateNewCompleteTestProfile();
+        var profile = TestDataHelper.CreateCompleteTestDynamicProfile();
 
         // ACT
         GenericSettingConfiguration result = _profileService.GetTimeConfig(profile, timeType);
@@ -114,7 +114,7 @@ public class ProfileServiceTests : BaseTest
     public void GetTimeConfig_NonExistingTimeConfig_ShouldReturnNull(ETimeType timeType)
     {
         // ARRANGE
-        var profile = TestDataHelper.CreateNewCompleteTestProfile();
+        var profile = TestDataHelper.CreateCompleteTestDynamicProfile();
         profile.TimeConfigs.Remove(profile.TimeConfigs.First(x => x.TimeType == timeType));
 
         // ACT
@@ -134,7 +134,7 @@ public class ProfileServiceTests : BaseTest
     public void GetLocationConfig_MatchFound_ReturnValue(EDynamicPrayerTimeProviderType source)
     {
         // ARRANGE
-        var profile = TestDataHelper.CreateNewCompleteTestProfile();
+        var profile = TestDataHelper.CreateCompleteTestDynamicProfile();
 
         // ACT
         BaseLocationData result = _profileService.GetLocationConfig(profile, source);
@@ -150,7 +150,7 @@ public class ProfileServiceTests : BaseTest
     public void GetLocationConfig_NoMatchFound_ReturnNull(EDynamicPrayerTimeProviderType source)
     {
         // ARRANGE
-        var profile = TestDataHelper.CreateNewCompleteTestProfile();
+        var profile = TestDataHelper.CreateCompleteTestDynamicProfile();
         profile.LocationConfigs.Should().Contain(x => x.DynamicPrayerTimeProvider == source);
         profile.LocationConfigs.Remove(profile.LocationConfigs.First(x => x.DynamicPrayerTimeProvider == source));
 
@@ -170,9 +170,11 @@ public class ProfileServiceTests : BaseTest
     public async Task UpdateLocationConfig_UpdateProfileLocationData_DbUpdateTriggeredForProfileLocationData()
     {
         // ARRANGE
-        var profile = TestDataHelper.CreateNewCompleteTestProfile();
-        List<(EDynamicPrayerTimeProviderType, BaseLocationData)> locationData = [(EDynamicPrayerTimeProviderType.Muwaqqit, Substitute.ForPartsOf<BaseLocationData>())];
-        
+        var profile = TestDataHelper.CreateCompleteTestDynamicProfile();
+        var expectedDynamicPrayerTimeProviderType = Enum.GetValues<EDynamicPrayerTimeProviderType>()
+            .Where(x => x != EDynamicPrayerTimeProviderType.None)
+            .ToHashSet();
+
         var placeInfo =
             new ProfilePlaceInfo
             {
@@ -194,11 +196,15 @@ public class ProfileServiceTests : BaseTest
             };
 
         // ACT
-        await _profileService.UpdateLocationConfig(profile, placeInfo, locationData, default);
+        await _profileService.UpdateLocationConfig(profile, placeInfo, default);
 
         // ASSERT
-        _profileDBAccessMock.ReceivedWithAnyArgs(1).Awaiting(x => x.UpdateLocationConfig(default, default, default, default));
-        _profileDBAccessMock.Received(1).Awaiting(x => x.UpdateLocationConfig(Arg.Is(profile), Arg.Is(placeInfo), Arg.Is(locationData), Arg.Any<CancellationToken>()));
+        await _profileDBAccessMock.ReceivedWithAnyArgs(1).UpdateLocationConfig(default, default, default, default);
+        await _profileDBAccessMock.Received(1).UpdateLocationConfig(
+            Arg.Is(profile), 
+            Arg.Is(placeInfo), 
+            Arg.Is<List<(EDynamicPrayerTimeProviderType, BaseLocationData)>>(x => x.Select(x => x.Item1).ToHashSet().SetEquals(expectedDynamicPrayerTimeProviderType)), 
+            Arg.Any<CancellationToken>());
     }
 
     #endregion UpdateLocationConfig
@@ -210,15 +216,15 @@ public class ProfileServiceTests : BaseTest
     public async Task UpdateTimeConfig_UpdateProfileConfig_DbUpdateTriggeredForProfileConfig()
     {
         // ARRANGE
-        var profile = TestDataHelper.CreateNewCompleteTestProfile();
+        var profile = TestDataHelper.CreateCompleteTestDynamicProfile();
         var setting = new GenericSettingConfiguration { TimeType = ETimeType.FajrStart };
 
         // ACT
         await _profileService.UpdateTimeConfig(profile, ETimeType.FajrStart, setting, default);
 
         // ASSERT
-        _profileDBAccessMock.ReceivedWithAnyArgs(1).Awaiting(x => x.UpdateTimeConfig(default, default, default, default));
-        _profileDBAccessMock.Received(1).Awaiting(x => x.UpdateTimeConfig(Arg.Is(profile), Arg.Is(ETimeType.FajrStart), Arg.Is(setting), Arg.Any<CancellationToken>()));
+        await _profileDBAccessMock.ReceivedWithAnyArgs(1).UpdateTimeConfig(default, default, default, default);
+        await _profileDBAccessMock.Received(1).UpdateTimeConfig(Arg.Is(profile), Arg.Is(ETimeType.FajrStart), Arg.Is(setting), Arg.Any<CancellationToken>());
     }
 
     #endregion UpdateTimeConfig
@@ -230,7 +236,7 @@ public class ProfileServiceTests : BaseTest
     public void GetLocationDataDisplayText_JustBasicExecution_NoExceptions()
     {
         // ARRANGE
-        var profile = TestDataHelper.CreateNewCompleteTestProfile();
+        var profile = TestDataHelper.CreateCompleteTestDynamicProfile();
 
         // ACT
         Action execution = () => _profileService.GetLocationDataDisplayText(profile);
@@ -248,7 +254,7 @@ public class ProfileServiceTests : BaseTest
     public void GetPrayerTimeConfigDisplayText_JustBasicExecution_NoExceptions()
     {
         // ARRANGE
-        var profile = TestDataHelper.CreateNewCompleteTestProfile();
+        var profile = TestDataHelper.CreateCompleteTestDynamicProfile();
 
         // ACT
         Action execution = () => _profileService.GetPrayerTimeConfigDisplayText(profile);
@@ -266,7 +272,7 @@ public class ProfileServiceTests : BaseTest
     public void GetActiveComplexTimeConfigs_ProfileWithMostlyActiveConfigs_ShouldReturnActiveConfigs()
     {
         // ARRANGE
-        var profile = TestDataHelper.CreateNewCompleteTestProfile();
+        var profile = TestDataHelper.CreateCompleteTestDynamicProfile();
 
         // make two of them inactive
         profile.TimeConfigs.First().CalculationConfiguration.IsTimeShown = false;
@@ -282,14 +288,14 @@ public class ProfileServiceTests : BaseTest
             config.IsTimeShown.Should().BeTrue();
             config.Source.Should().NotBe(EDynamicPrayerTimeProviderType.None);
         });
-    }        
-    
+    }
+
     [Fact]
     [Trait("Method", "GetActiveComplexTimeConfigs")]
     public void GetActiveComplexTimeConfigs_ProfileWithNoConfigs_ShouldReturnNothing()
     {
         // ARRANGE
-        var profile = TestDataHelper.CreateNewCompleteTestProfile();
+        var profile = TestDataHelper.CreateCompleteTestDynamicProfile();
         profile.TimeConfigs.Clear();
 
         // ACT

@@ -6,7 +6,7 @@ using PropertyChanged;
 namespace PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Models;
 
 [AddINotifyPropertyChangedInterface]
-public class MosquePrayerTimesSet : IPrayerTimesSet
+public class MosquePrayerTimesDay : IPrayerTimesDay
 {
     public ZonedDateTime? DataCalculationTimestamp { get; set; }
 
@@ -15,10 +15,10 @@ public class MosquePrayerTimesSet : IPrayerTimesSet
         get
         {
             return [
-                (EPrayerType.Fajr, Fajr), 
-                (EPrayerType.Dhuhr, Dhuhr), 
-                (EPrayerType.Asr, Asr), 
-                (EPrayerType.Maghrib, Maghrib), 
+                (EPrayerType.Fajr, Fajr),
+                (EPrayerType.Dhuhr, Dhuhr),
+                (EPrayerType.Asr, Asr),
+                (EPrayerType.Maghrib, Maghrib),
                 (EPrayerType.Isha, Isha)
             ];
         }
@@ -32,22 +32,26 @@ public class MosquePrayerTimesSet : IPrayerTimesSet
     public MosquePrayerTime Jumuah { get; init; } = new();
     public MosquePrayerTime Jumuah2 { get; init; } = new();
 
+    #region System.Object overrides
+
     public override bool Equals(object obj)
     {
-        if (obj is not MosquePrayerTimesSet otherMosquePrayerTimesSet)
+        if (obj is not MosquePrayerTimesDay otherMosquePrayerTimesSet)
             return false;
 
-        return object.Equals(Fajr, otherMosquePrayerTimesSet.Fajr)
-            && object.Equals(Dhuhr, otherMosquePrayerTimesSet.Dhuhr)
-            && object.Equals(Asr, otherMosquePrayerTimesSet.Asr)
-            && object.Equals(Maghrib, otherMosquePrayerTimesSet.Maghrib)
-            && object.Equals(Isha, otherMosquePrayerTimesSet.Isha)
-            && object.Equals(Jumuah, otherMosquePrayerTimesSet.Jumuah)
-            && object.Equals(Jumuah2, otherMosquePrayerTimesSet.Jumuah2);
+        return Equals(Fajr, otherMosquePrayerTimesSet.Fajr)
+            && Equals(Dhuhr, otherMosquePrayerTimesSet.Dhuhr)
+            && Equals(Asr, otherMosquePrayerTimesSet.Asr)
+            && Equals(Maghrib, otherMosquePrayerTimesSet.Maghrib)
+            && Equals(Isha, otherMosquePrayerTimesSet.Isha)
+            && Equals(Jumuah, otherMosquePrayerTimesSet.Jumuah)
+            && Equals(Jumuah2, otherMosquePrayerTimesSet.Jumuah2);
     }
 
     public override int GetHashCode()
     {
         return HashCode.Combine(Fajr, Dhuhr, Asr, Maghrib, Isha, HashCode.Combine(Jumuah, Jumuah2));
     }
+
+    #endregion System.Object overrides
 }

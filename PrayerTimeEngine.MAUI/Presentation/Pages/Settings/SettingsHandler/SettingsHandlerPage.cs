@@ -55,7 +55,7 @@ public partial class SettingsHandlerPage : ContentPage
                 };
 
                 tabItem.SetBinding(TabItem.TitleProperty, nameof(settingContentPages.ViewModel.TabTitle));
-                _tabView.Items.Add(tabItem);
+                _tabView.Tabs.Add(tabItem);
 
                 // added so late because moving around the contents triggers warning level binding errors
                 settingContentPages.AddDataBindings();

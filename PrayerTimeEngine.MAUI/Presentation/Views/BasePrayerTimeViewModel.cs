@@ -7,14 +7,14 @@ using PropertyChanged;
 namespace PrayerTimeEngine.Presentation.Views;
 
 [AddINotifyPropertyChangedInterface]
-public abstract class BasePrayerTimeViewModel<ProfileType, PrayerTimeSetType> (
+public abstract class BasePrayerTimeViewModel<ProfileType, PrayerTimeSetType>(
         ProfileType profile
     ) : IPrayerTimeViewModel
     where ProfileType : Profile
-    where PrayerTimeSetType : IPrayerTimesSet
+    where PrayerTimeSetType : IPrayerTimesDay
 {
     protected ProfileType ProfileActual { get; } = profile;
-    public IPrayerTimesSet PrayerTimesSet { get; private set; }
+    public IPrayerTimesDay PrayerTimesSet { get; private set; }
     public Profile Profile => ProfileActual;
 
     public abstract Task<PrayerTimeSetType> GetPrayerTimesSet(ZonedDateTime zonedDateTime, CancellationToken cancellationToken);
@@ -38,7 +38,7 @@ public abstract class BasePrayerTimeViewModel<ProfileType, PrayerTimeSetType> (
             currentPrayerTime = PrayerTimesSet.AllPrayerTimes
                     .OrderBy(x => x.Times.Start?.ToInstant())
                     .FirstOrDefault(x => x.Times.Start?.ToInstant() > instant);
-        
+
         if (currentPrayerTime == default || currentPrayerTime.Times?.Start is null || currentPrayerTime.Times?.End is null)
             return null;
 

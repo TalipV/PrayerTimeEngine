@@ -1,4 +1,5 @@
-﻿using NodaTime;
+﻿using Microsoft.Extensions.Logging;
+using NodaTime;
 using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Models;
@@ -15,7 +16,9 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Services;
 
 public class ProfileService(
         IProfileDBAccess profileDBAccess,
-        TimeTypeAttributeService timeTypeAttributeService
+        IDynamicPrayerTimeProviderFactory dynamicPrayerTimeProviderFactory,
+        TimeTypeAttributeService timeTypeAttributeService,
+        ILogger<ProfileService> logger
     ) : IProfileService
 {
     public async Task<List<Profile>> GetProfiles(CancellationToken cancellationToken)
@@ -48,12 +51,12 @@ public class ProfileService(
                 Latitude = 47.2803835M,
                 Longitude = 11.41337M,
                 InfoLanguageCode = "de",
-                Country = "Österreich", 
-                City = "Innsbruck", 
+                Country = "Österreich",
+                City = "Innsbruck",
                 CityDistrict = "",
-                PostCode = "6020", 
+                PostCode = "6020",
                 Street = "",
-                TimezoneInfo  = new TimezoneInfo
+                TimezoneInfo = new TimezoneInfo
                 {
                     DisplayName = "CEST",
                     Name = "Europe/Vienna",
@@ -279,13 +282,34 @@ public class ProfileService(
         return profile.LocationConfigs.FirstOrDefault(x => x.DynamicPrayerTimeProvider == dynamicPrayerTimeProviderType)?.LocationData;
     }
 
-    public Task UpdateLocationConfig(
+    public async Task UpdateLocationConfig(
         DynamicProfile profile,
         ProfilePlaceInfo placeInfo,
-        List<(EDynamicPrayerTimeProviderType DynamicPrayerTimeProvider, BaseLocationData LocationData)> locationDataByDynamicPrayerTimeProvider,
         CancellationToken cancellationToken)
     {
-        return profileDBAccess.UpdateLocationConfig(profile, placeInfo, locationDataByDynamicPrayerTimeProvider, cancellationToken);
+        var locationDataByDynamicPrayerTimeProvider = new List<(EDynamicPrayerTimeProviderType, BaseLocationData)>();
+
+        foreach (var dynamicPrayerTimeProvider in Enum.GetValues<EDynamicPrayerTimeProviderType>())
+        {
+            if (dynamicPrayerTimeProvider == EDynamicPrayerTimeProviderType.None)
+                continue;
+
+            BaseLocationData locationConfig = null;
+            try
+            {
+                locationConfig = await dynamicPrayerTimeProviderFactory
+                    .GetDynamicPrayerTimeProviderByDynamicPrayerTimeProvider(dynamicPrayerTimeProvider)
+                    .GetLocationInfo(placeInfo, cancellationToken);
+            }
+            catch (Exception exception)
+            {
+                logger.LogError(exception, "Error while retrieving location info for {DynamicPrayerTimeProvider}", dynamicPrayerTimeProvider);
+            }
+
+            locationDataByDynamicPrayerTimeProvider.Add((dynamicPrayerTimeProvider, locationConfig));
+        }
+
+        await profileDBAccess.UpdateLocationConfig(profile, placeInfo, locationDataByDynamicPrayerTimeProvider, cancellationToken);
     }
 
     public Task UpdateTimeConfig(DynamicProfile profile, ETimeType timeType, GenericSettingConfiguration settings, CancellationToken cancellationToken)

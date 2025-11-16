@@ -3,12 +3,7 @@
 namespace PrayerTimeEngine.Core.Common.Attribute;
 
 [AttributeUsage(AttributeTargets.Field)]
-public class TimeTypeSupportedByAttribute : System.Attribute
+public class TimeTypeSupportedByAttribute(params EDynamicPrayerTimeProviderType[] sources) : System.Attribute
 {
-    public List<EDynamicPrayerTimeProviderType> DynamicPrayerTimeProviders { get; private set; }
-
-    public TimeTypeSupportedByAttribute(params EDynamicPrayerTimeProviderType[] sources)
-    {
-        DynamicPrayerTimeProviders = sources.ToList();
-    }
+    public List<EDynamicPrayerTimeProviderType> DynamicPrayerTimeProviders { get; private set; } = sources.ToList();
 }

@@ -72,4 +72,41 @@ public class FaziletDynamicPrayerTimeProviderTests : BaseTest
         result.FirstOrDefault(x => x.TimeType == ETimeType.IshaStart).ZonedDateTime.LocalDateTime.Should().Be(new LocalDateTime(2023, 7, 29, 23, 11, 0));
         result.FirstOrDefault(x => x.TimeType == ETimeType.IshaEnd).ZonedDateTime.LocalDateTime.Should().Be(new LocalDateTime(2023, 7, 30, 03, 27, 0));
     }
+
+    // The provided date was not properly considered when the whole set of the prayer times of the year were filtered. It was an NodaDateTime.Instant comparison
+    // and then some slight difference due to DST led to a slight difference in the Instant comparison. (31.03.2025 00:00:00 +02:00 and 31.03.2025 00:01:00 +02:00)
+    // The day time should have been irrelevant to begin with.
+    [Fact]
+    public async Task GetPrayerTimesAsync_BugCaseIshaEndDSTTimeChange_IshaEndExtractedProperly()
+    {
+        // ARRANGE
+        ServiceProvider serviceProvider = createServiceProvider(
+            configureServiceCollection: serviceCollection =>
+            {
+                serviceCollection.AddSingleton(GetHandledDbContextFactory());
+                serviceCollection.AddSingleton(Substitute.For<IPlaceService>());
+                serviceCollection.AddSingleton<IFaziletDBAccess, FaziletDBAccess>();
+                serviceCollection.AddSingleton(SubstitutionHelper.GetMockedFaziletApiService());
+                serviceCollection.AddSingleton(Substitute.For<ILogger<FaziletDynamicPrayerTimeProvider>>());
+                serviceCollection.AddSingleton<FaziletDynamicPrayerTimeProvider>();
+            });
+        FaziletDynamicPrayerTimeProvider faziletDynamicPrayerTimeProvider = serviceProvider.GetRequiredService<FaziletDynamicPrayerTimeProvider>();
+
+        List<GenericSettingConfiguration> configs =
+            [
+                new GenericSettingConfiguration { TimeType = ETimeType.IshaEnd, Source = EDynamicPrayerTimeProviderType.Fazilet },
+            ];
+
+        // ACT
+        List<(ETimeType TimeType, ZonedDateTime ZonedDateTime)> result =
+            await faziletDynamicPrayerTimeProvider.GetPrayerTimesAsync(
+                new LocalDate(2025, 3, 30).AtStartOfDayInZone(TestDataHelper.EUROPE_VIENNA_TIME_ZONE),
+                new FaziletLocationData { CountryName = "Almanya", CityName = "Leverkusen" },
+                configs,
+                default);
+
+        // ASSERT
+        result.Should().NotBeNull();
+        result.FirstOrDefault(x => x.TimeType == ETimeType.IshaEnd).ZonedDateTime.LocalDateTime.Should().Be(new LocalDateTime(2025, 3, 31, 05, 21, 00));
+    }
 }

@@ -1,5 +1,5 @@
-﻿using System.Net.WebSockets;
-using PrayerTimeEngine.Core.Data.WebSocket.Interfaces;
+﻿using PrayerTimeEngine.Core.Data.WebSocket.Interfaces;
+using System.Net.WebSockets;
 
 namespace PrayerTimeEngine.Core.Data.WebSocket;
 

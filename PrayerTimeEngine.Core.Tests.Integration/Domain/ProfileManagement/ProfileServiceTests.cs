@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using NSubstitute.Extensions;
@@ -21,23 +22,30 @@ namespace PrayerTimeEngine.Core.Tests.Integration.Domain.ProfileManagement;
 
 public class ProfileServiceTests : BaseTest
 {
-    [Fact]
-    public async Task UpdateLocationConfig_SetsData_CorrectDataWithOriginalProfileUntouched()
+    private ServiceProvider getServiceProvider()
     {
-        // ARRANGE
-        ServiceProvider serviceProvider = createServiceProvider(
+        return createServiceProvider(
             serviceCollection =>
             {
                 serviceCollection.AddSingleton(GetHandledDbContextFactory());
                 serviceCollection.AddSingleton<TimeTypeAttributeService>();
                 serviceCollection.AddSingleton<IProfileDBAccess, ProfileDBAccess>();
                 serviceCollection.AddSingleton<IProfileService, ProfileService>();
+                serviceCollection.AddSingleton<IDynamicPrayerTimeProviderFactory, DynamicPrayerTimeProviderFactory>();
+                serviceCollection.AddSingleton(Substitute.For<ILogger<ProfileService>>());
             });
+    }
+
+    [Fact]
+    public async Task UpdateLocationConfig_SetsData_CorrectDataWithOriginalProfileUntouched()
+    {
+        // ARRANGE
+        ServiceProvider serviceProvider = getServiceProvider();
 
         using var dbContext = serviceProvider.GetRequiredService<IDbContextFactory<AppDbContext>>().CreateDbContext();
         var profileService = serviceProvider.GetRequiredService<IProfileService>() as ProfileService;
 
-        await dbContext.Profiles.AddAsync(TestDataHelper.CreateNewCompleteTestProfile());
+        await dbContext.Profiles.AddAsync(TestDataHelper.CreateCompleteTestDynamicProfile());
         await dbContext.SaveChangesAsync();
 
         // in the UI the data is loaded without tracking (i.e. intended for read only)
@@ -75,7 +83,7 @@ public class ProfileServiceTests : BaseTest
         };
 
         // ACT
-        await profileService.UpdateLocationConfig(profile, newPlaceInfo, newLocationDataByDynamicPrayerTimeProvider.Select(x => (x.Key, x.Value)).ToList(), default);
+        await profileService.UpdateLocationConfig(profile, newPlaceInfo, default);
 
         // ASSERT
         dbContext.ChangeTracker.HasChanges().Should().BeFalse();
@@ -97,14 +105,7 @@ public class ProfileServiceTests : BaseTest
     public async Task UpdateLocationConfig_SetsDataWithExceptionOnCommit_OldDataFullyRemains()
     {
         // ARRANGE
-        ServiceProvider serviceProvider = createServiceProvider(
-            serviceCollection =>
-            {
-                serviceCollection.AddSingleton(GetHandledDbContextFactory());
-                serviceCollection.AddSingleton<TimeTypeAttributeService>();
-                serviceCollection.AddSingleton<IProfileDBAccess, ProfileDBAccess>();
-                serviceCollection.AddSingleton<IProfileService, ProfileService>();
-            });
+        ServiceProvider serviceProvider = getServiceProvider();
 
         var dbContextFactory = serviceProvider.GetRequiredService<IDbContextFactory<AppDbContext>>();
         using var dbContext = dbContextFactory.CreateDbContext();
@@ -114,7 +115,7 @@ public class ProfileServiceTests : BaseTest
 
         var profileService = serviceProvider.GetRequiredService<IProfileService>() as ProfileService;
 
-        await dbContext.Profiles.AddAsync(TestDataHelper.CreateNewCompleteTestProfile());
+        await dbContext.Profiles.AddAsync(TestDataHelper.CreateCompleteTestDynamicProfile());
         await dbContext.SaveChangesAsync();
 
         dbContext.SaveChangesAsync().Throws(new Exception("Test exception during commit"));
@@ -162,13 +163,12 @@ public class ProfileServiceTests : BaseTest
                 await profileService.UpdateLocationConfig(
                     profile: profile,
                     placeInfo: newPlaceInfo,
-                    locationDataByDynamicPrayerTimeProvider: newLocationDataByDynamicPrayerTimeProvider.Select(x => (x.Key, x.Value)).ToList(),
                     cancellationToken: default);
             };
 
         // ASSERT
         await updateLocationConfigFunc.Should().ThrowAsync<Exception>().WithMessage("Test exception during commit");
-        
+
         profile.PlaceInfo.Should().NotBeNull();
         profile.PlaceInfo.Should().NotBe(newPlaceInfo);
         profile.PlaceInfo.Should().Be(oldPlaceInfo);
@@ -186,18 +186,11 @@ public class ProfileServiceTests : BaseTest
     public async Task UpdateTimeConfig_SetNewValue_Success()
     {
         // ARRANGE
-        ServiceProvider serviceProvider = createServiceProvider(
-            serviceCollection =>
-            {
-                serviceCollection.AddSingleton(GetHandledDbContextFactory());
-                serviceCollection.AddSingleton<TimeTypeAttributeService>();
-                serviceCollection.AddSingleton<IProfileDBAccess, ProfileDBAccess>();
-                serviceCollection.AddSingleton<IProfileService, ProfileService>();
-            });
+        ServiceProvider serviceProvider = getServiceProvider();
 
         var profileService = serviceProvider.GetRequiredService<IProfileService>() as ProfileService;
 
-        await TestArrangeDbContext.Profiles.AddAsync(TestDataHelper.CreateNewCompleteTestProfile());
+        await TestArrangeDbContext.Profiles.AddAsync(TestDataHelper.CreateCompleteTestDynamicProfile());
         await TestArrangeDbContext.SaveChangesAsync();
 
         var profile =
@@ -207,7 +200,7 @@ public class ProfileServiceTests : BaseTest
                 .AsNoTracking()
                 .Single();
 
-        var newSemerkandConfig =
+        var newSemerkandSettingConfig =
             new GenericSettingConfiguration
             {
                 Source = EDynamicPrayerTimeProviderType.Semerkand,
@@ -215,7 +208,7 @@ public class ProfileServiceTests : BaseTest
             };
 
         // ACT
-        await profileService.UpdateTimeConfig(profile, ETimeType.FajrStart, newSemerkandConfig, default);
+        await profileService.UpdateTimeConfig(profile, ETimeType.FajrStart, newSemerkandSettingConfig, default);
 
         // ASSERT
 

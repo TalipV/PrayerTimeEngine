@@ -1,13 +1,13 @@
 using Microsoft.Extensions.DependencyInjection;
 using NodaTime;
-using PrayerTimeEngine.Core.Tests.Common;
-using PrayerTimeEngine.Core.Tests.Common.TestData;
 using PrayerTimeEngine.Core.Data.WebSocket;
 using PrayerTimeEngine.Core.Data.WebSocket.Interfaces;
-using System.Net.WebSockets;
+using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Models;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.MyMosq.Interfaces;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.MyMosq.Services;
-using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Models;
+using PrayerTimeEngine.Core.Tests.Common;
+using PrayerTimeEngine.Core.Tests.Common.TestData;
+using System.Net.WebSockets;
 
 namespace PrayerTimeEngine.Core.Tests.Integration.Domain.MosquePrayerTimes.Providers.MyMosq;
 
@@ -78,7 +78,8 @@ public class MyMosqMosquePrayerTimeProviderTests : BaseTest
                 serviceCollection.AddTransient<MyMosqMosquePrayerTimeProvider>();
             });
 
-        var date = new LocalDate(2024, 8, 30);
+        // just some date but it has to be this year because the API returns data only for the current year
+        var date = new LocalDate(DateTime.Today.Year, 1, 1);
         MyMosqMosquePrayerTimeProvider myMosqPrayerTimeService = serviceProvider.GetRequiredService<MyMosqMosquePrayerTimeProvider>();
 
         // ACT & ASSERT
@@ -87,10 +88,12 @@ public class MyMosqMosquePrayerTimeProviderTests : BaseTest
 
     // to check the fragile API implementation with a live API call because why not
     [Theory]
-    [InlineData("1239")]
-    [InlineData("1145")]
-    [InlineData("1140")]
-    public async Task ValidateData_DifferentExternalIDsWithLiveApi_ValidData(string externalID)
+    [InlineData("1239", true)]
+    [InlineData("1145", true)]
+    [InlineData("1140", true)]
+    [InlineData("123497839", false)]
+    public async Task ValidateData_DifferentExternalIDsWithLiveApi_ValidatedAsExpected(
+        string externalID, bool isValid)
     {
         // ARRANGE
         ServiceProvider serviceProvider = createServiceProvider(
@@ -114,6 +117,6 @@ public class MyMosqMosquePrayerTimeProviderTests : BaseTest
         bool result = await myMosqPrayerTimeService.ValidateData(externalID, default);
 
         // ASSERT
-        result.Should().BeTrue();
+        result.Should().Be(isValid);
     }
 }
