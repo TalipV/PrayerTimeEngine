@@ -182,9 +182,13 @@ internal class MainPageOptionsMenuService(
                         break;
                     case _goldPriceText:
                         decimal goldEurPricePerGram = await getGoldGramEurAsync("fcdc9197a43a72f497fe20e4131542c0");
+                        decimal silverEurPricePerGram = await getSilverGramEurAsync("fcdc9197a43a72f497fe20e4131542c0");
                         await page.DisplayAlertAsync("Info", $"""
-                            Goldpreis pro Gramm: {goldEurPricePerGram:N2}€
+                            Goldpreis pro Gramm: {goldEurPricePerGram:N5}€
                             --> Nisab beträgt {(GOLD_NISAB_GRAMM * goldEurPricePerGram):N2}€ ({GOLD_NISAB_GRAMM:N2} g)
+
+                            Silberpreis pro Gramm: {silverEurPricePerGram:N5}€
+                            --> Nisab beträgt {(SILVER_NISAB_GRAMM * silverEurPricePerGram):N2}€ ({SILVER_NISAB_GRAMM:N2} g)
                             """, "Ok");
                         break;
                     case _cancelText:
@@ -201,9 +205,12 @@ internal class MainPageOptionsMenuService(
     }
 
     private const decimal GOLD_NISAB_GRAMM = 84.7M;
+    private const decimal SILVER_NISAB_GRAMM = 592.9M;
 
     private static async Task<decimal> getGoldGramEurAsync(string apiKey)
     {
+        // XAU --> gold
+
         using var http = new HttpClient();
         string url = $"https://api.metalpriceapi.com/v1/latest?api_key={apiKey}&base=EUR&currencies=XAU";
         string json = await http.GetStringAsync(url);
@@ -212,6 +219,25 @@ internal class MainPageOptionsMenuService(
         decimal eurPerOunce = data.RootElement
             .GetProperty("rates")
             .GetProperty("EURXAU")
+            .GetDecimal();
+
+        decimal eurPerGramm = eurPerOunce / 31.1034768m;
+
+        return eurPerGramm;
+    }
+
+    private static async Task<decimal> getSilverGramEurAsync(string apiKey)
+    {
+        // XAG --> silver
+
+        using var http = new HttpClient();
+        string url = $"https://api.metalpriceapi.com/v1/latest?api_key={apiKey}&base=EUR&currencies=XAG";
+        string json = await http.GetStringAsync(url);
+
+        JsonDocument data = System.Text.Json.JsonDocument.Parse(json);
+        decimal eurPerOunce = data.RootElement
+            .GetProperty("rates")
+            .GetProperty("EURXAG")
             .GetDecimal();
 
         decimal eurPerGramm = eurPerOunce / 31.1034768m;
