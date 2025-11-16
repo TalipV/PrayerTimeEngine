@@ -179,7 +179,6 @@ internal class MainPageOptionsMenuService(
     }
 
     private const decimal GOLD_NISAB_GRAMM = 84.7M;
-    private const decimal GOLD_NISAB_GRAMM = 84.7M;
 
     private static async Task<decimal> getGoldGramEurAsync(string apiKey)
     {
