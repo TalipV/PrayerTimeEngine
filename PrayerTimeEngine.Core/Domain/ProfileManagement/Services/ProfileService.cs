@@ -303,7 +303,9 @@ public class ProfileService(
             }
             catch (Exception exception)
             {
-                logger.LogError(exception, "Error while retrieving location info for {DynamicPrayerTimeProvider}", dynamicPrayerTimeProvider);
+                logger.LogError(exception, 
+                    "Error while retrieving location info for {DynamicPrayerTimeProviderFullName}", 
+                    dynamicPrayerTimeProvider.GetType().FullName);
             }
 
             locationDataByDynamicPrayerTimeProvider.Add((dynamicPrayerTimeProvider, locationConfig));

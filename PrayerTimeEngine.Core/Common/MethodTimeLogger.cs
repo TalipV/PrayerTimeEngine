@@ -18,19 +18,24 @@ public static class MethodTimeLogger
         if (Logger is null)
         {
             _notLoggedStuff.Add(
-                $"TIME-LOGGER: {Environment.NewLine}{methodBase.DeclaringType}.{methodBase.Name}, {Environment.NewLine}{timeSpan.TotalMilliseconds:N0} ms");
+                $"TIME-LOGGER: {methodBase.DeclaringType}.{methodBase.Name}, {timeSpan.TotalMilliseconds:N0} ms");
             return;
         }
 
+        executeMissedOutLogs();
+
+        Logger.LogInformation(
+            "TIME-LOGGER: {DeclaringType}.{MethodName}, {Milliseconds} ms",
+            methodBase.DeclaringType,
+            methodBase.Name,
+            timeSpan.TotalMilliseconds.ToString("N0"));
+    }
+
+    private static void executeMissedOutLogs()
+    {
         foreach (var notLoggedMessage in _notLoggedStuff.Reverse())
             Logger.LogInformation("{Message}", notLoggedMessage);
 
         _notLoggedStuff.Clear();
-
-        Logger?.LogInformation(
-            "TIME-LOGGER: \r\n{DeclaringType}.{MethodName}, \r\n{Milliseconds} ms",
-            methodBase.DeclaringType,
-            methodBase.Name,
-            timeSpan.TotalMilliseconds.ToString("N0"));
     }
 }
