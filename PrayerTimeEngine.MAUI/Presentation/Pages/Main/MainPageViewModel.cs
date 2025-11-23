@@ -417,7 +417,8 @@ public partial class MainPageViewModel(
         }
         catch (Exception exception)
         {
-            logger.LogError(exception, "Error during refreshData. ({RefreshCallID})", refreshCallID);
+            logger.LogError(exception, 
+                "Error during refreshData. ({RefreshCallID})", refreshCallID);
             toastMessageService.ShowError(exception.Message);
         }
         finally
@@ -521,10 +522,11 @@ public partial class MainPageViewModel(
                 List<EDynamicPrayerTimeProviderType> missingLocationInfo =
                     Enum.GetValues<EDynamicPrayerTimeProviderType>()
                         .Where(enumValue => enumValue != EDynamicPrayerTimeProviderType.None && !locationConfigDynamicPrayerTimeProviders.Contains(enumValue))
+                        .OrderBy(x => x.ToString())
                         .ToList();
                 if (missingLocationInfo.Count != 0)
                 {
-                    logger.LogWarning("Location information missing for the following calculation sources: {DynamicPrayerTimeProviders}", string.Join(", ", missingLocationInfo));
+                    logger.LogWarning("Location information missing for the following calculation sources: {@DynamicPrayerTimeProviders}", missingLocationInfo);
                     toastMessageService.ShowWarning($"Location information missing for {string.Join(", ", missingLocationInfo)}");
                 }
             }

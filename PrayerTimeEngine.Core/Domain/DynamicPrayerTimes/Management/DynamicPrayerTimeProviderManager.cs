@@ -116,7 +116,9 @@ public class DynamicPrayerTimeProviderManager(
             }
             catch (Exception exception) when (exception is not OperationCanceledException)
             {
-                logger.LogError(exception, "Error while trying to clean cache with {CacheCleanerFullName}", cacheCleaner.GetType().FullName);
+                logger.LogError(exception, 
+                    "Error while trying to clean cache with {CacheCleanerFullName}", 
+                    cacheCleaner.GetType().FullName);
             }
         }
     }
@@ -170,9 +172,11 @@ public class DynamicPrayerTimeProviderManager(
 
                 calculatorTasks.Add(calculatorTask);
             }
-            catch (Exception ex)
+            catch (Exception exception)
             {
-                logger.LogError(ex, "Error for {CalculatorName}", dynamicPrayerTimeProviderType.GetType().Name);
+                logger.LogError(exception,
+                    "Error for {DynamicPrayerTimeProviderFullName}", 
+                    dynamicPrayerTimeProviderType.GetType().FullName);
             }
         }
 

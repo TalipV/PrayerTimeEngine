@@ -402,8 +402,7 @@ internal class MainPageOptionsMenuService(
         }
         else
         {
-            logger.LogError(
-                result.Exception,
+            logger.LogError(result.Exception,
                 "Error while writing export configuration to destination '{DestinationFilePath}'",
                 result.FilePath);
 
@@ -450,8 +449,7 @@ internal class MainPageOptionsMenuService(
         }
         catch (Exception exception)
         {
-            logger.LogError(
-                exception,
+            logger.LogError(exception,
                 "Error while importing configuration '{FilePath}'",
                 pickedFile.FullPath);
 
