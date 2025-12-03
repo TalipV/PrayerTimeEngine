@@ -53,19 +53,11 @@ public partial class MainPage : ContentPage
 
         viewModel.OnAfterLoadingPrayerTimes_EventTrigger += ViewModel_OnAfterLoadingPrayerTimes_EventTrigger;
 
-        _lastUpdatedTextInfo.GestureRecognizers
-            .Add(
-                new TapGestureRecognizer
-                {
-                    Command = new Command(async () => await _mainPageOptionsMenuService.OpenGeneralOptionsMenu().ConfigureAwait(false)),
-                    NumberOfTapsRequired = 2,
-                });
-
         _profileDisplayNameTextInfo.GestureRecognizers
             .Add(
                 new TapGestureRecognizer
                 {
-                    Command = new Command(async () => await _mainPageOptionsMenuService.OpenProfileOptionsMenu().ConfigureAwait(false)),
+                    Command = new Command(async () => await _mainPageOptionsMenuService.OpenOptionsMenu().ConfigureAwait(false)),
                     NumberOfTapsRequired = 2,
                 });
     }
@@ -119,7 +111,7 @@ public partial class MainPage : ContentPage
         }
     }
 
-    private Label _lastUpdatedTextInfo;
+    private Label _weeksUntilTextInfo;
     private Label _profileDisplayNameTextInfo;
     private readonly PrayerTimeGraphicView _prayerTimeGraphicView;
     private GraphicsView _prayerTimeGraphicViewBaseView;
@@ -134,24 +126,13 @@ public partial class MainPage : ContentPage
                 GridLength.Star)
         };
 
-        _lastUpdatedTextInfo = new Label()
-            .Column(0).Row(0)
+        _profileDisplayNameTextInfo = new Label()
+            .Column(0).Row(0).Paddings(0, 0, 20, 0)
             .Start().CenterVertical()
             .MinWidth(20) // otherwise we can't reach the menu by tapping an empty label
-            .Bind(
-                Label.TextProperty,
-                path: $"{nameof(MainPageViewModel.CurrentProfileWithModel)}.{nameof(IPrayerTimeViewModel.PrayerTimesSet)}.{nameof(DynamicPrayerTimesDaySet.DataCalculationTimestamp)}",
-                stringFormat: "{0:dd.MM, HH:mm:ss}");
-
-        titleGrid.Add(_lastUpdatedTextInfo);
-
-        _profileDisplayNameTextInfo = new Label()
-            .Column(1).Row(0).Paddings(0, 0, 20, 0)
-            .TextEnd().CenterVertical()
-            .MinWidth(20) // otherwise we can't reach the menu by tapping an empty label
             .Bind(Label.TextProperty, $"{nameof(MainPageViewModel.CurrentProfile)}.{nameof(Profile.Name)}");
-
         titleGrid.Add(_profileDisplayNameTextInfo);
+
 
         NavigationPage.SetTitleView(this, titleGrid);
 
@@ -243,21 +224,14 @@ public partial class MainPage : ContentPage
         // Medium: Google Pixel 5
         // ************************
 
-        // STATUS TEXTS
-        new List<Label>()
-        {
-            _lastUpdatedTextInfo, _profileDisplayNameTextInfo
-        }.ForEach(label =>
-        {
-            label.FontSize =
+        _profileDisplayNameTextInfo.FontSize =
                 OnScreenSizeHelpers.Instance.GetScreenSizeValue<double>(
                     defaultSize: DebugUtil.GetSizeValues(99)[0],
                     extraLarge: DebugUtil.GetSizeValues(99)[0],
-                    large: DebugUtil.GetSizeValues(25)[0],
-                    medium: DebugUtil.GetSizeValues(23)[0],
+                large: DebugUtil.GetSizeValues(21)[0],
+                medium: DebugUtil.GetSizeValues(19)[0],
                     small: DebugUtil.GetSizeValues(99)[0],
                     extraSmall: DebugUtil.GetSizeValues(99)[0]);
-        });
 
         return mainGrid;
     }
