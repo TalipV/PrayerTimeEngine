@@ -31,6 +31,13 @@ internal class MainPageOptionsMenuService(
     private const string _exportConfiguration = "Konfiguration exportieren";
     private const string _importConfiguration = "Konfiguration importieren";
 
+    private const string _profileOptionsText = "... Profilverwaltung";
+    private const string _createNewDynamicProfileOptionsText = "Neues Profil erstellen";
+    private const string _createNewMosqueProfileOptionsText = "Neues Moschee-Profil erstellen";
+    private const string _changeProfileNameOptionsText = "Profilnamen bearbeiten";
+    private const string _deleteProfileOptionsText = "Profil löschen";
+    private const string _openMosqueProfileWebPageOptionsText = "Internetseite der Moschee-Zeiten öffnen";
+
     private const string _technicalOptionText = "... Technisches";
     private const string _showDbTablesText = "DB-Tabellen anzeigen";
     private const string _saveDbFileText = "DB-Datei speichern";
@@ -45,7 +52,7 @@ internal class MainPageOptionsMenuService(
     private const string _backText = "Zurück";
     private const string _cancelText = "Abbrechen";
 
-    public async Task OpenGeneralOptionsMenu()
+    public async Task OpenOptionsMenu()
     {
         if (viewModel.CurrentProfileWithModel == null)
         {
@@ -67,6 +74,7 @@ internal class MainPageOptionsMenuService(
                     cancel: _cancelText,
                     destruction: null,
                     _generalOptionText,
+                    _profileOptionsText,
                     _technicalOptionText,
                     _systemOptionText,
                     _goldPriceText))
@@ -101,6 +109,86 @@ internal class MainPageOptionsMenuService(
                                 break;
                             case _importConfiguration:
                                 await importConfiguration(cancellationToken);
+                                break;
+                            case _backText:
+                                doRepeat = true;
+                                break;
+                        }
+
+                        break;
+
+                    case _profileOptionsText:
+
+                        List<string> options = [
+                            _createNewDynamicProfileOptionsText,
+                            _createNewMosqueProfileOptionsText,
+                            _changeProfileNameOptionsText,
+                            _deleteProfileOptionsText,
+                        ];
+
+                        if (viewModel.CurrentProfile is MosqueProfile mosqueProfile)
+                        {
+                            options.Add(_openMosqueProfileWebPageOptionsText);
+                        }
+
+                        switch (await page.DisplayActionSheetAsync(
+                            title: _profileOptionsText,
+                            cancel: _backText,
+                            destruction: null,
+                            buttons: [.. options]))
+                        {
+                            case _createNewDynamicProfileOptionsText:
+                                await viewModel.CreateNewProfile();
+                                break;
+
+                            case _createNewMosqueProfileOptionsText:
+
+                                var items = Enum.GetValues<EMosquePrayerTimeProviderType>().ToList();
+                                items.Remove(EMosquePrayerTimeProviderType.None);
+
+                                string selectedItemText = await page.DisplayActionSheetAsync(
+                                    title: "Moschee-App auswählen",
+                                    cancel: "Abbrechen",
+                                    destruction: null,
+                                    items.Select(x => x.ToString()).ToArray()
+                                   );
+
+                                EMosquePrayerTimeProviderType selectedItem = items.FirstOrDefault(x => x.ToString() == selectedItemText);
+
+                                if (selectedItem != EMosquePrayerTimeProviderType.None)
+                                {
+                                    string externalID = await page.DisplayPromptAsync(
+                                        title: "Kennung",
+                                        message: "Kennung der jeweiligen Moschee eingeben",
+                                        initialValue: "",
+                                        keyboard: Keyboard.Text) ?? "";
+
+                                    await viewModel.CreateNewMosqueProfile(selectedItem, externalID);
+                                }
+
+                                break;
+
+                            case _changeProfileNameOptionsText:
+                                string currentProfileName = viewModel.CurrentProfile?.Name ?? "";
+                                string newProfileName =
+                                    await page.DisplayPromptAsync("Profilname:",
+                                    message: "",
+                                    initialValue: currentProfileName,
+                                    keyboard: Keyboard.Text) ?? "";
+
+                                if (!string.IsNullOrWhiteSpace(newProfileName))
+                                {
+                                    await viewModel.ChangeProfileName(newProfileName);
+                                }
+
+                                break;
+
+                            case _deleteProfileOptionsText:
+                                await viewModel.DeleteCurrentProfile();
+                                break;
+
+                            case _openMosqueProfileWebPageOptionsText:
+                                await viewModel.OpenMosqueInternetPage();
                                 break;
                             case _backText:
                                 doRepeat = true;
@@ -244,89 +332,6 @@ internal class MainPageOptionsMenuService(
 
         return eurPerGramm;
     }
-    
-
-    public async Task OpenProfileOptionsMenu()
-    {
-        List<string> options = [
-                "Neues Profil erstellen",
-                "Neues Moschee-Profil erstellen",
-                "Profilnamen bearbeiten",
-                "Profil löschen"
-            ];
-
-        if (viewModel.CurrentProfileWithModel == null)
-        {
-            await page.DisplayAlertAsync("Abbruch", "CurrentProfileWithModel ist NULL??", "OK");
-            return;
-        }
-
-        if (viewModel.CurrentProfile is MosqueProfile mosqueProfile)
-        {
-            options.Add("Internetseite der Moschee-Zeiten öffnen");
-        }
-
-        switch (await page.DisplayActionSheetAsync(
-                            title: "Profilverwaltung",
-                            cancel: "Abbrechen",
-                            destruction: null,
-                            buttons: [.. options]))
-        {
-            case "Neues Profil erstellen":
-                await viewModel.CreateNewProfile();
-                break;
-
-            case "Neues Moschee-Profil erstellen":
-
-                var items = Enum.GetValues<EMosquePrayerTimeProviderType>().ToList();
-                items.Remove(EMosquePrayerTimeProviderType.None);
-
-                string selectedItemText = await page.DisplayActionSheetAsync(
-                    title: "Moschee-App auswählen",
-                    cancel: "Abbrechen",
-                    destruction: null,
-                    items.Select(x => x.ToString()).ToArray()
-                   );
-
-                EMosquePrayerTimeProviderType selectedItem = items.FirstOrDefault(x => x.ToString() == selectedItemText);
-
-                if (selectedItem != EMosquePrayerTimeProviderType.None)
-                {
-                    string externalID = await page.DisplayPromptAsync(
-                        title: "Kennung",
-                        message: "Kennung der jeweiligen Moschee eingeben",
-                        initialValue: "",
-                        keyboard: Keyboard.Text) ?? "";
-
-                    await viewModel.CreateNewMosqueProfile(selectedItem, externalID);
-                }
-
-                break;
-
-            case "Profilnamen bearbeiten":
-                string currentProfileName = viewModel.CurrentProfile?.Name ?? "";
-                string newProfileName =
-                    await page.DisplayPromptAsync("Profilname:",
-                    message: "",
-                    initialValue: currentProfileName,
-                    keyboard: Keyboard.Text) ?? "";
-
-                if (!string.IsNullOrWhiteSpace(newProfileName))
-                {
-                    await viewModel.ChangeProfileName(newProfileName);
-                }
-
-                break;
-
-            case "Profil löschen":
-                await viewModel.DeleteCurrentProfile();
-                break;
-
-            case "Internetseite der Moschee-Zeiten öffnen":
-                await viewModel.OpenMosqueInternetPage();
-                break;
-        }
-    }
 
     private async void showCustomTextSizesInputPopup()
     {
@@ -344,7 +349,7 @@ internal class MainPageOptionsMenuService(
             "Fünf Textgröße angeben",
             """
             Geben Sie Werte für die folgenden vier Textarten komma-separiert an:
-            1. Statustexte oben
+            1. Profilname
             2. Gebetszeiten-Namen
             3. Haupt-Gebetszeiten
             4. Sub-Gebetszeiten-Namen
@@ -367,7 +372,7 @@ internal class MainPageOptionsMenuService(
             // Save the value
             DebugUtil.SetSizeValue(sizeValues);
 
-            await page.DisplayAlertAsync("Erfolg", $"Gespeichert! App manuell wieder starten!", "OK");
+            await page.DisplayAlertAsync("Erfolg", $"Gespeichert! App wird abschließend automatisch geschlossen!", "OK");
             Application.Current.Quit();
         }
         else
