@@ -132,7 +132,13 @@ public partial class MainPage : ContentPage
             .MinWidth(20) // otherwise we can't reach the menu by tapping an empty label
             .Bind(Label.TextProperty, $"{nameof(MainPageViewModel.CurrentProfile)}.{nameof(Profile.Name)}");
         titleGrid.Add(_profileDisplayNameTextInfo);
-
+        
+        _weeksUntilTextInfo = new Label()
+            .Column(1).Row(0).Paddings(0, 0, 20, 0)
+            .End().CenterVertical()
+            .FontSize(10)
+            .Bind(Label.TextProperty, $"{nameof(MainPageViewModel.WeeksUntilLabelText)}");
+        titleGrid.Add(_weeksUntilTextInfo);
 
         NavigationPage.SetTitleView(this, titleGrid);
 
@@ -225,13 +231,22 @@ public partial class MainPage : ContentPage
         // ************************
 
         _profileDisplayNameTextInfo.FontSize =
-                OnScreenSizeHelpers.Instance.GetScreenSizeValue<double>(
-                    defaultSize: DebugUtil.GetSizeValues(99)[0],
-                    extraLarge: DebugUtil.GetSizeValues(99)[0],
-                large: DebugUtil.GetSizeValues(21)[0],
-                medium: DebugUtil.GetSizeValues(19)[0],
-                    small: DebugUtil.GetSizeValues(99)[0],
-                    extraSmall: DebugUtil.GetSizeValues(99)[0]);
+            OnScreenSizeHelpers.Instance.GetScreenSizeValue<double>(
+                defaultSize: DebugUtil.GetSizeValues(99)[0],
+                extraLarge: DebugUtil.GetSizeValues(99)[0],
+                large: DebugUtil.GetSizeValues(23)[0],
+                medium: DebugUtil.GetSizeValues(21)[0],
+                small: DebugUtil.GetSizeValues(99)[0],
+                extraSmall: DebugUtil.GetSizeValues(99)[0]);
+
+        _weeksUntilTextInfo.FontSize =
+            OnScreenSizeHelpers.Instance.GetScreenSizeValue<double>(
+                defaultSize: DebugUtil.GetSizeValues(99)[0],
+                extraLarge: DebugUtil.GetSizeValues(99)[0],
+                large: DebugUtil.GetSizeValues(17)[0],
+                medium: DebugUtil.GetSizeValues(14)[0],
+                small: DebugUtil.GetSizeValues(99)[0],
+                extraSmall: DebugUtil.GetSizeValues(99)[0]);
 
         return mainGrid;
     }
