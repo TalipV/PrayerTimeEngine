@@ -451,6 +451,7 @@ internal class MainPageOptionsMenuService(
             await configurationImportExportService.Import(fileContent, cancellationToken);
 
             await page.DisplayAlertAsync("Erfolg", "Import erfolgreich! App wird abschließend automatisch geschlossen!", "OK");
+            Application.Current.Quit();
         }
         catch (Exception exception)
         {
