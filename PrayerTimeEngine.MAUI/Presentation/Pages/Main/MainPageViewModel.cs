@@ -6,6 +6,7 @@ using PrayerTimeEngine.Core.Common;
 using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Data.EntityFramework;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes;
+using PrayerTimeEngine.Core.Domain.IslamicCalendar.Interfaces;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Management;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Interfaces;
@@ -35,6 +36,7 @@ public partial class MainPageViewModel(
         IPlaceService placeService,
         IProfileService profileService,
         INavigationService navigationService,
+        IIslamicDateCalculationService islamicDateCalculationService,
         ILogger<MainPageViewModel> logger
     ) : LogController
 {
@@ -93,33 +95,47 @@ public partial class MainPageViewModel(
     public IEnumerable<BasicPlaceInfo> FoundPlaces { get; set; }
     public IEnumerable<string> FoundPlacesSelectionTexts { get; set; }
 
+    public string WeeksUntilLabelText
+    {
+        get
+        {
+            int weeksUntilRamadan = islamicDateCalculationService.GetWeeksUntilRamadan();
+            int weeksUntilHajjSeason = islamicDateCalculationService.GetWeeksUntilHajj();
+
+            return $"""
+                {weeksUntilHajjSeason} Wochen bis Hajj
+                {weeksUntilRamadan} Wochen bis Ramadan
+                """;
+        }
+    }
+
     #endregion properties
 
     #region ICommand
 
     public ICommand GoToSettingsPageCommand
-        => new Command<EPrayerType>(
-            async (prayerTime) =>
-            {
-                if (_isSettingsPageOpening)
+            => new Command<EPrayerType>(
+                async (prayerTime) =>
                 {
-                    return;
-                }
+                    if (_isSettingsPageOpening)
+                    {
+                        return;
+                    }
 
-                // stop loading times and stop loading places
-                loadingTimesCancellationTokenSource?.Cancel();
-                _placeSearchCancellationTokenSource?.Cancel();
+                    // stop loading times and stop loading places
+                    loadingTimesCancellationTokenSource?.Cancel();
+                    _placeSearchCancellationTokenSource?.Cancel();
 
-                try
-                {
-                    _isSettingsPageOpening = true;
-                    await navigationService.NavigateTo<SettingsHandlerPageViewModel>(CurrentProfile, prayerTime);
-                }
-                finally
-                {
-                    _isSettingsPageOpening = false;
-                }
-            });
+                    try
+                    {
+                        _isSettingsPageOpening = true;
+                        await navigationService.NavigateTo<SettingsHandlerPageViewModel>(CurrentProfile, prayerTime);
+                    }
+                    finally
+                    {
+                        _isSettingsPageOpening = false;
+                    }
+                });
 
     public event Action OnAfterLoadingPrayerTimes_EventTrigger = delegate { };
 
@@ -417,7 +433,7 @@ public partial class MainPageViewModel(
         }
         catch (Exception exception)
         {
-            logger.LogError(exception, 
+            logger.LogError(exception,
                 "Error during refreshData. ({RefreshCallID})", refreshCallID);
             toastMessageService.ShowError(exception.Message);
         }

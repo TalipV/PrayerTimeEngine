@@ -20,6 +20,8 @@ using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Muwaqqit.Interfa
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Muwaqqit.Services;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Semerkand.Interfaces;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Semerkand.Services;
+using PrayerTimeEngine.Core.Domain.IslamicCalendar.Interfaces;
+using PrayerTimeEngine.Core.Domain.IslamicCalendar.Services;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Management;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.Mawaqit.Interfaces;
@@ -240,6 +242,7 @@ public static class MauiProgram
         serviceCollection.AddTransient<NotificationService>();
         serviceCollection.AddSingleton<ISystemInfoService, SystemInfoService>();
         serviceCollection.AddTransient<IPreferenceService, PreferenceService>();
+        serviceCollection.AddTransient<IIslamicDateCalculationService, IslamicDateCalculationService>();
         serviceCollection.AddTransient<IConfigurationImportExportService, ConfigurationImportExportService>();
         serviceCollection.AddSingleton<TimeTypeAttributeService>();
 
