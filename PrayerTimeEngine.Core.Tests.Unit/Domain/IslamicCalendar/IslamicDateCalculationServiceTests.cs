@@ -1,16 +1,9 @@
 ﻿using NodaTime;
 using NSubstitute;
 using PrayerTimeEngine.Core.Common;
-using PrayerTimeEngine.Core.Domain.ConfigurationManagement;
 using PrayerTimeEngine.Core.Domain.IslamicCalendar.Services;
-using PrayerTimeEngine.Core.Domain.ProfileManagement.Interfaces;
-using PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
-using PrayerTimeEngine.Core.Tests.Common.TestData;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace PrayerTimeEngine.Core.Tests.Unit.IslamicCalendar
+namespace PrayerTimeEngine.Core.Tests.Unit.Domain.IslamicCalendar
 {
     public class IslamicDateCalculationServiceTests
     {
