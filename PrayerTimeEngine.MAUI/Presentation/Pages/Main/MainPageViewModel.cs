@@ -155,22 +155,6 @@ public partial class MainPageViewModel(
         debouncer.Debounce();
     }
 
-    private async void searchPlace()
-    {
-        if (!isValidPlaceSearchText())
-        {
-            return;
-        }
-        FoundPlaces = await PerformPlaceSearch(PlaceSearchText);
-        FoundPlacesSelectionTexts = FoundPlaces.Select(x => x.DisplayText).Distinct().OrderBy(x => x).Take(7).ToList();
-    }
-
-    private bool isValidPlaceSearchText()
-    {
-        return !string.IsNullOrWhiteSpace(PlaceSearchText)
-            && PlaceSearchText.Replace(" ", string.Empty).Length > 4;
-    }
-
     private CancellationTokenSource _placeSearchCancellationTokenSource;
 
     public async Task<List<BasicPlaceInfo>> PerformPlaceSearch(string searchText)
@@ -352,9 +336,31 @@ public partial class MainPageViewModel(
         return browser.OpenAsync(new Uri(url));
     }
 
+    public async Task ReloadAfterConfigurationImport()
+    {
+        await reloadProfiles();
+        await refreshData();
+    }
+
     #endregion public methods
 
     #region private methods
+
+    private async void searchPlace()
+    {
+        if (!isValidPlaceSearchText())
+        {
+            return;
+        }
+        FoundPlaces = await PerformPlaceSearch(PlaceSearchText);
+        FoundPlacesSelectionTexts = FoundPlaces.Select(x => x.DisplayText).Distinct().OrderBy(x => x).Take(7).ToList();
+    }
+
+    private bool isValidPlaceSearchText()
+    {
+        return !string.IsNullOrWhiteSpace(PlaceSearchText)
+            && PlaceSearchText.Replace(" ", string.Empty).Length > 4;
+    }
 
     private async Task reloadProfiles(int selectedProfile = 1)
     {
