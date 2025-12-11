@@ -82,9 +82,10 @@ namespace PrayerTimeEngine;
  */
 
 /* TODO general:
+ * - Autostart of app on device startup (like for example the Fazilet app does)
+ * - For prayer times of a time zone other than that of the device show option to select based on which time zone to show the times (like a yes/no slider)
+ * - After importing profiles, show overview of current and new profiles for the user to select which ones to keep
  * - Reconsider IDailyPrayerTimes properties ('Date' as a ZonedDateTime?? Why carry DateTimeZone info redundantely?)
- * - Performance
- * - Multiple profiles
  * - Decrease count of reloads (e.g. mere app switch shouldn't always require reload)
  * - Transactions when saving country data and city data to prevent partial safes (or rethink the whole thing)
  * - PlaceService and ProfileService with no or default CancellationToken?
