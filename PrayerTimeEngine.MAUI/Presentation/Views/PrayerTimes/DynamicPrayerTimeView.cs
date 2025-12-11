@@ -1,5 +1,7 @@
 ﻿using CommunityToolkit.Maui.Markup;
+using NodaTime;
 using OnScreenSizeMarkup.Maui.Helpers;
+using PrayerTimeEngine.Core.Common;
 using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Models;
 using PrayerTimeEngine.Core.Domain.Models;
@@ -12,10 +14,12 @@ namespace PrayerTimeEngine.Presentation.Views.PrayerTimes;
 public partial class DynamicPrayerTimeView : ContentView
 {
     private readonly MainPageViewModel _mainPageViewModel;
+    private readonly ISystemInfoService _systemInfoService;
 
-    public DynamicPrayerTimeView(MainPageViewModel mainPageViewModel)
+    public DynamicPrayerTimeView(MainPageViewModel mainPageViewModel, ISystemInfoService systemInfoService)
     {
         _mainPageViewModel = mainPageViewModel;
+        _systemInfoService = systemInfoService;
         Content = createUI();
     }
 
@@ -124,8 +128,11 @@ public partial class DynamicPrayerTimeView : ContentView
             $"{nameof(DynamicPrayerTimeViewModel.PrayerTimesSet)}.{bindingText}",
             convert: (GenericPrayerTime prayerTime) =>
             {
-                string startTime = prayerTime.Start?.ToString("HH:mm:ss", null) ?? "xx:xx:xx";
-                string endTime = prayerTime.End?.ToString("HH:mm:ss", null) ?? "xx:xx:xx";
+                ZonedDateTime? prayerTimeStartDisplayValue = _systemInfoService.GetInCurrentZone(prayerTime.Start);
+                ZonedDateTime? prayerTimeEndDisplayValue = _systemInfoService.GetInCurrentZone(prayerTime.End);
+
+                string startTime = prayerTimeStartDisplayValue?.ToString("HH:mm:ss", null) ?? "xx:xx:xx";
+                string endTime = prayerTimeEndDisplayValue?.ToString("HH:mm:ss", null) ?? "xx:xx:xx";
 
                 return $"{startTime} - {endTime}";
             });
@@ -156,7 +163,16 @@ public partial class DynamicPrayerTimeView : ContentView
                 HorizontalOptions = LayoutOptions.Center,
                 VerticalOptions = LayoutOptions.Center
             };
-            subtime1DisplayText.SetBinding(Label.TextProperty, $"{nameof(DynamicPrayerTimeViewModel.PrayerTimesSet)}.{bindingText}.{subtime1Binding}", stringFormat: "{0:HH:mm:ss}");
+
+            subtime1DisplayText.Bind(
+                Label.TextProperty, 
+                $"{nameof(DynamicPrayerTimeViewModel.PrayerTimesSet)}.{bindingText}.{subtime1Binding}",
+                convert: (ZonedDateTime? subTime1) =>
+                {
+                    return _systemInfoService.GetInCurrentZone(subTime1);
+                },
+                stringFormat: "{0:HH:mm:ss}");
+
             if (!string.IsNullOrEmpty(showSubtime1Binding))
             {
                 subtime1DisplayText.SetBinding(IsVisibleProperty, showSubtime1Binding);
@@ -190,7 +206,14 @@ public partial class DynamicPrayerTimeView : ContentView
                 VerticalOptions = LayoutOptions.Start
             };
 
-            subtime2DisplayText.SetBinding(Label.TextProperty, $"{nameof(DynamicPrayerTimeViewModel.PrayerTimesSet)}.{bindingText}.{subtime2Binding}", stringFormat: "{0:HH:mm:ss}");
+            subtime2DisplayText.Bind(
+                Label.TextProperty, 
+                $"{nameof(DynamicPrayerTimeViewModel.PrayerTimesSet)}.{bindingText}.{subtime2Binding}",
+                convert: (ZonedDateTime? subTime2) =>
+                {
+                    return _systemInfoService.GetInCurrentZone(subTime2);
+                },
+                stringFormat: "{0:HH:mm:ss}");
 
             if (!string.IsNullOrEmpty(showSubtime2Binding))
             {
@@ -225,7 +248,14 @@ public partial class DynamicPrayerTimeView : ContentView
                 VerticalOptions = LayoutOptions.Start
             };
 
-            subtime3DisplayText.SetBinding(Label.TextProperty, $"{nameof(DynamicPrayerTimeViewModel.PrayerTimesSet)}.{bindingText}.{subtime3Binding}", stringFormat: "{0:HH:mm:ss}");
+            subtime3DisplayText.Bind(
+                Label.TextProperty, 
+                $"{nameof(DynamicPrayerTimeViewModel.PrayerTimesSet)}.{bindingText}.{subtime3Binding}",
+                convert: (ZonedDateTime? subTime3) =>
+                {
+                    return _systemInfoService.GetInCurrentZone(subTime3);
+                },
+                stringFormat: "{0:HH:mm:ss}");
 
             if (!string.IsNullOrEmpty(showSubtime3Binding))
             {

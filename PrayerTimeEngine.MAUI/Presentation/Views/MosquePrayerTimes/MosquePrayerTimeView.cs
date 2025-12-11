@@ -1,5 +1,7 @@
 ﻿using CommunityToolkit.Maui.Markup;
+using NodaTime;
 using OnScreenSizeMarkup.Maui.Helpers;
+using PrayerTimeEngine.Core.Common;
 using PrayerTimeEngine.Core.Domain.Models;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Models;
 using static CommunityToolkit.Maui.Markup.GridRowsColumns;
@@ -8,12 +10,15 @@ namespace PrayerTimeEngine.Presentation.Views.MosquePrayerTimes;
 
 public partial class MosquePrayerTimeView : ContentView
 {
-    public MosquePrayerTimeView()
+    private readonly ISystemInfoService _systemInfoService;
+
+    public MosquePrayerTimeView(ISystemInfoService systemInfoService)
     {
+        _systemInfoService = systemInfoService;
         Content = createUI();
     }
 
-    private static Grid createUI()
+    private Grid createUI()
     {
         var mainGrid = new Grid
         {
@@ -63,7 +68,7 @@ public partial class MosquePrayerTimeView : ContentView
         return mainGrid;
     }
 
-    private static void addPrayerTimeUI(
+    private void addPrayerTimeUI(
         Grid grid,
         string prayerName,
         string bindingText,
@@ -99,8 +104,11 @@ public partial class MosquePrayerTimeView : ContentView
                 if (prayerTime.Start == null)
                     return "xx:xx";
 
-                string startTime = prayerTime.Start?.ToString("HH:mm", null) ?? "xx.xx";
-                string endTime = prayerTime.End?.ToString("HH:mm", null) ?? "xx.xx";
+                ZonedDateTime? prayerTimeStartDisplayValue = _systemInfoService.GetInCurrentZone(prayerTime.Start);
+                ZonedDateTime? prayerTimeEndDisplayValue = _systemInfoService.GetInCurrentZone(prayerTime.End);
+
+                string startTime = prayerTimeStartDisplayValue?.ToString("HH:mm", null) ?? "xx.xx";
+                string endTime = prayerTimeEndDisplayValue?.ToString("HH:mm", null) ?? "xx.xx";
                 string congregationTime = prayerTime.CongregationStartOffset > 0
                     ? prayerTime.Start?.PlusMinutes(prayerTime.CongregationStartOffset).ToString("HH:mm", null) ?? "xx.xx"
                     : "";
@@ -142,7 +150,14 @@ public partial class MosquePrayerTimeView : ContentView
                 HorizontalOptions = LayoutOptions.Center,
                 VerticalOptions = LayoutOptions.Center
             };
-            subtime1DisplayText.SetBinding(Label.TextProperty, new Binding($"{nameof(MosquePrayerTimeViewModel.PrayerTimesSet)}.{subtime1Binding}", stringFormat: "{0:HH:mm:ss}"));
+            subtime1DisplayText.Bind(
+                Label.TextProperty, 
+                $"{nameof(MosquePrayerTimeViewModel.PrayerTimesSet)}.{subtime1Binding}",
+                convert: (ZonedDateTime? subTime1) =>
+                {
+                    return _systemInfoService.GetInCurrentZone(subTime1);
+                },
+                stringFormat: "{0:HH:mm:ss}");
 
             grid.AddWithSpan(subtime1Label, startRowNo + 2, startColumnNo);
             grid.AddWithSpan(subtime1DisplayText, startRowNo + 2, startColumnNo + 1);

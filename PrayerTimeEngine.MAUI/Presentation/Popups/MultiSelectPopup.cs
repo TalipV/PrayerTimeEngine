@@ -1,5 +1,4 @@
-﻿using CommunityToolkit.Maui.Extensions;
-using CommunityToolkit.Maui.Markup;
+﻿using CommunityToolkit.Maui.Markup;
 using CommunityToolkit.Maui.Views;
 using System.Collections.ObjectModel;
 using static CommunityToolkit.Maui.Markup.GridRowsColumns;
