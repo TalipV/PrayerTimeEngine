@@ -30,4 +30,20 @@ internal class SystemInfoService : ISystemInfoService
 
         return DateTimeZoneProviders.Tzdb[TimeZoneInfo.Local.Id];
     }
+
+    public ZonedDateTime? GetInCurrentZone(ZonedDateTime? zonedDateTime)
+    {
+        if (zonedDateTime == null)
+        {
+            return null;
+        }
+
+        return GetInCurrentZone(zonedDateTime.Value);
+    }
+
+    public ZonedDateTime GetInCurrentZone(ZonedDateTime zonedDateTime)
+    {
+        DateTimeZone zone = GetSystemTimeZone();
+        return zonedDateTime.ToInstant().InZone(zone);
+    }
 }

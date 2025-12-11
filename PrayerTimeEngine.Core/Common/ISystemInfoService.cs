@@ -9,4 +9,6 @@ public interface ISystemInfoService
     Instant GetCurrentInstant();
     DateTimeZone GetSystemTimeZone();
     CultureInfo GetSystemCulture();
+    ZonedDateTime? GetInCurrentZone(ZonedDateTime? zonedDateTime);
+    ZonedDateTime GetInCurrentZone(ZonedDateTime zonedDateTime);
 }

@@ -2,7 +2,6 @@
 using NodaTime;
 using OnScreenSizeMarkup.Maui.Helpers;
 using PrayerTimeEngine.Core.Common;
-using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Models;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
 using PrayerTimeEngine.Presentation.Views.MosquePrayerTimes;
 using PrayerTimeEngine.Presentation.Views.PrayerTimeGraphic;
@@ -187,8 +186,8 @@ public partial class MainPage : ContentPage
         {
             ItemTemplate = new ProfileDataTemplateSelector
             {
-                MosquePrayerTimeTemplate = new DataTemplate(() => new MosquePrayerTimeView()),
-                PrayerTimesTemplate = new DataTemplate(() => new DynamicPrayerTimeView(_viewModel))
+                MosquePrayerTimeTemplate = new DataTemplate(() => new MosquePrayerTimeView(_systemInfoService)),
+                PrayerTimesTemplate = new DataTemplate(() => new DynamicPrayerTimeView(_viewModel, _systemInfoService))
             },
             Loop = false
         }
