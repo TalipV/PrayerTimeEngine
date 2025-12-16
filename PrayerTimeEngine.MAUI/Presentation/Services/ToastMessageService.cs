@@ -22,7 +22,7 @@ public class ToastMessageService(IDispatcher dispatcher)
         dispatcher.Dispatch(async () =>
         {
             await Toast.Make(
-                    message: $"WARNUNG: {text}",
+                    message: $"WARNING: {text}",
                     duration: ToastDuration.Short,
                     textSize: 14)
             .Show();
@@ -34,7 +34,7 @@ public class ToastMessageService(IDispatcher dispatcher)
         dispatcher.Dispatch(async () =>
         {
             await Toast.Make(
-                    message: $"FEHLER: {text}",
+                    message: $"ERROR: {text}",
                     duration: ToastDuration.Short,
                     textSize: 14)
             .Show();
