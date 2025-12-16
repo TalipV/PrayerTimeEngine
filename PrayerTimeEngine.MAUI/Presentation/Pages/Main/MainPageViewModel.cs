@@ -516,9 +516,9 @@ public partial class MainPageViewModel(
 
         Task.Run(async () =>
         {
-            BasicPlaceInfo SelectedPlace = FoundPlaces.FirstOrDefault(x => x.DisplayText == selectedPlaceText);
+            BasicPlaceInfo selectedPlace = FoundPlaces.FirstOrDefault(x => x.DisplayText == selectedPlaceText);
 
-            if (CurrentProfile is not DynamicProfile currentProfile || SelectedPlace is null)
+            if (CurrentProfile is not DynamicProfile currentProfile || selectedPlace is null)
                 return;
 
             await dispatcher.DispatchAsync(() => resetPlaceInput());
@@ -527,7 +527,7 @@ public partial class MainPageViewModel(
             {
                 IsLoadingSelectedPlace = true;
 
-                ProfilePlaceInfo completePlaceInfo = await placeService.GetTimezoneInfo(SelectedPlace, cancellationToken: default);
+                ProfilePlaceInfo completePlaceInfo = await placeService.GetTimezoneInfo(selectedPlace, cancellationToken: default);
 
                 await profileService.UpdateLocationConfig(
                     currentProfile,
@@ -539,6 +539,7 @@ public partial class MainPageViewModel(
 
                 HashSet<EDynamicPrayerTimeProviderType> locationConfigDynamicPrayerTimeProviders =
                     currentProfile.LocationConfigs
+                        .Where(x => x.LocationData != null)
                         .Select(x => x.DynamicPrayerTimeProvider)
                         .ToHashSet();
                 List<EDynamicPrayerTimeProviderType> missingLocationInfo =

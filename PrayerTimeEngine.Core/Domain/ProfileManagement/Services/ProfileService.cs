@@ -308,7 +308,8 @@ public class ProfileService(
                     dynamicPrayerTimeProvider.GetType().FullName);
             }
 
-            locationDataByDynamicPrayerTimeProvider.Add((dynamicPrayerTimeProvider, locationConfig));
+            if (locationConfig != null)
+                locationDataByDynamicPrayerTimeProvider.Add((dynamicPrayerTimeProvider, locationConfig));
         }
 
         await profileDBAccess.UpdateLocationConfig(profile, placeInfo, locationDataByDynamicPrayerTimeProvider, cancellationToken);
