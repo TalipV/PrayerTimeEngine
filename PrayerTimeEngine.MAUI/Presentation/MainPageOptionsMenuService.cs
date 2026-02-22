@@ -5,7 +5,9 @@ using PrayerTimeEngine.Core.Domain.ConfigurationManagement;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
 using PrayerTimeEngine.Presentation.Pages.Main;
+using PrayerTimeEngine.Presentation.Pages.QiblahFinder;
 using PrayerTimeEngine.Presentation.Services;
+using PrayerTimeEngine.Presentation.Services.Navigation;
 using System.Text.Json;
 
 namespace PrayerTimeEngine.Presentation;
@@ -15,6 +17,7 @@ internal class MainPageOptionsMenuService(
         MainPage page,
         MainPageViewModel viewModel,
         ToastMessageService toastMessageService,
+        INavigationService navigationService,
         IConfigurationImportExportService configurationImportExportService,
         IPreferenceService preferenceService,
         ISystemInfoService systemInfoService,
@@ -48,6 +51,7 @@ internal class MainPageOptionsMenuService(
     private const string _closeAppText = "App schließen";
 
     private const string _goldPriceText = "Tool: Goldpreise";
+    private const string _qiblahToolText = "Tool: Qiblah";
 
     private const string _backText = "Zurück";
     private const string _cancelText = "Abbrechen";
@@ -77,7 +81,8 @@ internal class MainPageOptionsMenuService(
                     _profileOptionsText,
                     _technicalOptionText,
                     _systemOptionText,
-                    _goldPriceText))
+                    _goldPriceText,
+                    _qiblahToolText))
                 {
                     case _generalOptionText:
 
@@ -278,6 +283,9 @@ internal class MainPageOptionsMenuService(
                             Silberpreis pro Gramm: {silverEurPricePerGram:N5}€
                             --> Nisab beträgt {(SILVER_NISAB_GRAMM * silverEurPricePerGram):N2}€ ({SILVER_NISAB_GRAMM:N2} g)
                             """, "Ok");
+                        break;
+                    case _qiblahToolText:
+                        await navigationService.NavigateTo<QiblaMapPage>();
                         break;
                     case _cancelText:
                         break;
