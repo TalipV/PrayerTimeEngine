@@ -123,6 +123,15 @@ namespace PrayerTimeEngine;
  * # ProfileService: One test for UpdateLocationInfo which considers the different Fazilet/Semerkand place info custom things
  */
 
+
+/*
+ * Fazilet&Semerkand Location Logs
+ * CurrentProfile = null soll nur gewisse Menüoptionen verhindern und nicht alle
+ * Calculator-Logs besser machen
+ * "Cachen" im CalculationManager nur, wenn vollständige Daten geladen wurden (oder so)
+ * Feature: Moschee-'Isha mit z.B. Fazilet vergleichen können und optisch kennzeichen
+ */
+
 public static class MauiProgram
 {
     public static readonly DateTime StartDateTime = DateTime.Now;
