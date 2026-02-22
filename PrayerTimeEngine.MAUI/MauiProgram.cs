@@ -35,6 +35,7 @@ using PrayerTimeEngine.Core.Domain.ProfileManagement.Interfaces;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Services;
 using PrayerTimeEngine.Presentation.Pages.DatabaseTables;
 using PrayerTimeEngine.Presentation.Pages.Main;
+using PrayerTimeEngine.Presentation.Pages.QiblahFinder;
 using PrayerTimeEngine.Presentation.Pages.Settings.SettingsContent;
 using PrayerTimeEngine.Presentation.Pages.Settings.SettingsContent.Custom;
 using PrayerTimeEngine.Presentation.Pages.Settings.SettingsHandler;
@@ -48,6 +49,7 @@ using PrayerTimeEngine.Presentation.Views.PrayerTimes;
 using PrayerTimeEngine.Services;
 using PrayerTimeEngine.Services.Notifications;
 using Refit;
+using SkiaSharp.Views.Maui.Controls.Hosting;
 using System.Net.WebSockets;
 using System.Text;
 using UraniumUI;
@@ -144,6 +146,7 @@ public static class MauiProgram
         MauiAppBuilder builder = MauiApp.CreateBuilder();
         builder
             .UseMauiApp<App>()
+            .UseSkiaSharp()
             .UseMauiCommunityToolkitMarkup()
             .UseMauiCommunityToolkit(options =>
             {
@@ -376,6 +379,8 @@ public static class MauiProgram
 
         serviceCollection.AddTransient<DatabaseTablesPage>();
         serviceCollection.AddTransient<DatabaseTablesPageViewModel>();
+
+        serviceCollection.AddTransient<QiblaMapPage>();
     }
 
     private static void addPlatformSpecificServices(IServiceCollection serviceCollection)
