@@ -61,7 +61,7 @@ public class PrayerTimeSummaryNotificationHandler : IPrayerTimeSummaryNotificati
                 title: "Akku-Optimierung",
                 message: BATTERY_OPTIMIZATION_WARNING_TEXT,
                 accept: "Einstellungen",
-                cancel: "Abbrechen");
+                cancel: "Nein, danke");
 
             if (!openSettings)
                 return;
