@@ -90,6 +90,8 @@ public partial class MainPageViewModel(
         }
     }
 
+    public bool IsMainPageEnabled { get; private set; } = false;
+
     [OnChangedMethod(nameof(onPlaceSearchTextChanged))]
     public string PlaceSearchText { get; set; }
     public IEnumerable<BasicPlaceInfo> FoundPlaces { get; set; }
@@ -476,9 +478,13 @@ public partial class MainPageViewModel(
     {
         try
         {
+            // initial value is false and things like scroll actions before the first
+            // loading sequence is through lead to weird exceptions from within the MAUI CarouselView code itself
+            // so blocking the UI generally prevents edge cases like that
+            IsMainPageEnabled = true;
+
             double startUpTimeMS = (DateTime.Now - MauiProgram.StartDateTime).TotalMilliseconds;
             toastMessageService.Show($"{startUpTimeMS:N0}ms to start!");
-
             dispatcher.Dispatch(async () => await prayerTimeNotificationManager.StartPrayerTimeSummaryNotification());
         }
         catch (Exception exception)

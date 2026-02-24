@@ -118,6 +118,11 @@ public partial class MainPage : ContentPage
 
     private Grid createUI()
     {
+        this.Bind<MainPage, bool, bool>(
+            IsEnabledProperty,
+            nameof(MainPageViewModel.IsMainPageEnabled),
+            convert: value => value);
+
         var titleGrid = new Grid
         {
             ColumnDefinitions = Columns.Define(
@@ -194,7 +199,12 @@ public partial class MainPage : ContentPage
         .FillHorizontal()
         .FillVertical()
         .Bind(ItemsView.ItemsSourceProperty, nameof(MainPageViewModel.ProfilesWithModel), mode: BindingMode.TwoWay)
-        .Bind(CarouselView.CurrentItemProperty, nameof(MainPageViewModel.CurrentProfileWithModel), mode: BindingMode.TwoWay);
+        .Bind(CarouselView.CurrentItemProperty, nameof(MainPageViewModel.CurrentProfileWithModel), mode: BindingMode.TwoWay)
+        .Bind<CarouselView, bool, bool>(
+            CarouselView.IsSwipeEnabledProperty,
+            nameof(MainPageViewModel.IsMainPageEnabled),
+            convert: value => value, 
+            mode: BindingMode.TwoWay);
 
         mainGrid.AddWithSpan(searchBox, row: 0, column: 0);
         mainGrid.AddWithSpan(_carouselView, row: 1, column: 0);
@@ -211,7 +221,12 @@ public partial class MainPage : ContentPage
                     {
                         Command = new Command(() =>
                         {
-                            var viewModels = this._carouselView.ItemsSource.OfType<IPrayerTimeViewModel>().ToList();
+                            // starting to interact too early leads to ItemsSource = null scenario
+                            var viewModels = this._carouselView.ItemsSource?.OfType<IPrayerTimeViewModel>().ToList() ?? [];
+                            if (viewModels.Count == 0)
+                            {
+                                return;
+                            }
 
                             var currentViewModel = this._carouselView.CurrentItem as IPrayerTimeViewModel;
                             var firstViewModel = viewModels.First();
