@@ -20,6 +20,7 @@ using PrayerTimeEngine.Presentation.Services.Navigation;
 using PrayerTimeEngine.Presentation.Views;
 using PrayerTimeEngine.Services.Notifications;
 using PropertyChanged;
+using System.Text;
 using System.Windows.Input;
 
 namespace PrayerTimeEngine.Presentation.Pages.Main;
@@ -104,10 +105,12 @@ public partial class MainPageViewModel(
             int weeksUntilRamadan = islamicDateCalculationService.GetWeeksUntilRamadan();
             int weeksUntilHajjSeason = islamicDateCalculationService.GetWeeksUntilHajj();
 
-            return $"""
-                {weeksUntilHajjSeason} Wochen bis Hajj
-                {weeksUntilRamadan} Wochen bis Ramadan
-                """;
+            var weeksUntilLabelTextStringBuilder = new StringBuilder();
+            if (weeksUntilHajjSeason < 25)
+                weeksUntilLabelTextStringBuilder.AppendLine($"{weeksUntilHajjSeason} Wochen bis Hajj");
+            if (weeksUntilRamadan < 25)
+                weeksUntilLabelTextStringBuilder.AppendLine($"{weeksUntilRamadan} Wochen bis Ramadan");
+            return weeksUntilLabelTextStringBuilder.ToString();
         }
     }
 
