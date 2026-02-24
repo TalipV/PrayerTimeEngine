@@ -105,12 +105,15 @@ public partial class MainPageViewModel(
             int weeksUntilRamadan = islamicDateCalculationService.GetWeeksUntilRamadan();
             int weeksUntilHajjSeason = islamicDateCalculationService.GetWeeksUntilHajj();
 
-            var weeksUntilLabelTextStringBuilder = new StringBuilder();
-            if (weeksUntilHajjSeason < 25)
-                weeksUntilLabelTextStringBuilder.AppendLine($"{weeksUntilHajjSeason} Wochen bis Hajj");
-            if (weeksUntilRamadan < 25)
-                weeksUntilLabelTextStringBuilder.AppendLine($"{weeksUntilRamadan} Wochen bis Ramadan");
-            return weeksUntilLabelTextStringBuilder.ToString();
+            List<(int WeeksCount, string Text)> weeksUntilLabelLines = [];
+            weeksUntilLabelLines.Add((weeksUntilHajjSeason, $"{weeksUntilHajjSeason} Wochen bis Hajj"));
+            weeksUntilLabelLines.Add((weeksUntilRamadan, $"{weeksUntilRamadan} Wochen bis Ramadan"));
+            return string.Join(
+                Environment.NewLine, 
+                weeksUntilLabelLines
+                    .Where(x => x.WeeksCount < 25)
+                    .OrderByDescending(x => x.WeeksCount)
+                    .Select(x => x.Text));
         }
     }
 
