@@ -10,6 +10,10 @@ using Mapsui.Tiling;
 using Mapsui.Tiling.Layers;
 using Mapsui.UI.Maui;
 using NetTopologySuite.Geometries;
+using PrayerTimeEngine.Extensions;
+using Brush = Mapsui.Styles.Brush;
+using Color = Mapsui.Styles.Color;
+using Polygon = NetTopologySuite.Geometries.Polygon;
 
 namespace PrayerTimeEngine.Presentation.Pages.QiblahFinder;
 public sealed partial class QiblahMapPage : ContentPage
@@ -202,45 +206,38 @@ public sealed partial class QiblahMapPage : ContentPage
         return 360 - angleDegrees;
     }
 
-    private static List<IFeature> createSectorOutline(
+    private static List<Mapsui.IFeature> createSectorOutline(
         Coordinate center,
         double radiusMeters,
         double startAngleDeg,
         double sweepDeg)
     {
         int segments = 60;
-        var features = new List<IFeature>();
-        var arcPoints = new List<Coordinate>();
+        List<Coordinate> polygonPoints = [center];
 
-        foreach (double angle in Enumerable.Range(0, segments).Select(i => startAngleDeg + (sweepDeg * i / segments)))
+        foreach (double angle in Enumerable.Range(0, segments)
+                     .Select(i => startAngleDeg + (sweepDeg * i / segments)))
         {
             double radians = angle * Math.PI / 180.0;
             double x = center.X + radiusMeters * Math.Sin(radians);
             double y = center.Y + radiusMeters * Math.Cos(radians);
-            arcPoints.Add(new Coordinate(x, y));
+
+            polygonPoints.Add(new Coordinate(x, y));
         }
 
-        // Arc
-        var arc = new LineString(arcPoints.ToArray());
-        var arcFeature = arc.ToFeature();
-        arcFeature.Styles.Add(createPenStyle());
-        features.Add(arcFeature);
+        polygonPoints.Add(center); // close polygon
 
-        // Left radial line
-        Coordinate leftPoint = arcPoints.First();
-        var leftLine = new LineString([center, leftPoint]);
-        var leftFeature = leftLine.ToFeature();
-        leftFeature.Styles.Add(createPenStyle());
-        features.Add(leftFeature);
+        var linearRing = new LinearRing(polygonPoints.ToArray());
+        var polygon = new Polygon(linearRing);
 
-        // Right radial line
-        Coordinate rightPoint = arcPoints.Last();
-        var rightLine = new LineString([center, rightPoint]);
-        var rightFeature = rightLine.ToFeature();
-        rightFeature.Styles.Add(createPenStyle());
-        features.Add(rightFeature);
+        var feature = GeometryExtensions.ToFeature(polygon);
 
-        return features;
+        feature.Styles.Add(new VectorStyle
+        {
+            Fill = new Brush(Color.LightSlateGray.WithTransparency(40)),
+        });
+
+        return [feature];
     }
 
     private static MPoint toMercator(double latitude, double longitude)
