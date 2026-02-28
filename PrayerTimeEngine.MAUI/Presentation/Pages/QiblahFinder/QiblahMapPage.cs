@@ -44,10 +44,40 @@ public sealed partial class QiblahMapPage : ContentPage
             }
         };
         this._mapControl.Map.Layers.Add(_toleranceLayer);
-        this.Content = this._mapControl;
+
+        var gpsButton = new Button
+        {
+            HorizontalOptions = LayoutOptions.End,
+            VerticalOptions = LayoutOptions.Start,
+            Margin = new Thickness(10),
+            FontFamily = "MaterialSymbols",
+            Text = "\ue55c", // "my_location"
+            FontSize = 28,
+            BackgroundColor = Microsoft.Maui.Graphics.Colors.White,
+            CornerRadius = 20,
+            WidthRequest = 44,
+            HeightRequest = 44
+        };
+        gpsButton.Clicked += LocateButton_Clicked;
+
+        Content = new Grid
+        {
+            Children = { _mapControl, gpsButton }
+        };
 
         this._mapControl.MapTapped += this._mapControl_MapTapped;
         _mapControl.Map.Navigator.ViewportChanged += navigator_ViewportChanged;
+    }
+
+    private async void LocateButton_Clicked(object sender, EventArgs e)
+    {
+        var point = await getCurrentLocation();
+
+        if (point == null)
+            return;
+
+        setCurrentPoint(point);
+        refreshCurrentPoint();
     }
 
     private void configureZoomLevel()
