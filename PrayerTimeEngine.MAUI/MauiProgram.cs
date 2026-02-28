@@ -211,16 +211,16 @@ public static class MauiProgram
                 {
                     //options.MaxLines = 1024;
                     options.Layout = new LoggingLayout();
-                    //options.MinLevel = LogLevel.Trace;
-                    //options.MaxLevel = LogLevel.Error;
+                    options.MinLevel = LogLevel.Trace;
+                    options.MaxLevel = LogLevel.Error;
                 })
             // for the logs to be sharable as files through the UI
             .AddStreamingFileLogger(
                 options =>
                 {
                     options.RetainDays = 2;
-                    //options.MinLevel = LogLevel.Trace;
-                    //options.MaxLevel = LogLevel.Error;
+                    options.MinLevel = LogLevel.Trace;
+                    options.MaxLevel = LogLevel.Error;
                     options.FolderPath = Path.Combine(
                         FileSystem.CacheDirectory,
                         "MetroLogs");
@@ -380,7 +380,7 @@ public static class MauiProgram
         serviceCollection.AddTransient<DatabaseTablesPage>();
         serviceCollection.AddTransient<DatabaseTablesPageViewModel>();
 
-        serviceCollection.AddTransient<QiblaMapPage>();
+        serviceCollection.AddTransient<QiblahMapPage>();
     }
 
     private static void addPlatformSpecificServices(IServiceCollection serviceCollection)

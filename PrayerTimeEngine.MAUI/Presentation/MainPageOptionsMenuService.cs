@@ -285,7 +285,7 @@ internal class MainPageOptionsMenuService(
                             """, "Ok");
                         break;
                     case _qiblahToolText:
-                        await navigationService.NavigateTo<QiblaMapPage>();
+                        await navigationService.NavigateTo<QiblahMapPage>();
                         break;
                     case _cancelText:
                         break;
