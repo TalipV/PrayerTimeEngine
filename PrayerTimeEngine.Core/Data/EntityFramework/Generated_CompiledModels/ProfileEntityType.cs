@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Microsoft.EntityFrameworkCore.ValueGeneration;
 using NodaTime;
-using PrayerTimeEngine.Core.Common.Extension;
+using PrayerTimeEngine.Core.Common.Extensions;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
 
 #pragma warning disable 219, 612, 618
