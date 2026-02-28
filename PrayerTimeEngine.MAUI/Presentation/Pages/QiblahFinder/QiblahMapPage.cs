@@ -57,7 +57,7 @@ public sealed partial class QiblahMapPage : ContentPage
             VerticalOptions = LayoutOptions.Start,
             Margin = new Thickness(10)
         };
-        gpsButton.Clicked += LocateButton_Clicked;
+        gpsButton.Clicked += locateButton_Clicked;
 
         Content = new Grid
         {
@@ -68,10 +68,9 @@ public sealed partial class QiblahMapPage : ContentPage
         _mapControl.Map.Navigator.ViewportChanged += navigator_ViewportChanged;
     }
 
-    private async void LocateButton_Clicked(object sender, EventArgs e)
+    private async void locateButton_Clicked(object sender, EventArgs e)
     {
         var point = await getCurrentLocation();
-
         if (point == null)
             return;
 
@@ -82,15 +81,8 @@ public sealed partial class QiblahMapPage : ContentPage
     private void configureZoomLevel()
     {
         var schema = new GlobalSphericalMercator();
+        var resolutions = schema.Resolutions.Select(r => r.Value.UnitsPerPixel).ToList();
 
-        this._mapControl.Map.Navigator.OverrideResolutions = schema.Resolutions.Select(r => r.Value.UnitsPerPixel).ToList();
-        //this._mapControl.Map.Navigator.OverrideZoomBounds = new MMinMax(0, 19);
-
-        var resolutions = schema.Resolutions
-            .Select(r => r.Value.UnitsPerPixel)
-            .ToList();
-
-        // allow deeper zoom
         double smallest = resolutions.Last();
         resolutions.Add(smallest / 2);
         resolutions.Add(smallest / 4);
@@ -220,8 +212,7 @@ public sealed partial class QiblahMapPage : ContentPage
         var features = new List<IFeature>();
         var arcPoints = new List<Coordinate>();
 
-        foreach (double angle in Enumerable.Range(0, segments)
-                    .Select(i => startAngleDeg + (sweepDeg * i / segments)))
+        foreach (double angle in Enumerable.Range(0, segments).Select(i => startAngleDeg + (sweepDeg * i / segments)))
         {
             double radians = angle * Math.PI / 180.0;
             double x = center.X + radiusMeters * Math.Sin(radians);
@@ -233,21 +224,20 @@ public sealed partial class QiblahMapPage : ContentPage
         var arc = new LineString(arcPoints.ToArray());
         var arcFeature = arc.ToFeature();
         arcFeature.Styles.Add(createPenStyle());
+        features.Add(arcFeature);
 
         // Left radial line
         Coordinate leftPoint = arcPoints.First();
         var leftLine = new LineString([center, leftPoint]);
         var leftFeature = leftLine.ToFeature();
         leftFeature.Styles.Add(createPenStyle());
+        features.Add(leftFeature);
 
         // Right radial line
         Coordinate rightPoint = arcPoints.Last();
         var rightLine = new LineString([center, rightPoint]);
         var rightFeature = rightLine.ToFeature();
         rightFeature.Styles.Add(createPenStyle());
-
-        features.Add(arcFeature);
-        features.Add(leftFeature);
         features.Add(rightFeature);
 
         return features;

@@ -1,7 +1,7 @@
 ﻿using NodaTime;
 using NodaTime.Text;
 
-namespace PrayerTimeEngine.Core.Common.Extension;
+namespace PrayerTimeEngine.Core.Common.Extensions;
 
 internal static class NodaTimeExtensions
 {
