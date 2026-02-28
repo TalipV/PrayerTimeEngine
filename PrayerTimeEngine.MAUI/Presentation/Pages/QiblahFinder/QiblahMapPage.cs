@@ -165,8 +165,6 @@ public sealed partial class QiblahMapPage : ContentPage
 
     private static async Task<MPoint> getCurrentLocation()
     {
-        return toMercator(51.04702545126251, 6.994402626447837);
-
         var location = await Geolocation.GetLastKnownLocationAsync()
             ?? await Geolocation.GetLocationAsync(new GeolocationRequest(GeolocationAccuracy.Best));
         return toMercator(location.Latitude, location.Longitude);
