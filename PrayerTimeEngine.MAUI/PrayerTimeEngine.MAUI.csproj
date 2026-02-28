@@ -99,6 +99,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Resources\Images\location.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <MauiImage Include="Resources\Images\location.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="CommunityToolkit.Maui" Version="14.0.0" />
     <PackageReference Include="CommunityToolkit.Maui.Markup" Version="7.0.0" />
     <PackageReference Include="Debounce.Core" Version="1.0.0" />

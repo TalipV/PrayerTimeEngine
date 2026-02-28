@@ -45,18 +45,17 @@ public sealed partial class QiblahMapPage : ContentPage
         };
         this._mapControl.Map.Layers.Add(_toleranceLayer);
 
-        var gpsButton = new Button
+        var gpsButton = new ImageButton
         {
+            Source = "location.png",
+            BackgroundColor = Microsoft.Maui.Graphics.Colors.White,
+            CornerRadius = 22,
+            WidthRequest = 44,
+            HeightRequest = 44,
+            Padding = 8,
             HorizontalOptions = LayoutOptions.End,
             VerticalOptions = LayoutOptions.Start,
-            Margin = new Thickness(10),
-            FontFamily = "MaterialSymbols",
-            Text = "\ue55c", // "my_location"
-            FontSize = 28,
-            BackgroundColor = Microsoft.Maui.Graphics.Colors.White,
-            CornerRadius = 20,
-            WidthRequest = 44,
-            HeightRequest = 44
+            Margin = new Thickness(10)
         };
         gpsButton.Clicked += LocateButton_Clicked;
 
