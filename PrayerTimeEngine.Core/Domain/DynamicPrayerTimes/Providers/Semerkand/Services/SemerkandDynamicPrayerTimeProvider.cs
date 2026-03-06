@@ -198,46 +198,115 @@ public class SemerkandDynamicPrayerTimeProvider(
     {
         ArgumentNullException.ThrowIfNull(place);
 
-        // TODO: if language is already turkish then use this place
-        BasicPlaceInfo turkishPlaceInfo = await placeService.GetPlaceBasedOnPlace(place, "tr", cancellationToken).ConfigureAwait(false);
-        
-        string countryName = turkishPlaceInfo.Country ?? "";
-        string cityName = turkishPlaceInfo.City ?? turkishPlaceInfo.State ?? "";
+        string timezoneName = place.TimezoneInfo.Name;
 
-        logger.LogDebug("Semerkand search location: {Country}, {City}", countryName, cityName);
+        string countryName = place.Country;
+        string placeName = place.City ?? place.State;
 
-        int countryID = await getCountryID(countryName, false, cancellationToken).ConfigureAwait(false);
-        if (countryID == -1)
+        BaseLocationData locationInfo = await getLocationInfoInternal(
+            place.Country,
+            place.City ?? place.State ?? "",
+            timezoneName,
+            cancellationToken).ConfigureAwait(false);
+
+        if (locationInfo != null)
         {
-            // QUICK FIX...
-            countryName = countryName.Replace("İ", "I");
-            countryID = await getCountryID(countryName, false, cancellationToken).ConfigureAwait(false);
+            return locationInfo;
+        }
+        else if (place.InfoLanguageCode?.ToLower() == "tr")
+        {
+            // we have already tried turkish
+            return null;
         }
 
-        int cityID = -1;
-        if (countryID != -1)
+        BasicPlaceInfo turkishPlaceInfo = await placeService.GetPlaceBasedOnPlace(place, "tr", cancellationToken).ConfigureAwait(false);
+
+        string turkishCountryName = turkishPlaceInfo.Country;
+        string turkishPlaceName = turkishPlaceInfo.City ?? turkishPlaceInfo.State;
+
+        return await getLocationInfoInternal(turkishCountryName, turkishPlaceName, timezoneName, cancellationToken).ConfigureAwait(false)
+            ?? await getLocationInfoInternal(countryName, turkishPlaceName, timezoneName, cancellationToken).ConfigureAwait(false)
+            ?? await getLocationInfoInternal(turkishCountryName, placeName, timezoneName, cancellationToken).ConfigureAwait(false);
+    }
+
+    private async Task<BaseLocationData> getLocationInfoInternal(
+        string countryName,
+        string cityName,
+        string timezoneName,
+        CancellationToken cancellationToken)
+    { 
+        logger.LogDebug("Semerkand search location: {Country}, {City}", countryName, cityName);
+
+        if (string.IsNullOrWhiteSpace(countryName) || string.IsNullOrWhiteSpace(cityName))
         {
-            cityID = await getCityID(cityName, countryID, false, cancellationToken).ConfigureAwait(false);
-            if (cityID == -1)
+            logger.LogDebug("No Semerkand location search result because of incomplete input data");
+            return null;
+        }
+
+        int countryID = await getCountryIDWithAlternativeCountryNames(countryName, cancellationToken).ConfigureAwait(false);
+        if (countryID == -1)
+        {
+            logger.LogDebug("No Semerkand location search result because country could not be found");
+            return null;
+        }
+
+        int cityID = await getCityIDWithAlternativeCityNames(cityName, countryID, cancellationToken).ConfigureAwait(false);
+        if (cityID == -1)
+        {
+            logger.LogDebug("No Semerkand location search result because city could not be found");
+            return null;
+        }
+
+        logger.LogDebug("Semerkand found location: {Country}, {City}", countryName, cityName);
+
+        return new SemerkandLocationData
+        {
+            CountryName = countryName,
+            CityName = cityName,
+            TimezoneName = timezoneName,
+        };
+    }
+
+    private async Task<int> getCountryIDWithAlternativeCountryNames(string countryName, CancellationToken cancellationToken)
+    {
+        int countryID = -1;
+        string[] toBeTriedCountryNames = [countryName.Replace("İ", "I"), countryName];
+
+        foreach (string toBeTriedCountryName in toBeTriedCountryNames)
+        {
+            countryID = await getCountryID(
+                toBeTriedCountryName,
+                throwIfNotFound: false,
+                cancellationToken).ConfigureAwait(false);
+
+            if (countryID != -1)
             {
-                // QUICK FIX...
-                cityName = cityName.Replace("İ", "I");
-                cityID = await getCityID(cityName, countryID, false, cancellationToken).ConfigureAwait(false);
+                break;
             }
         }
 
-        if (countryID != -1 && cityID != -1)
-        {
-            logger.LogDebug("Semerkand found location: {Country}, {City}", countryName, cityName);
+        return countryID;
+    }
 
-            return new SemerkandLocationData
+    private async Task<int> getCityIDWithAlternativeCityNames(string cityName, int countryID, CancellationToken cancellationToken)
+    {
+        int cityID = -1;
+        string[] toBeTriedCityNames = [cityName.Replace("İ", "I"), cityName];
+
+        foreach (string toBeTriedCityName in toBeTriedCityNames)
+        {
+            cityID = await getCityID(
+                toBeTriedCityName,
+                countryID,
+                throwIfNotFound: false,
+                cancellationToken).ConfigureAwait(false);
+
+            if (cityID != -1)
             {
-                CountryName = countryName,
-                CityName = cityName,
-                TimezoneName = place.TimezoneInfo.Name
-            };
+                break;
+            }
         }
 
-        return null;
+        return cityID;
     }
 }
