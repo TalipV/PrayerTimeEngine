@@ -110,7 +110,7 @@ public sealed partial class QiblahMapPage : ContentPage
         this._mapControl.Map.Navigator.RotateTo(angle);
     }
 
-    private void zoomChanged(MapControl mapControl)
+    private void zoomChanged()
     {
         if (_currentPoint.Point == null)
         {
@@ -260,6 +260,6 @@ public sealed partial class QiblahMapPage : ContentPage
 
     private void navigator_ViewportChanged(object sender, ViewportChangedEventArgs e)
     {
-        zoomChanged(_mapControl);
+        zoomChanged();
     }
 }
