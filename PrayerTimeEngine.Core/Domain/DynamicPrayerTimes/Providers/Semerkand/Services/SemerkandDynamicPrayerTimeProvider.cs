@@ -272,7 +272,7 @@ public class SemerkandDynamicPrayerTimeProvider(
         int countryID = -1;
         string[] toBeTriedCountryNames = [countryName.Replace("İ", "I"), countryName];
 
-        foreach (string toBeTriedCountryName in toBeTriedCountryNames)
+        foreach (string toBeTriedCountryName in toBeTriedCountryNames.Distinct())
         {
             countryID = await getCountryID(
                 toBeTriedCountryName,
@@ -293,7 +293,7 @@ public class SemerkandDynamicPrayerTimeProvider(
         int cityID = -1;
         string[] toBeTriedCityNames = [cityName.Replace("İ", "I"), cityName];
 
-        foreach (string toBeTriedCityName in toBeTriedCityNames)
+        foreach (string toBeTriedCityName in toBeTriedCityNames.Distinct())
         {
             cityID = await getCityID(
                 toBeTriedCityName,
