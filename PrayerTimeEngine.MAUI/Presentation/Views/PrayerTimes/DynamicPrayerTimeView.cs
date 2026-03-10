@@ -269,7 +269,7 @@ public partial class DynamicPrayerTimeView : ContentView
             subTimeDisplayTextViews.Add(subtime3DisplayText);
         }
 
-        if (OperatingSystem.IsWindows())
+        if (OperatingSystem.IsWindows() || OperatingSystem.IsMacCatalyst())
         {
             return;
         }

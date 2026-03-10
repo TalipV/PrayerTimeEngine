@@ -212,7 +212,7 @@ public partial class MainPage : ContentPage
 
         mainGrid.SetBinding(OpacityProperty, new Binding(nameof(MainPageViewModel.LoadingStatusOpacityValue)));
 
-        if (OperatingSystem.IsWindows())
+        if (OperatingSystem.IsWindows() || OperatingSystem.IsMacCatalyst())
         {
             // swiping carousel view doesn't work on Windows so this workaround will have to do, at least for now
             this._prayerTimeGraphicViewBaseView.GestureRecognizers

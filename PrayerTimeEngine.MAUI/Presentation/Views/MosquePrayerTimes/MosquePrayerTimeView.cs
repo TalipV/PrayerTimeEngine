@@ -166,7 +166,7 @@ public partial class MosquePrayerTimeView : ContentView
             subTimeDisplayTextViews.Add(subtime1DisplayText);
         }
 
-        if (OperatingSystem.IsWindows())
+        if (OperatingSystem.IsWindows() || OperatingSystem.IsMacCatalyst())
         {
             return;
         }
