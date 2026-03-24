@@ -36,6 +36,7 @@ public class MainActivity : MauiAppCompatActivity
         {
             Description = description
         };
+        channel.SetShowBadge(false);
         channel.SetSound(null, null);
         channel.EnableVibration(false);
 
