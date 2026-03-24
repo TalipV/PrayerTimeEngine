@@ -99,6 +99,11 @@ public partial class MainPage : ContentPage
             app.Resumed += app_Resumed;
         }
 
+        // resetting the title view like this was necessary to fix a MAUI bug
+        // where the contents become invisible after navigating back to this page from another page
+        NavigationPage.SetTitleView(this, null);
+        NavigationPage.SetTitleView(this, _titleGrid);
+
         Task.Run(_viewModel.OnActualAppearing);
     }
 
@@ -110,6 +115,7 @@ public partial class MainPage : ContentPage
         }
     }
 
+    private Grid _titleGrid;
     private Label _weeksUntilTextInfo;
     private Label _profileDisplayNameTextInfo;
     private readonly PrayerTimeGraphicView _prayerTimeGraphicView;
@@ -123,7 +129,7 @@ public partial class MainPage : ContentPage
             nameof(MainPageViewModel.IsMainPageEnabled),
             convert: value => value);
 
-        var titleGrid = new Grid
+        _titleGrid = new Grid
         {
             ColumnDefinitions = Columns.Define(
                 GridLength.Star,
@@ -135,21 +141,21 @@ public partial class MainPage : ContentPage
             .Start().CenterVertical()
             .MinWidth(20) // otherwise we can't reach the menu by tapping an empty label
             .Bind(Label.TextProperty, $"{nameof(MainPageViewModel.CurrentProfile)}.{nameof(Profile.Name)}");
-        titleGrid.Add(_profileDisplayNameTextInfo);
+        _titleGrid.Add(_profileDisplayNameTextInfo);
         
         _weeksUntilTextInfo = new Label()
             .Column(1).Row(0).Paddings(0, 0, 20, 0)
             .End().CenterVertical()
             .FontSize(10)
             .Bind(Label.TextProperty, $"{nameof(MainPageViewModel.WeeksUntilLabelText)}");
-        titleGrid.Add(_weeksUntilTextInfo);
+        _titleGrid.Add(_weeksUntilTextInfo);
 
-        NavigationPage.SetTitleView(this, titleGrid);
+        NavigationPage.SetTitleView(this, _titleGrid);
 
         // TODO fix: The grid doesn't fill the whole width when running on Windows.
         // Quick fix
 #if WINDOWS
-        titleGrid.WidthRequest = 415;
+        _titleGrid.WidthRequest = 415;
 #endif
 
         var searchBox =
