@@ -1,5 +1,4 @@
 ﻿using BruTile.Predefined;
-using Debounce.Core;
 using ExCSS;
 using Mapsui;
 using Mapsui.Layers;
@@ -19,6 +18,8 @@ namespace PrayerTimeEngine.Presentation.Pages.QiblahFinder;
 public sealed partial class QiblahMapPage : ContentPage
 {
     public static readonly MPoint KAABA_COORDINATES = toMercator(latitude: 21.422487, longitude: 39.826206);
+
+    private static int _isRefreshingLocation = 0;
 
     private readonly MapControl _mapControl = new MapControl();
     private readonly TileLayer _tileLayer;
@@ -190,8 +191,21 @@ public sealed partial class QiblahMapPage : ContentPage
 
     private static async Task<MPoint> getCurrentLocation()
     {
-        var location = await Geolocation.GetLastKnownLocationAsync()
-            ?? await Geolocation.GetLocationAsync(new GeolocationRequest(GeolocationAccuracy.Best));
+        var location = await Geolocation.GetLastKnownLocationAsync();
+
+        if (location is null)
+        {
+            location = await Geolocation.GetLocationAsync(new GeolocationRequest(GeolocationAccuracy.Best));
+        }
+        else if (location.Timestamp < DateTimeOffset.UtcNow.AddMinutes(-2))
+        {
+            if (Interlocked.CompareExchange(ref _isRefreshingLocation, 1, 0) == 0)
+            {
+                _ = Geolocation.GetLocationAsync(new GeolocationRequest(GeolocationAccuracy.Best))
+                    .ContinueWith(_ => Interlocked.Exchange(ref _isRefreshingLocation, 0));
+            }
+        }
+
         return toMercator(location.Latitude, location.Longitude);
     }
 
@@ -244,18 +258,6 @@ public sealed partial class QiblahMapPage : ContentPage
     {
         (double x, double y) = SphericalMercator.FromLonLat(longitude, latitude);
         return new MPoint(x, y);
-    }
-
-    private static VectorStyle createPenStyle()
-    {
-        return new VectorStyle
-        {
-            Outline = null,
-            Line = new Pen(Mapsui.Styles.Color.Black, 2)
-            {
-                PenStyle = PenStyle.Dash
-            }
-        };
     }
 
     private void navigator_ViewportChanged(object sender, ViewportChangedEventArgs e)

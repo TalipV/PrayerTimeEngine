@@ -1,7 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net10.0-android;net10.0-ios;net10.0-maccatalyst</TargetFrameworks>
+    <TargetFrameworks>net10.0-android;net10.0-ios</TargetFrameworks>
+    <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('maccatalyst'))">$(TargetFrameworks);net10.0-maccatalyst</TargetFrameworks>
     <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net10.0-windows10.0.26100.0</TargetFrameworks>
     <OutputType>Exe</OutputType>
     <RootNamespace>PrayerTimeEngine</RootNamespace>
@@ -106,23 +107,23 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="CommunityToolkit.Maui" Version="14.0.1" />
+    <PackageReference Include="CommunityToolkit.Maui" Version="14.1.1" />
     <PackageReference Include="CommunityToolkit.Maui.Markup" Version="7.0.1" />
     <PackageReference Include="Debounce.Core" Version="1.0.0" />
-    <PackageReference Include="Mapsui.Maui" Version="5.0.2" />
+    <PackageReference Include="Mapsui.Maui" Version="5.1.0" />
     <PackageReference Include="MethodTimer.Fody" Version="3.2.3" PrivateAssets="All" />
     <PackageReference Include="MetroLog.Maui" Version="2.1.0" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.5" />
-    <PackageReference Include="Microsoft.Extensions.Http" Version="10.0.5" />
-    <PackageReference Include="Microsoft.Extensions.Http.Resilience" Version="10.4.0" />
-    <PackageReference Include="Microsoft.Maui.Controls" Version="10.0.50" />
-    <PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="10.0.50" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.8" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="10.0.8" />
+    <PackageReference Include="Microsoft.Extensions.Http.Resilience" Version="10.6.0" />
+    <PackageReference Include="Microsoft.Maui.Controls" Version="10.0.70" />
+    <PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="10.0.70" />
     <PackageReference Include="OnScreenSizeMarkup.Maui" Version="3.0.18" />
     <PackageReference Include="Plugin.Maui.DebugRainbows" Version="1.2.2" />
     <PackageReference Include="PropertyChanged.Fody" Version="4.1.0" PrivateAssets="All" />
     <PackageReference Include="Refractored.MvvmHelpers" Version="1.6.2" />
-    <PackageReference Include="SkiaSharp.Views.Maui.Controls" Version="3.119.2" />
-    <PackageReference Include="UraniumUI.Material" Version="2.15.0" />
+    <PackageReference Include="SkiaSharp.Views.Maui.Controls" Version="3.119.4" />
+    <PackageReference Include="UraniumUI.Material" Version="2.16.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -133,7 +134,7 @@
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net10.0-windows10.0.26100.0'">
     <PackageReference Include="Mapsui.WinUI">
-      <Version>5.0.2</Version>
+      <Version>5.1.0</Version>
     </PackageReference>
   </ItemGroup>
 </Project>

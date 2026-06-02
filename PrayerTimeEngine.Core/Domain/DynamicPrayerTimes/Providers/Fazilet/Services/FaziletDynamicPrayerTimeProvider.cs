@@ -111,7 +111,8 @@ public class FaziletDynamicPrayerTimeProvider(
         // check-then-act has to be thread safe
         using (await semaphoreTryGetCityID.LockAsync(cancellationToken).ConfigureAwait(false))
         {
-            int? cityID = await faziletDBAccess.GetCityIDByName(countryID, cityName, cancellationToken).ConfigureAwait(false);
+            int? cityID = await faziletDBAccess.GetCityIDByName(countryID, cityName, cancellationToken).ConfigureAwait(false)
+                ?? await faziletDBAccess.GetCityIDByName(countryID, cityName.Replace("İ", "I"), cancellationToken).ConfigureAwait(false);
 
             // city found
             if (cityID is not null)
@@ -149,7 +150,8 @@ public class FaziletDynamicPrayerTimeProvider(
         // check-then-act has to be thread safe
         using (await semaphoreTryGetCountryID.LockAsync(cancellationToken).ConfigureAwait(false))
         {
-            int? countryID = await faziletDBAccess.GetCountryIDByName(countryName, cancellationToken).ConfigureAwait(false);
+            int? countryID = await faziletDBAccess.GetCountryIDByName(countryName, cancellationToken).ConfigureAwait(false)
+                ?? await faziletDBAccess.GetCountryIDByName(countryName.Replace("İ", "I"), cancellationToken).ConfigureAwait(false);
 
             // country found
             if (countryID is not null)
