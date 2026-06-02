@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using NodaTime;
 using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Models;
+using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Services;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Semerkand.Interfaces;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Semerkand.Models;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Semerkand.Models.DTOs;
@@ -135,7 +136,8 @@ public class SemerkandDynamicPrayerTimeProvider(
         // check-then-act has to be thread safe
         using (await semaphoreTryGetCityID.LockAsync(cancellationToken).ConfigureAwait(false))
         {
-            int? cityID = await semerkandDBAccess.GetCityIDByName(countryID, cityName, cancellationToken).ConfigureAwait(false);
+            int? cityID = await semerkandDBAccess.GetCityIDByName(countryID, cityName, cancellationToken).ConfigureAwait(false)
+                ?? await semerkandDBAccess.GetCityIDByName(countryID, cityName.Replace("İ", "I"), cancellationToken).ConfigureAwait(false);
 
             // city found
             if (cityID is not null)
