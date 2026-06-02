@@ -25,13 +25,17 @@ public class DynamicPrayerTimeViewModel(
     public bool ShowKaraha { get; set; }
     public bool ShowIshtibaq { get; set; }
     public bool ShowMaghribSufficientTime { get; set; }
+    public List<DynamicPrayerTimeCalculationErrorVO> CalculationErrors { get; private set; }
 
     public override async Task<DynamicPrayerTimesDaySet> GetPrayerTimesSet(ZonedDateTime zonedDateTime, CancellationToken cancellationToken)
     {
-        return (await dynamicPrayerTimeProviderManager.CalculatePrayerTimesAsync(
+        CalculatePrayerTimesResultVO calcResult = await dynamicPrayerTimeProviderManager.CalculatePrayerTimesAsync(
             ProfileActual.ID,
             zonedDateTime,
-            cancellationToken)).DynamicPrayerTimesDaySet;
+            cancellationToken);
+
+        CalculationErrors = calcResult.CalculationErrors;
+        return calcResult.DynamicPrayerTimesDaySet;
     }
 
     public override async Task RefreshData(ZonedDateTime zonedDateTime, CancellationToken cancellationToken)

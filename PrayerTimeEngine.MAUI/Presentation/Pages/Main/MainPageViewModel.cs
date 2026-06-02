@@ -6,6 +6,7 @@ using PrayerTimeEngine.Core.Common;
 using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Data.EntityFramework;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes;
+using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Models;
 using PrayerTimeEngine.Core.Domain.IslamicCalendar.Interfaces;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Management;
@@ -18,6 +19,7 @@ using PrayerTimeEngine.Presentation.Pages.Settings.SettingsHandler;
 using PrayerTimeEngine.Presentation.Services;
 using PrayerTimeEngine.Presentation.Services.Navigation;
 using PrayerTimeEngine.Presentation.Views;
+using PrayerTimeEngine.Presentation.Views.PrayerTimes;
 using PrayerTimeEngine.Services.Notifications;
 using PropertyChanged;
 using System.Text;
@@ -427,6 +429,7 @@ public partial class MainPageViewModel(
                         .InZone(dateTimeZone);
 
                 await CurrentProfileWithModel.RefreshData(zonedDateTime, loadingTimesCancellationTokenSource.Token);
+                showCalculationErrorsIfNeeded(CurrentProfileWithModel);
 
                 OnAfterLoadingPrayerTimes_EventTrigger?.Invoke();
             }
@@ -457,6 +460,32 @@ public partial class MainPageViewModel(
         }
 
         logger.LogInformation("Refreshing data finished. ({RefreshCallID})", refreshCallID);
+    }
+
+    private void showCalculationErrorsIfNeeded(IPrayerTimeViewModel prayerTimeViewModel)
+    {
+        // currently only supported for dynamic times
+        if (prayerTimeViewModel is not DynamicPrayerTimeViewModel dynamicPrayerTimeViewModel)
+        {
+            return;
+        }
+
+        List<DynamicPrayerTimeCalculationErrorVO> calculationErrors =
+            dynamicPrayerTimeViewModel.CalculationErrors ?? [];
+
+        if (calculationErrors.Count == 0)
+        {
+            return;
+        }
+
+        string failedCalculators = string.Join(
+            ", ",
+            calculationErrors
+                .Select(x => x.DynamicPrayerTimeProviderType.ToString())
+                .Distinct()
+                .OrderBy(x => x));
+
+        toastMessageService.ShowWarning($"Calculation for the following providers failed: {failedCalculators}");
     }
 
     private async Task onBeforeFirstLoad()
