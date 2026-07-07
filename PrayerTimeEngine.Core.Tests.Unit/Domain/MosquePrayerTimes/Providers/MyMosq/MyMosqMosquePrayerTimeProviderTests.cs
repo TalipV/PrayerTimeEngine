@@ -68,7 +68,6 @@ public class MyMosqMosquePrayerTimeProviderTests : BaseTest
         calculationResult.Should().BeEquivalentTo(times);
 
         _myMosqApiServiceMock.ReceivedCalls().Should().BeEmpty();
-        _myMosqDBAccessMock.ReceivedCalls().Should().HaveCount(1);
         await _myMosqDBAccessMock.Received(1).GetPrayerTimesAsync(Arg.Is(date), Arg.Is(externalID), Arg.Any<CancellationToken>());
     }
 

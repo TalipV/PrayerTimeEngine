@@ -80,12 +80,13 @@ namespace PrayerTimeEngine;
  * - Exception for single calculation only disables that calculation but subsequent calculations rely on cached values and don't retry
  * - remove AppDbContextModel _useOldBehavior31751 temp fix
  * - FIXED? Calculation relevant data like the Profile with its configs may change in the middle of the calculation process due to shared references
- * - MyMosq: "DhuhrTIME" is earlier than "Dhuhr" but "Fajr" is earlier than "FajrTIME". Bug?? One of them has to be the time for the congregation/iqama and the other one the actual prayer time
  * - Fazilet & Semerkand place search should also try german country names and/or city names
  */
 
 /* TODO general:
- * - Autostart of app on device startup (like for example the Fazilet app does)
+ * - Harden the provider services (Muwaqqit, Fazilet, Semerkand, Mawaqit, MyMosq) against missing values in their API responses.
+ *   Some values are present in 99% of cases but disappear e.g. in deep summer or for northern countries (no true night/dawn),
+ *   and then the logics (e.g. blind .First()/.Value accesses) break. Decide per value: fallback, skip or proper error.
  * - For prayer times of a time zone other than that of the device show option to select based on which time zone to show the times (like a yes/no slider)
  * - After importing profiles, show overview of current and new profiles for the user to select which ones to keep
  * - Reconsider IDailyPrayerTimes properties ('Date' as a ZonedDateTime?? Why carry DateTimeZone info redundantely?)

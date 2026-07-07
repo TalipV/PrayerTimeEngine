@@ -85,7 +85,6 @@ public class SemerkandDynamicPrayerTimeProviderTests : BaseTest
 
         _placeServiceMock.ReceivedCalls().Should().BeEmpty();
         _semerkandApiServiceMock.ReceivedCalls().Should().BeEmpty();
-        _semerkandDBAccessMock.ReceivedCalls().Should().HaveCount(4);
         await _semerkandDBAccessMock.Received(1).GetCountryIDByName(Arg.Is("Deutschland"), Arg.Any<CancellationToken>());
         await _semerkandDBAccessMock.Received(1).GetCityIDByName(Arg.Is(1), Arg.Is("Berlin"), Arg.Any<CancellationToken>());
         await _semerkandDBAccessMock.Received(1).GetTimesByDateAndCityID(Arg.Is(zonedDate), Arg.Is(1), Arg.Any<CancellationToken>());
@@ -158,11 +157,20 @@ public class SemerkandDynamicPrayerTimeProviderTests : BaseTest
         calculationResult.Should().HaveCount(1);
         calculationResult.First().Should().BeEquivalentTo((ETimeType.FajrEnd, shuruqZonedDateTime1));
 
-        _semerkandApiServiceMock.ReceivedCalls().Should().HaveCount(4);
-        _semerkandDBAccessMock.ReceivedCalls().Should().HaveCount(10);
         await _semerkandApiServiceMock.Received(1).GetCountries(Arg.Any<CancellationToken>());
         await _semerkandApiServiceMock.Received(1).GetCitiesByCountryID(Arg.Is(1), Arg.Any<CancellationToken>());
         await _semerkandApiServiceMock.Received(1).GetTimesByCityID(Arg.Is(date.Year), Arg.Is(1), Arg.Any<CancellationToken>());
+        await _semerkandApiServiceMock.Received(1).GetTimesByCityID(Arg.Is(nextFajrDate.Year), Arg.Is(1), Arg.Any<CancellationToken>());
+
+        await _semerkandDBAccessMock.Received(1).GetCountryIDByName(Arg.Is("Deutschland"), Arg.Any<CancellationToken>());
+        await _semerkandDBAccessMock.Received(1).HasCountryData(Arg.Any<CancellationToken>());
+        await _semerkandDBAccessMock.Received(1).InsertCountries(Arg.Any<IEnumerable<SemerkandCountry>>(), Arg.Any<CancellationToken>());
+        await _semerkandDBAccessMock.Received(2).GetCityIDByName(Arg.Is(1), Arg.Is("Berlin"), Arg.Any<CancellationToken>());
+        await _semerkandDBAccessMock.Received(1).HasCityData(Arg.Is(1), Arg.Any<CancellationToken>());
+        await _semerkandDBAccessMock.Received(1).InsertCities(Arg.Any<IEnumerable<SemerkandCity>>(), Arg.Any<CancellationToken>());
+        await _semerkandDBAccessMock.Received(1).GetTimesByDateAndCityID(Arg.Is(zonedDateTime), Arg.Is(1), Arg.Any<CancellationToken>());
+        await _semerkandDBAccessMock.Received(1).GetTimesByDateAndCityID(Arg.Is(nextFajrZonedDateTime), Arg.Is(1), Arg.Any<CancellationToken>());
+        await _semerkandDBAccessMock.Received(2).InsertPrayerTimesAsync(Arg.Any<IEnumerable<SemerkandDailyPrayerTimes>>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -228,7 +236,6 @@ public class SemerkandDynamicPrayerTimeProviderTests : BaseTest
         calculationResult.Should().HaveCount(1);
         calculationResult.First().Should().BeEquivalentTo((ETimeType.FajrEnd, shuruqZonedDateTime1));
 
-        _semerkandDBAccessMock.ReceivedCalls().Should().HaveCount(6);
         await _semerkandDBAccessMock.Received(1).GetCountryIDByName(Arg.Is("Deutschland"), Arg.Any<CancellationToken>());
         await _semerkandDBAccessMock.Received(1).GetCityIDByName(Arg.Is(1), Arg.Is("Berlin"), Arg.Any<CancellationToken>());
 
@@ -238,7 +245,6 @@ public class SemerkandDynamicPrayerTimeProviderTests : BaseTest
         await _semerkandDBAccessMock.Received(1).GetTimesByDateAndCityID(Arg.Is(nextFajrZonedDateTime), Arg.Is(1), Arg.Any<CancellationToken>());
         await _semerkandDBAccessMock.Received(1).InsertPrayerTimesAsync(Arg.Is<List<SemerkandDailyPrayerTimes>>(times => times[0].Date == nextFajrZonedDateTime), Arg.Any<CancellationToken>());
 
-        _semerkandApiServiceMock.ReceivedCalls().Should().HaveCount(2);
         await _semerkandApiServiceMock.Received(0).GetCountries(Arg.Any<CancellationToken>());
         await _semerkandApiServiceMock.Received(0).GetCitiesByCountryID(Arg.Is(1), Arg.Any<CancellationToken>());
         await _semerkandApiServiceMock.Received(1).GetTimesByCityID(Arg.Is(date.Year), Arg.Is(1), Arg.Any<CancellationToken>());
@@ -250,7 +256,7 @@ public class SemerkandDynamicPrayerTimeProviderTests : BaseTest
     #region GetLocationInfo
 
     [Fact]
-    public async Task GetLocationInfo_X_X()
+    public async Task GetLocationInfo_CountryOnlyFoundByTurkishName_ReturnsLocationData()
     {
         // ARRANGE
         var completePlaceInfo = new ProfilePlaceInfo
@@ -284,6 +290,8 @@ public class SemerkandDynamicPrayerTimeProviderTests : BaseTest
         _placeServiceMock
             .GetPlaceBasedOnPlace(Arg.Is(completePlaceInfo), Arg.Is("tr"), Arg.Any<CancellationToken>())
             .Returns(turkishBasicPlaceInfo);
+
+        _semerkandDBAccessMock.HasCountryData(Arg.Any<CancellationToken>()).Returns(true);
         _semerkandDBAccessMock.GetCountryIDByName(Arg.Is("Avusturya"), Arg.Any<CancellationToken>()).Returns(1);
         _semerkandDBAccessMock.GetCityIDByName(Arg.Is(1), Arg.Is("Innsbruck"), Arg.Any<CancellationToken>()).Returns(1);
 

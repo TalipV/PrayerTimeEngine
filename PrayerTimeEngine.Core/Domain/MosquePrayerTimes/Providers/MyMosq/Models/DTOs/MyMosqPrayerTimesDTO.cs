@@ -67,6 +67,9 @@ public class MyMosqPrayerTimesDTO
     [JsonPropertyName("Jummah3")]
     public LocalTime? Jumuah2 { get; set; }
 
+    // "XTime" holds the actual prayer time and the suffixless "X" holds the (possibly delayed)
+    // congregation time (e.g. "Dhuhr" holds the jumu'ah time on Fridays, "Isha" is delayed in winter).
+    // Only the fajr pair is named differently: "Fajr" = actual prayer time, "Sabah" = congregation.
     internal MyMosqMosqueDailyPrayerTimes ToMyMosqPrayerTimes(string externalID)
     {
         return new MyMosqMosqueDailyPrayerTimes
@@ -76,19 +79,19 @@ public class MyMosqPrayerTimesDTO
 
             Fajr = Fajr,
             Shuruq = Shuruq,
-            Dhuhr = Dhuhr,
-            Asr = Asr,
-            Maghrib = Maghrib,
-            Isha = Isha,
+            Dhuhr = DhuhrTime,
+            Asr = AsrTime,
+            Maghrib = MaghribTime,
+            Isha = IshaTime,
 
             Jumuah = Jumuah,
             Jumuah2 = Jumuah2,
 
             FajrCongregation = FajrTime,
-            DhuhrCongregation = DhuhrTime,
-            AsrCongregation = AsrTime,
-            MaghribCongregation = MaghribTime,
-            IshaCongregation = IshaTime,
+            DhuhrCongregation = Dhuhr,
+            AsrCongregation = Asr,
+            MaghribCongregation = Maghrib,
+            IshaCongregation = Isha,
         };
     }
 }
