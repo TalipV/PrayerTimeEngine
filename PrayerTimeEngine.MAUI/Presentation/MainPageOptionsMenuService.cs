@@ -274,8 +274,8 @@ internal class MainPageOptionsMenuService(
 
                         break;
                     case _goldPriceText:
-                        decimal goldEurPricePerGram = await getGoldGramEurAsync("fcdc9197a43a72f497fe20e4131542c0");
-                        decimal silverEurPricePerGram = await getSilverGramEurAsync("fcdc9197a43a72f497fe20e4131542c0");
+                        decimal goldEurPricePerGram = await getGoldGramEurAsync(AppApiKeys.MetalPrice);
+                        decimal silverEurPricePerGram = await getSilverGramEurAsync(AppApiKeys.MetalPrice);
                         await page.DisplayAlertAsync("Info", $"""
                             Goldpreis pro Gramm: {goldEurPricePerGram:N5}€
                             --> Nisab beträgt {(GOLD_NISAB_GRAMM * goldEurPricePerGram):N2}€ ({GOLD_NISAB_GRAMM:N2} g)

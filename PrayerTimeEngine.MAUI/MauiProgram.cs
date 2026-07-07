@@ -50,6 +50,7 @@ using PrayerTimeEngine.Services;
 using PrayerTimeEngine.Services.Notifications;
 using Refit;
 using SkiaSharp.Views.Maui.Controls.Hosting;
+using System.Net.Security;
 using System.Net.WebSockets;
 using System.Text;
 using UraniumUI;
@@ -138,8 +139,6 @@ public static class MauiProgram
 {
     public static readonly DateTime StartDateTime = DateTime.Now;
     public static IServiceProvider ServiceProvider { get; private set; }
-
-    public static bool IsFullyInitialized { get; set; } = false;
 
     public static MauiApp CreateMauiApp()
     {
@@ -260,7 +259,7 @@ public static class MauiProgram
         serviceCollection.AddTransient<IConfigurationImportExportService, ConfigurationImportExportService>();
         serviceCollection.AddSingleton<TimeTypeAttributeService>();
 
-        serviceCollection.AddTransient<IDynamicPrayerTimeProviderManager, DynamicPrayerTimeProviderManager>();
+        serviceCollection.AddSingleton<IDynamicPrayerTimeProviderManager, DynamicPrayerTimeProviderManager>();
         serviceCollection.AddTransient<IDynamicPrayerTimeProviderFactory, DynamicPrayerTimeProviderFactory>();
 
         serviceCollection.AddTransient<IMosquePrayerTimeProviderManager, MosquePrayerTimeProviderManager>();
@@ -280,8 +279,11 @@ public static class MauiProgram
             return new PlaceService(
                 RestService.For<ILocationIQApiService>(httpClient),
                 sp.GetRequiredService<ISystemInfoService>(),
-                sp.GetRequiredService<ILogger<PlaceService>>());
+                sp.GetRequiredService<ILogger<PlaceService>>(),
+                AppApiKeys.LocationIQ);
         });
+
+        serviceCollection.AddSingleton<IAppInitializer, AppInitializer>();
 
         addCalculatorServices(serviceCollection);
         addPresentationLayerServices(serviceCollection);
@@ -315,8 +317,19 @@ public static class MauiProgram
             })
             .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
             {
-                // TODO: REMOVE, because Semerkand will hopefully fix this soon
-                ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true
+                // Semerkand has certificate chain issues (untrusted root / broken chain).
+                // We bypass only chain trust errors; hostname mismatch is never bypassed
+                // because it would indicate a MITM attack.
+                ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) =>
+                {
+                    if (sslPolicyErrors == SslPolicyErrors.None)
+                        return true;
+                    if (sslPolicyErrors.HasFlag(SslPolicyErrors.RemoteCertificateNameMismatch))
+                        return false;
+                    if (sslPolicyErrors.HasFlag(SslPolicyErrors.RemoteCertificateNotAvailable))
+                        return false;
+                    return true; // only RemoteCertificateChainErrors remains
+                }
             })
             .AddStandardResilienceHandler();
         serviceCollection.AddTransient<SemerkandDynamicPrayerTimeProvider>();
@@ -386,14 +399,11 @@ public static class MauiProgram
 
     private static void addPlatformSpecificServices(IServiceCollection serviceCollection)
     {
-        var prayerTimeSummaryNotificationHandlerMock = NSubstitute.Substitute.For<IPrayerTimeSummaryNotificationHandler>();
-        NSubstitute.SubstituteExtensions.Returns(prayerTimeSummaryNotificationHandlerMock.ExecuteAsync(), Task.CompletedTask);
-
 #if ANDROID
         serviceCollection.AddTransient<IPrayerTimeSummaryNotificationHandler, Platforms.Android.Notifications.PrayerTimeSummaryNotificationHandler>();
 #else
         // TODO implement for other platforms someday (at least iOS)
-        serviceCollection.AddTransient<IPrayerTimeSummaryNotificationHandler>(factory => prayerTimeSummaryNotificationHandlerMock);
+        serviceCollection.AddTransient<IPrayerTimeSummaryNotificationHandler, NoOpPrayerTimeSummaryNotificationHandler>();
 #endif
     }
 }

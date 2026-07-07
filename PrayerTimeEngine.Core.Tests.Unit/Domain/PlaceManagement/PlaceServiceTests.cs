@@ -26,7 +26,8 @@ public class PlaceServiceTests : BaseTest
         _placeService = new PlaceService(
             RestService.For<ILocationIQApiService>(httpClient),
             Substitute.For<ISystemInfoService>(),
-            Substitute.For<ILogger<PlaceService>>());
+            Substitute.For<ILogger<PlaceService>>(),
+            apiKey: "test-key");
     }
 
     #region SearchPlacesAsync

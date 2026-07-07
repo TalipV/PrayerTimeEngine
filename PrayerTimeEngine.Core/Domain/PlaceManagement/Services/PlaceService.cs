@@ -14,10 +14,11 @@ namespace PrayerTimeEngine.Core.Domain.PlaceManagement.Services;
 public class PlaceService(
         ILocationIQApiService locationIQApiService,
         ISystemInfoService systemInfoService,
-        ILogger<PlaceService> logger
+        ILogger<PlaceService> logger,
+        string apiKey
     ) : IPlaceService
 {
-    private const string _apiKey = "pk.5fdf59f9c3682abc89749e42d1f68d8d";
+    private readonly string _apiKey = apiKey;
 
     public async Task<ProfilePlaceInfo> GetTimezoneInfo(BasicPlaceInfo basicPlaceInfo, CancellationToken cancellationToken)
     {

@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
+using Microsoft.EntityFrameworkCore.Storage;
 using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Data.EntityFramework;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes;
@@ -51,10 +52,11 @@ public class ProfileDBAccess(
     public async Task SaveProfiles(ICollection<Profile> profiles, CancellationToken cancellationToken)
     {
         using (AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false))
+        await using (IDbContextTransaction transaction = await dbContext.Database.BeginTransactionAsync(cancellationToken).ConfigureAwait(false))
         {
             foreach (Profile profile in profiles)
             {
-                Profile foundProfile = 
+                Profile foundProfile =
                     await includeGeneralData(dbContext.Profiles)
                         .FirstOrDefaultAsync(x => x.ID == profile.ID, cancellationToken)
                         .ConfigureAwait(false);
@@ -74,6 +76,7 @@ public class ProfileDBAccess(
             }
 
             await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+            await transaction.CommitAsync(cancellationToken).ConfigureAwait(false);
         }
     }
 
