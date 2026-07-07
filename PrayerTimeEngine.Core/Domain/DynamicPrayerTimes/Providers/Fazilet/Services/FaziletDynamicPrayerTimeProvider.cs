@@ -16,9 +16,9 @@ public class FaziletDynamicPrayerTimeProvider(
         IFaziletApiService faziletApiService,
         IPlaceService placeService,
         ILogger<FaziletDynamicPrayerTimeProvider> logger
-    ) : IDynamicPrayerTimeProvider
+    ) : BaseCountryCityDynamicPrayerTimeProvider(placeService, logger)
 {
-    public HashSet<ETimeType> GetUnsupportedTimeTypes()
+    public override HashSet<ETimeType> GetUnsupportedTimeTypes()
     {
         return _unsupportedTimeTypes;
     }
@@ -35,7 +35,7 @@ public class FaziletDynamicPrayerTimeProvider(
             ETimeType.MaghribIshtibaq,
         ];
 
-    public async Task<List<(ETimeType TimeType, ZonedDateTime ZonedDateTime)>> GetPrayerTimesAsync(
+    public override async Task<List<(ETimeType TimeType, ZonedDateTime ZonedDateTime)>> GetPrayerTimesAsync(
         ZonedDateTime date,
         BaseLocationData locationData,
         List<GenericSettingConfiguration> configurations,
@@ -64,8 +64,8 @@ public class FaziletDynamicPrayerTimeProvider(
 
     private async Task<FaziletDailyPrayerTimes> getPrayerTimesInternal(ZonedDateTime date, string countryName, string cityName, CancellationToken cancellationToken)
     {
-        int countryID = await getCountryID(countryName, throwIfNotFound: true, cancellationToken).ConfigureAwait(false);
-        int cityID = await getCityID(cityName, countryID, throwIfNotFound: true, cancellationToken).ConfigureAwait(false);
+        int countryID = await GetCountryID(countryName, throwIfNotFound: true, cancellationToken).ConfigureAwait(false);
+        int cityID = await GetCityID(cityName, countryID, throwIfNotFound: true, cancellationToken).ConfigureAwait(false);
 
         FaziletDailyPrayerTimes prayerTimes = await getPrayerTimesByDateAndCityID(date, cityID, cancellationToken).ConfigureAwait(false)
             ?? throw new Exception($"Prayer times for the {date} could not be found for an unknown reason.");
@@ -106,13 +106,12 @@ public class FaziletDynamicPrayerTimeProvider(
 
     private static readonly AsyncNonKeyedLocker semaphoreTryGetCityID = new(1);
 
-    private async Task<int> getCityID(string cityName, int countryID, bool throwIfNotFound, CancellationToken cancellationToken)
+    protected override async Task<int> GetCityID(string cityName, int countryID, bool throwIfNotFound, CancellationToken cancellationToken)
     {
         // check-then-act has to be thread safe
         using (await semaphoreTryGetCityID.LockAsync(cancellationToken).ConfigureAwait(false))
         {
-            int? cityID = await faziletDBAccess.GetCityIDByName(countryID, cityName, cancellationToken).ConfigureAwait(false)
-                ?? await faziletDBAccess.GetCityIDByName(countryID, cityName.Replace("İ", "I"), cancellationToken).ConfigureAwait(false);
+            int? cityID = await faziletDBAccess.GetCityIDByName(countryID, cityName, cancellationToken).ConfigureAwait(false);
 
             // city found
             if (cityID is not null)
@@ -145,13 +144,12 @@ public class FaziletDynamicPrayerTimeProvider(
 
     private static readonly AsyncNonKeyedLocker semaphoreTryGetCountryID = new(1);
 
-    private async Task<int> getCountryID(string countryName, bool throwIfNotFound, CancellationToken cancellationToken)
+    protected override async Task<int> GetCountryID(string countryName, bool throwIfNotFound, CancellationToken cancellationToken)
     {
         // check-then-act has to be thread safe
         using (await semaphoreTryGetCountryID.LockAsync(cancellationToken).ConfigureAwait(false))
         {
-            int? countryID = await faziletDBAccess.GetCountryIDByName(countryName, cancellationToken).ConfigureAwait(false)
-                ?? await faziletDBAccess.GetCountryIDByName(countryName.Replace("İ", "I"), cancellationToken).ConfigureAwait(false);
+            int? countryID = await faziletDBAccess.GetCountryIDByName(countryName, cancellationToken).ConfigureAwait(false);
 
             // country found
             if (countryID is not null)
@@ -181,67 +179,8 @@ public class FaziletDynamicPrayerTimeProvider(
         }
     }
 
-    public async Task<BaseLocationData> GetLocationInfo(ProfilePlaceInfo place, CancellationToken cancellationToken)
+    protected override BaseLocationData CreateLocationData(string countryName, string cityName, ProfilePlaceInfo place)
     {
-        ArgumentNullException.ThrowIfNull(place);
-
-        string countryName = place.Country;
-        string placeName = place.City ?? place.State;
-
-        BaseLocationData locationInfo = await getLocationInfoInternal(
-            place.Country,
-            place.City ?? place.State ?? "",
-            cancellationToken).ConfigureAwait(false);
-
-        if (locationInfo != null)
-        {
-            return locationInfo;
-        }
-        else if (place.InfoLanguageCode?.ToLower() == "tr")
-        {
-            // we have already tried turkish
-            return null;
-        }
-
-        BasicPlaceInfo turkishPlaceInfo = await placeService.GetPlaceBasedOnPlace(place, "tr", cancellationToken).ConfigureAwait(false);
-        
-        string turkishCountryName = turkishPlaceInfo.Country;
-        string turkishPlaceName = turkishPlaceInfo.City ?? turkishPlaceInfo.State;
-
-        return await getLocationInfoInternal(turkishCountryName, turkishPlaceName, cancellationToken).ConfigureAwait(false)
-            ?? await getLocationInfoInternal(countryName, turkishPlaceName, cancellationToken).ConfigureAwait(false)
-            ?? await getLocationInfoInternal(turkishCountryName, placeName, cancellationToken).ConfigureAwait(false);
-    }
-
-    private async Task<BaseLocationData> getLocationInfoInternal(
-        string countryName,
-        string cityName,
-        CancellationToken cancellationToken)
-    {
-        logger.LogDebug("Fazilet search location: {Country}, {City}", countryName, cityName);
-
-        if (string.IsNullOrWhiteSpace(countryName) || string.IsNullOrWhiteSpace(cityName))
-        {
-            logger.LogDebug("No Fazilet location search result because of incomplete input data");
-            return null;
-        }
-
-        int countryID = await getCountryIDWithAlternativeCountryNames(countryName, cancellationToken).ConfigureAwait(false);
-        if (countryID == -1)
-        {
-            logger.LogDebug("No Fazilet location search result because country could not be found");
-            return null;
-        }
-
-        int cityID = await getCityIDWithAlternativeCityNames(cityName, countryID, cancellationToken).ConfigureAwait(false);
-        if (cityID == -1)
-        {
-            logger.LogDebug("No Fazilet location search result because city could not be found");
-            return null;
-        }
-
-        logger.LogDebug("Fazilet found location: {Country}, {City}", countryName, cityName);
-
         return new FaziletLocationData
         {
             CountryName = countryName,
@@ -249,57 +188,13 @@ public class FaziletDynamicPrayerTimeProvider(
         };
     }
 
-    // TODO: I need tests which test whether the measures with the alternative city/country names works in all the different scenarios
-    // like switching the country and/or city to the turkish version (i.e. both, neither, only city, only country)
-    // or the simple Replace("İ", "I")
-
-    private async Task<int> getCountryIDWithAlternativeCountryNames(string countryName, CancellationToken cancellationToken)
+    protected override IEnumerable<string> GetCityNameVariants(string cityName)
     {
-        int countryID = -1;
-        string[] toBeTriedCountryNames = [countryName.Replace("İ", "I"), countryName];
-
-        foreach (string toBeTriedCountryName in toBeTriedCountryNames.Distinct())
+        return cityName switch
         {
-            countryID = await getCountryID(
-                toBeTriedCountryName,
-                throwIfNotFound: false,
-                cancellationToken).ConfigureAwait(false);
-
-            if (countryID != -1)
-            {
-                break;
-            }
-        }
-
-        return countryID;
-    }
-
-    private async Task<int> getCityIDWithAlternativeCityNames(string cityName, int countryID, CancellationToken cancellationToken)
-    {
-        int cityID = -1;
-        string[] toBeTriedCityNames;
-
-        if (cityName == "Mekke")
-            toBeTriedCityNames = ["Mekke-i Mükerreme"];
-        else if (cityName == "Medine")
-            toBeTriedCityNames = ["Medîne-i Münevvere"];
-        else
-            toBeTriedCityNames = [cityName.Replace("İ", "I"), cityName];
-
-        foreach (string toBeTriedCityName in toBeTriedCityNames.Distinct())
-        {
-            cityID = await getCityID(
-                toBeTriedCityName,
-                countryID,
-                throwIfNotFound: false,
-                cancellationToken).ConfigureAwait(false);
-
-            if (cityID != -1)
-            {
-                break;
-            }
-        }
-
-        return cityID;
+            "Mekke" => ["Mekke-i Mükerreme"],
+            "Medine" => ["Medîne-i Münevvere"],
+            _ => base.GetCityNameVariants(cityName),
+        };
     }
 }

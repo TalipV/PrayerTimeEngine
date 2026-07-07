@@ -193,11 +193,13 @@ public class DynamicPrayerTimeProviderManager(
         ZonedDateTime date,
         CancellationToken cancellationToken)
     {
-        IDynamicPrayerTimeProvider dynamicPrayerTimeProvider = prayerTimeServiceFactory.GetDynamicPrayerTimeProviderByDynamicPrayerTimeProvider(dynamicPrayerTimeProviderType);
-        throwIfConfigsHaveUnsupportedTimeTypes(dynamicPrayerTimeProvider, dynamicPrayerTimeProviderType, configs);
-
         try
         {
+            IDynamicPrayerTimeProvider dynamicPrayerTimeProvider = prayerTimeServiceFactory.GetDynamicPrayerTimeProviderByDynamicPrayerTimeProvider(dynamicPrayerTimeProviderType);
+
+            // within the try block so that a single invalid provider config doesn't kill the calculations of the other providers
+            throwIfConfigsHaveUnsupportedTimeTypes(dynamicPrayerTimeProvider, dynamicPrayerTimeProviderType, configs);
+
             List<(ETimeType TimeType, ZonedDateTime ZonedDateTime)> calculationResults =
                 await dynamicPrayerTimeProvider.GetPrayerTimesAsync(date, locationData, configs, cancellationToken).ConfigureAwait(false);
 

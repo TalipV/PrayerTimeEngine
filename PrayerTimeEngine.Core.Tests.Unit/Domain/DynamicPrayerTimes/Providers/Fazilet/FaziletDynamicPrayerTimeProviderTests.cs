@@ -143,5 +143,133 @@ public class FaziletDynamicPrayerTimeProviderTests : BaseTest
         locationData.Source.Should().Be(EDynamicPrayerTimeProviderType.Fazilet);
     }
 
+    [Fact]
+    public async Task GetLocationInfo_CityWithTurkishIOnlyKnownWithLatinI_StoresMatchedCityName()
+    {
+        // ARRANGE
+        var completePlaceInfo = new ProfilePlaceInfo
+        {
+            ExternalID = "1",
+            Longitude = 1M,
+            Latitude = 1M,
+            InfoLanguageCode = "tr",
+            Country = "Türkiye",
+            City = "İstanbul",
+            CityDistrict = "",
+            PostCode = "34000",
+            Street = "Yol",
+            TimezoneInfo = new TimezoneInfo { Name = "Europe/Istanbul" },
+        };
+
+        _faziletDBAccessMock.HasCountryData(Arg.Any<CancellationToken>()).Returns(true);
+        _faziletDBAccessMock.GetCountryIDByName(Arg.Is("Türkiye"), Arg.Any<CancellationToken>()).Returns(1);
+
+        // the city is only known with the latin 'I' version of its name
+        _faziletDBAccessMock.HasCityData(Arg.Is(1), Arg.Any<CancellationToken>()).Returns(true);
+        _faziletDBAccessMock.GetCityIDByName(Arg.Is(1), Arg.Is("Istanbul"), Arg.Any<CancellationToken>()).Returns(1);
+
+        // ACT
+        var locationData = await _faziletDynamicPrayerTimeProvider.GetLocationInfo(completePlaceInfo, default) as FaziletLocationData;
+
+        // ASSERT
+        locationData.Should().NotBeNull();
+        locationData.CountryName.Should().Be("Türkiye");
+
+        // the matched name version has to be stored because later look ups require exact matches
+        locationData.CityName.Should().Be("Istanbul");
+    }
+
+    [Fact]
+    public async Task GetLocationInfo_CountryFoundNativelyButCityOnlyByTurkishName_ReturnsLocationData()
+    {
+        // ARRANGE
+        var completePlaceInfo = new ProfilePlaceInfo
+        {
+            ExternalID = "1",
+            Longitude = 1M,
+            Latitude = 1M,
+            InfoLanguageCode = "de",
+            Country = "Deutschland",
+            City = "München",
+            CityDistrict = "",
+            PostCode = "80331",
+            Street = "Straße",
+            TimezoneInfo = new TimezoneInfo { Name = TestDataHelper.EUROPE_VIENNA_TIME_ZONE.Id },
+        };
+
+        var turkishBasicPlaceInfo =
+            new BasicPlaceInfo
+            {
+                ExternalID = "1",
+                Longitude = 1M,
+                Latitude = 1M,
+                InfoLanguageCode = "de",
+                Country = "Almanya",
+                City = "Münih",
+                CityDistrict = "",
+                PostCode = "80331",
+                Street = "Yol",
+            };
+
+        _placeServiceMock
+            .GetPlaceBasedOnPlace(Arg.Is(completePlaceInfo), Arg.Is("tr"), Arg.Any<CancellationToken>())
+            .Returns(turkishBasicPlaceInfo);
+
+        _faziletDBAccessMock.HasCountryData(Arg.Any<CancellationToken>()).Returns(true);
+        _faziletDBAccessMock.HasCityData(Arg.Is(1), Arg.Any<CancellationToken>()).Returns(true);
+
+        // the country is found through its native name, the city only through its turkish name
+        _faziletDBAccessMock.GetCountryIDByName(Arg.Is("Deutschland"), Arg.Any<CancellationToken>()).Returns(1);
+        _faziletDBAccessMock.GetCityIDByName(Arg.Is(1), Arg.Is("Münih"), Arg.Any<CancellationToken>()).Returns(5);
+
+        // ACT
+        var locationData = await _faziletDynamicPrayerTimeProvider.GetLocationInfo(completePlaceInfo, default) as FaziletLocationData;
+
+        // ASSERT
+        locationData.Should().NotBeNull();
+        locationData.CountryName.Should().Be("Deutschland");
+        locationData.CityName.Should().Be("Münih");
+
+        // the country resolution never needed the turkish names, only the city resolution did (with a single retrieval)
+        await _placeServiceMock.Received(1).GetPlaceBasedOnPlace(Arg.Is(completePlaceInfo), Arg.Is("tr"), Arg.Any<CancellationToken>());
+        await _faziletDBAccessMock.DidNotReceive().GetCountryIDByName(Arg.Is("Almanya"), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task GetLocationInfo_MekkeAsCityName_StoresFaziletSpecificCityName()
+    {
+        // ARRANGE
+        var completePlaceInfo = new ProfilePlaceInfo
+        {
+            ExternalID = "1",
+            Longitude = 1M,
+            Latitude = 1M,
+            InfoLanguageCode = "tr",
+            Country = "Suudi Arabistan",
+            City = "Mekke",
+            CityDistrict = "",
+            PostCode = "",
+            Street = "",
+            TimezoneInfo = new TimezoneInfo { Name = "Asia/Riyadh" },
+        };
+
+        _faziletDBAccessMock.HasCountryData(Arg.Any<CancellationToken>()).Returns(true);
+        _faziletDBAccessMock.GetCountryIDByName(Arg.Is("Suudi Arabistan"), Arg.Any<CancellationToken>()).Returns(1);
+
+        // Fazilet only knows the city with its special name
+        _faziletDBAccessMock.HasCityData(Arg.Is(1), Arg.Any<CancellationToken>()).Returns(true);
+        _faziletDBAccessMock.GetCityIDByName(Arg.Is(1), Arg.Is("Mekke-i Mükerreme"), Arg.Any<CancellationToken>()).Returns(1);
+
+        // ACT
+        var locationData = await _faziletDynamicPrayerTimeProvider.GetLocationInfo(completePlaceInfo, default) as FaziletLocationData;
+
+        // ASSERT
+        locationData.Should().NotBeNull();
+        locationData.CountryName.Should().Be("Suudi Arabistan");
+
+        // the matched name version has to be stored because later look ups require exact matches
+        locationData.CityName.Should().Be("Mekke-i Mükerreme");
+    }
+
     #endregion GetLocationInfo
 }
