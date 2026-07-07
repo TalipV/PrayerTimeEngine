@@ -37,14 +37,14 @@ public class MyMosqMosquePrayerTimeProviderTests : BaseTest
         // ASSERT
         result.Should().NotBeNull();
 
-        result.Date.Should().Be(new LocalDate(2024, 8, 30));
+        result.Date.Should().Be(new LocalDate(2024, 8, 30)); // friday
         result.ExternalID.Should().Be(externalID);
 
         result.Fajr.Should().Be(new LocalTime(04, 38, 00));
         result.FajrCongregation.Should().Be(new LocalTime(05, 51, 00));
         result.Shuruq.Should().Be(new LocalTime(06, 36, 00));
-        result.Dhuhr.Should().Be(new LocalTime(14, 30, 00));    // WHY? BECAUSE OF JUMU'AH? THEN WHY IS THE JUMU'AH FIELD 0:00?
-        result.DhuhrCongregation.Should().Be(new LocalTime(13, 38, 00));
+        result.Dhuhr.Should().Be(new LocalTime(13, 38, 00));
+        result.DhuhrCongregation.Should().Be(new LocalTime(14, 30, 00));
         result.Asr.Should().Be(new LocalTime(17, 22, 00));
         result.AsrCongregation.Should().Be(new LocalTime(17, 22, 00));
         result.Maghrib.Should().Be(new LocalTime(20, 30, 00));

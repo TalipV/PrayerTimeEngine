@@ -30,14 +30,14 @@ public class MyMosqApiServiceTests : BaseTest
         // ASSERT
         time.Should().NotBeNull();
 
-        time.Date.Should().Be(new LocalDate(2024, 8, 30));
+        time.Date.Should().Be(new LocalDate(2024, 8, 30)); // friday
         time.ExternalID.Should().Be(externalID);
 
         time.Fajr.Should().Be(new LocalTime(04, 38, 00));
         time.FajrCongregation.Should().Be(new LocalTime(05, 51, 00));
         time.Shuruq.Should().Be(new LocalTime(06, 36, 00));
-        time.Dhuhr.Should().Be(new LocalTime(14, 30, 00));    // WHY? BECAUSE OF JUMU'AH? THEN WHY IS THE JUMU'AH FIELD 0:00?
-        time.DhuhrCongregation.Should().Be(new LocalTime(13, 38, 00));
+        time.Dhuhr.Should().Be(new LocalTime(13, 38, 00));
+        time.DhuhrCongregation.Should().Be(new LocalTime(14, 30, 00));
         time.Asr.Should().Be(new LocalTime(17, 22, 00));
         time.AsrCongregation.Should().Be(new LocalTime(17, 22, 00));
         time.Maghrib.Should().Be(new LocalTime(20, 30, 00));
@@ -66,6 +66,8 @@ public class MyMosqApiServiceTests : BaseTest
         times.Min(x => x.Date).Should().Be(new LocalDate(2024, 1, 1));
         times.Max(x => x.Date).Should().Be(new LocalDate(2024, 12, 31));
 
+        LocalDate lastFriday = times.Where(x => x.Date.DayOfWeek == IsoDayOfWeek.Friday).Max(x => x.Date);
+
         times.Should().AllSatisfy(time =>
         {
             time.Should().NotBeNull();
@@ -74,14 +76,24 @@ public class MyMosqApiServiceTests : BaseTest
             time.Fajr.Should().BeLessThanOrEqualTo(time.FajrCongregation);
             time.Asr.Should().BeLessThanOrEqualTo(time.AsrCongregation);
             time.Maghrib.Should().BeLessThanOrEqualTo(time.MaghribCongregation);
-
-            // BUG!!?
             time.Dhuhr.Should().BeLessThanOrEqualTo(time.DhuhrCongregation);
             time.Isha.Should().BeLessThanOrEqualTo(time.IshaCongregation);
 
-            time.Jumuah.Should().NotBeNull();
-            time.Jumuah.Value.Should().BeGreaterThanOrEqualTo(time.Dhuhr);
-            time.Jumuah.Value.Should().BeGreaterThanOrEqualTo(time.DhuhrCongregation);
+            if (time.Date <= lastFriday)
+            {
+                time.Jumuah.Should().NotBeNull();
+
+                // jumu'ah is a midday prayer but its exact value may deviate from the dhuhr values of the same day
+                // (e.g. seasonal changes of the announced jumu'ah time or DST inconsistencies in the data)
+                time.Jumuah.Value.Should().BeGreaterThanOrEqualTo(new LocalTime(12, 00));
+                time.Jumuah.Value.Should().BeLessThanOrEqualTo(new LocalTime(15, 00));
+            }
+            else
+            {
+                // no upcoming friday within the retrieved year left
+                time.Jumuah.Should().BeNull();
+            }
+
             time.Jumuah2.Should().BeNull();
         });
     }

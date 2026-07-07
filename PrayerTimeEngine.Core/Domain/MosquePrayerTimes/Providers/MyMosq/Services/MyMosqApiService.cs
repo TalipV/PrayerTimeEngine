@@ -171,7 +171,8 @@ public partial class MyMosqApiService(
 
         foreach (var day in prayerTimes)
         {
-            MyMosqPrayerTimesDTO nextFriday = fridays.FirstOrDefault(f => f.Date > day.Date);
+            // ">=" so that a friday counts as its own upcoming jumu'ah
+            MyMosqPrayerTimesDTO nextFriday = fridays.FirstOrDefault(f => f.Date >= day.Date);
 
             if (nextFriday != null)
             {

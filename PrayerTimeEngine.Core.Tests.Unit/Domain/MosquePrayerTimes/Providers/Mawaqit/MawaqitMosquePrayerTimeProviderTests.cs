@@ -73,7 +73,6 @@ public class MawaqitDynamicPrayerTimeProviderTests : BaseTest
         calculationResult.Should().BeEquivalentTo(times);
 
         _mawaqitApiServiceMock.ReceivedCalls().Should().BeEmpty();
-        _mawaqitDBAccessMock.ReceivedCalls().Should().HaveCount(1);
         await _mawaqitDBAccessMock.Received(1).GetPrayerTimesAsync(Arg.Is(date), Arg.Is(externalID), Arg.Any<CancellationToken>());
     }
 

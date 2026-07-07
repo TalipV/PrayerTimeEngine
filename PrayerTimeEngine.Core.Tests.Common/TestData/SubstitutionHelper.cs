@@ -88,8 +88,8 @@ public class SubstitutionHelper
                 $@"{FAZILET_BASE_URL}/daily?districtId=232&lang=1" => File.OpenRead(Path.Combine(TestDataHelper.FAZILET_TEST_DATA_FILE_PATH, "Fazilet_TestCountriesData.txt")),
                 $@"{FAZILET_BASE_URL}/cities-by-country?districtId=2" => File.OpenRead(Path.Combine(TestDataHelper.FAZILET_TEST_DATA_FILE_PATH, "Fazilet_TestCityData_Austria.txt")),
                 $@"{FAZILET_BASE_URL}/cities-by-country?districtId=14" => File.OpenRead(Path.Combine(TestDataHelper.FAZILET_TEST_DATA_FILE_PATH, "Fazilet_TestCityData_Germany.txt")),
-                $@"{FAZILET_BASE_URL}/daily?districtId=92&lang=2" => File.OpenRead(Path.Combine(TestDataHelper.FAZILET_TEST_DATA_FILE_PATH, "Fazilet_TestPrayerTimeData_20230729_Innsbruck.txt")),
-                $@"{FAZILET_BASE_URL}/daily?districtId=2762&lang=2" => File.OpenRead(Path.Combine(TestDataHelper.FAZILET_TEST_DATA_FILE_PATH, "Fazilet_TestPrayerTimeData_20250330_Leverkusen.txt")),
+                $@"{FAZILET_BASE_URL}/daily?lang=2&districtId=92" => File.OpenRead(Path.Combine(TestDataHelper.FAZILET_TEST_DATA_FILE_PATH, "Fazilet_TestPrayerTimeData_20230729_Innsbruck.txt")),
+                $@"{FAZILET_BASE_URL}/daily?lang=2&districtId=2762" => File.OpenRead(Path.Combine(TestDataHelper.FAZILET_TEST_DATA_FILE_PATH, "Fazilet_TestPrayerTimeData_20250330_Leverkusen.txt")),
                 _ => throw new Exception($"No response registered for URL: {request.RequestUri.AbsoluteUri}"),
             };
 

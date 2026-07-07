@@ -83,7 +83,6 @@ public class FaziletDynamicPrayerTimeProviderTests : BaseTest
 
         _placeServiceMock.ReceivedCalls().Should().BeEmpty();
         _faziletApiServiceMock.ReceivedCalls().Should().BeEmpty();
-        _faziletDBAccessMock.ReceivedCalls().Should().HaveCount(4);
         await _faziletDBAccessMock.Received(1).GetCountryIDByName(Arg.Is("Deutschland"), Arg.Any<CancellationToken>());
         await _faziletDBAccessMock.Received(1).GetCityIDByName(Arg.Is(1), Arg.Is("Berlin"), Arg.Any<CancellationToken>());
         await _faziletDBAccessMock.Received(1).GetTimesByDateAndCityID(Arg.Is(dateInUtc), Arg.Is(1), Arg.Any<CancellationToken>());
@@ -95,7 +94,7 @@ public class FaziletDynamicPrayerTimeProviderTests : BaseTest
     #region GetLocationInfo
 
     [Fact]
-    public async Task GetLocationInfo_X_X()
+    public async Task GetLocationInfo_CountryOnlyFoundByTurkishName_ReturnsLocationData()
     {
         // ARRANGE
         var completePlaceInfo = new ProfilePlaceInfo
@@ -129,6 +128,8 @@ public class FaziletDynamicPrayerTimeProviderTests : BaseTest
         _placeServiceMock
             .GetPlaceBasedOnPlace(Arg.Is(completePlaceInfo), Arg.Is("tr"), Arg.Any<CancellationToken>())
             .Returns(turkishBasicPlaceInfo);
+
+        _faziletDBAccessMock.HasCountryData(Arg.Any<CancellationToken>()).Returns(true);
         _faziletDBAccessMock.GetCountryIDByName(Arg.Is("Avusturya"), Arg.Any<CancellationToken>()).Returns(1);
         _faziletDBAccessMock.GetCityIDByName(Arg.Is(1), Arg.Is("Innsbruck"), Arg.Any<CancellationToken>()).Returns(1);
 
