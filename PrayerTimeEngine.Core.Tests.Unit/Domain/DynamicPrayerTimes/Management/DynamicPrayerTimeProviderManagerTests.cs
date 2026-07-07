@@ -160,5 +160,224 @@ public class DynamicPrayerTimeProviderManagerTests : BaseTest
             && x.Exception.Message == expextedException.Message);
     }
 
+    [Fact]
+    public async Task CalculatePrayerTimesAsync_OneOfTwoProvidersFails_OtherProviderStillCalculated()
+    {
+        // ARRANGE
+        var profile = TestDataHelper.CreateCompleteTestDynamicProfile();
+        ZonedDateTime zonedDate = new LocalDate(2024, 1, 1).AtStartOfDayInZone(DateTimeZone.Utc);
+
+        _profileServiceMock.GetUntrackedReferenceOfProfile(Arg.Any<int>(), Arg.Any<CancellationToken>()).Returns(profile);
+
+        // failing Muwaqqit provider
+        var muwaqqitLocationData = Substitute.ForPartsOf<BaseLocationData>();
+        _profileServiceMock.GetLocationConfig(Arg.Is(profile), Arg.Is(EDynamicPrayerTimeProviderType.Muwaqqit)).Returns(muwaqqitLocationData);
+        GenericSettingConfiguration muwaqqitConfig = new MuwaqqitDegreeCalculationConfiguration { Degree = 14, TimeType = ETimeType.FajrStart };
+        var muwaqqitPrayerTimeServiceMock = Substitute.For<IDynamicPrayerTimeProvider>();
+        muwaqqitPrayerTimeServiceMock.GetUnsupportedTimeTypes().Returns([]);
+        muwaqqitPrayerTimeServiceMock.GetPrayerTimesAsync(
+                Arg.Any<ZonedDateTime>(),
+                Arg.Is(muwaqqitLocationData),
+                Arg.Any<List<GenericSettingConfiguration>>(),
+                Arg.Any<CancellationToken>())
+            .Returns(Task.FromException<List<(ETimeType, ZonedDateTime)>>(new InvalidOperationException("muwaqqit failed")));
+        _prayerTimeServiceFactoryMock.GetDynamicPrayerTimeProviderByDynamicPrayerTimeProvider(Arg.Is(EDynamicPrayerTimeProviderType.Muwaqqit)).Returns(muwaqqitPrayerTimeServiceMock);
+
+        // succeeding Fazilet provider
+        var faziletLocationData = Substitute.ForPartsOf<BaseLocationData>();
+        _profileServiceMock.GetLocationConfig(Arg.Is(profile), Arg.Is(EDynamicPrayerTimeProviderType.Fazilet)).Returns(faziletLocationData);
+        GenericSettingConfiguration faziletConfig = new() { TimeType = ETimeType.DhuhrStart, Source = EDynamicPrayerTimeProviderType.Fazilet };
+        var faziletPrayerTimeServiceMock = Substitute.For<IDynamicPrayerTimeProvider>();
+        faziletPrayerTimeServiceMock.GetUnsupportedTimeTypes().Returns([]);
+        faziletPrayerTimeServiceMock.GetPrayerTimesAsync(
+                Arg.Any<ZonedDateTime>(),
+                Arg.Is(faziletLocationData),
+                Arg.Any<List<GenericSettingConfiguration>>(),
+                Arg.Any<CancellationToken>())
+            .Returns(callInfo => Task.FromResult<List<(ETimeType, ZonedDateTime)>>([(ETimeType.DhuhrStart, callInfo.Arg<ZonedDateTime>().PlusHours(12))]));
+        _prayerTimeServiceFactoryMock.GetDynamicPrayerTimeProviderByDynamicPrayerTimeProvider(Arg.Is(EDynamicPrayerTimeProviderType.Fazilet)).Returns(faziletPrayerTimeServiceMock);
+
+        _profileServiceMock.GetActiveComplexTimeConfigs(Arg.Is(profile)).Returns([muwaqqitConfig, faziletConfig]);
+
+        // ACT
+        CalculatePrayerTimesResultVO result = await _dynamicPrayerTimeProviderManager.CalculatePrayerTimesAsync(profile.ID, zonedDate, default);
+
+        // ASSERT
+        result.DynamicPrayerTimesDaySet.Should().NotBeNull();
+
+        // the Fazilet times were calculated despite the Muwaqqit failure
+        result.DynamicPrayerTimesDaySet.PreviousDay.Dhuhr.Start.Should().Be(zonedDate.Plus(Duration.FromDays(-1)).PlusHours(12));
+        result.DynamicPrayerTimesDaySet.CurrentDay.Dhuhr.Start.Should().Be(zonedDate.PlusHours(12));
+        result.DynamicPrayerTimesDaySet.NextDay.Dhuhr.Start.Should().Be(zonedDate.Plus(Duration.FromDays(1)).PlusHours(12));
+        result.DynamicPrayerTimesDaySet.CurrentDay.Fajr.Start.Should().BeNull();
+
+        // and the Muwaqqit failure is visible as calculation errors (one per calculated day)
+        result.CalculationErrors.Should().HaveCount(3).And.OnlyContain(x =>
+            x.DynamicPrayerTimeProviderType == EDynamicPrayerTimeProviderType.Muwaqqit);
+    }
+
+    [Fact]
+    public async Task CalculatePrayerTimesAsync_ProviderWithoutLocationData_ProviderSkippedWithoutErrors()
+    {
+        // ARRANGE
+        var profile = TestDataHelper.CreateCompleteTestDynamicProfile();
+        ZonedDateTime zonedDate = new LocalDate(2024, 1, 1).AtStartOfDayInZone(DateTimeZone.Utc);
+
+        _profileServiceMock.GetUntrackedReferenceOfProfile(Arg.Any<int>(), Arg.Any<CancellationToken>()).Returns(profile);
+
+        // Muwaqqit without location data
+        _profileServiceMock.GetLocationConfig(Arg.Is(profile), Arg.Is(EDynamicPrayerTimeProviderType.Muwaqqit)).Returns((BaseLocationData)null);
+        GenericSettingConfiguration muwaqqitConfig = new MuwaqqitDegreeCalculationConfiguration { Degree = 14, TimeType = ETimeType.FajrStart };
+
+        // Fazilet with location data
+        var faziletLocationData = Substitute.ForPartsOf<BaseLocationData>();
+        _profileServiceMock.GetLocationConfig(Arg.Is(profile), Arg.Is(EDynamicPrayerTimeProviderType.Fazilet)).Returns(faziletLocationData);
+        GenericSettingConfiguration faziletConfig = new() { TimeType = ETimeType.DhuhrStart, Source = EDynamicPrayerTimeProviderType.Fazilet };
+        var faziletPrayerTimeServiceMock = Substitute.For<IDynamicPrayerTimeProvider>();
+        faziletPrayerTimeServiceMock.GetUnsupportedTimeTypes().Returns([]);
+        faziletPrayerTimeServiceMock.GetPrayerTimesAsync(
+                Arg.Any<ZonedDateTime>(),
+                Arg.Is(faziletLocationData),
+                Arg.Any<List<GenericSettingConfiguration>>(),
+                Arg.Any<CancellationToken>())
+            .Returns(callInfo => Task.FromResult<List<(ETimeType, ZonedDateTime)>>([(ETimeType.DhuhrStart, callInfo.Arg<ZonedDateTime>().PlusHours(12))]));
+        _prayerTimeServiceFactoryMock.GetDynamicPrayerTimeProviderByDynamicPrayerTimeProvider(Arg.Is(EDynamicPrayerTimeProviderType.Fazilet)).Returns(faziletPrayerTimeServiceMock);
+
+        _profileServiceMock.GetActiveComplexTimeConfigs(Arg.Is(profile)).Returns([muwaqqitConfig, faziletConfig]);
+
+        // ACT
+        CalculatePrayerTimesResultVO result = await _dynamicPrayerTimeProviderManager.CalculatePrayerTimesAsync(profile.ID, zonedDate, default);
+
+        // ASSERT
+        result.DynamicPrayerTimesDaySet.Should().NotBeNull();
+        result.CalculationErrors.Should().BeEmpty();
+
+        // missing location data just means that the associated times remain at null
+        result.DynamicPrayerTimesDaySet.CurrentDay.Dhuhr.Start.Should().Be(zonedDate.PlusHours(12));
+        result.DynamicPrayerTimesDaySet.CurrentDay.Fajr.Start.Should().BeNull();
+
+        // the Muwaqqit provider wasn't even created
+        _prayerTimeServiceFactoryMock.DidNotReceive().GetDynamicPrayerTimeProviderByDynamicPrayerTimeProvider(Arg.Is(EDynamicPrayerTimeProviderType.Muwaqqit));
+    }
+
+    [Fact]
+    public async Task CalculatePrayerTimesAsync_ConfigsWithUnsupportedTimeTypes_ReturnsCalculationErrorsInsteadOfThrowing()
+    {
+        // ARRANGE
+        var profile = TestDataHelper.CreateCompleteTestDynamicProfile();
+        ZonedDateTime zonedDate = new LocalDate(2024, 1, 1).AtStartOfDayInZone(DateTimeZone.Utc);
+
+        _profileServiceMock.GetUntrackedReferenceOfProfile(Arg.Any<int>(), Arg.Any<CancellationToken>()).Returns(profile);
+
+        // Muwaqqit with a config whose time type it doesn't support
+        var muwaqqitLocationData = Substitute.ForPartsOf<BaseLocationData>();
+        _profileServiceMock.GetLocationConfig(Arg.Is(profile), Arg.Is(EDynamicPrayerTimeProviderType.Muwaqqit)).Returns(muwaqqitLocationData);
+        GenericSettingConfiguration muwaqqitConfig = new MuwaqqitDegreeCalculationConfiguration { Degree = 14, TimeType = ETimeType.FajrStart };
+        var muwaqqitPrayerTimeServiceMock = Substitute.For<IDynamicPrayerTimeProvider>();
+        muwaqqitPrayerTimeServiceMock.GetUnsupportedTimeTypes().Returns([ETimeType.FajrStart]);
+        _prayerTimeServiceFactoryMock.GetDynamicPrayerTimeProviderByDynamicPrayerTimeProvider(Arg.Is(EDynamicPrayerTimeProviderType.Muwaqqit)).Returns(muwaqqitPrayerTimeServiceMock);
+
+        // valid Fazilet provider
+        var faziletLocationData = Substitute.ForPartsOf<BaseLocationData>();
+        _profileServiceMock.GetLocationConfig(Arg.Is(profile), Arg.Is(EDynamicPrayerTimeProviderType.Fazilet)).Returns(faziletLocationData);
+        GenericSettingConfiguration faziletConfig = new() { TimeType = ETimeType.DhuhrStart, Source = EDynamicPrayerTimeProviderType.Fazilet };
+        var faziletPrayerTimeServiceMock = Substitute.For<IDynamicPrayerTimeProvider>();
+        faziletPrayerTimeServiceMock.GetUnsupportedTimeTypes().Returns([]);
+        faziletPrayerTimeServiceMock.GetPrayerTimesAsync(
+                Arg.Any<ZonedDateTime>(),
+                Arg.Is(faziletLocationData),
+                Arg.Any<List<GenericSettingConfiguration>>(),
+                Arg.Any<CancellationToken>())
+            .Returns(callInfo => Task.FromResult<List<(ETimeType, ZonedDateTime)>>([(ETimeType.DhuhrStart, callInfo.Arg<ZonedDateTime>().PlusHours(12))]));
+        _prayerTimeServiceFactoryMock.GetDynamicPrayerTimeProviderByDynamicPrayerTimeProvider(Arg.Is(EDynamicPrayerTimeProviderType.Fazilet)).Returns(faziletPrayerTimeServiceMock);
+
+        _profileServiceMock.GetActiveComplexTimeConfigs(Arg.Is(profile)).Returns([muwaqqitConfig, faziletConfig]);
+
+        // ACT
+        CalculatePrayerTimesResultVO result = await _dynamicPrayerTimeProviderManager.CalculatePrayerTimesAsync(profile.ID, zonedDate, default);
+
+        // ASSERT
+        result.DynamicPrayerTimesDaySet.Should().NotBeNull();
+        result.DynamicPrayerTimesDaySet.CurrentDay.Dhuhr.Start.Should().Be(zonedDate.PlusHours(12));
+
+        result.CalculationErrors.Should().HaveCount(3).And.OnlyContain(x =>
+            x.DynamicPrayerTimeProviderType == EDynamicPrayerTimeProviderType.Muwaqqit
+            && x.Exception is ArgumentException);
+
+        await muwaqqitPrayerTimeServiceMock.DidNotReceiveWithAnyArgs().GetPrayerTimesAsync(default, default, default, default);
+    }
+
+    [Fact]
+    public async Task CalculatePrayerTimesAsync_SuccessfulCalculation_SecondCallServedFromCache()
+    {
+        // ARRANGE
+        var profile = TestDataHelper.CreateCompleteTestDynamicProfile();
+        ZonedDateTime zonedDate = new LocalDate(2024, 1, 1).AtStartOfDayInZone(DateTimeZone.Utc);
+
+        var muwaqqitLocationData = Substitute.ForPartsOf<BaseLocationData>();
+        _profileServiceMock.GetUntrackedReferenceOfProfile(Arg.Any<int>(), Arg.Any<CancellationToken>()).Returns(profile);
+        _profileServiceMock.GetLocationConfig(Arg.Is(profile), Arg.Is(EDynamicPrayerTimeProviderType.Muwaqqit)).Returns(muwaqqitLocationData);
+
+        GenericSettingConfiguration muwaqqitConfig = new MuwaqqitDegreeCalculationConfiguration { Degree = 14, TimeType = ETimeType.FajrStart };
+        var muwaqqitPrayerTimeServiceMock = Substitute.For<IDynamicPrayerTimeProvider>();
+        muwaqqitPrayerTimeServiceMock.GetUnsupportedTimeTypes().Returns([]);
+        muwaqqitPrayerTimeServiceMock.GetPrayerTimesAsync(
+                Arg.Any<ZonedDateTime>(),
+                Arg.Is(muwaqqitLocationData),
+                Arg.Any<List<GenericSettingConfiguration>>(),
+                Arg.Any<CancellationToken>())
+            .Returns(callInfo => Task.FromResult<List<(ETimeType, ZonedDateTime)>>([(ETimeType.FajrStart, callInfo.Arg<ZonedDateTime>().PlusHours(4))]));
+        _prayerTimeServiceFactoryMock.GetDynamicPrayerTimeProviderByDynamicPrayerTimeProvider(Arg.Is(EDynamicPrayerTimeProviderType.Muwaqqit)).Returns(muwaqqitPrayerTimeServiceMock);
+
+        _profileServiceMock.GetActiveComplexTimeConfigs(Arg.Is(profile)).Returns([muwaqqitConfig]);
+
+        // ACT
+        CalculatePrayerTimesResultVO firstResult = await _dynamicPrayerTimeProviderManager.CalculatePrayerTimesAsync(profile.ID, zonedDate, default);
+        CalculatePrayerTimesResultVO secondResult = await _dynamicPrayerTimeProviderManager.CalculatePrayerTimesAsync(profile.ID, zonedDate, default);
+
+        // ASSERT
+        firstResult.CalculationErrors.Should().BeEmpty();
+        secondResult.DynamicPrayerTimesDaySet.Should().BeSameAs(firstResult.DynamicPrayerTimesDaySet);
+
+        // 3 calls (previous, current and next day) for the first calculation, none for the second one
+        await muwaqqitPrayerTimeServiceMock.ReceivedWithAnyArgs(3).GetPrayerTimesAsync(default, default, default, default);
+    }
+
+    [Fact]
+    public async Task CalculatePrayerTimesAsync_FailedCalculation_SecondCallRecalculates()
+    {
+        // ARRANGE
+        var profile = TestDataHelper.CreateCompleteTestDynamicProfile();
+        ZonedDateTime zonedDate = new LocalDate(2024, 1, 1).AtStartOfDayInZone(DateTimeZone.Utc);
+
+        var muwaqqitLocationData = Substitute.ForPartsOf<BaseLocationData>();
+        _profileServiceMock.GetUntrackedReferenceOfProfile(Arg.Any<int>(), Arg.Any<CancellationToken>()).Returns(profile);
+        _profileServiceMock.GetLocationConfig(Arg.Is(profile), Arg.Is(EDynamicPrayerTimeProviderType.Muwaqqit)).Returns(muwaqqitLocationData);
+
+        GenericSettingConfiguration muwaqqitConfig = new MuwaqqitDegreeCalculationConfiguration { Degree = 14, TimeType = ETimeType.FajrStart };
+        var muwaqqitPrayerTimeServiceMock = Substitute.For<IDynamicPrayerTimeProvider>();
+        muwaqqitPrayerTimeServiceMock.GetUnsupportedTimeTypes().Returns([]);
+        muwaqqitPrayerTimeServiceMock.GetPrayerTimesAsync(
+                Arg.Any<ZonedDateTime>(),
+                Arg.Is(muwaqqitLocationData),
+                Arg.Any<List<GenericSettingConfiguration>>(),
+                Arg.Any<CancellationToken>())
+            .Returns(Task.FromException<List<(ETimeType, ZonedDateTime)>>(new InvalidOperationException("calculator failed")));
+        _prayerTimeServiceFactoryMock.GetDynamicPrayerTimeProviderByDynamicPrayerTimeProvider(Arg.Is(EDynamicPrayerTimeProviderType.Muwaqqit)).Returns(muwaqqitPrayerTimeServiceMock);
+
+        _profileServiceMock.GetActiveComplexTimeConfigs(Arg.Is(profile)).Returns([muwaqqitConfig]);
+
+        // ACT
+        CalculatePrayerTimesResultVO firstResult = await _dynamicPrayerTimeProviderManager.CalculatePrayerTimesAsync(profile.ID, zonedDate, default);
+        CalculatePrayerTimesResultVO secondResult = await _dynamicPrayerTimeProviderManager.CalculatePrayerTimesAsync(profile.ID, zonedDate, default);
+
+        // ASSERT
+        firstResult.CalculationErrors.Should().HaveCount(3);
+        secondResult.CalculationErrors.Should().HaveCount(3);
+
+        // erroneous results must not be cached, so both calls have to actually calculate (3 calls each)
+        await muwaqqitPrayerTimeServiceMock.ReceivedWithAnyArgs(6).GetPrayerTimesAsync(default, default, default, default);
+    }
+
     #endregion CalculatePrayerTimesAsync
 }

@@ -165,7 +165,7 @@ public class SemerkandDynamicPrayerTimeProviderTests : BaseTest
         await _semerkandDBAccessMock.Received(1).GetCountryIDByName(Arg.Is("Deutschland"), Arg.Any<CancellationToken>());
         await _semerkandDBAccessMock.Received(1).HasCountryData(Arg.Any<CancellationToken>());
         await _semerkandDBAccessMock.Received(1).InsertCountries(Arg.Any<IEnumerable<SemerkandCountry>>(), Arg.Any<CancellationToken>());
-        await _semerkandDBAccessMock.Received(2).GetCityIDByName(Arg.Is(1), Arg.Is("Berlin"), Arg.Any<CancellationToken>());
+        await _semerkandDBAccessMock.Received(1).GetCityIDByName(Arg.Is(1), Arg.Is("Berlin"), Arg.Any<CancellationToken>());
         await _semerkandDBAccessMock.Received(1).HasCityData(Arg.Is(1), Arg.Any<CancellationToken>());
         await _semerkandDBAccessMock.Received(1).InsertCities(Arg.Any<IEnumerable<SemerkandCity>>(), Arg.Any<CancellationToken>());
         await _semerkandDBAccessMock.Received(1).GetTimesByDateAndCityID(Arg.Is(zonedDateTime), Arg.Is(1), Arg.Any<CancellationToken>());
