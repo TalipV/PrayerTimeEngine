@@ -1,11 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net11.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>disable</Nullable>
-  </PropertyGroup>
-
   <ItemGroup>
     <InternalsVisibleTo Include="PrayerTimeEngine.Core.Tests.Unit" />
     <InternalsVisibleTo Include="PrayerTimeEngine.Core.Tests.Integration" />
@@ -26,7 +20,7 @@
     <PackageReference Include="NodaTime" Version="3.3.2" />
     <PackageReference Include="NSubstitute" Version="5.3.0" />
     <PackageReference Include="PropertyChanged.Fody" Version="4.1.0" PrivateAssets="All" />
-    <PackageReference Include="Refit.HttpClientFactory" Version="11.2.0" />
+    <PackageReference Include="Refit.HttpClientFactory" Version="13.1.0" />
     <PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" Version="3.0.3" />
   </ItemGroup>
 

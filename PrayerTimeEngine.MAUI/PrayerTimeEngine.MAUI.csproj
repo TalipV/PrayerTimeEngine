@@ -1,14 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net11.0-android;net11.0-ios</TargetFrameworks>
-    <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('maccatalyst'))">$(TargetFrameworks);net11.0-maccatalyst</TargetFrameworks>
-    <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net11.0-windows10.0.26100.0</TargetFrameworks>
     <OutputType>Exe</OutputType>
     <RootNamespace>PrayerTimeEngine</RootNamespace>
     <UseMaui>true</UseMaui>
     <SingleProject>true</SingleProject>
-    <ImplicitUsings>enable</ImplicitUsings>
 
     <!-- Display name -->
     <ApplicationTitle>PrayerTimeEngine</ApplicationTitle>
@@ -28,7 +24,7 @@
     <TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.22000.0</TargetPlatformMinVersion>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net11.0-ios|AnyCPU'">
+  <PropertyGroup Condition="$(TargetFramework.Contains('-ios'))">
     <CreatePackage>false</CreatePackage>
   </PropertyGroup>
 
@@ -53,7 +49,6 @@
     <NoStdLib></NoStdLib>
     <PlatformTarget>anycpu</PlatformTarget>
     <WarningsNotAsErrors></WarningsNotAsErrors>
-    <Nullable></Nullable>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <RunAOTCompilation>True</RunAOTCompilation>
@@ -79,7 +74,6 @@
     <NoStdLib></NoStdLib>
     <PlatformTarget>anycpu</PlatformTarget>
     <WarningsNotAsErrors></WarningsNotAsErrors>
-    <Nullable></Nullable>
   </PropertyGroup>
 
   <ItemGroup>
@@ -116,25 +110,18 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.9" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="10.0.9" />
     <PackageReference Include="Microsoft.Extensions.Http.Resilience" Version="10.7.0" />
-    <PackageReference Include="Microsoft.Maui.Controls" Version="10.0.71" />
-    <PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="10.0.71" />
+    <PackageReference Include="Microsoft.Maui.Controls" Version="10.0.80" />
+    <PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="10.0.80" />
     <PackageReference Include="OnScreenSizeMarkup.Maui" Version="3.0.18" />
     <PackageReference Include="Plugin.Maui.DebugRainbows" Version="1.2.2" />
     <PackageReference Include="PropertyChanged.Fody" Version="4.1.0" PrivateAssets="All" />
     <PackageReference Include="Refractored.MvvmHelpers" Version="1.6.2" />
-    <PackageReference Include="SkiaSharp.Views.Maui.Controls" Version="3.119.4" />
+    <PackageReference Include="SkiaSharp.Views.Maui.Controls" Version="4.148.0" />
     <PackageReference Include="UraniumUI.Material" Version="3.0.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\PrayerTimeEngine.Core\PrayerTimeEngine.Core.csproj">
-      <ReferenceSourceTarget>ProjectReference</ReferenceSourceTarget>
-    </ProjectReference>
+    <ProjectReference Include="..\PrayerTimeEngine.Core\PrayerTimeEngine.Core.csproj" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' == 'net11.0-windows10.0.26100.0'">
-    <PackageReference Include="Mapsui.WinUI">
-      <Version>5.1.0</Version>
-    </PackageReference>
-  </ItemGroup>
 </Project>

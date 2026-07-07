@@ -1,0 +1,23 @@
+<Project>
+
+  <PropertyGroup>
+    <NetVersion>net10.0</NetVersion>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(MSBuildProjectName)' != 'PrayerTimeEngine.MAUI'">
+    <TargetFramework>$(NetVersion)</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(MSBuildProjectName)' == 'PrayerTimeEngine.MAUI'">
+    <TargetFrameworks>$(NetVersion)-android;$(NetVersion)-ios</TargetFrameworks>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(MSBuildProjectName)' == 'PrayerTimeEngine.MAUI' And $([MSBuild]::IsOSPlatform('maccatalyst'))">
+    <TargetFrameworks>$(TargetFrameworks);$(NetVersion)-maccatalyst</TargetFrameworks>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(MSBuildProjectName)' == 'PrayerTimeEngine.MAUI' And $([MSBuild]::IsOSPlatform('windows'))">
+    <TargetFrameworks>$(TargetFrameworks);$(NetVersion)-windows10.0.26100.0</TargetFrameworks>
+  </PropertyGroup>
+
+</Project>

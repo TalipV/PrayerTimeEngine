@@ -1,10 +1,8 @@
 ﻿using MetroLog.Maui;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using NodaTime;
 using PrayerTimeEngine.Core.Common;
 using PrayerTimeEngine.Core.Common.Enum;
-using PrayerTimeEngine.Core.Data.EntityFramework;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Models;
 using PrayerTimeEngine.Core.Domain.IslamicCalendar.Interfaces;
@@ -20,9 +18,9 @@ using PrayerTimeEngine.Presentation.Services;
 using PrayerTimeEngine.Presentation.Services.Navigation;
 using PrayerTimeEngine.Presentation.Views;
 using PrayerTimeEngine.Presentation.Views.PrayerTimes;
+using PrayerTimeEngine.Services;
 using PrayerTimeEngine.Services.Notifications;
 using PropertyChanged;
-using System.Text;
 using System.Windows.Input;
 
 namespace PrayerTimeEngine.Presentation.Pages.Main;
@@ -40,6 +38,7 @@ public partial class MainPageViewModel(
         IProfileService profileService,
         INavigationService navigationService,
         IIslamicDateCalculationService islamicDateCalculationService,
+        IAppInitializer appInitializer,
         ILogger<MainPageViewModel> logger
     ) : LogController
 {
