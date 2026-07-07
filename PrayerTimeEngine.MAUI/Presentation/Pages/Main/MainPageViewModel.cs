@@ -396,6 +396,7 @@ public partial class MainPageViewModel(
     // but that one can be cancelled by things like leaving the page
     private long isLoadPrayerTimesRunningInterlockedInt = 0;  // 0 for false, 1 for true
     private CancellationTokenSource loadingTimesCancellationTokenSource;
+    private bool _firstLoadDone = false;
 
     private async Task refreshData()
     {
@@ -404,7 +405,7 @@ public partial class MainPageViewModel(
 
         try
         {
-            if (!MauiProgram.IsFullyInitialized)
+            if (!appInitializer.IsInitialized)
                 await onBeforeFirstLoad();
 
             try
@@ -438,8 +439,9 @@ public partial class MainPageViewModel(
                 IsLoadingPrayerTimes = false;
             }
 
-            if (!MauiProgram.IsFullyInitialized)
+            if (!_firstLoadDone)
             {
+                _firstLoadDone = true;
                 onAfterFirstLoad();
             }
         }
@@ -452,10 +454,6 @@ public partial class MainPageViewModel(
             logger.LogError(exception,
                 "Error during refreshData. ({RefreshCallID})", refreshCallID);
             toastMessageService.ShowError(exception.Message);
-        }
-        finally
-        {
-            MauiProgram.IsFullyInitialized = true;
         }
 
         logger.LogInformation("Refreshing data finished. ({RefreshCallID})", refreshCallID);
@@ -489,14 +487,9 @@ public partial class MainPageViewModel(
 
     private async Task onBeforeFirstLoad()
     {
-        var dbContextFactory = MauiProgram.ServiceProvider.GetRequiredService<IDbContextFactory<AppDbContext>>();
+        await appInitializer.InitializeAsync();
 
-        using (AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(default))
-        {
-            // TODO put this somewhere else
-            await dbContext.Database.MigrateAsync();
-        }
-
+        bool oldValue = _suspendOnCurrentProfileWithModelChanged;
         try
         {
             _suspendOnCurrentProfileWithModelChanged = true;
@@ -504,7 +497,7 @@ public partial class MainPageViewModel(
         }
         finally
         {
-            _suspendOnCurrentProfileWithModelChanged = false;
+            _suspendOnCurrentProfileWithModelChanged = oldValue;
         }
     }
 
