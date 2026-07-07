@@ -31,8 +31,8 @@ public class SubstitutionHelper
                 $"{SEMERKAND_BASE_URL}/countries?language=tr" => File.OpenRead(Path.Combine(TestDataHelper.SEMERKAND_TEST_DATA_FILE_PATH, "Semerkand_TestCountriesData.txt")),
                 $"{SEMERKAND_BASE_URL}/cities?countryID=3" => File.OpenRead(Path.Combine(TestDataHelper.SEMERKAND_TEST_DATA_FILE_PATH, "Semerkand_TestCityData_Austria.txt")),
                 $"{SEMERKAND_BASE_URL}/cities?countryID=2" => File.OpenRead(Path.Combine(TestDataHelper.SEMERKAND_TEST_DATA_FILE_PATH, "Semerkand_TestCityData_Germany.txt")),
-                $"{SEMERKAND_BASE_URL}/salaattimes?cityId=197&year=2023" => File.OpenRead(Path.Combine(TestDataHelper.SEMERKAND_TEST_DATA_FILE_PATH, "Semerkand_TestPrayerTimeData_20230729_Innsbruck.txt")),
-                $"{SEMERKAND_BASE_URL}/salaattimes?cityId=786&year=2025" => File.OpenRead(Path.Combine(TestDataHelper.SEMERKAND_TEST_DATA_FILE_PATH, "Semerkand_TestPrayerTimeData_20250330_Leverkusen.txt")),
+                $"{SEMERKAND_BASE_URL}/salaattimes?year=2023&cityId=197" => File.OpenRead(Path.Combine(TestDataHelper.SEMERKAND_TEST_DATA_FILE_PATH, "Semerkand_TestPrayerTimeData_20230729_Innsbruck.txt")),
+                $"{SEMERKAND_BASE_URL}/salaattimes?year=2025&cityId=786" => File.OpenRead(Path.Combine(TestDataHelper.SEMERKAND_TEST_DATA_FILE_PATH, "Semerkand_TestPrayerTimeData_20250330_Leverkusen.txt")),
                 _ => throw new Exception($"No response registered for URL: {request.RequestUri.AbsoluteUri}"),
             };
 
