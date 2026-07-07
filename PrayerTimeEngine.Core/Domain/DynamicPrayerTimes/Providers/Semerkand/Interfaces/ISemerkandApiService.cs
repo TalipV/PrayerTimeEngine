@@ -10,11 +10,11 @@ public interface ISemerkandApiService
     [Post("/countries?language=tr")]
     Task<List<SemerkandCountryResponseDTO>> GetCountries(CancellationToken cancellationToken);
 
-    [Post("/cities?countryID={countryID}")]
-    Task<List<SemerkandCityResponseDTO>> GetCitiesByCountryID(int countryID, CancellationToken cancellationToken);
+    [Post("/cities")]
+    Task<List<SemerkandCityResponseDTO>> GetCitiesByCountryID([AliasAs("countryID")] int countryID, CancellationToken cancellationToken);
 
-    [Post("/salaattimes?cityId={cityID}&year={year}")]
-    Task<List<SemerkandPrayerTimesResponseDTO>> GetTimesByCityID(int year, int cityID, CancellationToken cancellationToken);
+    [Post("/salaattimes")]
+    Task<List<SemerkandPrayerTimesResponseDTO>> GetTimesByCityID([AliasAs("year")] int year, [AliasAs("cityId")] int cityID, CancellationToken cancellationToken);
 
     // locationid 1, 2 and 3 were also available but I don't know what that refers to
     //[Post("/availableyears?type=city&locationid=4")]

@@ -7,27 +7,27 @@ public interface ILocationIQApiService
 {
     private const string MAX_RESULTS = "10";
 
-    [Get($$"""/timezone?format=json&key={accessToken}&lat={latitude}&lon={longitude}""")]
+    [Get("/timezone?format=json")]
     Task<LocationIQTimezoneResponseDTO> GetTimezoneAsync(
-        decimal latitude,
-        decimal longitude,
-        string accessToken,
+        [AliasAs("lat")] decimal latitude,
+        [AliasAs("lon")] decimal longitude,
+        [AliasAs("key")] string accessToken,
         CancellationToken cancellationToken);
 
     // &countrycodes is also available to restrict results to countries
-    [Get($$"""/autocomplete?format=json&key={accessToken}&addressdetails=1&limit={{MAX_RESULTS}}&accept-language={language}&q={searchTerm}""")]
+    [Get($"/autocomplete?format=json&addressdetails=1&limit={MAX_RESULTS}")]
     Task<List<LocationIQPlace>> GetPlacesAsync(
-        string language,
-        string searchTerm,
-        string accessToken,
+        [AliasAs("accept-language")] string language,
+        [AliasAs("q")] string searchTerm,
+        [AliasAs("key")] string accessToken,
         CancellationToken cancellationToken);
 
-    [Get($$"""/reverse?format=json&key={accessToken}&accept-language={language}&lat={latitude}&lon={longitude}&osm_id={osmID}""")]
+    [Get("/reverse?format=json")]
     Task<LocationIQPlace> GetSpecificPlaceAsync(
-        string language,
-        decimal latitude,
-        decimal longitude,
-        string osmID,
-        string accessToken,
+        [AliasAs("accept-language")] string language,
+        [AliasAs("lat")] decimal latitude,
+        [AliasAs("lon")] decimal longitude,
+        [AliasAs("osm_id")] string osmID,
+        [AliasAs("key")] string accessToken,
         CancellationToken cancellationToken);
 }
