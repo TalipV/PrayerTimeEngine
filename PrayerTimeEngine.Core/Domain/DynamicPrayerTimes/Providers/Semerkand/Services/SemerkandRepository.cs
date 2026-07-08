@@ -78,11 +78,11 @@ public class SemerkandRepository(
         }
     }
 
-    private static readonly Func<AppDbContext, string, Task<int?>> compiledQuery_GetCityIDByName =
+    private static readonly Func<AppDbContext, int, string, Task<int?>> compiledQuery_GetCityIDByName =
         EF.CompileAsyncQuery(
-            (AppDbContext context, string cityName) =>
+            (AppDbContext context, int countryID, string cityName) =>
                 context.SemerkandCities
-                    .Where(x => x.Name == cityName)
+                    .Where(x => x.CountryID == countryID && x.Name == cityName)
                     .Select(x => (int?)x.ID)
                     .FirstOrDefault());
 
@@ -90,7 +90,7 @@ public class SemerkandRepository(
     {
         using (AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken))
         {
-            return await compiledQuery_GetCityIDByName(dbContext, cityName).ConfigureAwait(false);
+            return await compiledQuery_GetCityIDByName(dbContext, countryID, cityName).ConfigureAwait(false);
         }
     }
 

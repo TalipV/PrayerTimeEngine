@@ -199,11 +199,12 @@ public class ProfileServiceTests : BaseTest
         await _profileService.UpdateLocationConfig(profile, placeInfo, default);
 
         // ASSERT
-        await _profileRepositoryMock.ReceivedWithAnyArgs(1).UpdateLocationConfig(default, default, default, default);
+        await _profileRepositoryMock.ReceivedWithAnyArgs(1).UpdateLocationConfig(default, default, default, default, default);
         await _profileRepositoryMock.Received(1).UpdateLocationConfig(
-            Arg.Is(profile), 
-            Arg.Is(placeInfo), 
-            Arg.Is<List<(EDynamicPrayerTimeProviderType, BaseLocationData)>>(x => x.Select(x => x.Item1).ToHashSet().SetEquals(expectedDynamicPrayerTimeProviderType)), 
+            Arg.Is(profile),
+            Arg.Is(placeInfo),
+            Arg.Is<List<(EDynamicPrayerTimeProviderType, BaseLocationData)>>(x => x.Select(x => x.Item1).ToHashSet().SetEquals(expectedDynamicPrayerTimeProviderType)),
+            Arg.Is($"{placeInfo.City}, {profile.SequenceNo}"),
             Arg.Any<CancellationToken>());
     }
 

@@ -80,11 +80,11 @@ public class FaziletRepository(
         }
     }
 
-    private static readonly Func<AppDbContext, string, Task<int?>> compiledQuery_GetCityIDByName =
+    private static readonly Func<AppDbContext, int, string, Task<int?>> compiledQuery_GetCityIDByName =
         EF.CompileAsyncQuery(
-            (AppDbContext context, string cityName) =>
+            (AppDbContext context, int countryID, string cityName) =>
                 context.FaziletCities
-                    .Where(x => x.Name == cityName)
+                    .Where(x => x.CountryID == countryID && x.Name == cityName)
                     .Select(x => (int?)x.ID)
                     .FirstOrDefault());
 
@@ -93,7 +93,7 @@ public class FaziletRepository(
         using (AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken))
         {
             // cancellation?
-            return await compiledQuery_GetCityIDByName(dbContext, cityName).ConfigureAwait(false);
+            return await compiledQuery_GetCityIDByName(dbContext, countryID, cityName).ConfigureAwait(false);
         }
     }
 
