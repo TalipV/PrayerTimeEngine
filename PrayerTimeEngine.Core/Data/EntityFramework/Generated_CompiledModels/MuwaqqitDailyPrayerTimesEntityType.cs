@@ -36,23 +36,23 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
 
             var asr = runtimeEntityType.AddProperty(
                 "Asr",
-                typeof(ZonedDateTime),
+                typeof(ZonedDateTime?),
                 propertyInfo: typeof(MuwaqqitDailyPrayerTimes).GetProperty("Asr", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                fieldInfo: typeof(MuwaqqitDailyPrayerTimes).GetField("<Asr>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
-            asr.SetValueConverter(new ValueConverter<ZonedDateTime, string>(
-                string (ZonedDateTime x) => x.GetStringForDBColumn(),
-                ZonedDateTime (string x) => x.GetZonedDateTimeFromDBColumnString()));
-            asr.SetSentinelFromProviderValue("0001-01-01T00:00:00 UTC (+00)");
+                fieldInfo: typeof(MuwaqqitDailyPrayerTimes).GetField("<Asr>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                nullable: true);
+            asr.SetValueConverter(new ValueConverter<ZonedDateTime?, string>(
+                string (ZonedDateTime? x) => (x != null ? x.Value.GetStringForDBColumn() : null),
+                ZonedDateTime? (string x) => (x != null ? ((ZonedDateTime? )(x.GetZonedDateTimeFromDBColumnString())) : null)));
 
             var asrKaraha = runtimeEntityType.AddProperty(
                 "AsrKaraha",
-                typeof(ZonedDateTime),
+                typeof(ZonedDateTime?),
                 propertyInfo: typeof(MuwaqqitDailyPrayerTimes).GetProperty("AsrKaraha", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                fieldInfo: typeof(MuwaqqitDailyPrayerTimes).GetField("<AsrKaraha>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
-            asrKaraha.SetValueConverter(new ValueConverter<ZonedDateTime, string>(
-                string (ZonedDateTime x) => x.GetStringForDBColumn(),
-                ZonedDateTime (string x) => x.GetZonedDateTimeFromDBColumnString()));
-            asrKaraha.SetSentinelFromProviderValue("0001-01-01T00:00:00 UTC (+00)");
+                fieldInfo: typeof(MuwaqqitDailyPrayerTimes).GetField("<AsrKaraha>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                nullable: true);
+            asrKaraha.SetValueConverter(new ValueConverter<ZonedDateTime?, string>(
+                string (ZonedDateTime? x) => (x != null ? x.Value.GetStringForDBColumn() : null),
+                ZonedDateTime? (string x) => (x != null ? ((ZonedDateTime? )(x.GetZonedDateTimeFromDBColumnString())) : null)));
 
             var asrKarahaDegree = runtimeEntityType.AddProperty(
                 "AsrKarahaDegree",
@@ -63,13 +63,13 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
 
             var asrMithlayn = runtimeEntityType.AddProperty(
                 "AsrMithlayn",
-                typeof(ZonedDateTime),
+                typeof(ZonedDateTime?),
                 propertyInfo: typeof(MuwaqqitDailyPrayerTimes).GetProperty("AsrMithlayn", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                fieldInfo: typeof(MuwaqqitDailyPrayerTimes).GetField("<AsrMithlayn>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
-            asrMithlayn.SetValueConverter(new ValueConverter<ZonedDateTime, string>(
-                string (ZonedDateTime x) => x.GetStringForDBColumn(),
-                ZonedDateTime (string x) => x.GetZonedDateTimeFromDBColumnString()));
-            asrMithlayn.SetSentinelFromProviderValue("0001-01-01T00:00:00 UTC (+00)");
+                fieldInfo: typeof(MuwaqqitDailyPrayerTimes).GetField("<AsrMithlayn>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                nullable: true);
+            asrMithlayn.SetValueConverter(new ValueConverter<ZonedDateTime?, string>(
+                string (ZonedDateTime? x) => (x != null ? x.Value.GetStringForDBColumn() : null),
+                ZonedDateTime? (string x) => (x != null ? ((ZonedDateTime? )(x.GetZonedDateTimeFromDBColumnString())) : null)));
 
             var date = runtimeEntityType.AddProperty(
                 "Date",
@@ -83,33 +83,33 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
 
             var dhuhr = runtimeEntityType.AddProperty(
                 "Dhuhr",
-                typeof(ZonedDateTime),
+                typeof(ZonedDateTime?),
                 propertyInfo: typeof(MuwaqqitDailyPrayerTimes).GetProperty("Dhuhr", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                fieldInfo: typeof(MuwaqqitDailyPrayerTimes).GetField("<Dhuhr>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
-            dhuhr.SetValueConverter(new ValueConverter<ZonedDateTime, string>(
-                string (ZonedDateTime x) => x.GetStringForDBColumn(),
-                ZonedDateTime (string x) => x.GetZonedDateTimeFromDBColumnString()));
-            dhuhr.SetSentinelFromProviderValue("0001-01-01T00:00:00 UTC (+00)");
+                fieldInfo: typeof(MuwaqqitDailyPrayerTimes).GetField("<Dhuhr>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                nullable: true);
+            dhuhr.SetValueConverter(new ValueConverter<ZonedDateTime?, string>(
+                string (ZonedDateTime? x) => (x != null ? x.Value.GetStringForDBColumn() : null),
+                ZonedDateTime? (string x) => (x != null ? ((ZonedDateTime? )(x.GetZonedDateTimeFromDBColumnString())) : null)));
 
             var duha = runtimeEntityType.AddProperty(
                 "Duha",
-                typeof(ZonedDateTime),
+                typeof(ZonedDateTime?),
                 propertyInfo: typeof(MuwaqqitDailyPrayerTimes).GetProperty("Duha", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                fieldInfo: typeof(MuwaqqitDailyPrayerTimes).GetField("<Duha>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
-            duha.SetValueConverter(new ValueConverter<ZonedDateTime, string>(
-                string (ZonedDateTime x) => x.GetStringForDBColumn(),
-                ZonedDateTime (string x) => x.GetZonedDateTimeFromDBColumnString()));
-            duha.SetSentinelFromProviderValue("0001-01-01T00:00:00 UTC (+00)");
+                fieldInfo: typeof(MuwaqqitDailyPrayerTimes).GetField("<Duha>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                nullable: true);
+            duha.SetValueConverter(new ValueConverter<ZonedDateTime?, string>(
+                string (ZonedDateTime? x) => (x != null ? x.Value.GetStringForDBColumn() : null),
+                ZonedDateTime? (string x) => (x != null ? ((ZonedDateTime? )(x.GetZonedDateTimeFromDBColumnString())) : null)));
 
             var fajr = runtimeEntityType.AddProperty(
                 "Fajr",
-                typeof(ZonedDateTime),
+                typeof(ZonedDateTime?),
                 propertyInfo: typeof(MuwaqqitDailyPrayerTimes).GetProperty("Fajr", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                fieldInfo: typeof(MuwaqqitDailyPrayerTimes).GetField("<Fajr>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
-            fajr.SetValueConverter(new ValueConverter<ZonedDateTime, string>(
-                string (ZonedDateTime x) => x.GetStringForDBColumn(),
-                ZonedDateTime (string x) => x.GetZonedDateTimeFromDBColumnString()));
-            fajr.SetSentinelFromProviderValue("0001-01-01T00:00:00 UTC (+00)");
+                fieldInfo: typeof(MuwaqqitDailyPrayerTimes).GetField("<Fajr>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                nullable: true);
+            fajr.SetValueConverter(new ValueConverter<ZonedDateTime?, string>(
+                string (ZonedDateTime? x) => (x != null ? x.Value.GetStringForDBColumn() : null),
+                ZonedDateTime? (string x) => (x != null ? ((ZonedDateTime? )(x.GetZonedDateTimeFromDBColumnString())) : null)));
 
             var fajrDegree = runtimeEntityType.AddProperty(
                 "FajrDegree",
@@ -130,13 +130,13 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
 
             var isha = runtimeEntityType.AddProperty(
                 "Isha",
-                typeof(ZonedDateTime),
+                typeof(ZonedDateTime?),
                 propertyInfo: typeof(MuwaqqitDailyPrayerTimes).GetProperty("Isha", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                fieldInfo: typeof(MuwaqqitDailyPrayerTimes).GetField("<Isha>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
-            isha.SetValueConverter(new ValueConverter<ZonedDateTime, string>(
-                string (ZonedDateTime x) => x.GetStringForDBColumn(),
-                ZonedDateTime (string x) => x.GetZonedDateTimeFromDBColumnString()));
-            isha.SetSentinelFromProviderValue("0001-01-01T00:00:00 UTC (+00)");
+                fieldInfo: typeof(MuwaqqitDailyPrayerTimes).GetField("<Isha>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                nullable: true);
+            isha.SetValueConverter(new ValueConverter<ZonedDateTime?, string>(
+                string (ZonedDateTime? x) => (x != null ? x.Value.GetStringForDBColumn() : null),
+                ZonedDateTime? (string x) => (x != null ? ((ZonedDateTime? )(x.GetZonedDateTimeFromDBColumnString())) : null)));
 
             var ishaDegree = runtimeEntityType.AddProperty(
                 "IshaDegree",
@@ -147,13 +147,13 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
 
             var ishtibaq = runtimeEntityType.AddProperty(
                 "Ishtibaq",
-                typeof(ZonedDateTime),
+                typeof(ZonedDateTime?),
                 propertyInfo: typeof(MuwaqqitDailyPrayerTimes).GetProperty("Ishtibaq", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                fieldInfo: typeof(MuwaqqitDailyPrayerTimes).GetField("<Ishtibaq>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
-            ishtibaq.SetValueConverter(new ValueConverter<ZonedDateTime, string>(
-                string (ZonedDateTime x) => x.GetStringForDBColumn(),
-                ZonedDateTime (string x) => x.GetZonedDateTimeFromDBColumnString()));
-            ishtibaq.SetSentinelFromProviderValue("0001-01-01T00:00:00 UTC (+00)");
+                fieldInfo: typeof(MuwaqqitDailyPrayerTimes).GetField("<Ishtibaq>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                nullable: true);
+            ishtibaq.SetValueConverter(new ValueConverter<ZonedDateTime?, string>(
+                string (ZonedDateTime? x) => (x != null ? x.Value.GetStringForDBColumn() : null),
+                ZonedDateTime? (string x) => (x != null ? ((ZonedDateTime? )(x.GetZonedDateTimeFromDBColumnString())) : null)));
 
             var ishtibaqDegree = runtimeEntityType.AddProperty(
                 "IshtibaqDegree",
@@ -178,33 +178,33 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
 
             var maghrib = runtimeEntityType.AddProperty(
                 "Maghrib",
-                typeof(ZonedDateTime),
+                typeof(ZonedDateTime?),
                 propertyInfo: typeof(MuwaqqitDailyPrayerTimes).GetProperty("Maghrib", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                fieldInfo: typeof(MuwaqqitDailyPrayerTimes).GetField("<Maghrib>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
-            maghrib.SetValueConverter(new ValueConverter<ZonedDateTime, string>(
-                string (ZonedDateTime x) => x.GetStringForDBColumn(),
-                ZonedDateTime (string x) => x.GetZonedDateTimeFromDBColumnString()));
-            maghrib.SetSentinelFromProviderValue("0001-01-01T00:00:00 UTC (+00)");
+                fieldInfo: typeof(MuwaqqitDailyPrayerTimes).GetField("<Maghrib>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                nullable: true);
+            maghrib.SetValueConverter(new ValueConverter<ZonedDateTime?, string>(
+                string (ZonedDateTime? x) => (x != null ? x.Value.GetStringForDBColumn() : null),
+                ZonedDateTime? (string x) => (x != null ? ((ZonedDateTime? )(x.GetZonedDateTimeFromDBColumnString())) : null)));
 
             var nextFajr = runtimeEntityType.AddProperty(
                 "NextFajr",
-                typeof(ZonedDateTime),
+                typeof(ZonedDateTime?),
                 propertyInfo: typeof(MuwaqqitDailyPrayerTimes).GetProperty("NextFajr", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                fieldInfo: typeof(MuwaqqitDailyPrayerTimes).GetField("<NextFajr>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
-            nextFajr.SetValueConverter(new ValueConverter<ZonedDateTime, string>(
-                string (ZonedDateTime x) => x.GetStringForDBColumn(),
-                ZonedDateTime (string x) => x.GetZonedDateTimeFromDBColumnString()));
-            nextFajr.SetSentinelFromProviderValue("0001-01-01T00:00:00 UTC (+00)");
+                fieldInfo: typeof(MuwaqqitDailyPrayerTimes).GetField("<NextFajr>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                nullable: true);
+            nextFajr.SetValueConverter(new ValueConverter<ZonedDateTime?, string>(
+                string (ZonedDateTime? x) => (x != null ? x.Value.GetStringForDBColumn() : null),
+                ZonedDateTime? (string x) => (x != null ? ((ZonedDateTime? )(x.GetZonedDateTimeFromDBColumnString())) : null)));
 
             var shuruq = runtimeEntityType.AddProperty(
                 "Shuruq",
-                typeof(ZonedDateTime),
+                typeof(ZonedDateTime?),
                 propertyInfo: typeof(MuwaqqitDailyPrayerTimes).GetProperty("Shuruq", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                fieldInfo: typeof(MuwaqqitDailyPrayerTimes).GetField("<Shuruq>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
-            shuruq.SetValueConverter(new ValueConverter<ZonedDateTime, string>(
-                string (ZonedDateTime x) => x.GetStringForDBColumn(),
-                ZonedDateTime (string x) => x.GetZonedDateTimeFromDBColumnString()));
-            shuruq.SetSentinelFromProviderValue("0001-01-01T00:00:00 UTC (+00)");
+                fieldInfo: typeof(MuwaqqitDailyPrayerTimes).GetField("<Shuruq>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                nullable: true);
+            shuruq.SetValueConverter(new ValueConverter<ZonedDateTime?, string>(
+                string (ZonedDateTime? x) => (x != null ? x.Value.GetStringForDBColumn() : null),
+                ZonedDateTime? (string x) => (x != null ? ((ZonedDateTime? )(x.GetZonedDateTimeFromDBColumnString())) : null)));
 
             var key = runtimeEntityType.AddKey(
                 new[] { iD });

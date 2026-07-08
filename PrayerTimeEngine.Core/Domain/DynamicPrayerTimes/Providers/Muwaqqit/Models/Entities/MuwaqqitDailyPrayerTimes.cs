@@ -21,19 +21,19 @@ public class MuwaqqitDailyPrayerTimes : IDailyPrayerTimes, IEntity
     public required double IshtibaqDegree { get; set; }
     public required double IshaDegree { get; set; }
 
-    public required ZonedDateTime Fajr { get; set; }
-    public required ZonedDateTime NextFajr { get; set; }
-    public required ZonedDateTime Shuruq { get; set; }
-    public required ZonedDateTime Duha { get; set; }
-    public required ZonedDateTime Dhuhr { get; set; }
-    public required ZonedDateTime Asr { get; set; }
-    public required ZonedDateTime AsrMithlayn { get; set; }
-    public required ZonedDateTime Maghrib { get; set; }
-    public required ZonedDateTime Isha { get; set; }
-    public required ZonedDateTime Ishtibaq { get; set; }
-    public required ZonedDateTime AsrKaraha { get; set; }
+    public required ZonedDateTime? Fajr { get; set; }
+    public required ZonedDateTime? NextFajr { get; set; }
+    public required ZonedDateTime? Shuruq { get; set; }
+    public required ZonedDateTime? Duha { get; set; }
+    public required ZonedDateTime? Dhuhr { get; set; }
+    public required ZonedDateTime? Asr { get; set; }
+    public required ZonedDateTime? AsrMithlayn { get; set; }
+    public required ZonedDateTime? Maghrib { get; set; }
+    public required ZonedDateTime? Isha { get; set; }
+    public required ZonedDateTime? Ishtibaq { get; set; }
+    public required ZonedDateTime? AsrKaraha { get; set; }
 
-    public ZonedDateTime GetZonedDateTimeForTimeType(ETimeType timeType)
+    public ZonedDateTime? GetZonedDateTimeForTimeType(ETimeType timeType)
     {
         return timeType switch
         {

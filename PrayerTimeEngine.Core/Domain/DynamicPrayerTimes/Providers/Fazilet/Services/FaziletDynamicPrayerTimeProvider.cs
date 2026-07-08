@@ -58,7 +58,9 @@ public class FaziletDynamicPrayerTimeProvider(
                 cityName, cancellationToken).ConfigureAwait(false);
 
         return configurations
-            .Select(x => (x.TimeType, faziletPrayerTimes.GetZonedDateTimeForTimeType(x.TimeType)))
+            .Select(x => (x.TimeType, ZonedDateTime: faziletPrayerTimes.GetZonedDateTimeForTimeType(x.TimeType)))
+            .Where(x => x.ZonedDateTime is not null)    // missing times are simply not returned
+            .Select(x => (x.TimeType, x.ZonedDateTime.Value))
             .ToList();
     }
 

@@ -60,7 +60,9 @@ public class SemerkandDynamicPrayerTimeProvider(
         SemerkandDailyPrayerTimes semerkandPrayerTimes = await getPrayerTimesInternal(date, countryName, cityName, timezoneName, cancellationToken).ConfigureAwait(false);
 
         return configurations
-            .Select(x => (x.TimeType, semerkandPrayerTimes.GetZonedDateTimeForTimeType(x.TimeType)))
+            .Select(x => (x.TimeType, ZonedDateTime: semerkandPrayerTimes.GetZonedDateTimeForTimeType(x.TimeType)))
+            .Where(x => x.ZonedDateTime is not null)    // missing times are simply not returned
+            .Select(x => (x.TimeType, x.ZonedDateTime.Value))
             .ToList();
     }
 

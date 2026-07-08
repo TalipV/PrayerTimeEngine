@@ -102,15 +102,15 @@ public class MawaqitApiServiceTests : BaseTest
             time.Should().NotBeNull();
             time.ExternalID.Should().Be(externalID);
 
-            time.Fajr.Should().BeLessThanOrEqualTo(time.FajrCongregation);
-            time.Dhuhr.Should().BeLessThanOrEqualTo(time.DhuhrCongregation);
-            time.Asr.Should().BeLessThanOrEqualTo(time.AsrCongregation);
-            time.Maghrib.Should().BeLessThanOrEqualTo(time.MaghribCongregation);
-            time.Isha.Should().BeLessThanOrEqualTo(time.IshaCongregation);
+            time.Fajr.Value.Should().BeLessThanOrEqualTo(time.FajrCongregation.Value);
+            time.Dhuhr.Value.Should().BeLessThanOrEqualTo(time.DhuhrCongregation.Value);
+            time.Asr.Value.Should().BeLessThanOrEqualTo(time.AsrCongregation.Value);
+            time.Maghrib.Value.Should().BeLessThanOrEqualTo(time.MaghribCongregation.Value);
+            time.Isha.Value.Should().BeLessThanOrEqualTo(time.IshaCongregation.Value);
 
             time.Jumuah.Should().NotBeNull();
-            time.Jumuah.Value.Should().BeGreaterThanOrEqualTo(time.Dhuhr);
-            time.Jumuah.Value.Should().BeGreaterThanOrEqualTo(time.DhuhrCongregation);
+            time.Jumuah.Value.Should().BeGreaterThanOrEqualTo(time.Dhuhr.Value);
+            time.Jumuah.Value.Should().BeGreaterThanOrEqualTo(time.DhuhrCongregation.Value);
             time.Jumuah2.Should().BeNull();
         });
     }

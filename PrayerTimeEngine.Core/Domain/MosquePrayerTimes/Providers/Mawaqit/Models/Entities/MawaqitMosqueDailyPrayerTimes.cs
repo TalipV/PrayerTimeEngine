@@ -14,19 +14,19 @@ public class MawaqitMosqueDailyPrayerTimes : IMosqueDailyPrayerTimes, IEntity
 
     public required LocalDate Date { get; set; }
 
-    public required LocalTime Fajr { get; set; }
-    public required LocalTime Shuruq { get; set; }
-    public required LocalTime Dhuhr { get; set; }
-    public required LocalTime Asr { get; set; }
-    public required LocalTime Maghrib { get; set; }
-    public required LocalTime Isha { get; set; }
+    public required LocalTime? Fajr { get; set; }
+    public required LocalTime? Shuruq { get; set; }
+    public required LocalTime? Dhuhr { get; set; }
+    public required LocalTime? Asr { get; set; }
+    public required LocalTime? Maghrib { get; set; }
+    public required LocalTime? Isha { get; set; }
 
     public LocalTime? Jumuah { get; set; }
     public LocalTime? Jumuah2 { get; set; }
 
-    public required LocalTime FajrCongregation { get; set; }
-    public required LocalTime DhuhrCongregation { get; set; }
-    public required LocalTime AsrCongregation { get; set; }
-    public required LocalTime MaghribCongregation { get; set; }
-    public required LocalTime IshaCongregation { get; set; }
+    public required LocalTime? FajrCongregation { get; set; }
+    public required LocalTime? DhuhrCongregation { get; set; }
+    public required LocalTime? AsrCongregation { get; set; }
+    public required LocalTime? MaghribCongregation { get; set; }
+    public required LocalTime? IshaCongregation { get; set; }
 }

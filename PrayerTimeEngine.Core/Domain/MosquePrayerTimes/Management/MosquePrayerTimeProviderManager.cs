@@ -45,30 +45,44 @@ public class MosquePrayerTimeProviderManager(
 
         var prayerTimesCollection = new MosquePrayerTimesDay();
 
-        prayerTimesCollection.Fajr.Start = times.Fajr.On(times.Date).InZoneStrictly(timeZone);
-        prayerTimesCollection.Fajr.CongregationStartOffset = (int)Period.Between(times.Fajr, times.FajrCongregation, PeriodUnits.Minutes).Minutes;
-        prayerTimesCollection.Fajr.End = times.Shuruq.On(times.Date).InZoneStrictly(timeZone);
+        // missing values just lead to missing times
+        ZonedDateTime? getZonedDateTimeOrNull(LocalTime? time)
+        {
+            return time?.On(times.Date).InZoneStrictly(timeZone);
+        }
 
-        prayerTimesCollection.Dhuhr.Start = times.Dhuhr.On(times.Date).InZoneStrictly(timeZone);
-        prayerTimesCollection.Dhuhr.CongregationStartOffset = (int)Period.Between(times.Dhuhr, times.DhuhrCongregation, PeriodUnits.Minutes).Minutes;
-        prayerTimesCollection.Dhuhr.End = times.Asr.On(times.Date).InZoneStrictly(timeZone);
+        static int getCongregationStartOffset(LocalTime? start, LocalTime? congregationStart)
+        {
+            if (start is null || congregationStart is null)
+                return 0;
 
-        prayerTimesCollection.Asr.Start = times.Asr.On(times.Date).InZoneStrictly(timeZone);
-        prayerTimesCollection.Asr.CongregationStartOffset = (int)Period.Between(times.Asr, times.AsrCongregation, PeriodUnits.Minutes).Minutes;
-        prayerTimesCollection.Asr.End = times.Maghrib.On(times.Date).InZoneStrictly(timeZone);
+            return (int)Period.Between(start.Value, congregationStart.Value, PeriodUnits.Minutes).Minutes;
+        }
 
-        prayerTimesCollection.Maghrib.Start = times.Maghrib.On(times.Date).InZoneStrictly(timeZone);
-        prayerTimesCollection.Maghrib.CongregationStartOffset = (int)Period.Between(times.Maghrib, times.MaghribCongregation, PeriodUnits.Minutes).Minutes;
-        prayerTimesCollection.Maghrib.End = times.Isha.On(times.Date).InZoneStrictly(timeZone);
+        prayerTimesCollection.Fajr.Start = getZonedDateTimeOrNull(times.Fajr);
+        prayerTimesCollection.Fajr.CongregationStartOffset = getCongregationStartOffset(times.Fajr, times.FajrCongregation);
+        prayerTimesCollection.Fajr.End = getZonedDateTimeOrNull(times.Shuruq);
 
-        prayerTimesCollection.Isha.Start = times.Isha.On(times.Date).InZoneStrictly(timeZone);
-        prayerTimesCollection.Isha.CongregationStartOffset = (int)Period.Between(times.Isha, times.IshaCongregation, PeriodUnits.Minutes).Minutes;
+        prayerTimesCollection.Dhuhr.Start = getZonedDateTimeOrNull(times.Dhuhr);
+        prayerTimesCollection.Dhuhr.CongregationStartOffset = getCongregationStartOffset(times.Dhuhr, times.DhuhrCongregation);
+        prayerTimesCollection.Dhuhr.End = getZonedDateTimeOrNull(times.Asr);
+
+        prayerTimesCollection.Asr.Start = getZonedDateTimeOrNull(times.Asr);
+        prayerTimesCollection.Asr.CongregationStartOffset = getCongregationStartOffset(times.Asr, times.AsrCongregation);
+        prayerTimesCollection.Asr.End = getZonedDateTimeOrNull(times.Maghrib);
+
+        prayerTimesCollection.Maghrib.Start = getZonedDateTimeOrNull(times.Maghrib);
+        prayerTimesCollection.Maghrib.CongregationStartOffset = getCongregationStartOffset(times.Maghrib, times.MaghribCongregation);
+        prayerTimesCollection.Maghrib.End = getZonedDateTimeOrNull(times.Isha);
+
+        prayerTimesCollection.Isha.Start = getZonedDateTimeOrNull(times.Isha);
+        prayerTimesCollection.Isha.CongregationStartOffset = getCongregationStartOffset(times.Isha, times.IshaCongregation);
 
         // TODO fix this. Doesn't make sense.. but let's go with it for now
-        prayerTimesCollection.Isha.End = times.Fajr.On(times.Date).InZoneStrictly(timeZone);
+        prayerTimesCollection.Isha.End = getZonedDateTimeOrNull(times.Fajr);
 
-        prayerTimesCollection.Jumuah.Start = (times.Jumuah ?? new LocalTime(0, 0)).On(times.Date).InZoneStrictly(timeZone);
-        prayerTimesCollection.Jumuah2.Start = (times.Jumuah2 ?? new LocalTime(0, 0)).On(times.Date).InZoneStrictly(timeZone);
+        prayerTimesCollection.Jumuah.Start = getZonedDateTimeOrNull(times.Jumuah);
+        prayerTimesCollection.Jumuah2.Start = getZonedDateTimeOrNull(times.Jumuah2);
 
         return prayerTimesCollection;
     }
