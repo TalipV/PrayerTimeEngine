@@ -29,7 +29,7 @@ public class ProfileServiceTests : BaseTest
             {
                 serviceCollection.AddSingleton(GetHandledDbContextFactory());
                 serviceCollection.AddSingleton<TimeTypeAttributeService>();
-                serviceCollection.AddSingleton<IProfileDBAccess, ProfileDBAccess>();
+                serviceCollection.AddSingleton<IProfileRepository, ProfileRepository>();
                 serviceCollection.AddSingleton<IProfileService, ProfileService>();
                 serviceCollection.AddSingleton<IDynamicPrayerTimeProviderFactory, DynamicPrayerTimeProviderFactory>();
                 serviceCollection.AddSingleton(Substitute.For<ILogger<ProfileService>>());

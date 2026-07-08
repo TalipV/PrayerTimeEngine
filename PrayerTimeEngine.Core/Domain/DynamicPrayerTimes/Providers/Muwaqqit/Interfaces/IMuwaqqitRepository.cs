@@ -3,7 +3,7 @@ using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Muwaqqit.Models.
 
 namespace PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Muwaqqit.Interfaces;
 
-public interface IMuwaqqitDBAccess
+public interface IMuwaqqitRepository
 {
     Task<MuwaqqitDailyPrayerTimes> GetPrayerTimesAsync(
         ZonedDateTime date,

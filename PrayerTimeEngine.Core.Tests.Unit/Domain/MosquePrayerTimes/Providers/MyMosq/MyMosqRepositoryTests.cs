@@ -1,31 +1,31 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using NodaTime;
 using PrayerTimeEngine.Core.Data.EntityFramework;
-using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.Mawaqit.Models.Entities;
-using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.Mawaqit.Services;
+using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.MyMosq.Models.Entities;
+using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.MyMosq.Services;
 using PrayerTimeEngine.Core.Tests.Common;
 
-namespace PrayerTimeEngine.Core.Tests.Unit.Domain.MosquePrayerTimes.Providers.Mawaqit;
+namespace PrayerTimeEngine.Core.Tests.Unit.Domain.MosquePrayerTimes.Providers.MyMosq;
 
-public class MawaqitDBAccessTests : BaseTest
+public class MyMosqRepositoryTests : BaseTest
 {
     private readonly IDbContextFactory<AppDbContext> _dbContextFactory;
-    private readonly MawaqitDBAccess _mawaqitDBAccess;
+    private readonly MyMosqRepository _myMosqRepository;
 
-    public MawaqitDBAccessTests()
+    public MyMosqRepositoryTests()
     {
         _dbContextFactory = GetHandledDbContextFactory();
-        _mawaqitDBAccess = new MawaqitDBAccess(_dbContextFactory);
+        _myMosqRepository = new MyMosqRepository(_dbContextFactory);
     }
 
     [Fact]
     public async Task GetPrayerTimesAsync_ExistingTime_ReturnsCorrectTime()
     {
         // ARRANGE
-        var date = new LocalDate(2024, 8, 29);
-        string externalID = "hamza-koln";
+        var date = new LocalDate(2024, 8, 30);
+        string externalID = "1239";
 
-        var mawaqitTime = new MawaqitMosqueDailyPrayerTimes
+        var myMosqTime = new MyMosqMosqueDailyPrayerTimes
         {
             ID = 0,
             Date = date,
@@ -45,24 +45,24 @@ public class MawaqitDBAccessTests : BaseTest
             Jumuah2 = new LocalTime(15, 30, 00),
         };
 
-        await TestArrangeDbContext.MawaqitPrayerTimes.AddAsync(mawaqitTime);
+        await TestArrangeDbContext.MyMosqPrayerTimes.AddAsync(myMosqTime);
         await TestArrangeDbContext.SaveChangesAsync();
 
         // ACT
-        var retrievedTime = await _mawaqitDBAccess.GetPrayerTimesAsync(mawaqitTime.Date, externalID, default);
+        var retrievedTime = await _myMosqRepository.GetPrayerTimesAsync(myMosqTime.Date, externalID, default);
 
         // ASSERT
-        retrievedTime.Should().BeEquivalentTo(mawaqitTime);
+        retrievedTime.Should().BeEquivalentTo(myMosqTime);
     }
 
     [Fact]
     public async Task InsertPrayerTimesAsync_NewTime_TimeInDb()
     {
         // ARRANGE
-        var date = new LocalDate(2024, 8, 29);
-        string externalID = "hamza-koln";
+        var date = new LocalDate(2024, 8, 30);
+        string externalID = "1239";
 
-        var newMawaqitTime = new MawaqitMosqueDailyPrayerTimes
+        var newMyMosqTime = new MyMosqMosqueDailyPrayerTimes
         {
             Date = date,
             ExternalID = externalID,
@@ -82,11 +82,11 @@ public class MawaqitDBAccessTests : BaseTest
         };
 
         // ACT
-        await _mawaqitDBAccess.InsertPrayerTimesAsync([newMawaqitTime], default);
+        await _myMosqRepository.InsertPrayerTimesAsync([newMyMosqTime], default);
 
         // ASSERT
-        var insertedTime = await TestAssertDbContext.MawaqitPrayerTimes.FindAsync(newMawaqitTime.ID);
-        insertedTime.Should().BeEquivalentTo(newMawaqitTime);
+        var insertedTime = await TestAssertDbContext.MyMosqPrayerTimes.FindAsync(newMyMosqTime.ID);
+        insertedTime.Should().BeEquivalentTo(newMyMosqTime);
     }
 
     [Fact]
@@ -97,7 +97,7 @@ public class MawaqitDBAccessTests : BaseTest
         ZonedDateTime oldDate = baseDate.Minus(Duration.FromDays(5));
         ZonedDateTime newDate = baseDate.Plus(Duration.FromDays(1));
 
-        var oldTime = new MawaqitMosqueDailyPrayerTimes
+        var oldTime = new MyMosqMosqueDailyPrayerTimes
         {
             Date = oldDate.Date,
             ExternalID = "1", Fajr = oldDate.LocalDateTime.TimeOfDay, FajrCongregation = oldDate.LocalDateTime.TimeOfDay, 
@@ -108,7 +108,7 @@ public class MawaqitDBAccessTests : BaseTest
             IshaCongregation = oldDate.LocalDateTime.TimeOfDay, Jumuah = oldDate.LocalDateTime.TimeOfDay, 
             Jumuah2 = oldDate.LocalDateTime.TimeOfDay,
         };
-        var newTime = new MawaqitMosqueDailyPrayerTimes
+        var newTime = new MyMosqMosqueDailyPrayerTimes
         {
             Date = newDate.Date,
             ExternalID = "1",
@@ -121,17 +121,17 @@ public class MawaqitDBAccessTests : BaseTest
             Jumuah2 = newDate.LocalDateTime.TimeOfDay,
         };
 
-        await TestArrangeDbContext.MawaqitPrayerTimes.AddRangeAsync(oldTime, newTime);
+        await TestArrangeDbContext.MyMosqPrayerTimes.AddRangeAsync(oldTime, newTime);
         await TestArrangeDbContext.SaveChangesAsync();
 
-        (await TestArrangeDbContext.MawaqitPrayerTimes.FindAsync(oldTime.ID)).Should().NotBeNull();
-        (await TestArrangeDbContext.MawaqitPrayerTimes.FindAsync(newTime.ID)).Should().NotBeNull();
+        (await TestArrangeDbContext.MyMosqPrayerTimes.FindAsync(oldTime.ID)).Should().NotBeNull();
+        (await TestArrangeDbContext.MyMosqPrayerTimes.FindAsync(newTime.ID)).Should().NotBeNull();
 
         // ACT
-        await _mawaqitDBAccess.DeleteCacheDataAsync(baseDate, default);
+        await _myMosqRepository.DeleteCacheDataAsync(baseDate, default);
 
         // ASSERT
-        (await TestAssertDbContext.MawaqitPrayerTimes.FindAsync(oldTime.ID)).Should().BeNull();
-        (await TestAssertDbContext.MawaqitPrayerTimes.FindAsync(newTime.ID)).Should().NotBeNull();
+        (await TestAssertDbContext.MyMosqPrayerTimes.FindAsync(oldTime.ID)).Should().BeNull();
+        (await TestAssertDbContext.MyMosqPrayerTimes.FindAsync(newTime.ID)).Should().NotBeNull();
     }
 }

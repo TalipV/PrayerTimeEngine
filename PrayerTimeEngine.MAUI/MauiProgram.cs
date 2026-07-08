@@ -92,7 +92,7 @@ namespace PrayerTimeEngine;
  * - Consider Muwaqqit API changes and maybe additionally use old API endpoint
  * - Consistent naming of awaitable methods with or without Async suffix
  * - Also check navigation properties back and forth in Equals override? Mixed approaches currently
- * - Change "DBAccess" to "Repository" and make sure the code there really is only about db access / repository
+ * - Make sure the code in the repository classes really is only about db access / repository concerns
  * - Check for possibly unsafe concurrent actions (fast user interactions, app crashes and other special cases) 
  * - Make MyMosqApiService more robust and try to read inputs as jsons
  * - Logging
@@ -109,15 +109,15 @@ namespace PrayerTimeEngine;
  * # Semerkand
  * --- SemerkandDynamicPrayerTimeProvider
  * --- SemerkandApiService
- * --- SemerkandDBAccess
+ * --- SemerkandRepository
  * # Fazilet
  * --- FaziletDynamicPrayerTimeProvider
  * --- FaziletApiService
- * --- FaziletDBAccess
+ * --- FaziletRepository
  * # Muwaqqit
  * --- MuwaqqitDynamicPrayerTimeProvider
  * --- MuwaqqitApiService
- * --- MuwaqqitDBAccess
+ * --- MuwaqqitRepository
  * # DynamicPrayerTimeProviderManager
  * # MyMosqPrayerTimes & MawaqitPrayerTimes: One test each to validate their respective scraped JSON inputs (i.e. every time text is a valid time and so on)
  * # ProfileService: One test for UpdateLocationInfo which considers the different Fazilet/Semerkand place info custom things
@@ -263,7 +263,7 @@ public static class MauiProgram
         serviceCollection.AddTransient<IMosquePrayerTimeProviderFactory, MosquePrayerTimeProviderFactory>();
 
         serviceCollection.AddTransient<IProfileService, ProfileService>();
-        serviceCollection.AddTransient<IProfileDBAccess, ProfileDBAccess>();
+        serviceCollection.AddTransient<IProfileRepository, ProfileRepository>();
 
         serviceCollection.AddTransient<IPlaceService, PlaceService>(sp =>
         {
@@ -290,8 +290,8 @@ public static class MauiProgram
     private static void addCalculatorServices(IServiceCollection serviceCollection)
     {
         // FAZILET
-        serviceCollection.AddTransient<IFaziletDBAccess, FaziletDBAccess>();
-        serviceCollection.AddTransient<IPrayerTimeCacheCleaner, FaziletDBAccess>();
+        serviceCollection.AddTransient<IFaziletRepository, FaziletRepository>();
+        serviceCollection.AddTransient<IPrayerTimeCacheCleaner, FaziletRepository>();
         serviceCollection
             .AddRefitClient<IFaziletApiService>()
             .ConfigureHttpClient(config =>
@@ -303,8 +303,8 @@ public static class MauiProgram
         serviceCollection.AddTransient<FaziletDynamicPrayerTimeProvider>();
 
         // SEMERKAND
-        serviceCollection.AddTransient<ISemerkandDBAccess, SemerkandDBAccess>();
-        serviceCollection.AddTransient<IPrayerTimeCacheCleaner, SemerkandDBAccess>();
+        serviceCollection.AddTransient<ISemerkandRepository, SemerkandRepository>();
+        serviceCollection.AddTransient<IPrayerTimeCacheCleaner, SemerkandRepository>();
         serviceCollection
             .AddRefitClient<ISemerkandApiService>()
             .ConfigureHttpClient(config =>
@@ -332,8 +332,8 @@ public static class MauiProgram
         serviceCollection.AddTransient<SemerkandDynamicPrayerTimeProvider>();
 
         // MUWAQQIT
-        serviceCollection.AddTransient<IMuwaqqitDBAccess, MuwaqqitDBAccess>();
-        serviceCollection.AddTransient<IPrayerTimeCacheCleaner, MuwaqqitDBAccess>();
+        serviceCollection.AddTransient<IMuwaqqitRepository, MuwaqqitRepository>();
+        serviceCollection.AddTransient<IPrayerTimeCacheCleaner, MuwaqqitRepository>();
         serviceCollection
             .AddRefitClient<IMuwaqqitApiService>()
             .ConfigureHttpClient(config =>
@@ -345,14 +345,14 @@ public static class MauiProgram
         serviceCollection.AddTransient<MuwaqqitDynamicPrayerTimeProvider>();
 
         // MYMOSQ
-        serviceCollection.AddTransient<IMyMosqDBAccess, MyMosqDBAccess>();
-        serviceCollection.AddTransient<IPrayerTimeCacheCleaner, MyMosqDBAccess>();
+        serviceCollection.AddTransient<IMyMosqRepository, MyMosqRepository>();
+        serviceCollection.AddTransient<IPrayerTimeCacheCleaner, MyMosqRepository>();
         serviceCollection.AddTransient<IMyMosqApiService, MyMosqApiService>();
         serviceCollection.AddTransient<MyMosqMosquePrayerTimeProvider>();
 
         // MAWAQIT
-        serviceCollection.AddTransient<IMawaqitDBAccess, MawaqitDBAccess>();
-        serviceCollection.AddTransient<IPrayerTimeCacheCleaner, MawaqitDBAccess>();
+        serviceCollection.AddTransient<IMawaqitRepository, MawaqitRepository>();
+        serviceCollection.AddTransient<IPrayerTimeCacheCleaner, MawaqitRepository>();
         serviceCollection.AddTransient<IMawaqitApiService, MawaqitApiService>(factory =>
         {
             var httpClient = new HttpClient

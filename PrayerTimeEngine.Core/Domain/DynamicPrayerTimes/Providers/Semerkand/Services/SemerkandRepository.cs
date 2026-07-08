@@ -1,21 +1,21 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using NodaTime;
 using PrayerTimeEngine.Core.Data.EntityFramework;
-using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Interfaces;
-using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Models.Entities;
+using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Semerkand.Interfaces;
+using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Semerkand.Models.Entities;
 
-namespace PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Services;
+namespace PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Semerkand.Services;
 
-public class FaziletDBAccess(
+public class SemerkandRepository(
         IDbContextFactory<AppDbContext> dbContextFactory
-    ) : IFaziletDBAccess, IPrayerTimeCacheCleaner
+    ) : ISemerkandRepository, IPrayerTimeCacheCleaner
 {
-    public async Task<List<FaziletCountry>> GetCountries(CancellationToken cancellationToken)
+    public async Task<List<SemerkandCountry>> GetCountries(CancellationToken cancellationToken)
     {
         using (AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken))
         {
             return await dbContext
-                .FaziletCountries.AsNoTracking()
+                .SemerkandCountries.AsNoTracking()
                 .ToListAsync(cancellationToken)
                 .ConfigureAwait(false);
         }
@@ -26,7 +26,7 @@ public class FaziletDBAccess(
         using (AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken))
         {
             return await dbContext
-                .FaziletCountries
+                .SemerkandCountries
                 .AnyAsync(cancellationToken)
                 .ConfigureAwait(false);
         }
@@ -35,7 +35,7 @@ public class FaziletDBAccess(
     private static readonly Func<AppDbContext, string, Task<int?>> compiledQuery_GetCountryIDByName =
         EF.CompileAsyncQuery(
             (AppDbContext context, string countryName) =>
-                context.FaziletCountries
+                context.SemerkandCountries
                     .Where(x => x.Name == countryName)
                     .Select(x => (int?)x.ID)
                     .FirstOrDefault());
@@ -44,26 +44,24 @@ public class FaziletDBAccess(
     {
         using (AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken))
         {
-            // cancellation?
             return await compiledQuery_GetCountryIDByName(dbContext, countryName).ConfigureAwait(false);
         }
     }
 
-    private static readonly Func<AppDbContext, int, IAsyncEnumerable<FaziletCity>> compiledQuery_GetCitiesByCountryID =
+    private static readonly Func<AppDbContext, int, IAsyncEnumerable<SemerkandCity>> compiledQuery_GetCitiesByCountryID =
         EF.CompileAsyncQuery(
             (AppDbContext context, int countryId) =>
-                context.FaziletCities
+                context.SemerkandCities
                     .AsNoTrackingWithIdentityResolution()
                     .Include(x => x.Country).ThenInclude(x => x.Cities)
                     .Where(x => x.CountryID == countryId));
 
-    public async Task<List<FaziletCity>> GetCitiesByCountryID(int countryId, CancellationToken cancellationToken)
+    public async Task<List<SemerkandCity>> GetCitiesByCountryID(int countryId, CancellationToken cancellationToken)
     {
         using (AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken))
         {
             return await compiledQuery_GetCitiesByCountryID(dbContext, countryId)
                 .ToListAsync(cancellationToken)
-                .AsTask()
                 .ConfigureAwait(false);
         }
     }
@@ -73,7 +71,7 @@ public class FaziletDBAccess(
         using (AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken))
         {
             return await dbContext
-                .FaziletCities
+                .SemerkandCities
                 .Where(x => x.CountryID == countryID)
                 .AnyAsync(cancellationToken)
                 .ConfigureAwait(false);
@@ -83,7 +81,7 @@ public class FaziletDBAccess(
     private static readonly Func<AppDbContext, string, Task<int?>> compiledQuery_GetCityIDByName =
         EF.CompileAsyncQuery(
             (AppDbContext context, string cityName) =>
-                context.FaziletCities
+                context.SemerkandCities
                     .Where(x => x.Name == cityName)
                     .Select(x => (int?)x.ID)
                     .FirstOrDefault());
@@ -92,51 +90,49 @@ public class FaziletDBAccess(
     {
         using (AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken))
         {
-            // cancellation?
             return await compiledQuery_GetCityIDByName(dbContext, cityName).ConfigureAwait(false);
         }
     }
 
-    private static readonly Func<AppDbContext, ZonedDateTime, int, Task<FaziletDailyPrayerTimes>> compiledQuery_GetTimesByDateAndCityID =
+    private static readonly Func<AppDbContext, ZonedDateTime, int, Task<SemerkandDailyPrayerTimes>> compiledQuery_GetTimesByDateAndCityID =
         EF.CompileAsyncQuery(
             (AppDbContext context, ZonedDateTime date, int cityId) =>
-                context.FaziletPrayerTimes
+                context.SemerkandPrayerTimes
                     .AsNoTracking()
                     .Where(x => x.Date == date && x.CityID == cityId)
                     .FirstOrDefault());
 
-    public async Task<FaziletDailyPrayerTimes> GetTimesByDateAndCityID(ZonedDateTime date, int cityId, CancellationToken cancellationToken)
+    public async Task<SemerkandDailyPrayerTimes> GetTimesByDateAndCityID(ZonedDateTime date, int cityId, CancellationToken cancellationToken)
     {
         using (AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken))
         {
-            // cancellation?
             return await compiledQuery_GetTimesByDateAndCityID(dbContext, date, cityId).ConfigureAwait(false);
         }
     }
 
-    public async Task InsertPrayerTimesAsync(IEnumerable<FaziletDailyPrayerTimes> faziletPrayerTimesLst, CancellationToken cancellationToken)
+    public async Task InsertPrayerTimesAsync(IEnumerable<SemerkandDailyPrayerTimes> semerkandPrayerTimesLst, CancellationToken cancellationToken)
     {
         using (AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken))
         {
-            await dbContext.FaziletPrayerTimes.AddRangeAsync(faziletPrayerTimesLst, cancellationToken).ConfigureAwait(false);
+            await dbContext.SemerkandPrayerTimes.AddRangeAsync(semerkandPrayerTimesLst, cancellationToken).ConfigureAwait(false);
             await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
         }
     }
 
-    public async Task InsertCountries(IEnumerable<FaziletCountry> countries, CancellationToken cancellationToken)
+    public async Task InsertCountries(IEnumerable<SemerkandCountry> countries, CancellationToken cancellationToken)
     {
         using (AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken))
         {
-            await dbContext.FaziletCountries.AddRangeAsync(countries, cancellationToken: cancellationToken).ConfigureAwait(false);
+            await dbContext.SemerkandCountries.AddRangeAsync(countries, cancellationToken: cancellationToken).ConfigureAwait(false);
             await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
         }
     }
 
-    public async Task InsertCities(IEnumerable<FaziletCity> cities, CancellationToken cancellationToken)
+    public async Task InsertCities(IEnumerable<SemerkandCity> cities, CancellationToken cancellationToken)
     {
         using (AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken))
         {
-            await dbContext.FaziletCities.AddRangeAsync(cities, cancellationToken: cancellationToken).ConfigureAwait(false);
+            await dbContext.SemerkandCities.AddRangeAsync(cities, cancellationToken: cancellationToken).ConfigureAwait(false);
             await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
         }
     }
@@ -147,11 +143,11 @@ public class FaziletDBAccess(
         {
             // TODO fix
             // ZonedDateTime doesn't allow db side querying
-            var toBeDeletedTimes = (await dbContext.FaziletPrayerTimes.ToListAsync(cancellationToken).ConfigureAwait(false))
+            var toBeDeletedTimes = (await dbContext.SemerkandPrayerTimes.ToListAsync(cancellationToken).ConfigureAwait(false))
                 .Where(p => p.Date.ToInstant() < deleteBeforeDate.ToInstant())
                 .ToList();
 
-            dbContext.FaziletPrayerTimes.RemoveRange(toBeDeletedTimes);
+            dbContext.SemerkandPrayerTimes.RemoveRange(toBeDeletedTimes);
             await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
         }
     }

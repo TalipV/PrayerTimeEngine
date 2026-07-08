@@ -10,7 +10,7 @@ using PrayerTimeEngine.Core.Domain.PlaceManagement.Models;
 namespace PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Muwaqqit.Services;
 
 public class MuwaqqitDynamicPrayerTimeProvider(
-        IMuwaqqitDBAccess muwaqqitDBAccess,
+        IMuwaqqitRepository muwaqqitRepository,
         IMuwaqqitApiService muwaqqitApiService,
         TimeTypeAttributeService timeTypeAttributeService
     ) : IDynamicPrayerTimeProvider
@@ -197,7 +197,7 @@ public class MuwaqqitDynamicPrayerTimeProvider(
 
         using (await getPrayerTimesLocker.LockAsync(lockTuple, cancellationToken).ConfigureAwait(false))
         {
-            MuwaqqitDailyPrayerTimes prayerTimes = await muwaqqitDBAccess.GetPrayerTimesAsync(date, longitude, latitude, fajrDegree, ishaDegree, ishtibaqDegree, asrKarahaDegree, cancellationToken).ConfigureAwait(false);
+            MuwaqqitDailyPrayerTimes prayerTimes = await muwaqqitRepository.GetPrayerTimesAsync(date, longitude, latitude, fajrDegree, ishaDegree, ishtibaqDegree, asrKarahaDegree, cancellationToken).ConfigureAwait(false);
 
             if (prayerTimes is null)
             {
@@ -214,7 +214,7 @@ public class MuwaqqitDynamicPrayerTimeProvider(
                         cancellationToken: cancellationToken).ConfigureAwait(false);
 
                 prayerTimes = apiResponse.ToMuwaqqitPrayerTimes();
-                await muwaqqitDBAccess.InsertPrayerTimesAsync([prayerTimes], cancellationToken).ConfigureAwait(false);
+                await muwaqqitRepository.InsertPrayerTimesAsync([prayerTimes], cancellationToken).ConfigureAwait(false);
             }
 
             return prayerTimes;

@@ -32,7 +32,7 @@ public class MyMosqMosquePrayerTimeProviderBenchmark
     {
         // to make sure that before the benchmark the data is gotten from the APIService and stored in the db
         new MyMosqMosquePrayerTimeProvider(
-                new MyMosqDBAccess(dbContextFactory),
+                new MyMosqRepository(dbContextFactory),
                 SubstitutionHelper.GetMockedMyMosqApiService()
             ).GetPrayerTimesAsync(
                 _localDate,
@@ -44,7 +44,7 @@ public class MyMosqMosquePrayerTimeProviderBenchmark
         mockedMyMosqApiService.ReturnsForAll<Task<MawaqitResponseDTO>>((callInfo) => throw new Exception("Don't use this!"));
 
         return new MyMosqMosquePrayerTimeProvider(
-                new MyMosqDBAccess(dbContextFactory),
+                new MyMosqRepository(dbContextFactory),
                 mockedMyMosqApiService
             );
     }
@@ -52,14 +52,14 @@ public class MyMosqMosquePrayerTimeProviderBenchmark
     private static MyMosqMosquePrayerTimeProvider getMyMosqMosquePrayerTimeProvider_DataFromApi()
     {
         // db doesn't return any data
-        var myMosqDBAccessMock = Substitute.For<IMyMosqDBAccess>();
-        myMosqDBAccessMock.GetPrayerTimesAsync(
+        var myMosqRepositoryMock = Substitute.For<IMyMosqRepository>();
+        myMosqRepositoryMock.GetPrayerTimesAsync(
             Arg.Any<LocalDate>(),
             Arg.Any<string>(),
             Arg.Any<CancellationToken>()).ReturnsNull<MyMosqMosqueDailyPrayerTimes>();
 
         return new MyMosqMosquePrayerTimeProvider(
-                myMosqDBAccessMock,
+                myMosqRepositoryMock,
                 SubstitutionHelper.GetMockedMyMosqApiService()
             );
     }

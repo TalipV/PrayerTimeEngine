@@ -10,18 +10,18 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.MosquePrayerTimes.Providers.My
 
 public class MyMosqMosquePrayerTimeProviderTests : BaseTest
 {
-    private readonly IMyMosqDBAccess _myMosqDBAccessMock;
+    private readonly IMyMosqRepository _myMosqRepositoryMock;
     private readonly IMyMosqApiService _myMosqApiServiceMock;
     private readonly MyMosqMosquePrayerTimeProvider _myMosqPrayerTimeService;
 
     public MyMosqMosquePrayerTimeProviderTests()
     {
-        _myMosqDBAccessMock = Substitute.For<IMyMosqDBAccess>();
+        _myMosqRepositoryMock = Substitute.For<IMyMosqRepository>();
         _myMosqApiServiceMock = Substitute.For<IMyMosqApiService>();
 
         _myMosqPrayerTimeService =
             new MyMosqMosquePrayerTimeProvider(
-                _myMosqDBAccessMock,
+                _myMosqRepositoryMock,
                 _myMosqApiServiceMock);
     }
 
@@ -54,7 +54,7 @@ public class MyMosqMosquePrayerTimeProviderTests : BaseTest
             Jumuah2 = new LocalTime(15, 30, 00),
         };
 
-        _myMosqDBAccessMock.GetPrayerTimesAsync(
+        _myMosqRepositoryMock.GetPrayerTimesAsync(
             Arg.Is(date),
             Arg.Is(externalID),
             Arg.Any<CancellationToken>())
@@ -68,7 +68,7 @@ public class MyMosqMosquePrayerTimeProviderTests : BaseTest
         calculationResult.Should().BeEquivalentTo(times);
 
         _myMosqApiServiceMock.ReceivedCalls().Should().BeEmpty();
-        await _myMosqDBAccessMock.Received(1).GetPrayerTimesAsync(Arg.Is(date), Arg.Is(externalID), Arg.Any<CancellationToken>());
+        await _myMosqRepositoryMock.Received(1).GetPrayerTimesAsync(Arg.Is(date), Arg.Is(externalID), Arg.Any<CancellationToken>());
     }
 
     #endregion GetPrayerTimesAsync

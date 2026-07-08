@@ -5,12 +5,12 @@ using System.Text.Json;
 namespace PrayerTimeEngine.Core.Domain.ConfigurationManagement;
 public class ConfigurationImportExportService : IConfigurationImportExportService
 {
-    private readonly IProfileDBAccess _profileDBAccess;
+    private readonly IProfileRepository _profileRepository;
     private readonly JsonSerializerOptions _jsonOptions;
 
-    public ConfigurationImportExportService(IProfileDBAccess _profileDBAccess)
+    public ConfigurationImportExportService(IProfileRepository _profileRepository)
     {
-        this._profileDBAccess = _profileDBAccess;
+        this._profileRepository = _profileRepository;
 
         _jsonOptions = new JsonSerializerOptions
         {
@@ -33,7 +33,7 @@ public class ConfigurationImportExportService : IConfigurationImportExportServic
         ConfigurationDTO configDTO = JsonSerializer.Deserialize<ConfigurationDTO>(content, _jsonOptions);
         Configuration configuration = ConfigurationMapper.ToConfiguration(configDTO); 
         
-        await _profileDBAccess.SaveProfiles(configuration.Profiles, cancellationToken).ConfigureAwait(false);
+        await _profileRepository.SaveProfiles(configuration.Profiles, cancellationToken).ConfigureAwait(false);
 
         return configuration;
     }

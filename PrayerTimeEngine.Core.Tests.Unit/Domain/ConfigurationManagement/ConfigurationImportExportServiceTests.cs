@@ -11,13 +11,13 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.ConfigurationManagement;
 
 public class ConfigurationImportExportServiceTests : BaseTest
 {
-    private readonly IProfileDBAccess _profileDBAccessMock;
+    private readonly IProfileRepository _profileRepositoryMock;
     private readonly ConfigurationImportExportService _configurationImportExportService;
 
     public ConfigurationImportExportServiceTests()
     {
-        _profileDBAccessMock = Substitute.For<IProfileDBAccess>();
-        _configurationImportExportService = new ConfigurationImportExportService(_profileDBAccessMock);
+        _profileRepositoryMock = Substitute.For<IProfileRepository>();
+        _configurationImportExportService = new ConfigurationImportExportService(_profileRepositoryMock);
     }
 
     #region SerializeConfiguration
@@ -67,7 +67,7 @@ public class ConfigurationImportExportServiceTests : BaseTest
         await _configurationImportExportService.Import(json, default);
 
         // ASSERT
-        await _profileDBAccessMock.Received(1).SaveProfiles(
+        await _profileRepositoryMock.Received(1).SaveProfiles(
             Arg.Is<ICollection<Profile>>(p => p.Any(x => x.Name == "X")),
             Arg.Any<CancellationToken>());
     }
@@ -91,7 +91,7 @@ public class ConfigurationImportExportServiceTests : BaseTest
         // ASSERT
         outputConfiguration.Profiles.Should().BeEmpty();
 
-        await _profileDBAccessMock.Received(1).SaveProfiles(
+        await _profileRepositoryMock.Received(1).SaveProfiles(
             Arg.Is<ICollection<Profile>>(p => p.Count == 0),
             Arg.Any<CancellationToken>());
     }

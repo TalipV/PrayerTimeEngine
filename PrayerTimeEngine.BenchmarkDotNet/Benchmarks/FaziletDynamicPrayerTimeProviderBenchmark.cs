@@ -47,7 +47,7 @@ public class FaziletDynamicPrayerTimeProviderBenchmark
     {
         // to make sure that before the benchmark the data is gotten from the APIService and stored in the db
         new FaziletDynamicPrayerTimeProvider(
-                new FaziletDBAccess(dbContextFactory),
+                new FaziletRepository(dbContextFactory),
                 SubstitutionHelper.GetMockedFaziletApiService(),
                 Substitute.For<IPlaceService>(),
                 Substitute.For<ILogger<FaziletDynamicPrayerTimeProvider>>()
@@ -58,7 +58,7 @@ public class FaziletDynamicPrayerTimeProviderBenchmark
         mockedFaziletApiService.ReturnsForAll<Task<FaziletDailyPrayerTimes>>((callInfo) => throw new Exception("Don't use this!"));
 
         return new FaziletDynamicPrayerTimeProvider(
-                new FaziletDBAccess(dbContextFactory),
+                new FaziletRepository(dbContextFactory),
                 mockedFaziletApiService,
                 Substitute.For<IPlaceService>(),
                 Substitute.For<ILogger<FaziletDynamicPrayerTimeProvider>>()
@@ -68,7 +68,7 @@ public class FaziletDynamicPrayerTimeProviderBenchmark
     private static FaziletDynamicPrayerTimeProvider getFaziletDynamicPrayerTimeProvider_DataFromApi()
     {
         // db doesn't return any data
-        var faziletDbAccessMock = Substitute.For<IFaziletDBAccess>();
+        var faziletDbAccessMock = Substitute.For<IFaziletRepository>();
         faziletDbAccessMock.GetCountries(Arg.Any<CancellationToken>()).Returns([]);
         faziletDbAccessMock.GetCitiesByCountryID(Arg.Any<int>(), Arg.Any<CancellationToken>()).Returns([]);
         faziletDbAccessMock.GetTimesByDateAndCityID(Arg.Any<ZonedDateTime>(), Arg.Any<int>(), Arg.Any<CancellationToken>()).ReturnsNull<FaziletDailyPrayerTimes>();

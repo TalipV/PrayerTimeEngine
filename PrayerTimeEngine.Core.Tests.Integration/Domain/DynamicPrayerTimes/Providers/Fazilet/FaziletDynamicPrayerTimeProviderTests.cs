@@ -25,7 +25,7 @@ public class FaziletDynamicPrayerTimeProviderTests : BaseTest
             {
                 serviceCollection.AddSingleton(GetHandledDbContextFactory());
                 serviceCollection.AddSingleton(Substitute.For<IPlaceService>());
-                serviceCollection.AddSingleton<IFaziletDBAccess, FaziletDBAccess>();
+                serviceCollection.AddSingleton<IFaziletRepository, FaziletRepository>();
                 serviceCollection.AddSingleton(SubstitutionHelper.GetMockedFaziletApiService());
                 serviceCollection.AddSingleton(Substitute.For<ILogger<FaziletDynamicPrayerTimeProvider>>());
                 serviceCollection.AddSingleton<FaziletDynamicPrayerTimeProvider>();
@@ -85,7 +85,7 @@ public class FaziletDynamicPrayerTimeProviderTests : BaseTest
             {
                 serviceCollection.AddSingleton(GetHandledDbContextFactory());
                 serviceCollection.AddSingleton(Substitute.For<IPlaceService>());
-                serviceCollection.AddSingleton<IFaziletDBAccess, FaziletDBAccess>();
+                serviceCollection.AddSingleton<IFaziletRepository, FaziletRepository>();
                 serviceCollection.AddSingleton(SubstitutionHelper.GetMockedFaziletApiService());
                 serviceCollection.AddSingleton(Substitute.For<ILogger<FaziletDynamicPrayerTimeProvider>>());
                 serviceCollection.AddSingleton<FaziletDynamicPrayerTimeProvider>();

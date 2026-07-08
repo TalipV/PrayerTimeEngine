@@ -15,7 +15,7 @@ using System.Text;
 namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Services;
 
 public class ProfileService(
-        IProfileDBAccess profileDBAccess,
+        IProfileRepository profileRepository,
         IDynamicPrayerTimeProviderFactory dynamicPrayerTimeProviderFactory,
         TimeTypeAttributeService timeTypeAttributeService,
         ILogger<ProfileService> logger
@@ -23,7 +23,7 @@ public class ProfileService(
 {
     public async Task<List<Profile>> GetProfiles(CancellationToken cancellationToken)
     {
-        List<Profile> profiles = await profileDBAccess.GetProfiles(cancellationToken).ConfigureAwait(false);
+        List<Profile> profiles = await profileRepository.GetProfiles(cancellationToken).ConfigureAwait(false);
 
         if (profiles.Count == 0)
         {
@@ -36,7 +36,7 @@ public class ProfileService(
 
     public Task SaveProfile(Profile profile, CancellationToken cancellationToken)
     {
-        return profileDBAccess.SaveProfile(profile, cancellationToken);
+        return profileRepository.SaveProfile(profile, cancellationToken);
     }
 
     private static DynamicProfile getDefaultProfile()
@@ -259,17 +259,17 @@ public class ProfileService(
 
     public Task<Profile> GetUntrackedReferenceOfProfile(int profileID, CancellationToken cancellationToken)
     {
-        return profileDBAccess.GetUntrackedReferenceOfProfile(profileID, cancellationToken);
+        return profileRepository.GetUntrackedReferenceOfProfile(profileID, cancellationToken);
     }
 
     public Task<Profile> CopyProfile(Profile profile, CancellationToken cancellationToken)
     {
-        return profileDBAccess.CopyProfile(profile, cancellationToken);
+        return profileRepository.CopyProfile(profile, cancellationToken);
     }
 
     public Task DeleteProfile(Profile profile, CancellationToken cancellationToken)
     {
-        return profileDBAccess.DeleteProfile(profile, cancellationToken);
+        return profileRepository.DeleteProfile(profile, cancellationToken);
     }
 
     public GenericSettingConfiguration GetTimeConfig(DynamicProfile profile, ETimeType timeType)
@@ -312,12 +312,12 @@ public class ProfileService(
                 locationDataByDynamicPrayerTimeProvider.Add((dynamicPrayerTimeProvider, locationConfig));
         }
 
-        await profileDBAccess.UpdateLocationConfig(profile, placeInfo, locationDataByDynamicPrayerTimeProvider, cancellationToken);
+        await profileRepository.UpdateLocationConfig(profile, placeInfo, locationDataByDynamicPrayerTimeProvider, cancellationToken);
     }
 
     public Task UpdateTimeConfig(DynamicProfile profile, ETimeType timeType, GenericSettingConfiguration settings, CancellationToken cancellationToken)
     {
-        return profileDBAccess.UpdateTimeConfig(profile, timeType, settings, cancellationToken);
+        return profileRepository.UpdateTimeConfig(profile, timeType, settings, cancellationToken);
     }
 
     public string GetLocationDataDisplayText(DynamicProfile profile)
@@ -401,7 +401,7 @@ public class ProfileService(
 
     public Task<MosqueProfile> CreateNewMosqueProfile(EMosquePrayerTimeProviderType providerType, string externalID, CancellationToken cancellationToken)
     {
-        return profileDBAccess.CreateNewMosqueProfile(providerType, externalID, cancellationToken);
+        return profileRepository.CreateNewMosqueProfile(providerType, externalID, cancellationToken);
     }
 
     public DateTimeZone GetDateTimeZone(Profile profile)
@@ -417,6 +417,6 @@ public class ProfileService(
 
     public Task ChangeProfileName(Profile profile, string newProfileName, CancellationToken cancellationToken)
     {
-        return profileDBAccess.ChangeProfileName(profile, newProfileName, cancellationToken);
+        return profileRepository.ChangeProfileName(profile, newProfileName, cancellationToken);
     }
 }

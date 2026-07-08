@@ -20,7 +20,7 @@ public class MawaqitMosquePrayerTimeProviderTests : BaseTest
             configureServiceCollection: serviceCollection =>
             {
                 serviceCollection.AddSingleton(GetHandledDbContextFactory());
-                serviceCollection.AddSingleton<IMawaqitDBAccess, MawaqitDBAccess>();
+                serviceCollection.AddSingleton<IMawaqitRepository, MawaqitRepository>();
                 serviceCollection.AddSingleton(SubstitutionHelper.GetMockedMawaqitApiService());
                 serviceCollection.AddSingleton<MawaqitMosquePrayerTimeProvider>();
                 serviceCollection.AddSingleton(SubstitutionHelper.GetMockedSystemInfoService(date.AtStartOfDayInZone(DateTimeZone.Utc)));

@@ -61,7 +61,7 @@ public class MuwaqqitDynamicPrayerTimeProviderBenchmark
     {
         // to make sure that before the benchmark the data is gotten from the APIService and stored in the db
         new MuwaqqitDynamicPrayerTimeProvider(
-                new MuwaqqitDBAccess(dbContextFactory),
+                new MuwaqqitRepository(dbContextFactory),
                 SubstitutionHelper.GetMockedMuwaqqitApiService(),
                 new TimeTypeAttributeService()
             ).GetPrayerTimesAsync(_zonedDateTime, _locationData, _configs, default).GetAwaiter().GetResult();
@@ -71,7 +71,7 @@ public class MuwaqqitDynamicPrayerTimeProviderBenchmark
         mockedMuwaqqitApiService.ReturnsForAll<Task<MuwaqqitDailyPrayerTimes>>((callInfo) => throw new Exception("Don't use this!"));
 
         return new MuwaqqitDynamicPrayerTimeProvider(
-                new MuwaqqitDBAccess(dbContextFactory),
+                new MuwaqqitRepository(dbContextFactory),
                 mockedMuwaqqitApiService,
                 new TimeTypeAttributeService()
             );
@@ -81,7 +81,7 @@ public class MuwaqqitDynamicPrayerTimeProviderBenchmark
     {
         return new MuwaqqitDynamicPrayerTimeProvider(
                 // returns null per default
-                Substitute.For<IMuwaqqitDBAccess>(),
+                Substitute.For<IMuwaqqitRepository>(),
                 SubstitutionHelper.GetMockedMuwaqqitApiService(),
                 new TimeTypeAttributeService()
             );

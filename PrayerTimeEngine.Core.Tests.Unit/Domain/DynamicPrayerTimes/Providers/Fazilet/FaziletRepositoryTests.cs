@@ -7,15 +7,15 @@ using PrayerTimeEngine.Core.Tests.Common;
 
 namespace PrayerTimeEngine.Core.Tests.Unit.Domain.DynamicPrayerTimes.Providers.Fazilet;
 
-public class FaziletDBAccessTests : BaseTest
+public class FaziletRepositoryTests : BaseTest
 {
     private readonly IDbContextFactory<AppDbContext> _dbContextFactory;
-    private readonly FaziletDBAccess _faziletDBAccess;
+    private readonly FaziletRepository _faziletRepository;
 
-    public FaziletDBAccessTests()
+    public FaziletRepositoryTests()
     {
         _dbContextFactory = GetHandledDbContextFactory();
-        _faziletDBAccess = new FaziletDBAccess(_dbContextFactory);
+        _faziletRepository = new FaziletRepository(_dbContextFactory);
     }
 
     [Fact]
@@ -24,7 +24,7 @@ public class FaziletDBAccessTests : BaseTest
         // ARRANGE
 
         // ACT
-        var countries = await _faziletDBAccess.GetCountries(default);
+        var countries = await _faziletRepository.GetCountries(default);
 
         // ASSERT
         countries.Should().BeEmpty();
@@ -41,7 +41,7 @@ public class FaziletDBAccessTests : BaseTest
         await TestArrangeDbContext.SaveChangesAsync();
 
         // ACT
-        var countries = await _faziletDBAccess.GetCountries(default);
+        var countries = await _faziletRepository.GetCountries(default);
 
         // ASSERT
         countries.Should().HaveCount(2);
@@ -65,7 +65,7 @@ public class FaziletDBAccessTests : BaseTest
         await TestArrangeDbContext.SaveChangesAsync();
 
         // ACT
-        var germanCities = await _faziletDBAccess.GetCitiesByCountryID(germany.ID, default);
+        var germanCities = await _faziletRepository.GetCitiesByCountryID(germany.ID, default);
 
         // ASSERT
         germanCities.Should().HaveCount(2);
@@ -88,7 +88,7 @@ public class FaziletDBAccessTests : BaseTest
         await TestArrangeDbContext.SaveChangesAsync();
 
         // ACT
-        var germanCities = await _faziletDBAccess.GetCitiesByCountryID(germany.ID, default);
+        var germanCities = await _faziletRepository.GetCitiesByCountryID(germany.ID, default);
 
         // ASSERT
         germanCities.Should().BeEmpty();
@@ -106,7 +106,7 @@ public class FaziletDBAccessTests : BaseTest
         await TestArrangeDbContext.SaveChangesAsync();
 
         // ACT
-        var cities = await _faziletDBAccess.GetCitiesByCountryID(2, default);
+        var cities = await _faziletRepository.GetCitiesByCountryID(2, default);
 
         // ASSERT
         cities.Should().BeEmpty();
@@ -171,7 +171,7 @@ public class FaziletDBAccessTests : BaseTest
         await TestArrangeDbContext.SaveChangesAsync();
 
         // ACT
-        var times = await _faziletDBAccess.GetTimesByDateAndCityID(dateInUtc, gerCity1.ID, default);
+        var times = await _faziletRepository.GetTimesByDateAndCityID(dateInUtc, gerCity1.ID, default);
 
         // ASSERT
         times.Should()
@@ -239,7 +239,7 @@ public class FaziletDBAccessTests : BaseTest
         await TestArrangeDbContext.SaveChangesAsync();
 
         // ACT
-        var times = await _faziletDBAccess.GetTimesByDateAndCityID(dateInUtc, 5, default);
+        var times = await _faziletRepository.GetTimesByDateAndCityID(dateInUtc, 5, default);
 
         // ASSERT
         times.Should().BeNull();
@@ -257,7 +257,7 @@ public class FaziletDBAccessTests : BaseTest
         ];
 
         // ACT
-        await _faziletDBAccess.InsertCountries(newCountries, default);
+        await _faziletRepository.InsertCountries(newCountries, default);
 
         // ASSERT
         foreach (var newCountry in newCountries)
@@ -288,7 +288,7 @@ public class FaziletDBAccessTests : BaseTest
         ];
 
         // ACT
-        await _faziletDBAccess.InsertCities([.. gerCities, .. autCities], default);
+        await _faziletRepository.InsertCities([.. gerCities, .. autCities], default);
 
         // ASSERT
         foreach (var newCity in gerCities.Concat(autCities))
@@ -361,7 +361,7 @@ public class FaziletDBAccessTests : BaseTest
         };
 
         // ACT
-        await _faziletDBAccess.InsertPrayerTimesAsync([time1, time2, time3], default);
+        await _faziletRepository.InsertPrayerTimesAsync([time1, time2, time3], default);
 
         // ASSERT
         (await TestAssertDbContext.FaziletPrayerTimes.FindAsync(time1.ID)).Should().BeEquivalentTo(time1);
@@ -402,7 +402,7 @@ public class FaziletDBAccessTests : BaseTest
         (await TestArrangeDbContext.FaziletPrayerTimes.FindAsync(newTime.ID)).Should().NotBeNull();
 
         // ACT
-        await _faziletDBAccess.DeleteCacheDataAsync(baseDate, default);
+        await _faziletRepository.DeleteCacheDataAsync(baseDate, default);
 
         // ASSERT
         (await TestAssertDbContext.FaziletPrayerTimes.FindAsync(oldTime.ID)).Should().BeNull();

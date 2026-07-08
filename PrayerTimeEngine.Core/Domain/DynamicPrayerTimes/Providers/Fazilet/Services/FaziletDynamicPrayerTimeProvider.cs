@@ -12,7 +12,7 @@ using PrayerTimeEngine.Core.Domain.PlaceManagement.Models;
 namespace PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Services;
 
 public class FaziletDynamicPrayerTimeProvider(
-        IFaziletDBAccess faziletDBAccess,
+        IFaziletRepository faziletRepository,
         IFaziletApiService faziletApiService,
         IPlaceService placeService,
         ILogger<FaziletDynamicPrayerTimeProvider> logger
@@ -90,14 +90,14 @@ public class FaziletDynamicPrayerTimeProvider(
 
         using (await getPrayerTimesLocker.LockAsync(lockTuple, cancellationToken).ConfigureAwait(false))
         {
-            FaziletDailyPrayerTimes prayerTimes = await faziletDBAccess.GetTimesByDateAndCityID(date, cityID, cancellationToken).ConfigureAwait(false);
+            FaziletDailyPrayerTimes prayerTimes = await faziletRepository.GetTimesByDateAndCityID(date, cityID, cancellationToken).ConfigureAwait(false);
 
             if (prayerTimes is null)
             {
                 var prayerTimesResponseDTO = await faziletApiService.GetTimesByCityID(cityID, cancellationToken).ConfigureAwait(false);
                 var timeZone = prayerTimesResponseDTO.Timezone;
                 var prayerTimesLst = prayerTimesResponseDTO.PrayerTimes.Select(x => x.ToFaziletPrayerTimes(cityID, timeZone)).ToList();
-                await faziletDBAccess.InsertPrayerTimesAsync(prayerTimesLst, cancellationToken).ConfigureAwait(false);
+                await faziletRepository.InsertPrayerTimesAsync(prayerTimesLst, cancellationToken).ConfigureAwait(false);
 
                 prayerTimes = prayerTimesLst.FirstOrDefault(x => x.Date.Date == date.Date);
             }
@@ -113,14 +113,14 @@ public class FaziletDynamicPrayerTimeProvider(
         // check-then-act has to be thread safe
         using (await semaphoreTryGetCityID.LockAsync(cancellationToken).ConfigureAwait(false))
         {
-            int? cityID = await faziletDBAccess.GetCityIDByName(countryID, cityName, cancellationToken).ConfigureAwait(false);
+            int? cityID = await faziletRepository.GetCityIDByName(countryID, cityName, cancellationToken).ConfigureAwait(false);
 
             // city found
             if (cityID is not null)
                 return cityID.Value;
 
             // unknown city
-            if (await faziletDBAccess.HasCityData(countryID, cancellationToken).ConfigureAwait(false))
+            if (await faziletRepository.HasCityData(countryID, cancellationToken).ConfigureAwait(false))
             {
                 return throwIfNotFound
                     ? throw new ArgumentException($"{nameof(cityName)} could not be found!")
@@ -130,7 +130,7 @@ public class FaziletDynamicPrayerTimeProvider(
             // load cities through HTTP request and save them
             var cityDTOs = await faziletApiService.GetCitiesByCountryID(countryID, cancellationToken).ConfigureAwait(false);
             var cities = cityDTOs.Select(x => new FaziletCity { Name = x.Name, ID = x.ID, CountryID = countryID }).ToList();
-            await faziletDBAccess.InsertCities(cities, cancellationToken).ConfigureAwait(false);
+            await faziletRepository.InsertCities(cities, cancellationToken).ConfigureAwait(false);
 
             if (cities.FirstOrDefault(x => x.Name == cityName)?.ID is int returnValue)
             {
@@ -151,14 +151,14 @@ public class FaziletDynamicPrayerTimeProvider(
         // check-then-act has to be thread safe
         using (await semaphoreTryGetCountryID.LockAsync(cancellationToken).ConfigureAwait(false))
         {
-            int? countryID = await faziletDBAccess.GetCountryIDByName(countryName, cancellationToken).ConfigureAwait(false);
+            int? countryID = await faziletRepository.GetCountryIDByName(countryName, cancellationToken).ConfigureAwait(false);
 
             // country found
             if (countryID is not null)
                 return countryID.Value;
 
             // unknown country
-            if (await faziletDBAccess.HasCountryData(cancellationToken).ConfigureAwait(false))
+            if (await faziletRepository.HasCountryData(cancellationToken).ConfigureAwait(false))
             {
                 return throwIfNotFound
                     ? throw new ArgumentException($"{nameof(countryName)} could not be found!")
@@ -167,7 +167,7 @@ public class FaziletDynamicPrayerTimeProvider(
 
             var countriesDTOs = (await faziletApiService.GetCountries(cancellationToken).ConfigureAwait(false)).Countries;
             var countries = countriesDTOs.Select(x => new FaziletCountry { Name = x.Name, ID = x.ID }).ToList();
-            await faziletDBAccess.InsertCountries(countries, cancellationToken).ConfigureAwait(false);
+            await faziletRepository.InsertCountries(countries, cancellationToken).ConfigureAwait(false);
 
             if (countries.FirstOrDefault(x => x.Name == countryName)?.ID is int returnValue)
             {

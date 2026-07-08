@@ -12,9 +12,9 @@ using PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
 
 namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Services;
 
-public class ProfileDBAccess(
+public class ProfileRepository(
         IDbContextFactory<AppDbContext> dbContextFactory
-    ) : IProfileDBAccess
+    ) : IProfileRepository
 {
     public async Task<Profile> GetUntrackedReferenceOfProfile(int profileID, CancellationToken cancellationToken)
     {

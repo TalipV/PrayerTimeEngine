@@ -3,7 +3,7 @@ using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Models.E
 
 namespace PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Interfaces;
 
-public interface IFaziletDBAccess
+public interface IFaziletRepository
 {
     public Task<List<FaziletCountry>> GetCountries(CancellationToken cancellationToken);
     public Task<List<FaziletCity>> GetCitiesByCountryID(int countryID, CancellationToken cancellationToken);
