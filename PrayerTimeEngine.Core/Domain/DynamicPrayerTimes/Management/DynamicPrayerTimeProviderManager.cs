@@ -19,33 +19,40 @@ public class DynamicPrayerTimeProviderManager(
         IEnumerable<IPrayerTimeCacheCleaner> cacheCleaners
     ) : IDynamicPrayerTimeProviderManager
 {
-    private readonly ConcurrentDictionary<(ZonedDateTime, int), (Profile, DynamicPrayerTimesDaySet)> _cachedDateAndProfileIDToPrayerTimeBundle = new();
-
     private sealed record ComplexCalculationResult(
         List<(ETimeType TimeType, ZonedDateTime ZonedDateTime)> PrayerTimes,
         DynamicPrayerTimeCalculationErrorVO CalculationError);
 
-    private bool tryGetCachedCalculation(
-        Profile profile,
+    /// <summary>
+    /// Caches the most recent successful calculation per profile because consumers like the
+    /// persistent notification request the same times again every few seconds.
+    ///
+    /// Only a single day set is kept per profile (practically the current day), so newer
+    /// calculations just replace older ones and the cache stays bounded without any clean up logic.
+    /// </summary>
+    private readonly ConcurrentDictionary<int, CachedDaySetEntry> _cachedDaySetByProfileID = new();
+
+    private sealed record CachedDaySetEntry(
+        ZonedDateTime Date,
+        Profile ProfileSnapshot,
+        DynamicPrayerTimesDaySet DaySet);
+
+    private bool tryGetCachedDaySet(
+        DynamicProfile profile,
         ZonedDateTime date,
-        out DynamicPrayerTimesDaySet prayerTimeEntity)
+        out DynamicPrayerTimesDaySet daySet)
     {
-        // no cache
-        if (!_cachedDateAndProfileIDToPrayerTimeBundle.TryGetValue((date, profile.ID), out (Profile, DynamicPrayerTimesDaySet) cachedValue))
+        if (_cachedDaySetByProfileID.TryGetValue(profile.ID, out CachedDaySetEntry cacheEntry)
+            && cacheEntry.Date == date
+            // reusing the cache is only valid as long as the profile configuration stayed the same
+            && Equals(cacheEntry.ProfileSnapshot, profile))
         {
-            prayerTimeEntity = null;
-            return false;
+            daySet = cacheEntry.DaySet;
+            return true;
         }
 
-        // there is only a cache for a different profile config
-        if (!Equals(cachedValue.Item1, profile))
-        {
-            prayerTimeEntity = null;
-            return false;
-        }
-
-        prayerTimeEntity = cachedValue.Item2;
-        return true;
+        daySet = null;
+        return false;
     }
 
     public async Task<CalculatePrayerTimesResultVO> CalculatePrayerTimesAsync(int profileID, ZonedDateTime date, CancellationToken cancellationToken)
@@ -58,7 +65,7 @@ public class DynamicPrayerTimeProviderManager(
         DynamicProfile dynamicProfile = profile as DynamicProfile
             ?? throw new Exception($"The Profile with the ID '{profileID}' is not a {nameof(DynamicProfile)}");
 
-        if (tryGetCachedCalculation(dynamicProfile, date, out DynamicPrayerTimesDaySet prayerTimeEntity))
+        if (tryGetCachedDaySet(dynamicProfile, date, out DynamicPrayerTimesDaySet prayerTimeEntity))
         {
             prayerTimeEntity.DataCalculationTimestamp = systemInfoService.GetCurrentZonedDateTime();
 
@@ -83,9 +90,10 @@ public class DynamicPrayerTimeProviderManager(
 
         prayerTimeEntity.DataCalculationTimestamp = systemInfoService.GetCurrentZonedDateTime();
 
+        // erroneous results are not cached so that the next request retries the calculation
         if (calculationErrors.Count == 0)
         {
-            _cachedDateAndProfileIDToPrayerTimeBundle[(date, dynamicProfile.ID)] = (dynamicProfile, prayerTimeEntity);
+            _cachedDaySetByProfileID[dynamicProfile.ID] = new CachedDaySetEntry(date, dynamicProfile, prayerTimeEntity);
         }
 
         // execute without awaiting because we don't want to await and block for this side quest
