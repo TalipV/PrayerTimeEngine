@@ -59,8 +59,10 @@ public class MuwaqqitDynamicPrayerTimeProvider(
                 MuwaqqitDailyPrayerTimes muwaqqitPrayerTimes = x.Key;
                 List<ETimeType> timeTypes = x.Value;
 
-                return timeTypes.Select(timeType => (timeType, muwaqqitPrayerTimes.GetZonedDateTimeForTimeType(timeType)));
+                return timeTypes.Select(timeType => (TimeType: timeType, ZonedDateTime: muwaqqitPrayerTimes.GetZonedDateTimeForTimeType(timeType)));
             })
+            .Where(x => x.ZonedDateTime is not null)    // missing times are simply not returned
+            .Select(x => (x.TimeType, x.ZonedDateTime.Value))
             .ToList();
     }
 

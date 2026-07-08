@@ -9,47 +9,47 @@ public class MuwaqqitPrayerTimesResponseDTO
 {
     [JsonPropertyName("fajr")]
     [JsonConverter(typeof(OffsetDateTimeConverter))]
-    public OffsetDateTime Fajr { get; set; }
+    public OffsetDateTime? Fajr { get; set; }
 
     [JsonPropertyName("fajr_t")]
     [JsonConverter(typeof(OffsetDateTimeConverter))]
-    public OffsetDateTime NextFajr { get; set; }
+    public OffsetDateTime? NextFajr { get; set; }
 
     [JsonPropertyName("sunrise")]
     [JsonConverter(typeof(OffsetDateTimeConverter))]
-    public OffsetDateTime Shuruq { get; set; }
+    public OffsetDateTime? Shuruq { get; set; }
 
     [JsonPropertyName("ishraq")]
     [JsonConverter(typeof(OffsetDateTimeConverter))]
-    public OffsetDateTime Ishraq { get; set; }
+    public OffsetDateTime? Ishraq { get; set; }
 
     [JsonPropertyName("zohr")]
     [JsonConverter(typeof(OffsetDateTimeConverter))]
-    public OffsetDateTime Dhuhr { get; set; }
+    public OffsetDateTime? Dhuhr { get; set; }
 
     [JsonPropertyName("asr_shafi")]
     [JsonConverter(typeof(OffsetDateTimeConverter))]
-    public OffsetDateTime Asr { get; set; }
+    public OffsetDateTime? Asr { get; set; }
 
     [JsonPropertyName("asr_hanafi")]
     [JsonConverter(typeof(OffsetDateTimeConverter))]
-    public OffsetDateTime AsrMithlayn { get; set; }
+    public OffsetDateTime? AsrMithlayn { get; set; }
 
     [JsonPropertyName("sunset")]
     [JsonConverter(typeof(OffsetDateTimeConverter))]
-    public OffsetDateTime Maghrib { get; set; }
+    public OffsetDateTime? Maghrib { get; set; }
 
     [JsonPropertyName("ishtibak")]
     [JsonConverter(typeof(OffsetDateTimeConverter))]
-    public OffsetDateTime Ishtibaq { get; set; }
+    public OffsetDateTime? Ishtibaq { get; set; }
 
     [JsonPropertyName("asr_makrooh")]
     [JsonConverter(typeof(OffsetDateTimeConverter))]
-    public OffsetDateTime AsrKaraha { get; set; }
+    public OffsetDateTime? AsrKaraha { get; set; }
 
     [JsonPropertyName("esha")]
     [JsonConverter(typeof(OffsetDateTimeConverter))]
-    public OffsetDateTime Isha { get; set; }
+    public OffsetDateTime? Isha { get; set; }
 
 
     [JsonPropertyName("ln")]
@@ -112,8 +112,11 @@ public class MuwaqqitPrayerTimesResponseDTO
         return Math.Round(degree, 2);
     }
 
-    private static ZonedDateTime getZonedDateTime(OffsetDateTime offsetDateTime, DateTimeZone timezone)
+    private static ZonedDateTime? getZonedDateTime(OffsetDateTime? offsetDateTimeNullable, DateTimeZone timezone)
     {
+        if (offsetDateTimeNullable is not OffsetDateTime offsetDateTime)
+            return null;
+
         offsetDateTime.Deconstruct(out LocalDateTime localDateTime, out Offset offset);
 
         // ignore fractions of seconds

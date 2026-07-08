@@ -71,7 +71,8 @@ namespace PrayerTimeEngine;
  * - No robust system for country and city (re)load from fazilet/semerkand API (e.g. failed city retrieval leads to no second try)
  * - Fazilet/Semerkand country/city names which are unexpected (e.g. "Vienna (Wien)")
  * - Turkish location details for Fazilet/Semerkand not robust
- * - Semerkand sometimes puts "*" in the json for their times which is not handled in the app (e.g. "*23:54")
+ * - Semerkand marks some times with "*" (e.g. "*23:54", probably taqdir/estimated like Fazilet's "is_takdiri" flag);
+ *   the app strips the "*" and shows the time as a normal one instead of conveying the special meaning
  * - Semerkand sometimes has countries and cities with duplicate names
  * 
  * - REMOVE bypassed SSL validation for ISemerkandApiService
@@ -82,9 +83,6 @@ namespace PrayerTimeEngine;
  */
 
 /* TODO general:
- * - Harden the provider services (Muwaqqit, Fazilet, Semerkand, Mawaqit, MyMosq) against missing values in their API responses.
- *   Some values are present in 99% of cases but disappear e.g. in deep summer or for northern countries (no true night/dawn),
- *   and then the logics (e.g. blind .First()/.Value accesses) break. Decide per value: fallback, skip or proper error.
  * - For prayer times of a time zone other than that of the device show option to select based on which time zone to show the times (like a yes/no slider)
  * - After importing profiles, show overview of current and new profiles for the user to select which ones to keep
  * - Reconsider IDailyPrayerTimes properties ('Date' as a ZonedDateTime?? Why carry DateTimeZone info redundantely?)

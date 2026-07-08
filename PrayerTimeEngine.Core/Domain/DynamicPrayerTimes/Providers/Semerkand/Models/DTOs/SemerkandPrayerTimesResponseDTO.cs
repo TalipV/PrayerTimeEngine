@@ -12,27 +12,27 @@ public class SemerkandPrayerTimesResponseDTO
 
     [JsonPropertyName("Fajr")]
     [JsonConverter(typeof(LocalTimeConverter))]
-    public LocalTime Fajr { get; set; }
+    public LocalTime? Fajr { get; set; }
 
     [JsonPropertyName("Tulu")]
     [JsonConverter(typeof(LocalTimeConverter))]
-    public LocalTime Shuruq { get; set; }
+    public LocalTime? Shuruq { get; set; }
 
     [JsonPropertyName("Zuhr")]
     [JsonConverter(typeof(LocalTimeConverter))]
-    public LocalTime Dhuhr { get; set; }
+    public LocalTime? Dhuhr { get; set; }
 
     [JsonPropertyName("Asr")]
     [JsonConverter(typeof(LocalTimeConverter))]
-    public LocalTime Asr { get; set; }
+    public LocalTime? Asr { get; set; }
 
     [JsonPropertyName("Maghrib")]
     [JsonConverter(typeof(LocalTimeConverter))]
-    public LocalTime Maghrib { get; set; }
+    public LocalTime? Maghrib { get; set; }
 
     [JsonPropertyName("Isha")]
     [JsonConverter(typeof(LocalTimeConverter))]
-    public LocalTime Isha { get; set; }
+    public LocalTime? Isha { get; set; }
 
     internal SemerkandDailyPrayerTimes ToSemerkandPrayerTimes(int cityID, DateTimeZone dateTimeZone, LocalDate firstDayOfYear)
     {
@@ -53,10 +53,13 @@ public class SemerkandPrayerTimesResponseDTO
         };
     }
 
-    private static ZonedDateTime getZonedDateTime(DateTimeZone timezone, LocalDate date, LocalTime time)
+    private static ZonedDateTime? getZonedDateTime(DateTimeZone timezone, LocalDate date, LocalTime? time)
     {
+        if (time is null)
+            return null;
+
         // InZoneStrictly throws an exception if the time is inacceptable,
         // like within the skipped hour of DST or ambiguous duplicate hour
-        return (date + time).InZoneStrictly(timezone);
+        return (date + time.Value).InZoneStrictly(timezone);
     }
 }

@@ -11,53 +11,53 @@ public class MyMosqPrayerTimesDTO
     [JsonPropertyName("Date")]
     public LocalDate Date { get; set; }
 
-    [JsonConverter(typeof(LocalTimeConverter))]
+    [JsonConverter(typeof(NullableLocalTimeConverter))]
     [JsonPropertyName("Fajr")]
-    public LocalTime Fajr { get; set; }
+    public LocalTime? Fajr { get; set; }
 
-    [JsonConverter(typeof(LocalTimeConverter))]
+    [JsonConverter(typeof(NullableLocalTimeConverter))]
     [JsonPropertyName("Sabah")]
-    public LocalTime FajrTime { get; set; }
+    public LocalTime? FajrTime { get; set; }
 
-    [JsonConverter(typeof(LocalTimeConverter))]
+    [JsonConverter(typeof(NullableLocalTimeConverter))]
     [JsonPropertyName("Sunrise")]
-    public LocalTime Shuruq { get; set; }
+    public LocalTime? Shuruq { get; set; }
 
 
-    [JsonConverter(typeof(LocalTimeConverter))]
+    [JsonConverter(typeof(NullableLocalTimeConverter))]
     [JsonPropertyName("Dhuhr")]
-    public LocalTime Dhuhr { get; set; }
+    public LocalTime? Dhuhr { get; set; }
 
-    [JsonConverter(typeof(LocalTimeConverter))]
+    [JsonConverter(typeof(NullableLocalTimeConverter))]
     [JsonPropertyName("DhuhrTime")]
-    public LocalTime DhuhrTime { get; set; }
+    public LocalTime? DhuhrTime { get; set; }
 
 
-    [JsonConverter(typeof(LocalTimeConverter))]
+    [JsonConverter(typeof(NullableLocalTimeConverter))]
     [JsonPropertyName("Asr")]
-    public LocalTime Asr { get; set; }
+    public LocalTime? Asr { get; set; }
 
-    [JsonConverter(typeof(LocalTimeConverter))]
+    [JsonConverter(typeof(NullableLocalTimeConverter))]
     [JsonPropertyName("AsrTime")]
-    public LocalTime AsrTime { get; set; }
+    public LocalTime? AsrTime { get; set; }
 
 
-    [JsonConverter(typeof(LocalTimeConverter))]
+    [JsonConverter(typeof(NullableLocalTimeConverter))]
     [JsonPropertyName("Maghrib")]
-    public LocalTime Maghrib { get; set; }
+    public LocalTime? Maghrib { get; set; }
 
-    [JsonConverter(typeof(LocalTimeConverter))]
+    [JsonConverter(typeof(NullableLocalTimeConverter))]
     [JsonPropertyName("MaghribTime")]
-    public LocalTime MaghribTime { get; set; }
+    public LocalTime? MaghribTime { get; set; }
 
 
-    [JsonConverter(typeof(LocalTimeConverter))]
+    [JsonConverter(typeof(NullableLocalTimeConverter))]
     [JsonPropertyName("Isha")]
-    public LocalTime Isha { get; set; }
+    public LocalTime? Isha { get; set; }
 
-    [JsonConverter(typeof(LocalTimeConverter))]
+    [JsonConverter(typeof(NullableLocalTimeConverter))]
     [JsonPropertyName("IshaTime")]
-    public LocalTime IshaTime { get; set; }
+    public LocalTime? IshaTime { get; set; }
 
     [JsonConverter(typeof(NullableLocalTimeConverter))]
     [JsonPropertyName("Jummah2")]

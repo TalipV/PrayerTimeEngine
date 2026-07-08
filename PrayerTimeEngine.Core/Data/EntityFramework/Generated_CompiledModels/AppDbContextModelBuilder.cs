@@ -11,7 +11,7 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
     public partial class AppDbContextModel
     {
         private AppDbContextModel()
-            : base(skipDetectChanges: false, modelId: new Guid("10774490-292a-4889-b5bb-a074a7600945"), entityTypeCount: 16)
+            : base(skipDetectChanges: false, modelId: new Guid("cac041a3-d655-4698-938d-0bdc434fc0e9"), entityTypeCount: 16)
         {
         }
 
@@ -58,7 +58,7 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
             DynamicProfileEntityType.CreateAnnotations(dynamicProfile);
             MosqueProfileEntityType.CreateAnnotations(mosqueProfile);
 
-            AddAnnotation("ProductVersion", "9.0.5");
+            AddAnnotation("ProductVersion", "10.0.9");
         }
     }
 }

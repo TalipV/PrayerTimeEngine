@@ -90,12 +90,12 @@ public class MawaqitResponseDTO
                     throw new Exception("Expected 6 times and 5 iqamah durations");
                 }
 
-                LocalTime fajr = localTimeParser.Parse(prayerTimeDay[0]).Value;
-                LocalTime shuruq = localTimeParser.Parse(prayerTimeDay[1]).Value;
-                LocalTime dhuhr = localTimeParser.Parse(prayerTimeDay[2]).Value;
-                LocalTime asr = localTimeParser.Parse(prayerTimeDay[3]).Value;
-                LocalTime maghrib = localTimeParser.Parse(prayerTimeDay[4]).Value;
-                LocalTime isha = localTimeParser.Parse(prayerTimeDay[5]).Value;
+                LocalTime? fajr = parseTimeOrNull(localTimeParser, prayerTimeDay[0]);
+                LocalTime? shuruq = parseTimeOrNull(localTimeParser, prayerTimeDay[1]);
+                LocalTime? dhuhr = parseTimeOrNull(localTimeParser, prayerTimeDay[2]);
+                LocalTime? asr = parseTimeOrNull(localTimeParser, prayerTimeDay[3]);
+                LocalTime? maghrib = parseTimeOrNull(localTimeParser, prayerTimeDay[4]);
+                LocalTime? isha = parseTimeOrNull(localTimeParser, prayerTimeDay[5]);
 
                 yield return new MawaqitMosqueDailyPrayerTimes
                 {
@@ -109,13 +109,30 @@ public class MawaqitResponseDTO
                     Isha = isha,
                     Jumuah = Jumuah,
                     Jumuah2 = Jumuah2,
-                    FajrCongregation = fajr.PlusMinutes(int.Parse(iqamaTimeValueForDay[0])),
-                    DhuhrCongregation = dhuhr.PlusMinutes(int.Parse(iqamaTimeValueForDay[1])),
-                    AsrCongregation = asr.PlusMinutes(int.Parse(iqamaTimeValueForDay[2])),
-                    MaghribCongregation = maghrib.PlusMinutes(int.Parse(iqamaTimeValueForDay[3])),
-                    IshaCongregation = isha.PlusMinutes(int.Parse(iqamaTimeValueForDay[4]))
+                    FajrCongregation = getCongregationTimeOrNull(fajr, iqamaTimeValueForDay[0]),
+                    DhuhrCongregation = getCongregationTimeOrNull(dhuhr, iqamaTimeValueForDay[1]),
+                    AsrCongregation = getCongregationTimeOrNull(asr, iqamaTimeValueForDay[2]),
+                    MaghribCongregation = getCongregationTimeOrNull(maghrib, iqamaTimeValueForDay[3]),
+                    IshaCongregation = getCongregationTimeOrNull(isha, iqamaTimeValueForDay[4])
                 };
             }
         }
+    }
+
+    private static LocalTime? parseTimeOrNull(LocalTimePattern localTimeParser, string timeText)
+    {
+        if (string.IsNullOrWhiteSpace(timeText))
+            return null;
+
+        ParseResult<LocalTime> parseResult = localTimeParser.Parse(timeText);
+        return parseResult.Success ? parseResult.Value : null;
+    }
+
+    private static LocalTime? getCongregationTimeOrNull(LocalTime? baseTime, string offsetMinutesText)
+    {
+        if (baseTime is null || !int.TryParse(offsetMinutesText, out int offsetMinutes))
+            return null;
+
+        return baseTime.Value.PlusMinutes(offsetMinutes);
     }
 }
