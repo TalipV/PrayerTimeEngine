@@ -11,20 +11,20 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.MosquePrayerTimes.Providers.Ma
 
 public class MawaqitDynamicPrayerTimeProviderTests : BaseTest
 {
-    private readonly IMawaqitDBAccess _mawaqitDBAccessMock;
+    private readonly IMawaqitRepository _mawaqitRepositoryMock;
     private readonly IMawaqitApiService _mawaqitApiServiceMock;
     private readonly ISystemInfoService _systemInfoService;
     private readonly MawaqitMosquePrayerTimeProvider _mawaqitPrayerTimeService;
 
     public MawaqitDynamicPrayerTimeProviderTests()
     {
-        _mawaqitDBAccessMock = Substitute.For<IMawaqitDBAccess>();
+        _mawaqitRepositoryMock = Substitute.For<IMawaqitRepository>();
         _mawaqitApiServiceMock = Substitute.For<IMawaqitApiService>();
         _systemInfoService = Substitute.For<ISystemInfoService>();
 
         _mawaqitPrayerTimeService =
             new MawaqitMosquePrayerTimeProvider(
-                _mawaqitDBAccessMock,
+                _mawaqitRepositoryMock,
                 _mawaqitApiServiceMock,
                 _systemInfoService);
     }
@@ -58,7 +58,7 @@ public class MawaqitDynamicPrayerTimeProviderTests : BaseTest
             Jumuah2 = new LocalTime(15, 30, 00),
         };
 
-        _mawaqitDBAccessMock.GetPrayerTimesAsync(
+        _mawaqitRepositoryMock.GetPrayerTimesAsync(
             Arg.Is(date),
             Arg.Is(externalID),
             Arg.Any<CancellationToken>())
@@ -73,7 +73,7 @@ public class MawaqitDynamicPrayerTimeProviderTests : BaseTest
         calculationResult.Should().BeEquivalentTo(times);
 
         _mawaqitApiServiceMock.ReceivedCalls().Should().BeEmpty();
-        await _mawaqitDBAccessMock.Received(1).GetPrayerTimesAsync(Arg.Is(date), Arg.Is(externalID), Arg.Any<CancellationToken>());
+        await _mawaqitRepositoryMock.Received(1).GetPrayerTimesAsync(Arg.Is(date), Arg.Is(externalID), Arg.Any<CancellationToken>());
     }
 
     #endregion GetPrayerTimesAsync

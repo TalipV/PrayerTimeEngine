@@ -7,7 +7,7 @@ using PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
 
 namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Interfaces;
 
-public interface IProfileDBAccess
+public interface IProfileRepository
 {
     public Task<List<Profile>> GetProfiles(CancellationToken cancellationToken);
     public Task SaveProfile(Profile profile, CancellationToken cancellationToken);

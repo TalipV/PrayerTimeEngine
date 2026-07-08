@@ -6,9 +6,9 @@ using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.Mawaqit.Models.En
 
 namespace PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.Mawaqit.Services;
 
-public class MawaqitDBAccess(
+public class MawaqitRepository(
         IDbContextFactory<AppDbContext> dbContextFactory
-    ) : IMawaqitDBAccess, IPrayerTimeCacheCleaner
+    ) : IMawaqitRepository, IPrayerTimeCacheCleaner
 {
     private static readonly Func<AppDbContext, LocalDate, string, IAsyncEnumerable<MawaqitMosqueDailyPrayerTimes>> compiledQuery_GetPrayerTimesAsync =
         EF.CompileAsyncQuery(

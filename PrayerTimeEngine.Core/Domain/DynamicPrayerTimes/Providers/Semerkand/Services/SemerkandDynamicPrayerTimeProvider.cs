@@ -13,7 +13,7 @@ using PrayerTimeEngine.Core.Domain.PlaceManagement.Models;
 namespace PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Semerkand.Services;
 
 public class SemerkandDynamicPrayerTimeProvider(
-        ISemerkandDBAccess semerkandDBAccess,
+        ISemerkandRepository semerkandRepository,
         ISemerkandApiService semerkandApiService,
         IPlaceService placeService,
         ILogger<SemerkandDynamicPrayerTimeProvider> logger
@@ -99,7 +99,7 @@ public class SemerkandDynamicPrayerTimeProvider(
         using (await getPrayerTimesLocker.LockAsync(lockTuple, cancellationToken).ConfigureAwait(false))
         {
             SemerkandDailyPrayerTimes prayerTimes =
-                await semerkandDBAccess.GetTimesByDateAndCityID(
+                await semerkandRepository.GetTimesByDateAndCityID(
                     date,
                     cityID,
                     cancellationToken).ConfigureAwait(false);
@@ -121,7 +121,7 @@ public class SemerkandDynamicPrayerTimeProvider(
                         .Where(x => date.Date <= x.Date.Date && x.Date.Date < date.Plus(Duration.FromDays(MAX_EXTENT_OF_RETRIEVED_DAYS)).Date)
                         .ToList();
 
-                await semerkandDBAccess.InsertPrayerTimesAsync(prayerTimesLst, cancellationToken).ConfigureAwait(false);
+                await semerkandRepository.InsertPrayerTimesAsync(prayerTimesLst, cancellationToken).ConfigureAwait(false);
 
                 prayerTimes = prayerTimesLst.FirstOrDefault(x => x.Date.Date == date.Date);
             }
@@ -137,14 +137,14 @@ public class SemerkandDynamicPrayerTimeProvider(
         // check-then-act has to be thread safe
         using (await semaphoreTryGetCityID.LockAsync(cancellationToken).ConfigureAwait(false))
         {
-            int? cityID = await semerkandDBAccess.GetCityIDByName(countryID, cityName, cancellationToken).ConfigureAwait(false);
+            int? cityID = await semerkandRepository.GetCityIDByName(countryID, cityName, cancellationToken).ConfigureAwait(false);
 
             // city found
             if (cityID is not null)
                 return cityID.Value;
 
             // unknown city
-            if (await semerkandDBAccess.HasCityData(countryID, cancellationToken).ConfigureAwait(false))
+            if (await semerkandRepository.HasCityData(countryID, cancellationToken).ConfigureAwait(false))
             {
                 return throwIfNotFound
                     ? throw new ArgumentException($"{nameof(cityName)} could not be found!")
@@ -154,7 +154,7 @@ public class SemerkandDynamicPrayerTimeProvider(
             // load cities through HTTP request and save them
             var cityResponseDTOs = await semerkandApiService.GetCitiesByCountryID(countryID, cancellationToken).ConfigureAwait(false);
             var cities = cityResponseDTOs.Select(x => new SemerkandCity { ID = x.ID, Name = x.Name, CountryID = countryID });
-            await semerkandDBAccess.InsertCities(cities, cancellationToken).ConfigureAwait(false);
+            await semerkandRepository.InsertCities(cities, cancellationToken).ConfigureAwait(false);
 
             return cityResponseDTOs.FirstOrDefault(x => x.Name == cityName)?.ID
                 ?? (throwIfNotFound
@@ -170,14 +170,14 @@ public class SemerkandDynamicPrayerTimeProvider(
         // check-then-act has to be thread safe
         using (await semaphoreTryGetCountryID.LockAsync(cancellationToken).ConfigureAwait(false))
         {
-            int? countryID = await semerkandDBAccess.GetCountryIDByName(countryName, cancellationToken).ConfigureAwait(false);
+            int? countryID = await semerkandRepository.GetCountryIDByName(countryName, cancellationToken).ConfigureAwait(false);
 
             // country found
             if (countryID is not null)
                 return countryID.Value;
 
             // unknown country
-            if (await semerkandDBAccess.HasCountryData(cancellationToken).ConfigureAwait(false))
+            if (await semerkandRepository.HasCountryData(cancellationToken).ConfigureAwait(false))
             {
                 return throwIfNotFound
                     ? throw new ArgumentException($"{nameof(countryName)} could not be found!")
@@ -187,7 +187,7 @@ public class SemerkandDynamicPrayerTimeProvider(
             // load countries through HTTP request and save them
             var countryResponseDTOs = await semerkandApiService.GetCountries(cancellationToken).ConfigureAwait(false);
             var countries = countryResponseDTOs.Select(x => new SemerkandCountry { ID = x.ID, Name = x.Name });
-            await semerkandDBAccess.InsertCountries(countries, cancellationToken).ConfigureAwait(false);
+            await semerkandRepository.InsertCountries(countries, cancellationToken).ConfigureAwait(false);
 
             return countryResponseDTOs.FirstOrDefault(x => x.Name == countryName)?.ID
                 ?? (throwIfNotFound

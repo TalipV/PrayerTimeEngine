@@ -8,7 +8,7 @@ using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.Mawaqit.Models.En
 namespace PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.Mawaqit.Services;
 
 public class MawaqitMosquePrayerTimeProvider(
-        IMawaqitDBAccess mawaqitDBAccess,
+        IMawaqitRepository mawaqitRepository,
         IMawaqitApiService mawaqitApiService,
         ISystemInfoService systemInfoService
 ) : IMosquePrayerTimeProvider
@@ -25,7 +25,7 @@ public class MawaqitMosquePrayerTimeProvider(
     {
         using (await getPrayerTimesLocker.LockAsync(externalID, cancellationToken).ConfigureAwait(false))
         {
-            MawaqitMosqueDailyPrayerTimes prayerTimes = await mawaqitDBAccess.GetPrayerTimesAsync(date, externalID, cancellationToken).ConfigureAwait(false);
+            MawaqitMosqueDailyPrayerTimes prayerTimes = await mawaqitRepository.GetPrayerTimesAsync(date, externalID, cancellationToken).ConfigureAwait(false);
 
             if (prayerTimes is null)
             {
@@ -37,7 +37,7 @@ public class MawaqitMosquePrayerTimeProvider(
                     .Where(x => date <= x.Date && x.Date < date.PlusDays(MAX_EXTENT_OF_RETRIEVED_DAYS))
                     .ToList();
 
-                await mawaqitDBAccess.InsertPrayerTimesAsync(prayerTimesLst, cancellationToken).ConfigureAwait(false);
+                await mawaqitRepository.InsertPrayerTimesAsync(prayerTimesLst, cancellationToken).ConfigureAwait(false);
                 prayerTimes = prayerTimesLst.FirstOrDefault(x => x.Date == date)
                     ?? throw new Exception($"Prayer times for the {date} could not be found for an unknown reason.");
             }

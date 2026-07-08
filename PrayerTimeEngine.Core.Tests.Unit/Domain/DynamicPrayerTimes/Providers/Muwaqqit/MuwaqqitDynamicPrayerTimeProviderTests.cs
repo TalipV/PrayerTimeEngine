@@ -14,18 +14,18 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.DynamicPrayerTimes.Providers.M
 
 public class MuwaqqitDynamicPrayerTimeProviderTests : BaseTest
 {
-    private readonly IMuwaqqitDBAccess _muwaqqitDBAccessMock;
+    private readonly IMuwaqqitRepository _muwaqqitRepositoryMock;
     private readonly IMuwaqqitApiService _muwaqqitApiServiceMock;
     private readonly MuwaqqitDynamicPrayerTimeProvider _muwaqqitDynamicPrayerTimeProvider;
 
     public MuwaqqitDynamicPrayerTimeProviderTests()
     {
-        _muwaqqitDBAccessMock = Substitute.For<IMuwaqqitDBAccess>();
+        _muwaqqitRepositoryMock = Substitute.For<IMuwaqqitRepository>();
         _muwaqqitApiServiceMock = Substitute.For<IMuwaqqitApiService>();
 
         _muwaqqitDynamicPrayerTimeProvider =
             new MuwaqqitDynamicPrayerTimeProvider(
-                _muwaqqitDBAccessMock,
+                _muwaqqitRepositoryMock,
                 _muwaqqitApiServiceMock,
                 new TimeTypeAttributeService());
     }

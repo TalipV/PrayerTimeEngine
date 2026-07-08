@@ -6,9 +6,9 @@ using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Muwaqqit.Models.
 
 namespace PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Muwaqqit.Services;
 
-public class MuwaqqitDBAccess(
+public class MuwaqqitRepository(
         IDbContextFactory<AppDbContext> dbContextFactory
-    ) : IMuwaqqitDBAccess, IPrayerTimeCacheCleaner
+    ) : IMuwaqqitRepository, IPrayerTimeCacheCleaner
 {
     public async Task<List<MuwaqqitDailyPrayerTimes>> GetAllTimes(CancellationToken cancellationToken)
     {

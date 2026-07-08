@@ -22,7 +22,7 @@ public class MyMosqMosquePrayerTimeProviderTests : BaseTest
             configureServiceCollection: serviceCollection =>
             {
                 serviceCollection.AddSingleton(GetHandledDbContextFactory());
-                serviceCollection.AddSingleton<IMyMosqDBAccess, MyMosqDBAccess>();
+                serviceCollection.AddSingleton<IMyMosqRepository, MyMosqRepository>();
                 serviceCollection.AddSingleton<IMyMosqApiService, MyMosqApiService>(factory => SubstitutionHelper.GetMockedMyMosqApiService());
                 serviceCollection.AddSingleton<MyMosqMosquePrayerTimeProvider>();
             });
@@ -68,7 +68,7 @@ public class MyMosqMosquePrayerTimeProviderTests : BaseTest
             configureServiceCollection: serviceCollection =>
             {
                 serviceCollection.AddSingleton(GetHandledDbContextFactory());
-                serviceCollection.AddTransient<IMyMosqDBAccess, MyMosqDBAccess>();
+                serviceCollection.AddTransient<IMyMosqRepository, MyMosqRepository>();
                 serviceCollection.AddTransient<IMyMosqApiService, MyMosqApiService>();
                 serviceCollection.AddSingleton<IWebSocketClientFactory, WebSocketClientFactory>();
                 serviceCollection.AddTransient<IWebSocketClient, WebSocketClient>(factory =>
@@ -100,7 +100,7 @@ public class MyMosqMosquePrayerTimeProviderTests : BaseTest
             configureServiceCollection: serviceCollection =>
             {
                 serviceCollection.AddSingleton(GetHandledDbContextFactory());
-                serviceCollection.AddTransient<IMyMosqDBAccess, MyMosqDBAccess>();
+                serviceCollection.AddTransient<IMyMosqRepository, MyMosqRepository>();
                 serviceCollection.AddTransient<IMyMosqApiService, MyMosqApiService>();
                 serviceCollection.AddSingleton<IWebSocketClientFactory, WebSocketClientFactory>();
                 serviceCollection.AddTransient<IWebSocketClient, WebSocketClient>(factory =>

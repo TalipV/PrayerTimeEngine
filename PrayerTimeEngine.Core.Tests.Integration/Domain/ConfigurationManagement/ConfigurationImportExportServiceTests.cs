@@ -18,7 +18,7 @@ public class ConfigurationImportExportServiceTests : BaseTest
             serviceCollection =>
             {
                 serviceCollection.AddSingleton(GetHandledDbContextFactory());
-                serviceCollection.AddSingleton<IProfileDBAccess, ProfileDBAccess>();
+                serviceCollection.AddSingleton<IProfileRepository, ProfileRepository>();
                 serviceCollection.AddSingleton<ConfigurationImportExportService>();
             });
     }

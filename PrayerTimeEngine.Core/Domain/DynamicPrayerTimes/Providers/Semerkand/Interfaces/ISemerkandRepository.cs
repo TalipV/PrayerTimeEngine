@@ -3,7 +3,7 @@ using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Semerkand.Models
 
 namespace PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Semerkand.Interfaces;
 
-public interface ISemerkandDBAccess
+public interface ISemerkandRepository
 {
     public Task<List<SemerkandCountry>> GetCountries(CancellationToken cancellationToken);
     public Task<List<SemerkandCity>> GetCitiesByCountryID(int countryID, CancellationToken cancellationToken);

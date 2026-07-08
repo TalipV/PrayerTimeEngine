@@ -48,7 +48,7 @@ public class SemerkandDynamicPrayerTimeProviderBenchmark
     {
         // to make sure that before the benchmark the data is gotten from the APIService and stored in the db
         new SemerkandDynamicPrayerTimeProvider(
-                new SemerkandDBAccess(dbContextFactory),
+                new SemerkandRepository(dbContextFactory),
                 SubstitutionHelper.GetMockedSemerkandApiService(),
                 Substitute.For<IPlaceService>(),
                 Substitute.For<ILogger<SemerkandDynamicPrayerTimeProvider>>()
@@ -59,7 +59,7 @@ public class SemerkandDynamicPrayerTimeProviderBenchmark
         mockedSemerkandApiService.ReturnsForAll<Task<SemerkandDailyPrayerTimes>>((callInfo) => throw new Exception("Don't use this!"));
 
         return new SemerkandDynamicPrayerTimeProvider(
-                new SemerkandDBAccess(dbContextFactory),
+                new SemerkandRepository(dbContextFactory),
                 mockedSemerkandApiService,
                 Substitute.For<IPlaceService>(),
                 Substitute.For<ILogger<SemerkandDynamicPrayerTimeProvider>>()
@@ -69,7 +69,7 @@ public class SemerkandDynamicPrayerTimeProviderBenchmark
     private static SemerkandDynamicPrayerTimeProvider getSemerkandDynamicPrayerTimeProvider_DataFromApi()
     {
         // db doesn't return any data
-        var semerkandDbAccessMock = Substitute.For<ISemerkandDBAccess>();
+        var semerkandDbAccessMock = Substitute.For<ISemerkandRepository>();
         semerkandDbAccessMock.GetCountries(Arg.Any<CancellationToken>()).Returns([]);
         semerkandDbAccessMock.GetCitiesByCountryID(Arg.Any<int>(), Arg.Any<CancellationToken>()).Returns([]);
         semerkandDbAccessMock.GetTimesByDateAndCityID(Arg.Any<ZonedDateTime>(), Arg.Any<int>(), Arg.Any<CancellationToken>()).ReturnsNull<SemerkandDailyPrayerTimes>();

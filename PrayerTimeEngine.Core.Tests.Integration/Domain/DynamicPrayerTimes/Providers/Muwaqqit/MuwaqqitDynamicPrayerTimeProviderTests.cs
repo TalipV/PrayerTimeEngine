@@ -28,8 +28,8 @@ public class MuwaqqitDynamicPrayerTimeProviderTests : BaseTest
                 serviceCollection.AddSingleton(Substitute.For<IPlaceService>());
                 serviceCollection.AddSingleton<TimeTypeAttributeService>();
 
-                serviceCollection.AddSingleton(Substitute.For<ILogger<MuwaqqitDBAccess>>());
-                serviceCollection.AddSingleton<IMuwaqqitDBAccess, MuwaqqitDBAccess>();
+                serviceCollection.AddSingleton(Substitute.For<ILogger<MuwaqqitRepository>>());
+                serviceCollection.AddSingleton<IMuwaqqitRepository, MuwaqqitRepository>();
                 serviceCollection.AddSingleton(SubstitutionHelper.GetMockedMuwaqqitApiService());
                 serviceCollection.AddSingleton(Substitute.For<ILogger<MuwaqqitDynamicPrayerTimeProvider>>());
                 serviceCollection.AddSingleton<MuwaqqitDynamicPrayerTimeProvider>();

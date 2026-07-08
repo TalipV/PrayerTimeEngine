@@ -8,15 +8,15 @@ using PrayerTimeEngine.Core.Tests.Common.TestData;
 
 namespace PrayerTimeEngine.Core.Tests.Unit.Domain.DynamicPrayerTimes.Providers.Muwaqqit;
 
-public class MuwaqqitDBAccessTests : BaseTest
+public class MuwaqqitRepositoryTests : BaseTest
 {
     private readonly IDbContextFactory<AppDbContext> _dbContextFactory;
-    private readonly MuwaqqitDBAccess _muwaqqitDBAccess;
+    private readonly MuwaqqitRepository _muwaqqitRepository;
 
-    public MuwaqqitDBAccessTests()
+    public MuwaqqitRepositoryTests()
     {
         _dbContextFactory = GetHandledDbContextFactory();
-        _muwaqqitDBAccess = new MuwaqqitDBAccess(_dbContextFactory);
+        _muwaqqitRepository = new MuwaqqitRepository(_dbContextFactory);
     }
 
     [Fact]
@@ -51,7 +51,7 @@ public class MuwaqqitDBAccessTests : BaseTest
         await TestArrangeDbContext.SaveChangesAsync();
 
         // ACT
-        var retrievedTime = await _muwaqqitDBAccess.GetPrayerTimesAsync(
+        var retrievedTime = await _muwaqqitRepository.GetPrayerTimesAsync(
             muwaqqitTime.Date,
             muwaqqitTime.Longitude,
             muwaqqitTime.Latitude,
@@ -94,7 +94,7 @@ public class MuwaqqitDBAccessTests : BaseTest
         };
 
         // ACT
-        await _muwaqqitDBAccess.InsertPrayerTimesAsync([newMuwaqqitTime], default);
+        await _muwaqqitRepository.InsertPrayerTimesAsync([newMuwaqqitTime], default);
 
         // ASSERT
         var insertedTime = await TestAssertDbContext.MuwaqqitPrayerTimes.FindAsync(newMuwaqqitTime.ID);
@@ -131,7 +131,7 @@ public class MuwaqqitDBAccessTests : BaseTest
         (await TestArrangeDbContext.MuwaqqitPrayerTimes.FindAsync(newTime.ID)).Should().NotBeNull();
 
         // ACT
-        await _muwaqqitDBAccess.DeleteCacheDataAsync(baseDate, default);
+        await _muwaqqitRepository.DeleteCacheDataAsync(baseDate, default);
 
         // ASSERT
         (await TestAssertDbContext.MuwaqqitPrayerTimes.FindAsync(oldTime.ID)).Should().BeNull();

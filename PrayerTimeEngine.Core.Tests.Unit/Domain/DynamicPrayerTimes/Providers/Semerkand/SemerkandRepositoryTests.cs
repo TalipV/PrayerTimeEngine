@@ -7,15 +7,15 @@ using PrayerTimeEngine.Core.Tests.Common;
 
 namespace PrayerTimeEngine.Core.Tests.Unit.Domain.DynamicPrayerTimes.Providers.Semerkand;
 
-public class SemerkandDBAccessTests : BaseTest
+public class SemerkandRepositoryTests : BaseTest
 {
     private readonly IDbContextFactory<AppDbContext> _dbContextFactory;
-    private readonly SemerkandDBAccess _semerkandDBAccess;
+    private readonly SemerkandRepository _semerkandRepository;
 
-    public SemerkandDBAccessTests()
+    public SemerkandRepositoryTests()
     {
         _dbContextFactory = GetHandledDbContextFactory();
-        _semerkandDBAccess = new SemerkandDBAccess(_dbContextFactory);
+        _semerkandRepository = new SemerkandRepository(_dbContextFactory);
     }
 
     [Fact]
@@ -24,7 +24,7 @@ public class SemerkandDBAccessTests : BaseTest
         // ARRANGE
 
         // ACT
-        var countries = await _semerkandDBAccess.GetCountries(default);
+        var countries = await _semerkandRepository.GetCountries(default);
 
         // ASSERT
         countries.Should().BeEmpty();
@@ -41,7 +41,7 @@ public class SemerkandDBAccessTests : BaseTest
         await TestArrangeDbContext.SaveChangesAsync();
 
         // ACT
-        var countries = await _semerkandDBAccess.GetCountries(default);
+        var countries = await _semerkandRepository.GetCountries(default);
 
         // ASSERT
         countries.Should().HaveCount(2);
@@ -65,7 +65,7 @@ public class SemerkandDBAccessTests : BaseTest
         await TestArrangeDbContext.SaveChangesAsync();
 
         // ACT
-        var germanCities = await _semerkandDBAccess.GetCitiesByCountryID(germany.ID, default);
+        var germanCities = await _semerkandRepository.GetCitiesByCountryID(germany.ID, default);
 
         // ASSERT
         germanCities.Should().HaveCount(2);
@@ -88,7 +88,7 @@ public class SemerkandDBAccessTests : BaseTest
         await TestArrangeDbContext.SaveChangesAsync();
 
         // ACT
-        var germanCities = await _semerkandDBAccess.GetCitiesByCountryID(germany.ID, default);
+        var germanCities = await _semerkandRepository.GetCitiesByCountryID(germany.ID, default);
 
         // ASSERT
         germanCities.Should().BeEmpty();
@@ -106,7 +106,7 @@ public class SemerkandDBAccessTests : BaseTest
         await TestArrangeDbContext.SaveChangesAsync();
 
         // ACT
-        var cities = await _semerkandDBAccess.GetCitiesByCountryID(2, default);
+        var cities = await _semerkandRepository.GetCitiesByCountryID(2, default);
 
         // ASSERT
         cities.Should().BeEmpty();
@@ -168,7 +168,7 @@ public class SemerkandDBAccessTests : BaseTest
         await TestArrangeDbContext.SaveChangesAsync();
 
         // ACT
-        var times = await _semerkandDBAccess.GetTimesByDateAndCityID(dateInUtc, gerCity1.ID, default);
+        var times = await _semerkandRepository.GetTimesByDateAndCityID(dateInUtc, gerCity1.ID, default);
 
         // ASSERT
         times.Should()
@@ -233,7 +233,7 @@ public class SemerkandDBAccessTests : BaseTest
         await TestArrangeDbContext.SaveChangesAsync();
 
         // ACT
-        var times = await _semerkandDBAccess.GetTimesByDateAndCityID(dateInUtc, 5, default);
+        var times = await _semerkandRepository.GetTimesByDateAndCityID(dateInUtc, 5, default);
 
         // ASSERT
         times.Should().BeNull();
@@ -251,7 +251,7 @@ public class SemerkandDBAccessTests : BaseTest
         ];
 
         // ACT
-        await _semerkandDBAccess.InsertCountries(newCountries, default);
+        await _semerkandRepository.InsertCountries(newCountries, default);
 
         // ASSERT
         foreach (var newCountry in newCountries)
@@ -282,8 +282,8 @@ public class SemerkandDBAccessTests : BaseTest
         ];
 
         // ACT
-        await _semerkandDBAccess.InsertCities(gerCities, default);
-        await _semerkandDBAccess.InsertCities(autCities, default);
+        await _semerkandRepository.InsertCities(gerCities, default);
+        await _semerkandRepository.InsertCities(autCities, default);
 
         // ASSERT
         foreach (var newCity in gerCities.Concat(autCities))
@@ -364,7 +364,7 @@ public class SemerkandDBAccessTests : BaseTest
         };
 
         // ACT
-        await _semerkandDBAccess.InsertPrayerTimesAsync([time1, time2, time3], default);
+        await _semerkandRepository.InsertPrayerTimesAsync([time1, time2, time3], default);
 
         // ASSERT
         (await TestAssertDbContext.SemerkandPrayerTimes.FindAsync(time1.ID)).Should().BeEquivalentTo(time1);
@@ -415,7 +415,7 @@ public class SemerkandDBAccessTests : BaseTest
         (await TestArrangeDbContext.SemerkandPrayerTimes.FindAsync(newTime.ID)).Should().NotBeNull();
 
         // ACT
-        await _semerkandDBAccess.DeleteCacheDataAsync(baseDate, default);
+        await _semerkandRepository.DeleteCacheDataAsync(baseDate, default);
 
         // ASSERT
         (await TestAssertDbContext.SemerkandPrayerTimes.FindAsync(oldTime.ID)).Should().BeNull();

@@ -17,20 +17,20 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.DynamicPrayerTimes.Providers.F
 
 public class FaziletDynamicPrayerTimeProviderTests : BaseTest
 {
-    private readonly IFaziletDBAccess _faziletDBAccessMock;
+    private readonly IFaziletRepository _faziletRepositoryMock;
     private readonly IFaziletApiService _faziletApiServiceMock;
     private readonly IPlaceService _placeServiceMock;
     private readonly FaziletDynamicPrayerTimeProvider _faziletDynamicPrayerTimeProvider;
 
     public FaziletDynamicPrayerTimeProviderTests()
     {
-        _faziletDBAccessMock = Substitute.For<IFaziletDBAccess>();
+        _faziletRepositoryMock = Substitute.For<IFaziletRepository>();
         _faziletApiServiceMock = Substitute.For<IFaziletApiService>();
         _placeServiceMock = Substitute.For<IPlaceService>();
 
         _faziletDynamicPrayerTimeProvider =
             new FaziletDynamicPrayerTimeProvider(
-                _faziletDBAccessMock,
+                _faziletRepositoryMock,
                 _faziletApiServiceMock,
                 _placeServiceMock,
                 Substitute.For<ILogger<FaziletDynamicPrayerTimeProvider>>());
@@ -50,8 +50,8 @@ public class FaziletDynamicPrayerTimeProviderTests : BaseTest
                 new GenericSettingConfiguration { TimeType = ETimeType.FajrEnd, Source = EDynamicPrayerTimeProviderType.Fazilet }
             ];
 
-        _faziletDBAccessMock.GetCountryIDByName(Arg.Is("Deutschland"), Arg.Any<CancellationToken>()).Returns(1);
-        _faziletDBAccessMock.GetCityIDByName(Arg.Is(1), Arg.Is("Berlin"), Arg.Any<CancellationToken>()).Returns(1);
+        _faziletRepositoryMock.GetCountryIDByName(Arg.Is("Deutschland"), Arg.Any<CancellationToken>()).Returns(1);
+        _faziletRepositoryMock.GetCityIDByName(Arg.Is(1), Arg.Is("Berlin"), Arg.Any<CancellationToken>()).Returns(1);
 
         var times = new FaziletDailyPrayerTimes
         {
@@ -67,7 +67,7 @@ public class FaziletDynamicPrayerTimeProviderTests : BaseTest
             Isha = dateInUtc.PlusHours(20),
         };
 
-        _faziletDBAccessMock.GetTimesByDateAndCityID(
+        _faziletRepositoryMock.GetTimesByDateAndCityID(
             Arg.Is<ZonedDateTime>(x => x == dateInUtc || x == dateInUtc.Plus(Duration.FromDays(1))),
             Arg.Any<int>(),
             Arg.Any<CancellationToken>())
@@ -83,10 +83,10 @@ public class FaziletDynamicPrayerTimeProviderTests : BaseTest
 
         _placeServiceMock.ReceivedCalls().Should().BeEmpty();
         _faziletApiServiceMock.ReceivedCalls().Should().BeEmpty();
-        await _faziletDBAccessMock.Received(1).GetCountryIDByName(Arg.Is("Deutschland"), Arg.Any<CancellationToken>());
-        await _faziletDBAccessMock.Received(1).GetCityIDByName(Arg.Is(1), Arg.Is("Berlin"), Arg.Any<CancellationToken>());
-        await _faziletDBAccessMock.Received(1).GetTimesByDateAndCityID(Arg.Is(dateInUtc), Arg.Is(1), Arg.Any<CancellationToken>());
-        await _faziletDBAccessMock.Received(1).GetTimesByDateAndCityID(Arg.Is(dateInUtc.Plus(Duration.FromDays(1))), Arg.Is(1), Arg.Any<CancellationToken>());
+        await _faziletRepositoryMock.Received(1).GetCountryIDByName(Arg.Is("Deutschland"), Arg.Any<CancellationToken>());
+        await _faziletRepositoryMock.Received(1).GetCityIDByName(Arg.Is(1), Arg.Is("Berlin"), Arg.Any<CancellationToken>());
+        await _faziletRepositoryMock.Received(1).GetTimesByDateAndCityID(Arg.Is(dateInUtc), Arg.Is(1), Arg.Any<CancellationToken>());
+        await _faziletRepositoryMock.Received(1).GetTimesByDateAndCityID(Arg.Is(dateInUtc.Plus(Duration.FromDays(1))), Arg.Is(1), Arg.Any<CancellationToken>());
     }
 
     #endregion GetPrayerTimesAsync
@@ -129,9 +129,9 @@ public class FaziletDynamicPrayerTimeProviderTests : BaseTest
             .GetPlaceBasedOnPlace(Arg.Is(completePlaceInfo), Arg.Is("tr"), Arg.Any<CancellationToken>())
             .Returns(turkishBasicPlaceInfo);
 
-        _faziletDBAccessMock.HasCountryData(Arg.Any<CancellationToken>()).Returns(true);
-        _faziletDBAccessMock.GetCountryIDByName(Arg.Is("Avusturya"), Arg.Any<CancellationToken>()).Returns(1);
-        _faziletDBAccessMock.GetCityIDByName(Arg.Is(1), Arg.Is("Innsbruck"), Arg.Any<CancellationToken>()).Returns(1);
+        _faziletRepositoryMock.HasCountryData(Arg.Any<CancellationToken>()).Returns(true);
+        _faziletRepositoryMock.GetCountryIDByName(Arg.Is("Avusturya"), Arg.Any<CancellationToken>()).Returns(1);
+        _faziletRepositoryMock.GetCityIDByName(Arg.Is(1), Arg.Is("Innsbruck"), Arg.Any<CancellationToken>()).Returns(1);
 
         // ACT
         var locationData = await _faziletDynamicPrayerTimeProvider.GetLocationInfo(completePlaceInfo, default) as FaziletLocationData;
@@ -161,12 +161,12 @@ public class FaziletDynamicPrayerTimeProviderTests : BaseTest
             TimezoneInfo = new TimezoneInfo { Name = "Europe/Istanbul" },
         };
 
-        _faziletDBAccessMock.HasCountryData(Arg.Any<CancellationToken>()).Returns(true);
-        _faziletDBAccessMock.GetCountryIDByName(Arg.Is("Türkiye"), Arg.Any<CancellationToken>()).Returns(1);
+        _faziletRepositoryMock.HasCountryData(Arg.Any<CancellationToken>()).Returns(true);
+        _faziletRepositoryMock.GetCountryIDByName(Arg.Is("Türkiye"), Arg.Any<CancellationToken>()).Returns(1);
 
         // the city is only known with the latin 'I' version of its name
-        _faziletDBAccessMock.HasCityData(Arg.Is(1), Arg.Any<CancellationToken>()).Returns(true);
-        _faziletDBAccessMock.GetCityIDByName(Arg.Is(1), Arg.Is("Istanbul"), Arg.Any<CancellationToken>()).Returns(1);
+        _faziletRepositoryMock.HasCityData(Arg.Is(1), Arg.Any<CancellationToken>()).Returns(true);
+        _faziletRepositoryMock.GetCityIDByName(Arg.Is(1), Arg.Is("Istanbul"), Arg.Any<CancellationToken>()).Returns(1);
 
         // ACT
         var locationData = await _faziletDynamicPrayerTimeProvider.GetLocationInfo(completePlaceInfo, default) as FaziletLocationData;
@@ -215,12 +215,12 @@ public class FaziletDynamicPrayerTimeProviderTests : BaseTest
             .GetPlaceBasedOnPlace(Arg.Is(completePlaceInfo), Arg.Is("tr"), Arg.Any<CancellationToken>())
             .Returns(turkishBasicPlaceInfo);
 
-        _faziletDBAccessMock.HasCountryData(Arg.Any<CancellationToken>()).Returns(true);
-        _faziletDBAccessMock.HasCityData(Arg.Is(1), Arg.Any<CancellationToken>()).Returns(true);
+        _faziletRepositoryMock.HasCountryData(Arg.Any<CancellationToken>()).Returns(true);
+        _faziletRepositoryMock.HasCityData(Arg.Is(1), Arg.Any<CancellationToken>()).Returns(true);
 
         // the country is found through its native name, the city only through its turkish name
-        _faziletDBAccessMock.GetCountryIDByName(Arg.Is("Deutschland"), Arg.Any<CancellationToken>()).Returns(1);
-        _faziletDBAccessMock.GetCityIDByName(Arg.Is(1), Arg.Is("Münih"), Arg.Any<CancellationToken>()).Returns(5);
+        _faziletRepositoryMock.GetCountryIDByName(Arg.Is("Deutschland"), Arg.Any<CancellationToken>()).Returns(1);
+        _faziletRepositoryMock.GetCityIDByName(Arg.Is(1), Arg.Is("Münih"), Arg.Any<CancellationToken>()).Returns(5);
 
         // ACT
         var locationData = await _faziletDynamicPrayerTimeProvider.GetLocationInfo(completePlaceInfo, default) as FaziletLocationData;
@@ -232,7 +232,7 @@ public class FaziletDynamicPrayerTimeProviderTests : BaseTest
 
         // the country resolution never needed the turkish names, only the city resolution did (with a single retrieval)
         await _placeServiceMock.Received(1).GetPlaceBasedOnPlace(Arg.Is(completePlaceInfo), Arg.Is("tr"), Arg.Any<CancellationToken>());
-        await _faziletDBAccessMock.DidNotReceive().GetCountryIDByName(Arg.Is("Almanya"), Arg.Any<CancellationToken>());
+        await _faziletRepositoryMock.DidNotReceive().GetCountryIDByName(Arg.Is("Almanya"), Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -253,12 +253,12 @@ public class FaziletDynamicPrayerTimeProviderTests : BaseTest
             TimezoneInfo = new TimezoneInfo { Name = "Asia/Riyadh" },
         };
 
-        _faziletDBAccessMock.HasCountryData(Arg.Any<CancellationToken>()).Returns(true);
-        _faziletDBAccessMock.GetCountryIDByName(Arg.Is("Suudi Arabistan"), Arg.Any<CancellationToken>()).Returns(1);
+        _faziletRepositoryMock.HasCountryData(Arg.Any<CancellationToken>()).Returns(true);
+        _faziletRepositoryMock.GetCountryIDByName(Arg.Is("Suudi Arabistan"), Arg.Any<CancellationToken>()).Returns(1);
 
         // Fazilet only knows the city with its special name
-        _faziletDBAccessMock.HasCityData(Arg.Is(1), Arg.Any<CancellationToken>()).Returns(true);
-        _faziletDBAccessMock.GetCityIDByName(Arg.Is(1), Arg.Is("Mekke-i Mükerreme"), Arg.Any<CancellationToken>()).Returns(1);
+        _faziletRepositoryMock.HasCityData(Arg.Is(1), Arg.Any<CancellationToken>()).Returns(true);
+        _faziletRepositoryMock.GetCityIDByName(Arg.Is(1), Arg.Is("Mekke-i Mükerreme"), Arg.Any<CancellationToken>()).Returns(1);
 
         // ACT
         var locationData = await _faziletDynamicPrayerTimeProvider.GetLocationInfo(completePlaceInfo, default) as FaziletLocationData;

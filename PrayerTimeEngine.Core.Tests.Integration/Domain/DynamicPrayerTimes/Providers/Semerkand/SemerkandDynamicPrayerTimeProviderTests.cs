@@ -26,7 +26,7 @@ public class SemerkandDynamicPrayerTimeProviderTests : BaseTest
                 serviceCollection.AddSingleton(GetHandledDbContextFactory());
                 serviceCollection.AddSingleton(Substitute.For<IPlaceService>());
 
-                serviceCollection.AddSingleton<ISemerkandDBAccess, SemerkandDBAccess>();
+                serviceCollection.AddSingleton<ISemerkandRepository, SemerkandRepository>();
                 serviceCollection.AddSingleton(SubstitutionHelper.GetMockedSemerkandApiService());
                 serviceCollection.AddSingleton(Substitute.For<ILogger<SemerkandDynamicPrayerTimeProvider>>());
                 serviceCollection.AddSingleton<SemerkandDynamicPrayerTimeProvider>();
@@ -97,7 +97,7 @@ public class SemerkandDynamicPrayerTimeProviderTests : BaseTest
                 serviceCollection.AddSingleton(GetHandledDbContextFactory());
                 serviceCollection.AddSingleton(Substitute.For<IPlaceService>());
 
-                serviceCollection.AddSingleton<ISemerkandDBAccess, SemerkandDBAccess>();
+                serviceCollection.AddSingleton<ISemerkandRepository, SemerkandRepository>();
                 serviceCollection.AddSingleton(SubstitutionHelper.GetMockedSemerkandApiService());
                 serviceCollection.AddSingleton(Substitute.For<ILogger<SemerkandDynamicPrayerTimeProvider>>());
                 serviceCollection.AddSingleton<SemerkandDynamicPrayerTimeProvider>();

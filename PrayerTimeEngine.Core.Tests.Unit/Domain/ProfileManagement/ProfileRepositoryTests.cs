@@ -13,15 +13,15 @@ using PrayerTimeEngine.Core.Tests.Common.TestData;
 
 namespace PrayerTimeEngine.Core.Tests.Unit.Domain.ProfileManagement;
 
-public class ProfileDBAccessTests : BaseTest
+public class ProfileRepositoryTests : BaseTest
 {
     private readonly IDbContextFactory<AppDbContext> _dbContextFactory;
-    private readonly ProfileDBAccess _profileDBAccess;
+    private readonly ProfileRepository _profileRepository;
 
-    public ProfileDBAccessTests()
+    public ProfileRepositoryTests()
     {
         _dbContextFactory = GetHandledDbContextFactory();
-        _profileDBAccess = new ProfileDBAccess(_dbContextFactory);
+        _profileRepository = new ProfileRepository(_dbContextFactory);
     }
 
     #region GetProfiles
@@ -40,7 +40,7 @@ public class ProfileDBAccessTests : BaseTest
         await TestArrangeDbContext.SaveChangesAsync();
 
         // ACT
-        var profiles = await _profileDBAccess.GetProfiles(default);
+        var profiles = await _profileRepository.GetProfiles(default);
 
         // ASSERT
         profiles.Should().NotBeNull().And.HaveCount(3);
@@ -63,7 +63,7 @@ public class ProfileDBAccessTests : BaseTest
         await TestArrangeDbContext.SaveChangesAsync();
 
         // ACT
-        var untracktedProfile = await _profileDBAccess.GetUntrackedReferenceOfProfile(profile.ID, default);
+        var untracktedProfile = await _profileRepository.GetUntrackedReferenceOfProfile(profile.ID, default);
 
         // ASSERT
         profile.Should().BeEquivalentTo(untracktedProfile);
@@ -77,7 +77,7 @@ public class ProfileDBAccessTests : BaseTest
     {
         // ARRANGE
         // ACT
-        var untracktedProfile = await _profileDBAccess.GetUntrackedReferenceOfProfile(500, default);
+        var untracktedProfile = await _profileRepository.GetUntrackedReferenceOfProfile(500, default);
 
         // ASSERT
         untracktedProfile.Should().BeNull();
@@ -95,7 +95,7 @@ public class ProfileDBAccessTests : BaseTest
         var profile = TestDataHelper.CreateCompleteTestDynamicProfile();
 
         // ACT
-        await _profileDBAccess.SaveProfile(profile, default);
+        await _profileRepository.SaveProfile(profile, default);
 
         // ASSERT
         var savedProfile =
@@ -147,7 +147,7 @@ public class ProfileDBAccessTests : BaseTest
             };
 
         // ACT
-        await _profileDBAccess.UpdateLocationConfig(profile, placeInfo, values, default);
+        await _profileRepository.UpdateLocationConfig(profile, placeInfo, values, default);
 
         // ASSERT
         profile.LocationConfigs.Should().HaveCount(1);
@@ -176,7 +176,7 @@ public class ProfileDBAccessTests : BaseTest
         };
 
         // ACT
-        await _profileDBAccess.UpdateTimeConfig(profile, ETimeType.FajrEnd, genericSettingConfiguration, default);
+        await _profileRepository.UpdateTimeConfig(profile, ETimeType.FajrEnd, genericSettingConfiguration, default);
 
         // ASSERT
         profile.TimeConfigs.Should().Contain(x => Equals(x.CalculationConfiguration, genericSettingConfiguration));
@@ -199,7 +199,7 @@ public class ProfileDBAccessTests : BaseTest
         profile.SequenceNo.Should().Be(1, "this is a precondition");
 
         // ACT
-        DynamicProfile copiedProfile = (await _profileDBAccess.CopyProfile(profile, default) as DynamicProfile);
+        DynamicProfile copiedProfile = (await _profileRepository.CopyProfile(profile, default) as DynamicProfile);
 
         // ASSERT
         copiedProfile.Should().NotBeNull();
@@ -272,10 +272,10 @@ public class ProfileDBAccessTests : BaseTest
         await TestArrangeDbContext.SaveChangesAsync();
         profile.ID.Should().Be(1, "this is a precondition");
         profile.SequenceNo.Should().Be(1, "this is a precondition");
-        Profile copiedProfile = await _profileDBAccess.CopyProfile(profile, default);
+        Profile copiedProfile = await _profileRepository.CopyProfile(profile, default);
 
         // ACT 
-        await _profileDBAccess.DeleteProfile(profile, default);
+        await _profileRepository.DeleteProfile(profile, default);
 
         // ASSERT
         var profiles =
@@ -299,7 +299,7 @@ public class ProfileDBAccessTests : BaseTest
     {
         // ARRANGE & ACT
         MosqueProfile copiedProfile =
-            await _profileDBAccess.CreateNewMosqueProfile(
+            await _profileRepository.CreateNewMosqueProfile(
                 EMosquePrayerTimeProviderType.Mawaqit,
                 "test-mosque",
                 default);
