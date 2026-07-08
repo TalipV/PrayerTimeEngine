@@ -145,6 +145,7 @@ public class ProfileRepository(
         DynamicProfile inputProfile,
         ProfilePlaceInfo newPlaceInfo,
         List<(EDynamicPrayerTimeProviderType DynamicPrayerTimeProvider, BaseLocationData LocationData)> locationDataByDynamicPrayerTimeProvider,
+        string newProfileName,
         CancellationToken cancellationToken)
     {
         using (AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken))
@@ -171,7 +172,7 @@ public class ProfileRepository(
                 dynamicProfile.PlaceInfo.ProfileID = dynamicProfile.ID;
                 dynamicProfile.PlaceInfo.Profile = dynamicProfile;
 
-                dynamicProfile.Name = $"{dynamicProfile.PlaceInfo?.City ?? "-"}, {dynamicProfile.SequenceNo}";
+                dynamicProfile.Name = newProfileName;
 
                 await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
             }
@@ -269,13 +270,13 @@ public class ProfileRepository(
         timeConfig.CalculationConfiguration = settings;
     }
 
-    public async Task<MosqueProfile> CreateNewMosqueProfile(EMosquePrayerTimeProviderType providerType, string externalID, CancellationToken cancellationToken)
+    public async Task<MosqueProfile> CreateNewMosqueProfile(EMosquePrayerTimeProviderType providerType, string externalID, string profileName, CancellationToken cancellationToken)
     {
         using (AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken))
         {
             var newMosqueProfile = new MosqueProfile
             {
-                Name = $"{providerType}: {externalID}",
+                Name = profileName,
                 ExternalID = externalID,
                 MosqueProviderType = providerType,
                 SequenceNo = await getNextProfileSequenceNo(dbContext, cancellationToken).ConfigureAwait(false)

@@ -312,7 +312,9 @@ public class ProfileService(
                 locationDataByDynamicPrayerTimeProvider.Add((dynamicPrayerTimeProvider, locationConfig));
         }
 
-        await profileRepository.UpdateLocationConfig(profile, placeInfo, locationDataByDynamicPrayerTimeProvider, cancellationToken);
+        string newProfileName = $"{placeInfo?.City ?? "-"}, {profile.SequenceNo}";
+
+        await profileRepository.UpdateLocationConfig(profile, placeInfo, locationDataByDynamicPrayerTimeProvider, newProfileName, cancellationToken);
     }
 
     public Task UpdateTimeConfig(DynamicProfile profile, ETimeType timeType, GenericSettingConfiguration settings, CancellationToken cancellationToken)
@@ -401,7 +403,9 @@ public class ProfileService(
 
     public Task<MosqueProfile> CreateNewMosqueProfile(EMosquePrayerTimeProviderType providerType, string externalID, CancellationToken cancellationToken)
     {
-        return profileRepository.CreateNewMosqueProfile(providerType, externalID, cancellationToken);
+        string profileName = $"{providerType}: {externalID}";
+
+        return profileRepository.CreateNewMosqueProfile(providerType, externalID, profileName, cancellationToken);
     }
 
     public DateTimeZone GetDateTimeZone(Profile profile)

@@ -147,7 +147,7 @@ public class ProfileRepositoryTests : BaseTest
             };
 
         // ACT
-        await _profileRepository.UpdateLocationConfig(profile, placeInfo, values, default);
+        await _profileRepository.UpdateLocationConfig(profile, placeInfo, values, "Test Profile Name", default);
 
         // ASSERT
         profile.LocationConfigs.Should().HaveCount(1);
@@ -302,6 +302,7 @@ public class ProfileRepositoryTests : BaseTest
             await _profileRepository.CreateNewMosqueProfile(
                 EMosquePrayerTimeProviderType.Mawaqit,
                 "test-mosque",
+                "Mawaqit: test-mosque",
                 default);
 
         // ASSERT
