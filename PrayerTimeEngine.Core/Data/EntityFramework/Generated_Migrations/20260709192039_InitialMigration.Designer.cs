@@ -10,7 +10,7 @@ using PrayerTimeEngine.Core.Data.EntityFramework;
 namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260708211734_InitialMigration")]
+    [Migration("20260709192039_InitialMigration")]
     partial class InitialMigration
     {
         /// <inheritdoc />
