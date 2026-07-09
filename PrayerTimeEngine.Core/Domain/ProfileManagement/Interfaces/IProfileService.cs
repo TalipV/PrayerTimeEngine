@@ -30,4 +30,10 @@ public interface IProfileService
     Task<MosqueProfile> CreateNewMosqueProfile(EMosquePrayerTimeProviderType selectedItem, string externalID, CancellationToken cancellationToken);
     DateTimeZone GetDateTimeZone(Profile profile);
     Task ChangeProfileName(Profile profile, string newProfileName, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// increasing counter per profile, bumped on every mutation.
+    /// Allows cache validity to be checked without a DB round-trip.
+    /// </summary>
+    long GetProfileVersion(int profileID);
 }

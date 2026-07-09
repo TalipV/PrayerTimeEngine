@@ -34,18 +34,18 @@ public class DynamicPrayerTimeProviderManager(
 
     private sealed record CachedDaySetEntry(
         ZonedDateTime Date,
-        Profile ProfileSnapshot,
+        long ProfileVersion,
         DynamicPrayerTimesDaySet DaySet);
 
     private bool tryGetCachedDaySet(
-        DynamicProfile profile,
+        int profileID,
         ZonedDateTime date,
         out DynamicPrayerTimesDaySet daySet)
     {
-        if (_cachedDaySetByProfileID.TryGetValue(profile.ID, out CachedDaySetEntry cacheEntry)
+        if (_cachedDaySetByProfileID.TryGetValue(profileID, out CachedDaySetEntry cacheEntry)
             && cacheEntry.Date == date
             // reusing the cache is only valid as long as the profile configuration stayed the same
-            && Equals(cacheEntry.ProfileSnapshot, profile))
+            && cacheEntry.ProfileVersion == profileService.GetProfileVersion(profileID))
         {
             daySet = cacheEntry.DaySet;
             return true;
@@ -59,13 +59,8 @@ public class DynamicPrayerTimeProviderManager(
     {
         date = date.LocalDateTime.Date.AtStartOfDayInZone(date.Zone);
 
-        Profile profile = await profileService.GetUntrackedReferenceOfProfile(profileID, cancellationToken).ConfigureAwait(false)
-            ?? throw new Exception($"The Profile with the ID '{profileID}' could not be found");
-
-        DynamicProfile dynamicProfile = profile as DynamicProfile
-            ?? throw new Exception($"The Profile with the ID '{profileID}' is not a {nameof(DynamicProfile)}");
-
-        if (tryGetCachedDaySet(dynamicProfile, date, out DynamicPrayerTimesDaySet prayerTimeEntity))
+        // Fast path: version check is in-memory, no DB round-trip needed
+        if (tryGetCachedDaySet(profileID, date, out DynamicPrayerTimesDaySet prayerTimeEntity))
         {
             prayerTimeEntity.DataCalculationTimestamp = systemInfoService.GetCurrentZonedDateTime();
 
@@ -75,6 +70,12 @@ public class DynamicPrayerTimeProviderManager(
             };
         }
 
+        Profile profile = await profileService.GetUntrackedReferenceOfProfile(profileID, cancellationToken).ConfigureAwait(false)
+            ?? throw new Exception($"The Profile with the ID '{profileID}' could not be found");
+
+        DynamicProfile dynamicProfile = profile as DynamicProfile
+            ?? throw new Exception($"The Profile with the ID '{profileID}' is not a {nameof(DynamicProfile)}");
+
         prayerTimeEntity = new DynamicPrayerTimesDaySet
         {
             PreviousDay = new DynamicPrayerTimesDay(),
@@ -82,18 +83,25 @@ public class DynamicPrayerTimeProviderManager(
             NextDay = new DynamicPrayerTimesDay(),
         };
 
-        List<DynamicPrayerTimeCalculationErrorVO> calculationErrors = [];
+        // the three days are calculated in parallel (and within each day the providers are requested in parallel)
+        Task<List<DynamicPrayerTimeCalculationErrorVO>> currentDayTask = calculateInternal(prayerTimeEntity.CurrentDay, dynamicProfile, date, cancellationToken);
+        Task<List<DynamicPrayerTimeCalculationErrorVO>> previousDayTask = calculateInternal(prayerTimeEntity.PreviousDay, dynamicProfile, date.Plus(Duration.FromDays(-1)), cancellationToken);
+        Task<List<DynamicPrayerTimeCalculationErrorVO>> nextDayTask = calculateInternal(prayerTimeEntity.NextDay, dynamicProfile, date.Plus(Duration.FromDays(1)), cancellationToken);
 
-        await calculateInternal(prayerTimeEntity.CurrentDay, dynamicProfile, date, calculationErrors, cancellationToken).ConfigureAwait(false);
-        await calculateInternal(prayerTimeEntity.PreviousDay, dynamicProfile, date.Plus(Duration.FromDays(-1)), calculationErrors, cancellationToken).ConfigureAwait(false);
-        await calculateInternal(prayerTimeEntity.NextDay, dynamicProfile, date.Plus(Duration.FromDays(1)), calculationErrors, cancellationToken).ConfigureAwait(false);
+        await Task.WhenAll(currentDayTask, previousDayTask, nextDayTask).ConfigureAwait(false);
+
+        List<DynamicPrayerTimeCalculationErrorVO> calculationErrors =
+            [.. currentDayTask.Result, .. previousDayTask.Result, .. nextDayTask.Result];
 
         prayerTimeEntity.DataCalculationTimestamp = systemInfoService.GetCurrentZonedDateTime();
 
         // erroneous results are not cached so that the next request retries the calculation
         if (calculationErrors.Count == 0)
         {
-            _cachedDaySetByProfileID[dynamicProfile.ID] = new CachedDaySetEntry(date, dynamicProfile, prayerTimeEntity);
+            _cachedDaySetByProfileID[dynamicProfile.ID] = new CachedDaySetEntry(
+                date,
+                profileService.GetProfileVersion(dynamicProfile.ID),
+                prayerTimeEntity);
         }
 
         // execute without awaiting because we don't want to await and block for this side quest
@@ -106,16 +114,13 @@ public class DynamicPrayerTimeProviderManager(
         };
     }
 
-    private async Task calculateInternal(
-        DynamicPrayerTimesDay targetSet, 
-        DynamicProfile profile, 
+    private async Task<List<DynamicPrayerTimeCalculationErrorVO>> calculateInternal(
+        DynamicPrayerTimesDay targetSet,
+        DynamicProfile profile,
         ZonedDateTime date,
-        List<DynamicPrayerTimeCalculationErrorVO> calculationErrors,
         CancellationToken ct)
     {
         var (PrayerTimes, CalculationErrors) = await calculateComplexTypes(profile, date, ct).ConfigureAwait(false);
-
-        calculationErrors.AddRange(CalculationErrors);
 
         foreach (var (type, time) in PrayerTimes)
         {
@@ -125,6 +130,8 @@ public class DynamicPrayerTimeProviderManager(
 
         foreach (var (type, time) in calculateSimpleTypes(profile, targetSet))
             targetSet.SetSpecificPrayerTimeDateTime(type, time);
+
+        return CalculationErrors;
     }
 
     private async Task cleanUpOldCacheData(CancellationToken cancellationToken)

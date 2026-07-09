@@ -77,7 +77,9 @@ public class FaziletDynamicPrayerTimeProvider(
         return prayerTimes;
     }
 
-    private static readonly AsyncKeyedLocker<(ZonedDateTime date, int cityID)> getPrayerTimesLocker = new(o =>
+    // locked per city (without the date) so that parallel calculations of multiple days
+    // don't trigger redundant API fetches: the first one fills the db cache, the others then hit it
+    private static readonly AsyncKeyedLocker<int> getPrayerTimesLocker = new(o =>
     {
         o.MaxCount = 1;
         o.PoolSize = 20;
@@ -86,9 +88,7 @@ public class FaziletDynamicPrayerTimeProvider(
 
     private async Task<FaziletDailyPrayerTimes> getPrayerTimesByDateAndCityID(ZonedDateTime date, int cityID, CancellationToken cancellationToken)
     {
-        var lockTuple = (date, cityID);
-
-        using (await getPrayerTimesLocker.LockAsync(lockTuple, cancellationToken).ConfigureAwait(false))
+        using (await getPrayerTimesLocker.LockAsync(cityID, cancellationToken).ConfigureAwait(false))
         {
             FaziletDailyPrayerTimes prayerTimes = await faziletRepository.GetTimesByDateAndCityID(date, cityID, cancellationToken).ConfigureAwait(false);
 

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using NodaTime;
 using PrayerTimeEngine.Core.Common.Enum;
+using System.Collections.Concurrent;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Models;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Models;
@@ -21,6 +22,12 @@ public class ProfileService(
         ILogger<ProfileService> logger
     ) : IProfileService
 {
+    private readonly ConcurrentDictionary<int, long> _profileVersions = new();
+
+    public long GetProfileVersion(int profileID) => _profileVersions.GetValueOrDefault(profileID, 0L);
+
+    private void bumpProfileVersion(int profileID) => _profileVersions.AddOrUpdate(profileID, 1L, (_, v) => v + 1L);
+
     public async Task<List<Profile>> GetProfiles(CancellationToken cancellationToken)
     {
         List<Profile> profiles = await profileRepository.GetProfiles(cancellationToken).ConfigureAwait(false);
@@ -34,9 +41,11 @@ public class ProfileService(
         return profiles;
     }
 
-    public Task SaveProfile(Profile profile, CancellationToken cancellationToken)
+    public async Task SaveProfile(Profile profile, CancellationToken cancellationToken)
     {
-        return profileRepository.SaveProfile(profile, cancellationToken);
+        await profileRepository.SaveProfile(profile, cancellationToken).ConfigureAwait(false);
+        if (profile.ID > 0)
+            bumpProfileVersion(profile.ID);
     }
 
     private static DynamicProfile getDefaultProfile()
@@ -267,9 +276,10 @@ public class ProfileService(
         return profileRepository.CopyProfile(profile, cancellationToken);
     }
 
-    public Task DeleteProfile(Profile profile, CancellationToken cancellationToken)
+    public async Task DeleteProfile(Profile profile, CancellationToken cancellationToken)
     {
-        return profileRepository.DeleteProfile(profile, cancellationToken);
+        await profileRepository.DeleteProfile(profile, cancellationToken).ConfigureAwait(false);
+        bumpProfileVersion(profile.ID);
     }
 
     public GenericSettingConfiguration GetTimeConfig(DynamicProfile profile, ETimeType timeType)
@@ -315,11 +325,13 @@ public class ProfileService(
         string newProfileName = $"{placeInfo?.City ?? "-"}, {profile.SequenceNo}";
 
         await profileRepository.UpdateLocationConfig(profile, placeInfo, locationDataByDynamicPrayerTimeProvider, newProfileName, cancellationToken);
+        bumpProfileVersion(profile.ID);
     }
 
-    public Task UpdateTimeConfig(DynamicProfile profile, ETimeType timeType, GenericSettingConfiguration settings, CancellationToken cancellationToken)
+    public async Task UpdateTimeConfig(DynamicProfile profile, ETimeType timeType, GenericSettingConfiguration settings, CancellationToken cancellationToken)
     {
-        return profileRepository.UpdateTimeConfig(profile, timeType, settings, cancellationToken);
+        await profileRepository.UpdateTimeConfig(profile, timeType, settings, cancellationToken).ConfigureAwait(false);
+        bumpProfileVersion(profile.ID);
     }
 
     public string GetLocationDataDisplayText(DynamicProfile profile)
@@ -419,8 +431,9 @@ public class ProfileService(
         };
     }
 
-    public Task ChangeProfileName(Profile profile, string newProfileName, CancellationToken cancellationToken)
+    public async Task ChangeProfileName(Profile profile, string newProfileName, CancellationToken cancellationToken)
     {
-        return profileRepository.ChangeProfileName(profile, newProfileName, cancellationToken);
+        await profileRepository.ChangeProfileName(profile, newProfileName, cancellationToken).ConfigureAwait(false);
+        bumpProfileVersion(profile.ID);
     }
 }
