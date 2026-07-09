@@ -84,7 +84,9 @@ public class SemerkandDynamicPrayerTimeProvider(
         return prayerTimes;
     }
 
-    private static readonly AsyncKeyedLocker<(ZonedDateTime date, int cityID)> getPrayerTimesLocker = new(o =>
+    // locked per city (without the date) so that parallel calculations of multiple days
+    // don't trigger redundant API fetches: the first one fills the db cache, the others then hit it
+    private static readonly AsyncKeyedLocker<int> getPrayerTimesLocker = new(o =>
     {
         o.PoolSize = 20;
         o.PoolInitialFill = 1;
@@ -94,9 +96,7 @@ public class SemerkandDynamicPrayerTimeProvider(
 
     private async Task<SemerkandDailyPrayerTimes> getPrayerTimesByDateAndCityID(ZonedDateTime date, string timezone, int cityID, CancellationToken cancellationToken)
     {
-        var lockTuple = (date, cityID);
-
-        using (await getPrayerTimesLocker.LockAsync(lockTuple, cancellationToken).ConfigureAwait(false))
+        using (await getPrayerTimesLocker.LockAsync(cityID, cancellationToken).ConfigureAwait(false))
         {
             SemerkandDailyPrayerTimes prayerTimes =
                 await semerkandRepository.GetTimesByDateAndCityID(

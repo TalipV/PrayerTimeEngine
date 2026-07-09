@@ -1,0 +1,1537 @@
+{
+  "PrayerTimeEngine.BenchmarkDotNet/BenchmarkConfig.cs": {
+    "mtime": 1726427261.701679,
+    "ast_hash": "e13e7ff66a222ba21d1db264e9869195",
+    "semantic_hash": "e13e7ff66a222ba21d1db264e9869195"
+  },
+  "PrayerTimeEngine.BenchmarkDotNet/Benchmarks/FaziletDynamicPrayerTimeProviderBenchmark.cs": {
+    "mtime": 1783545627.3984404,
+    "ast_hash": "e9cdce300f928c625708739cbdee11a4",
+    "semantic_hash": "e9cdce300f928c625708739cbdee11a4"
+  },
+  "PrayerTimeEngine.BenchmarkDotNet/Benchmarks/MawaqitMosquePrayerTimeProviderBenchmark.cs": {
+    "mtime": 1783545627.433815,
+    "ast_hash": "d1c6372174bed6e9e5386683366afc29",
+    "semantic_hash": "d1c6372174bed6e9e5386683366afc29"
+  },
+  "PrayerTimeEngine.BenchmarkDotNet/Benchmarks/MuwaqqitDynamicPrayerTimeProviderBenchmark.cs": {
+    "mtime": 1783545627.4694014,
+    "ast_hash": "1b80600be3c957f30a8aaa8b407792a3",
+    "semantic_hash": "1b80600be3c957f30a8aaa8b407792a3"
+  },
+  "PrayerTimeEngine.BenchmarkDotNet/Benchmarks/MyMosqMosquePrayerTimeProviderBenchmark.cs": {
+    "mtime": 1783545627.507376,
+    "ast_hash": "69f6cbcd0700aa6fd6795426b8798a11",
+    "semantic_hash": "69f6cbcd0700aa6fd6795426b8798a11"
+  },
+  "PrayerTimeEngine.BenchmarkDotNet/Benchmarks/SemerkandDynamicPrayerTimeProviderBenchmark.cs": {
+    "mtime": 1783545627.5464113,
+    "ast_hash": "8aa9425f6142bfa77d8d96e59f8790b8",
+    "semantic_hash": "8aa9425f6142bfa77d8d96e59f8790b8"
+  },
+  "PrayerTimeEngine.BenchmarkDotNet/PrayerTimeEngine.BenchmarkDotNet.csproj": {
+    "mtime": 1783409984.0538344,
+    "ast_hash": "e15a662248d14990491f5d41e8fe1daa",
+    "semantic_hash": "e15a662248d14990491f5d41e8fe1daa"
+  },
+  "PrayerTimeEngine.BenchmarkDotNet/Program.cs": {
+    "mtime": 1735978006.0631213,
+    "ast_hash": "251cee0920777d577720771efc952fb3",
+    "semantic_hash": "251cee0920777d577720771efc952fb3"
+  },
+  "PrayerTimeEngine.Core.Tests.Common/AssertionConfigurations.cs": {
+    "mtime": 1758448460.190169,
+    "ast_hash": "a857649fb7b583e3fac4f91bfa1c7eb4",
+    "semantic_hash": "a857649fb7b583e3fac4f91bfa1c7eb4"
+  },
+  "PrayerTimeEngine.Core.Tests.Common/BaseTest.cs": {
+    "mtime": 1745228284.4560263,
+    "ast_hash": "2d8a290e448f1b2f408a929319093bbd",
+    "semantic_hash": "2d8a290e448f1b2f408a929319093bbd"
+  },
+  "PrayerTimeEngine.Core.Tests.Common/GlobalUsings.cs": {
+    "mtime": 1726427261.8746803,
+    "ast_hash": "ecaa88f7fa0bf610a5a26cf545dcd3aa",
+    "semantic_hash": "ecaa88f7fa0bf610a5a26cf545dcd3aa"
+  },
+  "PrayerTimeEngine.Core.Tests.Common/MockHttpMessageHandler.cs": {
+    "mtime": 1726427261.8746803,
+    "ast_hash": "1baaa2f50b9851756711dd2266292b00",
+    "semantic_hash": "1baaa2f50b9851756711dd2266292b00"
+  },
+  "PrayerTimeEngine.Core.Tests.Common/PrayerTimeEngine.Core.Tests.Common.csproj": {
+    "mtime": 1783409987.4492824,
+    "ast_hash": "dc4e86230fbd20c0ff90a79b9b5457af",
+    "semantic_hash": "dc4e86230fbd20c0ff90a79b9b5457af"
+  },
+  "PrayerTimeEngine.Core.Tests.Common/TestData/SubstitutionHelper.cs": {
+    "mtime": 1783448593.9879057,
+    "ast_hash": "aa1272636983ab996909cea5473f367f",
+    "semantic_hash": "aa1272636983ab996909cea5473f367f"
+  },
+  "PrayerTimeEngine.Core.Tests.Common/TestData/TestDataHelper.cs": {
+    "mtime": 1783552992.4877036,
+    "ast_hash": "d151f005be686b596c957305b90a815f",
+    "semantic_hash": "d151f005be686b596c957305b90a815f"
+  },
+  "PrayerTimeEngine.Core.Tests.Integration/Domain/ConfigurationManagement/ConfigurationImportExportServiceTests.cs": {
+    "mtime": 1783545628.341324,
+    "ast_hash": "49a3ef4bc97c77c8371705d68e75c452",
+    "semantic_hash": "49a3ef4bc97c77c8371705d68e75c452"
+  },
+  "PrayerTimeEngine.Core.Tests.Integration/Domain/DynamicPrayerTimes/DynamicPrayerTimeProviderFactoryTests.cs": {
+    "mtime": 1726427261.8776796,
+    "ast_hash": "2e3b8a80f822228ff6888744f94849ef",
+    "semantic_hash": "2e3b8a80f822228ff6888744f94849ef"
+  },
+  "PrayerTimeEngine.Core.Tests.Integration/Domain/DynamicPrayerTimes/Management/DynamicPrayerTimeProviderManagerTests.cs": {
+    "mtime": 1726427261.8786793,
+    "ast_hash": "ff8b6d560c689d62c5bd198e9f2ae359",
+    "semantic_hash": "ff8b6d560c689d62c5bd198e9f2ae359"
+  },
+  "PrayerTimeEngine.Core.Tests.Integration/Domain/DynamicPrayerTimes/Providers/Fazilet/FaziletDynamicPrayerTimeProviderTests.cs": {
+    "mtime": 1783545628.379909,
+    "ast_hash": "4aa674858a4a4968d31c547b397544a1",
+    "semantic_hash": "4aa674858a4a4968d31c547b397544a1"
+  },
+  "PrayerTimeEngine.Core.Tests.Integration/Domain/DynamicPrayerTimes/Providers/Muwaqqit/MuwaqqitDynamicPrayerTimeProviderTests.cs": {
+    "mtime": 1783545628.416762,
+    "ast_hash": "352467c94e0c21f3f443cbd7214a7e48",
+    "semantic_hash": "352467c94e0c21f3f443cbd7214a7e48"
+  },
+  "PrayerTimeEngine.Core.Tests.Integration/Domain/DynamicPrayerTimes/Providers/Semerkand/SemerkandDynamicPrayerTimeProviderTests.cs": {
+    "mtime": 1783545628.4534142,
+    "ast_hash": "96e7647d4de76dbb6259e062889891e9",
+    "semantic_hash": "96e7647d4de76dbb6259e062889891e9"
+  },
+  "PrayerTimeEngine.Core.Tests.Integration/Domain/MosquePrayerTimes/Management/MosquePrayerTimeProviderManagerTests.cs": {
+    "mtime": 1726427261.8846805,
+    "ast_hash": "9157c30dee0ed357aaeb27e5bc8fa898",
+    "semantic_hash": "9157c30dee0ed357aaeb27e5bc8fa898"
+  },
+  "PrayerTimeEngine.Core.Tests.Integration/Domain/MosquePrayerTimes/MosquePrayerTimeProviderFactoryTests.cs": {
+    "mtime": 1726427261.8846805,
+    "ast_hash": "db408af964cbaa882dcfa0f496d9e383",
+    "semantic_hash": "db408af964cbaa882dcfa0f496d9e383"
+  },
+  "PrayerTimeEngine.Core.Tests.Integration/Domain/MosquePrayerTimes/Providers/Mawaqit/MawaqitMosquePrayerTimeProviderTests.cs": {
+    "mtime": 1783545628.492386,
+    "ast_hash": "bb1d7cf9b1b9984e4968326b0cfe240e",
+    "semantic_hash": "bb1d7cf9b1b9984e4968326b0cfe240e"
+  },
+  "PrayerTimeEngine.Core.Tests.Integration/Domain/MosquePrayerTimes/Providers/MyMosq/MyMosqMosquePrayerTimeProviderTests.cs": {
+    "mtime": 1783545628.5267198,
+    "ast_hash": "e3faa5b8a29c97db7fdab2d1f2a8b4a8",
+    "semantic_hash": "e3faa5b8a29c97db7fdab2d1f2a8b4a8"
+  },
+  "PrayerTimeEngine.Core.Tests.Integration/Domain/PlaceManagement/PlaceServiceTests.cs": {
+    "mtime": 1726427261.8876798,
+    "ast_hash": "6d1c3a079ff109eff0a0f9845aa85d2b",
+    "semantic_hash": "6d1c3a079ff109eff0a0f9845aa85d2b"
+  },
+  "PrayerTimeEngine.Core.Tests.Integration/Domain/ProfileManagement/ProfileServiceTests.cs": {
+    "mtime": 1783545628.5619588,
+    "ast_hash": "6c30a39158cb112a971e9146e57bd0d5",
+    "semantic_hash": "6c30a39158cb112a971e9146e57bd0d5"
+  },
+  "PrayerTimeEngine.Core.Tests.Integration/GlobalUsings.cs": {
+    "mtime": 1758448460.197651,
+    "ast_hash": "09fd80a4ac32a1fece424e68bc49f8ba",
+    "semantic_hash": "09fd80a4ac32a1fece424e68bc49f8ba"
+  },
+  "PrayerTimeEngine.Core.Tests.Integration/PrayerTimeEngine.Core.Tests.Integration.csproj": {
+    "mtime": 1783409989.4614885,
+    "ast_hash": "836bb523bc397c1fdd47c6d75bf9fb69",
+    "semantic_hash": "836bb523bc397c1fdd47c6d75bf9fb69"
+  },
+  "PrayerTimeEngine.Core.Tests.Unit/Domain/ConfigurationManagement/ConfigurationImportExportServiceTests.cs": {
+    "mtime": 1783545628.6071374,
+    "ast_hash": "a4cd75d86626e24f3d666daa272239f0",
+    "semantic_hash": "a4cd75d86626e24f3d666daa272239f0"
+  },
+  "PrayerTimeEngine.Core.Tests.Unit/Domain/DynamicPrayerTimes/DynamicPrayerTimeProviderFactoryTests.cs": {
+    "mtime": 1726427261.89068,
+    "ast_hash": "436b124acdaf20a7235d003def7105ad",
+    "semantic_hash": "436b124acdaf20a7235d003def7105ad"
+  },
+  "PrayerTimeEngine.Core.Tests.Unit/Domain/DynamicPrayerTimes/Management/DynamicPrayerTimeProviderManagerTests.cs": {
+    "mtime": 1783550942.4649596,
+    "ast_hash": "96ea6ae9c9f9b116c78e833c00dfec62",
+    "semantic_hash": "96ea6ae9c9f9b116c78e833c00dfec62"
+  },
+  "PrayerTimeEngine.Core.Tests.Unit/Domain/DynamicPrayerTimes/Providers/Fazilet/FaziletApiServiceTests.cs": {
+    "mtime": 1726427261.8926792,
+    "ast_hash": "bff242f2879e09683a4ecd112f8e2bfd",
+    "semantic_hash": "bff242f2879e09683a4ecd112f8e2bfd"
+  },
+  "PrayerTimeEngine.Core.Tests.Unit/Domain/DynamicPrayerTimes/Providers/Fazilet/FaziletDynamicPrayerTimeProviderTests.cs": {
+    "mtime": 1783545628.6449342,
+    "ast_hash": "0155c65732ef604ff94aecd8c653f595",
+    "semantic_hash": "0155c65732ef604ff94aecd8c653f595"
+  },
+  "PrayerTimeEngine.Core.Tests.Unit/Domain/DynamicPrayerTimes/Providers/Fazilet/FaziletRepositoryTests.cs": {
+    "mtime": 1783545628.6841228,
+    "ast_hash": "3b190e12c4dbe11351c65f28b46fcb16",
+    "semantic_hash": "3b190e12c4dbe11351c65f28b46fcb16"
+  },
+  "PrayerTimeEngine.Core.Tests.Unit/Domain/DynamicPrayerTimes/Providers/Muwaqqit/MuwaqqitApiServiceTests.cs": {
+    "mtime": 1726427261.8946798,
+    "ast_hash": "b4b6882d91bd3e038ef98592b6fc268e",
+    "semantic_hash": "b4b6882d91bd3e038ef98592b6fc268e"
+  },
+  "PrayerTimeEngine.Core.Tests.Unit/Domain/DynamicPrayerTimes/Providers/Muwaqqit/MuwaqqitDynamicPrayerTimeProviderTests.cs": {
+    "mtime": 1783545628.721705,
+    "ast_hash": "9a1bb572ae4328f59b23b83be3e5ce7b",
+    "semantic_hash": "9a1bb572ae4328f59b23b83be3e5ce7b"
+  },
+  "PrayerTimeEngine.Core.Tests.Unit/Domain/DynamicPrayerTimes/Providers/Muwaqqit/MuwaqqitRepositoryTests.cs": {
+    "mtime": 1783545628.7623286,
+    "ast_hash": "a2abf443603ea29ad8fd66743097138e",
+    "semantic_hash": "a2abf443603ea29ad8fd66743097138e"
+  },
+  "PrayerTimeEngine.Core.Tests.Unit/Domain/DynamicPrayerTimes/Providers/Semerkand/SemerkandApiServiceTests.cs": {
+    "mtime": 1735937587.7813513,
+    "ast_hash": "15b07492c3592612630b49d7ba2c4d92",
+    "semantic_hash": "15b07492c3592612630b49d7ba2c4d92"
+  },
+  "PrayerTimeEngine.Core.Tests.Unit/Domain/DynamicPrayerTimes/Providers/Semerkand/SemerkandDynamicPrayerTimeProviderTests.cs": {
+    "mtime": 1783545628.800649,
+    "ast_hash": "ce6990b64de7c3ff67a9dd0ad00baf96",
+    "semantic_hash": "ce6990b64de7c3ff67a9dd0ad00baf96"
+  },
+  "PrayerTimeEngine.Core.Tests.Unit/Domain/DynamicPrayerTimes/Providers/Semerkand/SemerkandRepositoryTests.cs": {
+    "mtime": 1783545628.8453763,
+    "ast_hash": "24b47a7745a6b0524d41e90f412648db",
+    "semantic_hash": "24b47a7745a6b0524d41e90f412648db"
+  },
+  "PrayerTimeEngine.Core.Tests.Unit/Domain/IslamicCalendar/IslamicDateCalculationServiceTests.cs": {
+    "mtime": 1764880299.3841286,
+    "ast_hash": "aa73273b0450ddd9abec936b4c9ebd3a",
+    "semantic_hash": "aa73273b0450ddd9abec936b4c9ebd3a"
+  },
+  "PrayerTimeEngine.Core.Tests.Unit/Domain/MosquePrayerTimes/Management/MosquePrayerTimeProviderManagerTests.cs": {
+    "mtime": 1726427261.9006793,
+    "ast_hash": "319694a918873b8377511ea2adfce118",
+    "semantic_hash": "319694a918873b8377511ea2adfce118"
+  },
+  "PrayerTimeEngine.Core.Tests.Unit/Domain/MosquePrayerTimes/MosquePrayerTimeProviderFactoryTests.cs": {
+    "mtime": 1726427261.9006793,
+    "ast_hash": "a8a8f1074b032c6cfd4b81d773096861",
+    "semantic_hash": "a8a8f1074b032c6cfd4b81d773096861"
+  },
+  "PrayerTimeEngine.Core.Tests.Unit/Domain/MosquePrayerTimes/Providers/Mawaqit/MawaqitApiServiceTests.cs": {
+    "mtime": 1783492953.6137013,
+    "ast_hash": "02021a92fd940139a43270576746e958",
+    "semantic_hash": "02021a92fd940139a43270576746e958"
+  },
+  "PrayerTimeEngine.Core.Tests.Unit/Domain/MosquePrayerTimes/Providers/Mawaqit/MawaqitMosquePrayerTimeProviderTests.cs": {
+    "mtime": 1783545628.887414,
+    "ast_hash": "2cea2080043a3dd2731cf0df017d1fff",
+    "semantic_hash": "2cea2080043a3dd2731cf0df017d1fff"
+  },
+  "PrayerTimeEngine.Core.Tests.Unit/Domain/MosquePrayerTimes/Providers/Mawaqit/MawaqitRepositoryTests.cs": {
+    "mtime": 1783545628.933123,
+    "ast_hash": "0e964b121f0cb4b7717b3e74c9d94663",
+    "semantic_hash": "0e964b121f0cb4b7717b3e74c9d94663"
+  },
+  "PrayerTimeEngine.Core.Tests.Unit/Domain/MosquePrayerTimes/Providers/MyMosq/MyMosqApiServiceTests.cs": {
+    "mtime": 1783492932.3521266,
+    "ast_hash": "6a6689ea14300a1db804e672e62c9aa8",
+    "semantic_hash": "6a6689ea14300a1db804e672e62c9aa8"
+  },
+  "PrayerTimeEngine.Core.Tests.Unit/Domain/MosquePrayerTimes/Providers/MyMosq/MyMosqMosquePrayerTimeProviderTests.cs": {
+    "mtime": 1783545628.9711325,
+    "ast_hash": "07007c29dc1064dac11718ce5cd7df15",
+    "semantic_hash": "07007c29dc1064dac11718ce5cd7df15"
+  },
+  "PrayerTimeEngine.Core.Tests.Unit/Domain/MosquePrayerTimes/Providers/MyMosq/MyMosqRepositoryTests.cs": {
+    "mtime": 1783545629.0096679,
+    "ast_hash": "fbb44564680182d2c778684fbba785d1",
+    "semantic_hash": "fbb44564680182d2c778684fbba785d1"
+  },
+  "PrayerTimeEngine.Core.Tests.Unit/Domain/PlaceManagement/PlaceServiceTests.cs": {
+    "mtime": 1783363008.1307156,
+    "ast_hash": "2b3c9d981e0f7efb9fe0b1063c218c2e",
+    "semantic_hash": "2b3c9d981e0f7efb9fe0b1063c218c2e"
+  },
+  "PrayerTimeEngine.Core.Tests.Unit/Domain/ProfileManagement/ProfileRepositoryTests.cs": {
+    "mtime": 1783546361.0609517,
+    "ast_hash": "d2ce7f1e92c113a15ffc3bc124367a55",
+    "semantic_hash": "d2ce7f1e92c113a15ffc3bc124367a55"
+  },
+  "PrayerTimeEngine.Core.Tests.Unit/Domain/ProfileManagement/ProfileServiceTests.cs": {
+    "mtime": 1783546341.1911893,
+    "ast_hash": "53c9740046da9c214699198ef88a23a3",
+    "semantic_hash": "53c9740046da9c214699198ef88a23a3"
+  },
+  "PrayerTimeEngine.Core.Tests.Unit/EntityValidationTests.cs": {
+    "mtime": 1758448460.2066548,
+    "ast_hash": "f9418ac919b65e90052202f328dc878a",
+    "semantic_hash": "f9418ac919b65e90052202f328dc878a"
+  },
+  "PrayerTimeEngine.Core.Tests.Unit/GlobalUsings.cs": {
+    "mtime": 1758448460.2071605,
+    "ast_hash": "09fd80a4ac32a1fece424e68bc49f8ba",
+    "semantic_hash": "09fd80a4ac32a1fece424e68bc49f8ba"
+  },
+  "PrayerTimeEngine.Core.Tests.Unit/PrayerTimeEngine.Core.Tests.Unit.csproj": {
+    "mtime": 1783409991.3200123,
+    "ast_hash": "651d7aea4df3f9ba51801ae1a435b625",
+    "semantic_hash": "651d7aea4df3f9ba51801ae1a435b625"
+  },
+  "PrayerTimeEngine.Core.Tests.Unit/WhereDoIPutThisStuffTests.cs": {
+    "mtime": 1726427261.9116795,
+    "ast_hash": "c49c013b1db1115f136de3e5284f2541",
+    "semantic_hash": "c49c013b1db1115f136de3e5284f2541"
+  },
+  "PrayerTimeEngine.Core/Common/Attribute/ConfigurableTypeAttribute.cs": {
+    "mtime": 1726427261.707681,
+    "ast_hash": "2ce01205886eb0be6953358bf7c1f3c2",
+    "semantic_hash": "2ce01205886eb0be6953358bf7c1f3c2"
+  },
+  "PrayerTimeEngine.Core/Common/Attribute/DegreeTimeTypeAttribute.cs": {
+    "mtime": 1735938138.1694674,
+    "ast_hash": "b6262083c912e2b009d059c9b9634634",
+    "semantic_hash": "b6262083c912e2b009d059c9b9634634"
+  },
+  "PrayerTimeEngine.Core/Common/Attribute/IsNotHidableTimeTypeAttribute.cs": {
+    "mtime": 1735938110.6144714,
+    "ast_hash": "a448d7cfe600053ac328d01f317948bf",
+    "semantic_hash": "a448d7cfe600053ac328d01f317948bf"
+  },
+  "PrayerTimeEngine.Core/Common/Attribute/SimpleTimeTypeAttribute.cs": {
+    "mtime": 1735938478.9781835,
+    "ast_hash": "9156e6d186176f574a8f75909002a34a",
+    "semantic_hash": "9156e6d186176f574a8f75909002a34a"
+  },
+  "PrayerTimeEngine.Core/Common/Attribute/TimeTypeForPrayerTypeAttribute.cs": {
+    "mtime": 1735938194.6975982,
+    "ast_hash": "dea75d1db457aa306f2ba5a34a5c9ed9",
+    "semantic_hash": "dea75d1db457aa306f2ba5a34a5c9ed9"
+  },
+  "PrayerTimeEngine.Core/Common/Attribute/TimeTypeSupportedByAttribute.cs": {
+    "mtime": 1735938201.7105987,
+    "ast_hash": "6dbe0516eb8e8f29c336a9c77924b13c",
+    "semantic_hash": "6dbe0516eb8e8f29c336a9c77924b13c"
+  },
+  "PrayerTimeEngine.Core/Common/Enum/EPrayerType.cs": {
+    "mtime": 1758442117.6643512,
+    "ast_hash": "22d63295b0bc748305dad4eab086833e",
+    "semantic_hash": "22d63295b0bc748305dad4eab086833e"
+  },
+  "PrayerTimeEngine.Core/Common/Enum/ETimeType.cs": {
+    "mtime": 1758447856.2890766,
+    "ast_hash": "b502eb435b0a45bd3fd453bb7ca5b7b6",
+    "semantic_hash": "b502eb435b0a45bd3fd453bb7ca5b7b6"
+  },
+  "PrayerTimeEngine.Core/Common/Extensions/NodaTimeExtension.cs": {
+    "mtime": 1772276317.666434,
+    "ast_hash": "e8943f109cdb1be401dbb74c8e8241e6",
+    "semantic_hash": "e8943f109cdb1be401dbb74c8e8241e6"
+  },
+  "PrayerTimeEngine.Core/Common/IPreferenceService.cs": {
+    "mtime": 1726427261.7156792,
+    "ast_hash": "73ea3ec25032ee7e489a4d1e9cfca0be",
+    "semantic_hash": "73ea3ec25032ee7e489a4d1e9cfca0be"
+  },
+  "PrayerTimeEngine.Core/Common/ISystemInfoService.cs": {
+    "mtime": 1765491268.016735,
+    "ast_hash": "6c446b1d293779b5b7955f5d92e7d53f",
+    "semantic_hash": "6c446b1d293779b5b7955f5d92e7d53f"
+  },
+  "PrayerTimeEngine.Core/Common/MethodTimeLogger.cs": {
+    "mtime": 1763884956.4705067,
+    "ast_hash": "a436377d121abddaddb80a0cd5fd1a08",
+    "semantic_hash": "a436377d121abddaddb80a0cd5fd1a08"
+  },
+  "PrayerTimeEngine.Core/Data/EntityFramework/AppDbContext.cs": {
+    "mtime": 1772276317.6909966,
+    "ast_hash": "a6256aa5289a0632bc67a4f5f3ce73e4",
+    "semantic_hash": "a6256aa5289a0632bc67a4f5f3ce73e4"
+  },
+  "PrayerTimeEngine.Core/Data/EntityFramework/AppDbContextMetaData.cs": {
+    "mtime": 1735938736.4816833,
+    "ast_hash": "6688a1c512101717eef722d3442ca490",
+    "semantic_hash": "6688a1c512101717eef722d3442ca490"
+  },
+  "PrayerTimeEngine.Core/Data/EntityFramework/DesignTimeDbContextFactory.cs": {
+    "mtime": 1735978006.1381204,
+    "ast_hash": "03bf277a941304af57b749de275b9eb4",
+    "semantic_hash": "03bf277a941304af57b749de275b9eb4"
+  },
+  "PrayerTimeEngine.Core/Data/EntityFramework/EFCoreExtensions.cs": {
+    "mtime": 1735937587.7133512,
+    "ast_hash": "d1e3e462c59a9b10ad4c81a32cd511f2",
+    "semantic_hash": "d1e3e462c59a9b10ad4c81a32cd511f2"
+  },
+  "PrayerTimeEngine.Core/Data/EntityFramework/Generated_CompiledModels/AppDbContextAssemblyAttributes.cs": {
+    "mtime": 1783545407.960227,
+    "ast_hash": "14d6f051bb734903b444e985c57dd3ba",
+    "semantic_hash": "14d6f051bb734903b444e985c57dd3ba"
+  },
+  "PrayerTimeEngine.Core/Data/EntityFramework/Generated_CompiledModels/AppDbContextModel.cs": {
+    "mtime": 1783545433.6919246,
+    "ast_hash": "2812b75153ee3b913c316ecd100f7774",
+    "semantic_hash": "2812b75153ee3b913c316ecd100f7774"
+  },
+  "PrayerTimeEngine.Core/Data/EntityFramework/Generated_CompiledModels/AppDbContextModelBuilder.cs": {
+    "mtime": 1783545407.960227,
+    "ast_hash": "6f0be23eb468a23749c342bd407a523c",
+    "semantic_hash": "6f0be23eb468a23749c342bd407a523c"
+  },
+  "PrayerTimeEngine.Core/Data/EntityFramework/Generated_CompiledModels/DynamicProfileEntityType.cs": {
+    "mtime": 1783545407.9663732,
+    "ast_hash": "ec97534b083b4fe48f7c1a8fc2cd5afa",
+    "semantic_hash": "ec97534b083b4fe48f7c1a8fc2cd5afa"
+  },
+  "PrayerTimeEngine.Core/Data/EntityFramework/Generated_CompiledModels/FaziletCityEntityType.cs": {
+    "mtime": 1783545407.960227,
+    "ast_hash": "f0a5c942eafef79d0ad7c515a3785570",
+    "semantic_hash": "f0a5c942eafef79d0ad7c515a3785570"
+  },
+  "PrayerTimeEngine.Core/Data/EntityFramework/Generated_CompiledModels/FaziletCountryEntityType.cs": {
+    "mtime": 1783545407.9617422,
+    "ast_hash": "363689145b036534d1db1eef286ffb37",
+    "semantic_hash": "363689145b036534d1db1eef286ffb37"
+  },
+  "PrayerTimeEngine.Core/Data/EntityFramework/Generated_CompiledModels/FaziletDailyPrayerTimesEntityType.cs": {
+    "mtime": 1783545407.9617422,
+    "ast_hash": "7b9348054dd69da86c3ba2f924f3d1a9",
+    "semantic_hash": "7b9348054dd69da86c3ba2f924f3d1a9"
+  },
+  "PrayerTimeEngine.Core/Data/EntityFramework/Generated_CompiledModels/MawaqitMosqueDailyPrayerTimesEntityType.cs": {
+    "mtime": 1783545407.963333,
+    "ast_hash": "875d3d5f96d2e0ddfbe1a79b8c4d6aca",
+    "semantic_hash": "875d3d5f96d2e0ddfbe1a79b8c4d6aca"
+  },
+  "PrayerTimeEngine.Core/Data/EntityFramework/Generated_CompiledModels/MawaqitPrayerTimesEntityType.cs": {
+    "mtime": 1772276317.7459075,
+    "ast_hash": "2753b7894d5c2ba5cdad578748260636",
+    "semantic_hash": "2753b7894d5c2ba5cdad578748260636"
+  },
+  "PrayerTimeEngine.Core/Data/EntityFramework/Generated_CompiledModels/MosqueProfileEntityType.cs": {
+    "mtime": 1783545407.9673793,
+    "ast_hash": "33203c0214753ee863d3e21ecb9fd23c",
+    "semantic_hash": "33203c0214753ee863d3e21ecb9fd23c"
+  },
+  "PrayerTimeEngine.Core/Data/EntityFramework/Generated_CompiledModels/MuwaqqitDailyPrayerTimesEntityType.cs": {
+    "mtime": 1783545407.9617422,
+    "ast_hash": "e27e33b40c6ebc2b2964c18d1ca3dfcc",
+    "semantic_hash": "e27e33b40c6ebc2b2964c18d1ca3dfcc"
+  },
+  "PrayerTimeEngine.Core/Data/EntityFramework/Generated_CompiledModels/MyMosqMosqueDailyPrayerTimesEntityType.cs": {
+    "mtime": 1783545407.9648614,
+    "ast_hash": "4706c40bcaab8740837217e5c35a6f4f",
+    "semantic_hash": "4706c40bcaab8740837217e5c35a6f4f"
+  },
+  "PrayerTimeEngine.Core/Data/EntityFramework/Generated_CompiledModels/MyMosqPrayerTimesEntityType.cs": {
+    "mtime": 1772276317.736158,
+    "ast_hash": "707825d3a258fed73228640b8e4aa766",
+    "semantic_hash": "707825d3a258fed73228640b8e4aa766"
+  },
+  "PrayerTimeEngine.Core/Data/EntityFramework/Generated_CompiledModels/ProfileEntityType.cs": {
+    "mtime": 1783545407.9658685,
+    "ast_hash": "da0f866a9ceba68e879699ac02f75a81",
+    "semantic_hash": "da0f866a9ceba68e879699ac02f75a81"
+  },
+  "PrayerTimeEngine.Core/Data/EntityFramework/Generated_CompiledModels/ProfileLocationConfigEntityType.cs": {
+    "mtime": 1783545407.9663732,
+    "ast_hash": "0864c1a19c5341050d1c85a01a6ca44c",
+    "semantic_hash": "0864c1a19c5341050d1c85a01a6ca44c"
+  },
+  "PrayerTimeEngine.Core/Data/EntityFramework/Generated_CompiledModels/ProfilePlaceInfoEntityType.cs": {
+    "mtime": 1783545407.9648614,
+    "ast_hash": "ec54876e5e390a33d3fa2155db53a6d7",
+    "semantic_hash": "ec54876e5e390a33d3fa2155db53a6d7"
+  },
+  "PrayerTimeEngine.Core/Data/EntityFramework/Generated_CompiledModels/ProfileTimeConfigEntityType.cs": {
+    "mtime": 1783545407.9663732,
+    "ast_hash": "159ad23ea6eec49584bb85f97faafca5",
+    "semantic_hash": "159ad23ea6eec49584bb85f97faafca5"
+  },
+  "PrayerTimeEngine.Core/Data/EntityFramework/Generated_CompiledModels/SemerkandCityEntityType.cs": {
+    "mtime": 1783545407.963333,
+    "ast_hash": "0a87c199c8d70786b14ffb71af530a25",
+    "semantic_hash": "0a87c199c8d70786b14ffb71af530a25"
+  },
+  "PrayerTimeEngine.Core/Data/EntityFramework/Generated_CompiledModels/SemerkandCountryEntityType.cs": {
+    "mtime": 1783545407.963333,
+    "ast_hash": "69530bc61dab83d9a7f3ad8f2f2367d1",
+    "semantic_hash": "69530bc61dab83d9a7f3ad8f2f2367d1"
+  },
+  "PrayerTimeEngine.Core/Data/EntityFramework/Generated_CompiledModels/SemerkandDailyPrayerTimesEntityType.cs": {
+    "mtime": 1783545407.963333,
+    "ast_hash": "acf085e8f5e25ef21972712eafbec381",
+    "semantic_hash": "acf085e8f5e25ef21972712eafbec381"
+  },
+  "PrayerTimeEngine.Core/Data/EntityFramework/Generated_CompiledModels/TimezoneInfoEntityType.cs": {
+    "mtime": 1783545407.9648614,
+    "ast_hash": "b0e673c7b05b55e8fb5d770c8c233d9a",
+    "semantic_hash": "b0e673c7b05b55e8fb5d770c8c233d9a"
+  },
+  "PrayerTimeEngine.Core/Data/EntityFramework/Generated_Migrations/20260708211734_InitialMigration.Designer.cs": {
+    "mtime": 1783545454.1292005,
+    "ast_hash": "04ed687518f146c2b9e34950141f5f69",
+    "semantic_hash": "04ed687518f146c2b9e34950141f5f69"
+  },
+  "PrayerTimeEngine.Core/Data/EntityFramework/Generated_Migrations/20260708211734_InitialMigration.cs": {
+    "mtime": 1783545454.128695,
+    "ast_hash": "58dadcd3d5ce34aacebd8089d1d41322",
+    "semantic_hash": "58dadcd3d5ce34aacebd8089d1d41322"
+  },
+  "PrayerTimeEngine.Core/Data/EntityFramework/Generated_Migrations/AppDbContextModelSnapshot.cs": {
+    "mtime": 1783545454.1302106,
+    "ast_hash": "5e48e737fccf10316971b640fe8e0144",
+    "semantic_hash": "5e48e737fccf10316971b640fe8e0144"
+  },
+  "PrayerTimeEngine.Core/Data/EntityFramework/IEntity.cs": {
+    "mtime": 1758448460.211329,
+    "ast_hash": "e20b3309f234d2f6e492235233a49c06",
+    "semantic_hash": "e20b3309f234d2f6e492235233a49c06"
+  },
+  "PrayerTimeEngine.Core/Data/JsonSerialization/DateTimeZoneConverter.cs": {
+    "mtime": 1735937587.6383526,
+    "ast_hash": "0cb19de987f8aba8977ce1f4e7236b02",
+    "semantic_hash": "0cb19de987f8aba8977ce1f4e7236b02"
+  },
+  "PrayerTimeEngine.Core/Data/JsonSerialization/LocalDateConverter.cs": {
+    "mtime": 1735937587.5593507,
+    "ast_hash": "b36381fc4c10bf3b784577307e09056c",
+    "semantic_hash": "b36381fc4c10bf3b784577307e09056c"
+  },
+  "PrayerTimeEngine.Core/Data/JsonSerialization/LocalTimeConverter.cs": {
+    "mtime": 1735937587.6173546,
+    "ast_hash": "68077afff523931240e4e77db82fa75a",
+    "semantic_hash": "68077afff523931240e4e77db82fa75a"
+  },
+  "PrayerTimeEngine.Core/Data/JsonSerialization/OffsetDateTimeConverter.cs": {
+    "mtime": 1748645666.8994083,
+    "ast_hash": "ac299f8bed171d27c393231f314f9611",
+    "semantic_hash": "ac299f8bed171d27c393231f314f9611"
+  },
+  "PrayerTimeEngine.Core/Data/WebSocket/Interfaces/IWebSocketClient.cs": {
+    "mtime": 1726427261.726679,
+    "ast_hash": "fcd1af2d0b8f04ebfe5b527325db78d6",
+    "semantic_hash": "fcd1af2d0b8f04ebfe5b527325db78d6"
+  },
+  "PrayerTimeEngine.Core/Data/WebSocket/Interfaces/IWebSocketClientFactory.cs": {
+    "mtime": 1726427261.7896795,
+    "ast_hash": "d782e8155e2c4fbec397c5187ddd7e48",
+    "semantic_hash": "d782e8155e2c4fbec397c5187ddd7e48"
+  },
+  "PrayerTimeEngine.Core/Data/WebSocket/WebSocketClient.cs": {
+    "mtime": 1735937587.5983517,
+    "ast_hash": "93754a3f4af555db9e770363ca7e70c3",
+    "semantic_hash": "93754a3f4af555db9e770363ca7e70c3"
+  },
+  "PrayerTimeEngine.Core/Data/WebSocket/WebSocketClientFactory.cs": {
+    "mtime": 1726427261.7916791,
+    "ast_hash": "ca59f8092f9d2910a272ed044d765d88",
+    "semantic_hash": "ca59f8092f9d2910a272ed044d765d88"
+  },
+  "PrayerTimeEngine.Core/Domain/ConfigurationManagement/Configuration.cs": {
+    "mtime": 1758448460.2128682,
+    "ast_hash": "ddf05ee82ae30c8867b95a5173a56685",
+    "semantic_hash": "ddf05ee82ae30c8867b95a5173a56685"
+  },
+  "PrayerTimeEngine.Core/Domain/ConfigurationManagement/ConfigurationImportExportService.cs": {
+    "mtime": 1783545627.58549,
+    "ast_hash": "483312d35420afa80a883abd1fdcc226",
+    "semantic_hash": "483312d35420afa80a883abd1fdcc226"
+  },
+  "PrayerTimeEngine.Core/Domain/ConfigurationManagement/ConfigurationMapper.cs": {
+    "mtime": 1758448460.2144167,
+    "ast_hash": "73098e2262a02a6889ecedc45dd99115",
+    "semantic_hash": "73098e2262a02a6889ecedc45dd99115"
+  },
+  "PrayerTimeEngine.Core/Domain/ConfigurationManagement/DTOs/ConfigurationDTO.cs": {
+    "mtime": 1758448460.2159572,
+    "ast_hash": "924cd79afe52628dc76a0fc55a215e30",
+    "semantic_hash": "924cd79afe52628dc76a0fc55a215e30"
+  },
+  "PrayerTimeEngine.Core/Domain/ConfigurationManagement/DTOs/DynamicProfileConfigDTO.cs": {
+    "mtime": 1758448460.2159572,
+    "ast_hash": "9c9002f726e7b0ae68cc5f60a23971ee",
+    "semantic_hash": "9c9002f726e7b0ae68cc5f60a23971ee"
+  },
+  "PrayerTimeEngine.Core/Domain/ConfigurationManagement/DTOs/LocationConfigDTO.cs": {
+    "mtime": 1758448460.2180471,
+    "ast_hash": "2db2486df7e27fec0f35bb2908ec6160",
+    "semantic_hash": "2db2486df7e27fec0f35bb2908ec6160"
+  },
+  "PrayerTimeEngine.Core/Domain/ConfigurationManagement/DTOs/MosqueProfileConfigDTO.cs": {
+    "mtime": 1758448460.2196457,
+    "ast_hash": "50ceb33c6df03f63447573d85e6fe54b",
+    "semantic_hash": "50ceb33c6df03f63447573d85e6fe54b"
+  },
+  "PrayerTimeEngine.Core/Domain/ConfigurationManagement/DTOs/PlaceInfoDTO.cs": {
+    "mtime": 1758448460.220855,
+    "ast_hash": "4e57ef7eebd92b363ba4bb90d141af4e",
+    "semantic_hash": "4e57ef7eebd92b363ba4bb90d141af4e"
+  },
+  "PrayerTimeEngine.Core/Domain/ConfigurationManagement/DTOs/ProfileConfigDTO.cs": {
+    "mtime": 1758448460.22138,
+    "ast_hash": "7bf8edb42471304291a3f56b19f7c39e",
+    "semantic_hash": "7bf8edb42471304291a3f56b19f7c39e"
+  },
+  "PrayerTimeEngine.Core/Domain/ConfigurationManagement/DTOs/TimeConfigDTO.cs": {
+    "mtime": 1758448460.2218938,
+    "ast_hash": "bccd465581a818dd6c20571d680dceb2",
+    "semantic_hash": "bccd465581a818dd6c20571d680dceb2"
+  },
+  "PrayerTimeEngine.Core/Domain/ConfigurationManagement/IConfigurationImportExportService.cs": {
+    "mtime": 1758448460.2224226,
+    "ast_hash": "dae8977c7145ff81f624deb5f9b5f8e6",
+    "semantic_hash": "dae8977c7145ff81f624deb5f9b5f8e6"
+  },
+  "PrayerTimeEngine.Core/Domain/DynamicPrayerTimes/DynamicPrayerTimeProviderFactory.cs": {
+    "mtime": 1745081189.988482,
+    "ast_hash": "0c7bc344fb32cd551fb3dd704a9e0431",
+    "semantic_hash": "0c7bc344fb32cd551fb3dd704a9e0431"
+  },
+  "PrayerTimeEngine.Core/Domain/DynamicPrayerTimes/EDynamicPrayerTimeProviderType.cs": {
+    "mtime": 1726427261.7936792,
+    "ast_hash": "0a60f0041fcf5a8120ccfe6a07969c0c",
+    "semantic_hash": "0a60f0041fcf5a8120ccfe6a07969c0c"
+  },
+  "PrayerTimeEngine.Core/Domain/DynamicPrayerTimes/IDynamicPrayerTimeProviderFactory.cs": {
+    "mtime": 1745081189.9889822,
+    "ast_hash": "c03d633f964364cfb5f2c24c4ce5a6ad",
+    "semantic_hash": "c03d633f964364cfb5f2c24c4ce5a6ad"
+  },
+  "PrayerTimeEngine.Core/Domain/DynamicPrayerTimes/Management/DynamicPrayerTimeProviderManager.cs": {
+    "mtime": 1783580078.9777048,
+    "ast_hash": "4449abd652a0cd7b9209830be0b04ac1",
+    "semantic_hash": "4449abd652a0cd7b9209830be0b04ac1"
+  },
+  "PrayerTimeEngine.Core/Domain/DynamicPrayerTimes/Management/IDynamicPrayerTimeProviderManager.cs": {
+    "mtime": 1780398868.3091655,
+    "ast_hash": "c9189d28d2f57525f25deb8287f73da7",
+    "semantic_hash": "c9189d28d2f57525f25deb8287f73da7"
+  },
+  "PrayerTimeEngine.Core/Domain/DynamicPrayerTimes/Models/BaseLocationData.cs": {
+    "mtime": 1726427261.7966793,
+    "ast_hash": "0e3d05f6d50729992104e7e3fd0334f1",
+    "semantic_hash": "0e3d05f6d50729992104e7e3fd0334f1"
+  },
+  "PrayerTimeEngine.Core/Domain/DynamicPrayerTimes/Models/CalculatePrayerTimesResultVO.cs": {
+    "mtime": 1780398869.2992074,
+    "ast_hash": "1d7910663963dddd52a028de4a04d446",
+    "semantic_hash": "1d7910663963dddd52a028de4a04d446"
+  },
+  "PrayerTimeEngine.Core/Domain/DynamicPrayerTimes/Models/DynamicPrayerTimeCalculationErrorVO.cs": {
+    "mtime": 1780418376.1317887,
+    "ast_hash": "00c7365fea48549bafb7364ab72b3a74",
+    "semantic_hash": "00c7365fea48549bafb7364ab72b3a74"
+  },
+  "PrayerTimeEngine.Core/Domain/DynamicPrayerTimes/Models/DynamicPrayerTimesDay.cs": {
+    "mtime": 1758448460.2242095,
+    "ast_hash": "f915356d2ec059834b43544601cbab23",
+    "semantic_hash": "f915356d2ec059834b43544601cbab23"
+  },
+  "PrayerTimeEngine.Core/Domain/DynamicPrayerTimes/Models/DynamicPrayerTimesSetBundle.cs": {
+    "mtime": 1758448460.2257419,
+    "ast_hash": "b2941a5343e598853186c62daa1b5b20",
+    "semantic_hash": "b2941a5343e598853186c62daa1b5b20"
+  },
+  "PrayerTimeEngine.Core/Domain/DynamicPrayerTimes/Models/GenericSettingConfiguration.cs": {
+    "mtime": 1758448460.2273083,
+    "ast_hash": "f26300dbb1a58ada0299975b3efe09e4",
+    "semantic_hash": "f26300dbb1a58ada0299975b3efe09e4"
+  },
+  "PrayerTimeEngine.Core/Domain/DynamicPrayerTimes/Providers/BaseCountryCityDynamicPrayerTimeProvider.cs": {
+    "mtime": 1783465088.903272,
+    "ast_hash": "903554d5dfa51a5e8268edc4a3d7e1bb",
+    "semantic_hash": "903554d5dfa51a5e8268edc4a3d7e1bb"
+  },
+  "PrayerTimeEngine.Core/Domain/DynamicPrayerTimes/Providers/Fazilet/Interfaces/IFaziletApiService.cs": {
+    "mtime": 1783448578.9276872,
+    "ast_hash": "b562ba27157f6eff5232cb3408a3932a",
+    "semantic_hash": "b562ba27157f6eff5232cb3408a3932a"
+  },
+  "PrayerTimeEngine.Core/Domain/DynamicPrayerTimes/Providers/Fazilet/Interfaces/IFaziletRepository.cs": {
+    "mtime": 1783545627.6251955,
+    "ast_hash": "4753b0e57d616bbbc75ef2860665801f",
+    "semantic_hash": "4753b0e57d616bbbc75ef2860665801f"
+  },
+  "PrayerTimeEngine.Core/Domain/DynamicPrayerTimes/Providers/Fazilet/Models/DTOs/FaziletCityResponseDTO.cs": {
+    "mtime": 1726427261.8006787,
+    "ast_hash": "19256f9346aef3bc657bedad0c71fc93",
+    "semantic_hash": "19256f9346aef3bc657bedad0c71fc93"
+  },
+  "PrayerTimeEngine.Core/Domain/DynamicPrayerTimes/Providers/Fazilet/Models/DTOs/FaziletCountryResponseDTO.cs": {
+    "mtime": 1726427261.80168,
+    "ast_hash": "09fa823541735426916faa4ae9c700e8",
+    "semantic_hash": "09fa823541735426916faa4ae9c700e8"
+  },
+  "PrayerTimeEngine.Core/Domain/DynamicPrayerTimes/Providers/Fazilet/Models/DTOs/FaziletPrayerTimesResponseDTO.cs": {
+    "mtime": 1783543346.4546478,
+    "ast_hash": "e4bb1ed8901e52940f0b073d377fa69c",
+    "semantic_hash": "e4bb1ed8901e52940f0b073d377fa69c"
+  },
+  "PrayerTimeEngine.Core/Domain/DynamicPrayerTimes/Providers/Fazilet/Models/Entities/FaziletCity.cs": {
+    "mtime": 1758448460.2288713,
+    "ast_hash": "6790c7627dae9ab0291aba32be901a5e",
+    "semantic_hash": "6790c7627dae9ab0291aba32be901a5e"
+  },
+  "PrayerTimeEngine.Core/Domain/DynamicPrayerTimes/Providers/Fazilet/Models/Entities/FaziletCountry.cs": {
+    "mtime": 1758448460.2304425,
+    "ast_hash": "3c94d5b91a32e2f3ccaaac25b74c63ce",
+    "semantic_hash": "3c94d5b91a32e2f3ccaaac25b74c63ce"
+  },
+  "PrayerTimeEngine.Core/Domain/DynamicPrayerTimes/Providers/Fazilet/Models/Entities/FaziletDailyPrayerTimes.cs": {
+    "mtime": 1783543159.656448,
+    "ast_hash": "9bdf1bd133f75d4cf2a6e0cfc6006316",
+    "semantic_hash": "9bdf1bd133f75d4cf2a6e0cfc6006316"
+  },
+  "PrayerTimeEngine.Core/Domain/DynamicPrayerTimes/Providers/Fazilet/Models/FaziletLocationData.cs": {
+    "mtime": 1758448460.2341092,
+    "ast_hash": "2617e9fbf8adcc7009057d2de4c48442",
+    "semantic_hash": "2617e9fbf8adcc7009057d2de4c48442"
+  },
+  "PrayerTimeEngine.Core/Domain/DynamicPrayerTimes/Providers/Fazilet/Services/FaziletDynamicPrayerTimeProvider.cs": {
+    "mtime": 1783553866.7432382,
+    "ast_hash": "456cd78fb273cd5d6c615f928aa61ded",
+    "semantic_hash": "456cd78fb273cd5d6c615f928aa61ded"
+  },
+  "PrayerTimeEngine.Core/Domain/DynamicPrayerTimes/Providers/Fazilet/Services/FaziletRepository.cs": {
+    "mtime": 1783546278.6739223,
+    "ast_hash": "4c81d31969fbcbc39f835ae7b1e34819",
+    "semantic_hash": "4c81d31969fbcbc39f835ae7b1e34819"
+  },
+  "PrayerTimeEngine.Core/Domain/DynamicPrayerTimes/Providers/IDynamicPrayerTimeProvider.cs": {
+    "mtime": 1745081189.9904835,
+    "ast_hash": "3ea6c4ae2e629e6877d8e62766239531",
+    "semantic_hash": "3ea6c4ae2e629e6877d8e62766239531"
+  },
+  "PrayerTimeEngine.Core/Domain/DynamicPrayerTimes/Providers/Muwaqqit/Interfaces/IMuwaqqitApiService.cs": {
+    "mtime": 1735937587.5683515,
+    "ast_hash": "d50ee8627ce7727e4867f4b938789756",
+    "semantic_hash": "d50ee8627ce7727e4867f4b938789756"
+  },
+  "PrayerTimeEngine.Core/Domain/DynamicPrayerTimes/Providers/Muwaqqit/Interfaces/IMuwaqqitRepository.cs": {
+    "mtime": 1783545627.737519,
+    "ast_hash": "ff0cd75f5974d77c1a51370d03e8d620",
+    "semantic_hash": "ff0cd75f5974d77c1a51370d03e8d620"
+  },
+  "PrayerTimeEngine.Core/Domain/DynamicPrayerTimes/Providers/Muwaqqit/Models/DTOs/MuwaqqitPrayerTimesResponseDTO.cs": {
+    "mtime": 1783543362.5275042,
+    "ast_hash": "d7faf8bc715d2ddc6151042ede4978c6",
+    "semantic_hash": "d7faf8bc715d2ddc6151042ede4978c6"
+  },
+  "PrayerTimeEngine.Core/Domain/DynamicPrayerTimes/Providers/Muwaqqit/Models/Entities/MuwaqqitDailyPrayerTimes.cs": {
+    "mtime": 1783543228.264817,
+    "ast_hash": "0ce5fb8a02b771b23117653238dc9391",
+    "semantic_hash": "0ce5fb8a02b771b23117653238dc9391"
+  },
+  "PrayerTimeEngine.Core/Domain/DynamicPrayerTimes/Providers/Muwaqqit/Models/MuwaqqitCalculationConfiguration.cs": {
+    "mtime": 1726427261.8136797,
+    "ast_hash": "cc42294282d801a6d4cb35f6026a8952",
+    "semantic_hash": "cc42294282d801a6d4cb35f6026a8952"
+  },
+  "PrayerTimeEngine.Core/Domain/DynamicPrayerTimes/Providers/Muwaqqit/Models/MuwaqqitDegreeCalculationConfiguration.cs": {
+    "mtime": 1758448460.2383275,
+    "ast_hash": "04469da26e07c900184f9b69f7b5d80a",
+    "semantic_hash": "04469da26e07c900184f9b69f7b5d80a"
+  },
+  "PrayerTimeEngine.Core/Domain/DynamicPrayerTimes/Providers/Muwaqqit/Models/MuwaqqitLocationData.cs": {
+    "mtime": 1758448460.2398407,
+    "ast_hash": "cc1648227ae5b46393e5d9536fb23044",
+    "semantic_hash": "cc1648227ae5b46393e5d9536fb23044"
+  },
+  "PrayerTimeEngine.Core/Domain/DynamicPrayerTimes/Providers/Muwaqqit/Services/MuwaqqitDynamicPrayerTimeProvider.cs": {
+    "mtime": 1783545627.7740362,
+    "ast_hash": "4da32f8bd16fcebab75b5bc0db84b376",
+    "semantic_hash": "4da32f8bd16fcebab75b5bc0db84b376"
+  },
+  "PrayerTimeEngine.Core/Domain/DynamicPrayerTimes/Providers/Muwaqqit/Services/MuwaqqitRepository.cs": {
+    "mtime": 1783545627.817143,
+    "ast_hash": "915d3c5917785bd02b915e64da018e08",
+    "semantic_hash": "915d3c5917785bd02b915e64da018e08"
+  },
+  "PrayerTimeEngine.Core/Domain/DynamicPrayerTimes/Providers/Semerkand/Interfaces/ISemerkandApiService.cs": {
+    "mtime": 1783447253.1603787,
+    "ast_hash": "aa6371a8798b4b4fa7ac32e0af29b095",
+    "semantic_hash": "aa6371a8798b4b4fa7ac32e0af29b095"
+  },
+  "PrayerTimeEngine.Core/Domain/DynamicPrayerTimes/Providers/Semerkand/Interfaces/ISemerkandRepository.cs": {
+    "mtime": 1783545627.8625078,
+    "ast_hash": "697e449b8ae8df8837251da2ac9b1730",
+    "semantic_hash": "697e449b8ae8df8837251da2ac9b1730"
+  },
+  "PrayerTimeEngine.Core/Domain/DynamicPrayerTimes/Providers/Semerkand/Models/DTOs/SemerkandCityResponseDTO.cs": {
+    "mtime": 1726427261.819679,
+    "ast_hash": "19c545049c50c2c1a727c7270bc255d9",
+    "semantic_hash": "19c545049c50c2c1a727c7270bc255d9"
+  },
+  "PrayerTimeEngine.Core/Domain/DynamicPrayerTimes/Providers/Semerkand/Models/DTOs/SemerkandCountryResponseDTO.cs": {
+    "mtime": 1726427261.8206794,
+    "ast_hash": "c85163d2936c776588938dd668c8577f",
+    "semantic_hash": "c85163d2936c776588938dd668c8577f"
+  },
+  "PrayerTimeEngine.Core/Domain/DynamicPrayerTimes/Providers/Semerkand/Models/DTOs/SemerkandPrayerTimesResponseDTO.cs": {
+    "mtime": 1783543378.3853748,
+    "ast_hash": "1cb651d1fe9ace931b653bd2ea32bb50",
+    "semantic_hash": "1cb651d1fe9ace931b653bd2ea32bb50"
+  },
+  "PrayerTimeEngine.Core/Domain/DynamicPrayerTimes/Providers/Semerkand/Models/Entities/SemerkandCity.cs": {
+    "mtime": 1758448460.242358,
+    "ast_hash": "1ba379de12ee8c4f74e5e16d10b96934",
+    "semantic_hash": "1ba379de12ee8c4f74e5e16d10b96934"
+  },
+  "PrayerTimeEngine.Core/Domain/DynamicPrayerTimes/Providers/Semerkand/Models/Entities/SemerkandCountry.cs": {
+    "mtime": 1758448460.243869,
+    "ast_hash": "1c3df7be1d7a535e5309dcfd5bf3ab8c",
+    "semantic_hash": "1c3df7be1d7a535e5309dcfd5bf3ab8c"
+  },
+  "PrayerTimeEngine.Core/Domain/DynamicPrayerTimes/Providers/Semerkand/Models/Entities/SemerkandDailyPrayerTimes.cs": {
+    "mtime": 1783543270.2522225,
+    "ast_hash": "fcdf2256ab5155920624fb381f85ea6c",
+    "semantic_hash": "fcdf2256ab5155920624fb381f85ea6c"
+  },
+  "PrayerTimeEngine.Core/Domain/DynamicPrayerTimes/Providers/Semerkand/Models/SemerkandLocationData.cs": {
+    "mtime": 1758448460.2463994,
+    "ast_hash": "fb4100a012e5eee6da15c90dda8fbce2",
+    "semantic_hash": "fb4100a012e5eee6da15c90dda8fbce2"
+  },
+  "PrayerTimeEngine.Core/Domain/DynamicPrayerTimes/Providers/Semerkand/Services/SemerkandDynamicPrayerTimeProvider.cs": {
+    "mtime": 1783553871.7648416,
+    "ast_hash": "b0adce6b3a72a47a23ba50c70979c270",
+    "semantic_hash": "b0adce6b3a72a47a23ba50c70979c270"
+  },
+  "PrayerTimeEngine.Core/Domain/DynamicPrayerTimes/Providers/Semerkand/Services/SemerkandRepository.cs": {
+    "mtime": 1783546295.6350918,
+    "ast_hash": "8889b0b596e281d70d3cd4e92e4c80a9",
+    "semantic_hash": "8889b0b596e281d70d3cd4e92e4c80a9"
+  },
+  "PrayerTimeEngine.Core/Domain/IPrayerTimeCacheCleaner.cs": {
+    "mtime": 1726427261.8276813,
+    "ast_hash": "0f2ce80e790138a0c489b6a34bc89cac",
+    "semantic_hash": "0f2ce80e790138a0c489b6a34bc89cac"
+  },
+  "PrayerTimeEngine.Core/Domain/IslamicCalendar/Interfaces/IIslamicDateCalculationService.cs": {
+    "mtime": 1764804005.4162564,
+    "ast_hash": "57a158a478a888668356777bcb51bb63",
+    "semantic_hash": "57a158a478a888668356777bcb51bb63"
+  },
+  "PrayerTimeEngine.Core/Domain/IslamicCalendar/Services/IslamicDateCalculationService.cs": {
+    "mtime": 1764804005.4167614,
+    "ast_hash": "e7044f2d36f25bc953742dd9c26725d1",
+    "semantic_hash": "e7044f2d36f25bc953742dd9c26725d1"
+  },
+  "PrayerTimeEngine.Core/Domain/Models/GenericPrayerTime.cs": {
+    "mtime": 1765491018.3705423,
+    "ast_hash": "bdb584d917c2421c089d1de481108160",
+    "semantic_hash": "bdb584d917c2421c089d1de481108160"
+  },
+  "PrayerTimeEngine.Core/Domain/Models/IDailyPrayerTimes.cs": {
+    "mtime": 1783543023.7873886,
+    "ast_hash": "f49ff7fd5d06538b4f48869757918320",
+    "semantic_hash": "f49ff7fd5d06538b4f48869757918320"
+  },
+  "PrayerTimeEngine.Core/Domain/Models/IPrayerTimesDay.cs": {
+    "mtime": 1755902794.6917632,
+    "ast_hash": "f4bb6b66b4b22f5be68ee481fecd3da9",
+    "semantic_hash": "f4bb6b66b4b22f5be68ee481fecd3da9"
+  },
+  "PrayerTimeEngine.Core/Domain/Models/PrayerTimes/AsrPrayerTime.cs": {
+    "mtime": 1726691471.792133,
+    "ast_hash": "c2cc6db503c331aaeb0326ac341af8bf",
+    "semantic_hash": "c2cc6db503c331aaeb0326ac341af8bf"
+  },
+  "PrayerTimeEngine.Core/Domain/Models/PrayerTimes/DuhaPrayerTime.cs": {
+    "mtime": 1755902794.6927621,
+    "ast_hash": "4b73b46d834b86195d1fac3851d1ff3b",
+    "semantic_hash": "4b73b46d834b86195d1fac3851d1ff3b"
+  },
+  "PrayerTimeEngine.Core/Domain/Models/PrayerTimes/FajrPrayerTime.cs": {
+    "mtime": 1726427261.8316803,
+    "ast_hash": "67a7f9c6a18aee37eb2d20eb030c2d0e",
+    "semantic_hash": "67a7f9c6a18aee37eb2d20eb030c2d0e"
+  },
+  "PrayerTimeEngine.Core/Domain/Models/PrayerTimes/IshaPrayerTime.cs": {
+    "mtime": 1726427261.8326814,
+    "ast_hash": "c7f53558dc5033c68c9c3033e85ebb12",
+    "semantic_hash": "c7f53558dc5033c68c9c3033e85ebb12"
+  },
+  "PrayerTimeEngine.Core/Domain/Models/PrayerTimes/MaghribPrayerTime.cs": {
+    "mtime": 1726427261.8336804,
+    "ast_hash": "9bf98396d8da15d60e80a9294c4b185d",
+    "semantic_hash": "9bf98396d8da15d60e80a9294c4b185d"
+  },
+  "PrayerTimeEngine.Core/Domain/MosquePrayerTimes/EMosquePrayerTimeProviderType.cs": {
+    "mtime": 1726427261.8346806,
+    "ast_hash": "4201ab205938ed2aa2b2792707ba1fb0",
+    "semantic_hash": "4201ab205938ed2aa2b2792707ba1fb0"
+  },
+  "PrayerTimeEngine.Core/Domain/MosquePrayerTimes/IMosquePrayerTimeProviderFactory.cs": {
+    "mtime": 1726427261.8346806,
+    "ast_hash": "c0ec5dc886d829cbc5caffae6003f7c8",
+    "semantic_hash": "c0ec5dc886d829cbc5caffae6003f7c8"
+  },
+  "PrayerTimeEngine.Core/Domain/MosquePrayerTimes/Management/IMosquePrayerTimeProviderManager.cs": {
+    "mtime": 1761164630.5670888,
+    "ast_hash": "e22ff3822d28e63d1b562e2cd9ffc5f8",
+    "semantic_hash": "e22ff3822d28e63d1b562e2cd9ffc5f8"
+  },
+  "PrayerTimeEngine.Core/Domain/MosquePrayerTimes/Management/MosquePrayerTimeProviderManager.cs": {
+    "mtime": 1783492893.1929321,
+    "ast_hash": "ecae598ad5ab6999aa6745e091fb9873",
+    "semantic_hash": "ecae598ad5ab6999aa6745e091fb9873"
+  },
+  "PrayerTimeEngine.Core/Domain/MosquePrayerTimes/Models/IMosqueDailyPrayerTimes.cs": {
+    "mtime": 1783543034.8531885,
+    "ast_hash": "2f147ca7cdabead13a7db491e7c76c62",
+    "semantic_hash": "2f147ca7cdabead13a7db491e7c76c62"
+  },
+  "PrayerTimeEngine.Core/Domain/MosquePrayerTimes/Models/MosquePrayerTime.cs": {
+    "mtime": 1758448460.2494226,
+    "ast_hash": "f26edeaa1ec0c2266a9de54719b88f25",
+    "semantic_hash": "f26edeaa1ec0c2266a9de54719b88f25"
+  },
+  "PrayerTimeEngine.Core/Domain/MosquePrayerTimes/Models/MosquePrayerTimesDay.cs": {
+    "mtime": 1758448460.2515392,
+    "ast_hash": "63a4990cdef51cc2b0c59c95bf1691fc",
+    "semantic_hash": "63a4990cdef51cc2b0c59c95bf1691fc"
+  },
+  "PrayerTimeEngine.Core/Domain/MosquePrayerTimes/MosquePrayerTimeProviderFactory.cs": {
+    "mtime": 1726427261.8386793,
+    "ast_hash": "ccbe04d0dcb67fd489c71643882985a2",
+    "semantic_hash": "ccbe04d0dcb67fd489c71643882985a2"
+  },
+  "PrayerTimeEngine.Core/Domain/MosquePrayerTimes/Providers/IMosquePrayerTimeProvider.cs": {
+    "mtime": 1726691560.5431333,
+    "ast_hash": "c676f8fa2b48290fa3f75fbf50a796a7",
+    "semantic_hash": "c676f8fa2b48290fa3f75fbf50a796a7"
+  },
+  "PrayerTimeEngine.Core/Domain/MosquePrayerTimes/Providers/Mawaqit/Interfaces/IMawaqitApiService.cs": {
+    "mtime": 1726427261.8406801,
+    "ast_hash": "4d8b2f89887b2e11380f316c0321f00b",
+    "semantic_hash": "4d8b2f89887b2e11380f316c0321f00b"
+  },
+  "PrayerTimeEngine.Core/Domain/MosquePrayerTimes/Providers/Mawaqit/Interfaces/IMawaqitRepository.cs": {
+    "mtime": 1783545627.990594,
+    "ast_hash": "505e987c41e91800c7413eb31f12baf2",
+    "semantic_hash": "505e987c41e91800c7413eb31f12baf2"
+  },
+  "PrayerTimeEngine.Core/Domain/MosquePrayerTimes/Providers/Mawaqit/JsonConverters/LocalTimeConverter.cs": {
+    "mtime": 1735937587.681354,
+    "ast_hash": "86c38b33e78509260a2e843d70c6f1ce",
+    "semantic_hash": "86c38b33e78509260a2e843d70c6f1ce"
+  },
+  "PrayerTimeEngine.Core/Domain/MosquePrayerTimes/Providers/Mawaqit/Models/DTOs/MawaqitResponseDTO.cs": {
+    "mtime": 1783543450.9870474,
+    "ast_hash": "0edbdcbe21fcc5257722de184f727d8e",
+    "semantic_hash": "0edbdcbe21fcc5257722de184f727d8e"
+  },
+  "PrayerTimeEngine.Core/Domain/MosquePrayerTimes/Providers/Mawaqit/Models/Entities/MawaqitMosqueDailyPrayerTimes.cs": {
+    "mtime": 1783543295.7393296,
+    "ast_hash": "95c875caa3b50f9e3650a3c8af0000db",
+    "semantic_hash": "95c875caa3b50f9e3650a3c8af0000db"
+  },
+  "PrayerTimeEngine.Core/Domain/MosquePrayerTimes/Providers/Mawaqit/Services/MawaqitApiService.cs": {
+    "mtime": 1734857022.334692,
+    "ast_hash": "cb27db560e62ce33b017aff507e29668",
+    "semantic_hash": "cb27db560e62ce33b017aff507e29668"
+  },
+  "PrayerTimeEngine.Core/Domain/MosquePrayerTimes/Providers/Mawaqit/Services/MawaqitMosquePrayerTimeProvider.cs": {
+    "mtime": 1783545628.0298781,
+    "ast_hash": "5c781c4d747f9d362342c6fa3b21c69d",
+    "semantic_hash": "5c781c4d747f9d362342c6fa3b21c69d"
+  },
+  "PrayerTimeEngine.Core/Domain/MosquePrayerTimes/Providers/Mawaqit/Services/MawaqitRepository.cs": {
+    "mtime": 1783545628.0660505,
+    "ast_hash": "7610eb44f2c2582bcfd0e31014e28bb0",
+    "semantic_hash": "7610eb44f2c2582bcfd0e31014e28bb0"
+  },
+  "PrayerTimeEngine.Core/Domain/MosquePrayerTimes/Providers/MyMosq/Interfaces/IMyMosqApiService.cs": {
+    "mtime": 1726427261.8476794,
+    "ast_hash": "459bf209d56258f53168e48593a5623d",
+    "semantic_hash": "459bf209d56258f53168e48593a5623d"
+  },
+  "PrayerTimeEngine.Core/Domain/MosquePrayerTimes/Providers/MyMosq/Interfaces/IMyMosqRepository.cs": {
+    "mtime": 1783545628.1029615,
+    "ast_hash": "0a63476e4762434555010506c4075798",
+    "semantic_hash": "0a63476e4762434555010506c4075798"
+  },
+  "PrayerTimeEngine.Core/Domain/MosquePrayerTimes/Providers/MyMosq/JsonConverters/LocalDateConverter.cs": {
+    "mtime": 1735937587.6923513,
+    "ast_hash": "0c0ed59b58348c20ce7e3f93acbac141",
+    "semantic_hash": "0c0ed59b58348c20ce7e3f93acbac141"
+  },
+  "PrayerTimeEngine.Core/Domain/MosquePrayerTimes/Providers/MyMosq/JsonConverters/NullableLocalTimeConverter.cs": {
+    "mtime": 1735937587.7233517,
+    "ast_hash": "3d5c94f6d115ed52b794b8289853a737",
+    "semantic_hash": "3d5c94f6d115ed52b794b8289853a737"
+  },
+  "PrayerTimeEngine.Core/Domain/MosquePrayerTimes/Providers/MyMosq/Models/DTOs/MyMosqPrayerTimesDTO.cs": {
+    "mtime": 1783492805.2306144,
+    "ast_hash": "5610b20b1a6937cf34ac6bcbc668c612",
+    "semantic_hash": "5610b20b1a6937cf34ac6bcbc668c612"
+  },
+  "PrayerTimeEngine.Core/Domain/MosquePrayerTimes/Providers/MyMosq/Models/DTOs/MyMosqReponseDTO.cs": {
+    "mtime": 1726427261.8536801,
+    "ast_hash": "9eb2758f8b77c76694f71913c6ae5b35",
+    "semantic_hash": "9eb2758f8b77c76694f71913c6ae5b35"
+  },
+  "PrayerTimeEngine.Core/Domain/MosquePrayerTimes/Providers/MyMosq/Models/Entities/MyMosqMosqueDailyPrayerTimes.cs": {
+    "mtime": 1783543307.146916,
+    "ast_hash": "61f133696d16670611d6808a6a2e225d",
+    "semantic_hash": "61f133696d16670611d6808a6a2e225d"
+  },
+  "PrayerTimeEngine.Core/Domain/MosquePrayerTimes/Providers/MyMosq/Services/MyMosqApiService.cs": {
+    "mtime": 1783450102.021566,
+    "ast_hash": "b1e15a57dffbbe39aaba5aae9c188c87",
+    "semantic_hash": "b1e15a57dffbbe39aaba5aae9c188c87"
+  },
+  "PrayerTimeEngine.Core/Domain/MosquePrayerTimes/Providers/MyMosq/Services/MyMosqMosquePrayerTimeProvider.cs": {
+    "mtime": 1783545628.140002,
+    "ast_hash": "c95d86df7ebb5bfe64bc076de9458495",
+    "semantic_hash": "c95d86df7ebb5bfe64bc076de9458495"
+  },
+  "PrayerTimeEngine.Core/Domain/MosquePrayerTimes/Providers/MyMosq/Services/MyMosqRepository.cs": {
+    "mtime": 1783545628.1797252,
+    "ast_hash": "e2764707bdf483d60ce86be1adcd0ea1",
+    "semantic_hash": "e2764707bdf483d60ce86be1adcd0ea1"
+  },
+  "PrayerTimeEngine.Core/Domain/PlaceManagement/Interfaces/IPlaceService.cs": {
+    "mtime": 1726427261.8576796,
+    "ast_hash": "68a11a693e7016548254151224ef83e7",
+    "semantic_hash": "68a11a693e7016548254151224ef83e7"
+  },
+  "PrayerTimeEngine.Core/Domain/PlaceManagement/Models/BasicPlaceInfo.cs": {
+    "mtime": 1783552992.4892566,
+    "ast_hash": "8afebfed5ce63046bd6fe26025544551",
+    "semantic_hash": "8afebfed5ce63046bd6fe26025544551"
+  },
+  "PrayerTimeEngine.Core/Domain/PlaceManagement/Models/ProfilePlaceInfo.cs": {
+    "mtime": 1758448460.2596748,
+    "ast_hash": "0e8e36a86117ca4204c64a2f84a35582",
+    "semantic_hash": "0e8e36a86117ca4204c64a2f84a35582"
+  },
+  "PrayerTimeEngine.Core/Domain/PlaceManagement/Models/TimezoneInfo.cs": {
+    "mtime": 1783552992.490771,
+    "ast_hash": "90e1d10ffd65d4a7492846653f73d18d",
+    "semantic_hash": "90e1d10ffd65d4a7492846653f73d18d"
+  },
+  "PrayerTimeEngine.Core/Domain/PlaceManagement/Services/LocationIQ/DTOs/LocationIQAddress.cs": {
+    "mtime": 1726427261.8606808,
+    "ast_hash": "1c1d4deeab767cc18fc0ce904193df8f",
+    "semantic_hash": "1c1d4deeab767cc18fc0ce904193df8f"
+  },
+  "PrayerTimeEngine.Core/Domain/PlaceManagement/Services/LocationIQ/DTOs/LocationIQPlace.cs": {
+    "mtime": 1726427261.861679,
+    "ast_hash": "62c6fd1233d6d98e8b22f60a8d133c7e",
+    "semantic_hash": "62c6fd1233d6d98e8b22f60a8d133c7e"
+  },
+  "PrayerTimeEngine.Core/Domain/PlaceManagement/Services/LocationIQ/DTOs/LocationIQTimezoneResponseDTO.cs": {
+    "mtime": 1726427261.8626792,
+    "ast_hash": "da72be98dd12ac1fb657785f76b535c1",
+    "semantic_hash": "da72be98dd12ac1fb657785f76b535c1"
+  },
+  "PrayerTimeEngine.Core/Domain/PlaceManagement/Services/LocationIQ/ILocationIQApiService.cs": {
+    "mtime": 1783447238.819929,
+    "ast_hash": "08a638029b74c521d69f12ba8f14c9c4",
+    "semantic_hash": "08a638029b74c521d69f12ba8f14c9c4"
+  },
+  "PrayerTimeEngine.Core/Domain/PlaceManagement/Services/PlaceService.cs": {
+    "mtime": 1783363142.321831,
+    "ast_hash": "61010cd0c40ad5d28cb8ae9d71f236e3",
+    "semantic_hash": "61010cd0c40ad5d28cb8ae9d71f236e3"
+  },
+  "PrayerTimeEngine.Core/Domain/ProfileManagement/Interfaces/IProfileRepository.cs": {
+    "mtime": 1783546177.132437,
+    "ast_hash": "a5c38d402567c66b3d4d4178348a6f5e",
+    "semantic_hash": "a5c38d402567c66b3d4d4178348a6f5e"
+  },
+  "PrayerTimeEngine.Core/Domain/ProfileManagement/Interfaces/IProfileService.cs": {
+    "mtime": 1783580008.496779,
+    "ast_hash": "467795e1ed6e15a4282be2a3676e48e0",
+    "semantic_hash": "467795e1ed6e15a4282be2a3676e48e0"
+  },
+  "PrayerTimeEngine.Core/Domain/ProfileManagement/Models/Entities/DynamicProfile.cs": {
+    "mtime": 1758448460.2627423,
+    "ast_hash": "5a546e8f90e4efbd2d3d0854ba503cb1",
+    "semantic_hash": "5a546e8f90e4efbd2d3d0854ba503cb1"
+  },
+  "PrayerTimeEngine.Core/Domain/ProfileManagement/Models/Entities/MosqueProfile.cs": {
+    "mtime": 1758448460.2643044,
+    "ast_hash": "9fa4c5537aad493035f2d05aa520809a",
+    "semantic_hash": "9fa4c5537aad493035f2d05aa520809a"
+  },
+  "PrayerTimeEngine.Core/Domain/ProfileManagement/Models/Entities/Profile.cs": {
+    "mtime": 1758448460.2659664,
+    "ast_hash": "700888a9305f6435e07eba59fce6f9a5",
+    "semantic_hash": "700888a9305f6435e07eba59fce6f9a5"
+  },
+  "PrayerTimeEngine.Core/Domain/ProfileManagement/Models/Entities/ProfileLocationConfig.cs": {
+    "mtime": 1758448460.2675388,
+    "ast_hash": "d9854a1686197ddb574931401146d807",
+    "semantic_hash": "d9854a1686197ddb574931401146d807"
+  },
+  "PrayerTimeEngine.Core/Domain/ProfileManagement/Models/Entities/ProfileTimeConfig.cs": {
+    "mtime": 1758448460.2687354,
+    "ast_hash": "d30791d6969167322ffbd494179ea363",
+    "semantic_hash": "d30791d6969167322ffbd494179ea363"
+  },
+  "PrayerTimeEngine.Core/Domain/ProfileManagement/Services/ProfileRepository.cs": {
+    "mtime": 1783546215.9964414,
+    "ast_hash": "b585e506d871b4327793d21aa7e9cfa0",
+    "semantic_hash": "b585e506d871b4327793d21aa7e9cfa0"
+  },
+  "PrayerTimeEngine.Core/Domain/ProfileManagement/Services/ProfileService.cs": {
+    "mtime": 1783580041.8779233,
+    "ast_hash": "eecf71d2172cb0e371b71327ca7a557d",
+    "semantic_hash": "eecf71d2172cb0e371b71327ca7a557d"
+  },
+  "PrayerTimeEngine.Core/Domain/TimeTypeAttributeService.cs": {
+    "mtime": 1735937751.4655719,
+    "ast_hash": "33c6f3bf242e82fd06dc1b2f257f82ce",
+    "semantic_hash": "33c6f3bf242e82fd06dc1b2f257f82ce"
+  },
+  "PrayerTimeEngine.Core/PrayerTimeEngine.Core.csproj": {
+    "mtime": 1783545350.232901,
+    "ast_hash": "6142a837b4b55c27ffb4cb8c0aefd833",
+    "semantic_hash": "6142a837b4b55c27ffb4cb8c0aefd833"
+  },
+  "PrayerTimeEngine.MAUI/App.xaml": {
+    "mtime": 1723579204.0576928,
+    "ast_hash": "a9dfb54c05a192b68017e8586577e1dc",
+    "semantic_hash": "a9dfb54c05a192b68017e8586577e1dc"
+  },
+  "PrayerTimeEngine.MAUI/App.xaml.cs": {
+    "mtime": 1726427261.9126804,
+    "ast_hash": "536fdaf444915f67714513cd64d1e853",
+    "semantic_hash": "536fdaf444915f67714513cd64d1e853"
+  },
+  "PrayerTimeEngine.MAUI/AppApiKeys.cs": {
+    "mtime": 1783363008.137379,
+    "ast_hash": "0859620a37a87ca5940c00cabe68ff57",
+    "semantic_hash": "0859620a37a87ca5940c00cabe68ff57"
+  },
+  "PrayerTimeEngine.MAUI/AppConfig.cs": {
+    "mtime": 1726427261.9136803,
+    "ast_hash": "409e29bf55b45880a0b1f4d77bd4b8da",
+    "semantic_hash": "409e29bf55b45880a0b1f4d77bd4b8da"
+  },
+  "PrayerTimeEngine.MAUI/Extensions/ColorExtensions.cs": {
+    "mtime": 1772276433.472474,
+    "ast_hash": "b6c1654a66fbe524a14bd266fe585e20",
+    "semantic_hash": "b6c1654a66fbe524a14bd266fe585e20"
+  },
+  "PrayerTimeEngine.MAUI/MauiProgram.cs": {
+    "mtime": 1783552992.492322,
+    "ast_hash": "162b916b2d97f87de270f04ddc44f02e",
+    "semantic_hash": "162b916b2d97f87de270f04ddc44f02e"
+  },
+  "PrayerTimeEngine.MAUI/Platforms/Android/BootBroadcastReceiver.Android.cs": {
+    "mtime": 1783364967.9966998,
+    "ast_hash": "43181b4a169e006fafaf5cb0c814d860",
+    "semantic_hash": "43181b4a169e006fafaf5cb0c814d860"
+  },
+  "PrayerTimeEngine.MAUI/Platforms/Android/MainActivity.cs": {
+    "mtime": 1774392945.7276368,
+    "ast_hash": "810f2e14cdc23f8f37c0e6063174704b",
+    "semantic_hash": "810f2e14cdc23f8f37c0e6063174704b"
+  },
+  "PrayerTimeEngine.MAUI/Platforms/Android/MainApplication.cs": {
+    "mtime": 1760739953.7479825,
+    "ast_hash": "45c6cf980d8897d7ce2ae407c2213a05",
+    "semantic_hash": "45c6cf980d8897d7ce2ae407c2213a05"
+  },
+  "PrayerTimeEngine.MAUI/Platforms/Android/Notifications/PersistentNotificationHandler.Android.cs": {
+    "mtime": 1771973286.7739332,
+    "ast_hash": "8a8ee5373b6f933a290ed136f28d6288",
+    "semantic_hash": "8a8ee5373b6f933a290ed136f28d6288"
+  },
+  "PrayerTimeEngine.MAUI/Platforms/Android/Notifications/PrayerTimeSummaryNotification.Android.cs": {
+    "mtime": 1761033258.596105,
+    "ast_hash": "bc3e7993b53a243de0deeca87cc15cab",
+    "semantic_hash": "bc3e7993b53a243de0deeca87cc15cab"
+  },
+  "PrayerTimeEngine.MAUI/Platforms/Android/Permissions/PostNotifications.cs": {
+    "mtime": 1760739953.7510424,
+    "ast_hash": "469c79db5acc45acde520db5999ab49a",
+    "semantic_hash": "469c79db5acc45acde520db5999ab49a"
+  },
+  "PrayerTimeEngine.MAUI/Platforms/MacCatalyst/AppDelegate.cs": {
+    "mtime": 1726427261.9196796,
+    "ast_hash": "afd4191cf27b62b2efe5c21aec5ca83d",
+    "semantic_hash": "afd4191cf27b62b2efe5c21aec5ca83d"
+  },
+  "PrayerTimeEngine.MAUI/Platforms/MacCatalyst/Program.cs": {
+    "mtime": 1726427261.9206793,
+    "ast_hash": "ad71fecb4b718a93f87260115696be94",
+    "semantic_hash": "ad71fecb4b718a93f87260115696be94"
+  },
+  "PrayerTimeEngine.MAUI/Platforms/Tizen/Main.cs": {
+    "mtime": 1696968361.185314,
+    "ast_hash": "5dbe0f6148758083841d9082280b12a6",
+    "semantic_hash": "5dbe0f6148758083841d9082280b12a6"
+  },
+  "PrayerTimeEngine.MAUI/Platforms/Windows/App.xaml": {
+    "mtime": 1723579204.0586922,
+    "ast_hash": "02c4a6c117126a9573a52f90062c2f3a",
+    "semantic_hash": "02c4a6c117126a9573a52f90062c2f3a"
+  },
+  "PrayerTimeEngine.MAUI/Platforms/Windows/App.xaml.cs": {
+    "mtime": 1735978006.3881238,
+    "ast_hash": "8297b2fda1e3fb8feca4f3db81c389f4",
+    "semantic_hash": "8297b2fda1e3fb8feca4f3db81c389f4"
+  },
+  "PrayerTimeEngine.MAUI/Platforms/iOS/AppDelegate.cs": {
+    "mtime": 1765233022.2883153,
+    "ast_hash": "7bee76eddf63b277064f0927308aad14",
+    "semantic_hash": "7bee76eddf63b277064f0927308aad14"
+  },
+  "PrayerTimeEngine.MAUI/Platforms/iOS/Program.cs": {
+    "mtime": 1726427261.9186792,
+    "ast_hash": "23ac572fe397c6a8b56fe30c6ce53712",
+    "semantic_hash": "23ac572fe397c6a8b56fe30c6ce53712"
+  },
+  "PrayerTimeEngine.MAUI/PrayerTimeEngine.MAUI.csproj": {
+    "mtime": 1783409997.5572078,
+    "ast_hash": "7a68fb566b08edd562747e2c0383f99c",
+    "semantic_hash": "7a68fb566b08edd562747e2c0383f99c"
+  },
+  "PrayerTimeEngine.MAUI/Presentation/DebugUtil.cs": {
+    "mtime": 1735939241.171524,
+    "ast_hash": "4416e7758ca4a01eb36f99da0bd6746b",
+    "semantic_hash": "4416e7758ca4a01eb36f99da0bd6746b"
+  },
+  "PrayerTimeEngine.MAUI/Presentation/IPrayerTimeViewModel.cs": {
+    "mtime": 1755902794.7067623,
+    "ast_hash": "2b39f879e0abd1d341e7764594ad0029",
+    "semantic_hash": "2b39f879e0abd1d341e7764594ad0029"
+  },
+  "PrayerTimeEngine.MAUI/Presentation/MainPageOptionsMenuService.cs": {
+    "mtime": 1783363008.1419678,
+    "ast_hash": "128e7d8b38bf1bcbb221b7693751b966",
+    "semantic_hash": "128e7d8b38bf1bcbb221b7693751b966"
+  },
+  "PrayerTimeEngine.MAUI/Presentation/MarkUpExtensions.cs": {
+    "mtime": 1764411360.7839625,
+    "ast_hash": "25cae2f2f3b25399cdbb11657e58b1cc",
+    "semantic_hash": "25cae2f2f3b25399cdbb11657e58b1cc"
+  },
+  "PrayerTimeEngine.MAUI/Presentation/Pages/DatabaseTables/DatabaseTablesPage.cs": {
+    "mtime": 1726427261.9246795,
+    "ast_hash": "8044a2fedef898bf53d9017427d656b1",
+    "semantic_hash": "8044a2fedef898bf53d9017427d656b1"
+  },
+  "PrayerTimeEngine.MAUI/Presentation/Pages/DatabaseTables/DatabaseTablesPageViewModel.cs": {
+    "mtime": 1758448460.276799,
+    "ast_hash": "b0456960f1c828c1856e9c9ea85f3568",
+    "semantic_hash": "b0456960f1c828c1856e9c9ea85f3568"
+  },
+  "PrayerTimeEngine.MAUI/Presentation/Pages/Main/MainPage.cs": {
+    "mtime": 1774392570.2083166,
+    "ast_hash": "a82637088bf972bb0ba6cd10f8b4454d",
+    "semantic_hash": "a82637088bf972bb0ba6cd10f8b4454d"
+  },
+  "PrayerTimeEngine.MAUI/Presentation/Pages/Main/MainPageViewModel.cs": {
+    "mtime": 1783364866.7620883,
+    "ast_hash": "ba7f0719a969fcfe361c41531697ebe7",
+    "semantic_hash": "ba7f0719a969fcfe361c41531697ebe7"
+  },
+  "PrayerTimeEngine.MAUI/Presentation/Pages/QiblahFinder/QiblahMapPage.cs": {
+    "mtime": 1780396500.7919219,
+    "ast_hash": "c3af304558d412e6112b1e00994064c8",
+    "semantic_hash": "c3af304558d412e6112b1e00994064c8"
+  },
+  "PrayerTimeEngine.MAUI/Presentation/Pages/Settings/SettingsContent/Custom/ISettingConfigurationViewModel.cs": {
+    "mtime": 1726427261.9276795,
+    "ast_hash": "3199bab71bc666ccd28217d020438472",
+    "semantic_hash": "3199bab71bc666ccd28217d020438472"
+  },
+  "PrayerTimeEngine.MAUI/Presentation/Pages/Settings/SettingsContent/Custom/MuwaqqitDegreeSettingConfigurationViewModel.cs": {
+    "mtime": 1726427261.9286797,
+    "ast_hash": "9eb15d01d5fc2333e13cf0b9cccbf5c9",
+    "semantic_hash": "9eb15d01d5fc2333e13cf0b9cccbf5c9"
+  },
+  "PrayerTimeEngine.MAUI/Presentation/Pages/Settings/SettingsContent/SettingsContentPage.cs": {
+    "mtime": 1726427261.9296799,
+    "ast_hash": "502f45ea6c995bafed3941acd2e9c090",
+    "semantic_hash": "502f45ea6c995bafed3941acd2e9c090"
+  },
+  "PrayerTimeEngine.MAUI/Presentation/Pages/Settings/SettingsContent/SettingsContentPageViewModel.cs": {
+    "mtime": 1735978006.294122,
+    "ast_hash": "297f9e7ca16f7392e85284ed9e368ddc",
+    "semantic_hash": "297f9e7ca16f7392e85284ed9e368ddc"
+  },
+  "PrayerTimeEngine.MAUI/Presentation/Pages/Settings/SettingsHandler/SettingsHandlerPage.cs": {
+    "mtime": 1731200638.5441432,
+    "ast_hash": "30db727bae6cb1fd6cdb47e53b34aace",
+    "semantic_hash": "30db727bae6cb1fd6cdb47e53b34aace"
+  },
+  "PrayerTimeEngine.MAUI/Presentation/Pages/Settings/SettingsHandler/SettingsHandlerPageViewModel.cs": {
+    "mtime": 1735940263.371507,
+    "ast_hash": "ead8fe363494966c20612a54d9d63956",
+    "semantic_hash": "ead8fe363494966c20612a54d9d63956"
+  },
+  "PrayerTimeEngine.MAUI/Presentation/Popups/MultiSelectPopup.cs": {
+    "mtime": 1765492097.2645116,
+    "ast_hash": "60d0a7f84935c0e6138a196c03ef01dc",
+    "semantic_hash": "60d0a7f84935c0e6138a196c03ef01dc"
+  },
+  "PrayerTimeEngine.MAUI/Presentation/ProfileDataTemplateSelector.cs": {
+    "mtime": 1726427261.933679,
+    "ast_hash": "944fb7b049998121b012d220a1e0652a",
+    "semantic_hash": "944fb7b049998121b012d220a1e0652a"
+  },
+  "PrayerTimeEngine.MAUI/Presentation/Services/Navigation/INavigationService.cs": {
+    "mtime": 1771802993.7963123,
+    "ast_hash": "49c92d10a1ebf7d1fcbd415b0d682ab3",
+    "semantic_hash": "49c92d10a1ebf7d1fcbd415b0d682ab3"
+  },
+  "PrayerTimeEngine.MAUI/Presentation/Services/SettingsContentPageFactory/SettingsContentPageFactory.cs": {
+    "mtime": 1726427261.93568,
+    "ast_hash": "616d118b75f92cc153efaab428004008",
+    "semantic_hash": "616d118b75f92cc153efaab428004008"
+  },
+  "PrayerTimeEngine.MAUI/Presentation/Services/ToastMessageService.cs": {
+    "mtime": 1771803215.3883593,
+    "ast_hash": "de8fd59b68e8145dce9b068c1a370264",
+    "semantic_hash": "de8fd59b68e8145dce9b068c1a370264"
+  },
+  "PrayerTimeEngine.MAUI/Presentation/Views/BasePrayerTimeViewModel.cs": {
+    "mtime": 1765490842.058231,
+    "ast_hash": "7580fcfc6bb7c066cef97ef312c575d8",
+    "semantic_hash": "7580fcfc6bb7c066cef97ef312c575d8"
+  },
+  "PrayerTimeEngine.MAUI/Presentation/Views/MosquePrayerTimes/MosquePrayerTimeView.cs": {
+    "mtime": 1772899966.4767284,
+    "ast_hash": "efd945104013ca926876ac866e83ba2a",
+    "semantic_hash": "efd945104013ca926876ac866e83ba2a"
+  },
+  "PrayerTimeEngine.MAUI/Presentation/Views/MosquePrayerTimes/MosquePrayerTimeViewModel.cs": {
+    "mtime": 1755902794.7117617,
+    "ast_hash": "dcc1eb5dbda1e99623b9d032f63a7a45",
+    "semantic_hash": "dcc1eb5dbda1e99623b9d032f63a7a45"
+  },
+  "PrayerTimeEngine.MAUI/Presentation/Views/PrayerTimeGraphic/PrayerTimeGraphicView.cs": {
+    "mtime": 1765492081.405807,
+    "ast_hash": "52565218df2ed9e2e736b087f82b7859",
+    "semantic_hash": "52565218df2ed9e2e736b087f82b7859"
+  },
+  "PrayerTimeEngine.MAUI/Presentation/Views/PrayerTimeGraphic/VOs/ESubTimeType.cs": {
+    "mtime": 1726427261.9396808,
+    "ast_hash": "dfc55df3f5461627ef57363fb9491fc9",
+    "semantic_hash": "dfc55df3f5461627ef57363fb9491fc9"
+  },
+  "PrayerTimeEngine.MAUI/Presentation/Views/PrayerTimeGraphic/VOs/PrayerTimeGraphicSubTimeVO.cs": {
+    "mtime": 1726427261.9406798,
+    "ast_hash": "a5f6e12113b6b588891d05609b536f43",
+    "semantic_hash": "a5f6e12113b6b588891d05609b536f43"
+  },
+  "PrayerTimeEngine.MAUI/Presentation/Views/PrayerTimeGraphic/VOs/PrayerTimeGraphicTimeVO.cs": {
+    "mtime": 1748644636.3143091,
+    "ast_hash": "eb587d131d1cb63f95d0826397791feb",
+    "semantic_hash": "eb587d131d1cb63f95d0826397791feb"
+  },
+  "PrayerTimeEngine.MAUI/Presentation/Views/PrayerTimeViewModelFactory.cs": {
+    "mtime": 1726610672.7914512,
+    "ast_hash": "c62bc491ce7e0d6a2d5812b8e6b37719",
+    "semantic_hash": "c62bc491ce7e0d6a2d5812b8e6b37719"
+  },
+  "PrayerTimeEngine.MAUI/Presentation/Views/PrayerTimes/DynamicPrayerTimeView.cs": {
+    "mtime": 1772899970.9806085,
+    "ast_hash": "83b17a4fe74a389def0b7c779a3e9c5a",
+    "semantic_hash": "83b17a4fe74a389def0b7c779a3e9c5a"
+  },
+  "PrayerTimeEngine.MAUI/Presentation/Views/PrayerTimes/DynamicPrayerTimeViewModel.cs": {
+    "mtime": 1780420544.9139953,
+    "ast_hash": "ab30b08b6576353d36c1a05c1845d513",
+    "semantic_hash": "ab30b08b6576353d36c1a05c1845d513"
+  },
+  "PrayerTimeEngine.MAUI/Properties/launchSettings.json": {
+    "mtime": 1699050634.212036,
+    "ast_hash": "836220c8be2d5322ad68c2a5c7538c2f",
+    "semantic_hash": "836220c8be2d5322ad68c2a5c7538c2f"
+  },
+  "PrayerTimeEngine.MAUI/Resources/Styles/Colors.xaml": {
+    "mtime": 1690624056.5476825,
+    "ast_hash": "4de604b16fd5b431b7ae78c743229bad",
+    "semantic_hash": "4de604b16fd5b431b7ae78c743229bad"
+  },
+  "PrayerTimeEngine.MAUI/Resources/Styles/Styles.xaml": {
+    "mtime": 1708036399.389114,
+    "ast_hash": "46b9b1d6c2ea1a5caa2d772d53fe4b1c",
+    "semantic_hash": "46b9b1d6c2ea1a5caa2d772d53fe4b1c"
+  },
+  "PrayerTimeEngine.MAUI/Services/AppInitializer.cs": {
+    "mtime": 1783372696.7410755,
+    "ast_hash": "4bf33580c408a681b33d51df16ba3203",
+    "semantic_hash": "4bf33580c408a681b33d51df16ba3203"
+  },
+  "PrayerTimeEngine.MAUI/Services/IAppInitializer.cs": {
+    "mtime": 1783358050.4520776,
+    "ast_hash": "d422216e98a6949b4a77dd1ac4463b3b",
+    "semantic_hash": "d422216e98a6949b4a77dd1ac4463b3b"
+  },
+  "PrayerTimeEngine.MAUI/Services/Notifications/IPrayerTimeSummaryNotificationHandler.cs": {
+    "mtime": 1746748561.191148,
+    "ast_hash": "01cede9c821b8775be7cbddb669b530c",
+    "semantic_hash": "01cede9c821b8775be7cbddb669b530c"
+  },
+  "PrayerTimeEngine.MAUI/Services/Notifications/NoOpPrayerTimeSummaryNotificationHandler.cs": {
+    "mtime": 1783363008.145146,
+    "ast_hash": "d454d792b1e2ea4fe6421c47e5d2be27",
+    "semantic_hash": "d454d792b1e2ea4fe6421c47e5d2be27"
+  },
+  "PrayerTimeEngine.MAUI/Services/Notifications/NotificationService.cs": {
+    "mtime": 1746748561.199147,
+    "ast_hash": "9c8018822fdb7878b84c2e2c8e2c2b21",
+    "semantic_hash": "9c8018822fdb7878b84c2e2c8e2c2b21"
+  },
+  "PrayerTimeEngine.MAUI/Services/PreferenceService.cs": {
+    "mtime": 1764800557.043665,
+    "ast_hash": "ee03ea7b2a6480904378c79611c73edf",
+    "semantic_hash": "ee03ea7b2a6480904378c79611c73edf"
+  },
+  "PrayerTimeEngine.MAUI/Services/SystemInfoService.cs": {
+    "mtime": 1765492838.978252,
+    "ast_hash": "eca7df68d19b688ff42e1f07167f5edb",
+    "semantic_hash": "eca7df68d19b688ff42e1f07167f5edb"
+  },
+  "PrayerTimeEngine.slnx": {
+    "mtime": 1783363977.9759667,
+    "ast_hash": "cb13911684ed9978a3d7cfda09186a00",
+    "semantic_hash": "cb13911684ed9978a3d7cfda09186a00"
+  },
+  "SharedGlobalSettings.cs": {
+    "mtime": 1735940684.191786,
+    "ast_hash": "9bf8c6959658031c77b1238db2c547a5",
+    "semantic_hash": "9bf8c6959658031c77b1238db2c547a5"
+  },
+  "PrayerTimeEngine.Core.Tests.Common/TestData/Configuration/SerializedConfigurationTwoDynamicOneMosque.txt": {
+    "mtime": 1783552992.4861898,
+    "ast_hash": "84bf5075d16476dc8c83e6bd428619f4",
+    "semantic_hash": "84bf5075d16476dc8c83e6bd428619f4"
+  },
+  "PrayerTimeEngine.Core.Tests.Common/TestData/FaziletTestData/Fazilet_TestCityData_Austria.txt": {
+    "mtime": 1698780194.0748909,
+    "ast_hash": "6c1215a91c24bfc597990eb421be9308",
+    "semantic_hash": "6c1215a91c24bfc597990eb421be9308"
+  },
+  "PrayerTimeEngine.Core.Tests.Common/TestData/FaziletTestData/Fazilet_TestCityData_Germany.txt": {
+    "mtime": 1743370792.875904,
+    "ast_hash": "f31dd360ea26994e389ec00eaac68ab1",
+    "semantic_hash": "f31dd360ea26994e389ec00eaac68ab1"
+  },
+  "PrayerTimeEngine.Core.Tests.Common/TestData/FaziletTestData/Fazilet_TestCountriesData.txt": {
+    "mtime": 1698780194.075893,
+    "ast_hash": "63a8565d7d4b24ee1090e55a8a20166c",
+    "semantic_hash": "63a8565d7d4b24ee1090e55a8a20166c"
+  },
+  "PrayerTimeEngine.Core.Tests.Common/TestData/FaziletTestData/Fazilet_TestPrayerTimeData_20230729_Innsbruck.txt": {
+    "mtime": 1698780194.0763931,
+    "ast_hash": "2faf3eb0d7bc25fc3589ef783eb56b67",
+    "semantic_hash": "2faf3eb0d7bc25fc3589ef783eb56b67"
+  },
+  "PrayerTimeEngine.Core.Tests.Common/TestData/FaziletTestData/Fazilet_TestPrayerTimeData_20250330_Leverkusen.txt": {
+    "mtime": 1743371376.577795,
+    "ast_hash": "b2548cf51a3b8d81a276eac5136ebb24",
+    "semantic_hash": "b2548cf51a3b8d81a276eac5136ebb24"
+  },
+  "PrayerTimeEngine.Core.Tests.Common/TestData/LocationIQTestData/PlaceInfoByPlaceData.txt": {
+    "mtime": 1706128187.287278,
+    "ast_hash": "f47d45c48acdbeaafad0bb42df23f0c3",
+    "semantic_hash": "f47d45c48acdbeaafad0bb42df23f0c3"
+  },
+  "PrayerTimeEngine.Core.Tests.Common/TestData/LocationIQTestData/SearchedPlacesInfoCologneGrandMosqueAddress.txt": {
+    "mtime": 1706128187.2877772,
+    "ast_hash": "ad85b8da50e8ead09498484d4baf8f6b",
+    "semantic_hash": "ad85b8da50e8ead09498484d4baf8f6b"
+  },
+  "PrayerTimeEngine.Core.Tests.Common/TestData/LocationIQTestData/TimezoneInfoCET.txt": {
+    "mtime": 1706128187.2882767,
+    "ast_hash": "3e9bbd5263a8cb148f8419fdf7f31d08",
+    "semantic_hash": "3e9bbd5263a8cb148f8419fdf7f31d08"
+  },
+  "PrayerTimeEngine.Core.Tests.Common/TestData/MawaqitTestData/Mawaqit_ResponsePageContent_20240829_hamza-koln.txt": {
+    "mtime": 1725006177.1252072,
+    "ast_hash": "0a85518cbaf93bb645407a8f84361909",
+    "semantic_hash": "0a85518cbaf93bb645407a8f84361909"
+  },
+  "PrayerTimeEngine.Core.Tests.Common/TestData/MuwaqqitTestData/Muwaqqit_TestPrayerTimeData_20230730_Innsbruck_Config1.txt": {
+    "mtime": 1698780194.0778925,
+    "ast_hash": "7fa72b4de5011f5b91c073078851e3d0",
+    "semantic_hash": "7fa72b4de5011f5b91c073078851e3d0"
+  },
+  "PrayerTimeEngine.Core.Tests.Common/TestData/MuwaqqitTestData/Muwaqqit_TestPrayerTimeData_20230730_Innsbruck_Config2.txt": {
+    "mtime": 1734856164.6515799,
+    "ast_hash": "ff954a9a1dc1c7b089848cc6cf2795d2",
+    "semantic_hash": "ff954a9a1dc1c7b089848cc6cf2795d2"
+  },
+  "PrayerTimeEngine.Core.Tests.Common/TestData/MuwaqqitTestData/Muwaqqit_TestPrayerTimeData_20230730_Innsbruck_Config3.txt": {
+    "mtime": 1698780194.0788932,
+    "ast_hash": "a7c5ca4a448f02f78be3c9beef81e592",
+    "semantic_hash": "a7c5ca4a448f02f78be3c9beef81e592"
+  },
+  "PrayerTimeEngine.Core.Tests.Common/TestData/MuwaqqitTestData/Muwaqqit_TestPrayerTimeData_20230730_Innsbruck_Config4.txt": {
+    "mtime": 1698780194.0793922,
+    "ast_hash": "2179de55d37e15cfc7e0e63bdb863093",
+    "semantic_hash": "2179de55d37e15cfc7e0e63bdb863093"
+  },
+  "PrayerTimeEngine.Core.Tests.Common/TestData/MyMosqTestData/MyMosq_WebSocketMessage_20240830_1239.txt": {
+    "mtime": 1725008568.6578195,
+    "ast_hash": "7eafc3e168a283aa2a6a11e928a2fb3f",
+    "semantic_hash": "7eafc3e168a283aa2a6a11e928a2fb3f"
+  },
+  "PrayerTimeEngine.Core.Tests.Common/TestData/MyMosqTestData/MyMosq_WebSocketMessage_20240830_InvalidMosqueID.txt": {
+    "mtime": 1725775170.4046783,
+    "ast_hash": "bf747c9baef6207e3fdc9963f92a9914",
+    "semantic_hash": "bf747c9baef6207e3fdc9963f92a9914"
+  },
+  "PrayerTimeEngine.Core.Tests.Common/TestData/SemerkandTestData/Semerkand_TestCityData_Austria.txt": {
+    "mtime": 1698780194.0808907,
+    "ast_hash": "996587c2e19b9f94858a3fdee3c3a416",
+    "semantic_hash": "996587c2e19b9f94858a3fdee3c3a416"
+  },
+  "PrayerTimeEngine.Core.Tests.Common/TestData/SemerkandTestData/Semerkand_TestCityData_Germany.txt": {
+    "mtime": 1743366445.0655107,
+    "ast_hash": "2cf6c3eb1d00aa7d8c8945708be38720",
+    "semantic_hash": "2cf6c3eb1d00aa7d8c8945708be38720"
+  },
+  "PrayerTimeEngine.Core.Tests.Common/TestData/SemerkandTestData/Semerkand_TestCountriesData.txt": {
+    "mtime": 1698780194.081391,
+    "ast_hash": "f4cc7ba4245f78d973f230bc1c69e531",
+    "semantic_hash": "f4cc7ba4245f78d973f230bc1c69e531"
+  },
+  "PrayerTimeEngine.Core.Tests.Common/TestData/SemerkandTestData/Semerkand_TestPrayerTimeData_20230729_Innsbruck.txt": {
+    "mtime": 1710709271.7310863,
+    "ast_hash": "f4d5523a838726223dddf799235c2be2",
+    "semantic_hash": "f4d5523a838726223dddf799235c2be2"
+  },
+  "PrayerTimeEngine.Core.Tests.Common/TestData/SemerkandTestData/Semerkand_TestPrayerTimeData_20250330_Leverkusen.txt": {
+    "mtime": 1743366045.6238265,
+    "ast_hash": "9d0fc2eb2209a77e849e3841462f9162",
+    "semantic_hash": "9d0fc2eb2209a77e849e3841462f9162"
+  },
+  "PrayerTimeEngine.MAUI/Resources/Raw/AboutAssets.txt": {
+    "mtime": 1690624056.546181,
+    "ast_hash": "a5880d77ce06ceae0dfa19fc02b86edc",
+    "semantic_hash": "a5880d77ce06ceae0dfa19fc02b86edc"
+  },
+  "PrayerTimeEngine.MAUI/Resources/AppIcon/appicon.svg": {
+    "mtime": 1690624056.5396838,
+    "ast_hash": "5c7fce998bd02a44ecccee4b477919f8",
+    "semantic_hash": "5c7fce998bd02a44ecccee4b477919f8"
+  },
+  "PrayerTimeEngine.MAUI/Resources/AppIcon/appiconfg.svg": {
+    "mtime": 1690624056.540682,
+    "ast_hash": "f90b41ec7837716bd7ed08c88114e060",
+    "semantic_hash": "f90b41ec7837716bd7ed08c88114e060"
+  },
+  "PrayerTimeEngine.MAUI/Resources/Images/location.png": {
+    "mtime": 1772274734.7093992,
+    "ast_hash": "e32ed4aaf368dd600ceea9c3c8321913",
+    "semantic_hash": "e32ed4aaf368dd600ceea9c3c8321913"
+  },
+  "PrayerTimeEngine.MAUI/Resources/Splash/splash.svg": {
+    "mtime": 1699107019.2372959,
+    "ast_hash": "f90b41ec7837716bd7ed08c88114e060",
+    "semantic_hash": "f90b41ec7837716bd7ed08c88114e060"
+  }
+}
