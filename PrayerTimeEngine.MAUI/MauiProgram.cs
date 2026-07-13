@@ -50,7 +50,6 @@ using PrayerTimeEngine.Services;
 using PrayerTimeEngine.Services.Notifications;
 using Refit;
 using SkiaSharp.Views.Maui.Controls.Hosting;
-using System.Net.Security;
 using System.Net.WebSockets;
 using System.Text;
 using UraniumUI;
@@ -74,8 +73,7 @@ namespace PrayerTimeEngine;
  * - Semerkand marks some times with "*" (e.g. "*23:54", probably taqdir/estimated like Fazilet's "is_takdiri" flag);
  *   the app strips the "*" and shows the time as a normal one instead of conveying the special meaning
  * - Semerkand sometimes has countries and cities with duplicate names
- * 
- * - REMOVE bypassed SSL validation for ISemerkandApiService
+ *
  * - Exception for single calculation only disables that calculation but subsequent calculations rely on cached values and don't retry
  * - remove AppDbContextModel _useOldBehavior31751 temp fix
  * - FIXED? Calculation relevant data like the Profile with its configs may change in the middle of the calculation process due to shared references
@@ -311,22 +309,6 @@ public static class MauiProgram
             {
                 config.Timeout = TimeSpan.FromSeconds(HTTP_REQUEST_TIMEOUT_SECONDS);
                 config.BaseAddress = new Uri("https://semerkandtakvimi.com/api/");
-            })
-            .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
-            {
-                // Semerkand has certificate chain issues (untrusted root / broken chain).
-                // We bypass only chain trust errors; hostname mismatch is never bypassed
-                // because it would indicate a MITM attack.
-                ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) =>
-                {
-                    if (sslPolicyErrors == SslPolicyErrors.None)
-                        return true;
-                    if (sslPolicyErrors.HasFlag(SslPolicyErrors.RemoteCertificateNameMismatch))
-                        return false;
-                    if (sslPolicyErrors.HasFlag(SslPolicyErrors.RemoteCertificateNotAvailable))
-                        return false;
-                    return true; // only RemoteCertificateChainErrors remains
-                }
             })
             .AddStandardResilienceHandler();
         serviceCollection.AddTransient<SemerkandDynamicPrayerTimeProvider>();
