@@ -4,12 +4,15 @@ namespace PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Semerkand.Mo
 
 public class SemerkandCityResponseDTO
 {
-    [JsonPropertyName("Id")]
+    [JsonPropertyName("id")]
     public int ID { get; set; }
 
-    [JsonPropertyName("Name")]
+    [JsonPropertyName("name")]
     public string Name { get; set; }
 
-    [JsonPropertyName("DisplayName")]
+    [JsonPropertyName("displayName")]
     public string DisplayName { get; set; }
+
+    [JsonPropertyName("countryId")]
+    public int CountryID { get; set; }
 }
