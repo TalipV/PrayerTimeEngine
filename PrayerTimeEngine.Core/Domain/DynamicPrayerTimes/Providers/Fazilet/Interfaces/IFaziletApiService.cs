@@ -3,6 +3,11 @@ using Refit;
 
 namespace PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Interfaces;
 
+// examples:
+// - https://fazilettakvimi.com/api/cms/daily?districtId=232&lang=1
+// - https://fazilettakvimi.com/api/cms/cities-by-country?districtId=1
+// - https://fazilettakvimi.com/api/cms/daily?lang=2&districtId=1
+
 public interface IFaziletApiService
 {
     [Get("/daily?districtId=232&lang=1")]

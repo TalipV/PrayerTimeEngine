@@ -310,7 +310,7 @@ public static class MauiProgram
             .ConfigureHttpClient(config =>
             {
                 config.Timeout = TimeSpan.FromSeconds(HTTP_REQUEST_TIMEOUT_SECONDS);
-                config.BaseAddress = new Uri("https://semerkandtakvimi.semerkandmobile.com/");
+                config.BaseAddress = new Uri("https://semerkandtakvimi.com/api/");
             })
             .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
             {

@@ -18,7 +18,7 @@ namespace PrayerTimeEngine.Core.Tests.Common.TestData;
 
 public class SubstitutionHelper
 {
-    private const string SEMERKAND_BASE_URL = @"https://semerkandtakvimi.semerkandmobile.com";
+    private const string SEMERKAND_BASE_URL = @"https://semerkandtakvimi.com/api";
     private const string FAZILET_BASE_URL = @"https://fazilettakvimi.com/api/cms";
     private const string MUWAQQIT_BASE_URL = @"https://www.muwaqqit.com";
 
@@ -28,11 +28,11 @@ public class SubstitutionHelper
         {
             Stream responseStream = request.RequestUri.AbsoluteUri switch
             {
-                $"{SEMERKAND_BASE_URL}/countries?language=tr" => File.OpenRead(Path.Combine(TestDataHelper.SEMERKAND_TEST_DATA_FILE_PATH, "Semerkand_TestCountriesData.txt")),
-                $"{SEMERKAND_BASE_URL}/cities?countryID=3" => File.OpenRead(Path.Combine(TestDataHelper.SEMERKAND_TEST_DATA_FILE_PATH, "Semerkand_TestCityData_Austria.txt")),
-                $"{SEMERKAND_BASE_URL}/cities?countryID=2" => File.OpenRead(Path.Combine(TestDataHelper.SEMERKAND_TEST_DATA_FILE_PATH, "Semerkand_TestCityData_Germany.txt")),
-                $"{SEMERKAND_BASE_URL}/salaattimes?year=2023&cityId=197" => File.OpenRead(Path.Combine(TestDataHelper.SEMERKAND_TEST_DATA_FILE_PATH, "Semerkand_TestPrayerTimeData_20230729_Innsbruck.txt")),
-                $"{SEMERKAND_BASE_URL}/salaattimes?year=2025&cityId=786" => File.OpenRead(Path.Combine(TestDataHelper.SEMERKAND_TEST_DATA_FILE_PATH, "Semerkand_TestPrayerTimeData_20250330_Leverkusen.txt")),
+                $"{SEMERKAND_BASE_URL}/countries" => File.OpenRead(Path.Combine(TestDataHelper.SEMERKAND_TEST_DATA_FILE_PATH, "Semerkand_TestCountriesData.txt")),
+                $"{SEMERKAND_BASE_URL}/countries/3/cities" => File.OpenRead(Path.Combine(TestDataHelper.SEMERKAND_TEST_DATA_FILE_PATH, "Semerkand_TestCityData_Austria.txt")),
+                $"{SEMERKAND_BASE_URL}/countries/2/cities" => File.OpenRead(Path.Combine(TestDataHelper.SEMERKAND_TEST_DATA_FILE_PATH, "Semerkand_TestCityData_Germany.txt")),
+                $"{SEMERKAND_BASE_URL}/salaat-times?year=2023&cityId=197" => File.OpenRead(Path.Combine(TestDataHelper.SEMERKAND_TEST_DATA_FILE_PATH, "Semerkand_TestPrayerTimeData_20230729_Innsbruck.txt")),
+                $"{SEMERKAND_BASE_URL}/salaat-times?year=2025&cityId=786" => File.OpenRead(Path.Combine(TestDataHelper.SEMERKAND_TEST_DATA_FILE_PATH, "Semerkand_TestPrayerTimeData_20250330_Leverkusen.txt")),
                 _ => throw new Exception($"No response registered for URL: {request.RequestUri.AbsoluteUri}"),
             };
 
@@ -44,7 +44,7 @@ public class SubstitutionHelper
         }
 
         var mockHttpMessageHandler = new MockHttpMessageHandler(handleRequestFunc);
-        var httpClient = new HttpClient(mockHttpMessageHandler) { BaseAddress = new Uri("https://semerkandtakvimi.semerkandmobile.com/") };
+        var httpClient = new HttpClient(mockHttpMessageHandler) { BaseAddress = new Uri("https://semerkandtakvimi.com/api/") };
 
         return RestService.For<ISemerkandApiService>(httpClient);
     }

@@ -15,7 +15,7 @@ public class SemerkandApiServiceTests : BaseTest
     public SemerkandApiServiceTests()
     {
         _mockHttpMessageHandler = new MockHttpMessageHandler();
-        var httpClient = new HttpClient(_mockHttpMessageHandler) { BaseAddress = new Uri("https://semerkandtakvimi.semerkandmobile.com/") };
+        var httpClient = new HttpClient(_mockHttpMessageHandler) { BaseAddress = new Uri("https://semerkandtakvimi.com/api/") };
         _semerkandApiService = RestService.For<ISemerkandApiService>(httpClient);
     }
 
@@ -39,7 +39,7 @@ public class SemerkandApiServiceTests : BaseTest
         var countries = await _semerkandApiService.GetCountries(default);
 
         // ASSERT
-        countries.Should().HaveCount(206);
+        countries.Should().HaveCount(207);
         countries.Should().AllSatisfy(country =>
         {
             country.Should().NotBeNull();
