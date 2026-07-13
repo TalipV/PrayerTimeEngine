@@ -262,6 +262,7 @@ public static class MauiProgram
 
         serviceCollection.AddTransient<IProfileService, ProfileService>();
         serviceCollection.AddTransient<IProfileRepository, ProfileRepository>();
+        serviceCollection.AddSingleton<IProfileVersionStore, ProfileVersionStore>();
 
         serviceCollection.AddTransient<IPlaceService, PlaceService>(sp =>
         {

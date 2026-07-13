@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using NodaTime;
 using PrayerTimeEngine.Core.Common.Enum;
-using System.Collections.Concurrent;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Models;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Models;
@@ -19,14 +18,13 @@ public class ProfileService(
         IProfileRepository profileRepository,
         IDynamicPrayerTimeProviderFactory dynamicPrayerTimeProviderFactory,
         TimeTypeAttributeService timeTypeAttributeService,
+        IProfileVersionStore profileVersionStore,
         ILogger<ProfileService> logger
     ) : IProfileService
 {
-    private readonly ConcurrentDictionary<int, long> _profileVersions = new();
+    public long GetProfileVersion(int profileID) => profileVersionStore.GetVersion(profileID);
 
-    public long GetProfileVersion(int profileID) => _profileVersions.GetValueOrDefault(profileID, 0L);
-
-    private void bumpProfileVersion(int profileID) => _profileVersions.AddOrUpdate(profileID, 1L, (_, v) => v + 1L);
+    private void bumpProfileVersion(int profileID) => profileVersionStore.BumpVersion(profileID);
 
     public async Task<List<Profile>> GetProfiles(CancellationToken cancellationToken)
     {
