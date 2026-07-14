@@ -128,7 +128,7 @@ public class MawaqitRepositoryTests : BaseTest
         (await TestArrangeDbContext.MawaqitPrayerTimes.FindAsync(newTime.ID)).Should().NotBeNull();
 
         // ACT
-        await _mawaqitRepository.DeleteCacheDataAsync(baseDate, default);
+        await _mawaqitRepository.DeleteCacheDataAsync(baseDate.Date, default);
 
         // ASSERT
         (await TestAssertDbContext.MawaqitPrayerTimes.FindAsync(oldTime.ID)).Should().BeNull();

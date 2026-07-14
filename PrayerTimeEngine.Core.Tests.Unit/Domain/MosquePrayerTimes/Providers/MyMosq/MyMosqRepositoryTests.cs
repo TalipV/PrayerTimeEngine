@@ -128,7 +128,7 @@ public class MyMosqRepositoryTests : BaseTest
         (await TestArrangeDbContext.MyMosqPrayerTimes.FindAsync(newTime.ID)).Should().NotBeNull();
 
         // ACT
-        await _myMosqRepository.DeleteCacheDataAsync(baseDate, default);
+        await _myMosqRepository.DeleteCacheDataAsync(baseDate.Date, default);
 
         // ASSERT
         (await TestAssertDbContext.MyMosqPrayerTimes.FindAsync(oldTime.ID)).Should().BeNull();

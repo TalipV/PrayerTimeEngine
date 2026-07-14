@@ -142,6 +142,36 @@ public class AppDbContext(
                         x => x != null ? x.GetLocalDateFromDBColumnString() : null
                     );
             }
+            else if (item.PropertyType == typeof(LocalDateTime))
+            {
+                modelBuilder
+                    .Entity(type)
+                    .Property<LocalDateTime>(item.Name)
+                    .HasConversion(
+                        x => x.GetStringForDBColumn(),
+                        x => x.GetLocalDateTimeFromDBColumnString()
+                    );
+            }
+            else if (item.PropertyType == typeof(LocalDateTime?))
+            {
+                modelBuilder
+                    .Entity(type)
+                    .Property<LocalDateTime?>(item.Name)
+                    .HasConversion(
+                        x => x != null ? x.Value.GetStringForDBColumn() : null,
+                        x => x != null ? x.GetLocalDateTimeFromDBColumnString() : null
+                    );
+            }
+            else if (item.PropertyType == typeof(DateTimeZone))
+            {
+                modelBuilder
+                    .Entity(type)
+                    .Property<DateTimeZone>(item.Name)
+                    .HasConversion(
+                        x => x.GetStringForDBColumn(),
+                        x => x.GetDateTimeZoneFromDBColumnString()
+                    );
+            }
             else if (item.PropertyType == typeof(LocalTime))
             {
                 modelBuilder

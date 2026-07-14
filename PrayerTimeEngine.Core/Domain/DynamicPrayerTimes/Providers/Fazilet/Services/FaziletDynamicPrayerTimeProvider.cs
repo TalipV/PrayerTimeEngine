@@ -90,7 +90,7 @@ public class FaziletDynamicPrayerTimeProvider(
     {
         using (await getPrayerTimesLocker.LockAsync(cityID, cancellationToken).ConfigureAwait(false))
         {
-            FaziletDailyPrayerTimes prayerTimes = await faziletRepository.GetTimesByDateAndCityID(date, cityID, cancellationToken).ConfigureAwait(false);
+            FaziletDailyPrayerTimes prayerTimes = await faziletRepository.GetTimesByDateAndCityID(date.Date, cityID, cancellationToken).ConfigureAwait(false);
 
             if (prayerTimes is null)
             {
@@ -99,7 +99,7 @@ public class FaziletDynamicPrayerTimeProvider(
                 var prayerTimesLst = prayerTimesResponseDTO.PrayerTimes.Select(x => x.ToFaziletPrayerTimes(cityID, timeZone)).ToList();
                 await faziletRepository.InsertPrayerTimesAsync(prayerTimesLst, cancellationToken).ConfigureAwait(false);
 
-                prayerTimes = prayerTimesLst.FirstOrDefault(x => x.Date.Date == date.Date);
+                prayerTimes = prayerTimesLst.FirstOrDefault(x => x.Date == date.Date);
             }
 
             return prayerTimes;

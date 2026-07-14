@@ -1,4 +1,4 @@
-﻿using NodaTime;
+using NodaTime;
 using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Data.EntityFramework;
 using PrayerTimeEngine.Core.Domain.Models;
@@ -11,23 +11,24 @@ public class FaziletDailyPrayerTimes : IDailyPrayerTimes, IEntity
     [Key]
     public int ID { get; set; }
 
-    public required ZonedDateTime Date { get; set; }
+    public required LocalDate Date { get; set; }
+    public required DateTimeZone TimeZone { get; set; }
     public required int CityID { get; set; }
     public Instant? InsertInstant { get; set; }
 
-    public required ZonedDateTime? Imsak { get; set; }
-    public required ZonedDateTime? Fajr { get; set; }
-    public required ZonedDateTime? Shuruq { get; set; }
-    public required ZonedDateTime? Duha { get; set; }
-    public required ZonedDateTime? Dhuhr { get; set; }
-    public required ZonedDateTime? Asr { get; set; }
-    public required ZonedDateTime? Maghrib { get; set; }
-    public required ZonedDateTime? Isha { get; set; }
-    public ZonedDateTime? NextFajr { get; set; }
+    public required LocalDateTime? Imsak { get; set; }
+    public required LocalDateTime? Fajr { get; set; }
+    public required LocalDateTime? Shuruq { get; set; }
+    public required LocalDateTime? Duha { get; set; }
+    public required LocalDateTime? Dhuhr { get; set; }
+    public required LocalDateTime? Asr { get; set; }
+    public required LocalDateTime? Maghrib { get; set; }
+    public required LocalDateTime? Isha { get; set; }
+    public LocalDateTime? NextFajr { get; set; }
 
     public ZonedDateTime? GetZonedDateTimeForTimeType(ETimeType timeType)
     {
-        return timeType switch
+        LocalDateTime? localDateTime = timeType switch
         {
             ETimeType.FajrStart => Fajr,
             ETimeType.FajrEnd => Shuruq,
@@ -42,5 +43,8 @@ public class FaziletDailyPrayerTimes : IDailyPrayerTimes, IEntity
             ETimeType.IshaEnd => NextFajr,
             _ => throw new ArgumentException($"Invalid {nameof(timeType)} value: {timeType}."),
         };
+
+        // the offset is derived from the zone (lenient so ambiguous/skipped DST hours never throw)
+        return localDateTime?.InZoneStrictly(TimeZone);
     }
 }

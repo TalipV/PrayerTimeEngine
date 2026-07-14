@@ -17,7 +17,10 @@ internal static class NodaTimeExtensions
         return _zonedDateTimePatternForDBColumn.Parse(zonedDateTimeString).GetValueOrThrow();
     }
 
-    private static readonly LocalDatePattern _localDatePatternForDBColumn = LocalDatePattern.CreateWithInvariantCulture("d");
+    // ISO 8601 ("uuuu-MM-dd"): fixed-width and lexicographically sortable, so the stored
+    // string ordering matches chronological ordering and date columns can be filtered/compared
+    // server-side. (The previous "d" pattern produced "MM/dd/yyyy", which does NOT sort correctly.)
+    private static readonly LocalDatePattern _localDatePatternForDBColumn = LocalDatePattern.CreateWithInvariantCulture("uuuu-MM-dd");
 
     internal static string GetStringForDBColumn(this LocalDate localDate)
     {
@@ -28,6 +31,21 @@ internal static class NodaTimeExtensions
     {
         return _localDatePatternForDBColumn.Parse(localDateString).GetValueOrThrow();
     }
+
+    // ISO 8601 ("uuuu-MM-ddTHH:mm:ss"): fixed-width and lexicographically sortable, human-readable.
+    private static readonly LocalDateTimePattern _localDateTimePatternForDBColumn = LocalDateTimePattern.CreateWithInvariantCulture("uuuu-MM-ddTHH:mm:ss");
+
+    internal static string GetStringForDBColumn(this LocalDateTime localDateTime)
+    {
+        return _localDateTimePatternForDBColumn.Format(localDateTime);
+    }
+    internal static LocalDateTime GetLocalDateTimeFromDBColumnString(this string localDateTimeString)
+    {
+        return _localDateTimePatternForDBColumn.Parse(localDateTimeString).GetValueOrThrow();
+    }
+
+    internal static string GetStringForDBColumn(this DateTimeZone dateTimeZone) => dateTimeZone.Id;
+    internal static DateTimeZone GetDateTimeZoneFromDBColumnString(this string dateTimeZoneString) => DateTimeZoneProviders.Tzdb[dateTimeZoneString];
 
     private static readonly LocalTimePattern _localTimePatternForDBColumn = LocalTimePattern.CreateWithInvariantCulture("HH:mm:ss");
 

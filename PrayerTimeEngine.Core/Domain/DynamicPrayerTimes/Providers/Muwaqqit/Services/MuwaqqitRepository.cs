@@ -21,9 +21,9 @@ public class MuwaqqitRepository(
         }
     }
 
-    private static readonly Func<AppDbContext, ZonedDateTime, decimal, decimal, double, double, double, double, IAsyncEnumerable<MuwaqqitDailyPrayerTimes>> compiledQuery_GetPrayerTimesAsync =
+    private static readonly Func<AppDbContext, LocalDate, decimal, decimal, double, double, double, double, IAsyncEnumerable<MuwaqqitDailyPrayerTimes>> compiledQuery_GetPrayerTimesAsync =
         EF.CompileAsyncQuery(
-            (AppDbContext context, ZonedDateTime date, decimal longitude, decimal latitude, double fajrDegree, double ishaDegree, double ishtibaqDegree, double asrKarahaDegree) =>
+            (AppDbContext context, LocalDate date, decimal longitude, decimal latitude, double fajrDegree, double ishaDegree, double ishtibaqDegree, double asrKarahaDegree) =>
                 context.MuwaqqitPrayerTimes.AsNoTracking()
                 .Where(x =>
                     x.Date == date
@@ -35,7 +35,7 @@ public class MuwaqqitRepository(
                     && x.AsrKarahaDegree == asrKarahaDegree));
 
     public async Task<MuwaqqitDailyPrayerTimes> GetPrayerTimesAsync(
-        ZonedDateTime date,
+        LocalDate date,
         decimal longitude,
         decimal latitude,
         double fajrDegree,
@@ -61,18 +61,13 @@ public class MuwaqqitRepository(
         }
     }
 
-    public async Task DeleteCacheDataAsync(ZonedDateTime deleteBeforeDate, CancellationToken cancellationToken)
+    public async Task DeleteCacheDataAsync(LocalDate deleteBeforeDate, CancellationToken cancellationToken)
     {
         using (AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken))
         {
-            // TODO fix
-            // ZonedDateTime doesn't allow db side querying
-            var toBeDeletedTimes = (await dbContext.MuwaqqitPrayerTimes.ToListAsync(cancellationToken).ConfigureAwait(false))
-                .Where(p => p.Date.ToInstant() < deleteBeforeDate.ToInstant())
-                .ToList();
-
-            dbContext.MuwaqqitPrayerTimes.RemoveRange(toBeDeletedTimes);
-            await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+            await dbContext.MuwaqqitPrayerTimes
+                .Where(p => p.Date < deleteBeforeDate)
+                .ExecuteDeleteAsync(cancellationToken).ConfigureAwait(false);
         }
     }
 }

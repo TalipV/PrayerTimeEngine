@@ -71,14 +71,14 @@ public abstract class BaseCountryCityDynamicPrayerTimeProvider(
         (int countryID, string matchedCountryName) = await findCountry(place.Country, getTurkishPlaceInfoAsync, cancellationToken).ConfigureAwait(false);
         if (countryID == -1)
         {
-            logger.LogDebug("No {ProviderTypeName} location search result because country could not be found", GetType().Name);
+            logger.LogWarning("No {ProviderTypeName} location data because country '{Country}' could not be found", GetType().Name, place.Country);
             return null;
         }
 
         (int cityID, string matchedCityName) = await findCity(place.City ?? place.State, countryID, getTurkishPlaceInfoAsync, cancellationToken).ConfigureAwait(false);
         if (cityID == -1)
         {
-            logger.LogDebug("No {ProviderTypeName} location search result because city could not be found", GetType().Name);
+            logger.LogWarning("No {ProviderTypeName} location data because city '{City}' could not be found in country '{Country}'", GetType().Name, place.City ?? place.State, matchedCountryName);
             return null;
         }
 

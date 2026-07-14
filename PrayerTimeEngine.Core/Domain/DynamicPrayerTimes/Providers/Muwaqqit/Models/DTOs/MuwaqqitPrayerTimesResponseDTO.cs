@@ -84,7 +84,8 @@ public class MuwaqqitPrayerTimesResponseDTO
     {
         return new MuwaqqitDailyPrayerTimes
         {
-            Date = Date.AtStartOfDayInZone(Timezone),
+            Date = Date,
+            TimeZone = Timezone,
             Longitude = Longitude,
             Latitude = Latitude,
 
@@ -93,17 +94,17 @@ public class MuwaqqitPrayerTimesResponseDTO
             IshtibaqDegree = getRoundedDegreeValue(IshtibaqDegree),
             IshaDegree = getRoundedDegreeValue(IshaDegree),
 
-            Fajr = getZonedDateTime(Fajr, Timezone),
-            NextFajr = getZonedDateTime(NextFajr, Timezone),
-            Shuruq = getZonedDateTime(Shuruq, Timezone),
-            Duha = getZonedDateTime(Ishraq, Timezone),
-            Dhuhr = getZonedDateTime(Dhuhr, Timezone),
-            Asr = getZonedDateTime(Asr, Timezone),
-            AsrMithlayn = getZonedDateTime(AsrMithlayn, Timezone),
-            Maghrib = getZonedDateTime(Maghrib, Timezone),
-            Isha = getZonedDateTime(Isha, Timezone),
-            Ishtibaq = getZonedDateTime(Ishtibaq, Timezone),
-            AsrKaraha = getZonedDateTime(AsrKaraha, Timezone),
+            Fajr = getLocalDateTime(Fajr, Timezone),
+            NextFajr = getLocalDateTime(NextFajr, Timezone),
+            Shuruq = getLocalDateTime(Shuruq, Timezone),
+            Duha = getLocalDateTime(Ishraq, Timezone),
+            Dhuhr = getLocalDateTime(Dhuhr, Timezone),
+            Asr = getLocalDateTime(Asr, Timezone),
+            AsrMithlayn = getLocalDateTime(AsrMithlayn, Timezone),
+            Maghrib = getLocalDateTime(Maghrib, Timezone),
+            Isha = getLocalDateTime(Isha, Timezone),
+            Ishtibaq = getLocalDateTime(Ishtibaq, Timezone),
+            AsrKaraha = getLocalDateTime(AsrKaraha, Timezone),
         };
     }
 
@@ -112,19 +113,14 @@ public class MuwaqqitPrayerTimesResponseDTO
         return Math.Round(degree, 2);
     }
 
-    private static ZonedDateTime? getZonedDateTime(OffsetDateTime? offsetDateTimeNullable, DateTimeZone timezone)
+    private static LocalDateTime? getLocalDateTime(OffsetDateTime? offsetDateTimeNullable, DateTimeZone timezone)
     {
         if (offsetDateTimeNullable is not OffsetDateTime offsetDateTime)
             return null;
 
-        offsetDateTime.Deconstruct(out LocalDateTime localDateTime, out Offset offset);
+        LocalDateTime localDateTime = offsetDateTime.InZone(timezone).LocalDateTime;
 
         // ignore fractions of seconds
-        localDateTime = localDateTime.Date + new LocalTime(localDateTime.Hour, localDateTime.Minute, localDateTime.Second);
-
-        return new ZonedDateTime(
-            localDateTime: localDateTime,
-            zone: timezone,
-            offset: offset);
+        return localDateTime.Date + new LocalTime(localDateTime.Hour, localDateTime.Minute, localDateTime.Second);
     }
 }

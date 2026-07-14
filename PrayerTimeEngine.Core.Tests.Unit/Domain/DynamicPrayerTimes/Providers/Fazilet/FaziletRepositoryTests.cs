@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using NodaTime;
 using PrayerTimeEngine.Core.Data.EntityFramework;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Models.Entities;
@@ -126,43 +126,46 @@ public class FaziletRepositoryTests : BaseTest
         var city1Times1 = new FaziletDailyPrayerTimes
         {
             CityID = gerCity1.ID,
-            Date = dateInUtc,
-            Imsak = dateInUtc.PlusHours(4),
-            Fajr = dateInUtc.PlusHours(5),
-            Shuruq = dateInUtc.PlusHours(7),
-            Duha = dateInUtc.PlusHours(8),
-            Dhuhr = dateInUtc.PlusHours(12),
-            Asr = dateInUtc.PlusHours(15),
-            Maghrib = dateInUtc.PlusHours(18),
-            Isha = dateInUtc.PlusHours(20),
+            Date = (dateInUtc).Date,
+            TimeZone = DateTimeZone.Utc,
+            Imsak = (dateInUtc.PlusHours(4)).LocalDateTime,
+            Fajr = (dateInUtc.PlusHours(5)).LocalDateTime,
+            Shuruq = (dateInUtc.PlusHours(7)).LocalDateTime,
+            Duha = (dateInUtc.PlusHours(8)).LocalDateTime,
+            Dhuhr = (dateInUtc.PlusHours(12)).LocalDateTime,
+            Asr = (dateInUtc.PlusHours(15)).LocalDateTime,
+            Maghrib = (dateInUtc.PlusHours(18)).LocalDateTime,
+            Isha = (dateInUtc.PlusHours(20)).LocalDateTime,
         };
 
         var city1Times2 = new FaziletDailyPrayerTimes
         {
             CityID = gerCity1.ID,
-            Date = dateInUtc.Plus(Duration.FromDays(1)),
-            Imsak = dateInUtc.PlusHours(24 + 4),
-            Fajr = dateInUtc.PlusHours(24 + 5),
-            Shuruq = dateInUtc.PlusHours(24 + 7),
-            Duha = dateInUtc.PlusHours(24 + 8),
-            Dhuhr = dateInUtc.PlusHours(24 + 12),
-            Asr = dateInUtc.PlusHours(24 + 15),
-            Maghrib = dateInUtc.PlusHours(24 + 19),
-            Isha = dateInUtc.PlusHours(24 + 23),
+            Date = (dateInUtc.Plus(Duration.FromDays(1))).Date,
+            TimeZone = DateTimeZone.Utc,
+            Imsak = (dateInUtc.PlusHours(24 + 4)).LocalDateTime,
+            Fajr = (dateInUtc.PlusHours(24 + 5)).LocalDateTime,
+            Shuruq = (dateInUtc.PlusHours(24 + 7)).LocalDateTime,
+            Duha = (dateInUtc.PlusHours(24 + 8)).LocalDateTime,
+            Dhuhr = (dateInUtc.PlusHours(24 + 12)).LocalDateTime,
+            Asr = (dateInUtc.PlusHours(24 + 15)).LocalDateTime,
+            Maghrib = (dateInUtc.PlusHours(24 + 19)).LocalDateTime,
+            Isha = (dateInUtc.PlusHours(24 + 23)).LocalDateTime,
         };
 
         var city2Times1 = new FaziletDailyPrayerTimes
         {
             CityID = gerCity2.ID,
-            Date = dateInUtc,
-            Imsak = dateInUtc.PlusHours(4),
-            Fajr = dateInUtc.PlusHours(5),
-            Shuruq = dateInUtc.PlusHours(7),
-            Duha = dateInUtc.PlusHours(8),
-            Dhuhr = dateInUtc.PlusHours(12),
-            Asr = dateInUtc.PlusHours(15),
-            Maghrib = dateInUtc.PlusHours(18),
-            Isha = dateInUtc.PlusHours(21),
+            Date = (dateInUtc).Date,
+            TimeZone = DateTimeZone.Utc,
+            Imsak = (dateInUtc.PlusHours(4)).LocalDateTime,
+            Fajr = (dateInUtc.PlusHours(5)).LocalDateTime,
+            Shuruq = (dateInUtc.PlusHours(7)).LocalDateTime,
+            Duha = (dateInUtc.PlusHours(8)).LocalDateTime,
+            Dhuhr = (dateInUtc.PlusHours(12)).LocalDateTime,
+            Asr = (dateInUtc.PlusHours(15)).LocalDateTime,
+            Maghrib = (dateInUtc.PlusHours(18)).LocalDateTime,
+            Isha = (dateInUtc.PlusHours(21)).LocalDateTime,
         };
 
         await TestArrangeDbContext.FaziletCountries.AddAsync(germany);
@@ -171,7 +174,7 @@ public class FaziletRepositoryTests : BaseTest
         await TestArrangeDbContext.SaveChangesAsync();
 
         // ACT
-        var times = await _faziletRepository.GetTimesByDateAndCityID(dateInUtc, gerCity1.ID, default);
+        var times = await _faziletRepository.GetTimesByDateAndCityID(dateInUtc.Date, gerCity1.ID, default);
 
         // ASSERT
         times.Should()
@@ -193,43 +196,46 @@ public class FaziletRepositoryTests : BaseTest
         var city1Times1 = new FaziletDailyPrayerTimes
         {
             CityID = gerCity1.ID,
-            Date = dateInUtc,
-            Imsak = dateInUtc.PlusHours(4),
-            Fajr = dateInUtc.PlusHours(5),
-            Shuruq = dateInUtc.PlusHours(7),
-            Duha = dateInUtc.PlusHours(8),
-            Dhuhr = dateInUtc.PlusHours(12),
-            Asr = dateInUtc.PlusHours(15),
-            Maghrib = dateInUtc.PlusHours(18),
-            Isha = dateInUtc.PlusHours(20),
+            Date = (dateInUtc).Date,
+            TimeZone = DateTimeZone.Utc,
+            Imsak = (dateInUtc.PlusHours(4)).LocalDateTime,
+            Fajr = (dateInUtc.PlusHours(5)).LocalDateTime,
+            Shuruq = (dateInUtc.PlusHours(7)).LocalDateTime,
+            Duha = (dateInUtc.PlusHours(8)).LocalDateTime,
+            Dhuhr = (dateInUtc.PlusHours(12)).LocalDateTime,
+            Asr = (dateInUtc.PlusHours(15)).LocalDateTime,
+            Maghrib = (dateInUtc.PlusHours(18)).LocalDateTime,
+            Isha = (dateInUtc.PlusHours(20)).LocalDateTime,
         };
 
         var city1Times2 = new FaziletDailyPrayerTimes
         {
             CityID = gerCity1.ID,
-            Date = dateInUtc.Plus(Duration.FromDays(1)),
-            Imsak = dateInUtc.PlusHours(24 + 4),
-            Fajr = dateInUtc.PlusHours(24 + 5),
-            Shuruq = dateInUtc.PlusHours(24 + 7),
-            Duha = dateInUtc.PlusHours(24+ 8),
-            Dhuhr = dateInUtc.PlusHours(24 + 12),
-            Asr = dateInUtc.PlusHours(24 + 15),
-            Maghrib = dateInUtc.PlusHours(24 + 19),
-            Isha = dateInUtc.PlusHours(24 + 23),
+            Date = (dateInUtc.Plus(Duration.FromDays(1))).Date,
+            TimeZone = DateTimeZone.Utc,
+            Imsak = (dateInUtc.PlusHours(24 + 4)).LocalDateTime,
+            Fajr = (dateInUtc.PlusHours(24 + 5)).LocalDateTime,
+            Shuruq = (dateInUtc.PlusHours(24 + 7)).LocalDateTime,
+            Duha = (dateInUtc.PlusHours(24+ 8)).LocalDateTime,
+            Dhuhr = (dateInUtc.PlusHours(24 + 12)).LocalDateTime,
+            Asr = (dateInUtc.PlusHours(24 + 15)).LocalDateTime,
+            Maghrib = (dateInUtc.PlusHours(24 + 19)).LocalDateTime,
+            Isha = (dateInUtc.PlusHours(24 + 23)).LocalDateTime,
         };
 
         var city2Times1 = new FaziletDailyPrayerTimes
         {
             CityID = gerCity2.ID,
-            Date = dateInUtc,
-            Imsak = dateInUtc.PlusHours(4),
-            Fajr = dateInUtc.PlusHours(5),
-            Shuruq = dateInUtc.PlusHours(7),
-            Duha = dateInUtc.PlusHours(8),
-            Dhuhr = dateInUtc.PlusHours(12),
-            Asr = dateInUtc.PlusHours(15),
-            Maghrib = dateInUtc.PlusHours(18),
-            Isha = dateInUtc.PlusHours(21),
+            Date = (dateInUtc).Date,
+            TimeZone = DateTimeZone.Utc,
+            Imsak = (dateInUtc.PlusHours(4)).LocalDateTime,
+            Fajr = (dateInUtc.PlusHours(5)).LocalDateTime,
+            Shuruq = (dateInUtc.PlusHours(7)).LocalDateTime,
+            Duha = (dateInUtc.PlusHours(8)).LocalDateTime,
+            Dhuhr = (dateInUtc.PlusHours(12)).LocalDateTime,
+            Asr = (dateInUtc.PlusHours(15)).LocalDateTime,
+            Maghrib = (dateInUtc.PlusHours(18)).LocalDateTime,
+            Isha = (dateInUtc.PlusHours(21)).LocalDateTime,
         };
 
         await TestArrangeDbContext.FaziletCountries.AddAsync(germany);
@@ -239,7 +245,7 @@ public class FaziletRepositoryTests : BaseTest
         await TestArrangeDbContext.SaveChangesAsync();
 
         // ACT
-        var times = await _faziletRepository.GetTimesByDateAndCityID(dateInUtc, 5, default);
+        var times = await _faziletRepository.GetTimesByDateAndCityID(dateInUtc.Date, 5, default);
 
         // ASSERT
         times.Should().BeNull();
@@ -323,41 +329,44 @@ public class FaziletRepositoryTests : BaseTest
         var time1 = new FaziletDailyPrayerTimes
         {
             CityID = 1,
-            Date = dateInUtc.Plus(Duration.FromDays(1)),
-            Imsak = dateInUtc,
-            Fajr = dateInUtc,
-            Shuruq = dateInUtc,
-            Duha = dateInUtc,
-            Dhuhr = dateInUtc,
-            Asr = dateInUtc,
-            Maghrib = dateInUtc,
-            Isha = dateInUtc,
+            Date = (dateInUtc.Plus(Duration.FromDays(1))).Date,
+            TimeZone = DateTimeZone.Utc,
+            Imsak = (dateInUtc).LocalDateTime,
+            Fajr = (dateInUtc).LocalDateTime,
+            Shuruq = (dateInUtc).LocalDateTime,
+            Duha = (dateInUtc).LocalDateTime,
+            Dhuhr = (dateInUtc).LocalDateTime,
+            Asr = (dateInUtc).LocalDateTime,
+            Maghrib = (dateInUtc).LocalDateTime,
+            Isha = (dateInUtc).LocalDateTime,
         };
         var time2 = new FaziletDailyPrayerTimes
         {
             CityID = 2,
-            Date = dateInUtc.Plus(Duration.FromDays(2)),
-            Imsak = dateInUtc,
-            Fajr = dateInUtc,
-            Shuruq = dateInUtc,
-            Duha = dateInUtc,
-            Dhuhr = dateInUtc,
-            Asr = dateInUtc,
-            Maghrib = dateInUtc,
-            Isha = dateInUtc,
+            Date = (dateInUtc.Plus(Duration.FromDays(2))).Date,
+            TimeZone = DateTimeZone.Utc,
+            Imsak = (dateInUtc).LocalDateTime,
+            Fajr = (dateInUtc).LocalDateTime,
+            Shuruq = (dateInUtc).LocalDateTime,
+            Duha = (dateInUtc).LocalDateTime,
+            Dhuhr = (dateInUtc).LocalDateTime,
+            Asr = (dateInUtc).LocalDateTime,
+            Maghrib = (dateInUtc).LocalDateTime,
+            Isha = (dateInUtc).LocalDateTime,
         };
         var time3 = new FaziletDailyPrayerTimes
         {
             CityID = 1,
-            Date = dateInUtc.Plus(Duration.FromDays(3)),
-            Imsak = dateInUtc,
-            Fajr = dateInUtc,
-            Shuruq = dateInUtc,
-            Dhuhr = dateInUtc,
-            Duha = dateInUtc,
-            Asr = dateInUtc,
-            Maghrib = dateInUtc,
-            Isha = dateInUtc,
+            Date = (dateInUtc.Plus(Duration.FromDays(3))).Date,
+            TimeZone = DateTimeZone.Utc,
+            Imsak = (dateInUtc).LocalDateTime,
+            Fajr = (dateInUtc).LocalDateTime,
+            Shuruq = (dateInUtc).LocalDateTime,
+            Dhuhr = (dateInUtc).LocalDateTime,
+            Duha = (dateInUtc).LocalDateTime,
+            Asr = (dateInUtc).LocalDateTime,
+            Maghrib = (dateInUtc).LocalDateTime,
+            Isha = (dateInUtc).LocalDateTime,
         };
 
         // ACT
@@ -384,15 +393,15 @@ public class FaziletRepositoryTests : BaseTest
 
         var oldTime = new FaziletDailyPrayerTimes
         {
-            CityID = city.ID, Date = oldDate, 
-            Imsak = oldDate, Fajr = oldDate, Shuruq = oldDate, Duha = oldDate, 
-            Dhuhr = oldDate, Asr = oldDate, Maghrib = oldDate, Isha = oldDate,
+            CityID = city.ID, Date = oldDate.Date, TimeZone = DateTimeZone.Utc, 
+            Imsak = (oldDate).LocalDateTime, Fajr = (oldDate).LocalDateTime, Shuruq = (oldDate).LocalDateTime, Duha = (oldDate).LocalDateTime, 
+            Dhuhr = (oldDate).LocalDateTime, Asr = (oldDate).LocalDateTime, Maghrib = (oldDate).LocalDateTime, Isha = (oldDate).LocalDateTime,
         };
         var newTime = new FaziletDailyPrayerTimes
         {
-            CityID = city.ID, Date = newDate,
-            Imsak = newDate, Fajr = newDate, Shuruq = newDate, Duha = newDate, 
-            Dhuhr = newDate, Asr = newDate, Maghrib = newDate, Isha = newDate,
+            CityID = city.ID, Date = newDate.Date, TimeZone = DateTimeZone.Utc,
+            Imsak = (newDate).LocalDateTime, Fajr = (newDate).LocalDateTime, Shuruq = (newDate).LocalDateTime, Duha = (newDate).LocalDateTime, 
+            Dhuhr = (newDate).LocalDateTime, Asr = (newDate).LocalDateTime, Maghrib = (newDate).LocalDateTime, Isha = (newDate).LocalDateTime,
         };
 
         await TestArrangeDbContext.FaziletPrayerTimes.AddRangeAsync(oldTime, newTime);
@@ -402,7 +411,7 @@ public class FaziletRepositoryTests : BaseTest
         (await TestArrangeDbContext.FaziletPrayerTimes.FindAsync(newTime.ID)).Should().NotBeNull();
 
         // ACT
-        await _faziletRepository.DeleteCacheDataAsync(baseDate, default);
+        await _faziletRepository.DeleteCacheDataAsync(baseDate.Date, default);
 
         // ASSERT
         (await TestAssertDbContext.FaziletPrayerTimes.FindAsync(oldTime.ID)).Should().BeNull();

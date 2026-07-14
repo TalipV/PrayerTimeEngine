@@ -197,7 +197,7 @@ public class MuwaqqitDynamicPrayerTimeProvider(
 
         using (await getPrayerTimesLocker.LockAsync(lockTuple, cancellationToken).ConfigureAwait(false))
         {
-            MuwaqqitDailyPrayerTimes prayerTimes = await muwaqqitRepository.GetPrayerTimesAsync(date, longitude, latitude, fajrDegree, ishaDegree, ishtibaqDegree, asrKarahaDegree, cancellationToken).ConfigureAwait(false);
+            MuwaqqitDailyPrayerTimes prayerTimes = await muwaqqitRepository.GetPrayerTimesAsync(date.Date, longitude, latitude, fajrDegree, ishaDegree, ishtibaqDegree, asrKarahaDegree, cancellationToken).ConfigureAwait(false);
 
             if (prayerTimes is null)
             {
