@@ -129,12 +129,12 @@ public class SemerkandRepositoryTests : BaseTest
             DayOfYear = 5,
             Date = (dateInUtc).Date,
             TimeZone = DateTimeZone.Utc,
-            Fajr = (dateInUtc.PlusHours(5)).LocalDateTime,
-            Shuruq = (dateInUtc.PlusHours(7)).LocalDateTime,
-            Dhuhr = (dateInUtc.PlusHours(12)).LocalDateTime,
-            Asr = (dateInUtc.PlusHours(15)).LocalDateTime,
-            Maghrib = (dateInUtc.PlusHours(18)).LocalDateTime,
-            Isha = (dateInUtc.PlusHours(20)).LocalDateTime,
+            Fajr = (dateInUtc.PlusHours(5)).ToInstant(),
+            Shuruq = (dateInUtc.PlusHours(7)).ToInstant(),
+            Dhuhr = (dateInUtc.PlusHours(12)).ToInstant(),
+            Asr = (dateInUtc.PlusHours(15)).ToInstant(),
+            Maghrib = (dateInUtc.PlusHours(18)).ToInstant(),
+            Isha = (dateInUtc.PlusHours(20)).ToInstant(),
         };
 
         var city1Times2 = new SemerkandDailyPrayerTimes
@@ -143,12 +143,12 @@ public class SemerkandRepositoryTests : BaseTest
             DayOfYear = 6,
             Date = (dateInUtc.Plus(Duration.FromDays(1))).Date,
             TimeZone = DateTimeZone.Utc,
-            Fajr = (dateInUtc.PlusHours(24 + 5)).LocalDateTime,
-            Shuruq = (dateInUtc.PlusHours(24 + 7)).LocalDateTime,
-            Dhuhr = (dateInUtc.PlusHours(24 + 12)).LocalDateTime,
-            Asr = (dateInUtc.PlusHours(24 + 15)).LocalDateTime,
-            Maghrib = (dateInUtc.PlusHours(24 + 19)).LocalDateTime,
-            Isha = (dateInUtc.PlusHours(24 + 23)).LocalDateTime,
+            Fajr = (dateInUtc.PlusHours(24 + 5)).ToInstant(),
+            Shuruq = (dateInUtc.PlusHours(24 + 7)).ToInstant(),
+            Dhuhr = (dateInUtc.PlusHours(24 + 12)).ToInstant(),
+            Asr = (dateInUtc.PlusHours(24 + 15)).ToInstant(),
+            Maghrib = (dateInUtc.PlusHours(24 + 19)).ToInstant(),
+            Isha = (dateInUtc.PlusHours(24 + 23)).ToInstant(),
         };
 
         var city2Times1 = new SemerkandDailyPrayerTimes
@@ -157,12 +157,12 @@ public class SemerkandRepositoryTests : BaseTest
             DayOfYear = 5,
             Date = (dateInUtc).Date,
             TimeZone = DateTimeZone.Utc,
-            Fajr = (dateInUtc.PlusHours(5)).LocalDateTime,
-            Shuruq = (dateInUtc.PlusHours(7)).LocalDateTime,
-            Dhuhr = (dateInUtc.PlusHours(12)).LocalDateTime,
-            Asr = (dateInUtc.PlusHours(15)).LocalDateTime,
-            Maghrib = (dateInUtc.PlusHours(18)).LocalDateTime,
-            Isha = (dateInUtc.PlusHours(21)).LocalDateTime,
+            Fajr = (dateInUtc.PlusHours(5)).ToInstant(),
+            Shuruq = (dateInUtc.PlusHours(7)).ToInstant(),
+            Dhuhr = (dateInUtc.PlusHours(12)).ToInstant(),
+            Asr = (dateInUtc.PlusHours(15)).ToInstant(),
+            Maghrib = (dateInUtc.PlusHours(18)).ToInstant(),
+            Isha = (dateInUtc.PlusHours(21)).ToInstant(),
         };
 
         await TestArrangeDbContext.SemerkandCountries.AddAsync(germany);
@@ -196,12 +196,12 @@ public class SemerkandRepositoryTests : BaseTest
             DayOfYear = 5,
             Date = (dateInUtc).Date,
             TimeZone = DateTimeZone.Utc,
-            Fajr = (dateInUtc.PlusHours(5)).LocalDateTime,
-            Shuruq = (dateInUtc.PlusHours(7)).LocalDateTime,
-            Dhuhr = (dateInUtc.PlusHours(12)).LocalDateTime,
-            Asr = (dateInUtc.PlusHours(15)).LocalDateTime,
-            Maghrib = (dateInUtc.PlusHours(18)).LocalDateTime,
-            Isha = (dateInUtc.PlusHours(20)).LocalDateTime,
+            Fajr = (dateInUtc.PlusHours(5)).ToInstant(),
+            Shuruq = (dateInUtc.PlusHours(7)).ToInstant(),
+            Dhuhr = (dateInUtc.PlusHours(12)).ToInstant(),
+            Asr = (dateInUtc.PlusHours(15)).ToInstant(),
+            Maghrib = (dateInUtc.PlusHours(18)).ToInstant(),
+            Isha = (dateInUtc.PlusHours(20)).ToInstant(),
         };
 
         var city1Times2 = new SemerkandDailyPrayerTimes
@@ -210,12 +210,12 @@ public class SemerkandRepositoryTests : BaseTest
             DayOfYear = 6,
             Date = (dateInUtc.Plus(Duration.FromDays(1))).Date,
             TimeZone = DateTimeZone.Utc,
-            Fajr = (dateInUtc.PlusHours(24 + 5)).LocalDateTime,
-            Shuruq = (dateInUtc.PlusHours(24 + 7)).LocalDateTime,
-            Dhuhr = (dateInUtc.PlusHours(24 + 12)).LocalDateTime,
-            Asr = (dateInUtc.PlusHours(24 + 15)).LocalDateTime,
-            Maghrib = (dateInUtc.PlusHours(24 + 19)).LocalDateTime,
-            Isha = (dateInUtc.PlusHours(24 + 23)).LocalDateTime,
+            Fajr = (dateInUtc.PlusHours(24 + 5)).ToInstant(),
+            Shuruq = (dateInUtc.PlusHours(24 + 7)).ToInstant(),
+            Dhuhr = (dateInUtc.PlusHours(24 + 12)).ToInstant(),
+            Asr = (dateInUtc.PlusHours(24 + 15)).ToInstant(),
+            Maghrib = (dateInUtc.PlusHours(24 + 19)).ToInstant(),
+            Isha = (dateInUtc.PlusHours(24 + 23)).ToInstant(),
         };
 
         var city2Times1 = new SemerkandDailyPrayerTimes
@@ -224,12 +224,12 @@ public class SemerkandRepositoryTests : BaseTest
             DayOfYear = 5,
             Date = (dateInUtc).Date,
             TimeZone = DateTimeZone.Utc,
-            Fajr = (dateInUtc.PlusHours(5)).LocalDateTime,
-            Shuruq = (dateInUtc.PlusHours(7)).LocalDateTime,
-            Dhuhr = (dateInUtc.PlusHours(12)).LocalDateTime,
-            Asr = (dateInUtc.PlusHours(15)).LocalDateTime,
-            Maghrib = (dateInUtc.PlusHours(18)).LocalDateTime,
-            Isha = (dateInUtc.PlusHours(21)).LocalDateTime,
+            Fajr = (dateInUtc.PlusHours(5)).ToInstant(),
+            Shuruq = (dateInUtc.PlusHours(7)).ToInstant(),
+            Dhuhr = (dateInUtc.PlusHours(12)).ToInstant(),
+            Asr = (dateInUtc.PlusHours(15)).ToInstant(),
+            Maghrib = (dateInUtc.PlusHours(18)).ToInstant(),
+            Isha = (dateInUtc.PlusHours(21)).ToInstant(),
         };
 
         await TestArrangeDbContext.SemerkandCountries.AddAsync(germany);
@@ -338,12 +338,12 @@ public class SemerkandRepositoryTests : BaseTest
             DayOfYear = 2,
             Date = (dateInUtc.Plus(Duration.FromDays(1))).Date,
             TimeZone = DateTimeZone.Utc,
-            Fajr = (dateInUtc).LocalDateTime,
-            Shuruq = (dateInUtc).LocalDateTime,
-            Dhuhr = (dateInUtc).LocalDateTime,
-            Asr = (dateInUtc).LocalDateTime,
-            Maghrib = (dateInUtc).LocalDateTime,
-            Isha = (dateInUtc).LocalDateTime,
+            Fajr = (dateInUtc).ToInstant(),
+            Shuruq = (dateInUtc).ToInstant(),
+            Dhuhr = (dateInUtc).ToInstant(),
+            Asr = (dateInUtc).ToInstant(),
+            Maghrib = (dateInUtc).ToInstant(),
+            Isha = (dateInUtc).ToInstant(),
         };
         var time2 = new SemerkandDailyPrayerTimes
         {
@@ -351,12 +351,12 @@ public class SemerkandRepositoryTests : BaseTest
             DayOfYear = 3,
             Date = (dateInUtc.Plus(Duration.FromDays(2))).Date,
             TimeZone = DateTimeZone.Utc,
-            Fajr = (dateInUtc).LocalDateTime,
-            Shuruq = (dateInUtc).LocalDateTime,
-            Dhuhr = (dateInUtc).LocalDateTime,
-            Asr = (dateInUtc).LocalDateTime,
-            Maghrib = (dateInUtc).LocalDateTime,
-            Isha = (dateInUtc).LocalDateTime,
+            Fajr = (dateInUtc).ToInstant(),
+            Shuruq = (dateInUtc).ToInstant(),
+            Dhuhr = (dateInUtc).ToInstant(),
+            Asr = (dateInUtc).ToInstant(),
+            Maghrib = (dateInUtc).ToInstant(),
+            Isha = (dateInUtc).ToInstant(),
         };
         var time3 = new SemerkandDailyPrayerTimes
         {
@@ -364,12 +364,12 @@ public class SemerkandRepositoryTests : BaseTest
             DayOfYear = 4,
             Date = (dateInUtc.Plus(Duration.FromDays(3))).Date,
             TimeZone = DateTimeZone.Utc,
-            Fajr = (dateInUtc).LocalDateTime,
-            Shuruq = (dateInUtc).LocalDateTime,
-            Dhuhr = (dateInUtc).LocalDateTime,
-            Asr = (dateInUtc).LocalDateTime,
-            Maghrib = (dateInUtc).LocalDateTime,
-            Isha = (dateInUtc).LocalDateTime,
+            Fajr = (dateInUtc).ToInstant(),
+            Shuruq = (dateInUtc).ToInstant(),
+            Dhuhr = (dateInUtc).ToInstant(),
+            Asr = (dateInUtc).ToInstant(),
+            Maghrib = (dateInUtc).ToInstant(),
+            Isha = (dateInUtc).ToInstant(),
         };
 
         // ACT
@@ -399,24 +399,24 @@ public class SemerkandRepositoryTests : BaseTest
             CityID = city.ID,
             Date = (oldDate).Date,
             TimeZone = DateTimeZone.Utc,
-            Fajr = (oldDate).LocalDateTime,
-            Shuruq = (oldDate).LocalDateTime,
-            Dhuhr = (oldDate).LocalDateTime,
-            Asr = (oldDate).LocalDateTime,
-            Maghrib = (oldDate).LocalDateTime,
-            Isha = (oldDate).LocalDateTime,
+            Fajr = (oldDate).ToInstant(),
+            Shuruq = (oldDate).ToInstant(),
+            Dhuhr = (oldDate).ToInstant(),
+            Asr = (oldDate).ToInstant(),
+            Maghrib = (oldDate).ToInstant(),
+            Isha = (oldDate).ToInstant(),
         };
         var newTime = new SemerkandDailyPrayerTimes
         {
             CityID = city.ID,
             Date = (newDate).Date,
             TimeZone = DateTimeZone.Utc,
-            Fajr = (newDate).LocalDateTime,
-            Shuruq = (newDate).LocalDateTime,
-            Dhuhr = (newDate).LocalDateTime,
-            Asr = (newDate).LocalDateTime,
-            Maghrib = (newDate).LocalDateTime,
-            Isha = (newDate).LocalDateTime,
+            Fajr = (newDate).ToInstant(),
+            Shuruq = (newDate).ToInstant(),
+            Dhuhr = (newDate).ToInstant(),
+            Asr = (newDate).ToInstant(),
+            Maghrib = (newDate).ToInstant(),
+            Isha = (newDate).ToInstant(),
         };
 
         await TestArrangeDbContext.SemerkandPrayerTimes.AddRangeAsync(oldTime, newTime);

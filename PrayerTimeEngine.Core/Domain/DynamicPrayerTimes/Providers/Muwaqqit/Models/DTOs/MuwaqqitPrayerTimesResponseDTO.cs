@@ -94,17 +94,17 @@ public class MuwaqqitPrayerTimesResponseDTO
             IshtibaqDegree = getRoundedDegreeValue(IshtibaqDegree),
             IshaDegree = getRoundedDegreeValue(IshaDegree),
 
-            Fajr = getLocalDateTime(Fajr, Timezone),
-            NextFajr = getLocalDateTime(NextFajr, Timezone),
-            Shuruq = getLocalDateTime(Shuruq, Timezone),
-            Duha = getLocalDateTime(Ishraq, Timezone),
-            Dhuhr = getLocalDateTime(Dhuhr, Timezone),
-            Asr = getLocalDateTime(Asr, Timezone),
-            AsrMithlayn = getLocalDateTime(AsrMithlayn, Timezone),
-            Maghrib = getLocalDateTime(Maghrib, Timezone),
-            Isha = getLocalDateTime(Isha, Timezone),
-            Ishtibaq = getLocalDateTime(Ishtibaq, Timezone),
-            AsrKaraha = getLocalDateTime(AsrKaraha, Timezone),
+            Fajr = getInstant(Fajr),
+            NextFajr = getInstant(NextFajr),
+            Shuruq = getInstant(Shuruq),
+            Duha = getInstant(Ishraq),
+            Dhuhr = getInstant(Dhuhr),
+            Asr = getInstant(Asr),
+            AsrMithlayn = getInstant(AsrMithlayn),
+            Maghrib = getInstant(Maghrib),
+            Isha = getInstant(Isha),
+            Ishtibaq = getInstant(Ishtibaq),
+            AsrKaraha = getInstant(AsrKaraha),
         };
     }
 
@@ -113,14 +113,12 @@ public class MuwaqqitPrayerTimesResponseDTO
         return Math.Round(degree, 2);
     }
 
-    private static LocalDateTime? getLocalDateTime(OffsetDateTime? offsetDateTimeNullable, DateTimeZone timezone)
+    private static Instant? getInstant(OffsetDateTime? offsetDateTimeNullable)
     {
         if (offsetDateTimeNullable is not OffsetDateTime offsetDateTime)
             return null;
 
-        LocalDateTime localDateTime = offsetDateTime.InZone(timezone).LocalDateTime;
-
         // ignore fractions of seconds
-        return localDateTime.Date + new LocalTime(localDateTime.Hour, localDateTime.Minute, localDateTime.Second);
+        return Instant.FromUnixTimeSeconds(offsetDateTime.ToInstant().ToUnixTimeSeconds());
     }
 }

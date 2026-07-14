@@ -35,17 +35,17 @@ public class MuwaqqitRepositoryTests : BaseTest
             IshaDegree = 1,
             IshtibaqDegree = 1,
             AsrKarahaDegree = 1,
-            Fajr = localDateTime(2023, 7, 30, 2, 27, 04, dateTimeZone),
-            NextFajr = localDateTime(2023, 7, 31, 2, 28, 04, dateTimeZone),
-            Shuruq = localDateTime(2023, 7, 30, 3, 49, 53, dateTimeZone),
-            Duha = localDateTime(2023, 7, 30, 4, 49, 53, dateTimeZone),
-            Dhuhr = localDateTime(2023, 7, 30, 11, 21, 22, dateTimeZone),
-            Asr = localDateTime(2023, 7, 30, 15, 25, 53, dateTimeZone),
-            AsrMithlayn = localDateTime(2023, 7, 30, 16, 25, 53, dateTimeZone),
-            AsrKaraha = localDateTime(2023, 7, 30, 17, 25, 53, dateTimeZone),
-            Maghrib = localDateTime(2023, 7, 30, 18, 50, 59, dateTimeZone),
-            Ishtibaq = localDateTime(2023, 7, 30, 19, 50, 59, dateTimeZone),
-            Isha = localDateTime(2023, 7, 30, 20, 13, 17, dateTimeZone)
+            Fajr = instant(2023, 7, 30, 2, 27, 04),
+            NextFajr = instant(2023, 7, 31, 2, 28, 04),
+            Shuruq = instant(2023, 7, 30, 3, 49, 53),
+            Duha = instant(2023, 7, 30, 4, 49, 53),
+            Dhuhr = instant(2023, 7, 30, 11, 21, 22),
+            Asr = instant(2023, 7, 30, 15, 25, 53),
+            AsrMithlayn = instant(2023, 7, 30, 16, 25, 53),
+            AsrKaraha = instant(2023, 7, 30, 17, 25, 53),
+            Maghrib = instant(2023, 7, 30, 18, 50, 59),
+            Ishtibaq = instant(2023, 7, 30, 19, 50, 59),
+            Isha = instant(2023, 7, 30, 20, 13, 17)
         };
 
         await TestArrangeDbContext.MuwaqqitPrayerTimes.AddAsync(muwaqqitTime);
@@ -82,17 +82,17 @@ public class MuwaqqitRepositoryTests : BaseTest
             IshaDegree = 1,
             IshtibaqDegree = 1,
             AsrKarahaDegree = 1,
-            Fajr = localDateTime(2023, 7, 30, 2, 27, 04, dateTimeZone),
-            NextFajr = localDateTime(2023, 7, 31, 2, 28, 04, dateTimeZone),
-            Shuruq = localDateTime(2023, 7, 30, 3, 49, 53, dateTimeZone),
-            Duha = localDateTime(2023, 7, 30, 4, 49, 53, dateTimeZone),
-            Dhuhr = localDateTime(2023, 7, 30, 11, 21, 22, dateTimeZone),
-            Asr = localDateTime(2023, 7, 30, 15, 25, 53, dateTimeZone),
-            AsrMithlayn = localDateTime(2023, 7, 30, 16, 25, 53, dateTimeZone),
-            AsrKaraha = localDateTime(2023, 7, 30, 17, 25, 53, dateTimeZone),
-            Maghrib = localDateTime(2023, 7, 30, 18, 50, 59, dateTimeZone),
-            Ishtibaq = localDateTime(2023, 7, 30, 19, 50, 59, dateTimeZone),
-            Isha = localDateTime(2023, 7, 30, 20, 13, 17, dateTimeZone)
+            Fajr = instant(2023, 7, 30, 2, 27, 04),
+            NextFajr = instant(2023, 7, 31, 2, 28, 04),
+            Shuruq = instant(2023, 7, 30, 3, 49, 53),
+            Duha = instant(2023, 7, 30, 4, 49, 53),
+            Dhuhr = instant(2023, 7, 30, 11, 21, 22),
+            Asr = instant(2023, 7, 30, 15, 25, 53),
+            AsrMithlayn = instant(2023, 7, 30, 16, 25, 53),
+            AsrKaraha = instant(2023, 7, 30, 17, 25, 53),
+            Maghrib = instant(2023, 7, 30, 18, 50, 59),
+            Ishtibaq = instant(2023, 7, 30, 19, 50, 59),
+            Isha = instant(2023, 7, 30, 20, 13, 17)
         };
 
         // ACT
@@ -116,16 +116,16 @@ public class MuwaqqitRepositoryTests : BaseTest
             Date = oldDate.Date,
             TimeZone = DateTimeZone.Utc,
             Latitude = 1, Longitude = 1, FajrDegree = 1, IshaDegree = 1, IshtibaqDegree = 1, AsrKarahaDegree = 1,
-            Fajr = oldDate.LocalDateTime, NextFajr = oldDate.LocalDateTime, Shuruq = oldDate.LocalDateTime, Duha = oldDate.LocalDateTime, Dhuhr = oldDate.LocalDateTime, Asr = oldDate.LocalDateTime,
-            AsrMithlayn = oldDate.LocalDateTime, AsrKaraha = oldDate.LocalDateTime, Maghrib = oldDate.LocalDateTime, Ishtibaq = oldDate.LocalDateTime, Isha = oldDate.LocalDateTime,
+            Fajr = oldDate.ToInstant(), NextFajr = oldDate.ToInstant(), Shuruq = oldDate.ToInstant(), Duha = oldDate.ToInstant(), Dhuhr = oldDate.ToInstant(), Asr = oldDate.ToInstant(),
+            AsrMithlayn = oldDate.ToInstant(), AsrKaraha = oldDate.ToInstant(), Maghrib = oldDate.ToInstant(), Ishtibaq = oldDate.ToInstant(), Isha = oldDate.ToInstant(),
         };
         var newTime = new MuwaqqitDailyPrayerTimes
         {
             Date = newDate.Date,
             TimeZone = DateTimeZone.Utc,
             Latitude = 1, Longitude = 1, FajrDegree = 1, IshaDegree = 1, IshtibaqDegree = 1, AsrKarahaDegree = 1,
-            Fajr = newDate.LocalDateTime, NextFajr = newDate.LocalDateTime, Shuruq = newDate.LocalDateTime, Duha = newDate.LocalDateTime, Dhuhr = newDate.LocalDateTime, Asr = newDate.LocalDateTime,
-            AsrMithlayn = newDate.LocalDateTime, AsrKaraha = newDate.LocalDateTime, Maghrib = newDate.LocalDateTime, Ishtibaq = newDate.LocalDateTime, Isha = newDate.LocalDateTime,
+            Fajr = newDate.ToInstant(), NextFajr = newDate.ToInstant(), Shuruq = newDate.ToInstant(), Duha = newDate.ToInstant(), Dhuhr = newDate.ToInstant(), Asr = newDate.ToInstant(),
+            AsrMithlayn = newDate.ToInstant(), AsrKaraha = newDate.ToInstant(), Maghrib = newDate.ToInstant(), Ishtibaq = newDate.ToInstant(), Isha = newDate.ToInstant(),
         };
 
         await TestArrangeDbContext.MuwaqqitPrayerTimes.AddRangeAsync(oldTime, newTime);
@@ -141,9 +141,9 @@ public class MuwaqqitRepositoryTests : BaseTest
         (await TestAssertDbContext.MuwaqqitPrayerTimes.FindAsync(oldTime.ID)).Should().BeNull();
         (await TestAssertDbContext.MuwaqqitPrayerTimes.FindAsync(newTime.ID)).Should().NotBeNull();
     }
-    
-    private static LocalDateTime localDateTime(int year, int month, int day, int hour, int minute, int second, DateTimeZone zone)
+
+    private static Instant instant(int year, int month, int day, int hour, int minute, int second)
     {
-        return Instant.FromUtc(year, month, day, hour, minute, second).InZone(zone).LocalDateTime;
+        return Instant.FromUtc(year, month, day, hour, minute, second);
     }
 }

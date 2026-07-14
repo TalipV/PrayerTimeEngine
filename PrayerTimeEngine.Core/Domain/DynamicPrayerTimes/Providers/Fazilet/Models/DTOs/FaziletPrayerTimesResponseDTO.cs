@@ -52,20 +52,20 @@ public class FaziletPrayerTimesResponseDTO
             CityID = cityID,
             TimeZone = timeZone,
             Date = Date,
-            Imsak = getLocalDateTimeOrNull(Imsak, timeZone),
-            Fajr = getLocalDateTimeOrNull(Fajr, timeZone),
-            Shuruq = getLocalDateTimeOrNull(Shuruq, timeZone),
-            Duha = getLocalDateTimeOrNull(Duha, timeZone),
-            Dhuhr = getLocalDateTimeOrNull(Dhuhr, timeZone),
-            Asr = getLocalDateTimeOrNull(Asr, timeZone),
-            Maghrib = getLocalDateTimeOrNull(Maghrib, timeZone),
-            Isha = getLocalDateTimeOrNull(Isha, timeZone),
+            Imsak = getInstantOrNull(Imsak),
+            Fajr = getInstantOrNull(Fajr),
+            Shuruq = getInstantOrNull(Shuruq),
+            Duha = getInstantOrNull(Duha),
+            Dhuhr = getInstantOrNull(Dhuhr),
+            Asr = getInstantOrNull(Asr),
+            Maghrib = getInstantOrNull(Maghrib),
+            Isha = getInstantOrNull(Isha),
         };
     }
 
-    private static LocalDateTime? getLocalDateTimeOrNull(List<TimeDetail> timeDetails, DateTimeZone timeZone)
+    private static Instant? getInstantOrNull(List<TimeDetail> timeDetails)
     {
-        return timeDetails?.FirstOrDefault()?.OffsetDateTime.InZone(timeZone).LocalDateTime;
+        return timeDetails?.FirstOrDefault()?.OffsetDateTime.ToInstant();
     }
 }
 public class TimeDetail

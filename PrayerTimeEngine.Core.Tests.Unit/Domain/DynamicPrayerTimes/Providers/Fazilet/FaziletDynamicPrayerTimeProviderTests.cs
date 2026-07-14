@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using NodaTime;
 using NSubstitute;
 using PrayerTimeEngine.Core.Common.Enum;
@@ -58,14 +58,14 @@ public class FaziletDynamicPrayerTimeProviderTests : BaseTest
             CityID = 1,
             Date = date,
             TimeZone = DateTimeZone.Utc,
-            Imsak = dateInUtc.PlusHours(4).LocalDateTime,
-            Fajr = dateInUtc.PlusHours(5).LocalDateTime,
-            Shuruq = dateInUtc.PlusHours(7).LocalDateTime,
-            Duha = dateInUtc.PlusHours(8).LocalDateTime,
-            Dhuhr = dateInUtc.PlusHours(12).LocalDateTime,
-            Asr = dateInUtc.PlusHours(15).LocalDateTime,
-            Maghrib = dateInUtc.PlusHours(18).LocalDateTime,
-            Isha = dateInUtc.PlusHours(20).LocalDateTime,
+            Imsak = dateInUtc.PlusHours(4).ToInstant(),
+            Fajr = dateInUtc.PlusHours(5).ToInstant(),
+            Shuruq = dateInUtc.PlusHours(7).ToInstant(),
+            Duha = dateInUtc.PlusHours(8).ToInstant(),
+            Dhuhr = dateInUtc.PlusHours(12).ToInstant(),
+            Asr = dateInUtc.PlusHours(15).ToInstant(),
+            Maghrib = dateInUtc.PlusHours(18).ToInstant(),
+            Isha = dateInUtc.PlusHours(20).ToInstant(),
         };
 
         _faziletRepositoryMock.GetTimesByDateAndCityID(
