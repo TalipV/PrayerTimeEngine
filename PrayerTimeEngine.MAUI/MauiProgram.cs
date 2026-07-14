@@ -229,6 +229,9 @@ public static class MauiProgram
 
         serviceCollection.AddDbContextFactory<AppDbContext>(options =>
         {
+            // Necessary in AppDbContextModel because otherwise EF migrations deadlock on app startup
+            AppContext.SetSwitch("Microsoft.EntityFrameworkCore.Issue31751", true);
+
             options.UseModel(AppDbContextModel.Instance);
             options.UseSqlite($"Data Source={AppConfig.DATABASE_PATH}",
                 sqlLiteConfig => sqlLiteConfig.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery));
