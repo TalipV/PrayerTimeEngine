@@ -16,19 +16,19 @@ public class FaziletDailyPrayerTimes : IDailyPrayerTimes, IEntity
     public required int CityID { get; set; }
     public Instant? InsertInstant { get; set; }
 
-    public required LocalDateTime? Imsak { get; set; }
-    public required LocalDateTime? Fajr { get; set; }
-    public required LocalDateTime? Shuruq { get; set; }
-    public required LocalDateTime? Duha { get; set; }
-    public required LocalDateTime? Dhuhr { get; set; }
-    public required LocalDateTime? Asr { get; set; }
-    public required LocalDateTime? Maghrib { get; set; }
-    public required LocalDateTime? Isha { get; set; }
-    public LocalDateTime? NextFajr { get; set; }
+    public required Instant? Imsak { get; set; }
+    public required Instant? Fajr { get; set; }
+    public required Instant? Shuruq { get; set; }
+    public required Instant? Duha { get; set; }
+    public required Instant? Dhuhr { get; set; }
+    public required Instant? Asr { get; set; }
+    public required Instant? Maghrib { get; set; }
+    public required Instant? Isha { get; set; }
+    public Instant? NextFajr { get; set; }
 
     public ZonedDateTime? GetZonedDateTimeForTimeType(ETimeType timeType)
     {
-        LocalDateTime? localDateTime = timeType switch
+        Instant? instant = timeType switch
         {
             ETimeType.FajrStart => Fajr,
             ETimeType.FajrEnd => Shuruq,
@@ -44,7 +44,6 @@ public class FaziletDailyPrayerTimes : IDailyPrayerTimes, IEntity
             _ => throw new ArgumentException($"Invalid {nameof(timeType)} value: {timeType}."),
         };
 
-        // the offset is derived from the zone (lenient so ambiguous/skipped DST hours never throw)
-        return localDateTime?.InZoneStrictly(TimeZone);
+        return instant?.InZone(TimeZone);
     }
 }

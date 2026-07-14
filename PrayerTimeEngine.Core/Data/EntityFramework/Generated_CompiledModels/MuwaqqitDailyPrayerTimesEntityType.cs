@@ -36,23 +36,23 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
 
             var asr = runtimeEntityType.AddProperty(
                 "Asr",
-                typeof(LocalDateTime?),
+                typeof(Instant?),
                 propertyInfo: typeof(MuwaqqitDailyPrayerTimes).GetProperty("Asr", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 fieldInfo: typeof(MuwaqqitDailyPrayerTimes).GetField("<Asr>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 nullable: true);
-            asr.SetValueConverter(new ValueConverter<LocalDateTime?, string>(
-                string (LocalDateTime? x) => (x != null ? x.Value.GetStringForDBColumn() : null),
-                LocalDateTime? (string x) => (x != null ? ((LocalDateTime? )(x.GetLocalDateTimeFromDBColumnString())) : null)));
+            asr.SetValueConverter(new ValueConverter<Instant?, string>(
+                string (Instant? x) => (x != null ? x.Value.GetStringForDBColumn() : null),
+                Instant? (string x) => (x != null ? ((Instant? )(x.GetInstantFromDBColumnString())) : null)));
 
             var asrKaraha = runtimeEntityType.AddProperty(
                 "AsrKaraha",
-                typeof(LocalDateTime?),
+                typeof(Instant?),
                 propertyInfo: typeof(MuwaqqitDailyPrayerTimes).GetProperty("AsrKaraha", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 fieldInfo: typeof(MuwaqqitDailyPrayerTimes).GetField("<AsrKaraha>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 nullable: true);
-            asrKaraha.SetValueConverter(new ValueConverter<LocalDateTime?, string>(
-                string (LocalDateTime? x) => (x != null ? x.Value.GetStringForDBColumn() : null),
-                LocalDateTime? (string x) => (x != null ? ((LocalDateTime? )(x.GetLocalDateTimeFromDBColumnString())) : null)));
+            asrKaraha.SetValueConverter(new ValueConverter<Instant?, string>(
+                string (Instant? x) => (x != null ? x.Value.GetStringForDBColumn() : null),
+                Instant? (string x) => (x != null ? ((Instant? )(x.GetInstantFromDBColumnString())) : null)));
 
             var asrKarahaDegree = runtimeEntityType.AddProperty(
                 "AsrKarahaDegree",
@@ -63,13 +63,13 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
 
             var asrMithlayn = runtimeEntityType.AddProperty(
                 "AsrMithlayn",
-                typeof(LocalDateTime?),
+                typeof(Instant?),
                 propertyInfo: typeof(MuwaqqitDailyPrayerTimes).GetProperty("AsrMithlayn", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 fieldInfo: typeof(MuwaqqitDailyPrayerTimes).GetField("<AsrMithlayn>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 nullable: true);
-            asrMithlayn.SetValueConverter(new ValueConverter<LocalDateTime?, string>(
-                string (LocalDateTime? x) => (x != null ? x.Value.GetStringForDBColumn() : null),
-                LocalDateTime? (string x) => (x != null ? ((LocalDateTime? )(x.GetLocalDateTimeFromDBColumnString())) : null)));
+            asrMithlayn.SetValueConverter(new ValueConverter<Instant?, string>(
+                string (Instant? x) => (x != null ? x.Value.GetStringForDBColumn() : null),
+                Instant? (string x) => (x != null ? ((Instant? )(x.GetInstantFromDBColumnString())) : null)));
 
             var date = runtimeEntityType.AddProperty(
                 "Date",
@@ -83,33 +83,33 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
 
             var dhuhr = runtimeEntityType.AddProperty(
                 "Dhuhr",
-                typeof(LocalDateTime?),
+                typeof(Instant?),
                 propertyInfo: typeof(MuwaqqitDailyPrayerTimes).GetProperty("Dhuhr", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 fieldInfo: typeof(MuwaqqitDailyPrayerTimes).GetField("<Dhuhr>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 nullable: true);
-            dhuhr.SetValueConverter(new ValueConverter<LocalDateTime?, string>(
-                string (LocalDateTime? x) => (x != null ? x.Value.GetStringForDBColumn() : null),
-                LocalDateTime? (string x) => (x != null ? ((LocalDateTime? )(x.GetLocalDateTimeFromDBColumnString())) : null)));
+            dhuhr.SetValueConverter(new ValueConverter<Instant?, string>(
+                string (Instant? x) => (x != null ? x.Value.GetStringForDBColumn() : null),
+                Instant? (string x) => (x != null ? ((Instant? )(x.GetInstantFromDBColumnString())) : null)));
 
             var duha = runtimeEntityType.AddProperty(
                 "Duha",
-                typeof(LocalDateTime?),
+                typeof(Instant?),
                 propertyInfo: typeof(MuwaqqitDailyPrayerTimes).GetProperty("Duha", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 fieldInfo: typeof(MuwaqqitDailyPrayerTimes).GetField("<Duha>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 nullable: true);
-            duha.SetValueConverter(new ValueConverter<LocalDateTime?, string>(
-                string (LocalDateTime? x) => (x != null ? x.Value.GetStringForDBColumn() : null),
-                LocalDateTime? (string x) => (x != null ? ((LocalDateTime? )(x.GetLocalDateTimeFromDBColumnString())) : null)));
+            duha.SetValueConverter(new ValueConverter<Instant?, string>(
+                string (Instant? x) => (x != null ? x.Value.GetStringForDBColumn() : null),
+                Instant? (string x) => (x != null ? ((Instant? )(x.GetInstantFromDBColumnString())) : null)));
 
             var fajr = runtimeEntityType.AddProperty(
                 "Fajr",
-                typeof(LocalDateTime?),
+                typeof(Instant?),
                 propertyInfo: typeof(MuwaqqitDailyPrayerTimes).GetProperty("Fajr", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 fieldInfo: typeof(MuwaqqitDailyPrayerTimes).GetField("<Fajr>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 nullable: true);
-            fajr.SetValueConverter(new ValueConverter<LocalDateTime?, string>(
-                string (LocalDateTime? x) => (x != null ? x.Value.GetStringForDBColumn() : null),
-                LocalDateTime? (string x) => (x != null ? ((LocalDateTime? )(x.GetLocalDateTimeFromDBColumnString())) : null)));
+            fajr.SetValueConverter(new ValueConverter<Instant?, string>(
+                string (Instant? x) => (x != null ? x.Value.GetStringForDBColumn() : null),
+                Instant? (string x) => (x != null ? ((Instant? )(x.GetInstantFromDBColumnString())) : null)));
 
             var fajrDegree = runtimeEntityType.AddProperty(
                 "FajrDegree",
@@ -130,13 +130,13 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
 
             var isha = runtimeEntityType.AddProperty(
                 "Isha",
-                typeof(LocalDateTime?),
+                typeof(Instant?),
                 propertyInfo: typeof(MuwaqqitDailyPrayerTimes).GetProperty("Isha", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 fieldInfo: typeof(MuwaqqitDailyPrayerTimes).GetField("<Isha>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 nullable: true);
-            isha.SetValueConverter(new ValueConverter<LocalDateTime?, string>(
-                string (LocalDateTime? x) => (x != null ? x.Value.GetStringForDBColumn() : null),
-                LocalDateTime? (string x) => (x != null ? ((LocalDateTime? )(x.GetLocalDateTimeFromDBColumnString())) : null)));
+            isha.SetValueConverter(new ValueConverter<Instant?, string>(
+                string (Instant? x) => (x != null ? x.Value.GetStringForDBColumn() : null),
+                Instant? (string x) => (x != null ? ((Instant? )(x.GetInstantFromDBColumnString())) : null)));
 
             var ishaDegree = runtimeEntityType.AddProperty(
                 "IshaDegree",
@@ -147,13 +147,13 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
 
             var ishtibaq = runtimeEntityType.AddProperty(
                 "Ishtibaq",
-                typeof(LocalDateTime?),
+                typeof(Instant?),
                 propertyInfo: typeof(MuwaqqitDailyPrayerTimes).GetProperty("Ishtibaq", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 fieldInfo: typeof(MuwaqqitDailyPrayerTimes).GetField("<Ishtibaq>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 nullable: true);
-            ishtibaq.SetValueConverter(new ValueConverter<LocalDateTime?, string>(
-                string (LocalDateTime? x) => (x != null ? x.Value.GetStringForDBColumn() : null),
-                LocalDateTime? (string x) => (x != null ? ((LocalDateTime? )(x.GetLocalDateTimeFromDBColumnString())) : null)));
+            ishtibaq.SetValueConverter(new ValueConverter<Instant?, string>(
+                string (Instant? x) => (x != null ? x.Value.GetStringForDBColumn() : null),
+                Instant? (string x) => (x != null ? ((Instant? )(x.GetInstantFromDBColumnString())) : null)));
 
             var ishtibaqDegree = runtimeEntityType.AddProperty(
                 "IshtibaqDegree",
@@ -178,33 +178,33 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
 
             var maghrib = runtimeEntityType.AddProperty(
                 "Maghrib",
-                typeof(LocalDateTime?),
+                typeof(Instant?),
                 propertyInfo: typeof(MuwaqqitDailyPrayerTimes).GetProperty("Maghrib", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 fieldInfo: typeof(MuwaqqitDailyPrayerTimes).GetField("<Maghrib>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 nullable: true);
-            maghrib.SetValueConverter(new ValueConverter<LocalDateTime?, string>(
-                string (LocalDateTime? x) => (x != null ? x.Value.GetStringForDBColumn() : null),
-                LocalDateTime? (string x) => (x != null ? ((LocalDateTime? )(x.GetLocalDateTimeFromDBColumnString())) : null)));
+            maghrib.SetValueConverter(new ValueConverter<Instant?, string>(
+                string (Instant? x) => (x != null ? x.Value.GetStringForDBColumn() : null),
+                Instant? (string x) => (x != null ? ((Instant? )(x.GetInstantFromDBColumnString())) : null)));
 
             var nextFajr = runtimeEntityType.AddProperty(
                 "NextFajr",
-                typeof(LocalDateTime?),
+                typeof(Instant?),
                 propertyInfo: typeof(MuwaqqitDailyPrayerTimes).GetProperty("NextFajr", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 fieldInfo: typeof(MuwaqqitDailyPrayerTimes).GetField("<NextFajr>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 nullable: true);
-            nextFajr.SetValueConverter(new ValueConverter<LocalDateTime?, string>(
-                string (LocalDateTime? x) => (x != null ? x.Value.GetStringForDBColumn() : null),
-                LocalDateTime? (string x) => (x != null ? ((LocalDateTime? )(x.GetLocalDateTimeFromDBColumnString())) : null)));
+            nextFajr.SetValueConverter(new ValueConverter<Instant?, string>(
+                string (Instant? x) => (x != null ? x.Value.GetStringForDBColumn() : null),
+                Instant? (string x) => (x != null ? ((Instant? )(x.GetInstantFromDBColumnString())) : null)));
 
             var shuruq = runtimeEntityType.AddProperty(
                 "Shuruq",
-                typeof(LocalDateTime?),
+                typeof(Instant?),
                 propertyInfo: typeof(MuwaqqitDailyPrayerTimes).GetProperty("Shuruq", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 fieldInfo: typeof(MuwaqqitDailyPrayerTimes).GetField("<Shuruq>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 nullable: true);
-            shuruq.SetValueConverter(new ValueConverter<LocalDateTime?, string>(
-                string (LocalDateTime? x) => (x != null ? x.Value.GetStringForDBColumn() : null),
-                LocalDateTime? (string x) => (x != null ? ((LocalDateTime? )(x.GetLocalDateTimeFromDBColumnString())) : null)));
+            shuruq.SetValueConverter(new ValueConverter<Instant?, string>(
+                string (Instant? x) => (x != null ? x.Value.GetStringForDBColumn() : null),
+                Instant? (string x) => (x != null ? ((Instant? )(x.GetInstantFromDBColumnString())) : null)));
 
             var timeZone = runtimeEntityType.AddProperty(
                 "TimeZone",

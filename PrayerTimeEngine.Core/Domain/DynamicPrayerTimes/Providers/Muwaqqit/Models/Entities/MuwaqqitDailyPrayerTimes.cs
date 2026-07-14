@@ -22,21 +22,21 @@ public class MuwaqqitDailyPrayerTimes : IDailyPrayerTimes, IEntity
     public required double IshtibaqDegree { get; set; }
     public required double IshaDegree { get; set; }
 
-    public required LocalDateTime? Fajr { get; set; }
-    public required LocalDateTime? NextFajr { get; set; }
-    public required LocalDateTime? Shuruq { get; set; }
-    public required LocalDateTime? Duha { get; set; }
-    public required LocalDateTime? Dhuhr { get; set; }
-    public required LocalDateTime? Asr { get; set; }
-    public required LocalDateTime? AsrMithlayn { get; set; }
-    public required LocalDateTime? Maghrib { get; set; }
-    public required LocalDateTime? Isha { get; set; }
-    public required LocalDateTime? Ishtibaq { get; set; }
-    public required LocalDateTime? AsrKaraha { get; set; }
+    public required Instant? Fajr { get; set; }
+    public required Instant? NextFajr { get; set; }
+    public required Instant? Shuruq { get; set; }
+    public required Instant? Duha { get; set; }
+    public required Instant? Dhuhr { get; set; }
+    public required Instant? Asr { get; set; }
+    public required Instant? AsrMithlayn { get; set; }
+    public required Instant? Maghrib { get; set; }
+    public required Instant? Isha { get; set; }
+    public required Instant? Ishtibaq { get; set; }
+    public required Instant? AsrKaraha { get; set; }
 
     public ZonedDateTime? GetZonedDateTimeForTimeType(ETimeType timeType)
     {
-        LocalDateTime? localDateTime = timeType switch
+        Instant? instant = timeType switch
         {
             ETimeType.FajrStart or ETimeType.FajrGhalas or ETimeType.FajrKaraha => Fajr,
             ETimeType.FajrEnd => Shuruq,
@@ -54,7 +54,6 @@ public class MuwaqqitDailyPrayerTimes : IDailyPrayerTimes, IEntity
             _ => throw new ArgumentException($"Invalid {nameof(timeType)} value: {timeType}."),
         };
 
-        // the offset is derived from the zone (lenient so ambiguous/skipped DST hours never throw)
-        return localDateTime?.InZoneStrictly(TimeZone);
+        return instant?.InZone(TimeZone);
     }
 }

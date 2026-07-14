@@ -69,16 +69,16 @@ public class MuwaqqitApiServiceTests : BaseTest
         time.Longitude.Should().Be(11.41337M);
         time.InsertInstant.Should().BeNull();
 
-        time.Asr.Should().Be(new LocalDateTime(2023, 7, 30, 17, 25, 53));
-        time.AsrKaraha.Should().Be(new LocalDateTime(2023, 7, 30, 20, 23, 53));
-        time.AsrMithlayn.Should().Be(new LocalDateTime(2023, 7, 30, 18, 33, 27));
-        time.Dhuhr.Should().Be(new LocalDateTime(2023, 7, 30, 13, 21, 22));
-        time.Duha.Should().Be(new LocalDateTime(2023, 7, 30, 06, 17, 04));
-        time.Fajr.Should().Be(new LocalDateTime(2023, 7, 30, 04, 27, 04));
-        time.Isha.Should().Be(new LocalDateTime(2023, 7, 30, 22, 13, 17));
-        time.Ishtibaq.Should().Be(new LocalDateTime(2023, 7, 30, 21, 41, 46));
-        time.Maghrib.Should().Be(new LocalDateTime(2023, 7, 30, 20, 50, 59));
-        time.NextFajr.Should().Be(new LocalDateTime(2023, 7, 31, 04, 28, 47));
-        time.Shuruq.Should().Be(new LocalDateTime(2023, 7, 30, 05, 49, 53));
+        time.Asr.Should().Be(Instant.FromUtc(2023, 7, 30, 15, 25, 53));
+        time.AsrKaraha.Should().Be(Instant.FromUtc(2023, 7, 30, 18, 23, 53));
+        time.AsrMithlayn.Should().Be(Instant.FromUtc(2023, 7, 30, 16, 33, 27));
+        time.Dhuhr.Should().Be(Instant.FromUtc(2023, 7, 30, 11, 21, 22));
+        time.Duha.Should().Be(Instant.FromUtc(2023, 7, 30, 4, 17, 4));
+        time.Fajr.Should().Be(Instant.FromUtc(2023, 7, 30, 2, 27, 4));
+        time.Isha.Should().Be(Instant.FromUtc(2023, 7, 30, 20, 13, 17));
+        time.Ishtibaq.Should().Be(Instant.FromUtc(2023, 7, 30, 19, 41, 46));
+        time.Maghrib.Should().Be(Instant.FromUtc(2023, 7, 30, 18, 50, 59));
+        time.NextFajr.Should().Be(Instant.FromUtc(2023, 7, 31, 2, 28, 47));
+        time.Shuruq.Should().Be(Instant.FromUtc(2023, 7, 30, 3, 49, 53));
     }
 }

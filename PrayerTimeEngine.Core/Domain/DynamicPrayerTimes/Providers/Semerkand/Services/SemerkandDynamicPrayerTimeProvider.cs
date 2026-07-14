@@ -115,11 +115,22 @@ public class SemerkandDynamicPrayerTimeProvider(
                 var dateTimeZone = DateTimeZoneProviders.Tzdb[timezone];
                 var firstDayOfYear = new LocalDate(date.Year, 1, 1);
 
-                List<SemerkandDailyPrayerTimes> prayerTimesLst =
-                    timesResponseDTOs
-                        .Select(x => x.ToSemerkandPrayerTimes(cityID, dateTimeZone, firstDayOfYear))
-                        .Where(x => date.Date <= x.Date && x.Date < date.Plus(Duration.FromDays(MAX_EXTENT_OF_RETRIEVED_DAYS)).Date)
-                        .ToList();
+                SemerkandDailyPrayerTimes previousDay = null;
+                List<SemerkandDailyPrayerTimes> prayerTimesLst = [];
+
+                foreach (SemerkandPrayerTimesResponseDTO semerkandTimesDTO in timesResponseDTOs.OrderBy(x => x.DayOfYear))
+                {
+                    SemerkandDailyPrayerTimes semerkandPrayerTimes = semerkandTimesDTO.ToSemerkandPrayerTimes(cityID, dateTimeZone, firstDayOfYear, previousDay);
+                    previousDay = semerkandPrayerTimes;
+
+                    // only add prayer times that are not before the request date
+                    // but still before the maximum extent of to-be-retrieved days
+                    if (date.Date <= semerkandPrayerTimes.Date 
+                        && semerkandPrayerTimes.Date < date.Plus(Duration.FromDays(MAX_EXTENT_OF_RETRIEVED_DAYS)).Date)
+                    {
+                        prayerTimesLst.Add(semerkandPrayerTimes);
+                    }
+                }
 
                 await semerkandRepository.InsertPrayerTimesAsync(prayerTimesLst, cancellationToken).ConfigureAwait(false);
 

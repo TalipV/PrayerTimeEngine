@@ -62,12 +62,12 @@ public class SemerkandDynamicPrayerTimeProviderTests : BaseTest
             DayOfYear = 5,
             Date = date,
             TimeZone = TestDataHelper.EUROPE_BERLIN_TIME_ZONE,
-            Fajr = zonedDate.PlusHours(5).LocalDateTime,
-            Shuruq = zonedDate.PlusHours(7).LocalDateTime,
-            Dhuhr = zonedDate.PlusHours(12).LocalDateTime,
-            Asr = zonedDate.PlusHours(15).LocalDateTime,
-            Maghrib = zonedDate.PlusHours(18).LocalDateTime,
-            Isha = zonedDate.PlusHours(20).LocalDateTime,
+            Fajr = zonedDate.PlusHours(5).ToInstant(),
+            Shuruq = zonedDate.PlusHours(7).ToInstant(),
+            Dhuhr = zonedDate.PlusHours(12).ToInstant(),
+            Asr = zonedDate.PlusHours(15).ToInstant(),
+            Maghrib = zonedDate.PlusHours(18).ToInstant(),
+            Isha = zonedDate.PlusHours(20).ToInstant(),
         };
 
         _semerkandRepositoryMock.GetTimesByDateAndCityID(
