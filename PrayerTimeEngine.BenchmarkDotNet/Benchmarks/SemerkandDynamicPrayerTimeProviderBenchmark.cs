@@ -72,7 +72,7 @@ public class SemerkandDynamicPrayerTimeProviderBenchmark
         var semerkandDbAccessMock = Substitute.For<ISemerkandRepository>();
         semerkandDbAccessMock.GetCountries(Arg.Any<CancellationToken>()).Returns([]);
         semerkandDbAccessMock.GetCitiesByCountryID(Arg.Any<int>(), Arg.Any<CancellationToken>()).Returns([]);
-        semerkandDbAccessMock.GetTimesByDateAndCityID(Arg.Any<ZonedDateTime>(), Arg.Any<int>(), Arg.Any<CancellationToken>()).ReturnsNull<SemerkandDailyPrayerTimes>();
+        semerkandDbAccessMock.GetTimesByDateAndCityID(Arg.Any<LocalDate>(), Arg.Any<int>(), Arg.Any<CancellationToken>()).ReturnsNull<SemerkandDailyPrayerTimes>();
 
         return new SemerkandDynamicPrayerTimeProvider(
                 // returns null per default

@@ -42,24 +42,23 @@ public class SemerkandPrayerTimesResponseDTO
         {
             DayOfYear = DayOfYear,
             CityID = cityID,
-            Date = localDate.AtStartOfDayInZone(dateTimeZone),
+            TimeZone = dateTimeZone,
+            Date = localDate,
 
-            Fajr = getZonedDateTime(dateTimeZone, localDate, Fajr),
-            Shuruq = getZonedDateTime(dateTimeZone, localDate, Shuruq),
-            Dhuhr = getZonedDateTime(dateTimeZone, localDate, Dhuhr),
-            Asr = getZonedDateTime(dateTimeZone, localDate, Asr),
-            Maghrib = getZonedDateTime(dateTimeZone, localDate, Maghrib),
-            Isha = getZonedDateTime(dateTimeZone, localDate, Isha)
+            Fajr = getLocalDateTime(localDate, Fajr),
+            Shuruq = getLocalDateTime(localDate, Shuruq),
+            Dhuhr = getLocalDateTime(localDate, Dhuhr),
+            Asr = getLocalDateTime(localDate, Asr),
+            Maghrib = getLocalDateTime(localDate, Maghrib),
+            Isha = getLocalDateTime(localDate, Isha)
         };
     }
 
-    private static ZonedDateTime? getZonedDateTime(DateTimeZone timezone, LocalDate date, LocalTime? time)
+    private static LocalDateTime? getLocalDateTime(LocalDate date, LocalTime? time)
     {
         if (time is null)
             return null;
 
-        // InZoneStrictly throws an exception if the time is inacceptable,
-        // like within the skipped hour of DST or ambiguous duplicate hour
-        return (date + time.Value).InZoneStrictly(timezone);
+        return date + time.Value;
     }
 }

@@ -100,7 +100,7 @@ public class SemerkandDynamicPrayerTimeProvider(
         {
             SemerkandDailyPrayerTimes prayerTimes =
                 await semerkandRepository.GetTimesByDateAndCityID(
-                    date,
+                    date.Date,
                     cityID,
                     cancellationToken).ConfigureAwait(false);
 
@@ -118,12 +118,12 @@ public class SemerkandDynamicPrayerTimeProvider(
                 List<SemerkandDailyPrayerTimes> prayerTimesLst =
                     timesResponseDTOs
                         .Select(x => x.ToSemerkandPrayerTimes(cityID, dateTimeZone, firstDayOfYear))
-                        .Where(x => date.Date <= x.Date.Date && x.Date.Date < date.Plus(Duration.FromDays(MAX_EXTENT_OF_RETRIEVED_DAYS)).Date)
+                        .Where(x => date.Date <= x.Date && x.Date < date.Plus(Duration.FromDays(MAX_EXTENT_OF_RETRIEVED_DAYS)).Date)
                         .ToList();
 
                 await semerkandRepository.InsertPrayerTimesAsync(prayerTimesLst, cancellationToken).ConfigureAwait(false);
 
-                prayerTimes = prayerTimesLst.FirstOrDefault(x => x.Date.Date == date.Date);
+                prayerTimes = prayerTimesLst.FirstOrDefault(x => x.Date == date.Date);
             }
 
             return prayerTimes;

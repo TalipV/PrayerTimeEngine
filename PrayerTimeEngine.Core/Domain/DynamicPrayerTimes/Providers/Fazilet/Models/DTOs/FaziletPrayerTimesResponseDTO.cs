@@ -50,21 +50,22 @@ public class FaziletPrayerTimesResponseDTO
         return new FaziletDailyPrayerTimes
         {
             CityID = cityID,
-            Imsak = getZonedDateTimeOrNull(Imsak, timeZone),
-            Fajr = getZonedDateTimeOrNull(Fajr, timeZone),
-            Shuruq = getZonedDateTimeOrNull(Shuruq, timeZone),
-            Duha = getZonedDateTimeOrNull(Duha, timeZone),
-            Dhuhr = getZonedDateTimeOrNull(Dhuhr, timeZone),
-            Asr = getZonedDateTimeOrNull(Asr, timeZone),
-            Maghrib = getZonedDateTimeOrNull(Maghrib, timeZone),
-            Isha = getZonedDateTimeOrNull(Isha, timeZone),
-            Date = Date.AtStartOfDayInZone(timeZone),
+            TimeZone = timeZone,
+            Date = Date,
+            Imsak = getLocalDateTimeOrNull(Imsak, timeZone),
+            Fajr = getLocalDateTimeOrNull(Fajr, timeZone),
+            Shuruq = getLocalDateTimeOrNull(Shuruq, timeZone),
+            Duha = getLocalDateTimeOrNull(Duha, timeZone),
+            Dhuhr = getLocalDateTimeOrNull(Dhuhr, timeZone),
+            Asr = getLocalDateTimeOrNull(Asr, timeZone),
+            Maghrib = getLocalDateTimeOrNull(Maghrib, timeZone),
+            Isha = getLocalDateTimeOrNull(Isha, timeZone),
         };
     }
 
-    private static ZonedDateTime? getZonedDateTimeOrNull(List<TimeDetail> timeDetails, DateTimeZone timeZone)
+    private static LocalDateTime? getLocalDateTimeOrNull(List<TimeDetail> timeDetails, DateTimeZone timeZone)
     {
-        return timeDetails?.FirstOrDefault()?.OffsetDateTime.InZone(timeZone);
+        return timeDetails?.FirstOrDefault()?.OffsetDateTime.InZone(timeZone).LocalDateTime;
     }
 }
 public class TimeDetail

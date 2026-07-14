@@ -62,7 +62,7 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
             date.SetValueConverter(new ValueConverter<LocalDate, string>(
                 string (LocalDate x) => x.GetStringForDBColumn(),
                 LocalDate (string x) => x.GetLocalDateFromDBColumnString()));
-            date.SetSentinelFromProviderValue("01/01/0001");
+            date.SetSentinelFromProviderValue("0001-01-01");
 
             var dhuhr = runtimeEntityType.AddProperty(
                 "Dhuhr",

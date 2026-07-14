@@ -56,19 +56,20 @@ public class FaziletDynamicPrayerTimeProviderTests : BaseTest
         var times = new FaziletDailyPrayerTimes
         {
             CityID = 1,
-            Date = dateInUtc,
-            Imsak = dateInUtc.PlusHours(4),
-            Fajr = dateInUtc.PlusHours(5),
-            Shuruq = dateInUtc.PlusHours(7),
-            Duha = dateInUtc.PlusHours(8),
-            Dhuhr = dateInUtc.PlusHours(12),
-            Asr = dateInUtc.PlusHours(15),
-            Maghrib = dateInUtc.PlusHours(18),
-            Isha = dateInUtc.PlusHours(20),
+            Date = date,
+            TimeZone = DateTimeZone.Utc,
+            Imsak = dateInUtc.PlusHours(4).LocalDateTime,
+            Fajr = dateInUtc.PlusHours(5).LocalDateTime,
+            Shuruq = dateInUtc.PlusHours(7).LocalDateTime,
+            Duha = dateInUtc.PlusHours(8).LocalDateTime,
+            Dhuhr = dateInUtc.PlusHours(12).LocalDateTime,
+            Asr = dateInUtc.PlusHours(15).LocalDateTime,
+            Maghrib = dateInUtc.PlusHours(18).LocalDateTime,
+            Isha = dateInUtc.PlusHours(20).LocalDateTime,
         };
 
         _faziletRepositoryMock.GetTimesByDateAndCityID(
-            Arg.Is<ZonedDateTime>(x => x == dateInUtc || x == dateInUtc.Plus(Duration.FromDays(1))),
+            Arg.Is<LocalDate>(x => x == date || x == date.PlusDays(1)),
             Arg.Any<int>(),
             Arg.Any<CancellationToken>())
             .Returns(times);
@@ -79,14 +80,14 @@ public class FaziletDynamicPrayerTimeProviderTests : BaseTest
 
         // ASSERT
         calculationResult.Should().NotBeNull().And.HaveCount(1);
-        calculationResult.First().Should().BeEquivalentTo((ETimeType.FajrEnd, times.Shuruq));
+        calculationResult.First().Should().BeEquivalentTo((ETimeType.FajrEnd, times.GetZonedDateTimeForTimeType(ETimeType.FajrEnd).Value));
 
         _placeServiceMock.ReceivedCalls().Should().BeEmpty();
         _faziletApiServiceMock.ReceivedCalls().Should().BeEmpty();
         await _faziletRepositoryMock.Received(1).GetCountryIDByName(Arg.Is("Deutschland"), Arg.Any<CancellationToken>());
         await _faziletRepositoryMock.Received(1).GetCityIDByName(Arg.Is(1), Arg.Is("Berlin"), Arg.Any<CancellationToken>());
-        await _faziletRepositoryMock.Received(1).GetTimesByDateAndCityID(Arg.Is(dateInUtc), Arg.Is(1), Arg.Any<CancellationToken>());
-        await _faziletRepositoryMock.Received(1).GetTimesByDateAndCityID(Arg.Is(dateInUtc.Plus(Duration.FromDays(1))), Arg.Is(1), Arg.Any<CancellationToken>());
+        await _faziletRepositoryMock.Received(1).GetTimesByDateAndCityID(Arg.Is(date), Arg.Is(1), Arg.Any<CancellationToken>());
+        await _faziletRepositoryMock.Received(1).GetTimesByDateAndCityID(Arg.Is(date.PlusDays(1)), Arg.Is(1), Arg.Any<CancellationToken>());
     }
 
     #endregion GetPrayerTimesAsync

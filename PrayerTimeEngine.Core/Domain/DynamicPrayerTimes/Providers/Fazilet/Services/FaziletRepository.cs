@@ -97,15 +97,15 @@ public class FaziletRepository(
         }
     }
 
-    private static readonly Func<AppDbContext, ZonedDateTime, int, Task<FaziletDailyPrayerTimes>> compiledQuery_GetTimesByDateAndCityID =
+    private static readonly Func<AppDbContext, LocalDate, int, Task<FaziletDailyPrayerTimes>> compiledQuery_GetTimesByDateAndCityID =
         EF.CompileAsyncQuery(
-            (AppDbContext context, ZonedDateTime date, int cityId) =>
+            (AppDbContext context, LocalDate date, int cityId) =>
                 context.FaziletPrayerTimes
                     .AsNoTracking()
                     .Where(x => x.Date == date && x.CityID == cityId)
                     .FirstOrDefault());
 
-    public async Task<FaziletDailyPrayerTimes> GetTimesByDateAndCityID(ZonedDateTime date, int cityId, CancellationToken cancellationToken)
+    public async Task<FaziletDailyPrayerTimes> GetTimesByDateAndCityID(LocalDate date, int cityId, CancellationToken cancellationToken)
     {
         using (AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken))
         {
@@ -141,18 +141,13 @@ public class FaziletRepository(
         }
     }
 
-    public async Task DeleteCacheDataAsync(ZonedDateTime deleteBeforeDate, CancellationToken cancellationToken)
+    public async Task DeleteCacheDataAsync(LocalDate deleteBeforeDate, CancellationToken cancellationToken)
     {
         using (AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken))
         {
-            // TODO fix
-            // ZonedDateTime doesn't allow db side querying
-            var toBeDeletedTimes = (await dbContext.FaziletPrayerTimes.ToListAsync(cancellationToken).ConfigureAwait(false))
-                .Where(p => p.Date.ToInstant() < deleteBeforeDate.ToInstant())
-                .ToList();
-
-            dbContext.FaziletPrayerTimes.RemoveRange(toBeDeletedTimes);
-            await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+            await dbContext.FaziletPrayerTimes
+                .Where(p => p.Date < deleteBeforeDate)
+                .ExecuteDeleteAsync(cancellationToken).ConfigureAwait(false);
         }
     }
 }

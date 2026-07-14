@@ -30,6 +30,7 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_Migrations
                     ID = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     Date = table.Column<string>(type: "TEXT", nullable: false),
+                    TimeZone = table.Column<string>(type: "TEXT", nullable: true),
                     CityID = table.Column<int>(type: "INTEGER", nullable: false),
                     InsertInstant = table.Column<string>(type: "TEXT", nullable: true),
                     Imsak = table.Column<string>(type: "TEXT", nullable: true),
@@ -82,6 +83,7 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_Migrations
                     ID = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     Date = table.Column<string>(type: "TEXT", nullable: false),
+                    TimeZone = table.Column<string>(type: "TEXT", nullable: true),
                     Longitude = table.Column<decimal>(type: "TEXT", nullable: false),
                     Latitude = table.Column<decimal>(type: "TEXT", nullable: false),
                     InsertInstant = table.Column<string>(type: "TEXT", nullable: true),
@@ -173,6 +175,7 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_Migrations
                         .Annotation("Sqlite:Autoincrement", true),
                     DayOfYear = table.Column<int>(type: "INTEGER", nullable: false),
                     Date = table.Column<string>(type: "TEXT", nullable: false),
+                    TimeZone = table.Column<string>(type: "TEXT", nullable: true),
                     CityID = table.Column<int>(type: "INTEGER", nullable: false),
                     InsertInstant = table.Column<string>(type: "TEXT", nullable: true),
                     Fajr = table.Column<string>(type: "TEXT", nullable: true),

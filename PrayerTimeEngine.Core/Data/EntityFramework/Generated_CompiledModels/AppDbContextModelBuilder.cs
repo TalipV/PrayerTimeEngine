@@ -11,7 +11,7 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
     public partial class AppDbContextModel
     {
         private AppDbContextModel()
-            : base(skipDetectChanges: false, modelId: new Guid("d5ec9575-d749-4da9-ba66-c4ecf8f4c558"), entityTypeCount: 16)
+            : base(skipDetectChanges: false, modelId: new Guid("2540b759-36b9-49c5-8cb5-428b08949323"), entityTypeCount: 16)
         {
         }
 

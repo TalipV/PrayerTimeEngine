@@ -71,7 +71,7 @@ public class FaziletDynamicPrayerTimeProviderBenchmark
         var faziletDbAccessMock = Substitute.For<IFaziletRepository>();
         faziletDbAccessMock.GetCountries(Arg.Any<CancellationToken>()).Returns([]);
         faziletDbAccessMock.GetCitiesByCountryID(Arg.Any<int>(), Arg.Any<CancellationToken>()).Returns([]);
-        faziletDbAccessMock.GetTimesByDateAndCityID(Arg.Any<ZonedDateTime>(), Arg.Any<int>(), Arg.Any<CancellationToken>()).ReturnsNull<FaziletDailyPrayerTimes>();
+        faziletDbAccessMock.GetTimesByDateAndCityID(Arg.Any<LocalDate>(), Arg.Any<int>(), Arg.Any<CancellationToken>()).ReturnsNull<FaziletDailyPrayerTimes>();
 
         return new FaziletDynamicPrayerTimeProvider(
                 // returns null per default

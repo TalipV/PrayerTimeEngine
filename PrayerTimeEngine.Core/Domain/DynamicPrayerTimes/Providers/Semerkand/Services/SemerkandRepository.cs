@@ -94,15 +94,15 @@ public class SemerkandRepository(
         }
     }
 
-    private static readonly Func<AppDbContext, ZonedDateTime, int, Task<SemerkandDailyPrayerTimes>> compiledQuery_GetTimesByDateAndCityID =
+    private static readonly Func<AppDbContext, LocalDate, int, Task<SemerkandDailyPrayerTimes>> compiledQuery_GetTimesByDateAndCityID =
         EF.CompileAsyncQuery(
-            (AppDbContext context, ZonedDateTime date, int cityId) =>
+            (AppDbContext context, LocalDate date, int cityId) =>
                 context.SemerkandPrayerTimes
                     .AsNoTracking()
                     .Where(x => x.Date == date && x.CityID == cityId)
                     .FirstOrDefault());
 
-    public async Task<SemerkandDailyPrayerTimes> GetTimesByDateAndCityID(ZonedDateTime date, int cityId, CancellationToken cancellationToken)
+    public async Task<SemerkandDailyPrayerTimes> GetTimesByDateAndCityID(LocalDate date, int cityId, CancellationToken cancellationToken)
     {
         using (AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken))
         {
@@ -137,18 +137,13 @@ public class SemerkandRepository(
         }
     }
 
-    public async Task DeleteCacheDataAsync(ZonedDateTime deleteBeforeDate, CancellationToken cancellationToken)
+    public async Task DeleteCacheDataAsync(LocalDate deleteBeforeDate, CancellationToken cancellationToken)
     {
         using (AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken))
         {
-            // TODO fix
-            // ZonedDateTime doesn't allow db side querying
-            var toBeDeletedTimes = (await dbContext.SemerkandPrayerTimes.ToListAsync(cancellationToken).ConfigureAwait(false))
-                .Where(p => p.Date.ToInstant() < deleteBeforeDate.ToInstant())
-                .ToList();
-
-            dbContext.SemerkandPrayerTimes.RemoveRange(toBeDeletedTimes);
-            await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+            await dbContext.SemerkandPrayerTimes
+                .Where(p => p.Date < deleteBeforeDate)
+                .ExecuteDeleteAsync(cancellationToken).ConfigureAwait(false);
         }
     }
 }

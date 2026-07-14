@@ -6,7 +6,7 @@ namespace PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Muwaqqit.Int
 public interface IMuwaqqitRepository
 {
     Task<MuwaqqitDailyPrayerTimes> GetPrayerTimesAsync(
-        ZonedDateTime date,
+        LocalDate date,
         decimal longitude,
         decimal latitude,
         double fajrDegree,

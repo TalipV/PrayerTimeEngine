@@ -1,15 +1,19 @@
-﻿using NodaTime;
+using NodaTime;
+using PrayerTimeEngine.Core.Common.Enum;
 
 namespace PrayerTimeEngine.Core.Domain.Models;
 
 public interface IDailyPrayerTimes
 {
-    public ZonedDateTime Date { get; }
+    public LocalDate Date { get; }
+    public DateTimeZone TimeZone { get; }
 
-    public ZonedDateTime? Fajr { get; }
-    public ZonedDateTime? Shuruq { get; }
-    public ZonedDateTime? Dhuhr { get; }
-    public ZonedDateTime? Asr { get; }
-    public ZonedDateTime? Maghrib { get; }
-    public ZonedDateTime? Isha { get; }
+    public LocalDateTime? Fajr { get; }
+    public LocalDateTime? Shuruq { get; }
+    public LocalDateTime? Dhuhr { get; }
+    public LocalDateTime? Asr { get; }
+    public LocalDateTime? Maghrib { get; }
+    public LocalDateTime? Isha { get; }
+
+    public ZonedDateTime? GetZonedDateTimeForTimeType(ETimeType timeType);
 }

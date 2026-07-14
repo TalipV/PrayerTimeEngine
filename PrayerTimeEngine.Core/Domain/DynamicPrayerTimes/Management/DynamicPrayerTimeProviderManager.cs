@@ -149,7 +149,7 @@ public class DynamicPrayerTimeProviderManager(
 
                 try
                 {
-                    await cacheCleaner.DeleteCacheDataAsync(deleteBeforeDate, cancellationToken).ConfigureAwait(false);
+                    await cacheCleaner.DeleteCacheDataAsync(deleteBeforeDate.Date, cancellationToken).ConfigureAwait(false);
                 }
                 catch (Exception exception) when (exception is not OperationCanceledException)
                 {

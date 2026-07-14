@@ -1,4 +1,4 @@
-﻿using NodaTime;
+using NodaTime;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Muwaqqit.Interfaces;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Muwaqqit.Models.Entities;
 using PrayerTimeEngine.Core.Tests.Common;
@@ -59,7 +59,8 @@ public class MuwaqqitApiServiceTests : BaseTest
         time.Should().NotBeNull();
 
         time.ID.Should().Be(0);
-        time.Date.Should().Be(new LocalDate(2023, 7, 30).AtStartOfDayInZone(timeZone));
+        time.Date.Should().Be(new LocalDate(2023, 7, 30));
+        time.TimeZone.Should().Be(timeZone);
         time.FajrDegree.Should().Be(-12);
         time.AsrKarahaDegree.Should().Be(3.5);
         time.IshtibaqDegree.Should().Be(-8);
@@ -68,16 +69,16 @@ public class MuwaqqitApiServiceTests : BaseTest
         time.Longitude.Should().Be(11.41337M);
         time.InsertInstant.Should().BeNull();
 
-        time.Asr.Should().Be(new LocalDateTime(2023, 7, 30, 17, 25, 53).InZoneStrictly(timeZone));
-        time.AsrKaraha.Should().Be(new LocalDateTime(2023, 7, 30, 20, 23, 53).InZoneStrictly(timeZone));
-        time.AsrMithlayn.Should().Be(new LocalDateTime(2023, 7, 30, 18, 33, 27).InZoneStrictly(timeZone));
-        time.Dhuhr.Should().Be(new LocalDateTime(2023, 7, 30, 13, 21, 22).InZoneStrictly(timeZone));
-        time.Duha.Should().Be(new LocalDateTime(2023, 7, 30, 06, 17, 04).InZoneStrictly(timeZone));
-        time.Fajr.Should().Be(new LocalDateTime(2023, 7, 30, 04, 27, 04).InZoneStrictly(timeZone));
-        time.Isha.Should().Be(new LocalDateTime(2023, 7, 30, 22, 13, 17).InZoneStrictly(timeZone));
-        time.Ishtibaq.Should().Be(new LocalDateTime(2023, 7, 30, 21, 41, 46).InZoneStrictly(timeZone));
-        time.Maghrib.Should().Be(new LocalDateTime(2023, 7, 30, 20, 50, 59).InZoneStrictly(timeZone));
-        time.NextFajr.Should().Be(new LocalDateTime(2023, 7, 31, 04, 28, 47).InZoneStrictly(timeZone));
-        time.Shuruq.Should().Be(new LocalDateTime(2023, 7, 30, 05, 49, 53).InZoneStrictly(timeZone));
+        time.Asr.Should().Be(new LocalDateTime(2023, 7, 30, 17, 25, 53));
+        time.AsrKaraha.Should().Be(new LocalDateTime(2023, 7, 30, 20, 23, 53));
+        time.AsrMithlayn.Should().Be(new LocalDateTime(2023, 7, 30, 18, 33, 27));
+        time.Dhuhr.Should().Be(new LocalDateTime(2023, 7, 30, 13, 21, 22));
+        time.Duha.Should().Be(new LocalDateTime(2023, 7, 30, 06, 17, 04));
+        time.Fajr.Should().Be(new LocalDateTime(2023, 7, 30, 04, 27, 04));
+        time.Isha.Should().Be(new LocalDateTime(2023, 7, 30, 22, 13, 17));
+        time.Ishtibaq.Should().Be(new LocalDateTime(2023, 7, 30, 21, 41, 46));
+        time.Maghrib.Should().Be(new LocalDateTime(2023, 7, 30, 20, 50, 59));
+        time.NextFajr.Should().Be(new LocalDateTime(2023, 7, 31, 04, 28, 47));
+        time.Shuruq.Should().Be(new LocalDateTime(2023, 7, 30, 05, 49, 53));
     }
 }

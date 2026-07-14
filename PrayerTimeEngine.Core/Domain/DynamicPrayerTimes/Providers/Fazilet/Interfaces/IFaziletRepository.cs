@@ -7,7 +7,7 @@ public interface IFaziletRepository
 {
     public Task<List<FaziletCountry>> GetCountries(CancellationToken cancellationToken);
     public Task<List<FaziletCity>> GetCitiesByCountryID(int countryID, CancellationToken cancellationToken);
-    public Task<FaziletDailyPrayerTimes> GetTimesByDateAndCityID(ZonedDateTime date, int cityID, CancellationToken cancellationToken);
+    public Task<FaziletDailyPrayerTimes> GetTimesByDateAndCityID(LocalDate date, int cityID, CancellationToken cancellationToken);
 
     public Task InsertCountries(IEnumerable<FaziletCountry> countries, CancellationToken cancellationToken);
     public Task InsertCities(IEnumerable<FaziletCity> cities, CancellationToken cancellationToken);

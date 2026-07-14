@@ -35,18 +35,13 @@ public class MyMosqRepository(
         }
     }
 
-    public async Task DeleteCacheDataAsync(ZonedDateTime deleteBeforeDate, CancellationToken cancellationToken)
+    public async Task DeleteCacheDataAsync(LocalDate deleteBeforeDate, CancellationToken cancellationToken)
     {
         using (AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken))
         {
-            // TODO fix
-            // db side querying doesn't work for some reason
-            var toBeDeletedTimes = (await dbContext.MyMosqPrayerTimes.ToListAsync(cancellationToken).ConfigureAwait(false))
-                .Where(p => p.Date < deleteBeforeDate.LocalDateTime.Date)
-                .ToList();
-
-            dbContext.MyMosqPrayerTimes.RemoveRange(toBeDeletedTimes);
-            await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+            await dbContext.MyMosqPrayerTimes
+                .Where(p => p.Date < deleteBeforeDate)
+                .ExecuteDeleteAsync(cancellationToken).ConfigureAwait(false);
         }
     }
 }

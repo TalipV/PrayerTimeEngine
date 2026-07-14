@@ -96,6 +96,9 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_Migrations
                 b.Property<string>("Shuruq")
                     .HasColumnType("TEXT");
 
+                b.Property<string>("TimeZone")
+                    .HasColumnType("TEXT");
+
                 b.HasKey("ID");
 
                 b.ToTable("FaziletPrayerTimes");
@@ -163,6 +166,9 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_Migrations
                     .HasColumnType("TEXT");
 
                 b.Property<string>("Shuruq")
+                    .HasColumnType("TEXT");
+
+                b.Property<string>("TimeZone")
                     .HasColumnType("TEXT");
 
                 b.HasKey("ID");
@@ -245,6 +251,9 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_Migrations
                     .HasColumnType("TEXT");
 
                 b.Property<string>("Shuruq")
+                    .HasColumnType("TEXT");
+
+                b.Property<string>("TimeZone")
                     .HasColumnType("TEXT");
 
                 b.HasKey("ID");

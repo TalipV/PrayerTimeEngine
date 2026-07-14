@@ -10,7 +10,7 @@ using PrayerTimeEngine.Core.Data.EntityFramework;
 namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260709192039_InitialMigration")]
+    [Migration("20260714062839_InitialMigration")]
     partial class InitialMigration
     {
         /// <inheritdoc />
@@ -99,6 +99,9 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_Migrations
                     b.Property<string>("Shuruq")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("TimeZone")
+                        .HasColumnType("TEXT");
+
                     b.HasKey("ID");
 
                     b.ToTable("FaziletPrayerTimes");
@@ -166,6 +169,9 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Shuruq")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("TimeZone")
                         .HasColumnType("TEXT");
 
                     b.HasKey("ID");
@@ -248,6 +254,9 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Shuruq")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("TimeZone")
                         .HasColumnType("TEXT");
 
                     b.HasKey("ID");
