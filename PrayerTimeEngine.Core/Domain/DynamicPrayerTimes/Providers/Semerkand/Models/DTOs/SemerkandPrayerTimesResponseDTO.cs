@@ -35,7 +35,7 @@ public class SemerkandPrayerTimesResponseDTO
     [JsonConverter(typeof(LocalTimeConverter))]
     public LocalTime? Isha { get; set; }
 
-    internal SemerkandDailyPrayerTimes ToSemerkandPrayerTimes(int cityID, DateTimeZone dateTimeZone, LocalDate firstDayOfYear, SemerkandDailyPrayerTimes previousDay = null)
+    internal SemerkandDailyPrayerTimes ToSemerkandPrayerTimes(int cityID, DateTimeZone dateTimeZone, LocalDate firstDayOfYear, SemerkandDailyPrayerTimes previousDayPrayerTimes = null)
     {
         LocalDate localDate = firstDayOfYear.PlusDays(DayOfYear - 1);
 
@@ -45,16 +45,16 @@ public class SemerkandPrayerTimesResponseDTO
             CityID = cityID,
             TimeZone = dateTimeZone,
             Date = localDate,
-            Fajr = getInstant(localDate, dateTimeZone, Fajr, previousDay?.Fajr),
-            Shuruq = getInstant(localDate, dateTimeZone, Shuruq, previousDay?.Shuruq),
-            Dhuhr = getInstant(localDate, dateTimeZone, Dhuhr, previousDay?.Dhuhr),
-            Asr = getInstant(localDate, dateTimeZone, Asr, previousDay?.Asr),
-            Maghrib = getInstant(localDate, dateTimeZone, Maghrib, previousDay?.Maghrib),
-            Isha = getInstant(localDate, dateTimeZone, Isha, previousDay?.Isha),
+            Fajr = getInstant(localDate, dateTimeZone, Fajr, previousDayPrayerTimes?.Date, previousDayPrayerTimes?.Fajr),
+            Shuruq = getInstant(localDate, dateTimeZone, Shuruq, previousDayPrayerTimes?.Date, previousDayPrayerTimes?.Shuruq),
+            Dhuhr = getInstant(localDate, dateTimeZone, Dhuhr, previousDayPrayerTimes?.Date, previousDayPrayerTimes?.Dhuhr),
+            Asr = getInstant(localDate, dateTimeZone, Asr, previousDayPrayerTimes?.Date, previousDayPrayerTimes?.Asr),
+            Maghrib = getInstant(localDate, dateTimeZone, Maghrib, previousDayPrayerTimes?.Date, previousDayPrayerTimes?.Maghrib),
+            Isha = getInstant(localDate, dateTimeZone, Isha, previousDayPrayerTimes?.Date, previousDayPrayerTimes?.Isha),
         };
     }
 
-    private static Instant? getInstant(LocalDate date, DateTimeZone zone, LocalTime? time, Instant? prevDayHint)
+    private static Instant? getInstant(LocalDate date, DateTimeZone zone, LocalTime? time, LocalDate? previousDayDate, Instant? previousDayInstant)
     {
         if (time is null)
             return null;
@@ -63,7 +63,7 @@ public class SemerkandPrayerTimesResponseDTO
         ZoneLocalMapping mapping = zone.MapLocal(localDateTime);
 
         // in 99.99% of cases there will be exactly one mapping but if a specific clock time
-        // occurs twice at one day, like 02:30 on the 27.10.2026 in Europe/Berlin,
+        // occurs twice at one day, like 02:30 on the 27.10.2024 in Europe/Berlin,
         // then we have to find out which one to use.
         // In the above example it won't be an issue because none of those prayer times falls within that 02:00-03:00 range
         // but these rare edge cases are still possible for specific places during specific times in specific timezones
@@ -71,26 +71,39 @@ public class SemerkandPrayerTimesResponseDTO
         {
             0 => throw new SkippedTimeException(localDateTime, zone),   // When the local time does not exist in the timezone, like when 02:00 jumps to 03:00 and then 02:30 is processed for that day
             1 => mapping.First().ToInstant(),
-            2 => resolveAmbiguousTime(mapping, prevDayHint),
+            2 => resolveAmbiguousTime(mapping, date, previousDayDate, previousDayInstant),
             _ => throw new InvalidOperationException("Unexpected mapping count.")
         };
     }
 
-    private static Instant resolveAmbiguousTime(ZoneLocalMapping mapping, Instant? instantOfPreviousDay)
+    private static readonly Duration _oneDayDuration = Duration.FromDays(1);
+
+    private static Instant resolveAmbiguousTime(ZoneLocalMapping mapping, LocalDate date, LocalDate? previousDayDate, Instant? previousDayInstant)
     {
+        // the comparison below only works with the direct predecessor
+        if (previousDayDate is not null && previousDayDate != date.PlusDays(-1))
+            throw new ArgumentException($"The previous day must be exactly one day before {date} but was {previousDayDate}.");
+
         // nothing to compare it against
-        if (instantOfPreviousDay is null)
+        if (previousDayInstant is null)
             throw new AmbiguousTimeException(mapping.First(), mapping.Last());
+
+        // Prayer times drift only by a few minutes per day, so the previous day's time plus 24h
+        // is a good approximation of today's time and thereby suitable to pick between the
+        // two options (which are exactly one hour apart).
+        // The previous day's time itself is NOT suitable because it lies ~24h before both
+        // options and would thus always be closer to the earlier one.
+        Instant comparisonInstant = previousDayInstant.Value + _oneDayDuration;
 
         Instant earlierOption = mapping.First().ToInstant();
         Instant laterOption = mapping.Last().ToInstant();
 
-        long distEarlier = Math.Abs((earlierOption - instantOfPreviousDay.Value).BclCompatibleTicks);
-        long distLater = Math.Abs((laterOption - instantOfPreviousDay.Value).BclCompatibleTicks);
+        long distEarlier = Math.Abs((earlierOption - comparisonInstant).BclCompatibleTicks);
+        long distLater = Math.Abs((laterOption - comparisonInstant).BclCompatibleTicks);
 
-        // take whatever is closer to the previous day's time
-        return distEarlier <= distLater 
-            ? earlierOption 
+        // take whatever option is closer to the comparison value
+        return distEarlier <= distLater
+            ? earlierOption
             : laterOption;
     }
 }

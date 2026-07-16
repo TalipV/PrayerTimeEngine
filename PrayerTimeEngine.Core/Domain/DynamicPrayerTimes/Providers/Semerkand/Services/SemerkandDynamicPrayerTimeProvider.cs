@@ -120,6 +120,10 @@ public class SemerkandDynamicPrayerTimeProvider(
 
                 foreach (SemerkandPrayerTimesResponseDTO semerkandTimesDTO in timesResponseDTOs.OrderBy(x => x.DayOfYear))
                 {
+                    // a gap in the API data invalidates the previous day as reference
+                    if (previousDay is not null && previousDay.DayOfYear != semerkandTimesDTO.DayOfYear - 1)
+                        previousDay = null;
+
                     SemerkandDailyPrayerTimes semerkandPrayerTimes = semerkandTimesDTO.ToSemerkandPrayerTimes(cityID, dateTimeZone, firstDayOfYear, previousDay);
                     previousDay = semerkandPrayerTimes;
 
