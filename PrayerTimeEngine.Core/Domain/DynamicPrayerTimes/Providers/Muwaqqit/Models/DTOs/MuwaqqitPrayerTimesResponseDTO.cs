@@ -51,13 +51,23 @@ public class MuwaqqitPrayerTimesResponseDTO
     [JsonConverter(typeof(OffsetDateTimeConverter))]
     public OffsetDateTime? Isha { get; set; }
 
+    [JsonPropertyName("esha_red")]
+    [JsonConverter(typeof(OffsetDateTimeConverter))]
+    public OffsetDateTime? IshaRedness { get; set; }
+
+    [JsonPropertyName("anti_transit")]
+    [JsonConverter(typeof(OffsetDateTimeConverter))]
+    public OffsetDateTime AstronomicalMidnight { get; set; }
 
     [JsonPropertyName("ln")]
     public decimal Longitude { get; set; }
-
     [JsonPropertyName("lt")]
     public decimal Latitude { get; set; }
 
+    // moment at which the sun stands in the qibla direction; absent where the sun never reaches that azimuth
+    [JsonPropertyName("qibla_date")]
+    [JsonConverter(typeof(OffsetDateTimeConverter))]
+    public OffsetDateTime? QiblaTime { get; set; }
 
     [JsonPropertyName("ea")]
     public double IshaDegree { get; set; }
@@ -105,6 +115,7 @@ public class MuwaqqitPrayerTimesResponseDTO
             Isha = getInstant(Isha),
             Ishtibaq = getInstant(Ishtibaq),
             AsrKaraha = getInstant(AsrKaraha),
+            QiblaTime = getInstant(QiblaTime),
         };
     }
 

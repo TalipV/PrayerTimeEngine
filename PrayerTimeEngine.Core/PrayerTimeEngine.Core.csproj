@@ -20,8 +20,8 @@
     <PackageReference Include="NodaTime" Version="3.3.3" />
     <PackageReference Include="NSubstitute" Version="6.0.0" />
     <PackageReference Include="PropertyChanged.Fody" Version="4.1.0" PrivateAssets="All" />
-    <PackageReference Include="Refit.HttpClientFactory" Version="13.1.0" />
-    <PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" Version="3.0.3" />
+    <PackageReference Include="Refit.HttpClientFactory" Version="14.0.1" />
+    <PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" Version="3.0.5" />
   </ItemGroup>
 
 </Project>
