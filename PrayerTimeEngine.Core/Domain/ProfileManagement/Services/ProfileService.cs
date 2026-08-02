@@ -258,6 +258,13 @@ public class ProfileService(
                     Profile = profile,
                     // früheste Berechnung
                     CalculationConfiguration = new GenericSettingConfiguration { Source = EDynamicPrayerTimeProviderType.Semerkand, TimeType = ETimeType.IshaEnd }
+                },
+                new()
+                {
+                    TimeType = ETimeType.QiblaTime,
+                    ProfileID = profile.ID,
+                    Profile = profile,
+                    CalculationConfiguration = new GenericSettingConfiguration { Source = EDynamicPrayerTimeProviderType.Muwaqqit, TimeType = ETimeType.QiblaTime }
                 }
             ];
 
@@ -377,6 +384,11 @@ public class ProfileService(
                     continue;
 
                 GenericSettingConfiguration config = GetTimeConfig(profile, timeType);
+
+                // profiles which were saved before a time type was introduced have no config for it
+                if (config is null)
+                    continue;
+
                 outputText.Append(Environment.NewLine);
                 outputText.Append($"- {timeType} mit {config.Source}");
                 if (config is MuwaqqitDegreeCalculationConfiguration degreeConfig)

@@ -277,13 +277,14 @@ public class ProfileServiceTests : BaseTest
 
         // make two of them inactive
         profile.TimeConfigs.First().CalculationConfiguration.IsTimeShown = false;
-        profile.TimeConfigs.Last().CalculationConfiguration = new GenericSettingConfiguration { Source = EDynamicPrayerTimeProviderType.None, TimeType = ETimeType.IshaEnd };
+        profile.TimeConfigs.First(x => x.TimeType == ETimeType.IshaEnd).CalculationConfiguration =
+            new GenericSettingConfiguration { Source = EDynamicPrayerTimeProviderType.None, TimeType = ETimeType.IshaEnd };
 
         // ACT
         List<GenericSettingConfiguration> activeComplexConfigs = _profileService.GetActiveComplexTimeConfigs(profile);
 
         // ASSERT
-        activeComplexConfigs.Should().HaveCount(14);
+        activeComplexConfigs.Should().HaveCount(15);
         activeComplexConfigs.Should().AllSatisfy(config =>
         {
             config.IsTimeShown.Should().BeTrue();

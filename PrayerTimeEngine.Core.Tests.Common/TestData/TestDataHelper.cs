@@ -166,6 +166,11 @@ public static class TestDataHelper
                     {
                         TimeType = ETimeType.IshaEnd,
                         CalculationConfiguration = new GenericSettingConfiguration { Source = EDynamicPrayerTimeProviderType.Semerkand, TimeType = ETimeType.IshaEnd }
+                    },
+                    new()
+                    {
+                        TimeType = ETimeType.QiblaTime,
+                        CalculationConfiguration = new GenericSettingConfiguration { Source = EDynamicPrayerTimeProviderType.Muwaqqit, TimeType = ETimeType.QiblaTime }
                     }
                 ]
         };

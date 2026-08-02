@@ -80,5 +80,6 @@ public class MuwaqqitApiServiceTests : BaseTest
         time.Maghrib.Should().Be(Instant.FromUtc(2023, 7, 30, 18, 50, 59));
         time.NextFajr.Should().Be(Instant.FromUtc(2023, 7, 31, 2, 28, 47));
         time.Shuruq.Should().Be(Instant.FromUtc(2023, 7, 30, 3, 49, 53));
+        time.QiblaTime.Should().Be(Instant.FromUtc(2023, 7, 30, 9, 18, 45));
     }
 }

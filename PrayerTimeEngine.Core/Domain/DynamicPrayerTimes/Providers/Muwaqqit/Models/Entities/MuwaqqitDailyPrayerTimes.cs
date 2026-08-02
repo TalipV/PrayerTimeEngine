@@ -33,6 +33,7 @@ public class MuwaqqitDailyPrayerTimes : IDailyPrayerTimes, IEntity
     public required Instant? Isha { get; set; }
     public required Instant? Ishtibaq { get; set; }
     public required Instant? AsrKaraha { get; set; }
+    public required Instant? QiblaTime { get; set; }
 
     public ZonedDateTime? GetZonedDateTimeForTimeType(ETimeType timeType)
     {
@@ -51,6 +52,7 @@ public class MuwaqqitDailyPrayerTimes : IDailyPrayerTimes, IEntity
             ETimeType.MaghribIshtibaq => Ishtibaq,
             ETimeType.MaghribEnd or ETimeType.IshaStart => Isha,
             ETimeType.IshaEnd => NextFajr,
+            ETimeType.QiblaTime => QiblaTime,
             _ => throw new ArgumentException($"Invalid {nameof(timeType)} value: {timeType}."),
         };
 

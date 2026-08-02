@@ -22,7 +22,7 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
                 "PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Muwaqqit.Models.Entities.MuwaqqitDailyPrayerTimes",
                 typeof(MuwaqqitDailyPrayerTimes),
                 baseEntityType,
-                propertyCount: 21,
+                propertyCount: 22,
                 keyCount: 1);
 
             var iD = runtimeEntityType.AddProperty(
@@ -193,6 +193,16 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
                 fieldInfo: typeof(MuwaqqitDailyPrayerTimes).GetField("<NextFajr>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 nullable: true);
             nextFajr.SetValueConverter(new ValueConverter<Instant?, string>(
+                string (Instant? x) => (x != null ? x.Value.GetStringForDBColumn() : null),
+                Instant? (string x) => (x != null ? ((Instant? )(x.GetInstantFromDBColumnString())) : null)));
+
+            var qiblaTime = runtimeEntityType.AddProperty(
+                "QiblaTime",
+                typeof(Instant?),
+                propertyInfo: typeof(MuwaqqitDailyPrayerTimes).GetProperty("QiblaTime", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(MuwaqqitDailyPrayerTimes).GetField("<QiblaTime>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                nullable: true);
+            qiblaTime.SetValueConverter(new ValueConverter<Instant?, string>(
                 string (Instant? x) => (x != null ? x.Value.GetStringForDBColumn() : null),
                 Instant? (string x) => (x != null ? ((Instant? )(x.GetInstantFromDBColumnString())) : null)));
 
