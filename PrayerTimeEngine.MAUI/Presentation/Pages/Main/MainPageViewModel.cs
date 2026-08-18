@@ -521,7 +521,7 @@ public partial class MainPageViewModel(
         catch (Exception exception)
         {
             logger.LogError(exception, "Error during onAfterFirstLoad");
-            toastMessageService.ShowError(exception?.Message);
+            toastMessageService.ShowError(exception.Message);
         }
     }
 
