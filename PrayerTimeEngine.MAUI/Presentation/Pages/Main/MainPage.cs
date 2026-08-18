@@ -41,7 +41,8 @@ public partial class MainPage : ContentPage
 
         _prayerTimeGraphicView = prayerTimeGraphicView;
 
-        if (_preferenceService.CheckAndResetDoReset())
+        if (_preferenceService.CheckAndResetDoReset()
+            && File.Exists(AppConfig.DATABASE_PATH))
         {
             File.Delete(AppConfig.DATABASE_PATH);
         }
