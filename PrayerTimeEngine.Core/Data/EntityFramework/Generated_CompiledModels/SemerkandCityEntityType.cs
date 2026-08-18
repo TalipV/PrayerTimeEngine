@@ -59,8 +59,7 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
                 "Name",
                 typeof(string),
                 propertyInfo: typeof(SemerkandCity).GetProperty("Name", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                fieldInfo: typeof(SemerkandCity).GetField("<Name>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                nullable: true);
+                fieldInfo: typeof(SemerkandCity).GetField("<Name>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
 
             var key = runtimeEntityType.AddKey(
                 new[] { iD });

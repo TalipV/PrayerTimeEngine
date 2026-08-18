@@ -14,7 +14,7 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "10.0.10");
+            modelBuilder.HasAnnotation("ProductVersion", "10.0.11");
 
             modelBuilder.Entity("PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Models.Entities.FaziletCity", b =>
             {
@@ -28,6 +28,7 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_Migrations
                     .HasColumnType("TEXT");
 
                 b.Property<string>("Name")
+                    .IsRequired()
                     .HasColumnType("TEXT");
 
                 b.HasKey("ID");
@@ -46,6 +47,7 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_Migrations
                     .HasColumnType("TEXT");
 
                 b.Property<string>("Name")
+                    .IsRequired()
                     .HasColumnType("TEXT");
 
                 b.HasKey("ID");
@@ -97,6 +99,7 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_Migrations
                     .HasColumnType("TEXT");
 
                 b.Property<string>("TimeZone")
+                    .IsRequired()
                     .HasColumnType("TEXT");
 
                 b.HasKey("ID");
@@ -165,10 +168,14 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_Migrations
                 b.Property<string>("NextFajr")
                     .HasColumnType("TEXT");
 
+                b.Property<string>("QiblaTime")
+                    .HasColumnType("TEXT");
+
                 b.Property<string>("Shuruq")
                     .HasColumnType("TEXT");
 
                 b.Property<string>("TimeZone")
+                    .IsRequired()
                     .HasColumnType("TEXT");
 
                 b.HasKey("ID");
@@ -188,6 +195,7 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_Migrations
                     .HasColumnType("TEXT");
 
                 b.Property<string>("Name")
+                    .IsRequired()
                     .HasColumnType("TEXT");
 
                 b.HasKey("ID");
@@ -206,6 +214,7 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_Migrations
                     .HasColumnType("TEXT");
 
                 b.Property<string>("Name")
+                    .IsRequired()
                     .HasColumnType("TEXT");
 
                 b.HasKey("ID");
@@ -254,6 +263,7 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_Migrations
                     .HasColumnType("TEXT");
 
                 b.Property<string>("TimeZone")
+                    .IsRequired()
                     .HasColumnType("TEXT");
 
                 b.HasKey("ID");
@@ -284,6 +294,7 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_Migrations
                     .HasColumnType("TEXT");
 
                 b.Property<string>("ExternalID")
+                    .IsRequired()
                     .HasColumnType("TEXT");
 
                 b.Property<string>("Fajr")
@@ -344,6 +355,7 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_Migrations
                     .HasColumnType("TEXT");
 
                 b.Property<string>("ExternalID")
+                    .IsRequired()
                     .HasColumnType("TEXT");
 
                 b.Property<string>("Fajr")
@@ -388,18 +400,23 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_Migrations
                     .HasColumnType("INTEGER");
 
                 b.Property<string>("City")
+                    .IsRequired()
                     .HasColumnType("TEXT");
 
                 b.Property<string>("CityDistrict")
+                    .IsRequired()
                     .HasColumnType("TEXT");
 
                 b.Property<string>("Country")
+                    .IsRequired()
                     .HasColumnType("TEXT");
 
                 b.Property<string>("ExternalID")
+                    .IsRequired()
                     .HasColumnType("TEXT");
 
                 b.Property<string>("InfoLanguageCode")
+                    .IsRequired()
                     .HasColumnType("TEXT");
 
                 b.Property<string>("InsertInstant")
@@ -412,6 +429,7 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_Migrations
                     .HasColumnType("TEXT");
 
                 b.Property<string>("PostCode")
+                    .IsRequired()
                     .HasColumnType("TEXT");
 
                 b.Property<int>("ProfileID")
@@ -421,9 +439,10 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_Migrations
                     .HasColumnType("TEXT");
 
                 b.Property<string>("Street")
+                    .IsRequired()
                     .HasColumnType("TEXT");
 
-                b.Property<int?>("TimezoneInfoID")
+                b.Property<int>("TimezoneInfoID")
                     .HasColumnType("INTEGER");
 
                 b.HasKey("ID");
@@ -443,12 +462,14 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_Migrations
                     .HasColumnType("INTEGER");
 
                 b.Property<string>("DisplayName")
+                    .IsRequired()
                     .HasColumnType("TEXT");
 
                 b.Property<string>("InsertInstant")
                     .HasColumnType("TEXT");
 
                 b.Property<string>("Name")
+                    .IsRequired()
                     .HasColumnType("TEXT");
 
                 b.Property<int>("UtcOffsetSeconds")
@@ -474,6 +495,7 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_Migrations
                     .HasColumnType("TEXT");
 
                 b.Property<string>("Name")
+                    .IsRequired()
                     .HasColumnType("TEXT");
 
                 b.Property<int>("SequenceNo")
@@ -501,6 +523,7 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_Migrations
                     .HasColumnType("TEXT");
 
                 b.Property<string>("LocationData")
+                    .IsRequired()
                     .HasColumnType("TEXT");
 
                 b.Property<int>("ProfileID")
@@ -520,6 +543,7 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_Migrations
                     .HasColumnType("INTEGER");
 
                 b.Property<string>("CalculationConfiguration")
+                    .IsRequired()
                     .HasColumnType("TEXT");
 
                 b.Property<string>("InsertInstant")
@@ -550,6 +574,7 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_Migrations
                 b.HasBaseType("PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities.Profile");
 
                 b.Property<string>("ExternalID")
+                    .IsRequired()
                     .HasColumnType("TEXT");
 
                 b.Property<int>("MosqueProviderType")
@@ -590,7 +615,9 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_Migrations
 
                 b.HasOne("PrayerTimeEngine.Core.Domain.PlaceManagement.Models.TimezoneInfo", "TimezoneInfo")
                     .WithMany()
-                    .HasForeignKey("TimezoneInfoID");
+                    .HasForeignKey("TimezoneInfoID")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
                 b.Navigation("Profile");
 
@@ -633,7 +660,8 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_Migrations
             {
                 b.Navigation("LocationConfigs");
 
-                b.Navigation("PlaceInfo");
+                b.Navigation("PlaceInfo")
+                    .IsRequired();
 
                 b.Navigation("TimeConfigs");
             });

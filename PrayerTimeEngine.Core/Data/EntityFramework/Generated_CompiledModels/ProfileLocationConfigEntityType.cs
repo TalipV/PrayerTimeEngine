@@ -63,8 +63,7 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
                 "LocationData",
                 typeof(BaseLocationData),
                 propertyInfo: typeof(ProfileLocationConfig).GetProperty("LocationData", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                fieldInfo: typeof(ProfileLocationConfig).GetField("<LocationData>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                nullable: true);
+                fieldInfo: typeof(ProfileLocationConfig).GetField("<LocationData>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
             locationData.SetValueConverter(new ValueConverter<BaseLocationData, string>(
                 string (BaseLocationData x) => JsonSerializer.Serialize(x, AppDbContext.SerializerOptions),
                 BaseLocationData (string x) => JsonSerializer.Deserialize<BaseLocationData>(x, AppDbContext.SerializerOptions)));

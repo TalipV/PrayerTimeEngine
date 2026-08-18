@@ -40,6 +40,7 @@ public static class TestDataHelper
             Name = profileName,
             PlaceInfo = new ProfilePlaceInfo
             {
+                ExternalID = "343647974",
                 Latitude = 47.2803835M,
                 Longitude = 11.41337M,
                 InfoLanguageCode = "de",

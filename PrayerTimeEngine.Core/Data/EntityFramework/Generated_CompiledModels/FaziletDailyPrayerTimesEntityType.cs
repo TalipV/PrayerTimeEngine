@@ -155,8 +155,7 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
                 "TimeZone",
                 typeof(DateTimeZone),
                 propertyInfo: typeof(FaziletDailyPrayerTimes).GetProperty("TimeZone", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                fieldInfo: typeof(FaziletDailyPrayerTimes).GetField("<TimeZone>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                nullable: true);
+                fieldInfo: typeof(FaziletDailyPrayerTimes).GetField("<TimeZone>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
             timeZone.SetValueConverter(new ValueConverter<DateTimeZone, string>(
                 string (DateTimeZone x) => x.GetStringForDBColumn(),
                 DateTimeZone (string x) => x.GetDateTimeZoneFromDBColumnString()));

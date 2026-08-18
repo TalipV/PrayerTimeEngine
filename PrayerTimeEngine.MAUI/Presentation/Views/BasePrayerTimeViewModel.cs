@@ -44,7 +44,7 @@ public abstract class BasePrayerTimeViewModel<ProfileType, PrayerTimeSetType>(
 
         return new PrayerTimeGraphicTimeVO
         {
-            Title = currentPrayerTime.PrayerType.ToString(),
+            Title = currentPrayerTime.Section.ToString(),
             Start = currentPrayerTime.Times.Start.Value,
             End = currentPrayerTime.Times.End.Value,
             SubTimeVOs = CreatePrayerTimeGraphicSubTimeVO(currentPrayerTime.Times)

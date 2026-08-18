@@ -55,30 +55,34 @@ public partial class DynamicPrayerTimeView : ContentView
 
         int startRowNo = 1;
 
-        addPrayerTimeUI(mainGrid, "Fajr", $"{nameof(DynamicPrayerTimesDaySet.CurrentDay)}.{nameof(DynamicPrayerTimesDay.Fajr)}",
+        addPrayerTimeUI(mainGrid, "Fajr", ETimeSection.Fajr, $"{nameof(DynamicPrayerTimesDaySet.CurrentDay)}.{nameof(DynamicPrayerTimesDay.Fajr)}",
             startRowNo, startColumnNo: 0,
             subtime1Name: "Ghalas", showSubtime1Binding: $"{nameof(DynamicPrayerTimeViewModel.ShowFajrGhalas)}", subtime1Binding: nameof(FajrPrayerTime.Ghalas),
             subtime2Name: "Redness", showSubtime2Binding: $"{nameof(DynamicPrayerTimeViewModel.ShowFajrRedness)}", subtime2Binding: nameof(FajrPrayerTime.Karaha));
 
-        addPrayerTimeUI(mainGrid, "Duha", $"{nameof(DynamicPrayerTimesDaySet.CurrentDay)}.{nameof(DynamicPrayerTimesDay.Duha)}",
+        addPrayerTimeUI(mainGrid, "Duha", ETimeSection.Duha, $"{nameof(DynamicPrayerTimesDaySet.CurrentDay)}.{nameof(DynamicPrayerTimesDay.Duha)}",
             startRowNo, startColumnNo: 3,
             subtime1Name: "Quarter", subtime1Binding: nameof(DuhaPrayerTime.QuarterOfDay),
             subtime2Name: "Half*", subtime2Binding: nameof(DuhaPrayerTime.HalfOfDay));
 
-        addPrayerTimeUI(mainGrid, "Dhuhr", $"{nameof(DynamicPrayerTimesDaySet.CurrentDay)}.{nameof(DynamicPrayerTimesDay.Dhuhr)}",
+        addPrayerTimeUI(mainGrid, "Dhuhr", ETimeSection.Dhuhr, $"{nameof(DynamicPrayerTimesDaySet.CurrentDay)}.{nameof(DynamicPrayerTimesDay.Dhuhr)}",
             startRowNo + 4, startColumnNo: 0);
 
-        addPrayerTimeUI(mainGrid, "Asr", $"{nameof(DynamicPrayerTimesDaySet.CurrentDay)}.{nameof(DynamicPrayerTimesDay.Asr)}",
+        addPrayerTimeUI(mainGrid, "Qibla", ETimeSection.General, $"{nameof(DynamicPrayerTimesDaySet.CurrentDay)}.{nameof(DynamicPrayerTimesDay.Qibla)}",
+            startRowNo + 6, startColumnNo: 0,
+            showOnlyStartTime: true);
+
+        addPrayerTimeUI(mainGrid, "Asr", ETimeSection.Asr, $"{nameof(DynamicPrayerTimesDaySet.CurrentDay)}.{nameof(DynamicPrayerTimesDay.Asr)}",
             startRowNo + 4, startColumnNo: 3,
             subtime1Name: "Mithlayn", showSubtime1Binding: $"{nameof(DynamicPrayerTimeViewModel.ShowMithlayn)}", subtime1Binding: nameof(AsrPrayerTime.Mithlayn),
             subtime2Name: "Karaha", showSubtime2Binding: $"{nameof(DynamicPrayerTimeViewModel.ShowKaraha)}", subtime2Binding: nameof(AsrPrayerTime.Karaha));
 
-        addPrayerTimeUI(mainGrid, "Maghrib", $"{nameof(DynamicPrayerTimesDaySet.CurrentDay)}.{nameof(DynamicPrayerTimesDay.Maghrib)}",
+        addPrayerTimeUI(mainGrid, "Maghrib", ETimeSection.Maghrib, $"{nameof(DynamicPrayerTimesDaySet.CurrentDay)}.{nameof(DynamicPrayerTimesDay.Maghrib)}",
             startRowNo + 8, startColumnNo: 0,
             subtime1Name: "Sufficient", showSubtime1Binding: $"{nameof(DynamicPrayerTimeViewModel.ShowMaghribSufficientTime)}", subtime1Binding: nameof(MaghribPrayerTime.SufficientTime),
             subtime2Name: "Ishtibaq", showSubtime2Binding: $"{nameof(DynamicPrayerTimeViewModel.ShowIshtibaq)}", subtime2Binding: nameof(MaghribPrayerTime.Ishtibaq));
 
-        addPrayerTimeUI(mainGrid, "Isha", $"{nameof(DynamicPrayerTimesDaySet.CurrentDay)}.{nameof(DynamicPrayerTimesDay.Isha)}",
+        addPrayerTimeUI(mainGrid, "Isha", ETimeSection.Isha, $"{nameof(DynamicPrayerTimesDaySet.CurrentDay)}.{nameof(DynamicPrayerTimesDay.Isha)}",
             startRowNo + 8, startColumnNo: 3,
             subtime1Name: "1/3", subtime1Binding: nameof(IshaPrayerTime.FirstThirdOfNight),
             subtime2Name: "1/2", subtime2Binding: nameof(IshaPrayerTime.MiddleOfNight),
@@ -90,11 +94,13 @@ public partial class DynamicPrayerTimeView : ContentView
     private void addPrayerTimeUI(
         Grid grid,
         string prayerName,
+        ETimeSection section,
         string bindingText,
         int startRowNo, int startColumnNo,
-        string subtime1Name = null, string showSubtime1Binding = null, string subtime1Binding = null,
-        string subtime2Name = null, string showSubtime2Binding = null, string subtime2Binding = null,
-        string showSubtime3Binding = null, string subtime3Name = null, string subtime3Binding = null)
+        string? subtime1Name = null, string? showSubtime1Binding = null, string? subtime1Binding = null,
+        string? subtime2Name = null, string? showSubtime2Binding = null, string? subtime2Binding = null,
+        string? showSubtime3Binding = null, string? subtime3Name = null, string? subtime3Binding = null,
+        bool showOnlyStartTime = false)
     {
         List<Label> timeTextViews = [];
         List<Label> timeDisplayTextViews = [];
@@ -113,7 +119,7 @@ public partial class DynamicPrayerTimeView : ContentView
         prayerNameLabel.GestureRecognizers.Add(new TapGestureRecognizer
         {
             Command = _mainPageViewModel.GoToSettingsPageCommand,
-            CommandParameter = Enum.Parse<EPrayerType>(prayerName)
+            CommandParameter = section
         });
         grid.AddWithSpan(prayerNameLabel, startRowNo, startColumnNo, columnSpan: 2);
 
@@ -129,9 +135,14 @@ public partial class DynamicPrayerTimeView : ContentView
             convert: (GenericPrayerTime prayerTime) =>
             {
                 ZonedDateTime? prayerTimeStartDisplayValue = _systemInfoService.GetInCurrentZone(prayerTime.Start);
-                ZonedDateTime? prayerTimeEndDisplayValue = _systemInfoService.GetInCurrentZone(prayerTime.End);
-
                 string startTime = prayerTimeStartDisplayValue?.ToString("HH:mm:ss", null) ?? "xx:xx:xx";
+
+                if (showOnlyStartTime)
+                {
+                    return startTime;
+                }
+
+                ZonedDateTime? prayerTimeEndDisplayValue = _systemInfoService.GetInCurrentZone(prayerTime.End);
                 string endTime = prayerTimeEndDisplayValue?.ToString("HH:mm:ss", null) ?? "xx:xx:xx";
 
                 return $"{startTime} - {endTime}";

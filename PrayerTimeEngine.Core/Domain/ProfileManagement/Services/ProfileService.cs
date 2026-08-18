@@ -373,10 +373,10 @@ public class ProfileService(
     {
         var outputText = new StringBuilder();
 
-        foreach (KeyValuePair<EPrayerType, List<ETimeType>> item in timeTypeAttributeService.PrayerTypeToTimeTypes)
+        foreach (KeyValuePair<ETimeSection, List<ETimeType>> item in timeTypeAttributeService.SectionToTimeTypes)
         {
-            EPrayerType prayerType = item.Key;
-            outputText.AppendLine(prayerType.ToString());
+            ETimeSection section = item.Key;
+            outputText.AppendLine(section.ToString());
 
             foreach (ETimeType timeType in item.Value)
             {

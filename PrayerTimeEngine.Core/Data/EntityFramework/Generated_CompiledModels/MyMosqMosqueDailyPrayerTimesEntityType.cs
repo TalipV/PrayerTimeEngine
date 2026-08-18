@@ -88,8 +88,7 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
                 "ExternalID",
                 typeof(string),
                 propertyInfo: typeof(MyMosqMosqueDailyPrayerTimes).GetProperty("ExternalID", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                fieldInfo: typeof(MyMosqMosqueDailyPrayerTimes).GetField("<ExternalID>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                nullable: true);
+                fieldInfo: typeof(MyMosqMosqueDailyPrayerTimes).GetField("<ExternalID>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
 
             var fajr = runtimeEntityType.AddProperty(
                 "Fajr",

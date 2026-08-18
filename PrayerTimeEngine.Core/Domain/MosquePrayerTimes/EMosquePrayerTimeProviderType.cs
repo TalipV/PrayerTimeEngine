@@ -2,7 +2,7 @@
 
 public enum EMosquePrayerTimeProviderType
 {
-    None,
-    Mawaqit,
-    MyMosq
+    None = 0,
+    Mawaqit = 5,
+    MyMosq = 10
 }

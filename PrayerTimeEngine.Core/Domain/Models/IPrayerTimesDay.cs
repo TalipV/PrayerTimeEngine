@@ -7,5 +7,5 @@ public interface IPrayerTimesDay
 {
     ZonedDateTime? DataCalculationTimestamp { get; }
 
-    List<(EPrayerType PrayerType, GenericPrayerTime Times)> AllPrayerTimes { get; }
+    List<(ETimeSection Section, GenericPrayerTime Times)> AllPrayerTimes { get; }
 }
