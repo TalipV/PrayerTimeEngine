@@ -81,6 +81,7 @@ namespace PrayerTimeEngine;
  */
 
 /* TODO general:
+ * - When API is generally not available then that should be shown and handled in a specific manner
  * - For prayer times of a time zone other than that of the device show option to select based on which time zone to show the times (like a yes/no slider)
  * - After importing profiles, show overview of current and new profiles for the user to select which ones to keep
  * - Decrease count of reloads (e.g. mere app switch shouldn't always require reload)
@@ -222,6 +223,8 @@ public static class MauiProgram
     }
 
     private const int HTTP_REQUEST_TIMEOUT_SECONDS = 40;
+    private const int RESILIENCE_ATTEMPT_TIMEOUT_SECONDS = 20;
+    private const int RESILIENCE_TOTAL_REQUEST_TIMEOUT_SECONDS = 35;
 
     private static void addDependencyInjectionServices(IServiceCollection serviceCollection)
     {
@@ -288,45 +291,57 @@ public static class MauiProgram
         addPlatformSpecificServices(serviceCollection);
     }
 
+    private static void addDefaultResilienceHandler(IHttpClientBuilder httpClientBuilder)
+    {
+        httpClientBuilder.AddStandardResilienceHandler(options =>
+        {
+            options.AttemptTimeout.Timeout = TimeSpan.FromSeconds(RESILIENCE_ATTEMPT_TIMEOUT_SECONDS);
+            options.TotalRequestTimeout.Timeout = TimeSpan.FromSeconds(RESILIENCE_TOTAL_REQUEST_TIMEOUT_SECONDS);
+
+            // validation requires it to be at least twice the attempt timeout
+            options.CircuitBreaker.SamplingDuration = TimeSpan.FromSeconds(RESILIENCE_ATTEMPT_TIMEOUT_SECONDS * 2);
+        });
+    }
+
     private static void addCalculatorServices(IServiceCollection serviceCollection)
     {
         // FAZILET
         serviceCollection.AddTransient<IFaziletRepository, FaziletRepository>();
         serviceCollection.AddTransient<IPrayerTimeCacheCleaner, FaziletRepository>();
-        serviceCollection
-            .AddRefitClient<IFaziletApiService>()
+        IHttpClientBuilder faziletHttpClientBuilder = serviceCollection
+            .AddRefitGeneratedClient<IFaziletApiService>()
             .ConfigureHttpClient(config =>
             {
                 config.Timeout = TimeSpan.FromSeconds(HTTP_REQUEST_TIMEOUT_SECONDS);
                 config.BaseAddress = new Uri("https://fazilettakvimi.com/api/cms/");
-            })
-            .AddStandardResilienceHandler();
+            });
+        addDefaultResilienceHandler(faziletHttpClientBuilder);
         serviceCollection.AddTransient<FaziletDynamicPrayerTimeProvider>();
 
         // SEMERKAND
         serviceCollection.AddTransient<ISemerkandRepository, SemerkandRepository>();
         serviceCollection.AddTransient<IPrayerTimeCacheCleaner, SemerkandRepository>();
-        serviceCollection
-            .AddRefitClient<ISemerkandApiService>()
+        IHttpClientBuilder semerkandHttpClientBuilder = serviceCollection
+            .AddRefitGeneratedClient<ISemerkandApiService>()
             .ConfigureHttpClient(config =>
             {
                 config.Timeout = TimeSpan.FromSeconds(HTTP_REQUEST_TIMEOUT_SECONDS);
                 config.BaseAddress = new Uri("https://semerkandtakvimi.com/api/");
-            })
-            .AddStandardResilienceHandler();
+            });
+        addDefaultResilienceHandler(semerkandHttpClientBuilder);
         serviceCollection.AddTransient<SemerkandDynamicPrayerTimeProvider>();
 
         // MUWAQQIT
         serviceCollection.AddTransient<IMuwaqqitRepository, MuwaqqitRepository>();
         serviceCollection.AddTransient<IPrayerTimeCacheCleaner, MuwaqqitRepository>();
-        serviceCollection
-            .AddRefitClient<IMuwaqqitApiService>()
+        IHttpClientBuilder muwaqqitHttpClientBuilder = serviceCollection
+            .AddRefitGeneratedClient<IMuwaqqitApiService>()
             .ConfigureHttpClient(config =>
             {
                 config.Timeout = TimeSpan.FromSeconds(HTTP_REQUEST_TIMEOUT_SECONDS);
                 config.BaseAddress = new Uri("https://www.muwaqqit.com/");
-            })
-            .AddStandardResilienceHandler();
+            });
+        addDefaultResilienceHandler(muwaqqitHttpClientBuilder);
         serviceCollection.AddTransient<MuwaqqitDynamicPrayerTimeProvider>();
 
         // MYMOSQ

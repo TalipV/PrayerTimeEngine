@@ -16,13 +16,20 @@ public class DynamicPrayerTimesDay
     public MaghribPrayerTime Maghrib { get; } = new();
     public IshaPrayerTime Isha { get; } = new();
 
-    public virtual List<(EPrayerType, GenericPrayerTime)> AllPrayerTimes => [
-        (EPrayerType.Fajr, Fajr),
-        (EPrayerType.Duha, Duha),
-        (EPrayerType.Dhuhr, Dhuhr),
-        (EPrayerType.Asr, Asr),
-        (EPrayerType.Maghrib, Maghrib),
-        (EPrayerType.Isha, Isha),
+    /// <summary>
+    /// Single moment (only <see cref="GenericPrayerTime.Start"/> is set), not a time span.
+    /// Therefore deliberately not part of <see cref="AllPrayerTimes"/>, which consumers
+    /// iterate expecting a Start-End range.
+    /// </summary>
+    public GenericPrayerTime Qibla { get; } = new();
+
+    public virtual List<(ETimeSection Section, GenericPrayerTime Times)> AllPrayerTimes => [
+        (ETimeSection.Fajr, Fajr),
+        (ETimeSection.Duha, Duha),
+        (ETimeSection.Dhuhr, Dhuhr),
+        (ETimeSection.Asr, Asr),
+        (ETimeSection.Maghrib, Maghrib),
+        (ETimeSection.Isha, Isha),
     ];
 
     public void SetSpecificPrayerTimeDateTime(ETimeType timeType, ZonedDateTime? zonedDateTime)
@@ -114,7 +121,7 @@ public class DynamicPrayerTimesDay
 
     #region System.Object overrides
 
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         if (obj is not DynamicPrayerTimesDay otherBasePrayerTimesSet)
             return false;
@@ -124,12 +131,13 @@ public class DynamicPrayerTimesDay
             && Equals(Dhuhr, otherBasePrayerTimesSet.Dhuhr)
             && Equals(Asr, otherBasePrayerTimesSet.Asr)
             && Equals(Maghrib, otherBasePrayerTimesSet.Maghrib)
-            && Equals(Isha, otherBasePrayerTimesSet.Isha);
+            && Equals(Isha, otherBasePrayerTimesSet.Isha)
+            && Equals(Qibla, otherBasePrayerTimesSet.Qibla);
     }
 
     public override int GetHashCode()
     {
-        return HashCode.Combine(Fajr, Duha, Dhuhr, Asr, Maghrib, Isha);
+        return HashCode.Combine(Fajr, Duha, Dhuhr, Asr, Maghrib, Isha, Qibla);
     }
 
     #endregion System.Object overrides

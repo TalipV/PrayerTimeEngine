@@ -2,9 +2,9 @@
 
 public enum EDynamicPrayerTimeProviderType
 {
-    None,
-    Muwaqqit,
-    Fazilet,
-    Semerkand,
-    //AlAdhan
+    None = 0,
+    Muwaqqit = 5,
+    Fazilet = 10,
+    Semerkand = 15,
+    //AlAdhan = 20,
 }

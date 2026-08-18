@@ -14,7 +14,7 @@ public class DynamicPrayerTimesDaySet : IPrayerTimesDay
     public DynamicPrayerTimesDay CurrentDay { get; set; }
     public DynamicPrayerTimesDay NextDay { get; set; }
 
-    public List<(EPrayerType, GenericPrayerTime)> AllPrayerTimes
+    public List<(ETimeSection Section, GenericPrayerTime Times)> AllPrayerTimes
     {
         get
         {
@@ -23,7 +23,7 @@ public class DynamicPrayerTimesDaySet : IPrayerTimesDay
             return this.PreviousDay.AllPrayerTimes
                 .Concat(this.CurrentDay.AllPrayerTimes)
                 .Concat(this.NextDay.AllPrayerTimes)
-                .Select(x => (PrayerType: x.Item1, Times: x.Item2))
+                .Select(x => (Section: x.Item1, Times: x.Item2))
                 .ToList();
         }
     }

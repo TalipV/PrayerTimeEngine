@@ -14,7 +14,7 @@ public class TimeTypeAttributeService
     public List<ETimeType> NotHideableTypes { get; }
     public List<ETimeType> ConfigurableSimpleTypes { get; }
     public List<ETimeType> ConfigurableTypes { get; }
-    public IDictionary<EPrayerType, List<ETimeType>> PrayerTypeToTimeTypes { get; }
+    public IDictionary<ETimeSection, List<ETimeType>> SectionToTimeTypes { get; }
 
     public TimeTypeAttributeService()
     {
@@ -25,7 +25,7 @@ public class TimeTypeAttributeService
         NotHideableTypes = [];
         ConfigurableSimpleTypes = [];
         ConfigurableTypes = [];
-        PrayerTypeToTimeTypes = new Dictionary<EPrayerType, List<ETimeType>>();
+        SectionToTimeTypes = new Dictionary<ETimeSection, List<ETimeType>>();
         Initialize();
     }
 
@@ -43,7 +43,7 @@ public class TimeTypeAttributeService
             List<ConfigurableSimpleTypeAttribute> configurableSimpleTimeTypeAttrs = enumValueMemberInfo.GetCustomAttributes<ConfigurableSimpleTypeAttribute>(false).ToList();
             List<SimpleTimeTypeAttribute> simpleTimeTypeAttrs = enumValueMemberInfo.GetCustomAttributes<SimpleTimeTypeAttribute>(false).ToList();
             List<IsNotHidableTimeTypeAttribute> notHideableTypeAttrs = enumValueMemberInfo.GetCustomAttributes<IsNotHidableTimeTypeAttribute>(false).ToList();
-            List<TimeTypeForPrayerTypeAttribute> timeTypeForPrayerTypeAttrs = enumValueMemberInfo.GetCustomAttributes<TimeTypeForPrayerTypeAttribute>(false).ToList();
+            List<TimeTypeForSectionAttribute> timeTypeForSectionAttrs = enumValueMemberInfo.GetCustomAttributes<TimeTypeForSectionAttribute>(false).ToList();
 
             foreach (TimeTypeSupportedByAttribute attr in timeTypeSupportedByAttrs)
             {
@@ -76,12 +76,12 @@ public class TimeTypeAttributeService
                 NotHideableTypes.Add(timeType);
             }
 
-            foreach (var attr in timeTypeForPrayerTypeAttrs)
+            foreach (var attr in timeTypeForSectionAttrs)
             {
-                if (!PrayerTypeToTimeTypes.TryGetValue(attr.PrayerTime, out List<ETimeType> value))
+                if (!SectionToTimeTypes.TryGetValue(attr.Section, out List<ETimeType> value))
                 {
                     value = [];
-                    PrayerTypeToTimeTypes[attr.PrayerTime] = value;
+                    SectionToTimeTypes[attr.Section] = value;
                 }
 
                 value.Add(timeType);

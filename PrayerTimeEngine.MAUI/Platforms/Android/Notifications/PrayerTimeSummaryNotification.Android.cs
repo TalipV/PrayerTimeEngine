@@ -1,4 +1,4 @@
-﻿using Android.App;
+using Android.App;
 using Android.Content;
 using Android.OS;
 using AsyncAwaitBestPractices;
@@ -179,11 +179,11 @@ public class PrayerTimeSummaryNotification : Service
         ZonedDateTime? nextTime = null;
         string timeName = "-";
         string additionalInfo = string.Empty;
-        (EPrayerType prayerType, GenericPrayerTime prayerTime) _lastTimeInfo = default;
+        (ETimeSection section, GenericPrayerTime prayerTime) _lastTimeInfo = default;
 
-        foreach ((EPrayerType prayerType, GenericPrayerTime prayerTime) in prayerTimeBundle.AllPrayerTimes)
+        foreach ((ETimeSection section, GenericPrayerTime prayerTime) in prayerTimeBundle.AllPrayerTimes)
         {
-            //if (prayerType == EPrayerType.Duha)
+            //if (section == ETimeSection.Duha)
             //    continue;
 
             if (prayerTime.End is not null
@@ -191,7 +191,7 @@ public class PrayerTimeSummaryNotification : Service
                 && (nextTime is null || prayerTime.End.Value.ToInstant() < nextTime.Value.ToInstant()))
             {
                 nextTime = prayerTime.End;
-                timeName = $"{prayerType}-End";
+                timeName = $"{section}-End";
             }
 
             if (prayerTime.Start is not null
@@ -199,15 +199,15 @@ public class PrayerTimeSummaryNotification : Service
                 && (nextTime is null || prayerTime.Start.Value.ToInstant() < nextTime.Value.ToInstant()))
             {
                 nextTime = prayerTime.Start;
-                timeName = $"{prayerType}-Start";
+                timeName = $"{section}-Start";
 
                 if (_lastTimeInfo != default && _lastTimeInfo.prayerTime.End is not null)
                 {
-                    additionalInfo = $"{(now - _lastTimeInfo.prayerTime.End.Value).ToString("HH:mm:ss", null)} since {_lastTimeInfo.prayerType}-End";
+                    additionalInfo = $"{(now - _lastTimeInfo.prayerTime.End.Value).ToString("HH:mm:ss", null)} since {_lastTimeInfo.section}-End";
                 }
             }
 
-            _lastTimeInfo = (prayerType, prayerTime);
+            _lastTimeInfo = (section, prayerTime);
         }
 
         if (nextTime is null)

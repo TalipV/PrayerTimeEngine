@@ -43,36 +43,31 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
                 "City",
                 typeof(string),
                 propertyInfo: typeof(BasicPlaceInfo).GetProperty("City", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                fieldInfo: typeof(BasicPlaceInfo).GetField("<City>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                nullable: true);
+                fieldInfo: typeof(BasicPlaceInfo).GetField("<City>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
 
             var cityDistrict = runtimeEntityType.AddProperty(
                 "CityDistrict",
                 typeof(string),
                 propertyInfo: typeof(BasicPlaceInfo).GetProperty("CityDistrict", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                fieldInfo: typeof(BasicPlaceInfo).GetField("<CityDistrict>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                nullable: true);
+                fieldInfo: typeof(BasicPlaceInfo).GetField("<CityDistrict>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
 
             var country = runtimeEntityType.AddProperty(
                 "Country",
                 typeof(string),
                 propertyInfo: typeof(BasicPlaceInfo).GetProperty("Country", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                fieldInfo: typeof(BasicPlaceInfo).GetField("<Country>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                nullable: true);
+                fieldInfo: typeof(BasicPlaceInfo).GetField("<Country>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
 
             var externalID = runtimeEntityType.AddProperty(
                 "ExternalID",
                 typeof(string),
                 propertyInfo: typeof(BasicPlaceInfo).GetProperty("ExternalID", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                fieldInfo: typeof(BasicPlaceInfo).GetField("<ExternalID>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                nullable: true);
+                fieldInfo: typeof(BasicPlaceInfo).GetField("<ExternalID>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
 
             var infoLanguageCode = runtimeEntityType.AddProperty(
                 "InfoLanguageCode",
                 typeof(string),
                 propertyInfo: typeof(BasicPlaceInfo).GetProperty("InfoLanguageCode", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                fieldInfo: typeof(BasicPlaceInfo).GetField("<InfoLanguageCode>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                nullable: true);
+                fieldInfo: typeof(BasicPlaceInfo).GetField("<InfoLanguageCode>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
 
             var insertInstant = runtimeEntityType.AddProperty(
                 "InsertInstant",
@@ -102,8 +97,7 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
                 "PostCode",
                 typeof(string),
                 propertyInfo: typeof(BasicPlaceInfo).GetProperty("PostCode", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                fieldInfo: typeof(BasicPlaceInfo).GetField("<PostCode>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                nullable: true);
+                fieldInfo: typeof(BasicPlaceInfo).GetField("<PostCode>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
 
             var profileID = runtimeEntityType.AddProperty(
                 "ProfileID",
@@ -123,13 +117,12 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
                 "Street",
                 typeof(string),
                 propertyInfo: typeof(BasicPlaceInfo).GetProperty("Street", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                fieldInfo: typeof(BasicPlaceInfo).GetField("<Street>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                nullable: true);
+                fieldInfo: typeof(BasicPlaceInfo).GetField("<Street>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
 
             var timezoneInfoID = runtimeEntityType.AddProperty(
                 "TimezoneInfoID",
-                typeof(int?),
-                nullable: true);
+                typeof(int),
+                sentinel: 0);
 
             var key = runtimeEntityType.AddKey(
                 new[] { iD });
@@ -152,7 +145,8 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
                 principalEntityType,
                 deleteBehavior: DeleteBehavior.Cascade,
                 unique: true,
-                required: true);
+                required: true,
+                requiredDependent: true);
 
             var profile = declaringEntityType.AddNavigation("Profile",
                 runtimeForeignKey,
@@ -175,7 +169,9 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
         {
             var runtimeForeignKey = declaringEntityType.AddForeignKey(new[] { declaringEntityType.FindProperty("TimezoneInfoID") },
                 principalEntityType.FindKey(new[] { principalEntityType.FindProperty("ID") }),
-                principalEntityType);
+                principalEntityType,
+                deleteBehavior: DeleteBehavior.Cascade,
+                required: true);
 
             var timezoneInfo = declaringEntityType.AddNavigation("TimezoneInfo",
                 runtimeForeignKey,

@@ -220,8 +220,7 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
                 "TimeZone",
                 typeof(DateTimeZone),
                 propertyInfo: typeof(MuwaqqitDailyPrayerTimes).GetProperty("TimeZone", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                fieldInfo: typeof(MuwaqqitDailyPrayerTimes).GetField("<TimeZone>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                nullable: true);
+                fieldInfo: typeof(MuwaqqitDailyPrayerTimes).GetField("<TimeZone>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
             timeZone.SetValueConverter(new ValueConverter<DateTimeZone, string>(
                 string (DateTimeZone x) => x.GetStringForDBColumn(),
                 DateTimeZone (string x) => x.GetDateTimeZoneFromDBColumnString()));

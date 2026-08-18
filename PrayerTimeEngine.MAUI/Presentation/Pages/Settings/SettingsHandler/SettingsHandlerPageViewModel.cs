@@ -49,12 +49,12 @@ public partial class SettingsHandlerPageViewModel(
             throw new ArgumentException($"{nameof(parameter)}[0] is not a {nameof(Profile)}");
         }
 
-        if (parameter[1] is not EPrayerType prayerTime)
+        if (parameter[1] is not ETimeSection section)
         {
-            throw new ArgumentException($"{nameof(parameter)}[1] is not an {nameof(EPrayerType)}");
+            throw new ArgumentException($"{nameof(parameter)}[1] is not an {nameof(ETimeSection)}");
         }
 
-        foreach (ETimeType timeType in timeTypeAttributeService.PrayerTypeToTimeTypes[prayerTime].Intersect(timeTypeAttributeService.ConfigurableTypes))
+        foreach (ETimeType timeType in timeTypeAttributeService.SectionToTimeTypes[section].Intersect(timeTypeAttributeService.ConfigurableTypes))
         {
             SettingsContentPage settingsContentPage = settingsContentPageFactory.Create();
             SettingsContentPageViewModel tabViewModel = settingsContentPage.BindingContext as SettingsContentPageViewModel;

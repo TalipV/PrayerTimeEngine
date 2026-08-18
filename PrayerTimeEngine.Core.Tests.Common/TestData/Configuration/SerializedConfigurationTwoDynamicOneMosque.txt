@@ -2,7 +2,7 @@
   "DynamicProfileConfigs": [
     {
       "PlaceInfo": {
-        "ExternalID": null,
+        "ExternalID": "343647974",
         "Longitude": 11.41337,
         "Latitude": 47.2803835,
         "InfoLanguageCode": "de",
@@ -18,187 +18,197 @@
       },
       "TimeConfigs": [
         {
-          "TimeType": "FajrStart",
+          "TimeType": 100,
           "CalculationConfiguration": {
             "$type": "GenericConfig",
-            "TimeType": 0,
-            "Source": 2,
+            "TimeType": 100,
+            "Source": 10,
             "MinuteAdjustment": 0,
             "IsTimeShown": true
           }
         },
         {
-          "TimeType": "FajrEnd",
+          "TimeType": 110,
           "CalculationConfiguration": {
             "$type": "GenericConfig",
-            "TimeType": 1,
-            "Source": 3,
+            "TimeType": 110,
+            "Source": 15,
             "MinuteAdjustment": 0,
             "IsTimeShown": true
           }
         },
         {
-          "TimeType": "FajrGhalas",
+          "TimeType": 120,
           "CalculationConfiguration": {
             "$type": "MuwaqqitDegreeConfig",
             "Degree": -8.5,
-            "Source": 1,
-            "TimeType": 2,
+            "Source": 5,
+            "TimeType": 120,
             "MinuteAdjustment": 0,
             "IsTimeShown": true
           }
         },
         {
-          "TimeType": "FajrKaraha",
+          "TimeType": 130,
           "CalculationConfiguration": {
             "$type": "MuwaqqitDegreeConfig",
             "Degree": -4,
-            "Source": 1,
-            "TimeType": 3,
+            "Source": 5,
+            "TimeType": 130,
             "MinuteAdjustment": 0,
             "IsTimeShown": true
           }
         },
         {
-          "TimeType": "DuhaStart",
+          "TimeType": 200,
           "CalculationConfiguration": {
             "$type": "MuwaqqitDegreeConfig",
             "Degree": 5,
-            "Source": 1,
-            "TimeType": 4,
+            "Source": 5,
+            "TimeType": 200,
             "MinuteAdjustment": 0,
             "IsTimeShown": true
           }
         },
         {
-          "TimeType": "DuhaEnd",
+          "TimeType": 230,
           "CalculationConfiguration": {
             "$type": "GenericConfig",
-            "TimeType": 6,
+            "TimeType": 230,
             "Source": 0,
             "MinuteAdjustment": -25,
             "IsTimeShown": true
           }
         },
         {
-          "TimeType": "DhuhrStart",
+          "TimeType": 300,
           "CalculationConfiguration": {
             "$type": "GenericConfig",
-            "TimeType": 7,
-            "Source": 2,
+            "TimeType": 300,
+            "Source": 10,
             "MinuteAdjustment": 0,
             "IsTimeShown": true
           }
         },
         {
-          "TimeType": "DhuhrEnd",
+          "TimeType": 310,
           "CalculationConfiguration": {
             "$type": "GenericConfig",
-            "TimeType": 8,
-            "Source": 1,
+            "TimeType": 310,
+            "Source": 5,
             "MinuteAdjustment": 0,
             "IsTimeShown": true
           }
         },
         {
-          "TimeType": "AsrStart",
+          "TimeType": 400,
           "CalculationConfiguration": {
             "$type": "GenericConfig",
-            "TimeType": 9,
-            "Source": 2,
+            "TimeType": 400,
+            "Source": 10,
             "MinuteAdjustment": 0,
             "IsTimeShown": true
           }
         },
         {
-          "TimeType": "AsrEnd",
+          "TimeType": 410,
           "CalculationConfiguration": {
             "$type": "GenericConfig",
-            "TimeType": 10,
-            "Source": 1,
+            "TimeType": 410,
+            "Source": 5,
             "MinuteAdjustment": 0,
             "IsTimeShown": true
           }
         },
         {
-          "TimeType": "AsrMithlayn",
+          "TimeType": 420,
           "CalculationConfiguration": {
             "$type": "GenericConfig",
-            "TimeType": 11,
-            "Source": 1,
+            "TimeType": 420,
+            "Source": 5,
             "MinuteAdjustment": 0,
             "IsTimeShown": true
           }
         },
         {
-          "TimeType": "AsrKaraha",
+          "TimeType": 430,
           "CalculationConfiguration": {
             "$type": "MuwaqqitDegreeConfig",
             "Degree": 5,
-            "Source": 1,
-            "TimeType": 12,
+            "Source": 5,
+            "TimeType": 430,
             "MinuteAdjustment": 0,
             "IsTimeShown": true
           }
         },
         {
-          "TimeType": "MaghribStart",
+          "TimeType": 500,
           "CalculationConfiguration": {
             "$type": "GenericConfig",
-            "TimeType": 13,
-            "Source": 2,
+            "TimeType": 500,
+            "Source": 10,
             "MinuteAdjustment": 0,
             "IsTimeShown": true
           }
         },
         {
-          "TimeType": "MaghribEnd",
+          "TimeType": 510,
           "CalculationConfiguration": {
             "$type": "MuwaqqitDegreeConfig",
             "Degree": -15,
-            "Source": 1,
-            "TimeType": 14,
+            "Source": 5,
+            "TimeType": 510,
             "MinuteAdjustment": 0,
             "IsTimeShown": true
           }
         },
         {
-          "TimeType": "MaghribSufficientTime",
+          "TimeType": 520,
           "CalculationConfiguration": {
             "$type": "GenericConfig",
-            "TimeType": 15,
+            "TimeType": 520,
             "Source": 0,
             "MinuteAdjustment": 20,
             "IsTimeShown": true
           }
         },
         {
-          "TimeType": "MaghribIshtibaq",
+          "TimeType": 530,
           "CalculationConfiguration": {
             "$type": "MuwaqqitDegreeConfig",
             "Degree": -10,
-            "Source": 1,
-            "TimeType": 16,
+            "Source": 5,
+            "TimeType": 530,
             "MinuteAdjustment": 0,
             "IsTimeShown": true
           }
         },
         {
-          "TimeType": "IshaStart",
+          "TimeType": 600,
           "CalculationConfiguration": {
             "$type": "GenericConfig",
-            "TimeType": 17,
-            "Source": 2,
+            "TimeType": 600,
+            "Source": 10,
             "MinuteAdjustment": 0,
             "IsTimeShown": true
           }
         },
         {
-          "TimeType": "IshaEnd",
+          "TimeType": 610,
           "CalculationConfiguration": {
             "$type": "GenericConfig",
-            "TimeType": 18,
-            "Source": 3,
+            "TimeType": 610,
+            "Source": 15,
+            "MinuteAdjustment": 0,
+            "IsTimeShown": true
+          }
+        },
+        {
+          "TimeType": 1000,
+          "CalculationConfiguration": {
+            "$type": "GenericConfig",
+            "TimeType": 1000,
+            "Source": 5,
             "MinuteAdjustment": 0,
             "IsTimeShown": true
           }
@@ -206,32 +216,32 @@
       ],
       "LocationConfigs": [
         {
-          "ProviderType": "Muwaqqit",
+          "ProviderType": 5,
           "LocationData": {
             "$type": "MuwaqqitLocationData",
             "Longitude": 11.41337,
             "Latitude": 47.2803835,
             "TimezoneName": "Europe/Vienna",
-            "Source": 1
+            "Source": 5
           }
         },
         {
-          "ProviderType": "Fazilet",
+          "ProviderType": 10,
           "LocationData": {
             "$type": "FaziletLocationData",
             "CountryName": "Avusturya",
             "CityName": "Innsbruck",
-            "Source": 2
+            "Source": 10
           }
         },
         {
-          "ProviderType": "Semerkand",
+          "ProviderType": 15,
           "LocationData": {
             "$type": "SemerkandLocationData",
             "CountryName": "Avusturya",
             "CityName": "Innsbruck",
             "TimezoneName": "Europe/Vienna",
-            "Source": 3
+            "Source": 15
           }
         }
       ],
@@ -240,7 +250,7 @@
     },
     {
       "PlaceInfo": {
-        "ExternalID": null,
+        "ExternalID": "343647974",
         "Longitude": 11.41337,
         "Latitude": 47.2803835,
         "InfoLanguageCode": "de",
@@ -256,187 +266,197 @@
       },
       "TimeConfigs": [
         {
-          "TimeType": "FajrStart",
+          "TimeType": 100,
           "CalculationConfiguration": {
             "$type": "GenericConfig",
-            "TimeType": 0,
-            "Source": 2,
+            "TimeType": 100,
+            "Source": 10,
             "MinuteAdjustment": 0,
             "IsTimeShown": true
           }
         },
         {
-          "TimeType": "FajrEnd",
+          "TimeType": 110,
           "CalculationConfiguration": {
             "$type": "GenericConfig",
-            "TimeType": 1,
-            "Source": 3,
+            "TimeType": 110,
+            "Source": 15,
             "MinuteAdjustment": 0,
             "IsTimeShown": true
           }
         },
         {
-          "TimeType": "FajrGhalas",
+          "TimeType": 120,
           "CalculationConfiguration": {
             "$type": "MuwaqqitDegreeConfig",
             "Degree": -8.5,
-            "Source": 1,
-            "TimeType": 2,
+            "Source": 5,
+            "TimeType": 120,
             "MinuteAdjustment": 0,
             "IsTimeShown": true
           }
         },
         {
-          "TimeType": "FajrKaraha",
+          "TimeType": 130,
           "CalculationConfiguration": {
             "$type": "MuwaqqitDegreeConfig",
             "Degree": -4,
-            "Source": 1,
-            "TimeType": 3,
+            "Source": 5,
+            "TimeType": 130,
             "MinuteAdjustment": 0,
             "IsTimeShown": true
           }
         },
         {
-          "TimeType": "DuhaStart",
+          "TimeType": 200,
           "CalculationConfiguration": {
             "$type": "MuwaqqitDegreeConfig",
             "Degree": 5,
-            "Source": 1,
-            "TimeType": 4,
+            "Source": 5,
+            "TimeType": 200,
             "MinuteAdjustment": 0,
             "IsTimeShown": true
           }
         },
         {
-          "TimeType": "DuhaEnd",
+          "TimeType": 230,
           "CalculationConfiguration": {
             "$type": "GenericConfig",
-            "TimeType": 6,
+            "TimeType": 230,
             "Source": 0,
             "MinuteAdjustment": -25,
             "IsTimeShown": true
           }
         },
         {
-          "TimeType": "DhuhrStart",
+          "TimeType": 300,
           "CalculationConfiguration": {
             "$type": "GenericConfig",
-            "TimeType": 7,
-            "Source": 2,
+            "TimeType": 300,
+            "Source": 10,
             "MinuteAdjustment": 0,
             "IsTimeShown": true
           }
         },
         {
-          "TimeType": "DhuhrEnd",
+          "TimeType": 310,
           "CalculationConfiguration": {
             "$type": "GenericConfig",
-            "TimeType": 8,
-            "Source": 1,
+            "TimeType": 310,
+            "Source": 5,
             "MinuteAdjustment": 0,
             "IsTimeShown": true
           }
         },
         {
-          "TimeType": "AsrStart",
+          "TimeType": 400,
           "CalculationConfiguration": {
             "$type": "GenericConfig",
-            "TimeType": 9,
-            "Source": 2,
+            "TimeType": 400,
+            "Source": 10,
             "MinuteAdjustment": 0,
             "IsTimeShown": true
           }
         },
         {
-          "TimeType": "AsrEnd",
+          "TimeType": 410,
           "CalculationConfiguration": {
             "$type": "GenericConfig",
-            "TimeType": 10,
-            "Source": 1,
+            "TimeType": 410,
+            "Source": 5,
             "MinuteAdjustment": 0,
             "IsTimeShown": true
           }
         },
         {
-          "TimeType": "AsrMithlayn",
+          "TimeType": 420,
           "CalculationConfiguration": {
             "$type": "GenericConfig",
-            "TimeType": 11,
-            "Source": 1,
+            "TimeType": 420,
+            "Source": 5,
             "MinuteAdjustment": 0,
             "IsTimeShown": true
           }
         },
         {
-          "TimeType": "AsrKaraha",
+          "TimeType": 430,
           "CalculationConfiguration": {
             "$type": "MuwaqqitDegreeConfig",
             "Degree": 5,
-            "Source": 1,
-            "TimeType": 12,
+            "Source": 5,
+            "TimeType": 430,
             "MinuteAdjustment": 0,
             "IsTimeShown": true
           }
         },
         {
-          "TimeType": "MaghribStart",
+          "TimeType": 500,
           "CalculationConfiguration": {
             "$type": "GenericConfig",
-            "TimeType": 13,
-            "Source": 2,
+            "TimeType": 500,
+            "Source": 10,
             "MinuteAdjustment": 0,
             "IsTimeShown": true
           }
         },
         {
-          "TimeType": "MaghribEnd",
+          "TimeType": 510,
           "CalculationConfiguration": {
             "$type": "MuwaqqitDegreeConfig",
             "Degree": -15,
-            "Source": 1,
-            "TimeType": 14,
+            "Source": 5,
+            "TimeType": 510,
             "MinuteAdjustment": 0,
             "IsTimeShown": true
           }
         },
         {
-          "TimeType": "MaghribSufficientTime",
+          "TimeType": 520,
           "CalculationConfiguration": {
             "$type": "GenericConfig",
-            "TimeType": 15,
+            "TimeType": 520,
             "Source": 0,
             "MinuteAdjustment": 20,
             "IsTimeShown": true
           }
         },
         {
-          "TimeType": "MaghribIshtibaq",
+          "TimeType": 530,
           "CalculationConfiguration": {
             "$type": "MuwaqqitDegreeConfig",
             "Degree": -10,
-            "Source": 1,
-            "TimeType": 16,
+            "Source": 5,
+            "TimeType": 530,
             "MinuteAdjustment": 0,
             "IsTimeShown": true
           }
         },
         {
-          "TimeType": "IshaStart",
+          "TimeType": 600,
           "CalculationConfiguration": {
             "$type": "GenericConfig",
-            "TimeType": 17,
-            "Source": 2,
+            "TimeType": 600,
+            "Source": 10,
             "MinuteAdjustment": 0,
             "IsTimeShown": true
           }
         },
         {
-          "TimeType": "IshaEnd",
+          "TimeType": 610,
           "CalculationConfiguration": {
             "$type": "GenericConfig",
-            "TimeType": 18,
-            "Source": 3,
+            "TimeType": 610,
+            "Source": 15,
+            "MinuteAdjustment": 0,
+            "IsTimeShown": true
+          }
+        },
+        {
+          "TimeType": 1000,
+          "CalculationConfiguration": {
+            "$type": "GenericConfig",
+            "TimeType": 1000,
+            "Source": 5,
             "MinuteAdjustment": 0,
             "IsTimeShown": true
           }
@@ -444,32 +464,32 @@
       ],
       "LocationConfigs": [
         {
-          "ProviderType": "Muwaqqit",
+          "ProviderType": 5,
           "LocationData": {
             "$type": "MuwaqqitLocationData",
             "Longitude": 11.41337,
             "Latitude": 47.2803835,
             "TimezoneName": "Europe/Vienna",
-            "Source": 1
+            "Source": 5
           }
         },
         {
-          "ProviderType": "Fazilet",
+          "ProviderType": 10,
           "LocationData": {
             "$type": "FaziletLocationData",
             "CountryName": "Avusturya",
             "CityName": "Innsbruck",
-            "Source": 2
+            "Source": 10
           }
         },
         {
-          "ProviderType": "Semerkand",
+          "ProviderType": 15,
           "LocationData": {
             "$type": "SemerkandLocationData",
             "CountryName": "Avusturya",
             "CityName": "Innsbruck",
             "TimezoneName": "Europe/Vienna",
-            "Source": 3
+            "Source": 15
           }
         }
       ],
@@ -479,7 +499,7 @@
   ],
   "MosqueProfileConfigs": [
     {
-      "MosqueProviderType": "Mawaqit",
+      "MosqueProviderType": 5,
       "ExternalID": "12345",
       "Name": "Profil Two",
       "SequenceNo": 4

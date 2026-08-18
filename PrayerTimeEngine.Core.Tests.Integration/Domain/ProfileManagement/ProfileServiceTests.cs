@@ -73,7 +73,7 @@ public class ProfileServiceTests : BaseTest
             CityDistrict = "",
             PostCode = "",
             Street = "",
-            TimezoneInfo = new TimezoneInfo { Name = TestDataHelper.EUROPE_BERLIN_TIME_ZONE.Id },
+            TimezoneInfo = new TimezoneInfo { DisplayName = "CET", Name = TestDataHelper.EUROPE_BERLIN_TIME_ZONE.Id },
         };
 
         var newLocationDataByDynamicPrayerTimeProvider = new Dictionary<EDynamicPrayerTimeProviderType, BaseLocationData>
@@ -141,6 +141,7 @@ public class ProfileServiceTests : BaseTest
         var newPlaceInfo =
             new ProfilePlaceInfo
             {
+                ExternalID = "1",
                 Latitude = 1M,
                 Longitude = 1M,
                 InfoLanguageCode = "de",

@@ -12,7 +12,7 @@ public class PlaceInfoDTO
     public required string InfoLanguageCode { get; set; }
 
     public required string Country { get; set; }
-    public string State { get; set; }
+    public string? State { get; set; }
     public required string City { get; set; }
     public required string CityDistrict { get; set; }
     public required string PostCode { get; set; }

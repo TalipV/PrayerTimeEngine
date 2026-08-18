@@ -46,8 +46,7 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
                 "CalculationConfiguration",
                 typeof(GenericSettingConfiguration),
                 propertyInfo: typeof(ProfileTimeConfig).GetProperty("CalculationConfiguration", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                fieldInfo: typeof(ProfileTimeConfig).GetField("<CalculationConfiguration>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                nullable: true);
+                fieldInfo: typeof(ProfileTimeConfig).GetField("<CalculationConfiguration>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
             calculationConfiguration.SetValueConverter(new ValueConverter<GenericSettingConfiguration, string>(
                 string (GenericSettingConfiguration x) => JsonSerializer.Serialize(x, AppDbContext.SerializerOptions),
                 GenericSettingConfiguration (string x) => JsonSerializer.Deserialize<GenericSettingConfiguration>(x, AppDbContext.SerializerOptions)));

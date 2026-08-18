@@ -123,8 +123,8 @@ public partial class MainPageViewModel(
     #region ICommand
 
     public ICommand GoToSettingsPageCommand
-            => new Command<EPrayerType>(
-                async (prayerTime) =>
+            => new Command<ETimeSection>(
+                async (section) =>
                 {
                     if (_isSettingsPageOpening)
                     {
@@ -138,7 +138,7 @@ public partial class MainPageViewModel(
                     try
                     {
                         _isSettingsPageOpening = true;
-                        await navigationService.NavigateTo<SettingsHandlerPageViewModel>(CurrentProfile, prayerTime);
+                        await navigationService.NavigateTo<SettingsHandlerPageViewModel>(CurrentProfile, section);
                     }
                     finally
                     {
@@ -438,12 +438,6 @@ public partial class MainPageViewModel(
                 Interlocked.Exchange(ref isLoadPrayerTimesRunningInterlockedInt, 0);  // Reset the flag to allow future runs
                 IsLoadingPrayerTimes = false;
             }
-
-            if (!_firstLoadDone)
-            {
-                _firstLoadDone = true;
-                onAfterFirstLoad();
-            }
         }
         catch (OperationCanceledException)
         {
@@ -454,6 +448,16 @@ public partial class MainPageViewModel(
             logger.LogError(exception,
                 "Error during refreshData. ({RefreshCallID})", refreshCallID);
             toastMessageService.ShowError(exception.Message);
+        }
+        finally
+        {
+            // has to happen even when the loading sequence failed or was skipped because
+            // otherwise the main page stays disabled and the app is stuck on the loading screen
+            if (!_firstLoadDone)
+            {
+                _firstLoadDone = true;
+                onAfterFirstLoad();
+            }
         }
 
         logger.LogInformation("Refreshing data finished. ({RefreshCallID})", refreshCallID);

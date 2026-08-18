@@ -10,16 +10,16 @@ public class MosquePrayerTimesDay : IPrayerTimesDay
 {
     public ZonedDateTime? DataCalculationTimestamp { get; set; }
 
-    public List<(EPrayerType PrayerType, GenericPrayerTime Times)> AllPrayerTimes
+    public List<(ETimeSection Section, GenericPrayerTime Times)> AllPrayerTimes
     {
         get
         {
             return [
-                (EPrayerType.Fajr, Fajr),
-                (EPrayerType.Dhuhr, Dhuhr),
-                (EPrayerType.Asr, Asr),
-                (EPrayerType.Maghrib, Maghrib),
-                (EPrayerType.Isha, Isha)
+                (ETimeSection.Fajr, Fajr),
+                (ETimeSection.Dhuhr, Dhuhr),
+                (ETimeSection.Asr, Asr),
+                (ETimeSection.Maghrib, Maghrib),
+                (ETimeSection.Isha, Isha)
             ];
         }
     }
