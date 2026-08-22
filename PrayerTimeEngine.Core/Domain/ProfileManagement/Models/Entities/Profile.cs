@@ -1,12 +1,10 @@
 ﻿using NodaTime;
 using PrayerTimeEngine.Core.Data.EntityFramework;
-using PropertyChanged;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
 
-[AddINotifyPropertyChangedInterface]
 public abstract class Profile : IEntity
 {
     [Key]
