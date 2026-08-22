@@ -1,11 +1,9 @@
 ﻿using NodaTime;
 using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Domain.Models;
-using PropertyChanged;
 
 namespace PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Models;
 
-[AddINotifyPropertyChangedInterface]
 public class DynamicPrayerTimesDaySet : IPrayerTimesDay
 {
     public ZonedDateTime? DataCalculationTimestamp { get; set; }

@@ -1,11 +1,9 @@
 ﻿using NodaTime;
 using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Domain.Models;
-using PropertyChanged;
 
 namespace PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Models;
 
-[AddINotifyPropertyChangedInterface]
 public class MosquePrayerTimesDay : IPrayerTimesDay
 {
     public ZonedDateTime? DataCalculationTimestamp { get; set; }

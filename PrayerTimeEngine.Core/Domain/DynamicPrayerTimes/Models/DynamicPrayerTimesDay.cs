@@ -2,11 +2,9 @@
 using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Domain.Models;
 using PrayerTimeEngine.Core.Domain.Models.PrayerTimes;
-using PropertyChanged;
 
 namespace PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Models;
 
-[AddINotifyPropertyChangedInterface]
 public class DynamicPrayerTimesDay
 {
     public FajrPrayerTime Fajr { get; } = new();
