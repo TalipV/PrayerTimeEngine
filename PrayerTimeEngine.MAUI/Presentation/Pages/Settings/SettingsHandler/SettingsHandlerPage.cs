@@ -27,12 +27,16 @@ public partial class SettingsHandlerPage : ContentPage
             FontAttributes = FontAttributes.Bold,
             FontSize = 20,
             HorizontalTextAlignment = TextAlignment.Center,
-            VerticalTextAlignment = TextAlignment.Center
+            VerticalTextAlignment = TextAlignment.Center,
+            TextColor = AppColors.Text
         });
+
+        BackgroundColor = AppColors.Background;
 
         Content = _tabView = new TabView
         {
-            TabPlacement = TabViewTabPlacement.Top
+            TabPlacement = TabViewTabPlacement.Top,
+            BackgroundColor = AppColors.Background
         };
 
         BindingContext = _viewModel = viewModel;

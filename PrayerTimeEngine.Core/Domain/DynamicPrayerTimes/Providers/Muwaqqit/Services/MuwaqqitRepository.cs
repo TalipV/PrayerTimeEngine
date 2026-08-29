@@ -23,7 +23,7 @@ public class MuwaqqitRepository(
 
     private static readonly Func<AppDbContext, LocalDate, decimal, decimal, double, double, double, double, IAsyncEnumerable<MuwaqqitDailyPrayerTimes>> compiledQuery_GetPrayerTimesAsync =
         EF.CompileAsyncQuery(
-            (AppDbContext context, LocalDate date, decimal longitude, decimal latitude, double fajrDegree, double ishaDegree, double ishtibaqDegree, double asrKarahaDegree) =>
+            (AppDbContext context, LocalDate date, decimal longitude, decimal latitude, double fajrDegree, double ishaDegree, double ishtibakDegree, double asrKarahaDegree) =>
                 context.MuwaqqitPrayerTimes.AsNoTracking()
                 .Where(x =>
                     x.Date == date
@@ -31,7 +31,7 @@ public class MuwaqqitRepository(
                     && x.Latitude == latitude
                     && x.FajrDegree == fajrDegree
                     && x.IshaDegree == ishaDegree
-                    && x.IshtibaqDegree == ishtibaqDegree
+                    && x.IshtibakDegree == ishtibakDegree
                     && x.AsrKarahaDegree == asrKarahaDegree));
 
     public async Task<MuwaqqitDailyPrayerTimes> GetPrayerTimesAsync(
@@ -40,13 +40,13 @@ public class MuwaqqitRepository(
         decimal latitude,
         double fajrDegree,
         double ishaDegree,
-        double ishtibaqDegree,
+        double ishtibakDegree,
         double asrKarahaDegree,
         CancellationToken cancellationToken)
     {
         using (AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken))
         {
-            return await compiledQuery_GetPrayerTimesAsync(dbContext, date, longitude, latitude, fajrDegree, ishaDegree, ishtibaqDegree, asrKarahaDegree)
+            return await compiledQuery_GetPrayerTimesAsync(dbContext, date, longitude, latitude, fajrDegree, ishaDegree, ishtibakDegree, asrKarahaDegree)
                 .FirstOrDefaultAsync(cancellationToken)
                 .ConfigureAwait(false);
         }

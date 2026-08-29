@@ -155,8 +155,8 @@ public static class TestDataHelper
                     },
                     new()
                     {
-                        TimeType = ETimeType.MaghribIshtibaq,
-                        CalculationConfiguration = new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.MaghribIshtibaq, Degree = -10.0 }
+                        TimeType = ETimeType.MaghribIshtibak,
+                        CalculationConfiguration = new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.MaghribIshtibak, Degree = -10.0 }
                     },
                     new()
                     {

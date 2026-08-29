@@ -48,14 +48,14 @@ public partial class SettingsContentPage : ContentPage
                 )
         };
 
-        _dynamicPrayerTimeProviderPickerLabel = new Label { Text = "Calculation Source" };
-        _dynamicPrayerTimeProviderPicker = new Picker();
+        _dynamicPrayerTimeProviderPickerLabel = new Label { Text = "Calculation Source", TextColor = AppColors.Text };
+        _dynamicPrayerTimeProviderPicker = createPicker();
 
-        var minuteAdjustmentLabel = new Label { Text = "Minute Adjustment" };
-        _minuteAdjustmentPicker = new Picker();
+        var minuteAdjustmentLabel = new Label { Text = "Minute Adjustment", TextColor = AppColors.Text };
+        _minuteAdjustmentPicker = createPicker();
 
-        _isTimeShownCheckBoxLabel = new Label { Text = "Shown:" };
-        _isTimeShownCheckBox = new CheckBox();
+        _isTimeShownCheckBoxLabel = new Label { Text = "Shown:", TextColor = AppColors.Text };
+        _isTimeShownCheckBox = new CheckBox { Color = AppColors.Accent };
 
         var line = new Line
         {
@@ -63,7 +63,7 @@ public partial class SettingsContentPage : ContentPage
             Y1 = 10,
             X2 = 350,
             Y2 = 10,
-            Stroke = Colors.White
+            Stroke = AppColors.Border
         };
 
         _configurableUIContainer = [];
@@ -78,6 +78,19 @@ public partial class SettingsContentPage : ContentPage
         grid.AddWithSpan(view: _configurableUIContainer, row: 5, columnSpan: 2);
 
         return grid;
+    }
+
+    /// <summary>
+    /// Colours are set explicitly instead of following the system theme,
+    /// because the app is on the fixed dark palette of <see cref="AppColors"/>.
+    /// </summary>
+    private static Picker createPicker()
+    {
+        return new Picker
+        {
+            TextColor = AppColors.Text,
+            TitleColor = AppColors.Text
+        };
     }
 
     private void onInitializeCustomUI_EventTrigger()

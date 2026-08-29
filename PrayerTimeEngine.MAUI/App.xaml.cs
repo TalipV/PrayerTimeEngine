@@ -1,4 +1,5 @@
 ﻿using MetroLog.Maui;
+using PrayerTimeEngine.Presentation;
 using PrayerTimeEngine.Presentation.Pages.Main;
 
 namespace PrayerTimeEngine;
@@ -16,7 +17,11 @@ public partial class App : Application
 
     protected override Window CreateWindow(IActivationState activationState)
     {
-        var page = new NavigationPage(_mainPage);
+        var page = new NavigationPage(_mainPage)
+        {
+            BarBackgroundColor = AppColors.Background,
+            BarTextColor = AppColors.Text,
+        };
         var window = new Window(page)
         {
             Width = 425,

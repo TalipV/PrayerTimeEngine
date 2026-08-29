@@ -23,7 +23,7 @@ public class DynamicPrayerTimeViewModel(
     public bool ShowFajrRedness { get; set; }
     public bool ShowMithlayn { get; set; }
     public bool ShowKaraha { get; set; }
-    public bool ShowIshtibaq { get; set; }
+    public bool ShowIshtibak { get; set; }
     public bool ShowMaghribSufficientTime { get; set; }
     public List<DynamicPrayerTimeCalculationErrorVO> CalculationErrors { get; private set; }
 
@@ -53,7 +53,7 @@ public class DynamicPrayerTimeViewModel(
         ShowKaraha = isCalculationShown(ETimeType.AsrKaraha);
 
         ShowMaghribSufficientTime = isCalculationShown(ETimeType.MaghribSufficientTime);
-        ShowIshtibaq = isCalculationShown(ETimeType.MaghribIshtibaq);
+        ShowIshtibak = isCalculationShown(ETimeType.MaghribIshtibak);
     }
 
     private bool isCalculationShown(ETimeType timeData)
@@ -173,7 +173,7 @@ public class DynamicPrayerTimeViewModel(
 
     private static List<PrayerTimeGraphicSubTimeVO> createMaghribPrayerTimeGraphicSubTimeVO(MaghribPrayerTime maghribPrayerTime, IshaPrayerTime ishaPrayerTime = null)
     {
-        if (maghribPrayerTime.SufficientTime is null || maghribPrayerTime.Ishtibaq is null)
+        if (maghribPrayerTime.SufficientTime is null || maghribPrayerTime.Ishtibak is null)
         {
             return [];
         }
@@ -184,8 +184,8 @@ public class DynamicPrayerTimeViewModel(
         List<PrayerTimeGraphicSubTimeVO> result = [];
 
         addSubTimeIfValid(mainStart, mainEnd, result, "Normal", maghribPrayerTime.Start.Value.ToInstant(), maghribPrayerTime.SufficientTime.Value.ToInstant());
-        addSubTimeIfValid(mainStart, mainEnd, result, "Karaha1", maghribPrayerTime.SufficientTime.Value.ToInstant(), maghribPrayerTime.Ishtibaq.Value.ToInstant());
-        addSubTimeIfValid(mainStart, mainEnd, result, "Karaha2", maghribPrayerTime.Ishtibaq.Value.ToInstant(), maghribPrayerTime.End.Value.ToInstant());
+        addSubTimeIfValid(mainStart, mainEnd, result, "Karaha1", maghribPrayerTime.SufficientTime.Value.ToInstant(), maghribPrayerTime.Ishtibak.Value.ToInstant());
+        addSubTimeIfValid(mainStart, mainEnd, result, "Karaha2", maghribPrayerTime.Ishtibak.Value.ToInstant(), maghribPrayerTime.End.Value.ToInstant());
 
         if (ishaPrayerTime != null)
         {

@@ -30,7 +30,6 @@ internal class MainPageOptionsMenuService(
     private const string _showTimeConfigsOverviewText = "Überblick: Zeiten-Konfiguration";
     private const string _showLocationConfigsOverviewText = "Überblick: Ortsdaten";
     private const string _showLogsText = "Logs anzeigen";
-    private const string _setCustomTextSizes = "Benutzerdefinierte Textgröße";
     private const string _exportConfiguration = "Konfiguration exportieren";
     private const string _importConfiguration = "Konfiguration importieren";
 
@@ -93,8 +92,7 @@ internal class MainPageOptionsMenuService(
                             _showTimeConfigsOverviewText,
                             _showLocationConfigsOverviewText,
                             _showLogsText,
-                            _setCustomTextSizes,
-                            _exportConfiguration, 
+                            _exportConfiguration,
                             _importConfiguration))
                         {
                             case _showTimeConfigsOverviewText:
@@ -105,9 +103,6 @@ internal class MainPageOptionsMenuService(
                                 break;
                             case _showLogsText:
                                 viewModel.GoToLogsPageCommand.Execute(null);
-                                break;
-                            case _setCustomTextSizes:
-                                showCustomTextSizesInputPopup();
                                 break;
                             case _exportConfiguration:
                                 await exportConfiguration(cancellationToken);
@@ -236,7 +231,6 @@ internal class MainPageOptionsMenuService(
                                     Art: {DeviceInfo.Idiom}, {DeviceInfo.DeviceType}
                                     OS: {DeviceInfo.Platform}, {DeviceInfo.VersionString}
                                     Auflösung: {DeviceDisplay.MainDisplayInfo.Height}x{DeviceDisplay.MainDisplayInfo.Width} (Dichte: {DeviceDisplay.MainDisplayInfo.Density})
-                                    Kategorie der Größe: {DebugUtil.GetScreenSizeCategoryName()}
                                     Zeitzone: {systemInfoService.GetSystemTimeZone().Id}
                                 """
                                     , "Ok");
@@ -341,54 +335,6 @@ internal class MainPageOptionsMenuService(
         return eurPerGramm;
     }
 
-    private async void showCustomTextSizesInputPopup()
-    {
-        var currentValues = DebugUtil.GetSizeValues(0);
-
-        if (currentValues.All(x => x == 0))
-        {
-            currentValues = [25, 24, 18, 14, 14];
-        }
-
-        string initialValue = string.Join(",", currentValues);
-
-        string result =
-            await page.DisplayPromptAsync(
-            "Fünf Textgröße angeben",
-            """
-            Geben Sie Werte für die folgenden vier Textarten komma-separiert an:
-            1. Profilname
-            2. Gebetszeiten-Namen
-            3. Haupt-Gebetszeiten
-            4. Sub-Gebetszeiten-Namen
-            5. Sub-Gebetszeiten
-
-            Zum Zurücksetzen "0,0,0,0,0" eingeben und bestätigen.
-            """,
-            initialValue: initialValue,
-            keyboard: Keyboard.Text) ?? "";
-
-        int[] sizeValues =
-            result.Split(",")
-            .Select(x => x.Replace(" ", ""))
-            .Where(x => int.TryParse(x, out int _))
-            .Select(int.Parse)
-            .ToArray();
-
-        if (sizeValues.Length == 5 && sizeValues.All(x => x >= 0))
-        {
-            // Save the value
-            DebugUtil.SetSizeValue(sizeValues);
-
-            await page.DisplayAlertAsync("Erfolg", $"Gespeichert! App wird abschließend automatisch geschlossen!", "OK");
-            Application.Current.Quit();
-        }
-        else
-        {
-            await page.DisplayAlertAsync("Eingabe ungültig", "Eingabe war ungültig", "OK");
-        }
-    }
-
     private async Task exportConfiguration(CancellationToken cancellationToken)
     {
         Profile[] profiles = viewModel.ProfilesWithModel.Select(x => x.Profile).ToArray();
@@ -398,7 +344,7 @@ internal class MainPageOptionsMenuService(
             Profiles = profiles
         });
 
-        FileSaverResult result = null;
+        FileSaverResult? result = null;
 
         using (var stream = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(serializedConfiguration)))
         {
@@ -439,7 +385,7 @@ internal class MainPageOptionsMenuService(
 
     private async Task importConfiguration(CancellationToken cancellationToken)
     {
-        FileResult pickedFile = await FilePicker.Default.PickAsync(_configImportPickOptions);
+        FileResult? pickedFile = await FilePicker.Default.PickAsync(_configImportPickOptions);
 
         if (pickedFile == null)
         {

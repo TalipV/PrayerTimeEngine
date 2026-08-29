@@ -19,7 +19,7 @@ public class MuwaqqitDailyPrayerTimes : IDailyPrayerTimes, IEntity
 
     public required double FajrDegree { get; set; }
     public required double AsrKarahaDegree { get; set; }
-    public required double IshtibaqDegree { get; set; }
+    public required double IshtibakDegree { get; set; }
     public required double IshaDegree { get; set; }
 
     public required Instant? Fajr { get; set; }
@@ -31,7 +31,7 @@ public class MuwaqqitDailyPrayerTimes : IDailyPrayerTimes, IEntity
     public required Instant? AsrMithlayn { get; set; }
     public required Instant? Maghrib { get; set; }
     public required Instant? Isha { get; set; }
-    public required Instant? Ishtibaq { get; set; }
+    public required Instant? Ishtibak { get; set; }
     public required Instant? AsrKaraha { get; set; }
     public required Instant? QiblaTime { get; set; }
 
@@ -49,7 +49,7 @@ public class MuwaqqitDailyPrayerTimes : IDailyPrayerTimes, IEntity
             ETimeType.AsrMithlayn => AsrMithlayn,
             ETimeType.AsrKaraha => AsrKaraha,
             ETimeType.MaghribStart => Maghrib,
-            ETimeType.MaghribIshtibaq => Ishtibaq,
+            ETimeType.MaghribIshtibak => Ishtibak,
             ETimeType.MaghribEnd or ETimeType.IshaStart => Isha,
             ETimeType.IshaEnd => NextFajr,
             ETimeType.QiblaTime => QiblaTime,

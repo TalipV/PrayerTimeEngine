@@ -56,7 +56,7 @@ public class MuwaqqitDynamicPrayerTimeProviderTests : BaseTest
             Longitude = locationData.Longitude,
             FajrDegree = 18,
             IshaDegree = 18,
-            IshtibaqDegree = 1,
+            IshtibakDegree = 1,
             AsrKarahaDegree = 1,
             Fajr = new ZonedDateTime(Instant.FromUtc(2023, 7, 30, 2, 27, 04), zonedDateTime.Zone).ToOffsetDateTime(),
             NextFajr = new ZonedDateTime(Instant.FromUtc(2023, 7, 31, 2, 28, 04), zonedDateTime.Zone).ToOffsetDateTime(),
@@ -67,7 +67,7 @@ public class MuwaqqitDynamicPrayerTimeProviderTests : BaseTest
             AsrMithlayn = new ZonedDateTime(Instant.FromUtc(2023, 7, 30, 16, 25, 53), zonedDateTime.Zone).ToOffsetDateTime(),
             AsrKaraha = new ZonedDateTime(Instant.FromUtc(2023, 7, 30, 17, 25, 53), zonedDateTime.Zone).ToOffsetDateTime(),
             Maghrib = new ZonedDateTime(Instant.FromUtc(2023, 7, 30, 18, 50, 59), zonedDateTime.Zone).ToOffsetDateTime(),
-            Ishtibaq = new ZonedDateTime(Instant.FromUtc(2023, 7, 30, 19, 50, 59), zonedDateTime.Zone).ToOffsetDateTime(),
+            Ishtibak = new ZonedDateTime(Instant.FromUtc(2023, 7, 30, 19, 50, 59), zonedDateTime.Zone).ToOffsetDateTime(),
             Isha = new ZonedDateTime(Instant.FromUtc(2023, 7, 30, 20, 13, 17), zonedDateTime.Zone).ToOffsetDateTime()
         };
 
@@ -78,7 +78,7 @@ public class MuwaqqitDynamicPrayerTimeProviderTests : BaseTest
                 timezone: Arg.Any<string>(),
                 fajrDegree: Arg.Any<double>(),
                 ishaDegree: Arg.Any<double>(),
-                ishtibaqDegree: Arg.Any<double>(),
+                ishtibakDegree: Arg.Any<double>(),
                 asrKarahaDegree: Arg.Any<double>(),
                 cancellationToken: Arg.Any<CancellationToken>())
             .Returns(Task.FromResult(expectedResponse));
@@ -120,7 +120,7 @@ public class MuwaqqitDynamicPrayerTimeProviderTests : BaseTest
             Longitude = locationData.Longitude,
             FajrDegree = 18,
             IshaDegree = 18,
-            IshtibaqDegree = 1,
+            IshtibakDegree = 1,
             AsrKarahaDegree = 1,
             Fajr = null,
             NextFajr = null,
@@ -131,7 +131,7 @@ public class MuwaqqitDynamicPrayerTimeProviderTests : BaseTest
             AsrMithlayn = new ZonedDateTime(Instant.FromUtc(2024, 6, 21, 16, 00, 00), zonedDateTime.Zone).ToOffsetDateTime(),
             AsrKaraha = new ZonedDateTime(Instant.FromUtc(2024, 6, 21, 17, 00, 00), zonedDateTime.Zone).ToOffsetDateTime(),
             Maghrib = new ZonedDateTime(Instant.FromUtc(2024, 6, 21, 21, 30, 00), zonedDateTime.Zone).ToOffsetDateTime(),
-            Ishtibaq = null,
+            Ishtibak = null,
             Isha = null,
         };
 
@@ -142,7 +142,7 @@ public class MuwaqqitDynamicPrayerTimeProviderTests : BaseTest
                 timezone: Arg.Any<string>(),
                 fajrDegree: Arg.Any<double>(),
                 ishaDegree: Arg.Any<double>(),
-                ishtibaqDegree: Arg.Any<double>(),
+                ishtibakDegree: Arg.Any<double>(),
                 asrKarahaDegree: Arg.Any<double>(),
                 cancellationToken: Arg.Any<CancellationToken>())
             .Returns(Task.FromResult(expectedResponse));

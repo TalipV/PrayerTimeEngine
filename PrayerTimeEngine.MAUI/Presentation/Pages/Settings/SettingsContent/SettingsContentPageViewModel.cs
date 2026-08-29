@@ -30,7 +30,7 @@ public class SettingsContentPageViewModel(
             -9.5, -10.0
         ];
 
-    public static readonly IReadOnlyCollection<double> ISHTIBAQ_SELECTABLE_DEGREES = [
+    public static readonly IReadOnlyCollection<double> ISHTIBAK_SELECTABLE_DEGREES = [
             -9.0, -9.5, -10.0, -10.5, -11.0
         ];
 

@@ -33,7 +33,7 @@ public class MuwaqqitRepositoryTests : BaseTest
             Longitude = 11.41337M,
             FajrDegree = 1,
             IshaDegree = 1,
-            IshtibaqDegree = 1,
+            IshtibakDegree = 1,
             AsrKarahaDegree = 1,
             Fajr = instant(2023, 7, 30, 2, 27, 04),
             NextFajr = instant(2023, 7, 31, 2, 28, 04),
@@ -44,7 +44,7 @@ public class MuwaqqitRepositoryTests : BaseTest
             AsrMithlayn = instant(2023, 7, 30, 16, 25, 53),
             AsrKaraha = instant(2023, 7, 30, 17, 25, 53),
             Maghrib = instant(2023, 7, 30, 18, 50, 59),
-            Ishtibaq = instant(2023, 7, 30, 19, 50, 59),
+            Ishtibak = instant(2023, 7, 30, 19, 50, 59),
             Isha = instant(2023, 7, 30, 20, 13, 17),
             QiblaTime = instant(2023, 7, 30, 9, 21, 22)
         };
@@ -59,7 +59,7 @@ public class MuwaqqitRepositoryTests : BaseTest
             muwaqqitTime.Latitude,
             muwaqqitTime.FajrDegree,
             muwaqqitTime.IshaDegree,
-            muwaqqitTime.IshtibaqDegree,
+            muwaqqitTime.IshtibakDegree,
             muwaqqitTime.AsrKarahaDegree,
             default);
 
@@ -81,7 +81,7 @@ public class MuwaqqitRepositoryTests : BaseTest
             Longitude = 11.41337M,
             FajrDegree = 1,
             IshaDegree = 1,
-            IshtibaqDegree = 1,
+            IshtibakDegree = 1,
             AsrKarahaDegree = 1,
             Fajr = instant(2023, 7, 30, 2, 27, 04),
             NextFajr = instant(2023, 7, 31, 2, 28, 04),
@@ -92,7 +92,7 @@ public class MuwaqqitRepositoryTests : BaseTest
             AsrMithlayn = instant(2023, 7, 30, 16, 25, 53),
             AsrKaraha = instant(2023, 7, 30, 17, 25, 53),
             Maghrib = instant(2023, 7, 30, 18, 50, 59),
-            Ishtibaq = instant(2023, 7, 30, 19, 50, 59),
+            Ishtibak = instant(2023, 7, 30, 19, 50, 59),
             Isha = instant(2023, 7, 30, 20, 13, 17),
             QiblaTime = instant(2023, 7, 30, 9, 21, 22)
         };
@@ -117,18 +117,18 @@ public class MuwaqqitRepositoryTests : BaseTest
         {
             Date = oldDate.Date,
             TimeZone = DateTimeZone.Utc,
-            Latitude = 1, Longitude = 1, FajrDegree = 1, IshaDegree = 1, IshtibaqDegree = 1, AsrKarahaDegree = 1,
+            Latitude = 1, Longitude = 1, FajrDegree = 1, IshaDegree = 1, IshtibakDegree = 1, AsrKarahaDegree = 1,
             Fajr = oldDate.ToInstant(), NextFajr = oldDate.ToInstant(), Shuruq = oldDate.ToInstant(), Duha = oldDate.ToInstant(), Dhuhr = oldDate.ToInstant(), Asr = oldDate.ToInstant(),
-            AsrMithlayn = oldDate.ToInstant(), AsrKaraha = oldDate.ToInstant(), Maghrib = oldDate.ToInstant(), Ishtibaq = oldDate.ToInstant(), Isha = oldDate.ToInstant(),
+            AsrMithlayn = oldDate.ToInstant(), AsrKaraha = oldDate.ToInstant(), Maghrib = oldDate.ToInstant(), Ishtibak = oldDate.ToInstant(), Isha = oldDate.ToInstant(),
             QiblaTime = oldDate.ToInstant(),
         };
         var newTime = new MuwaqqitDailyPrayerTimes
         {
             Date = newDate.Date,
             TimeZone = DateTimeZone.Utc,
-            Latitude = 1, Longitude = 1, FajrDegree = 1, IshaDegree = 1, IshtibaqDegree = 1, AsrKarahaDegree = 1,
+            Latitude = 1, Longitude = 1, FajrDegree = 1, IshaDegree = 1, IshtibakDegree = 1, AsrKarahaDegree = 1,
             Fajr = newDate.ToInstant(), NextFajr = newDate.ToInstant(), Shuruq = newDate.ToInstant(), Duha = newDate.ToInstant(), Dhuhr = newDate.ToInstant(), Asr = newDate.ToInstant(),
-            AsrMithlayn = newDate.ToInstant(), AsrKaraha = newDate.ToInstant(), Maghrib = newDate.ToInstant(), Ishtibaq = newDate.ToInstant(), Isha = newDate.ToInstant(),
+            AsrMithlayn = newDate.ToInstant(), AsrKaraha = newDate.ToInstant(), Maghrib = newDate.ToInstant(), Ishtibak = newDate.ToInstant(), Isha = newDate.ToInstant(),
             QiblaTime = newDate.ToInstant(),
         };
 

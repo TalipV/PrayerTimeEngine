@@ -11,7 +11,7 @@ public interface IMuwaqqitRepository
         decimal latitude,
         double fajrDegree,
         double ishaDegree,
-        double ishtibaqDegree,
+        double ishtibakDegree,
         double asrKarahaDegree, CancellationToken cancellationToken);
 
     Task InsertPrayerTimesAsync(IEnumerable<MuwaqqitDailyPrayerTimes> muwaqqitPrayerTimesLst, CancellationToken cancellationToken);

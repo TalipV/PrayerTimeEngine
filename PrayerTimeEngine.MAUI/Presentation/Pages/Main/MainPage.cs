@@ -1,6 +1,5 @@
 ﻿using CommunityToolkit.Maui.Markup;
 using NodaTime;
-using OnScreenSizeMarkup.Maui.Helpers;
 using PrayerTimeEngine.Core.Common;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
 using PrayerTimeEngine.Presentation.Views.MosquePrayerTimes;
@@ -49,7 +48,7 @@ public partial class MainPage : ContentPage
 
         Content = createUI();
 
-        BackgroundColor = Color.FromRgb(243, 234, 227);
+        BackgroundColor = AppColors.Background;
 
         viewModel.OnAfterLoadingPrayerTimes_EventTrigger += ViewModel_OnAfterLoadingPrayerTimes_EventTrigger;
 
@@ -141,13 +140,16 @@ public partial class MainPage : ContentPage
             .Column(0).Row(0).Paddings(0, 0, 20, 0)
             .Start().CenterVertical()
             .MinWidth(20) // otherwise we can't reach the menu by tapping an empty label
+            .FontSize(AppFontSizes.Title)
+            .TextColor(AppColors.Text)
             .Bind(Label.TextProperty, $"{nameof(MainPageViewModel.CurrentProfile)}.{nameof(Profile.Name)}");
         _titleGrid.Add(_profileDisplayNameTextInfo);
-        
+
         _weeksUntilTextInfo = new Label()
             .Column(1).Row(0).Paddings(0, 0, 20, 0)
             .End().CenterVertical()
-            .FontSize(10)
+            .FontSize(AppFontSizes.Subtitle)
+            .TextColor(AppColors.Text)
             .Bind(Label.TextProperty, $"{nameof(MainPageViewModel.WeeksUntilLabelText)}");
         _titleGrid.Add(_weeksUntilTextInfo);
 
@@ -164,10 +166,10 @@ public partial class MainPage : ContentPage
             {
                 Title = "Search",
                 VerticalOptions = LayoutOptions.Center,
-                BorderColor = Colors.Black,
-                InputBackgroundColor = Colors.LightGray,
-                TextColor = Colors.Black,
-                TitleColor = Colors.Black,
+                BorderColor = AppColors.Border,
+                InputBackgroundColor = AppColors.Surface,
+                TextColor = AppColors.Text,
+                TitleColor = AppColors.Text,
             }
             .Bind(AutoCompleteTextField.ItemsSourceProperty, nameof(MainPageViewModel.FoundPlacesSelectionTexts))
             .Bind(AutoCompleteTextField.SelectedTextProperty, nameof(MainPageViewModel.SelectedPlaceText))
@@ -243,31 +245,7 @@ public partial class MainPage : ContentPage
                         }),
                         NumberOfTapsRequired = 2,
                     });
-
-            return mainGrid;
         }
-
-        // Large: Galaxy S22 Ultra, iPhone 14 Pro Max
-        // Medium: Google Pixel 5
-        // ************************
-
-        _profileDisplayNameTextInfo.FontSize =
-            OnScreenSizeHelpers.Instance.GetScreenSizeValue<double>(
-                defaultSize: DebugUtil.GetSizeValues(99)[0],
-                extraLarge: DebugUtil.GetSizeValues(99)[0],
-                large: DebugUtil.GetSizeValues(23)[0],
-                medium: DebugUtil.GetSizeValues(21)[0],
-                small: DebugUtil.GetSizeValues(99)[0],
-                extraSmall: DebugUtil.GetSizeValues(99)[0]);
-
-        _weeksUntilTextInfo.FontSize =
-            OnScreenSizeHelpers.Instance.GetScreenSizeValue<double>(
-                defaultSize: DebugUtil.GetSizeValues(99)[0],
-                extraLarge: DebugUtil.GetSizeValues(99)[0],
-                large: DebugUtil.GetSizeValues(17)[0],
-                medium: DebugUtil.GetSizeValues(14)[0],
-                small: DebugUtil.GetSizeValues(99)[0],
-                extraSmall: DebugUtil.GetSizeValues(99)[0]);
 
         return mainGrid;
     }
