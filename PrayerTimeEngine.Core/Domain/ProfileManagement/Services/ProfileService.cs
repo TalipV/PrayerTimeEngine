@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using NodaTime;
+using PrayerTimeEngine.Core.Common;
 using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Models;
@@ -11,6 +12,7 @@ using PrayerTimeEngine.Core.Domain.PlaceManagement.Models;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Interfaces;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
 using System.Text;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Services;
 
@@ -19,6 +21,7 @@ public class ProfileService(
         IDynamicPrayerTimeProviderFactory dynamicPrayerTimeProviderFactory,
         TimeTypeAttributeService timeTypeAttributeService,
         IProfileVersionStore profileVersionStore,
+        ISystemInfoService systemInfoService,
         ILogger<ProfileService> logger
     ) : IProfileService
 {
@@ -237,11 +240,11 @@ public class ProfileService(
                 },
                 new()
                 {
-                    TimeType = ETimeType.MaghribIshtibaq,
+                    TimeType = ETimeType.MaghribIshtibak,
                     ProfileID = profile.ID,
                     Profile = profile,
                     // von Gebetszeiten-Hoca
-                    CalculationConfiguration = new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.MaghribIshtibaq, Degree = -10.0 }
+                    CalculationConfiguration = new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.MaghribIshtibak, Degree = -10.0 }
                 },
                 new()
                 {
@@ -445,5 +448,11 @@ public class ProfileService(
     {
         await profileRepository.ChangeProfileName(profile, newProfileName, cancellationToken).ConfigureAwait(false);
         bumpProfileVersion(profile.ID);
+    }
+
+    public ZonedDateTime GetCurrentZonedDateTime(DynamicProfile profile)
+    {
+        return systemInfoService.GetCurrentInstant()
+                .InZone(DateTimeZoneProviders.Tzdb[profile.PlaceInfo.TimezoneInfo.Name]);
     }
 }

@@ -110,7 +110,7 @@ public enum ETimeType
     [TimeTypeSupportedBy(EDynamicPrayerTimeProviderType.None, EDynamicPrayerTimeProviderType.Muwaqqit)]
     [TimeTypeForSection(ETimeSection.Maghrib)]
     [DegreeTimeType]
-    MaghribIshtibaq = 530,
+    MaghribIshtibak = 530,
 
     #endregion Maghrib
 

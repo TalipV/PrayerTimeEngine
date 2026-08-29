@@ -89,7 +89,7 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_Migrations
                     InsertInstant = table.Column<string>(type: "TEXT", nullable: true),
                     FajrDegree = table.Column<double>(type: "REAL", nullable: false),
                     AsrKarahaDegree = table.Column<double>(type: "REAL", nullable: false),
-                    IshtibaqDegree = table.Column<double>(type: "REAL", nullable: false),
+                    IshtibakDegree = table.Column<double>(type: "REAL", nullable: false),
                     IshaDegree = table.Column<double>(type: "REAL", nullable: false),
                     Fajr = table.Column<string>(type: "TEXT", nullable: true),
                     NextFajr = table.Column<string>(type: "TEXT", nullable: true),
@@ -100,7 +100,7 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_Migrations
                     AsrMithlayn = table.Column<string>(type: "TEXT", nullable: true),
                     Maghrib = table.Column<string>(type: "TEXT", nullable: true),
                     Isha = table.Column<string>(type: "TEXT", nullable: true),
-                    Ishtibaq = table.Column<string>(type: "TEXT", nullable: true),
+                    Ishtibak = table.Column<string>(type: "TEXT", nullable: true),
                     AsrKaraha = table.Column<string>(type: "TEXT", nullable: true),
                     QiblaTime = table.Column<string>(type: "TEXT", nullable: true)
                 },

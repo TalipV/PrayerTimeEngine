@@ -10,7 +10,7 @@ using PrayerTimeEngine.Core.Data.EntityFramework;
 namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260818222958_InitialMigration")]
+    [Migration("20260828221547_InitialMigration")]
     partial class InitialMigration
     {
         /// <inheritdoc />
@@ -153,10 +153,10 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_Migrations
                     b.Property<double>("IshaDegree")
                         .HasColumnType("REAL");
 
-                    b.Property<string>("Ishtibaq")
+                    b.Property<string>("Ishtibak")
                         .HasColumnType("TEXT");
 
-                    b.Property<double>("IshtibaqDegree")
+                    b.Property<double>("IshtibakDegree")
                         .HasColumnType("REAL");
 
                     b.Property<decimal>("Latitude")

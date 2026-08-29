@@ -89,8 +89,8 @@ public class DynamicPrayerTimesDay
             case ETimeType.MaghribSufficientTime:
                 Maghrib.SufficientTime = zonedDateTime;
                 break;
-            case ETimeType.MaghribIshtibaq:
-                Maghrib.Ishtibaq = zonedDateTime;
+            case ETimeType.MaghribIshtibak:
+                Maghrib.Ishtibak = zonedDateTime;
                 break;
 
             case ETimeType.IshaStart:

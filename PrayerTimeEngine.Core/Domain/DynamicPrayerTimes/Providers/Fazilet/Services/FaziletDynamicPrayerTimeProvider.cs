@@ -32,7 +32,7 @@ public class FaziletDynamicPrayerTimeProvider(
             ETimeType.DuhaEnd,
             ETimeType.AsrMithlayn,
             ETimeType.AsrKaraha,
-            ETimeType.MaghribIshtibaq,
+            ETimeType.MaghribIshtibak,
         ];
 
     public override async Task<List<(ETimeType TimeType, ZonedDateTime ZonedDateTime)>> GetPrayerTimesAsync(

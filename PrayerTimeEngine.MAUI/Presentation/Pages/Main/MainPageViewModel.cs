@@ -397,6 +397,7 @@ public partial class MainPageViewModel(
     private long isLoadPrayerTimesRunningInterlockedInt = 0;  // 0 for false, 1 for true
     private CancellationTokenSource loadingTimesCancellationTokenSource;
     private bool _firstLoadDone = false;
+    private bool _wasColdStart = false;
 
     private async Task refreshData()
     {
@@ -491,6 +492,9 @@ public partial class MainPageViewModel(
 
     private async Task onBeforeFirstLoad()
     {
+        // the AppInitializer is a singleton, so it is only uninitialized when this process is fresh,
+        // which means this is a real app start and not just a recreated activity of a long living process
+        _wasColdStart = !appInitializer.IsInitialized;
         await appInitializer.InitializeAsync();
 
         bool oldValue = _suspendOnCurrentProfileWithModelChanged;
@@ -515,7 +519,14 @@ public partial class MainPageViewModel(
             IsMainPageEnabled = true;
 
             double startUpTimeMS = (DateTime.Now - MauiProgram.StartDateTime).TotalMilliseconds;
-            toastMessageService.Show($"{startUpTimeMS:N0}ms to start!");
+
+            // the duration limit covers the case of the process being restarted headlessly (e.g. by the
+            // summary notification service) and the user only entering the app much later, which would
+            // otherwise report an astronomically high start up time
+            if (_wasColdStart && startUpTimeMS < 60_000)
+            {
+                toastMessageService.Show($"{startUpTimeMS:N0}ms to start!");
+            }
             dispatcher.Dispatch(async () => await prayerTimeNotificationManager.StartPrayerTimeSummaryNotification());
         }
         catch (Exception exception)

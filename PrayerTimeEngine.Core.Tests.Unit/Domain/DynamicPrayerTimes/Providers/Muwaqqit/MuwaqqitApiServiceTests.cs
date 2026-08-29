@@ -50,7 +50,7 @@ public class MuwaqqitApiServiceTests : BaseTest
             timezone: timeZone.Id,
             fajrDegree: -12,
             ishaDegree: -12,
-            ishtibaqDegree: -8,
+            ishtibakDegree: -8,
             asrKarahaDegree: 3.5,
             cancellationToken: default);
         MuwaqqitDailyPrayerTimes time = response.ToMuwaqqitPrayerTimes();
@@ -63,7 +63,7 @@ public class MuwaqqitApiServiceTests : BaseTest
         time.TimeZone.Should().Be(timeZone);
         time.FajrDegree.Should().Be(-12);
         time.AsrKarahaDegree.Should().Be(3.5);
-        time.IshtibaqDegree.Should().Be(-8);
+        time.IshtibakDegree.Should().Be(-8);
         time.IshaDegree.Should().Be(-12);
         time.Latitude.Should().Be(47.2803835M);
         time.Longitude.Should().Be(11.41337M);
@@ -76,7 +76,7 @@ public class MuwaqqitApiServiceTests : BaseTest
         time.Duha.Should().Be(Instant.FromUtc(2023, 7, 30, 4, 17, 4));
         time.Fajr.Should().Be(Instant.FromUtc(2023, 7, 30, 2, 27, 4));
         time.Isha.Should().Be(Instant.FromUtc(2023, 7, 30, 20, 13, 17));
-        time.Ishtibaq.Should().Be(Instant.FromUtc(2023, 7, 30, 19, 41, 46));
+        time.Ishtibak.Should().Be(Instant.FromUtc(2023, 7, 30, 19, 41, 46));
         time.Maghrib.Should().Be(Instant.FromUtc(2023, 7, 30, 18, 50, 59));
         time.NextFajr.Should().Be(Instant.FromUtc(2023, 7, 31, 2, 28, 47));
         time.Shuruq.Should().Be(Instant.FromUtc(2023, 7, 30, 3, 49, 53));

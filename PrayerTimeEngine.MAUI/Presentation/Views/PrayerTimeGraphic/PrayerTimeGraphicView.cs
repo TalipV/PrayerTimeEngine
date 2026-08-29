@@ -8,13 +8,13 @@ public class PrayerTimeGraphicView(
         ISystemInfoService systemInfoService
     ) : IDrawable
 {
-    private readonly Color PrayerTimeColor = Colors.LightGray;
+    private readonly Color PrayerTimeColor = AppColors.GraphicSurface;
 
-    private readonly Color PrayerMainTextColor = Colors.Black;
-    private readonly Color CurrentTimeTextColor = Colors.Red;
+    private readonly Color PrayerMainTextColor = AppColors.Text;
+    private readonly Color CurrentTimeTextColor = AppColors.CurrentTime;
 
-    private readonly Color PrayerSubTimeBorderColor = Color.FromArgb("#f3eae3");
-    private readonly Color PrayerSubTimeTextColor = Colors.Black;
+    private readonly Color PrayerSubTimeBorderColor = AppColors.Text;
+    private readonly Color PrayerSubTimeTextColor = AppColors.Text;
 
     public PrayerTimeGraphicTimeVO PrayerTimeGraphicTime { get; set; }
 

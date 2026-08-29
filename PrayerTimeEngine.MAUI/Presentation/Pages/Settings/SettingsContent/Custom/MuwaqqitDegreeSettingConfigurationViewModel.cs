@@ -43,7 +43,7 @@ public class MuwaqqitDegreeSettingConfigurationViewModel : ISettingConfiguration
                 BindingContext = this
             };
 
-            stackLayout.Children.Add(new Label { Text = "Degree" });
+            stackLayout.Children.Add(new Label { Text = "Degree", TextColor = AppColors.Text });
 
             var picker = new Picker
             {
@@ -84,9 +84,9 @@ public class MuwaqqitDegreeSettingConfigurationViewModel : ISettingConfiguration
         {
             return SettingsContentPageViewModel.MODERATE_SELECTABLE_DEGREES_NEGATIVE;
         }
-        else if (timeType == ETimeType.MaghribIshtibaq)
+        else if (timeType == ETimeType.MaghribIshtibak)
         {
-            return SettingsContentPageViewModel.ISHTIBAQ_SELECTABLE_DEGREES;
+            return SettingsContentPageViewModel.ISHTIBAK_SELECTABLE_DEGREES;
         }
         else
         {

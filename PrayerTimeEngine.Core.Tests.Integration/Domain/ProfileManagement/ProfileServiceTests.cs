@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using NSubstitute.Extensions;
+using PrayerTimeEngine.Core.Common;
 using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Data.EntityFramework;
 using PrayerTimeEngine.Core.Domain;
@@ -33,6 +34,7 @@ public class ProfileServiceTests : BaseTest
                 serviceCollection.AddSingleton<IProfileService, ProfileService>();
                 serviceCollection.AddSingleton<IProfileVersionStore, ProfileVersionStore>();
                 serviceCollection.AddSingleton<IDynamicPrayerTimeProviderFactory, DynamicPrayerTimeProviderFactory>();
+                serviceCollection.AddSingleton(Substitute.For<ISystemInfoService>());
                 serviceCollection.AddSingleton(Substitute.For<ILogger<ProfileService>>());
             });
     }

@@ -41,7 +41,7 @@ public class MuwaqqitPrayerTimesResponseDTO
 
     [JsonPropertyName("ishtibak")]
     [JsonConverter(typeof(OffsetDateTimeConverter))]
-    public OffsetDateTime? Ishtibaq { get; set; }
+    public OffsetDateTime? Ishtibak { get; set; }
 
     [JsonPropertyName("asr_makrooh")]
     [JsonConverter(typeof(OffsetDateTimeConverter))]
@@ -79,7 +79,7 @@ public class MuwaqqitPrayerTimesResponseDTO
     public double AsrKarahaDegree { get; set; }
 
     [JsonPropertyName("ishtibak_alt")]
-    public double IshtibaqDegree { get; set; }
+    public double IshtibakDegree { get; set; }
 
 
     [JsonPropertyName("tz")]
@@ -101,7 +101,7 @@ public class MuwaqqitPrayerTimesResponseDTO
 
             FajrDegree = getRoundedDegreeValue(FajrDegree),
             AsrKarahaDegree = getRoundedDegreeValue(AsrKarahaDegree),
-            IshtibaqDegree = getRoundedDegreeValue(IshtibaqDegree),
+            IshtibakDegree = getRoundedDegreeValue(IshtibakDegree),
             IshaDegree = getRoundedDegreeValue(IshaDegree),
 
             Fajr = getInstant(Fajr),
@@ -113,7 +113,7 @@ public class MuwaqqitPrayerTimesResponseDTO
             AsrMithlayn = getInstant(AsrMithlayn),
             Maghrib = getInstant(Maghrib),
             Isha = getInstant(Isha),
-            Ishtibaq = getInstant(Ishtibaq),
+            Ishtibak = getInstant(Ishtibak),
             AsrKaraha = getInstant(AsrKaraha),
             QiblaTime = getInstant(QiblaTime),
         };

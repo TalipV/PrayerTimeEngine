@@ -30,6 +30,7 @@ public interface IProfileService
     Task<MosqueProfile> CreateNewMosqueProfile(EMosquePrayerTimeProviderType selectedItem, string externalID, CancellationToken cancellationToken);
     DateTimeZone GetDateTimeZone(Profile profile);
     Task ChangeProfileName(Profile profile, string newProfileName, CancellationToken cancellationToken);
+    ZonedDateTime GetCurrentZonedDateTime(DynamicProfile profile);
 
     /// <summary>
     /// increasing counter per profile, bumped on every mutation.

@@ -13,7 +13,7 @@ public interface IMuwaqqitApiService
         [AliasAs("tz")] string timezone,
         [AliasAs("fa")] double fajrDegree,
         [AliasAs("ia")] double asrKarahaDegree,
-        [AliasAs("isn")] double ishtibaqDegree,
+        [AliasAs("isn")] double ishtibakDegree,
         [AliasAs("ea")] double ishaDegree,
         CancellationToken cancellationToken);
 }

@@ -1,6 +1,5 @@
-﻿using CommunityToolkit.Maui.Markup;
+using CommunityToolkit.Maui.Markup;
 using NodaTime;
-using OnScreenSizeMarkup.Maui.Helpers;
 using PrayerTimeEngine.Core.Common;
 using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Models;
@@ -13,6 +12,112 @@ namespace PrayerTimeEngine.Presentation.Views.PrayerTimes;
 
 public partial class DynamicPrayerTimeView : ContentView
 {
+    #region layout description
+
+    private sealed record SubTimeDefinition(string Name, string Binding, string? ShowBinding = null);
+
+    private sealed record BlockDefinition(
+        string Name,
+        ETimeSection Section,
+        string Binding,
+        SubTimeDefinition[] SubTimes,
+        bool ShowOnlyStartTime = false);
+
+    /// <summary>
+    /// The whole view is derived from these two columns, so adding or removing a time
+    /// is a change to the description and never to row or column indices.
+    /// </summary>
+    private static BlockDefinition[][] getColumns() =>
+    [
+        [
+            new BlockDefinition("Fajr", ETimeSection.Fajr, currentDayBinding(nameof(DynamicPrayerTimesDay.Fajr)),
+            [
+                new SubTimeDefinition("Ghalas", nameof(FajrPrayerTime.Ghalas), nameof(DynamicPrayerTimeViewModel.ShowFajrGhalas)),
+                new SubTimeDefinition("Redness", nameof(FajrPrayerTime.Karaha), nameof(DynamicPrayerTimeViewModel.ShowFajrRedness)),
+            ]),
+            new BlockDefinition("Dhuhr", ETimeSection.Dhuhr, currentDayBinding(nameof(DynamicPrayerTimesDay.Dhuhr)), []),
+            new BlockDefinition("Maghrib", ETimeSection.Maghrib, currentDayBinding(nameof(DynamicPrayerTimesDay.Maghrib)),
+            [
+                new SubTimeDefinition("Sufficient", nameof(MaghribPrayerTime.SufficientTime), nameof(DynamicPrayerTimeViewModel.ShowMaghribSufficientTime)),
+                new SubTimeDefinition("Ishtibak", nameof(MaghribPrayerTime.Ishtibak), nameof(DynamicPrayerTimeViewModel.ShowIshtibak)),
+            ]),
+        ],
+        [
+            new BlockDefinition("Duha", ETimeSection.Duha, currentDayBinding(nameof(DynamicPrayerTimesDay.Duha)),
+            [
+                new SubTimeDefinition("Quarter", nameof(DuhaPrayerTime.QuarterOfDay)),
+                new SubTimeDefinition("Half*", nameof(DuhaPrayerTime.HalfOfDay)),
+            ]),
+            new BlockDefinition("Asr", ETimeSection.Asr, currentDayBinding(nameof(DynamicPrayerTimesDay.Asr)),
+            [
+                new SubTimeDefinition("Mithlayn", nameof(AsrPrayerTime.Mithlayn), nameof(DynamicPrayerTimeViewModel.ShowMithlayn)),
+                new SubTimeDefinition("Karaha", nameof(AsrPrayerTime.Karaha), nameof(DynamicPrayerTimeViewModel.ShowKaraha)),
+            ]),
+            new BlockDefinition("Isha", ETimeSection.Isha, currentDayBinding(nameof(DynamicPrayerTimesDay.Isha)),
+            [
+                new SubTimeDefinition("1/3", nameof(IshaPrayerTime.FirstThirdOfNight)),
+                new SubTimeDefinition("1/2", nameof(IshaPrayerTime.MiddleOfNight)),
+                new SubTimeDefinition("2/3", nameof(IshaPrayerTime.SecondThirdOfNight)),
+            ]),
+        ],
+    ];
+
+    /// <summary>
+    /// A single moment instead of a range, and not tied to one section of the day, so it gets
+    /// its own row below both columns instead of a place in the prayer order.
+    /// </summary>
+    private static BlockDefinition getMomentBlock()
+        => new("Qibla", ETimeSection.General, currentDayBinding(nameof(DynamicPrayerTimesDay.Qibla)), [], ShowOnlyStartTime: true);
+
+    private static string currentDayBinding(string prayerTimeProperty)
+        => $"{nameof(DynamicPrayerTimesDaySet.CurrentDay)}.{prayerTimeProperty}";
+
+    #endregion layout description
+
+    #region type scale
+
+    // Only the proportions between the text roles are fixed, the absolute size is measured.
+    // The prayer name is the reference, everything else is expressed relative to it.
+    private const double PRAYER_TIME_RATIO = 0.75;
+    private const double SUB_TIME_RATIO = 0.75;
+
+    // A text line needs a bit more room than its font size.
+    private const double LINE_HEIGHT_RATIO = 1.2;
+
+    // Widths in multiples of the font size. Digits are the widest glyphs here, while the colons,
+    // the dash and the spaces of a time are markedly narrower, so a plain character count would
+    // overestimate a time by roughly a third and shrink the whole view for no reason.
+    private const double TIME_RANGE_EM_WIDTH = 8.8;  // "00:00:00 - 00:00:00"
+    private const double TIME_EM_WIDTH = 4.0;        // "00:00:00"
+    private const double LETTER_EM_WIDTH = 0.5;      // average of a lower case name like "Sufficient"
+    private const double SUB_TIME_GAP_EM_WIDTH = 1.0;
+
+    // gap between two rows, as a share of the prayer name size, so the rows stay apart even when
+    // there is no unused height left to distribute
+    private const double MIN_ROW_GAP_RATIO = 0.9;
+
+    // how much of the unused height goes into the gaps on top of that, the rest stays at the bottom
+    private const double ROW_SPACING_SHARE = 0.75;
+
+    private readonly List<(Label Label, double Ratio)> _scaledLabels = [];
+
+    /// <summary>
+    /// Height each column needs expressed in multiples of the prayer name size, so that the
+    /// column which needs the most decides the scale and both columns stay aligned.
+    /// </summary>
+    private double _requiredLineUnits;
+
+    /// <summary>
+    /// Width one column needs expressed in multiples of the prayer name size.
+    /// </summary>
+    private double _requiredEmWidth;
+
+    private int _blockRowCount;
+
+    private double _lastAppliedFontSize;
+
+    #endregion type scale
+
     private readonly MainPageViewModel _mainPageViewModel;
     private readonly ISystemInfoService _systemInfoService;
 
@@ -23,316 +128,261 @@ public partial class DynamicPrayerTimeView : ContentView
         Content = createUI();
     }
 
-    private Grid createUI()
+    /// <summary>
+    /// Both columns live in the same grid, so a row is exactly as high as the taller of its two
+    /// blocks and the pairs stay on one line no matter how many sub times they have.
+    /// </summary>
+    private View createUI()
     {
+        BlockDefinition[][] columns = getColumns();
+        BlockDefinition momentBlock = getMomentBlock();
+
+        _blockRowCount = columns.Max(column => column.Length);
+
+        // the star row soaks up whatever is left, which keeps the moment row at the bottom
+        GridLength[] rows = [.. Enumerable.Repeat(Auto, _blockRowCount), Star, Auto];
+
         var mainGrid = new Grid
         {
-            Padding = new Thickness(10, 20, 10, 20),
-            RowDefinitions = Rows.Define(
-                new GridLength(2, GridUnitType.Star),
-                new GridLength(2, GridUnitType.Star),
-                GridLength.Star,
-                GridLength.Star,
-                new GridLength(2, GridUnitType.Star),
-                new GridLength(2, GridUnitType.Star),
-                GridLength.Star,
-                GridLength.Star,
-                new GridLength(2, GridUnitType.Star),
-                new GridLength(2, GridUnitType.Star),
-                GridLength.Star,
-                GridLength.Star,
-                GridLength.Star,
-                GridLength.Star
-            ),
-            ColumnDefinitions = Columns.Define(
-                new GridLength(3, GridUnitType.Star),
-                new GridLength(4, GridUnitType.Star),
-                new GridLength(2, GridUnitType.Star),
-                new GridLength(3, GridUnitType.Star),
-                new GridLength(4, GridUnitType.Star)
-            )
+            Padding = new Thickness(10, 14, 10, 10),
+            ColumnSpacing = 14,
+            RowDefinitions = Rows.Define(rows),
+            ColumnDefinitions = Columns.Define(Star, Star)
         };
 
-        int startRowNo = 1;
+        for (int columnIndex = 0; columnIndex < columns.Length; columnIndex++)
+        {
+            BlockDefinition[] blocks = columns[columnIndex];
 
-        addPrayerTimeUI(mainGrid, "Fajr", ETimeSection.Fajr, $"{nameof(DynamicPrayerTimesDaySet.CurrentDay)}.{nameof(DynamicPrayerTimesDay.Fajr)}",
-            startRowNo, startColumnNo: 0,
-            subtime1Name: "Ghalas", showSubtime1Binding: $"{nameof(DynamicPrayerTimeViewModel.ShowFajrGhalas)}", subtime1Binding: nameof(FajrPrayerTime.Ghalas),
-            subtime2Name: "Redness", showSubtime2Binding: $"{nameof(DynamicPrayerTimeViewModel.ShowFajrRedness)}", subtime2Binding: nameof(FajrPrayerTime.Karaha));
+            for (int rowIndex = 0; rowIndex < blocks.Length; rowIndex++)
+            {
+                mainGrid.Add(createBlock(blocks[rowIndex]), column: columnIndex, row: rowIndex);
+            }
+        }
 
-        addPrayerTimeUI(mainGrid, "Duha", ETimeSection.Duha, $"{nameof(DynamicPrayerTimesDaySet.CurrentDay)}.{nameof(DynamicPrayerTimesDay.Duha)}",
-            startRowNo, startColumnNo: 3,
-            subtime1Name: "Quarter", subtime1Binding: nameof(DuhaPrayerTime.QuarterOfDay),
-            subtime2Name: "Half*", subtime2Binding: nameof(DuhaPrayerTime.HalfOfDay));
+        mainGrid.AddWithSpan(createMomentRow(momentBlock), row: _blockRowCount + 1, column: 0, columnSpan: 2);
 
-        addPrayerTimeUI(mainGrid, "Dhuhr", ETimeSection.Dhuhr, $"{nameof(DynamicPrayerTimesDaySet.CurrentDay)}.{nameof(DynamicPrayerTimesDay.Dhuhr)}",
-            startRowNo + 4, startColumnNo: 0);
-
-        addPrayerTimeUI(mainGrid, "Qibla", ETimeSection.General, $"{nameof(DynamicPrayerTimesDaySet.CurrentDay)}.{nameof(DynamicPrayerTimesDay.Qibla)}",
-            startRowNo + 6, startColumnNo: 0,
-            showOnlyStartTime: true);
-
-        addPrayerTimeUI(mainGrid, "Asr", ETimeSection.Asr, $"{nameof(DynamicPrayerTimesDaySet.CurrentDay)}.{nameof(DynamicPrayerTimesDay.Asr)}",
-            startRowNo + 4, startColumnNo: 3,
-            subtime1Name: "Mithlayn", showSubtime1Binding: $"{nameof(DynamicPrayerTimeViewModel.ShowMithlayn)}", subtime1Binding: nameof(AsrPrayerTime.Mithlayn),
-            subtime2Name: "Karaha", showSubtime2Binding: $"{nameof(DynamicPrayerTimeViewModel.ShowKaraha)}", subtime2Binding: nameof(AsrPrayerTime.Karaha));
-
-        addPrayerTimeUI(mainGrid, "Maghrib", ETimeSection.Maghrib, $"{nameof(DynamicPrayerTimesDaySet.CurrentDay)}.{nameof(DynamicPrayerTimesDay.Maghrib)}",
-            startRowNo + 8, startColumnNo: 0,
-            subtime1Name: "Sufficient", showSubtime1Binding: $"{nameof(DynamicPrayerTimeViewModel.ShowMaghribSufficientTime)}", subtime1Binding: nameof(MaghribPrayerTime.SufficientTime),
-            subtime2Name: "Ishtibaq", showSubtime2Binding: $"{nameof(DynamicPrayerTimeViewModel.ShowIshtibaq)}", subtime2Binding: nameof(MaghribPrayerTime.Ishtibaq));
-
-        addPrayerTimeUI(mainGrid, "Isha", ETimeSection.Isha, $"{nameof(DynamicPrayerTimesDaySet.CurrentDay)}.{nameof(DynamicPrayerTimesDay.Isha)}",
-            startRowNo + 8, startColumnNo: 3,
-            subtime1Name: "1/3", subtime1Binding: nameof(IshaPrayerTime.FirstThirdOfNight),
-            subtime2Name: "1/2", subtime2Binding: nameof(IshaPrayerTime.MiddleOfNight),
-            subtime3Name: "2/3", subtime3Binding: nameof(IshaPrayerTime.SecondThirdOfNight));
+        // the moment row is a single line, as high as the larger of its two labels, and every row
+        // is followed by a gap which has to be part of the height the view asks for
+        _requiredLineUnits =
+            columns.Max(getRequiredLineUnits)
+            + 1.0
+            + (_blockRowCount + 1) * MIN_ROW_GAP_RATIO;
+        _requiredEmWidth = columns.Max(getRequiredEmWidth);
+        mainGrid.SizeChanged += (_, _) => applyTypeScale(mainGrid);
 
         return mainGrid;
     }
 
-    private void addPrayerTimeUI(
-        Grid grid,
-        string prayerName,
-        ETimeSection section,
-        string bindingText,
-        int startRowNo, int startColumnNo,
-        string? subtime1Name = null, string? showSubtime1Binding = null, string? subtime1Binding = null,
-        string? subtime2Name = null, string? showSubtime2Binding = null, string? subtime2Binding = null,
-        string? showSubtime3Binding = null, string? subtime3Name = null, string? subtime3Binding = null,
-        bool showOnlyStartTime = false)
+    private View createBlock(BlockDefinition block)
     {
-        List<Label> timeTextViews = [];
-        List<Label> timeDisplayTextViews = [];
-        List<Label> subTimeTextViews = [];
-        List<Label> subTimeDisplayTextViews = [];
+        var blockLayout = new VerticalStackLayout { VerticalOptions = LayoutOptions.Start };
 
         var prayerNameLabel = new Label
         {
-            Text = prayerName,
-            TextColor = Colors.Black,
+            Text = block.Name,
+            TextColor = AppColors.Text,
             FontAttributes = FontAttributes.Bold,
-            HorizontalOptions = LayoutOptions.Start,
-            VerticalOptions = LayoutOptions.Start
+            HorizontalOptions = LayoutOptions.Start
         };
 
         prayerNameLabel.GestureRecognizers.Add(new TapGestureRecognizer
         {
             Command = _mainPageViewModel.GoToSettingsPageCommand,
-            CommandParameter = section
+            CommandParameter = block.Section
         });
-        grid.AddWithSpan(prayerNameLabel, startRowNo, startColumnNo, columnSpan: 2);
 
-        var prayerDurationLabel = new Label
+        Label prayerDurationLabel = createTimeLabel(block);
+
+        blockLayout.Add(prayerNameLabel);
+        blockLayout.Add(prayerDurationLabel);
+
+        _scaledLabels.Add((prayerNameLabel, 1.0));
+        _scaledLabels.Add((prayerDurationLabel, PRAYER_TIME_RATIO));
+
+        foreach (SubTimeDefinition subTime in block.SubTimes)
         {
-            TextColor = Colors.Black,
-            HorizontalOptions = LayoutOptions.Start,
-            VerticalOptions = LayoutOptions.Start
-        };
-        prayerDurationLabel.Bind(
-            Label.TextProperty,
-            $"{nameof(DynamicPrayerTimeViewModel.PrayerTimesSet)}.{bindingText}",
-            convert: (GenericPrayerTime prayerTime) =>
-            {
-                ZonedDateTime? prayerTimeStartDisplayValue = _systemInfoService.GetInCurrentZone(prayerTime.Start);
-                string startTime = prayerTimeStartDisplayValue?.ToString("HH:mm:ss", null) ?? "xx:xx:xx";
+            blockLayout.Add(createSubTime(block, subTime));
+        }
 
-                if (showOnlyStartTime)
+        return blockLayout;
+    }
+
+    private Label createTimeLabel(BlockDefinition block)
+    {
+        var timeLabel = new Label
+        {
+            TextColor = AppColors.Text,
+            HorizontalOptions = LayoutOptions.Start
+        };
+
+        timeLabel.Bind(
+            Label.TextProperty,
+            $"{nameof(DynamicPrayerTimeViewModel.PrayerTimesSet)}.{block.Binding}",
+            convert: (GenericPrayerTime? prayerTime) =>
+            {
+                ZonedDateTime? startDisplayValue = _systemInfoService.GetInCurrentZone(prayerTime?.Start);
+                string startTime = startDisplayValue?.ToString("HH:mm:ss", null) ?? "xx:xx:xx";
+
+                if (block.ShowOnlyStartTime)
                 {
                     return startTime;
                 }
 
-                ZonedDateTime? prayerTimeEndDisplayValue = _systemInfoService.GetInCurrentZone(prayerTime.End);
-                string endTime = prayerTimeEndDisplayValue?.ToString("HH:mm:ss", null) ?? "xx:xx:xx";
+                ZonedDateTime? endDisplayValue = _systemInfoService.GetInCurrentZone(prayerTime?.End);
+                string endTime = endDisplayValue?.ToString("HH:mm:ss", null) ?? "xx:xx:xx";
 
                 return $"{startTime} - {endTime}";
             });
 
-        grid.AddWithSpan(prayerDurationLabel, startRowNo + 1, startColumnNo, columnSpan: 2);
+        return timeLabel;
+    }
 
-        timeTextViews.Add(prayerNameLabel);
-        timeDisplayTextViews.Add(prayerDurationLabel);
-
-        if (!string.IsNullOrEmpty(subtime1Binding))
+    /// <summary>
+    /// Name and value on one line, so the row stays flat and does not compete with the prayers.
+    /// </summary>
+    private View createMomentRow(BlockDefinition block)
+    {
+        var nameLabel = new Label
         {
-            var subtime1Label = new Label
-            {
-                Text = subtime1Name,
-                TextColor = Colors.Black,
-                HorizontalOptions = LayoutOptions.Start,
-                VerticalOptions = LayoutOptions.Center
-            };
+            Text = block.Name,
+            TextColor = AppColors.Text,
+            FontAttributes = FontAttributes.Bold,
+            VerticalOptions = LayoutOptions.Center
+        };
 
-            if (!string.IsNullOrEmpty(showSubtime1Binding))
-            {
-                subtime1Label.SetBinding(IsVisibleProperty, showSubtime1Binding);
-            }
+        nameLabel.GestureRecognizers.Add(new TapGestureRecognizer
+        {
+            Command = _mainPageViewModel.GoToSettingsPageCommand,
+            CommandParameter = block.Section
+        });
 
-            var subtime1DisplayText = new Label
-            {
-                TextColor = Colors.Black,
-                HorizontalOptions = LayoutOptions.Center,
-                VerticalOptions = LayoutOptions.Center
-            };
+        Label timeLabel = createTimeLabel(block);
+        timeLabel.VerticalOptions = LayoutOptions.Center;
 
-            subtime1DisplayText.Bind(
-                Label.TextProperty, 
-                $"{nameof(DynamicPrayerTimeViewModel.PrayerTimesSet)}.{bindingText}.{subtime1Binding}",
-                convert: (ZonedDateTime? subTime1) =>
-                {
-                    return _systemInfoService.GetInCurrentZone(subTime1);
-                },
-                stringFormat: "{0:HH:mm:ss}");
+        // same sizes as a prayer and its time, the row only differs in being on one line
+        _scaledLabels.Add((nameLabel, 1.0));
+        _scaledLabels.Add((timeLabel, PRAYER_TIME_RATIO));
 
-            if (!string.IsNullOrEmpty(showSubtime1Binding))
-            {
-                subtime1DisplayText.SetBinding(IsVisibleProperty, showSubtime1Binding);
-            }
+        return new HorizontalStackLayout
+        {
+            Spacing = 10,
+            Children = { nameLabel, timeLabel }
+        };
+    }
 
-            grid.AddWithSpan(subtime1Label, startRowNo + 2, startColumnNo);
-            grid.AddWithSpan(subtime1DisplayText, startRowNo + 2, startColumnNo + 1);
+    private View createSubTime(BlockDefinition block, SubTimeDefinition subTime)
+    {
+        // the name takes what it needs, the value keeps to the right edge so the values line up
+        var subTimeGrid = new Grid
+        {
+            ColumnDefinitions = Columns.Define(Auto, Star)
+        };
 
-            subTimeTextViews.Add(subtime1Label);
-            subTimeDisplayTextViews.Add(subtime1DisplayText);
+        var nameLabel = new Label
+        {
+            Text = subTime.Name,
+            TextColor = AppColors.Text,
+            HorizontalOptions = LayoutOptions.Start,
+            VerticalOptions = LayoutOptions.Center
+        };
+
+        var valueLabel = new Label
+        {
+            TextColor = AppColors.Text,
+            HorizontalOptions = LayoutOptions.End,
+            VerticalOptions = LayoutOptions.Center
+        };
+
+        valueLabel.Bind(
+            Label.TextProperty,
+            $"{nameof(DynamicPrayerTimeViewModel.PrayerTimesSet)}.{block.Binding}.{subTime.Binding}",
+            convert: (ZonedDateTime? value) => _systemInfoService.GetInCurrentZone(value),
+            stringFormat: "{0:HH:mm:ss}");
+
+        if (!string.IsNullOrEmpty(subTime.ShowBinding))
+        {
+            subTimeGrid.SetBinding(IsVisibleProperty, subTime.ShowBinding);
         }
 
-        if (!string.IsNullOrEmpty(subtime2Binding))
-        {
-            var subtime2Label = new Label
-            {
-                Text = subtime2Name,
-                TextColor = Colors.Black,
-                HorizontalOptions = LayoutOptions.Start,
-                VerticalOptions = LayoutOptions.Start
-            };
-            if (!string.IsNullOrEmpty(showSubtime2Binding))
-            {
-                subtime2Label.SetBinding(IsVisibleProperty, showSubtime2Binding);
-            }
+        subTimeGrid.Add(nameLabel, column: 0);
+        subTimeGrid.Add(valueLabel, column: 1);
 
-            var subtime2DisplayText = new Label
-            {
-                TextColor = Colors.Black,
-                HorizontalOptions = LayoutOptions.Center,
-                VerticalOptions = LayoutOptions.Start
-            };
+        _scaledLabels.Add((nameLabel, SUB_TIME_RATIO));
+        _scaledLabels.Add((valueLabel, SUB_TIME_RATIO));
 
-            subtime2DisplayText.Bind(
-                Label.TextProperty, 
-                $"{nameof(DynamicPrayerTimeViewModel.PrayerTimesSet)}.{bindingText}.{subtime2Binding}",
-                convert: (ZonedDateTime? subTime2) =>
-                {
-                    return _systemInfoService.GetInCurrentZone(subTime2);
-                },
-                stringFormat: "{0:HH:mm:ss}");
+        return subTimeGrid;
+    }
 
-            if (!string.IsNullOrEmpty(showSubtime2Binding))
-            {
-                subtime2DisplayText.SetBinding(IsVisibleProperty, showSubtime2Binding);
-            }
+    private static double getRequiredLineUnits(BlockDefinition[] blocks)
+        => blocks.Sum(block => 1.0 + PRAYER_TIME_RATIO + block.SubTimes.Length * SUB_TIME_RATIO);
 
-            grid.AddWithSpan(subtime2Label, startRowNo + 3, startColumnNo);
-            grid.AddWithSpan(subtime2DisplayText, startRowNo + 3, startColumnNo + 1);
+    /// <summary>
+    /// The widest line of a column is either a full time range or the longest sub time line,
+    /// which is its name and its value next to each other.
+    /// </summary>
+    private static double getRequiredEmWidth(BlockDefinition[] blocks)
+    {
+        double timeRangeWidth = TIME_RANGE_EM_WIDTH * PRAYER_TIME_RATIO;
 
-            subTimeTextViews.Add(subtime2Label);
-            subTimeDisplayTextViews.Add(subtime2DisplayText);
-        }
+        int longestSubTimeName = blocks
+            .SelectMany(block => block.SubTimes)
+            .Select(subTime => subTime.Name.Length)
+            .DefaultIfEmpty(0)
+            .Max();
 
-        if (!string.IsNullOrEmpty(subtime3Binding))
-        {
-            var subtime3Label = new Label
-            {
-                Text = subtime3Name,
-                TextColor = Colors.Black,
-                HorizontalOptions = LayoutOptions.Start,
-                VerticalOptions = LayoutOptions.Start
-            };
-            if (!string.IsNullOrEmpty(showSubtime3Binding))
-            {
-                subtime3Label.SetBinding(IsVisibleProperty, showSubtime3Binding);
-            }
+        double subTimeWidth =
+            (longestSubTimeName * LETTER_EM_WIDTH + SUB_TIME_GAP_EM_WIDTH + TIME_EM_WIDTH) * SUB_TIME_RATIO;
 
-            var subtime3DisplayText = new Label
-            {
-                TextColor = Colors.Black,
-                HorizontalOptions = LayoutOptions.Center,
-                VerticalOptions = LayoutOptions.Start
-            };
+        return Math.Max(timeRangeWidth, subTimeWidth);
+    }
 
-            subtime3DisplayText.Bind(
-                Label.TextProperty, 
-                $"{nameof(DynamicPrayerTimeViewModel.PrayerTimesSet)}.{bindingText}.{subtime3Binding}",
-                convert: (ZonedDateTime? subTime3) =>
-                {
-                    return _systemInfoService.GetInCurrentZone(subTime3);
-                },
-                stringFormat: "{0:HH:mm:ss}");
+    /// <summary>
+    /// Derives the font size from the space the view actually got: large enough to fill the
+    /// height, small enough that a full time range still fits into one column.
+    /// </summary>
+    private void applyTypeScale(Grid mainGrid)
+    {
+        double height = mainGrid.Height - mainGrid.Padding.VerticalThickness;
+        double width = mainGrid.Width - mainGrid.Padding.HorizontalThickness - mainGrid.ColumnSpacing;
 
-            if (!string.IsNullOrEmpty(showSubtime3Binding))
-            {
-                subtime3DisplayText.SetBinding(IsVisibleProperty, showSubtime3Binding);
-            }
-
-            grid.AddWithSpan(subtime3Label, startRowNo + 4, startColumnNo);
-            grid.AddWithSpan(subtime3DisplayText, startRowNo + 4, startColumnNo + 1);
-
-            subTimeTextViews.Add(subtime3Label);
-            subTimeDisplayTextViews.Add(subtime3DisplayText);
-        }
-
-        if (OperatingSystem.IsWindows() || OperatingSystem.IsMacCatalyst())
-        {
+        if (width <= 0 || height <= 0 || _requiredLineUnits <= 0)
             return;
+
+        double fontSizeByHeight = height / (_requiredLineUnits * LINE_HEIGHT_RATIO);
+
+        double columnWidth = width / 2;
+        double fontSizeByWidth = columnWidth / _requiredEmWidth;
+
+        double fontSize = Math.Min(fontSizeByHeight, fontSizeByWidth);
+
+        // resizing the labels changes the layout again, so ignore the resulting echo
+        if (Math.Abs(fontSize - _lastAppliedFontSize) < 0.5)
+            return;
+
+        _lastAppliedFontSize = fontSize;
+
+        foreach ((Label label, double ratio) in _scaledLabels)
+        {
+            label.FontSize = fontSize * ratio;
         }
 
-        // PRAYER TIME MAIN TITLES
-        timeTextViews.ForEach(label =>
-        {
-            label.FontSize =
-                OnScreenSizeHelpers.Instance.GetScreenSizeValue<double>(
-                    defaultSize: DebugUtil.GetSizeValues(99)[1],
-                    extraLarge: DebugUtil.GetSizeValues(99)[1],
-                    large: DebugUtil.GetSizeValues(24)[1],
-                    medium: DebugUtil.GetSizeValues(22)[1],
-                    small: DebugUtil.GetSizeValues(99)[1],
-                    extraSmall: DebugUtil.GetSizeValues(99)[1]);
-        });
+        applyRowSpacing(mainGrid, height, fontSize);
+    }
 
-        // PRAYER TIME MAIN DURATIONS
-        timeDisplayTextViews.ForEach(label =>
-        {
-            label.FontSize =
-                OnScreenSizeHelpers.Instance.GetScreenSizeValue<double>(
-                    defaultSize: DebugUtil.GetSizeValues(99)[2],
-                    extraLarge: DebugUtil.GetSizeValues(99)[2],
-                    large: DebugUtil.GetSizeValues(18)[2],
-                    medium: DebugUtil.GetSizeValues(14)[2],
-                    small: DebugUtil.GetSizeValues(99)[2],
-                    extraSmall: DebugUtil.GetSizeValues(99)[2]);
-        });
+    /// <summary>
+    /// When the width limits the font size, the text does not fill the height. Most of that
+    /// remainder is spent on the gaps between the rows, the rest lands in the star row and
+    /// therefore between the last prayer and the moment row.
+    /// </summary>
+    private void applyRowSpacing(Grid mainGrid, double height, double fontSize)
+    {
+        double neededHeight = fontSize * _requiredLineUnits * LINE_HEIGHT_RATIO;
+        double leftoverHeight = Math.Max(0, height - neededHeight);
 
-        subTimeTextViews.ForEach(label =>
-        {
-            label.FontSize =
-                OnScreenSizeHelpers.Instance.GetScreenSizeValue<double>(
-                    defaultSize: DebugUtil.GetSizeValues(99)[3],
-                    extraLarge: DebugUtil.GetSizeValues(99)[3],
-                    large: DebugUtil.GetSizeValues(14)[3],
-                    medium: DebugUtil.GetSizeValues(12)[3],
-                    small: DebugUtil.GetSizeValues(99)[3],
-                    extraSmall: DebugUtil.GetSizeValues(99)[3]);
-        });
+        // one gap per block row plus the one in front of the moment row
+        double distributedGap = leftoverHeight / (_blockRowCount + 1) * ROW_SPACING_SHARE;
 
-        subTimeDisplayTextViews.ForEach(label =>
-        {
-            label.FontSize =
-                OnScreenSizeHelpers.Instance.GetScreenSizeValue<double>(
-                    defaultSize: DebugUtil.GetSizeValues(99)[4],
-                    extraLarge: DebugUtil.GetSizeValues(99)[4],
-                    large: DebugUtil.GetSizeValues(14)[4],
-                    medium: DebugUtil.GetSizeValues(11)[4],
-                    small: DebugUtil.GetSizeValues(99)[4],
-                    extraSmall: DebugUtil.GetSizeValues(99)[4]);
-        });
+        mainGrid.RowSpacing = fontSize * MIN_ROW_GAP_RATIO + distributedGap;
     }
 }

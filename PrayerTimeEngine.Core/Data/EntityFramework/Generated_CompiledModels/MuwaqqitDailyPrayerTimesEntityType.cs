@@ -145,21 +145,21 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
                 fieldInfo: typeof(MuwaqqitDailyPrayerTimes).GetField("<IshaDegree>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 sentinel: 0.0);
 
-            var ishtibaq = runtimeEntityType.AddProperty(
-                "Ishtibaq",
+            var ishtibak = runtimeEntityType.AddProperty(
+                "Ishtibak",
                 typeof(Instant?),
-                propertyInfo: typeof(MuwaqqitDailyPrayerTimes).GetProperty("Ishtibaq", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                fieldInfo: typeof(MuwaqqitDailyPrayerTimes).GetField("<Ishtibaq>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                propertyInfo: typeof(MuwaqqitDailyPrayerTimes).GetProperty("Ishtibak", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(MuwaqqitDailyPrayerTimes).GetField("<Ishtibak>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 nullable: true);
-            ishtibaq.SetValueConverter(new ValueConverter<Instant?, string>(
+            ishtibak.SetValueConverter(new ValueConverter<Instant?, string>(
                 string (Instant? x) => (x != null ? x.Value.GetStringForDBColumn() : null),
                 Instant? (string x) => (x != null ? ((Instant? )(x.GetInstantFromDBColumnString())) : null)));
 
-            var ishtibaqDegree = runtimeEntityType.AddProperty(
-                "IshtibaqDegree",
+            var ishtibakDegree = runtimeEntityType.AddProperty(
+                "IshtibakDegree",
                 typeof(double),
-                propertyInfo: typeof(MuwaqqitDailyPrayerTimes).GetProperty("IshtibaqDegree", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                fieldInfo: typeof(MuwaqqitDailyPrayerTimes).GetField("<IshtibaqDegree>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                propertyInfo: typeof(MuwaqqitDailyPrayerTimes).GetProperty("IshtibakDegree", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(MuwaqqitDailyPrayerTimes).GetField("<IshtibakDegree>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 sentinel: 0.0);
 
             var latitude = runtimeEntityType.AddProperty(

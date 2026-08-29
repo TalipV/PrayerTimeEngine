@@ -58,7 +58,7 @@ public class MuwaqqitDynamicPrayerTimeProviderTests : BaseTest
                 new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.AsrKaraha, Degree = 4.5 },
                 new GenericSettingConfiguration { TimeType = ETimeType.MaghribStart, Source = EDynamicPrayerTimeProviderType.Muwaqqit },
                 new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.MaghribEnd, Degree = -12.0 },
-                new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.MaghribIshtibaq, Degree = -8 },
+                new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.MaghribIshtibak, Degree = -8 },
                 new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.IshaStart, Degree = -15.5 },
                 new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.IshaEnd, Degree = -15.0 },
             ];
@@ -91,7 +91,7 @@ public class MuwaqqitDynamicPrayerTimeProviderTests : BaseTest
 
         result.FirstOrDefault(x => x.TimeType == ETimeType.MaghribStart).ZonedDateTime.LocalDateTime.Should().Be(new LocalDateTime(2023, 7, 30, 20, 50, 59));
         result.FirstOrDefault(x => x.TimeType == ETimeType.MaghribEnd).ZonedDateTime.LocalDateTime.Should().Be(new LocalDateTime(2023, 7, 30, 22, 13, 17));
-        result.FirstOrDefault(x => x.TimeType == ETimeType.MaghribIshtibaq).ZonedDateTime.LocalDateTime.Should().Be(new LocalDateTime(2023, 7, 30, 21, 41, 46));
+        result.FirstOrDefault(x => x.TimeType == ETimeType.MaghribIshtibak).ZonedDateTime.LocalDateTime.Should().Be(new LocalDateTime(2023, 7, 30, 21, 41, 46));
 
         result.FirstOrDefault(x => x.TimeType == ETimeType.IshaStart).ZonedDateTime.LocalDateTime.Should().Be(new LocalDateTime(2023, 7, 30, 22, 44, 14));
         result.FirstOrDefault(x => x.TimeType == ETimeType.IshaStart).ZonedDateTime.LocalDateTime.Should().Be(new LocalDateTime(2023, 7, 30, 22, 44, 14));
