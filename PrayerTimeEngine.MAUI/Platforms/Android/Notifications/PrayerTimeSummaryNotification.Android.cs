@@ -342,11 +342,11 @@ public class PrayerTimeSummaryNotification : Service
 
         List<(string Name, Instant Time)> subTimes =
             getSubTimes(prayerTime)
-                .Select(subTime => (subTime.Name, Time: subTime.Time?.ToInstant()))
-                .OfType<(string Name, Instant Time)>()
-                .Where(subTime => start < subTime.Time && subTime.Time < end)
-                .OrderBy(subTime => subTime.Time)
-                .ToList();
+                    .Where(subTime => subTime.Time is not null)
+                    .Select(subTime => (subTime.Name, Time: subTime.Time!.Value.ToInstant()))
+                    .Where(subTime => start < subTime.Time && subTime.Time < end)
+                    .OrderBy(subTime => subTime.Time)
+                    .ToList();
 
         if (subTimes.Count == 0)
             return new ProgressBarInfo([PROGRESS_MAX], []);
