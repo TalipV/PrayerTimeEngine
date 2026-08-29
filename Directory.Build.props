@@ -12,7 +12,8 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(MSBuildProjectName)' == 'PrayerTimeEngine.MAUI'">
-    <TargetFrameworks>$(NetVersion)-android;$(NetVersion)-ios</TargetFrameworks>
+    <TargetFrameworks>$(NetVersion)-android</TargetFrameworks>
+    <TargetFrameworks Condition="!$([MSBuild]::IsOSPlatform('linux'))">$(TargetFrameworks);$(NetVersion)-ios</TargetFrameworks>
     <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">15.0</SupportedOSPlatformVersion>
     <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">15.0</SupportedOSPlatformVersion>
     <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">26.0</SupportedOSPlatformVersion>
@@ -20,7 +21,7 @@
     <TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.22000.0</TargetPlatformMinVersion>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(MSBuildProjectName)' == 'PrayerTimeEngine.MAUI' And $([MSBuild]::IsOSPlatform('maccatalyst'))">
+  <PropertyGroup Condition="'$(MSBuildProjectName)' == 'PrayerTimeEngine.MAUI' And $([MSBuild]::IsOSPlatform('osx'))">
     <TargetFrameworks>$(TargetFrameworks);$(NetVersion)-maccatalyst</TargetFrameworks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(MSBuildProjectName)' == 'PrayerTimeEngine.MAUI' And $([MSBuild]::IsOSPlatform('windows'))">
