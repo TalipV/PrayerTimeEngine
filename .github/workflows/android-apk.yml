@@ -41,6 +41,7 @@ jobs:
         run: >
           dotnet build PrayerTimeEngine.MAUI/PrayerTimeEngine.MAUI.csproj
           -c Debug -f net10.0-android -t:SignAndroidPackage
+          -p:TargetFrameworks=net10.0-android
           -p:AndroidKeyStore=true
           -p:AndroidSigningKeyStore="$RUNNER_TEMP/signing.keystore"
           -p:AndroidSigningKeyAlias=${{ secrets.ANDROID_KEY_ALIAS }}
@@ -51,6 +52,7 @@ jobs:
         run: >
           dotnet publish PrayerTimeEngine.MAUI/PrayerTimeEngine.MAUI.csproj
           -c Release -f net10.0-android
+          -p:TargetFrameworks=net10.0-android
           -p:EnableLLVM=false
           -p:AndroidKeyStore=true
           -p:AndroidSigningKeyStore="$RUNNER_TEMP/signing.keystore"
