@@ -27,3 +27,19 @@ Claude Code cloud sessions get a .NET SDK from the environment's setup script, b
 - `PrayerTimeEngine.MAUI` is built by GitHub Actions (`.github/workflows`), not here.
 - The Core build emits ~160 nullable warnings today; they are pre-existing, so only
   worry about warnings your own change introduces.
+
+## Pull requests created by Claude
+
+PRs opened by a Claude session must be recognizable as such at a glance:
+
+- **Branch name** starts with `claude/`.
+- **First line of the PR body** is this banner, before any heading:
+
+  ```
+  > 🤖 **Dieser Pull Request wurde von Claude Code erstellt.** Bitte den Diff vor dem Merge prüfen.
+  ```
+
+- **End of the PR body** keeps the generated-with footer and the session link.
+
+Same for the PR title: describe the change normally, no marker there — the banner
+and the branch prefix carry that.
