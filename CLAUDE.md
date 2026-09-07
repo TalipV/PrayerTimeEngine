@@ -33,13 +33,14 @@ Claude Code cloud sessions get a .NET SDK from the environment's setup script, b
 PRs opened by a Claude session must be recognizable as such at a glance:
 
 - **Branch name** starts with `claude/`.
+- **Label** `claude` is applied to the PR.
 - **First line of the PR body** is this banner, before any heading:
 
   ```
-  > 🤖 **Dieser Pull Request wurde von Claude Code erstellt.** Bitte den Diff vor dem Merge prüfen.
+  > 🤖 **Dieser Pull Request wurde von Claude Code erstellt.**
   ```
 
 - **End of the PR body** keeps the generated-with footer and the session link.
 
-Same for the PR title: describe the change normally, no marker there — the banner
-and the branch prefix carry that.
+Same for the PR title: describe the change normally, no marker there — the banner,
+the label and the branch prefix carry that.
