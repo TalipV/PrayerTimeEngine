@@ -59,7 +59,10 @@ public partial class MyMosqApiService(
                 newValue: "{\"prayerTimes\":[{\"Asr\"")
             .Replace("}}", "}]}");
 
-        var prayerTimes = JsonSerializer.Deserialize<MyMosqResponseDTO>(json: finaleMessage).PrayerTimes;
+        List<MyMosqPrayerTimesDTO> prayerTimes =
+            JsonSerializer.Deserialize<MyMosqResponseDTO>(json: finaleMessage)?.PrayerTimes
+            ?? throw new InvalidOperationException($"The externalID '{externalID}' led to a response without deserializable prayer time data.");
+
         fixPrayerTimes(prayerTimes);
         return prayerTimes;
     }
