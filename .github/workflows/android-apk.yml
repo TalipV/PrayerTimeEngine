@@ -13,6 +13,9 @@ jobs:
   test:
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    env:
+      DOTNET_CLI_TELEMETRY_OPTOUT: '1'
+      DOTNET_NOLOGO: '1'
 
     steps:
       - uses: actions/checkout@v7
@@ -22,15 +25,25 @@ jobs:
           dotnet-version: '11.0.x'
           dotnet-quality: preview
 
-      - name: Run unit tests
-        run: >
-          dotnet test PrayerTimeEngine.Core.Tests.Unit/PrayerTimeEngine.Core.Tests.Unit.csproj
-          -c Release --logger "trx;LogFileName=unit.trx" --results-directory TestResults
+      # Restore + build while the network is still available (NuGet needs it).
+      - name: Build test projects
+        run: |
+          dotnet build PrayerTimeEngine.Core.Tests.Unit/PrayerTimeEngine.Core.Tests.Unit.csproj -c Release
+          dotnet build PrayerTimeEngine.Core.Tests.Integration/PrayerTimeEngine.Core.Tests.Integration.csproj -c Release
 
-      - name: Run integration tests
-        run: >
-          dotnet test PrayerTimeEngine.Core.Tests.Integration/PrayerTimeEngine.Core.Tests.Integration.csproj
-          -c Release --logger "trx;LogFileName=integration.trx" --results-directory TestResults
+      # Run tests with outbound network blocked, so any test that tries to reach a
+      # live API fails immediately instead of silently passing. Existing (runner)
+      # connections and loopback stay open; new outbound connections are rejected.
+      - name: Run tests offline
+        run: |
+          sudo iptables -A OUTPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+          sudo iptables -A OUTPUT -o lo -j ACCEPT
+          sudo iptables -A OUTPUT -j REJECT
+          trap 'sudo iptables -F OUTPUT' EXIT
+          dotnet test PrayerTimeEngine.Core.Tests.Unit/PrayerTimeEngine.Core.Tests.Unit.csproj \
+            -c Release --no-build --logger "trx;LogFileName=unit.trx" --results-directory TestResults
+          dotnet test PrayerTimeEngine.Core.Tests.Integration/PrayerTimeEngine.Core.Tests.Integration.csproj \
+            -c Release --no-build --logger "trx;LogFileName=integration.trx" --results-directory TestResults
 
       - name: Test report
         if: always()
