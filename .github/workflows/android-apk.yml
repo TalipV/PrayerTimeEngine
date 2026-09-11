@@ -34,6 +34,8 @@ jobs:
       # Run tests with outbound network blocked, so any test that tries to reach a
       # live API fails immediately instead of silently passing. Existing (runner)
       # connections and loopback stay open; new outbound connections are rejected.
+      # The intentional live-API tests (named *WithLiveApi*) are excluded here on
+      # purpose; the block then only catches tests that reach the network by mistake.
       - name: Run tests offline
         run: |
           sudo iptables -A OUTPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
@@ -41,9 +43,11 @@ jobs:
           sudo iptables -A OUTPUT -j REJECT
           trap 'sudo iptables -F OUTPUT' EXIT
           dotnet test PrayerTimeEngine.Core.Tests.Unit/PrayerTimeEngine.Core.Tests.Unit.csproj \
-            -c Release --no-build --logger "trx;LogFileName=unit.trx" --results-directory TestResults
+            -c Release --no-build --filter "FullyQualifiedName!~WithLiveApi" \
+            --logger "trx;LogFileName=unit.trx" --results-directory TestResults
           dotnet test PrayerTimeEngine.Core.Tests.Integration/PrayerTimeEngine.Core.Tests.Integration.csproj \
-            -c Release --no-build --logger "trx;LogFileName=integration.trx" --results-directory TestResults
+            -c Release --no-build --filter "FullyQualifiedName!~WithLiveApi" \
+            --logger "trx;LogFileName=integration.trx" --results-directory TestResults
 
       - name: Test report
         if: always()
