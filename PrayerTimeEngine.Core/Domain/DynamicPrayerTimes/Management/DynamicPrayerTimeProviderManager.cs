@@ -55,6 +55,14 @@ public class DynamicPrayerTimeProviderManager(
         return false;
     }
 
+    public bool TryGetCachedPrayerTimes(int profileID, ZonedDateTime date, out DynamicPrayerTimesDaySet daySet)
+    {
+        // normalize identically to CalculatePrayerTimesAsync so the cache key (start of day) matches
+        date = date.LocalDateTime.Date.AtStartOfDayInZone(date.Zone);
+
+        return tryGetCachedDaySet(profileID, date, out daySet);
+    }
+
     public async Task<CalculatePrayerTimesResultVO> CalculatePrayerTimesAsync(int profileID, ZonedDateTime date, CancellationToken cancellationToken)
     {
         date = date.LocalDateTime.Date.AtStartOfDayInZone(date.Zone);
@@ -228,7 +236,15 @@ public class DynamicPrayerTimeProviderManager(
                     .ToList(),
                 CalculationError: null);
         }
-        catch (Exception exception) when (exception is not OperationCanceledException)
+        catch (Exception exception) when (isCausedByCancellation(exception, cancellationToken))
+        {
+            // A caller-side cancellation (e.g. the notification's short render timeout) can surface from
+            // the HTTP stack (Refit / the resilience pipeline) as something other than a plain
+            // OperationCanceledException. Treat it as a cancellation instead of logging it as a
+            // calculation error, so it is handled uniformly by the OperationCanceledException-aware callers.
+            throw new OperationCanceledException("Prayer time calculation was canceled.", exception, cancellationToken);
+        }
+        catch (Exception exception)
         {
             logger.LogError(exception,
                 "Error while calculating complex prayer times for {DynamicPrayerTimeProviderType} on {Date}",
@@ -245,6 +261,24 @@ public class DynamicPrayerTimeProviderManager(
                     Exception = exception,
                 });
         }
+    }
+
+    /// <summary>
+    /// Whether the exception is (or wraps) a cancellation, or the token has been canceled. Needed because
+    /// the HTTP stack does not always surface a canceled request as a plain <see cref="OperationCanceledException"/>.
+    /// </summary>
+    private static bool isCausedByCancellation(Exception exception, CancellationToken cancellationToken)
+    {
+        if (cancellationToken.IsCancellationRequested)
+            return true;
+
+        for (Exception current = exception; current is not null; current = current.InnerException)
+        {
+            if (current is OperationCanceledException)
+                return true;
+        }
+
+        return false;
     }
 
     private IEnumerable<(ETimeType, ZonedDateTime?)> calculateSimpleTypes(DynamicProfile dynamicProfile, DynamicPrayerTimesDay prayerTimeEntity)
