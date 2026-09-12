@@ -19,6 +19,14 @@ public sealed partial class QiblahMapPage : ContentPage
 {
     public static readonly MPoint KAABA_COORDINATES = toMercator(latitude: 21.422487, longitude: 39.826206);
 
+    // OpenStreetMap's volunteer-run tile servers require a User-Agent that clearly identifies
+    // the application, otherwise requests are blocked with HTTP 403 (see osm.wiki/Blocked and
+    // https://operations.osmfoundation.org/policies/tiles/). Mapsui's default "user-agent-of-*"
+    // value does not satisfy this, so we provide an explicit one with app name, version and a
+    // contact URL.
+    private static readonly string OSM_USER_AGENT =
+        $"PrayerTimeEngine/{AppInfo.Current.VersionString} (+https://github.com/TalipV/PrayerTimeEngine)";
+
     private static int _isRefreshingLocation = 0;
 
     private readonly MapControl _mapControl = new MapControl();
@@ -33,7 +41,7 @@ public sealed partial class QiblahMapPage : ContentPage
         this._mapControl.Map = new Mapsui.Map();
         configureZoomLevel();
 
-        this._tileLayer = OpenStreetMap.CreateTileLayer();
+        this._tileLayer = OpenStreetMap.CreateTileLayer(OSM_USER_AGENT);
         this._mapControl.Map.Layers.Add(_tileLayer);
 
         this._qiblahLineLayer = new MemoryLayer();

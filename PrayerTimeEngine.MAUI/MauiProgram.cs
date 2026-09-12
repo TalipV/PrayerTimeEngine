@@ -100,6 +100,12 @@ namespace PrayerTimeEngine;
  * - CancellationTokens implementieren, die default setzen
  * - "MosquePrayerTimes" and variations used for all kinds of things! Better names!
  * - Check if using multiple profiles from differing timezones works fine (graphic, mosque times, swiping back and forth, ...)
+ * - Qiblah map tiles: currently OpenStreetMap's volunteer-run tile servers (tile.openstreetmap.org)
+ *   with an explicit, policy-compliant User-Agent (see QiblahMapPage.OSM_USER_AGENT). This fixed the
+ *   HTTP 403 "Access blocked" (osm.wiki/Blocked), but those servers are officially not meant for
+ *   broadly distributed apps and enforcement can tighten again at any time. Consider switching to a
+ *   tile provider intended for apps (e.g. Thunderforest / MapTiler / Carto, API-key based) if the app
+ *   scales or gets blocked again, and/or add a graceful fallback/error state when tiles fail to load.
  */
 
 /* TODO tests:
