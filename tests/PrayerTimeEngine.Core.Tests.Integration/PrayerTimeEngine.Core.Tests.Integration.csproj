@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.10.0" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="4.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\PrayerTimeEngine.Core.Tests.Common\PrayerTimeEngine.Core.Tests.Common.csproj" />
+    <ProjectReference Include="..\..\Domain\PrayerTimeEngine.Domain\PrayerTimeEngine.Domain.csproj" />
+    <ProjectReference Include="..\..\Application\PrayerTimeEngine.Application\PrayerTimeEngine.Application.csproj" />
+    <ProjectReference Include="..\..\Infrastructure\PrayerTimeEngine.Infrastructure\PrayerTimeEngine.Infrastructure.csproj" />
+  </ItemGroup>
+
+</Project>

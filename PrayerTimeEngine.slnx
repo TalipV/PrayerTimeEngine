@@ -6,18 +6,32 @@
   <Folder Name="/Solution Items/">
     <File Path=".editorconfig" />
     <File Path="Directory.Build.props" />
+    <File Path="Directory.Build.targets" />
+  </Folder>
+  <Folder Name="/1 - Domain/">
+    <Project Path="Domain\PrayerTimeEngine.Domain\PrayerTimeEngine.Domain.csproj" />
+  </Folder>
+  <Folder Name="/2 - Application/">
+    <Project Path="Application\PrayerTimeEngine.Application\PrayerTimeEngine.Application.csproj" />
+  </Folder>
+  <Folder Name="/3 - Infrastructure/">
+    <Project Path="Infrastructure\PrayerTimeEngine.Infrastructure\PrayerTimeEngine.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/4 - Presentation/">
+    <Project Path="Presentation\PrayerTimeEngine.MAUI\PrayerTimeEngine.MAUI.csproj">
+      <Platform Solution="Debug|x64" Project="x64" />
+      <Build Solution="Release|x64" Project="false" />
+      <Deploy Solution="*|Any CPU" />
+      <Deploy Solution="Debug|x64" />
+    </Project>
   </Folder>
   <Folder Name="/tests/">
-    <Project Path="PrayerTimeEngine.Core.Tests.Common\PrayerTimeEngine.Core.Tests.Common.csproj" />
-    <Project Path="PrayerTimeEngine.Core.Tests.Integration\PrayerTimeEngine.Core.Tests.Integration.csproj" />
-    <Project Path="PrayerTimeEngine.Core.Tests.Unit\PrayerTimeEngine.Core.Tests.Unit.csproj" />
+    <Project Path="tests\PrayerTimeEngine.Core.Tests.Common\PrayerTimeEngine.Core.Tests.Common.csproj" />
+    <Project Path="tests\PrayerTimeEngine.Core.Tests.Integration\PrayerTimeEngine.Core.Tests.Integration.csproj" />
+    <Project Path="tests\PrayerTimeEngine.Core.Tests.Live\PrayerTimeEngine.Core.Tests.Live.csproj" />
+    <Project Path="tests\PrayerTimeEngine.Core.Tests.Unit\PrayerTimeEngine.Core.Tests.Unit.csproj" />
   </Folder>
-  <Project Path="PrayerTimeEngine.BenchmarkDotNet\PrayerTimeEngine.BenchmarkDotNet.csproj" />
-  <Project Path="PrayerTimeEngine.Core\PrayerTimeEngine.Core.csproj" />
-  <Project Path="PrayerTimeEngine.MAUI\PrayerTimeEngine.MAUI.csproj">
-    <Platform Solution="Debug|x64" Project="x64" />
-    <Build Solution="Release|x64" Project="false" />
-    <Deploy Solution="*|Any CPU" />
-    <Deploy Solution="Debug|x64" />
-  </Project>
+  <Folder Name="/tools/">
+    <Project Path="tools\PrayerTimeEngine.BenchmarkDotNet\PrayerTimeEngine.BenchmarkDotNet.csproj" />
+  </Folder>
 </Solution>

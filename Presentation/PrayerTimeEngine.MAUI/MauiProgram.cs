@@ -1,0 +1,291 @@
+﻿using CommunityToolkit.Maui;
+using CommunityToolkit.Maui.Markup;
+using MetroLog.MicrosoftExtensions;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using Plugin.Maui.DebugRainbows;
+using PrayerTimeEngine.Core.Application;
+using PrayerTimeEngine.Core.Common;
+using PrayerTimeEngine.Core.Infrastructure;
+using PrayerTimeEngine.Core.Data.EntityFramework;
+using PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels;
+using PrayerTimeEngine.Core.Data.WebSocket;
+using PrayerTimeEngine.Core.Data.WebSocket.Interfaces;
+using PrayerTimeEngine.Core.Domain;
+using PrayerTimeEngine.Core.Domain.Calculators.Mosques.Mawaqit.Services;
+using PrayerTimeEngine.Core.Domain.ConfigurationManagement;
+using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes;
+using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Management;
+using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Interfaces;
+using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Services;
+using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Muwaqqit.Interfaces;
+using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Muwaqqit.Services;
+using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Semerkand.Interfaces;
+using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Semerkand.Services;
+using PrayerTimeEngine.Core.Domain.IslamicCalendar.Interfaces;
+using PrayerTimeEngine.Core.Domain.IslamicCalendar.Services;
+using PrayerTimeEngine.Core.Domain.MosquePrayerTimes;
+using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Management;
+using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.Mawaqit.Interfaces;
+using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.Mawaqit.Services;
+using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.MyMosq.Interfaces;
+using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.MyMosq.Services;
+using PrayerTimeEngine.Core.Domain.PlaceManagement.Interfaces;
+using PrayerTimeEngine.Core.Domain.PlaceManagement.Services;
+using PrayerTimeEngine.Core.Domain.PlaceManagement.Services.LocationIQ;
+using PrayerTimeEngine.Core.Domain.ProfileManagement.Interfaces;
+using PrayerTimeEngine.Core.Domain.ProfileManagement.Services;
+using PrayerTimeEngine.Presentation.Pages.DatabaseTables;
+using PrayerTimeEngine.Presentation.Pages.Main;
+using PrayerTimeEngine.Presentation.Pages.QiblahFinder;
+using PrayerTimeEngine.Presentation.Pages.Settings.SettingsContent;
+using PrayerTimeEngine.Presentation.Pages.Settings.SettingsContent.Custom;
+using PrayerTimeEngine.Presentation.Pages.Settings.SettingsHandler;
+using PrayerTimeEngine.Presentation.Services;
+using PrayerTimeEngine.Presentation.Services.Navigation;
+using PrayerTimeEngine.Presentation.Services.SettingsContentPageFactory;
+using PrayerTimeEngine.Presentation.Views;
+using PrayerTimeEngine.Presentation.Views.MosquePrayerTimes;
+using PrayerTimeEngine.Presentation.Views.PrayerTimeGraphic;
+using PrayerTimeEngine.Presentation.Views.PrayerTimes;
+using PrayerTimeEngine.Services;
+using PrayerTimeEngine.Services.Notifications;
+using Refit;
+using SkiaSharp.Views.Maui.Controls.Hosting;
+using System.Net.WebSockets;
+using System.Text;
+using UraniumUI;
+
+namespace PrayerTimeEngine;
+
+// weak event manager?
+
+
+/* CLI commands cheat sheet (executed in solution folder)
+ * Generate Release APK:    dotnet publish -c release -f net10.0-android -p:false
+ * EF Compiled Models:      dotnet ef dbcontext optimize --output-dir Data\EntityFramework\Generated_CompiledModels --namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels --context PrayerTimeEngine.Core.Data.EntityFramework.AppDbContext --project PrayerTimeEngine.Core\PrayerTimeEngine.Core.csproj
+ * EF Migration:            dotnet ef migrations add InitialMigration --output-dir Data\EntityFramework\Generated_Migrations --namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_Migrations --context PrayerTimeEngine.Core.Data.EntityFramework.AppDbContext --project PrayerTimeEngine.Core\PrayerTimeEngine.Core.csproj
+ */
+
+/* BUGS:
+ * - Next Fajr (value and for graphic) & Last 'Isha (for graphic)
+ * - No robust system for country and city (re)load from fazilet/semerkand API (e.g. failed city retrieval leads to no second try)
+ * - Fazilet/Semerkand country/city names which are unexpected (e.g. "Vienna (Wien)")
+ * - Turkish location details for Fazilet/Semerkand not robust
+ * - Semerkand marks some times with "*" (e.g. "*23:54", probably taqdir/estimated like Fazilet's "is_takdiri" flag);
+ *   the app strips the "*" and shows the time as a normal one instead of conveying the special meaning
+ * - Semerkand sometimes has countries and cities with duplicate names
+ *
+ * - Exception for single calculation only disables that calculation but subsequent calculations rely on cached values and don't retry
+ * - remove AppDbContextModel _useOldBehavior31751 temp fix
+ * - FIXED? Calculation relevant data like the Profile with its configs may change in the middle of the calculation process due to shared references
+ * - Fazilet & Semerkand place search should also try german country names and/or city names
+ */
+
+/* TODO general:
+ * - When API is generally not available then that should be shown and handled in a specific manner
+ * - For prayer times of a time zone other than that of the device show option to select based on which time zone to show the times (like a yes/no slider)
+ * - After importing profiles, show overview of current and new profiles for the user to select which ones to keep
+ * - Decrease count of reloads (e.g. mere app switch shouldn't always require reload)
+ * - Transactions when saving country data and city data to prevent partial safes (or rethink the whole thing)
+ * - PlaceService and ProfileService with no or default CancellationToken?
+ * - Consider Muwaqqit API changes and maybe additionally use old API endpoint
+ * - Consistent naming of awaitable methods with or without Async suffix
+ * - Also check navigation properties back and forth in Equals override? Mixed approaches currently
+ * - Make sure the code in the repository classes really is only about db access / repository concerns
+ * - Check for possibly unsafe concurrent actions (fast user interactions, app crashes and other special cases) 
+ * - Make MyMosqApiService more robust and try to read inputs as jsons
+ * - Logging
+ * - Comments
+ * - Translation
+ * - Check MVVM
+ * - CancellationTokens implementieren, die default setzen
+ * - "MosquePrayerTimes" and variations used for all kinds of things! Better names!
+ * - Check if using multiple profiles from differing timezones works fine (graphic, mosque times, swiping back and forth, ...)
+ * - Qiblah map tiles: currently OpenStreetMap's volunteer-run tile servers (tile.openstreetmap.org)
+ *   with an explicit, policy-compliant User-Agent (see QiblahMapPage.OSM_USER_AGENT). This fixed the
+ *   HTTP 403 "Access blocked" (osm.wiki/Blocked), but those servers are officially not meant for
+ *   broadly distributed apps and enforcement can tighten again at any time. Consider switching to a
+ *   tile provider intended for apps (e.g. Thunderforest / MapTiler / Carto, API-key based) if the app
+ *   scales or gets blocked again, and/or add a graceful fallback/error state when tiles fail to load.
+ */
+
+/* TODO tests:
+ * ### UNIT
+ * # Semerkand
+ * --- SemerkandDynamicPrayerTimeProvider
+ * --- SemerkandApiService
+ * --- SemerkandRepository
+ * # Fazilet
+ * --- FaziletDynamicPrayerTimeProvider
+ * --- FaziletApiService
+ * --- FaziletRepository
+ * # Muwaqqit
+ * --- MuwaqqitDynamicPrayerTimeProvider
+ * --- MuwaqqitApiService
+ * --- MuwaqqitRepository
+ * # DynamicPrayerTimeProviderManager
+ * # MyMosqPrayerTimes & MawaqitPrayerTimes: One test each to validate their respective scraped JSON inputs (i.e. every time text is a valid time and so on)
+ * # ProfileService: One test for UpdateLocationInfo which considers the different Fazilet/Semerkand place info custom things
+ */
+
+
+/*
+ * Fazilet&Semerkand Location Logs
+ * CurrentProfile = null soll nur gewisse Menüoptionen verhindern und nicht alle
+ * Calculator-Logs besser machen
+ * "Cachen" im CalculationManager nur, wenn vollständige Daten geladen wurden (oder so)
+ * Feature: Moschee-'Isha mit z.B. Fazilet vergleichen können und optisch kennzeichen
+ */
+
+public static class MauiProgram
+{
+    public static readonly DateTime StartDateTime = DateTime.Now;
+    public static IServiceProvider ServiceProvider { get; private set; }
+
+    public static MauiApp CreateMauiApp()
+    {
+        MauiAppBuilder builder = MauiApp.CreateBuilder();
+        builder
+            .UseMauiApp<App>()
+            .UseSkiaSharp()
+            .UseMauiCommunityToolkitMarkup()
+            .UseMauiCommunityToolkit(options =>
+            {
+                options.SetShouldEnableSnackbarOnWindows(true);
+            })
+            .UseUraniumUI()
+            .UseUraniumUIMaterial()
+            .UseDebugRainbows(new DebugRainbowsOptions { ShowRainbows = false })
+            .ConfigureFonts(fonts =>
+            {
+                fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
+                fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
+            });
+
+        addLogging(builder);
+        addDependencyInjectionServices(builder.Services);
+
+        MauiApp mauiApp = builder.Build();
+        ServiceProvider = mauiApp.Services;
+
+        MethodTimeLogger.Logger = mauiApp.Services.GetRequiredService<ILogger<App>>();
+
+        return mauiApp;
+    }
+
+    class LoggingLayout : MetroLog.Layouts.Layout
+    {
+        public override string GetFormattedString(MetroLog.LogWriteContext context, MetroLog.LogEventInfo info)
+        {
+            var text = new StringBuilder($"███ {info.Level}|{info.TimeStamp:HH:mm:ss:fff}|{info.Logger}|{info.Message}");
+
+            if (info.Exception is not null)
+            {
+                text.Append($"|Exception:'{info.Exception.Message}' AT '{info.Exception.StackTrace}'");
+            }
+
+            //text.Append($"|StackTrace: {new StackTrace()}");
+
+            return text.ToString();
+        }
+    }
+
+    private static void addLogging(MauiAppBuilder builder)
+    {
+        builder.Logging
+            .SetMinimumLevel(LogLevel.Trace)
+            .AddFilter((loggerProviderFullName, loggerFullName, level) =>
+            {
+                // temp fix, these log too much for my taste
+                if (loggerFullName.StartsWith("Microsoft.EntityFrameworkCore")
+                    || loggerFullName.StartsWith("System.Net.Http.HttpClient.Refit.Implementation.Generated")
+                    || loggerFullName == "Microsoft.Extensions.Http.DefaultHttpClientFactory"
+                    || loggerFullName == "Polly")
+                {
+                    return false;
+                }
+
+                return true;
+            })
+            // for the logs to be visible within the app
+            .AddInMemoryLogger(
+                options =>
+                {
+                    //options.MaxLines = 1024;
+                    options.Layout = new LoggingLayout();
+                    options.MinLevel = LogLevel.Trace;
+                    options.MaxLevel = LogLevel.Error;
+                })
+            // for the logs to be sharable as files through the UI
+            .AddStreamingFileLogger(
+                options =>
+                {
+                    options.RetainDays = 2;
+                    options.MinLevel = LogLevel.Trace;
+                    options.MaxLevel = LogLevel.Error;
+                    options.FolderPath = Path.Combine(
+                        FileSystem.CacheDirectory,
+                        "MetroLogs");
+                });
+    }
+
+    private static void addDependencyInjectionServices(IServiceCollection serviceCollection)
+    {
+        // Note: Microsoft recommends explicit HttpClient instances without DI for MAUI
+
+        // Platform-specific implementations of Domain ports live in the MAUI (outer) ring.
+        serviceCollection.AddTransient<NotificationService>();
+        serviceCollection.AddSingleton<ISystemInfoService, SystemInfoService>();
+        serviceCollection.AddTransient<IPreferenceService, PreferenceService>();
+        serviceCollection.AddSingleton<IAppInitializer, AppInitializer>();
+
+        // ONION inner rings — one call each. All persistence, HTTP/Refit, WebSocket and
+        // orchestration wiring now lives in the Application/Infrastructure composition roots.
+        serviceCollection.AddApplication();
+        serviceCollection.AddInfrastructure(AppConfig.DATABASE_PATH, AppApiKeys.LocationIQ);
+
+        addPresentationLayerServices(serviceCollection);
+        addPlatformSpecificServices(serviceCollection);
+    }
+
+    private static void addPresentationLayerServices(IServiceCollection serviceCollection)
+    {
+        serviceCollection.AddTransient<IBrowser>(factory => Browser.Default);
+
+        serviceCollection.AddTransient<INavigationService, NavigationService>();
+        serviceCollection.AddTransient<ToastMessageService>();
+        serviceCollection.AddTransient<FavoritePlacesService>();
+
+        serviceCollection.AddTransient<MainPage>();
+        serviceCollection.AddTransient<MainPageViewModel>();
+        serviceCollection.AddTransient<PrayerTimeGraphicView>();
+
+        serviceCollection.AddTransient<PrayerTimeViewModelFactory>();
+        serviceCollection.AddTransient<DynamicPrayerTimeViewModel>();
+        serviceCollection.AddTransient<MosquePrayerTimeViewModel>();
+
+        serviceCollection.AddTransient<SettingsHandlerPage>();
+        serviceCollection.AddTransient<SettingsHandlerPageViewModel>();
+        serviceCollection.AddTransient<SettingsContentPageFactory>();
+
+        serviceCollection.AddTransient<SettingsContentPage>();
+        serviceCollection.AddTransient<SettingsContentPageViewModel>();
+        serviceCollection.AddTransient<MuwaqqitDegreeSettingConfigurationViewModel>();
+
+        serviceCollection.AddTransient<DatabaseTablesPage>();
+        serviceCollection.AddTransient<DatabaseTablesPageViewModel>();
+
+        serviceCollection.AddTransient<QiblahMapPage>();
+    }
+
+    private static void addPlatformSpecificServices(IServiceCollection serviceCollection)
+    {
+#if ANDROID
+        serviceCollection.AddTransient<IPrayerTimeSummaryNotificationHandler, Platforms.Android.Notifications.PrayerTimeSummaryNotificationHandler>();
+#else
+        // TODO implement for other platforms someday (at least iOS)
+        serviceCollection.AddTransient<IPrayerTimeSummaryNotificationHandler, NoOpPrayerTimeSummaryNotificationHandler>();
+#endif
+    }
+}
