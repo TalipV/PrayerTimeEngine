@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BenchmarkDotNet" Version="0.15.8" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\tests\PrayerTimeEngine.Core.Tests.Integration\PrayerTimeEngine.Core.Tests.Integration.csproj" />
+    <ProjectReference Include="..\..\tests\PrayerTimeEngine.Core.Tests.Unit\PrayerTimeEngine.Core.Tests.Unit.csproj" />
+    <ProjectReference Include="..\..\Domain\PrayerTimeEngine.Domain\PrayerTimeEngine.Domain.csproj" />
+    <ProjectReference Include="..\..\Application\PrayerTimeEngine.Application\PrayerTimeEngine.Application.csproj" />
+    <ProjectReference Include="..\..\Infrastructure\PrayerTimeEngine.Infrastructure\PrayerTimeEngine.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <!--Benchmark methods had warnings on them because they are not static which they have to be though-->
+    <NoWarn>CA1822</NoWarn>
+  </PropertyGroup>
+
+</Project>
