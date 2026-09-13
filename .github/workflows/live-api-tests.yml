@@ -1,0 +1,51 @@
+name: Live API tests
+
+# The live-API tests hit real external services (e.g. the MyMosq Firebase API), so
+# they are non-deterministic and must NOT gate pushes or the APK release. They run on
+# a nightly schedule (and on demand) to surface breaking changes on the provider side,
+# decoupled from feature work.
+on:
+  schedule:
+    - cron: '0 3 * * *'   # daily at 03:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  checks: write
+
+jobs:
+  live-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      DOTNET_CLI_TELEMETRY_OPTOUT: '1'
+      DOTNET_NOLOGO: '1'
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: '11.0.x'
+          dotnet-quality: preview
+
+      - name: Run live API tests
+        run: >
+          dotnet test tests/PrayerTimeEngine.Core.Tests.Live/PrayerTimeEngine.Core.Tests.Live.csproj
+          -c Release --logger "trx;LogFileName=live.trx" --results-directory TestResults
+
+      - name: Test report
+        if: always()
+        uses: dorny/test-reporter@v2
+        with:
+          name: Live API tests
+          path: TestResults/*.trx
+          reporter: dotnet-trx
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: live-test-results-${{ github.sha }}
+          path: TestResults/*.trx
+          retention-days: 30
