@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    ONION RING 1 — Domain (center).
+    Entities, value objects, enums, domain services and the PORT interfaces
+    (repositories, API gateways, IPlaceService, IProfile*, ...).
+    MUST NOT depend on EF Core, Refit, HTTP, HtmlAgilityPack or any other
+    infrastructure framework. Only NodaTime and logging abstractions are allowed.
+  -->
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="PrayerTimeEngine.Application" />
+    <InternalsVisibleTo Include="PrayerTimeEngine.Infrastructure" />
+    <InternalsVisibleTo Include="PrayerTimeEngine.Core.Tests.Unit" />
+    <InternalsVisibleTo Include="PrayerTimeEngine.Core.Tests.Integration" />
+    <InternalsVisibleTo Include="PrayerTimeEngine.Core.Tests.Common" />
+    <InternalsVisibleTo Include="PrayerTimeEngine.BenchmarkDotNet" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="NodaTime" Version="3.3.3" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.12" />
+  </ItemGroup>
+
+</Project>
