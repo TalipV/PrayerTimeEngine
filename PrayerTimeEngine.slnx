@@ -9,16 +9,16 @@
     <File Path="Directory.Build.targets" />
   </Folder>
   <Folder Name="/1 - Domain/">
-    <Project Path="1-Domain\PrayerTimeEngine.Domain\PrayerTimeEngine.Domain.csproj" />
+    <Project Path="Domain\PrayerTimeEngine.Domain\PrayerTimeEngine.Domain.csproj" />
   </Folder>
   <Folder Name="/2 - Application/">
-    <Project Path="2-Application\PrayerTimeEngine.Application\PrayerTimeEngine.Application.csproj" />
+    <Project Path="Application\PrayerTimeEngine.Application\PrayerTimeEngine.Application.csproj" />
   </Folder>
   <Folder Name="/3 - Infrastructure/">
-    <Project Path="3-Infrastructure\PrayerTimeEngine.Infrastructure\PrayerTimeEngine.Infrastructure.csproj" />
+    <Project Path="Infrastructure\PrayerTimeEngine.Infrastructure\PrayerTimeEngine.Infrastructure.csproj" />
   </Folder>
   <Folder Name="/4 - Presentation/">
-    <Project Path="4-Presentation\PrayerTimeEngine.MAUI\PrayerTimeEngine.MAUI.csproj">
+    <Project Path="Presentation\PrayerTimeEngine.MAUI\PrayerTimeEngine.MAUI.csproj">
       <Platform Solution="Debug|x64" Project="x64" />
       <Build Solution="Release|x64" Project="false" />
       <Deploy Solution="*|Any CPU" />

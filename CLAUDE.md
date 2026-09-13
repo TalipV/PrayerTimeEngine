@@ -78,7 +78,7 @@ dotnet tool install --global dotnet-ef --version 10.0.11   # once
 dotnet ef dbcontext optimize \
   --output-dir Data/EntityFramework/Generated_CompiledModels \
   --namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels \
-  --project 3-Infrastructure/PrayerTimeEngine.Infrastructure/PrayerTimeEngine.Infrastructure.csproj
+  --project Infrastructure/PrayerTimeEngine.Infrastructure/PrayerTimeEngine.Infrastructure.csproj
 ```
 
 ## Pull requests created by Claude

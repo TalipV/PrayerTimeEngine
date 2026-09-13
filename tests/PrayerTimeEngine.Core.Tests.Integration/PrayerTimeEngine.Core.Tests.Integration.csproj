@@ -14,9 +14,9 @@
 
   <ItemGroup>
     <ProjectReference Include="..\PrayerTimeEngine.Core.Tests.Common\PrayerTimeEngine.Core.Tests.Common.csproj" />
-    <ProjectReference Include="..\..\1-Domain\PrayerTimeEngine.Domain\PrayerTimeEngine.Domain.csproj" />
-    <ProjectReference Include="..\..\2-Application\PrayerTimeEngine.Application\PrayerTimeEngine.Application.csproj" />
-    <ProjectReference Include="..\..\3-Infrastructure\PrayerTimeEngine.Infrastructure\PrayerTimeEngine.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\Domain\PrayerTimeEngine.Domain\PrayerTimeEngine.Domain.csproj" />
+    <ProjectReference Include="..\..\Application\PrayerTimeEngine.Application\PrayerTimeEngine.Application.csproj" />
+    <ProjectReference Include="..\..\Infrastructure\PrayerTimeEngine.Infrastructure\PrayerTimeEngine.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

@@ -8,7 +8,7 @@
   -->
 
   <ItemGroup>
-    <ProjectReference Include="..\..\1-Domain\PrayerTimeEngine.Domain\PrayerTimeEngine.Domain.csproj" />
+    <ProjectReference Include="..\..\Domain\PrayerTimeEngine.Domain\PrayerTimeEngine.Domain.csproj" />
   </ItemGroup>
 
   <ItemGroup>
