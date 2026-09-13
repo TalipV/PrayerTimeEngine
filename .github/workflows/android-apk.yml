@@ -94,7 +94,7 @@ jobs:
 
       - name: Build Debug APK
         run: >
-          dotnet build 4-Presentation/PrayerTimeEngine.MAUI/PrayerTimeEngine.MAUI.csproj
+          dotnet build Presentation/PrayerTimeEngine.MAUI/PrayerTimeEngine.MAUI.csproj
           -c Debug -f net10.0-android -t:SignAndroidPackage
           -p:AndroidKeyStore=true
           -p:AndroidSigningKeyStore="$RUNNER_TEMP/signing.keystore"
@@ -104,7 +104,7 @@ jobs:
 
       - name: Build Release APK
         run: >
-          dotnet publish 4-Presentation/PrayerTimeEngine.MAUI/PrayerTimeEngine.MAUI.csproj
+          dotnet publish Presentation/PrayerTimeEngine.MAUI/PrayerTimeEngine.MAUI.csproj
           -c Release -f net10.0-android
           -p:EnableLLVM=false
           -p:AndroidKeyStore=true
@@ -116,9 +116,9 @@ jobs:
       - name: Collect APKs
         run: |
           mkdir -p out
-          cp 4-Presentation/PrayerTimeEngine.MAUI/bin/Debug/net10.0-android/*-Signed.apk \
+          cp Presentation/PrayerTimeEngine.MAUI/bin/Debug/net10.0-android/*-Signed.apk \
              "out/PrayerTimeEngine_${BUILD_DATE}_debug.apk"
-          cp 4-Presentation/PrayerTimeEngine.MAUI/bin/Release/net10.0-android/*-Signed.apk \
+          cp Presentation/PrayerTimeEngine.MAUI/bin/Release/net10.0-android/*-Signed.apk \
              "out/PrayerTimeEngine_${BUILD_DATE}_release.apk"
           ls -lh out
 

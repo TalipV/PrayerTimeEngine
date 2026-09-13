@@ -8,7 +8,7 @@
   -->
 
   <ItemGroup>
-    <ProjectReference Include="..\..\2-Application\PrayerTimeEngine.Application\PrayerTimeEngine.Application.csproj" />
+    <ProjectReference Include="..\..\Application\PrayerTimeEngine.Application\PrayerTimeEngine.Application.csproj" />
   </ItemGroup>
 
   <ItemGroup>
