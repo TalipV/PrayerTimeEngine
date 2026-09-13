@@ -1,0 +1,36 @@
+﻿using NodaTime;
+using PrayerTimeEngine.Core.Data.EntityFramework;
+
+namespace PrayerTimeEngine.Core.Domain.PlaceManagement.Models;
+
+public class TimezoneInfo : IEntity
+{
+    public int ID { get; set; }
+    public Instant? InsertInstant { get; set; }
+
+    public string DisplayName { get; set; }
+    public string Name { get; set; }
+    public int UtcOffsetSeconds { get; set; }
+
+    #region System.Object overrides
+
+    public override bool Equals(object obj)
+    {
+        if (obj is not TimezoneInfo other)
+        {
+            return false;
+        }
+
+        return ID == other.ID &&
+               DisplayName == other.DisplayName &&
+               Name == other.Name &&
+               UtcOffsetSeconds == other.UtcOffsetSeconds;
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(ID, DisplayName, Name, UtcOffsetSeconds);
+    }
+
+    #endregion System.Object overrides
+}

@@ -1,0 +1,30 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    ONION RING 2 — Application.
+    Use-case orchestration: provider managers, factories, the concrete
+    prayer-time providers, ProfileService and configuration import/export.
+    Depends INWARD on Domain only. No EF Core / Refit / HTTP here either.
+  -->
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Domain\PrayerTimeEngine.Domain\PrayerTimeEngine.Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="PrayerTimeEngine.Infrastructure" />
+    <InternalsVisibleTo Include="PrayerTimeEngine.Core.Tests.Unit" />
+    <InternalsVisibleTo Include="PrayerTimeEngine.Core.Tests.Integration" />
+    <InternalsVisibleTo Include="PrayerTimeEngine.Core.Tests.Common" />
+    <InternalsVisibleTo Include="PrayerTimeEngine.BenchmarkDotNet" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="NodaTime" Version="3.3.3" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.12" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.12" />
+    <PackageReference Include="AsyncAwaitBestPractices" Version="10.0.0" />
+    <PackageReference Include="AsyncKeyedLock" Version="8.0.2" />
+  </ItemGroup>
+
+</Project>

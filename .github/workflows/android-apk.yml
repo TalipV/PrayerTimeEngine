@@ -28,26 +28,24 @@ jobs:
       # Restore + build while the network is still available (NuGet needs it).
       - name: Build test projects
         run: |
-          dotnet build PrayerTimeEngine.Core.Tests.Unit/PrayerTimeEngine.Core.Tests.Unit.csproj -c Release
-          dotnet build PrayerTimeEngine.Core.Tests.Integration/PrayerTimeEngine.Core.Tests.Integration.csproj -c Release
+          dotnet build tests/PrayerTimeEngine.Core.Tests.Unit/PrayerTimeEngine.Core.Tests.Unit.csproj -c Release
+          dotnet build tests/PrayerTimeEngine.Core.Tests.Integration/PrayerTimeEngine.Core.Tests.Integration.csproj -c Release
 
       # Run tests with outbound network blocked, so any test that tries to reach a
       # live API fails immediately instead of silently passing. Existing (runner)
       # connections and loopback stay open; new outbound connections are rejected.
-      # The intentional live-API tests (named *WithLiveApi*) are excluded here on
-      # purpose; the block then only catches tests that reach the network by mistake.
+      # Intentional live-API tests live in PrayerTimeEngine.Core.Tests.Live, which is
+      # not built here and runs in the separate live-api-tests workflow instead.
       - name: Run tests offline
         run: |
           sudo iptables -A OUTPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
           sudo iptables -A OUTPUT -o lo -j ACCEPT
           sudo iptables -A OUTPUT -j REJECT
           trap 'sudo iptables -F OUTPUT' EXIT
-          dotnet test PrayerTimeEngine.Core.Tests.Unit/PrayerTimeEngine.Core.Tests.Unit.csproj \
-            -c Release --no-build --filter "FullyQualifiedName!~WithLiveApi" \
-            --logger "trx;LogFileName=unit.trx" --results-directory TestResults
-          dotnet test PrayerTimeEngine.Core.Tests.Integration/PrayerTimeEngine.Core.Tests.Integration.csproj \
-            -c Release --no-build --filter "FullyQualifiedName!~WithLiveApi" \
-            --logger "trx;LogFileName=integration.trx" --results-directory TestResults
+          dotnet test tests/PrayerTimeEngine.Core.Tests.Unit/PrayerTimeEngine.Core.Tests.Unit.csproj \
+            -c Release --no-build --logger "trx;LogFileName=unit.trx" --results-directory TestResults
+          dotnet test tests/PrayerTimeEngine.Core.Tests.Integration/PrayerTimeEngine.Core.Tests.Integration.csproj \
+            -c Release --no-build --logger "trx;LogFileName=integration.trx" --results-directory TestResults
 
       - name: Test report
         if: always()
@@ -96,7 +94,7 @@ jobs:
 
       - name: Build Debug APK
         run: >
-          dotnet build PrayerTimeEngine.MAUI/PrayerTimeEngine.MAUI.csproj
+          dotnet build Presentation/PrayerTimeEngine.MAUI/PrayerTimeEngine.MAUI.csproj
           -c Debug -f net10.0-android -t:SignAndroidPackage
           -p:AndroidKeyStore=true
           -p:AndroidSigningKeyStore="$RUNNER_TEMP/signing.keystore"
@@ -106,7 +104,7 @@ jobs:
 
       - name: Build Release APK
         run: >
-          dotnet publish PrayerTimeEngine.MAUI/PrayerTimeEngine.MAUI.csproj
+          dotnet publish Presentation/PrayerTimeEngine.MAUI/PrayerTimeEngine.MAUI.csproj
           -c Release -f net10.0-android
           -p:EnableLLVM=false
           -p:AndroidKeyStore=true
@@ -118,9 +116,9 @@ jobs:
       - name: Collect APKs
         run: |
           mkdir -p out
-          cp PrayerTimeEngine.MAUI/bin/Debug/net10.0-android/*-Signed.apk \
+          cp Presentation/PrayerTimeEngine.MAUI/bin/Debug/net10.0-android/*-Signed.apk \
              "out/PrayerTimeEngine_${BUILD_DATE}_debug.apk"
-          cp PrayerTimeEngine.MAUI/bin/Release/net10.0-android/*-Signed.apk \
+          cp Presentation/PrayerTimeEngine.MAUI/bin/Release/net10.0-android/*-Signed.apk \
              "out/PrayerTimeEngine_${BUILD_DATE}_release.apk"
           ls -lh out
 
