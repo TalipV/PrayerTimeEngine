@@ -32,6 +32,7 @@ public class PrayerTimeSummaryNotification : Service
 
     private readonly IProfileService _profileService;
     private readonly IDynamicPrayerTimeProviderManager _prayerTimeDynamicPrayerTimeProviderManager;
+    private readonly IMosquePrayerTimeProviderManager _mosquePrayerTimeProviderManager;
     private readonly ILogger<PrayerTimeSummaryNotification> _logger;
     private readonly ISystemInfoService _systemInfoService;
 
@@ -39,6 +40,7 @@ public class PrayerTimeSummaryNotification : Service
     {
         _profileService = MauiProgram.ServiceProvider.GetRequiredService<IProfileService>();
         _prayerTimeDynamicPrayerTimeProviderManager = MauiProgram.ServiceProvider.GetRequiredService<IDynamicPrayerTimeProviderManager>();
+        _mosquePrayerTimeProviderManager = MauiProgram.ServiceProvider.GetRequiredService<IMosquePrayerTimeProviderManager>();
         _logger = MauiProgram.ServiceProvider.GetRequiredService<ILogger<PrayerTimeSummaryNotification>>();
         _systemInfoService = MauiProgram.ServiceProvider.GetRequiredService<ISystemInfoService>();
 
@@ -96,26 +98,22 @@ public class PrayerTimeSummaryNotification : Service
             return;
         }
 
-        // wait 5 seconds at max
-        using (var cancellationTokenSource = new CancellationTokenSource(delay: TimeSpan.FromMilliseconds(MAXIMUM_UPDATE_WAITING_DURATION_MS)))
+        // The per-second render must never do (cancellable) network work - it only reads already
+        // calculated times from the manager's in-memory cache. The short timeout therefore only guards
+        // the local profile read, which cannot legitimately take seconds.
+        using (var renderCancellationTokenSource = new CancellationTokenSource(delay: TimeSpan.FromMilliseconds(MAXIMUM_UPDATE_WAITING_DURATION_MS)))
         {
             try
             {
-                List<Profile> profiles = await _profileService.GetProfiles(cancellationTokenSource.Token);
+                List<Profile> profiles = await _profileService.GetProfiles(renderCancellationTokenSource.Token);
 
                 // potential for performance improvement
                 DynamicProfile mainProfile = profiles.OfType<DynamicProfile>().FirstOrDefault();
-                Profile[] otherProfiles = profiles.Except([mainProfile]).ToArray();
 
-                if (otherProfiles.Length != 0)
-                {
-                    // add cancellation token for general shut down requests (timeout not really needed)
-                    ensureSureOtherProfilesLoadedOnceADay(otherProfiles, CancellationToken.None)
-                        .SafeFireAndForget(exception =>
-                        {
-                            _logger.LogError(exception, "Error while trying to load data of other profiles");
-                        });
-                }
+                // Loading the prayer times (potentially over the network) happens off this per-second
+                // render path, with its own generous timeout, so a slow first fetch can never be canceled
+                // by the short render timeout above. Deduplicated so overlapping ticks don't stack.
+                ensureProfilesLoadedInBackground(profiles, mainProfile);
 
                 var notificationBuilder = getNotificationBuilder();
 
@@ -128,7 +126,7 @@ public class PrayerTimeSummaryNotification : Service
                     applyContent(
                         notificationBuilder,
                         profileInfo: mainProfile.PlaceInfo.City,
-                        await getProgress(mainProfile, cancellationTokenSource.Token));
+                        getProgress(mainProfile));
                 }
 
                 var context = global::Android.App.Application.Context;
@@ -209,15 +207,15 @@ public class PrayerTimeSummaryNotification : Service
     /// between Fajr-End and Duha-Start, in which case no progress is shown at all.
     /// </para>
     /// </summary>
-    private async Task<CurrentTimeProgress?> getProgress(DynamicProfile profile, CancellationToken cancellationToken)
+    private CurrentTimeProgress? getProgress(DynamicProfile profile)
     {
         ZonedDateTime now = _profileService.GetCurrentZonedDateTime(profile);
 
-        DynamicPrayerTimesDaySet prayerTimeBundle =
-            (await _prayerTimeDynamicPrayerTimeProviderManager.CalculatePrayerTimesAsync(
-                profile.ID,
-                now,
-                cancellationToken)).DynamicPrayerTimesDaySet;
+        // read-only: never trigger a calculation here. If the times aren't calculated yet (first run,
+        // or after a reboot before the background load finished) simply show no progress instead of
+        // forcing a network fetch under the short render timeout.
+        if (!_prayerTimeDynamicPrayerTimeProviderManager.TryGetCachedPrayerTimes(profile.ID, now, out DynamicPrayerTimesDaySet prayerTimeBundle))
+            return null;
 
         Instant nowInstant = now.ToInstant();
         GenericPrayerTime? currentTime = null;
@@ -495,34 +493,74 @@ public class PrayerTimeSummaryNotification : Service
     }
 
     private LocalDate _lastLoadedDate = new LocalDate(2000, 1, 1);
+    private int isLoadInProgress = 0;
 
-    private async Task ensureSureOtherProfilesLoadedOnceADay(Profile[] profiles, CancellationToken cancellationToken)
+    /// <summary>
+    /// Ensures the prayer times of all profiles are calculated (and thereby cached) for the current day,
+    /// off the per-second render path. The actual fetch may need the network, so it runs with a generous
+    /// timeout (bounded by the HttpClient/resilience pipeline) instead of the short render timeout.
+    /// Deduplicated so overlapping timer ticks never stack, and retried on the next tick until the main
+    /// profile is available so a failed first fetch doesn't leave the notification blank all day.
+    /// </summary>
+    private void ensureProfilesLoadedInBackground(List<Profile> profiles, DynamicProfile mainProfile)
     {
         ZonedDateTime currentZonedDateTime = _systemInfoService.GetCurrentZonedDateTime();
 
-        if (profiles.Length == 0 || _lastLoadedDate == currentZonedDateTime.Date)
-        {
+        if (profiles.Count == 0 || _lastLoadedDate == currentZonedDateTime.Date)
             return;
-        }
 
-        foreach (Profile profile in profiles)
+        // when isLoadInProgress equals "not in progress", set it to "in progress" and return the previous
+        // value. If a load is already running, skip this tick instead of starting a second one.
+        if (Interlocked.CompareExchange(ref isLoadInProgress, value: trueInt, comparand: falseInt) == trueInt)
+            return;
+
+        loadProfilesData(profiles, mainProfile, currentZonedDateTime)
+            .SafeFireAndForget(exception =>
+            {
+                _logger.LogError(exception, "Error while loading prayer time data for the notification");
+            });
+    }
+
+    private async Task loadProfilesData(List<Profile> profiles, DynamicProfile mainProfile, ZonedDateTime currentZonedDateTime)
+    {
+        try
         {
-            if (profile is DynamicProfile dynamicProfile)
+            // load the rendered (main) profile first so the notification comes alive as soon as possible
+            IEnumerable<Profile> orderedProfiles =
+                mainProfile is null
+                    ? profiles
+                    : profiles.OrderByDescending(profile => ReferenceEquals(profile, mainProfile));
+
+            foreach (Profile profile in orderedProfiles)
             {
-                var dynamicPrayerTimeProviderManager = MauiProgram.ServiceProvider.GetRequiredService<IDynamicPrayerTimeProviderManager>();
-                await dynamicPrayerTimeProviderManager.CalculatePrayerTimesAsync(dynamicProfile.ID, currentZonedDateTime, cancellationToken);
+                // No timeout token on purpose: this initial fetch may hit the network and is already
+                // bounded by the HttpClient/resilience timeouts. Keeping it off the per-second render path
+                // is exactly what prevents the short render timeout from canceling a slow first request.
+                if (profile is DynamicProfile dynamicProfile)
+                {
+                    await _prayerTimeDynamicPrayerTimeProviderManager.CalculatePrayerTimesAsync(dynamicProfile.ID, currentZonedDateTime, CancellationToken.None);
+                }
+                else if (profile is MosqueProfile mosqueProfile)
+                {
+                    await _mosquePrayerTimeProviderManager.CalculatePrayerTimesAsync(mosqueProfile.ID, currentZonedDateTime, CancellationToken.None);
+                }
+                else
+                {
+                    throw new NotImplementedException($"Type of profile '{profile?.GetType().ToString() ?? "NULL"}' is not implemented");
+                }
             }
-            else if (profile is MosqueProfile mosqueProfile)
+
+            // only consider the day loaded once the profile the notification renders is actually cached,
+            // so a failed fetch is retried on the next tick instead of being skipped for the rest of the day
+            if (mainProfile is null
+                || _prayerTimeDynamicPrayerTimeProviderManager.TryGetCachedPrayerTimes(mainProfile.ID, currentZonedDateTime, out _))
             {
-                var mosquePrayerTimeProviderManager = MauiProgram.ServiceProvider.GetRequiredService<IMosquePrayerTimeProviderManager>();
-                await mosquePrayerTimeProviderManager.CalculatePrayerTimesAsync(mosqueProfile.ID, currentZonedDateTime, cancellationToken);
-            }
-            else
-            {
-                throw new NotImplementedException($"Type of profile '{profile?.GetType().ToString() ?? "NULL"}' is not implemented");
+                _lastLoadedDate = currentZonedDateTime.Date;
             }
         }
-
-        _lastLoadedDate = currentZonedDateTime.Date;
+        finally
+        {
+            Interlocked.Exchange(ref isLoadInProgress, falseInt);
+        }
     }
 }
