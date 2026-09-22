@@ -1,4 +1,5 @@
-﻿using BruTile.Predefined;
+﻿using BruTile.Cache;
+using BruTile.Predefined;
 using ExCSS;
 using Mapsui;
 using Mapsui.Layers;
@@ -26,6 +27,20 @@ public sealed partial class QiblahMapPage : ContentPage
     // contact URL.
     private static readonly string OSM_USER_AGENT =
         $"PrayerTimeEngine/{AppInfo.Current.VersionString} (+https://github.com/TalipV/PrayerTimeEngine)";
+
+    // The OSM tile usage policy requires tiles to be cached locally (min. 7 days) instead of
+    // being re-downloaded for repeated views. Mapsui only keeps an in-memory cache by default,
+    // which is lost on every app restart, so we provide a persistent one on disk.
+    // DefaultCache is read by CreateTileLayer, hence it has to be set before that call.
+    private static readonly TimeSpan OSM_TILE_CACHE_DURATION = TimeSpan.FromDays(30);
+
+    static QiblahMapPage()
+    {
+        OpenStreetMap.DefaultCache ??= new FileCache(
+            directory: Path.Combine(FileSystem.CacheDirectory, "osm-tiles"),
+            format: "png",
+            cacheExpireTime: OSM_TILE_CACHE_DURATION);
+    }
 
     private static int _isRefreshingLocation = 0;
 
