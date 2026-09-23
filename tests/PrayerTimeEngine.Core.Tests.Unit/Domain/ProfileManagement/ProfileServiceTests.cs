@@ -97,6 +97,59 @@ public class ProfileServiceTests : BaseTest
 
     #endregion SaveProfile
 
+    #region DeleteProfile
+
+    [Fact]
+    [Trait("Method", "DeleteProfile")]
+    public async Task DeleteProfile_DynamicProfileWithOtherDynamicProfilesLeft_DbDeleteTriggered()
+    {
+        // ARRANGE
+        var profileToDelete = TestDataHelper.CreateCompleteTestDynamicProfile(profileID: 1);
+        var otherProfile = TestDataHelper.CreateCompleteTestDynamicProfile(profileID: 2);
+        _profileRepositoryMock.GetProfiles(Arg.Any<CancellationToken>()).Returns([profileToDelete, otherProfile]);
+
+        // ACT
+        await _profileService.DeleteProfile(profileToDelete, default);
+
+        // ASSERT
+        await _profileRepositoryMock.Received(1).DeleteProfile(Arg.Is(profileToDelete), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    [Trait("Method", "DeleteProfile")]
+    public async Task DeleteProfile_LastDynamicProfile_ThrowsAndDoesNotDelete()
+    {
+        // ARRANGE
+        var profileToDelete = TestDataHelper.CreateCompleteTestDynamicProfile(profileID: 1);
+        var mosqueProfile = TestDataHelper.CreateCompleteTestMosqueProfile(profileID: 2);
+        _profileRepositoryMock.GetProfiles(Arg.Any<CancellationToken>()).Returns([profileToDelete, mosqueProfile]);
+
+        // ACT
+        Func<Task> execution = () => _profileService.DeleteProfile(profileToDelete, default);
+
+        // ASSERT
+        await execution.Should().ThrowAsync<InvalidOperationException>();
+        await _profileRepositoryMock.DidNotReceiveWithAnyArgs().DeleteProfile(default, default);
+    }
+
+    [Fact]
+    [Trait("Method", "DeleteProfile")]
+    public async Task DeleteProfile_LastMosqueProfile_DbDeleteTriggered()
+    {
+        // ARRANGE
+        var dynamicProfile = TestDataHelper.CreateCompleteTestDynamicProfile(profileID: 1);
+        var mosqueProfileToDelete = TestDataHelper.CreateCompleteTestMosqueProfile(profileID: 2);
+        _profileRepositoryMock.GetProfiles(Arg.Any<CancellationToken>()).Returns([dynamicProfile, mosqueProfileToDelete]);
+
+        // ACT
+        await _profileService.DeleteProfile(mosqueProfileToDelete, default);
+
+        // ASSERT
+        await _profileRepositoryMock.Received(1).DeleteProfile(Arg.Is(mosqueProfileToDelete), Arg.Any<CancellationToken>());
+    }
+
+    #endregion DeleteProfile
+
     #region GetTimeConfig
 
     [Theory]
