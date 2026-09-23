@@ -558,6 +558,13 @@ public class PrayerTimeSummaryNotification : Service
             {
                 _lastLoadedDate = currentZonedDateTime.Date;
             }
+            else
+            {
+                _logger.LogWarning(
+                    "Prayer times for the rendered profile {ProfileID} are still not available after loading for {Date}; day will be retried on the next tick",
+                    mainProfile.ID,
+                    currentZonedDateTime.Date);
+            }
         }
         finally
         {
