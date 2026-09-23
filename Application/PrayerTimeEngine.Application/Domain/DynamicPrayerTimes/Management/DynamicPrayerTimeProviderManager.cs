@@ -55,7 +55,7 @@ public class DynamicPrayerTimeProviderManager(
         return false;
     }
 
-    public bool TryGetCachedPrayerTimes(int profileID, ZonedDateTime date, out DynamicPrayerTimesDaySet daySet)
+    public bool TryGetAlreadyCalculatedPrayerTimes(int profileID, ZonedDateTime date, out DynamicPrayerTimesDaySet daySet)
     {
         // normalize identically to CalculatePrayerTimesAsync so the cache key (start of day) matches
         date = date.LocalDateTime.Date.AtStartOfDayInZone(date.Zone);

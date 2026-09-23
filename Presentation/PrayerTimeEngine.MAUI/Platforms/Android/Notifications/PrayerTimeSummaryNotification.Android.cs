@@ -214,7 +214,7 @@ public class PrayerTimeSummaryNotification : Service
         // read-only: never trigger a calculation here. If the times aren't calculated yet (first run,
         // or after a reboot before the background load finished) simply show no progress instead of
         // forcing a network fetch under the short render timeout.
-        if (!_prayerTimeDynamicPrayerTimeProviderManager.TryGetCachedPrayerTimes(profile.ID, now, out DynamicPrayerTimesDaySet prayerTimeBundle))
+        if (!_prayerTimeDynamicPrayerTimeProviderManager.TryGetAlreadyCalculatedPrayerTimes(profile.ID, now, out DynamicPrayerTimesDaySet prayerTimeBundle))
             return null;
 
         Instant nowInstant = now.ToInstant();
@@ -553,7 +553,7 @@ public class PrayerTimeSummaryNotification : Service
             // only consider the day loaded once the profile the notification renders is actually cached,
             // so a failed fetch is retried on the next tick instead of being skipped for the rest of the day
             if (mainProfile is null
-                || _prayerTimeDynamicPrayerTimeProviderManager.TryGetCachedPrayerTimes(mainProfile.ID, currentZonedDateTime, out _))
+                || _prayerTimeDynamicPrayerTimeProviderManager.TryGetAlreadyCalculatedPrayerTimes(mainProfile.ID, currentZonedDateTime, out _))
             {
                 _lastLoadedDate = currentZonedDateTime.Date;
             }
