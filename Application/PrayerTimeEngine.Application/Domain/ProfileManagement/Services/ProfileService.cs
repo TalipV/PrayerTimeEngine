@@ -286,6 +286,17 @@ public class ProfileService(
 
     public async Task DeleteProfile(Profile profile, CancellationToken cancellationToken)
     {
+        // Es muss immer mindestens ein DynamicProfile geben; das letzte darf nicht gelöscht werden.
+        // MosqueProfiles unterliegen dieser Einschränkung nicht.
+        if (profile is DynamicProfile)
+        {
+            List<Profile> existingProfiles = await profileRepository.GetProfiles(cancellationToken).ConfigureAwait(false);
+            bool anyOtherDynamicProfileExists = existingProfiles.OfType<DynamicProfile>().Any(x => x.ID != profile.ID);
+
+            if (!anyOtherDynamicProfileExists)
+                throw new InvalidOperationException("Das letzte dynamische Profil kann nicht gelöscht werden. Es muss immer mindestens ein dynamisches Profil vorhanden sein.");
+        }
+
         await profileRepository.DeleteProfile(profile, cancellationToken).ConfigureAwait(false);
         bumpProfileVersion(profile.ID);
     }
