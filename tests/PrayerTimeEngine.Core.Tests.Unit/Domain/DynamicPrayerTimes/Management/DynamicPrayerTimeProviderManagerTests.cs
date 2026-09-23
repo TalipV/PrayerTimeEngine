@@ -417,17 +417,17 @@ public class DynamicPrayerTimeProviderManagerTests : BaseTest
 
     #endregion CalculatePrayerTimesAsync
 
-    #region TryGetCachedPrayerTimes
+    #region TryGetAlreadyCalculatedPrayerTimes
 
     [Fact]
-    public void TryGetCachedPrayerTimes_NothingCalculatedYet_ReturnsFalseWithoutCalculating()
+    public void TryGetAlreadyCalculatedPrayerTimes_NothingCalculatedYet_ReturnsFalseWithoutCalculating()
     {
         // ARRANGE
         var profile = TestDataHelper.CreateCompleteTestDynamicProfile();
         ZonedDateTime zonedDate = new LocalDate(2024, 1, 1).AtStartOfDayInZone(DateTimeZone.Utc);
 
         // ACT
-        bool found = _dynamicPrayerTimeProviderManager.TryGetCachedPrayerTimes(profile.ID, zonedDate, out DynamicPrayerTimesDaySet daySet);
+        bool found = _dynamicPrayerTimeProviderManager.TryGetAlreadyCalculatedPrayerTimes(profile.ID, zonedDate, out DynamicPrayerTimesDaySet daySet);
 
         // ASSERT
         found.Should().BeFalse();
@@ -438,7 +438,7 @@ public class DynamicPrayerTimeProviderManagerTests : BaseTest
     }
 
     [Fact]
-    public async Task TryGetCachedPrayerTimes_AfterSuccessfulCalculation_ReturnsCachedDaySetWithoutRecalculating()
+    public async Task TryGetAlreadyCalculatedPrayerTimes_AfterSuccessfulCalculation_ReturnsCachedDaySetWithoutRecalculating()
     {
         // ARRANGE
         var profile = TestDataHelper.CreateCompleteTestDynamicProfile();
@@ -465,7 +465,7 @@ public class DynamicPrayerTimeProviderManagerTests : BaseTest
 
         // ACT
         // a different time on the same day must resolve to the same cached (start of day) entry
-        bool found = _dynamicPrayerTimeProviderManager.TryGetCachedPrayerTimes(profile.ID, zonedDate.PlusHours(10), out DynamicPrayerTimesDaySet daySet);
+        bool found = _dynamicPrayerTimeProviderManager.TryGetAlreadyCalculatedPrayerTimes(profile.ID, zonedDate.PlusHours(10), out DynamicPrayerTimesDaySet daySet);
 
         // ASSERT
         found.Should().BeTrue();
@@ -476,7 +476,7 @@ public class DynamicPrayerTimeProviderManagerTests : BaseTest
     }
 
     [Fact]
-    public async Task TryGetCachedPrayerTimes_ForOtherDateThanCalculated_ReturnsFalse()
+    public async Task TryGetAlreadyCalculatedPrayerTimes_ForOtherDateThanCalculated_ReturnsFalse()
     {
         // ARRANGE
         var profile = TestDataHelper.CreateCompleteTestDynamicProfile();
@@ -503,14 +503,14 @@ public class DynamicPrayerTimeProviderManagerTests : BaseTest
         await _dynamicPrayerTimeProviderManager.CalculatePrayerTimesAsync(profile.ID, calculatedDate, default);
 
         // ACT
-        bool found = _dynamicPrayerTimeProviderManager.TryGetCachedPrayerTimes(profile.ID, otherDate, out DynamicPrayerTimesDaySet daySet);
+        bool found = _dynamicPrayerTimeProviderManager.TryGetAlreadyCalculatedPrayerTimes(profile.ID, otherDate, out DynamicPrayerTimesDaySet daySet);
 
         // ASSERT
         found.Should().BeFalse();
         daySet.Should().BeNull();
     }
 
-    #endregion TryGetCachedPrayerTimes
+    #endregion TryGetAlreadyCalculatedPrayerTimes
 
     #region cancellation handling
 
@@ -549,7 +549,7 @@ public class DynamicPrayerTimeProviderManagerTests : BaseTest
             _dynamicPrayerTimeProviderManager.CalculatePrayerTimesAsync(profile.ID, zonedDate, cancellationTokenSource.Token));
 
         // a canceled calculation must not be cached
-        _dynamicPrayerTimeProviderManager.TryGetCachedPrayerTimes(profile.ID, zonedDate, out _).Should().BeFalse();
+        _dynamicPrayerTimeProviderManager.TryGetAlreadyCalculatedPrayerTimes(profile.ID, zonedDate, out _).Should().BeFalse();
     }
 
     #endregion cancellation handling
