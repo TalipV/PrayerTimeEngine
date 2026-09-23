@@ -108,7 +108,7 @@ public class PrayerTimeSummaryNotification : Service
                 List<Profile> profiles = await _profileService.GetProfiles(renderCancellationTokenSource.Token);
 
                 // potential for performance improvement
-                DynamicProfile mainProfile = profiles.OfType<DynamicProfile>().FirstOrDefault();
+                DynamicProfile mainProfile = profiles.OfType<DynamicProfile>().OrderBy(x => x.SequenceNo).First();
 
                 // Loading the prayer times (potentially over the network) happens off this per-second
                 // render path, with its own generous timeout, so a slow first fetch can never be canceled
@@ -214,8 +214,13 @@ public class PrayerTimeSummaryNotification : Service
         // read-only: never trigger a calculation here. If the times aren't calculated yet (first run,
         // or after a reboot before the background load finished) simply show no progress instead of
         // forcing a network fetch under the short render timeout.
-        if (!_prayerTimeDynamicPrayerTimeProviderManager.TryGetAlreadyCalculatedPrayerTimes(profile.ID, now, out DynamicPrayerTimesDaySet prayerTimeBundle))
+        if (!_prayerTimeDynamicPrayerTimeProviderManager.TryGetAlreadyCalculatedPrayerTimes(
+                profile.ID, 
+                now, 
+                out DynamicPrayerTimesDaySet prayerTimeBundle))
+        {
             return null;
+        }
 
         Instant nowInstant = now.ToInstant();
         GenericPrayerTime? currentTime = null;
@@ -526,10 +531,7 @@ public class PrayerTimeSummaryNotification : Service
         try
         {
             // load the rendered (main) profile first so the notification comes alive as soon as possible
-            IEnumerable<Profile> orderedProfiles =
-                mainProfile is null
-                    ? profiles
-                    : profiles.OrderByDescending(profile => ReferenceEquals(profile, mainProfile));
+            IEnumerable<Profile> orderedProfiles = profiles.OrderByDescending(profile => ReferenceEquals(profile, mainProfile));
 
             foreach (Profile profile in orderedProfiles)
             {
@@ -552,8 +554,7 @@ public class PrayerTimeSummaryNotification : Service
 
             // only consider the day loaded once the profile the notification renders is actually cached,
             // so a failed fetch is retried on the next tick instead of being skipped for the rest of the day
-            if (mainProfile is null
-                || _prayerTimeDynamicPrayerTimeProviderManager.TryGetAlreadyCalculatedPrayerTimes(mainProfile.ID, currentZonedDateTime, out _))
+            if (_prayerTimeDynamicPrayerTimeProviderManager.TryGetAlreadyCalculatedPrayerTimes(mainProfile.ID, currentZonedDateTime, out _))
             {
                 _lastLoadedDate = currentZonedDateTime.Date;
             }
