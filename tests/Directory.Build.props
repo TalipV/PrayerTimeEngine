@@ -1,0 +1,27 @@
+﻿<Project>
+
+  <!-- Inherit the repo-wide settings (TargetFramework, Nullable, ImplicitUsings, ...). -->
+  <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))" />
+
+  <!-- Shared by every project under tests/ - defined once here instead of per project. -->
+  <PropertyGroup>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+  </PropertyGroup>
+
+  <!--
+    The test host stack. Microsoft.NET.Test.Sdk must be referenced directly by each
+    test project (it wires up the test host and cannot be inherited transitively via a
+    ProjectReference), so it lives here to avoid repeating it in every test .csproj.
+    Assertion/mocking libraries (xunit, NSubstitute, AwesomeAssertions) stay in
+    Tests.Common and flow to the others transitively.
+  -->
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.10.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="4.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+</Project>
