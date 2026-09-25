@@ -9,8 +9,10 @@ using Mapsui.Styles;
 using Mapsui.Tiling;
 using Mapsui.Tiling.Layers;
 using Mapsui.UI.Maui;
+using Microsoft.Extensions.Logging;
 using NetTopologySuite.Geometries;
 using PrayerTimeEngine.Extensions;
+using PrayerTimeEngine.Presentation.Services;
 using Brush = Mapsui.Styles.Brush;
 using Color = Mapsui.Styles.Color;
 using Polygon = NetTopologySuite.Geometries.Polygon;
@@ -44,6 +46,9 @@ public sealed partial class QiblahMapPage : ContentPage
 
     private static int _isRefreshingLocation = 0;
 
+    private readonly ToastMessageService _toastMessageService;
+    private readonly ILogger<QiblahMapPage> _logger;
+
     private readonly MapControl _mapControl = new MapControl();
     private readonly TileLayer _tileLayer;
     private readonly MemoryLayer _qiblahLineLayer;
@@ -51,8 +56,13 @@ public sealed partial class QiblahMapPage : ContentPage
 
     private (MPoint Point, double QiblahAngle) _currentPoint = (KAABA_COORDINATES, 0);
 
-    public QiblahMapPage()
+    public QiblahMapPage(
+        ToastMessageService toastMessageService,
+        ILogger<QiblahMapPage> logger)
     {
+        this._toastMessageService = toastMessageService;
+        this._logger = logger;
+
         this._mapControl.Map = new Mapsui.Map();
         configureZoomLevel();
 
@@ -93,17 +103,38 @@ public sealed partial class QiblahMapPage : ContentPage
         };
 
         this._mapControl.MapTapped += this._mapControl_MapTapped;
-        _mapControl.Map.Navigator.ViewportChanged += navigator_ViewportChanged;
     }
 
     private async void locateButton_Clicked(object sender, EventArgs e)
     {
-        var point = await getCurrentLocation();
-        if (point == null)
-            return;
+        await locateAndShowCurrentPosition();
+    }
 
-        setCurrentPoint(point);
-        refreshCurrentPoint();
+    /// <summary>
+    /// Determines the device location and shows the qiblah direction for it.
+    /// </summary>
+    /// <remarks>
+    /// Called from async void event handlers (OnAppearing, button click), so no exception may escape
+    /// from here: an unhandled exception in an async void method crashes the whole app. This is exactly
+    /// what happened when the location service of the device was switched off
+    /// (<see cref="FeatureNotEnabledException"/>).
+    /// </remarks>
+    private async Task locateAndShowCurrentPosition()
+    {
+        try
+        {
+            MPoint? point = await getCurrentLocation();
+            if (point is null)
+                return;
+
+            setCurrentPoint(point);
+            refreshCurrentPoint();
+        }
+        catch (Exception exception)
+        {
+            _logger.LogError(exception, "Error while showing the qiblah for the current location");
+            _toastMessageService.ShowError(exception.Message);
+        }
     }
 
     private void configureZoomLevel()
@@ -148,8 +179,11 @@ public sealed partial class QiblahMapPage : ContentPage
     {
         base.OnAppearing();
 
-        setCurrentPoint(await getCurrentLocation());
-        refreshCurrentPoint();
+        // subscribed here instead of in the constructor so that it is symmetrical to OnDisappearing
+        _mapControl.Map.Navigator.ViewportChanged -= navigator_ViewportChanged;
+        _mapControl.Map.Navigator.ViewportChanged += navigator_ViewportChanged;
+
+        await locateAndShowCurrentPosition();
     }
 
     private void setCurrentPoint(MPoint newPoint)
@@ -212,24 +246,95 @@ public sealed partial class QiblahMapPage : ContentPage
                 sweepDeg: fullToleranceAngle);
     }
 
-    private static async Task<MPoint> getCurrentLocation()
+    /// <returns>The current location or <c>null</c> if it could not be determined (the user has already been informed in that case).</returns>
+    private async Task<MPoint?> getCurrentLocation()
     {
-        var location = await Geolocation.GetLastKnownLocationAsync();
+        Location? location;
+
+        try
+        {
+            location = await Geolocation.GetLastKnownLocationAsync();
+
+            if (location is null)
+            {
+                location = await Geolocation.GetLocationAsync(new GeolocationRequest(GeolocationAccuracy.Best));
+            }
+            else if (location.Timestamp < DateTimeOffset.UtcNow.AddMinutes(-2))
+            {
+                if (Interlocked.CompareExchange(ref _isRefreshingLocation, 1, 0) == 0)
+                {
+                    // fire and forget: only warms up the last known location for the next call,
+                    // a failure (e.g. location switched off in the meantime) is irrelevant
+                    _ = Geolocation.GetLocationAsync(new GeolocationRequest(GeolocationAccuracy.Best))
+                        .ContinueWith(_ => Interlocked.Exchange(ref _isRefreshingLocation, 0));
+                }
+            }
+        }
+        catch (FeatureNotEnabledException exception)
+        {
+            _logger.LogWarning(exception, "Location service is switched off");
+
+            bool openSettings = await DisplayAlertAsync(
+                title: "Standort deaktiviert",
+                message: "Der Standort ist auf dem Gerät ausgeschaltet. Schalte ihn ein und tippe danach auf den Standort-Button "
+                       + "oder tippe auf die Karte, um deine Position manuell zu setzen.",
+                accept: "Einstellungen öffnen",
+                cancel: "Abbrechen");
+
+            if (openSettings)
+                openLocationSettings();
+
+            return null;
+        }
+        catch (PermissionException exception)
+        {
+            _logger.LogWarning(exception, "Location permission not granted");
+
+            bool openSettings = await DisplayAlertAsync(
+                title: "Keine Berechtigung",
+                message: "Die App hat keine Berechtigung für den Standort. Erteile sie in den App-Einstellungen "
+                       + "oder tippe auf die Karte, um deine Position manuell zu setzen.",
+                accept: "Einstellungen öffnen",
+                cancel: "Abbrechen");
+
+            if (openSettings)
+                AppInfo.Current.ShowSettingsUI();
+
+            return null;
+        }
+        catch (FeatureNotSupportedException exception)
+        {
+            _logger.LogWarning(exception, "Location is not supported on this device");
+            _toastMessageService.ShowWarning("Standortbestimmung wird auf diesem Gerät nicht unterstützt. Tippe auf die Karte, um deine Position zu setzen.");
+            return null;
+        }
 
         if (location is null)
         {
-            location = await Geolocation.GetLocationAsync(new GeolocationRequest(GeolocationAccuracy.Best));
-        }
-        else if (location.Timestamp < DateTimeOffset.UtcNow.AddMinutes(-2))
-        {
-            if (Interlocked.CompareExchange(ref _isRefreshingLocation, 1, 0) == 0)
-            {
-                _ = Geolocation.GetLocationAsync(new GeolocationRequest(GeolocationAccuracy.Best))
-                    .ContinueWith(_ => Interlocked.Exchange(ref _isRefreshingLocation, 0));
-            }
+            _toastMessageService.ShowWarning("Standort konnte nicht ermittelt werden. Tippe auf die Karte, um deine Position zu setzen.");
+            return null;
         }
 
         return toMercator(location.Latitude, location.Longitude);
+    }
+
+    private void openLocationSettings()
+    {
+        try
+        {
+#if ANDROID
+            var intent = new global::Android.Content.Intent(global::Android.Provider.Settings.ActionLocationSourceSettings);
+            intent.AddFlags(global::Android.Content.ActivityFlags.NewTask);
+            global::Android.App.Application.Context.StartActivity(intent);
+#else
+            AppInfo.Current.ShowSettingsUI();
+#endif
+        }
+        catch (Exception exception)
+        {
+            _logger.LogError(exception, "Opening the location settings failed");
+            _toastMessageService.ShowError("Einstellungen konnten nicht geöffnet werden.");
+        }
     }
 
     private static double calculateScreenAngle(Coordinate coordinates)
