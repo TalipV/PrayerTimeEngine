@@ -16,6 +16,7 @@ using PrayerTimeEngine.Presentation.Services;
 using Brush = Mapsui.Styles.Brush;
 using Color = Mapsui.Styles.Color;
 using Polygon = NetTopologySuite.Geometries.Polygon;
+using Location = Microsoft.Maui.Devices.Sensors.Location;
 
 namespace PrayerTimeEngine.Presentation.Pages.QiblahFinder;
 public sealed partial class QiblahMapPage : ContentPage
