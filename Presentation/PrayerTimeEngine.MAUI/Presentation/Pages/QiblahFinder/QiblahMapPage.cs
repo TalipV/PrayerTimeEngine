@@ -128,7 +128,7 @@ public sealed partial class QiblahMapPage : ContentPage
                 return;
 
             setCurrentPoint(point);
-            refreshCurrentPoint();
+            redrawCurrentPoint();
         }
         catch (Exception exception)
         {
@@ -201,10 +201,10 @@ public sealed partial class QiblahMapPage : ContentPage
     private async void _mapControl_MapTapped(object sender, MapEventArgs e)
     {
         setCurrentPoint(e.WorldPosition);
-        refreshCurrentPoint(jumpToPoint: false);
+        redrawCurrentPoint(jumpToPoint: false);
     }
 
-    private void refreshCurrentPoint(bool jumpToPoint = true)
+    private void redrawCurrentPoint(bool jumpToPoint = true)
     {
         if (_currentPoint.Point == null)
         {
