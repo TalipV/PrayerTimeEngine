@@ -15,7 +15,7 @@ public sealed partial class MultiSelectPopup : Popup<List<MultiSelectOption>>
     public MultiSelectPopup(string title, ICollection<MultiSelectOption> options)
     {
         Title = title;
-        Options = new ObservableCollection<MultiSelectOption>(options);
+        Options = [.. options];
         BindingContext = this;
 
         Margin = new Thickness(left: 20, top: 20, right: 20, bottom: 0);
