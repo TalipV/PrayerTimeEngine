@@ -42,10 +42,11 @@ PascalCase for types, members, constants (also local constants) and local functi
 static fields; `I`/`T` prefixes for interfaces/type parameters; camelCase for locals and
 parameters. `var` only when the type is apparent from the right-hand side.
 
-The .NET SDK is pinned in `global.json` (`rollForward: disable`); GitHub Actions reads the
-same file, so local and CI builds run the same analyzers. The MAUI workload set version is
-pinned in `.github/workflows/android-apk.yml` (`dotnet workload install ... --version`).
-Upgrade both together, deliberately.
+`global.json` is the single source of truth for toolchain versions: the .NET SDK
+(`sdk.version`, `rollForward: disable`) and the MAUI workload set (`sdk.workloadVersion`).
+GitHub Actions reads both from it, so local and CI builds run the same SDK, analyzers and
+workloads. To upgrade, change `global.json`, then locally (admin shell, in the repo root)
+run `dotnet workload update` so the new workload set is installed.
 
 Most violations are auto-fixable: `dotnet format <project>.csproj --severity error`.
 Run it per project (not on the multi-targeted MAUI project as a whole: formatting several
