@@ -26,8 +26,8 @@ jobs:
 
       - uses: actions/setup-dotnet@v6
         with:
-          dotnet-version: '11.0.x'
-          dotnet-quality: preview
+          # SDK version is pinned in global.json, so CI and local builds use the same SDK.
+          global-json-file: global.json
 
       - name: Run live API tests
         run: >
