@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using NodaTime;
 using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Models;
@@ -22,9 +22,9 @@ public abstract class BaseCountryCityDynamicPrayerTimeProvider(
     ) : IDynamicPrayerTimeProvider
 {
     public abstract Task<List<(ETimeType TimeType, ZonedDateTime ZonedDateTime)>> GetPrayerTimesAsync(
-        ZonedDateTime date, 
-        BaseLocationData locationData, 
-        List<GenericSettingConfiguration> configurations, 
+        ZonedDateTime date,
+        BaseLocationData locationData,
+        List<GenericSettingConfiguration> configurations,
         CancellationToken cancellationToken);
 
     public abstract HashSet<ETimeType> GetUnsupportedTimeTypes();
@@ -59,23 +59,25 @@ public abstract class BaseCountryCityDynamicPrayerTimeProvider(
         BasicPlaceInfo turkishPlaceInfo = null;
 
         // lazy retrieval because the place service is rate limited and only necessary when the native names don't suffice
-        async Task<BasicPlaceInfo> getTurkishPlaceInfoAsync()
+        async Task<BasicPlaceInfo> GetTurkishPlaceInfoAsync()
         {
             // the native names are already the turkish ones
             if (place.InfoLanguageCode?.ToLower() == "tr")
+            {
                 return null;
+            }
 
             return turkishPlaceInfo ??= await placeService.GetPlaceBasedOnPlace(place, "tr", cancellationToken).ConfigureAwait(false);
         }
 
-        (int countryID, string matchedCountryName) = await findCountry(place.Country, getTurkishPlaceInfoAsync, cancellationToken).ConfigureAwait(false);
+        (int countryID, string matchedCountryName) = await FindCountry(place.Country, GetTurkishPlaceInfoAsync, cancellationToken).ConfigureAwait(false);
         if (countryID == -1)
         {
             logger.LogWarning("No {ProviderTypeName} location data because country '{Country}' could not be found", GetType().Name, place.Country);
             return null;
         }
 
-        (int cityID, string matchedCityName) = await findCity(place.City ?? place.State, countryID, getTurkishPlaceInfoAsync, cancellationToken).ConfigureAwait(false);
+        (int cityID, string matchedCityName) = await FindCity(place.City ?? place.State, countryID, GetTurkishPlaceInfoAsync, cancellationToken).ConfigureAwait(false);
         if (cityID == -1)
         {
             logger.LogWarning("No {ProviderTypeName} location data because city '{City}' could not be found in country '{Country}'", GetType().Name, place.City ?? place.State, matchedCountryName);
@@ -89,30 +91,32 @@ public abstract class BaseCountryCityDynamicPrayerTimeProvider(
         return CreateLocationData(matchedCountryName, matchedCityName, place);
     }
 
-    private async Task<(int CountryID, string MatchedCountryName)> findCountry(
+    private async Task<(int CountryID, string MatchedCountryName)> FindCountry(
         string countryName,
         Func<Task<BasicPlaceInfo>> getTurkishPlaceInfoAsync,
         CancellationToken cancellationToken)
     {
         if (!string.IsNullOrWhiteSpace(countryName))
         {
-            (int CountryID, string MatchedCountryName) result = await findCountryIDByNameVariants(countryName, cancellationToken).ConfigureAwait(false);
+            (int CountryID, string MatchedCountryName) result = await FindCountryIDByNameVariants(countryName, cancellationToken).ConfigureAwait(false);
 
             if (result.CountryID != -1)
+            {
                 return result;
+            }
         }
 
         string turkishCountryName = (await getTurkishPlaceInfoAsync().ConfigureAwait(false))?.Country;
 
         if (!string.IsNullOrWhiteSpace(turkishCountryName) && turkishCountryName != countryName)
         {
-            return await findCountryIDByNameVariants(turkishCountryName, cancellationToken).ConfigureAwait(false);
+            return await FindCountryIDByNameVariants(turkishCountryName, cancellationToken).ConfigureAwait(false);
         }
 
         return (-1, null);
     }
 
-    private async Task<(int CityID, string MatchedCityName)> findCity(
+    private async Task<(int CityID, string MatchedCityName)> FindCity(
         string cityName,
         int countryID,
         Func<Task<BasicPlaceInfo>> getTurkishPlaceInfoAsync,
@@ -120,10 +124,12 @@ public abstract class BaseCountryCityDynamicPrayerTimeProvider(
     {
         if (!string.IsNullOrWhiteSpace(cityName))
         {
-            (int CityID, string MatchedCityName) result = await findCityIDByNameVariants(cityName, countryID, cancellationToken).ConfigureAwait(false);
+            (int CityID, string MatchedCityName) result = await FindCityIDByNameVariants(cityName, countryID, cancellationToken).ConfigureAwait(false);
 
             if (result.CityID != -1)
+            {
                 return result;
+            }
         }
 
         BasicPlaceInfo turkishPlaceInfo = await getTurkishPlaceInfoAsync().ConfigureAwait(false);
@@ -131,13 +137,13 @@ public abstract class BaseCountryCityDynamicPrayerTimeProvider(
 
         if (!string.IsNullOrWhiteSpace(turkishCityName) && turkishCityName != cityName)
         {
-            return await findCityIDByNameVariants(turkishCityName, countryID, cancellationToken).ConfigureAwait(false);
+            return await FindCityIDByNameVariants(turkishCityName, countryID, cancellationToken).ConfigureAwait(false);
         }
 
         return (-1, null);
     }
 
-    private async Task<(int CountryID, string MatchedCountryName)> findCountryIDByNameVariants(string countryName, CancellationToken cancellationToken)
+    private async Task<(int CountryID, string MatchedCountryName)> FindCountryIDByNameVariants(string countryName, CancellationToken cancellationToken)
     {
         foreach (string countryNameVariant in GetCountryNameVariants(countryName).Distinct())
         {
@@ -152,7 +158,7 @@ public abstract class BaseCountryCityDynamicPrayerTimeProvider(
         return (-1, null);
     }
 
-    private async Task<(int CityID, string MatchedCityName)> findCityIDByNameVariants(string cityName, int countryID, CancellationToken cancellationToken)
+    private async Task<(int CityID, string MatchedCityName)> FindCityIDByNameVariants(string cityName, int countryID, CancellationToken cancellationToken)
     {
         foreach (string cityNameVariant in GetCityNameVariants(cityName).Distinct())
         {

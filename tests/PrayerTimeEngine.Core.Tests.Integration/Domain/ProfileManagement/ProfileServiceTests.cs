@@ -15,6 +15,7 @@ using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Muwaqqit.Models;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Semerkand.Models;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Models;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Interfaces;
+using PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Services;
 using PrayerTimeEngine.Core.Tests.Common;
 using PrayerTimeEngine.Core.Tests.Common.TestData;
@@ -23,9 +24,9 @@ namespace PrayerTimeEngine.Core.Tests.Integration.Domain.ProfileManagement;
 
 public class ProfileServiceTests : BaseTest
 {
-    private ServiceProvider getServiceProvider()
+    private ServiceProvider GetServiceProvider()
     {
-        return createServiceProvider(
+        return CreateServiceProvider(
             serviceCollection =>
             {
                 serviceCollection.AddSingleton(GetHandledDbContextFactory());
@@ -43,9 +44,9 @@ public class ProfileServiceTests : BaseTest
     public async Task UpdateLocationConfig_SetsData_CorrectDataWithOriginalProfileUntouched()
     {
         // ARRANGE
-        ServiceProvider serviceProvider = getServiceProvider();
+        ServiceProvider serviceProvider = GetServiceProvider();
 
-        using var dbContext = serviceProvider.GetRequiredService<IDbContextFactory<AppDbContext>>().CreateDbContext();
+        using AppDbContext dbContext = serviceProvider.GetRequiredService<IDbContextFactory<AppDbContext>>().CreateDbContext();
         var profileService = serviceProvider.GetRequiredService<IProfileService>() as ProfileService;
 
         await dbContext.Profiles.AddAsync(TestDataHelper.CreateCompleteTestDynamicProfile());
@@ -53,7 +54,7 @@ public class ProfileServiceTests : BaseTest
 
         // in the UI the data is loaded without tracking (i.e. intended for read only)
         // changes have to be made on separate entities with tracking to keep the mechanisms clean
-        var profile =
+        DynamicProfile profile =
             dbContext.DynamicProfiles
                 .Include(x => x.LocationConfigs)
                 .Include(x => x.TimeConfigs)
@@ -95,7 +96,7 @@ public class ProfileServiceTests : BaseTest
         profile.PlaceInfo.Should().NotBe(oldPlaceInfo);
         profile.PlaceInfo.Should().Be(newPlaceInfo);
 
-        foreach (var locationDataByDynamicPrayerTimeProvider in profile.LocationConfigs.ToDictionary(x => x.DynamicPrayerTimeProvider, x => x.LocationData))
+        foreach (KeyValuePair<EDynamicPrayerTimeProviderType, BaseLocationData> locationDataByDynamicPrayerTimeProvider in profile.LocationConfigs.ToDictionary(x => x.DynamicPrayerTimeProvider, x => x.LocationData))
         {
             BaseLocationData newValue = newLocationDataByDynamicPrayerTimeProvider[locationDataByDynamicPrayerTimeProvider.Key];
             BaseLocationData currentValue = locationDataByDynamicPrayerTimeProvider.Value;
@@ -108,10 +109,10 @@ public class ProfileServiceTests : BaseTest
     public async Task UpdateLocationConfig_SetsDataWithExceptionOnCommit_OldDataFullyRemains()
     {
         // ARRANGE
-        ServiceProvider serviceProvider = getServiceProvider();
+        ServiceProvider serviceProvider = GetServiceProvider();
 
-        var dbContextFactory = serviceProvider.GetRequiredService<IDbContextFactory<AppDbContext>>();
-        using var dbContext = dbContextFactory.CreateDbContext();
+        IDbContextFactory<AppDbContext> dbContextFactory = serviceProvider.GetRequiredService<IDbContextFactory<AppDbContext>>();
+        using AppDbContext dbContext = dbContextFactory.CreateDbContext();
 
         dbContextFactory.Configure().CreateDbContext().Returns(dbContext);
         dbContextFactory.Configure().CreateDbContextAsync().Returns(Task.FromResult(dbContext));
@@ -123,7 +124,7 @@ public class ProfileServiceTests : BaseTest
 
         dbContext.SaveChangesAsync().Throws(new Exception("Test exception during commit"));
 
-        var profile =
+        DynamicProfile profile =
             dbContext.DynamicProfiles
                 .Include(x => x.LocationConfigs)
                 .Include(x => x.TimeConfigs)
@@ -162,13 +163,10 @@ public class ProfileServiceTests : BaseTest
 
         // ACT
         Func<Task> updateLocationConfigFunc =
-            async () =>
-            {
-                await profileService.UpdateLocationConfig(
+            async () => await profileService.UpdateLocationConfig(
                     profile: profile,
                     placeInfo: newPlaceInfo,
                     cancellationToken: default);
-            };
 
         // ASSERT
         await updateLocationConfigFunc.Should().ThrowAsync<Exception>().WithMessage("Test exception during commit");
@@ -177,7 +175,7 @@ public class ProfileServiceTests : BaseTest
         profile.PlaceInfo.Should().NotBe(newPlaceInfo);
         profile.PlaceInfo.Should().Be(oldPlaceInfo);
 
-        foreach (var locationDataByDynamicPrayerTimeProvider in profile.LocationConfigs.ToDictionary(x => x.DynamicPrayerTimeProvider, x => x.LocationData))
+        foreach (KeyValuePair<EDynamicPrayerTimeProviderType, BaseLocationData> locationDataByDynamicPrayerTimeProvider in profile.LocationConfigs.ToDictionary(x => x.DynamicPrayerTimeProvider, x => x.LocationData))
         {
             BaseLocationData oldValue = oldLocationDataByDynamicPrayerTimeProvider[locationDataByDynamicPrayerTimeProvider.Key];
             BaseLocationData currentValue = locationDataByDynamicPrayerTimeProvider.Value;
@@ -190,14 +188,14 @@ public class ProfileServiceTests : BaseTest
     public async Task UpdateTimeConfig_SetNewValue_Success()
     {
         // ARRANGE
-        ServiceProvider serviceProvider = getServiceProvider();
+        ServiceProvider serviceProvider = GetServiceProvider();
 
         var profileService = serviceProvider.GetRequiredService<IProfileService>() as ProfileService;
 
         await TestArrangeDbContext.Profiles.AddAsync(TestDataHelper.CreateCompleteTestDynamicProfile());
         await TestArrangeDbContext.SaveChangesAsync();
 
-        var profile =
+        DynamicProfile profile =
             TestArrangeDbContext.DynamicProfiles
                 .Include(x => x.LocationConfigs)
                 .Include(x => x.TimeConfigs)
@@ -216,7 +214,7 @@ public class ProfileServiceTests : BaseTest
 
         // ASSERT
 
-        var fajrStartConfig = profileService.GetTimeConfig(profile, ETimeType.FajrStart);
+        GenericSettingConfiguration fajrStartConfig = profileService.GetTimeConfig(profile, ETimeType.FajrStart);
         fajrStartConfig.Source.Should().Be(EDynamicPrayerTimeProviderType.Semerkand);
     }
 }

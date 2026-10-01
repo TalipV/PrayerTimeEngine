@@ -20,7 +20,7 @@ public class FaziletDynamicPrayerTimeProviderTests : BaseTest
     public async Task GetPrayerTimesAsync_NormalInput_PrayerTimesForThatDay()
     {
         // ARRANGE
-        ServiceProvider serviceProvider = createServiceProvider(
+        ServiceProvider serviceProvider = CreateServiceProvider(
             configureServiceCollection: serviceCollection =>
             {
                 serviceCollection.AddSingleton(GetHandledDbContextFactory());
@@ -80,7 +80,7 @@ public class FaziletDynamicPrayerTimeProviderTests : BaseTest
     public async Task GetPrayerTimesAsync_BugCaseIshaEndDSTTimeChange_IshaEndExtractedProperly()
     {
         // ARRANGE
-        ServiceProvider serviceProvider = createServiceProvider(
+        ServiceProvider serviceProvider = CreateServiceProvider(
             configureServiceCollection: serviceCollection =>
             {
                 serviceCollection.AddSingleton(GetHandledDbContextFactory());

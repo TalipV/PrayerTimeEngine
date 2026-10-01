@@ -1,4 +1,4 @@
-﻿using NodaTime;
+using NodaTime;
 using PrayerTimeEngine.Core.Common;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Models;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers;
@@ -32,57 +32,59 @@ public class MosquePrayerTimeProviderManager(
                 mosqueProfile.ExternalID,
                 cancellationToken).ConfigureAwait(false);
 
-        var prayerTimesCollection = getPrayerTimesCollection(times);
+        MosquePrayerTimesDay prayerTimesCollection = GetPrayerTimesCollection(times);
         prayerTimesCollection.DataCalculationTimestamp = systemInfoService.GetCurrentZonedDateTime();
 
         return prayerTimesCollection;
     }
 
-    private MosquePrayerTimesDay getPrayerTimesCollection(IMosqueDailyPrayerTimes times)
+    private MosquePrayerTimesDay GetPrayerTimesCollection(IMosqueDailyPrayerTimes times)
     {
         // TODO fix this. The Profile should know its own time zone!
-        var timeZone = systemInfoService.GetSystemTimeZone();
+        DateTimeZone timeZone = systemInfoService.GetSystemTimeZone();
 
         var prayerTimesCollection = new MosquePrayerTimesDay();
 
         // missing values just lead to missing times
-        ZonedDateTime? getZonedDateTimeOrNull(LocalTime? time)
+        ZonedDateTime? GetZonedDateTimeOrNull(LocalTime? time)
         {
             return time?.On(times.Date).InZoneStrictly(timeZone);
         }
 
-        static int getCongregationStartOffset(LocalTime? start, LocalTime? congregationStart)
+        static int GetCongregationStartOffset(LocalTime? start, LocalTime? congregationStart)
         {
             if (start is null || congregationStart is null)
+            {
                 return 0;
+            }
 
             return (int)Period.Between(start.Value, congregationStart.Value, PeriodUnits.Minutes).Minutes;
         }
 
-        prayerTimesCollection.Fajr.Start = getZonedDateTimeOrNull(times.Fajr);
-        prayerTimesCollection.Fajr.CongregationStartOffset = getCongregationStartOffset(times.Fajr, times.FajrCongregation);
-        prayerTimesCollection.Fajr.End = getZonedDateTimeOrNull(times.Shuruq);
+        prayerTimesCollection.Fajr.Start = GetZonedDateTimeOrNull(times.Fajr);
+        prayerTimesCollection.Fajr.CongregationStartOffset = GetCongregationStartOffset(times.Fajr, times.FajrCongregation);
+        prayerTimesCollection.Fajr.End = GetZonedDateTimeOrNull(times.Shuruq);
 
-        prayerTimesCollection.Dhuhr.Start = getZonedDateTimeOrNull(times.Dhuhr);
-        prayerTimesCollection.Dhuhr.CongregationStartOffset = getCongregationStartOffset(times.Dhuhr, times.DhuhrCongregation);
-        prayerTimesCollection.Dhuhr.End = getZonedDateTimeOrNull(times.Asr);
+        prayerTimesCollection.Dhuhr.Start = GetZonedDateTimeOrNull(times.Dhuhr);
+        prayerTimesCollection.Dhuhr.CongregationStartOffset = GetCongregationStartOffset(times.Dhuhr, times.DhuhrCongregation);
+        prayerTimesCollection.Dhuhr.End = GetZonedDateTimeOrNull(times.Asr);
 
-        prayerTimesCollection.Asr.Start = getZonedDateTimeOrNull(times.Asr);
-        prayerTimesCollection.Asr.CongregationStartOffset = getCongregationStartOffset(times.Asr, times.AsrCongregation);
-        prayerTimesCollection.Asr.End = getZonedDateTimeOrNull(times.Maghrib);
+        prayerTimesCollection.Asr.Start = GetZonedDateTimeOrNull(times.Asr);
+        prayerTimesCollection.Asr.CongregationStartOffset = GetCongregationStartOffset(times.Asr, times.AsrCongregation);
+        prayerTimesCollection.Asr.End = GetZonedDateTimeOrNull(times.Maghrib);
 
-        prayerTimesCollection.Maghrib.Start = getZonedDateTimeOrNull(times.Maghrib);
-        prayerTimesCollection.Maghrib.CongregationStartOffset = getCongregationStartOffset(times.Maghrib, times.MaghribCongregation);
-        prayerTimesCollection.Maghrib.End = getZonedDateTimeOrNull(times.Isha);
+        prayerTimesCollection.Maghrib.Start = GetZonedDateTimeOrNull(times.Maghrib);
+        prayerTimesCollection.Maghrib.CongregationStartOffset = GetCongregationStartOffset(times.Maghrib, times.MaghribCongregation);
+        prayerTimesCollection.Maghrib.End = GetZonedDateTimeOrNull(times.Isha);
 
-        prayerTimesCollection.Isha.Start = getZonedDateTimeOrNull(times.Isha);
-        prayerTimesCollection.Isha.CongregationStartOffset = getCongregationStartOffset(times.Isha, times.IshaCongregation);
+        prayerTimesCollection.Isha.Start = GetZonedDateTimeOrNull(times.Isha);
+        prayerTimesCollection.Isha.CongregationStartOffset = GetCongregationStartOffset(times.Isha, times.IshaCongregation);
 
         // TODO fix this. Doesn't make sense.. but let's go with it for now
-        prayerTimesCollection.Isha.End = getZonedDateTimeOrNull(times.Fajr);
+        prayerTimesCollection.Isha.End = GetZonedDateTimeOrNull(times.Fajr);
 
-        prayerTimesCollection.Jumuah.Start = getZonedDateTimeOrNull(times.Jumuah);
-        prayerTimesCollection.Jumuah2.Start = getZonedDateTimeOrNull(times.Jumuah2);
+        prayerTimesCollection.Jumuah.Start = GetZonedDateTimeOrNull(times.Jumuah);
+        prayerTimesCollection.Jumuah2.Start = GetZonedDateTimeOrNull(times.Jumuah2);
 
         return prayerTimesCollection;
     }

@@ -1,4 +1,5 @@
-﻿using AsyncAwaitBestPractices;
+using System.Collections.Concurrent;
+using AsyncAwaitBestPractices;
 using Microsoft.Extensions.Logging;
 using NodaTime;
 using PrayerTimeEngine.Core.Common;
@@ -7,7 +8,6 @@ using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Models;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Interfaces;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
-using System.Collections.Concurrent;
 
 namespace PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Management;
 
@@ -37,7 +37,7 @@ public class DynamicPrayerTimeProviderManager(
         long ProfileVersion,
         DynamicPrayerTimesDaySet DaySet);
 
-    private bool tryGetCachedDaySet(
+    private bool TryGetCachedDaySet(
         int profileID,
         ZonedDateTime date,
         out DynamicPrayerTimesDaySet daySet)
@@ -60,7 +60,7 @@ public class DynamicPrayerTimeProviderManager(
         // normalize identically to CalculatePrayerTimesAsync so the cache key (start of day) matches
         date = date.LocalDateTime.Date.AtStartOfDayInZone(date.Zone);
 
-        return tryGetCachedDaySet(profileID, date, out daySet);
+        return TryGetCachedDaySet(profileID, date, out daySet);
     }
 
     public async Task<CalculatePrayerTimesResultVO> CalculatePrayerTimesAsync(int profileID, ZonedDateTime date, CancellationToken cancellationToken)
@@ -68,7 +68,7 @@ public class DynamicPrayerTimeProviderManager(
         date = date.LocalDateTime.Date.AtStartOfDayInZone(date.Zone);
 
         // Fast path: version check is in-memory, no DB round-trip needed
-        if (tryGetCachedDaySet(profileID, date, out DynamicPrayerTimesDaySet prayerTimeEntity))
+        if (TryGetCachedDaySet(profileID, date, out DynamicPrayerTimesDaySet prayerTimeEntity))
         {
             prayerTimeEntity.DataCalculationTimestamp = systemInfoService.GetCurrentZonedDateTime();
 
@@ -92,9 +92,9 @@ public class DynamicPrayerTimeProviderManager(
         };
 
         // the three days are calculated in parallel (and within each day the providers are requested in parallel)
-        Task<List<DynamicPrayerTimeCalculationErrorVO>> currentDayTask = calculateInternal(prayerTimeEntity.CurrentDay, dynamicProfile, date, cancellationToken);
-        Task<List<DynamicPrayerTimeCalculationErrorVO>> previousDayTask = calculateInternal(prayerTimeEntity.PreviousDay, dynamicProfile, date.Plus(Duration.FromDays(-1)), cancellationToken);
-        Task<List<DynamicPrayerTimeCalculationErrorVO>> nextDayTask = calculateInternal(prayerTimeEntity.NextDay, dynamicProfile, date.Plus(Duration.FromDays(1)), cancellationToken);
+        Task<List<DynamicPrayerTimeCalculationErrorVO>> currentDayTask = CalculateInternal(prayerTimeEntity.CurrentDay, dynamicProfile, date, cancellationToken);
+        Task<List<DynamicPrayerTimeCalculationErrorVO>> previousDayTask = CalculateInternal(prayerTimeEntity.PreviousDay, dynamicProfile, date.Plus(Duration.FromDays(-1)), cancellationToken);
+        Task<List<DynamicPrayerTimeCalculationErrorVO>> nextDayTask = CalculateInternal(prayerTimeEntity.NextDay, dynamicProfile, date.Plus(Duration.FromDays(1)), cancellationToken);
 
         await Task.WhenAll(currentDayTask, previousDayTask, nextDayTask).ConfigureAwait(false);
 
@@ -113,7 +113,7 @@ public class DynamicPrayerTimeProviderManager(
         }
 
         // execute without awaiting because we don't want to await and block for this side quest
-        cleanUpOldCacheData(cancellationToken).SafeFireAndForget(exception => logger.LogError(exception, "Error during cleanUpOldCacheData"));
+        CleanUpOldCacheData(cancellationToken).SafeFireAndForget(exception => logger.LogError(exception, "Error during cleanUpOldCacheData"));
 
         return new CalculatePrayerTimesResultVO
         {
@@ -122,27 +122,29 @@ public class DynamicPrayerTimeProviderManager(
         };
     }
 
-    private async Task<List<DynamicPrayerTimeCalculationErrorVO>> calculateInternal(
+    private async Task<List<DynamicPrayerTimeCalculationErrorVO>> CalculateInternal(
         DynamicPrayerTimesDay targetSet,
         DynamicProfile profile,
         ZonedDateTime date,
         CancellationToken ct)
     {
-        var (PrayerTimes, CalculationErrors) = await calculateComplexTypes(profile, date, ct).ConfigureAwait(false);
+        (List<(ETimeType TimeType, ZonedDateTime ZonedDateTime)>? prayerTimes, List<DynamicPrayerTimeCalculationErrorVO>? calculationErrors) = await CalculateComplexTypes(profile, date, ct).ConfigureAwait(false);
 
-        foreach (var (type, time) in PrayerTimes)
+        foreach ((ETimeType type, ZonedDateTime time) in prayerTimes)
         {
             ct.ThrowIfCancellationRequested();
             targetSet.SetSpecificPrayerTimeDateTime(type, time);
         }
 
-        foreach (var (type, time) in calculateSimpleTypes(profile, targetSet))
+        foreach ((ETimeType type, ZonedDateTime? time) in CalculateSimpleTypes(profile, targetSet))
+        {
             targetSet.SetSpecificPrayerTimeDateTime(type, time);
+        }
 
-        return CalculationErrors;
+        return calculationErrors;
     }
 
-    private async Task cleanUpOldCacheData(CancellationToken cancellationToken)
+    private async Task CleanUpOldCacheData(CancellationToken cancellationToken)
     {
         try
         {
@@ -173,14 +175,14 @@ public class DynamicPrayerTimeProviderManager(
         }
     }
 
-    private async Task<(List<(ETimeType TimeType, ZonedDateTime ZonedDateTime)> PrayerTimes, List<DynamicPrayerTimeCalculationErrorVO> CalculationErrors)> calculateComplexTypes(
+    private async Task<(List<(ETimeType TimeType, ZonedDateTime ZonedDateTime)> PrayerTimes, List<DynamicPrayerTimeCalculationErrorVO> CalculationErrors)> CalculateComplexTypes(
         DynamicProfile dynamicProfile,
         ZonedDateTime date,
         CancellationToken cancellationToken)
     {
         List<Task<ComplexCalculationResult>> calculatorTasks = [];
 
-        foreach (var timeConfigsByCalcSource in profileService.GetActiveComplexTimeConfigs(dynamicProfile).GroupBy(x => x.Source))
+        foreach (IGrouping<EDynamicPrayerTimeProviderType, GenericSettingConfiguration> timeConfigsByCalcSource in profileService.GetActiveComplexTimeConfigs(dynamicProfile).GroupBy(x => x.Source))
         {
             EDynamicPrayerTimeProviderType dynamicPrayerTimeProviderType = timeConfigsByCalcSource.Key;
             List<GenericSettingConfiguration> configs = [.. timeConfigsByCalcSource];
@@ -189,9 +191,11 @@ public class DynamicPrayerTimeProviderManager(
 
             // missing location info only means that the associated times are not calculated (i.e. remain at null)
             if (locationData == null)
+            {
                 continue;
+            }
 
-            calculatorTasks.Add(calculateComplexTypesForCalculator(
+            calculatorTasks.Add(CalculateComplexTypesForCalculator(
                 locationData,
                 dynamicPrayerTimeProviderType,
                 configs,
@@ -209,7 +213,7 @@ public class DynamicPrayerTimeProviderManager(
                 .ToList());
     }
 
-    private async Task<ComplexCalculationResult> calculateComplexTypesForCalculator(
+    private async Task<ComplexCalculationResult> CalculateComplexTypesForCalculator(
         BaseLocationData locationData,
         EDynamicPrayerTimeProviderType dynamicPrayerTimeProviderType,
         List<GenericSettingConfiguration> configs,
@@ -221,22 +225,21 @@ public class DynamicPrayerTimeProviderManager(
             IDynamicPrayerTimeProvider dynamicPrayerTimeProvider = prayerTimeServiceFactory.GetDynamicPrayerTimeProviderByDynamicPrayerTimeProvider(dynamicPrayerTimeProviderType);
 
             // within the try block so that a single invalid provider config doesn't kill the calculations of the other providers
-            throwIfConfigsHaveUnsupportedTimeTypes(dynamicPrayerTimeProvider, dynamicPrayerTimeProviderType, configs);
+            ThrowIfConfigsHaveUnsupportedTimeTypes(dynamicPrayerTimeProvider, dynamicPrayerTimeProviderType, configs);
 
             List<(ETimeType TimeType, ZonedDateTime ZonedDateTime)> calculationResults =
                 await dynamicPrayerTimeProvider.GetPrayerTimesAsync(date, locationData, configs, cancellationToken).ConfigureAwait(false);
 
             return new ComplexCalculationResult(
-                PrayerTimes: calculationResults
+                PrayerTimes: [.. calculationResults
                     .Select(calculation =>
                     {
                         GenericSettingConfiguration config = configs.First(config => config.TimeType == calculation.TimeType);
                         return (calculation.TimeType, calculation.ZonedDateTime.PlusMinutes(config.MinuteAdjustment));
-                    })
-                    .ToList(),
+                    })],
                 CalculationError: null);
         }
-        catch (Exception exception) when (isCausedByCancellation(exception, cancellationToken))
+        catch (Exception exception) when (IsCausedByCancellation(exception, cancellationToken))
         {
             // A caller-side cancellation (e.g. the notification's short render timeout) can surface from
             // the HTTP stack (Refit / the resilience pipeline) as something other than a plain
@@ -257,7 +260,7 @@ public class DynamicPrayerTimeProviderManager(
                 {
                     DynamicPrayerTimeProviderType = dynamicPrayerTimeProviderType,
                     Date = date.LocalDateTime.Date,
-                    TimeTypes = configs.Select(x => x.TimeType).Distinct().OrderBy(x => x.ToString()).ToList(),
+                    TimeTypes = [.. configs.Select(x => x.TimeType).Distinct().OrderBy(x => x.ToString())],
                     Exception = exception,
                 });
         }
@@ -267,21 +270,25 @@ public class DynamicPrayerTimeProviderManager(
     /// Whether the exception is (or wraps) a cancellation, or the token has been canceled. Needed because
     /// the HTTP stack does not always surface a canceled request as a plain <see cref="OperationCanceledException"/>.
     /// </summary>
-    private static bool isCausedByCancellation(Exception exception, CancellationToken cancellationToken)
+    private static bool IsCausedByCancellation(Exception exception, CancellationToken cancellationToken)
     {
         if (cancellationToken.IsCancellationRequested)
+        {
             return true;
+        }
 
         for (Exception current = exception; current is not null; current = current.InnerException)
         {
             if (current is OperationCanceledException)
+            {
                 return true;
+            }
         }
 
         return false;
     }
 
-    private IEnumerable<(ETimeType, ZonedDateTime?)> calculateSimpleTypes(DynamicProfile dynamicProfile, DynamicPrayerTimesDay prayerTimeEntity)
+    private IEnumerable<(ETimeType, ZonedDateTime?)> CalculateSimpleTypes(DynamicProfile dynamicProfile, DynamicPrayerTimesDay prayerTimeEntity)
     {
         if (prayerTimeEntity.Dhuhr?.Start is not null
             && profileService.GetTimeConfig(dynamicProfile, ETimeType.DuhaEnd) is GenericSettingConfiguration duhaConfig
@@ -336,12 +343,12 @@ public class DynamicPrayerTimeProviderManager(
         }
     }
 
-    private static void throwIfConfigsHaveUnsupportedTimeTypes(
+    private static void ThrowIfConfigsHaveUnsupportedTimeTypes(
         IDynamicPrayerTimeProvider timeCalculator,
         EDynamicPrayerTimeProviderType dynamicPrayerTimeProviderType,
         List<GenericSettingConfiguration> configs)
     {
-        List<ETimeType> unsupportedTimeTypes =
+        var unsupportedTimeTypes =
             timeCalculator
             .GetUnsupportedTimeTypes().Intersect(configs.Select(x => x.TimeType))
             .ToList();

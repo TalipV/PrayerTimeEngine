@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.EntityFrameworkCore.Storage;
 using PrayerTimeEngine.Core.Common.Enum;
@@ -18,15 +18,13 @@ public class ProfileRepository(
 {
     public async Task<Profile> GetUntrackedReferenceOfProfile(int profileID, CancellationToken cancellationToken)
     {
-        using (AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken))
-        {
-            return await includeGeneralData(dbContext.Profiles)
-                .AsNoTracking()
-                .FirstOrDefaultAsync(x => x.ID == profileID, cancellationToken);
-        }
+        using AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
+        return await IncludeGeneralData(dbContext.Profiles)
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.ID == profileID, cancellationToken);
     }
 
-    private static IIncludableQueryable<Profile, TimezoneInfo> includeGeneralData(IQueryable<Profile> queryable)
+    private static IIncludableQueryable<Profile, TimezoneInfo> IncludeGeneralData(IQueryable<Profile> queryable)
     {
         return queryable
             .Include(x => ((DynamicProfile)x).TimeConfigs)
@@ -36,12 +34,10 @@ public class ProfileRepository(
 
     public async Task<List<Profile>> GetProfiles(CancellationToken cancellationToken)
     {
-        using (AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken))
-        {
-            return await includeGeneralData(dbContext.Profiles)
-                .AsNoTracking()
-                .ToListAsync(cancellationToken);
-        }
+        using AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
+        return await IncludeGeneralData(dbContext.Profiles)
+            .AsNoTracking()
+            .ToListAsync(cancellationToken);
     }
 
     public Task SaveProfile(Profile profile, CancellationToken cancellationToken)
@@ -51,36 +47,34 @@ public class ProfileRepository(
 
     public async Task SaveProfiles(ICollection<Profile> profiles, CancellationToken cancellationToken)
     {
-        using (AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false))
-        await using (IDbContextTransaction transaction = await dbContext.Database.BeginTransactionAsync(cancellationToken).ConfigureAwait(false))
+        using AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
+        await using IDbContextTransaction transaction = await dbContext.Database.BeginTransactionAsync(cancellationToken).ConfigureAwait(false);
+        foreach (Profile profile in profiles)
         {
-            foreach (Profile profile in profiles)
+            Profile foundProfile =
+                await IncludeGeneralData(dbContext.Profiles)
+                    .FirstOrDefaultAsync(x => x.ID == profile.ID, cancellationToken)
+                    .ConfigureAwait(false);
+
+            if (foundProfile != null)
             {
-                Profile foundProfile =
-                    await includeGeneralData(dbContext.Profiles)
-                        .FirstOrDefaultAsync(x => x.ID == profile.ID, cancellationToken)
-                        .ConfigureAwait(false);
-
-                if (foundProfile != null)
+                if (foundProfile is DynamicProfile foundDynamicProfile)
                 {
-                    if (foundProfile is DynamicProfile foundDynamicProfile)
-                    {
-                        dbContext.TimezoneInfos.Remove(foundDynamicProfile.PlaceInfo.TimezoneInfo);
-                        dbContext.PlaceInfos.Remove(foundDynamicProfile.PlaceInfo);
-                    }
-                    dbContext.Profiles.Remove(foundProfile);
-                    await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+                    dbContext.TimezoneInfos.Remove(foundDynamicProfile.PlaceInfo.TimezoneInfo);
+                    dbContext.PlaceInfos.Remove(foundDynamicProfile.PlaceInfo);
                 }
-
-                await dbContext.Profiles.AddAsync(profile, cancellationToken).ConfigureAwait(false);
+                dbContext.Profiles.Remove(foundProfile);
+                await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
             }
 
-            await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-            await transaction.CommitAsync(cancellationToken).ConfigureAwait(false);
+            await dbContext.Profiles.AddAsync(profile, cancellationToken).ConfigureAwait(false);
         }
+
+        await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+        await transaction.CommitAsync(cancellationToken).ConfigureAwait(false);
     }
 
-    private static async Task<int> getNextProfileSequenceNo(AppDbContext dbContext, CancellationToken cancellationToken)
+    private static async Task<int> GetNextProfileSequenceNo(AppDbContext dbContext, CancellationToken cancellationToken)
     {
         int? maxSeq = await dbContext.Profiles
             .Select(x => (int?)x.SequenceNo)
@@ -92,53 +86,49 @@ public class ProfileRepository(
 
     public async Task<Profile> CopyProfile(Profile profile, CancellationToken cancellationToken)
     {
-        using (AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken))
+        using AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
+        Profile clonedProfile = dbContext.DetachedClone(profile);
+        clonedProfile.ID = default;
+        clonedProfile.SequenceNo = await GetNextProfileSequenceNo(dbContext, cancellationToken).ConfigureAwait(false);
+
+        if (clonedProfile is DynamicProfile clonedDynamicProfile
+            && profile is DynamicProfile dynamicProfile)
         {
-            Profile clonedProfile = dbContext.DetachedClone(profile);
-            clonedProfile.ID = default;
-            clonedProfile.SequenceNo = await getNextProfileSequenceNo(dbContext, cancellationToken).ConfigureAwait(false);
+            clonedDynamicProfile.PlaceInfo = dbContext.DetachedClone(dynamicProfile.PlaceInfo);
+            clonedDynamicProfile.PlaceInfo.ID = default;
+            clonedDynamicProfile.PlaceInfo.TimezoneInfo = dbContext.DetachedClone(dynamicProfile.PlaceInfo.TimezoneInfo);
+            clonedDynamicProfile.PlaceInfo.TimezoneInfo.ID = default;
 
-            if (clonedProfile is DynamicProfile clonedDynamicProfile
-                && profile is DynamicProfile dynamicProfile)
+            await dbContext.Entry(clonedDynamicProfile).Collection(x => x.TimeConfigs).LoadAsync(cancellationToken);
+            foreach (ProfileTimeConfig timeConfig in dynamicProfile.TimeConfigs)
             {
-                clonedDynamicProfile.PlaceInfo = dbContext.DetachedClone(dynamicProfile.PlaceInfo);
-                clonedDynamicProfile.PlaceInfo.ID = default;
-                clonedDynamicProfile.PlaceInfo.TimezoneInfo = dbContext.DetachedClone(dynamicProfile.PlaceInfo.TimezoneInfo);
-                clonedDynamicProfile.PlaceInfo.TimezoneInfo.ID = default;
-
-                await dbContext.Entry(clonedDynamicProfile).Collection(x => x.TimeConfigs).LoadAsync(cancellationToken);
-                foreach (var timeConfig in dynamicProfile.TimeConfigs)
-                {
-                    ProfileTimeConfig copiedTimeConfig = dbContext.DetachedClone(timeConfig);
-                    copiedTimeConfig.ID = default;
-                    clonedDynamicProfile.TimeConfigs.Add(copiedTimeConfig);
-                }
-
-                await dbContext.Entry(clonedDynamicProfile).Collection(x => x.LocationConfigs).LoadAsync(cancellationToken);
-                foreach (var locationConfig in dynamicProfile.LocationConfigs)
-                {
-                    ProfileLocationConfig copiedProfileLocationConfig = dbContext.DetachedClone(locationConfig);
-                    copiedProfileLocationConfig.ID = default;
-                    clonedDynamicProfile.LocationConfigs.Add(copiedProfileLocationConfig);
-                }
+                ProfileTimeConfig copiedTimeConfig = dbContext.DetachedClone(timeConfig);
+                copiedTimeConfig.ID = default;
+                clonedDynamicProfile.TimeConfigs.Add(copiedTimeConfig);
             }
 
-            await dbContext.Profiles.AddAsync(clonedProfile, cancellationToken);
-            await dbContext.SaveChangesAsync(cancellationToken);
-            return clonedProfile;
+            await dbContext.Entry(clonedDynamicProfile).Collection(x => x.LocationConfigs).LoadAsync(cancellationToken);
+            foreach (ProfileLocationConfig locationConfig in dynamicProfile.LocationConfigs)
+            {
+                ProfileLocationConfig copiedProfileLocationConfig = dbContext.DetachedClone(locationConfig);
+                copiedProfileLocationConfig.ID = default;
+                clonedDynamicProfile.LocationConfigs.Add(copiedProfileLocationConfig);
+            }
         }
+
+        await dbContext.Profiles.AddAsync(clonedProfile, cancellationToken);
+        await dbContext.SaveChangesAsync(cancellationToken);
+        return clonedProfile;
     }
 
     public async Task DeleteProfile(Profile profile, CancellationToken cancellationToken)
     {
-        using (AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken))
-        {
-            Profile trackedProfile = await this.GetUntrackedReferenceOfProfile(profile.ID, cancellationToken);
-            dbContext.Entry(trackedProfile).State = EntityState.Unchanged;
+        using AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
+        Profile trackedProfile = await GetUntrackedReferenceOfProfile(profile.ID, cancellationToken);
+        dbContext.Entry(trackedProfile).State = EntityState.Unchanged;
 
-            dbContext.Profiles.Remove(trackedProfile);
-            await dbContext.SaveChangesAsync(cancellationToken);
-        }
+        dbContext.Profiles.Remove(trackedProfile);
+        await dbContext.SaveChangesAsync(cancellationToken);
     }
 
     public async Task UpdateLocationConfig(
@@ -148,43 +138,41 @@ public class ProfileRepository(
         string newProfileName,
         CancellationToken cancellationToken)
     {
-        using (AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken))
+        using AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
+        DynamicProfile dynamicProfile =
+            await dbContext.DynamicProfiles
+                .Include(x => x.LocationConfigs)
+                .Include(x => x.PlaceInfo).ThenInclude(x => x.TimezoneInfo)
+                .FirstOrDefaultAsync(x => x.ID == inputProfile.ID, cancellationToken)
+                .ConfigureAwait(false);
+        try
         {
-            DynamicProfile dynamicProfile =
-                await dbContext.DynamicProfiles
-                    .Include(x => x.LocationConfigs)
-                    .Include(x => x.PlaceInfo).ThenInclude(x => x.TimezoneInfo)
-                    .FirstOrDefaultAsync(x => x.ID == inputProfile.ID, cancellationToken)
-                    .ConfigureAwait(false);
-            try
-            {
-                setNewLocationData(dbContext, dynamicProfile, locationDataByDynamicPrayerTimeProvider);
+            SetNewLocationData(dbContext, dynamicProfile, locationDataByDynamicPrayerTimeProvider);
 
-                if (dynamicProfile.PlaceInfo != null)
+            if (dynamicProfile.PlaceInfo != null)
+            {
+                if (dynamicProfile.PlaceInfo.TimezoneInfo != null)
                 {
-                    if (dynamicProfile.PlaceInfo.TimezoneInfo != null)
-                    {
-                        dbContext.TimezoneInfos.Remove(dynamicProfile.PlaceInfo.TimezoneInfo);
-                    }
-                    dbContext.PlaceInfos.Remove(dynamicProfile.PlaceInfo);
+                    dbContext.TimezoneInfos.Remove(dynamicProfile.PlaceInfo.TimezoneInfo);
                 }
-                dynamicProfile.PlaceInfo = newPlaceInfo;
-                dynamicProfile.PlaceInfo.ProfileID = dynamicProfile.ID;
-                dynamicProfile.PlaceInfo.Profile = dynamicProfile;
-
-                dynamicProfile.Name = newProfileName;
-
-                await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+                dbContext.PlaceInfos.Remove(dynamicProfile.PlaceInfo);
             }
-            finally
-            {
-                dbContext.ChangeTracker.Clear();
+            dynamicProfile.PlaceInfo = newPlaceInfo;
+            dynamicProfile.PlaceInfo.ProfileID = dynamicProfile.ID;
+            dynamicProfile.PlaceInfo.Profile = dynamicProfile;
 
-                await dbContext.Entry(inputProfile).ReloadAsync(cancellationToken).ConfigureAwait(false);
-                await dbContext.Entry(inputProfile).Reference(x => x.PlaceInfo).LoadAsync(cancellationToken);
-                await dbContext.Entry(inputProfile.PlaceInfo).Reference(x => x.TimezoneInfo).LoadAsync(cancellationToken).ConfigureAwait(false);
-                await dbContext.Entry(inputProfile).Collection(x => x.LocationConfigs).ReloadAsync(cancellationToken).ConfigureAwait(false);
-            }
+            dynamicProfile.Name = newProfileName;
+
+            await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+        }
+        finally
+        {
+            dbContext.ChangeTracker.Clear();
+
+            await dbContext.Entry(inputProfile).ReloadAsync(cancellationToken).ConfigureAwait(false);
+            await dbContext.Entry(inputProfile).Reference(x => x.PlaceInfo).LoadAsync(cancellationToken);
+            await dbContext.Entry(inputProfile.PlaceInfo).Reference(x => x.TimezoneInfo).LoadAsync(cancellationToken).ConfigureAwait(false);
+            await dbContext.Entry(inputProfile).Collection(x => x.LocationConfigs).ReloadAsync(cancellationToken).ConfigureAwait(false);
         }
     }
 
@@ -194,43 +182,41 @@ public class ProfileRepository(
         GenericSettingConfiguration settings,
         CancellationToken cancellationToken)
     {
-        using (AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken))
+        using AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
+        DynamicProfile dynamicTrackedProfil =
+            await dbContext.DynamicProfiles
+                .Include(x => x.TimeConfigs)
+                .FirstOrDefaultAsync(x => x.ID == inputProfile.ID, cancellationToken)
+                .ConfigureAwait(false);
+        try
         {
-            DynamicProfile dynamicTrackedProfil =
-                await dbContext.DynamicProfiles
-                    .Include(x => x.TimeConfigs)
-                    .FirstOrDefaultAsync(x => x.ID == inputProfile.ID, cancellationToken)
-                    .ConfigureAwait(false);
-            try
-            {
-                setTimeConfig(dynamicTrackedProfil, timeType, settings);
-                await dbContext.SaveChangesAsync(cancellationToken);
-            }
-            finally
-            {
-                // or a new db context for this reloading stuff?
-                dbContext.ChangeTracker.Clear();
+            SetTimeConfig(dynamicTrackedProfil, timeType, settings);
+            await dbContext.SaveChangesAsync(cancellationToken);
+        }
+        finally
+        {
+            // or a new db context for this reloading stuff?
+            dbContext.ChangeTracker.Clear();
 
-                await dbContext.Entry(inputProfile).Collection(x => x.TimeConfigs).ReloadAsync(cancellationToken).ConfigureAwait(false);
-            }
+            await dbContext.Entry(inputProfile).Collection(x => x.TimeConfigs).ReloadAsync(cancellationToken).ConfigureAwait(false);
         }
     }
 
-    private static void setNewLocationData(
+    private static void SetNewLocationData(
         AppDbContext dbContext,
         DynamicProfile profile,
         List<(EDynamicPrayerTimeProviderType DynamicPrayerTimeProvider, BaseLocationData LocationData)> locationDataByDynamicPrayerTimeProvider)
     {
         var currentLocationConfigs = profile.LocationConfigs.ToList();
 
-        HashSet<EDynamicPrayerTimeProviderType> newDynamicPrayerTimeProviders = locationDataByDynamicPrayerTimeProvider.Select(x => x.DynamicPrayerTimeProvider).ToHashSet();
-        List<ProfileLocationConfig> configsToRemove = currentLocationConfigs
+        var newDynamicPrayerTimeProviders = locationDataByDynamicPrayerTimeProvider.Select(x => x.DynamicPrayerTimeProvider).ToHashSet();
+        var configsToRemove = currentLocationConfigs
             .Where(config => !newDynamicPrayerTimeProviders.Contains(config.DynamicPrayerTimeProvider))
             .ToList();
 
         foreach ((EDynamicPrayerTimeProviderType dynamicPrayerTimeProviderType, BaseLocationData locationData) in locationDataByDynamicPrayerTimeProvider)
         {
-            var existingLocationConfig = currentLocationConfigs
+            ProfileLocationConfig? existingLocationConfig = currentLocationConfigs
                 .FirstOrDefault(config => config.DynamicPrayerTimeProvider == dynamicPrayerTimeProviderType);
 
             if (existingLocationConfig != null)
@@ -254,7 +240,7 @@ public class ProfileRepository(
         dbContext.ProfileLocations.RemoveRange(configsToRemove);
     }
 
-    private static void setTimeConfig(
+    private static void SetTimeConfig(
         DynamicProfile profile, ETimeType timeType,
         GenericSettingConfiguration settings)
     {
@@ -272,43 +258,39 @@ public class ProfileRepository(
 
     public async Task<MosqueProfile> CreateNewMosqueProfile(EMosquePrayerTimeProviderType providerType, string externalID, string profileName, CancellationToken cancellationToken)
     {
-        using (AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken))
+        using AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
+        var newMosqueProfile = new MosqueProfile
         {
-            var newMosqueProfile = new MosqueProfile
-            {
-                Name = profileName,
-                ExternalID = externalID,
-                MosqueProviderType = providerType,
-                SequenceNo = await getNextProfileSequenceNo(dbContext, cancellationToken).ConfigureAwait(false)
-            };
+            Name = profileName,
+            ExternalID = externalID,
+            MosqueProviderType = providerType,
+            SequenceNo = await GetNextProfileSequenceNo(dbContext, cancellationToken).ConfigureAwait(false)
+        };
 
-            await dbContext.MosqueProfiles.AddAsync(newMosqueProfile, cancellationToken);
-            await dbContext.SaveChangesAsync(cancellationToken);
+        await dbContext.MosqueProfiles.AddAsync(newMosqueProfile, cancellationToken);
+        await dbContext.SaveChangesAsync(cancellationToken);
 
-            return newMosqueProfile;
-        }
+        return newMosqueProfile;
     }
 
     public async Task ChangeProfileName(Profile inputProfile, string newProfileName, CancellationToken cancellationToken)
     {
-        using (AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken))
+        using AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
+        Profile trackedProfile =
+            await dbContext.Profiles
+                .FirstOrDefaultAsync(x => x.ID == inputProfile.ID, cancellationToken)
+                .ConfigureAwait(false);
+        try
         {
-            Profile trackedProfile =
-                await dbContext.Profiles
-                    .FirstOrDefaultAsync(x => x.ID == inputProfile.ID, cancellationToken)
-                    .ConfigureAwait(false);
-            try
-            {
-                trackedProfile.Name = newProfileName;
-                await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-            }
-            finally
-            {
-                // or a new db context for this reloading stuff?
-                dbContext.ChangeTracker.Clear();
+            trackedProfile.Name = newProfileName;
+            await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+        }
+        finally
+        {
+            // or a new db context for this reloading stuff?
+            dbContext.ChangeTracker.Clear();
 
-                await dbContext.Entry(inputProfile).ReloadAsync(cancellationToken).ConfigureAwait(false);
-            }
+            await dbContext.Entry(inputProfile).ReloadAsync(cancellationToken).ConfigureAwait(false);
         }
     }
 }

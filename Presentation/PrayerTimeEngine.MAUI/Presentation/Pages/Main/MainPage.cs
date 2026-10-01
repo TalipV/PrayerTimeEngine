@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.Maui.Markup;
+using CommunityToolkit.Maui.Markup;
 using NodaTime;
 using PrayerTimeEngine.Core.Common;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
@@ -46,7 +46,7 @@ public partial class MainPage : ContentPage
             File.Delete(AppConfig.DATABASE_PATH);
         }
 
-        Content = createUI();
+        Content = CreateUI();
 
         BackgroundColor = AppColors.Background;
 
@@ -83,7 +83,7 @@ public partial class MainPage : ContentPage
     /// <summary>
     /// Triggers when the app is opened after being minimized
     /// </summary>
-    private void app_Resumed()
+    private void App_Resumed()
     {
         Task.Run(_viewModel.OnActualAppearing);
     }
@@ -95,8 +95,8 @@ public partial class MainPage : ContentPage
     {
         if (Application.Current is App app)
         {
-            app.Resumed -= app_Resumed;
-            app.Resumed += app_Resumed;
+            app.Resumed -= App_Resumed;
+            app.Resumed += App_Resumed;
         }
 
         // resetting the title view like this was necessary to fix a MAUI bug
@@ -111,7 +111,7 @@ public partial class MainPage : ContentPage
     {
         if (Application.Current is App app)
         {
-            app.Resumed -= app_Resumed;
+            app.Resumed -= App_Resumed;
         }
     }
 
@@ -122,7 +122,7 @@ public partial class MainPage : ContentPage
     private GraphicsView _prayerTimeGraphicViewBaseView;
     private CarouselView _carouselView;
 
-    private Grid createUI()
+    private Grid CreateUI()
     {
         this.Bind<MainPage, bool, bool>(
             IsEnabledProperty,
@@ -161,7 +161,7 @@ public partial class MainPage : ContentPage
         _titleGrid.WidthRequest = 415;
 #endif
 
-        var searchBox =
+        AutoCompleteTextField searchBox =
             new AutoCompleteTextField
             {
                 Title = "Search",
@@ -179,7 +179,7 @@ public partial class MainPage : ContentPage
                 nameof(MainPageViewModel.IsSearchBoxEnabled),
                 convert: value => value);
 
-        var mainGrid = new Grid
+        Grid mainGrid = new Grid
         {
             RowDefinitions = Rows.Define(
                 new GridLength(2, GridUnitType.Star),
@@ -212,7 +212,7 @@ public partial class MainPage : ContentPage
         .Bind<CarouselView, bool, bool>(
             CarouselView.IsSwipeEnabledProperty,
             nameof(MainPageViewModel.IsMainPageEnabled),
-            convert: value => value, 
+            convert: value => value,
             mode: BindingMode.TwoWay);
 
         mainGrid.AddWithSpan(searchBox, row: 0, column: 0);
@@ -224,24 +224,24 @@ public partial class MainPage : ContentPage
         if (OperatingSystem.IsWindows() || OperatingSystem.IsMacCatalyst())
         {
             // swiping carousel view doesn't work on Windows so this workaround will have to do, at least for now
-            this._prayerTimeGraphicViewBaseView.GestureRecognizers
+            _prayerTimeGraphicViewBaseView.GestureRecognizers
                 .Add(
                     new TapGestureRecognizer
                     {
                         Command = new Command(() =>
                         {
                             // starting to interact too early leads to ItemsSource = null scenario
-                            var viewModels = this._carouselView.ItemsSource?.OfType<IPrayerTimeViewModel>().ToList() ?? [];
+                            List<IPrayerTimeViewModel> viewModels = _carouselView.ItemsSource?.OfType<IPrayerTimeViewModel>().ToList() ?? [];
                             if (viewModels.Count == 0)
                             {
                                 return;
                             }
 
-                            var currentViewModel = this._carouselView.CurrentItem as IPrayerTimeViewModel;
-                            var firstViewModel = viewModels.First();
+                            var currentViewModel = _carouselView.CurrentItem as IPrayerTimeViewModel;
+                            IPrayerTimeViewModel firstViewModel = viewModels.First();
 
-                            var nextItemIndex = viewModels.IndexOf(currentViewModel ?? firstViewModel) + 1;
-                            this._carouselView.CurrentItem = viewModels.ElementAtOrDefault(nextItemIndex) ?? firstViewModel;
+                            int nextItemIndex = viewModels.IndexOf(currentViewModel ?? firstViewModel) + 1;
+                            _carouselView.CurrentItem = viewModels.ElementAtOrDefault(nextItemIndex) ?? firstViewModel;
                         }),
                         NumberOfTapsRequired = 2,
                     });

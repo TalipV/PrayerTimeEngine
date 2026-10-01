@@ -1,4 +1,4 @@
-﻿namespace PrayerTimeEngine;
+namespace PrayerTimeEngine;
 
 public class AppConfig
 {

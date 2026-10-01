@@ -1,4 +1,4 @@
-﻿using NodaTime;
+using NodaTime;
 using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Data.EntityFramework;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Models;
@@ -20,7 +20,9 @@ public class ProfileTimeConfig : IEntity
     public override bool Equals(object obj)
     {
         if (obj is not ProfileTimeConfig otherTimeConfig)
+        {
             return false;
+        }
 
         return ID == otherTimeConfig.ID
             && ProfileID == otherTimeConfig.ProfileID

@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+using System.Data.Common;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
@@ -6,7 +7,6 @@ using NSubstitute.Core;
 using NSubstitute.Extensions;
 using PrayerTimeEngine.Core.Common;
 using PrayerTimeEngine.Core.Data.EntityFramework;
-using System.Data.Common;
 
 namespace PrayerTimeEngine.Core.Tests.Common;
 
@@ -22,38 +22,38 @@ public abstract class BaseTest : IDisposable
     protected AppDbContext TestArrangeDbContext { get; private set; }
     protected AppDbContext TestAssertDbContext { get; private set; }
 
-    protected static ServiceProvider createServiceProvider(Action<ServiceCollection> configureServiceCollection)
+    protected static ServiceProvider CreateServiceProvider(Action<ServiceCollection> configureServiceCollection)
     {
         var serviceCollection = new ServiceCollection();
         configureServiceCollection(serviceCollection);
         return serviceCollection.BuildServiceProvider();
     }
 
-    private IDbContextFactory<AppDbContext> createTestAppDbContextFactory()
+    private IDbContextFactory<AppDbContext> CreateTestAppDbContextFactory()
     {
-        var dbContextFactoryMock = Substitute.For<IDbContextFactory<AppDbContext>>();
+        IDbContextFactory<AppDbContext> dbContextFactoryMock = Substitute.For<IDbContextFactory<AppDbContext>>();
 
-        dbContextFactoryMock.CreateDbContext().Returns(getMockableAppDbContext);
-        dbContextFactoryMock.CreateDbContextAsync().Returns(callInfo => Task.FromResult(getMockableAppDbContext(callInfo)));
+        dbContextFactoryMock.CreateDbContext().Returns(GetMockableAppDbContext);
+        dbContextFactoryMock.CreateDbContextAsync().Returns(callInfo => Task.FromResult(GetMockableAppDbContext(callInfo)));
 
         return dbContextFactoryMock;
     }
 
-    private AppDbContext getMockableAppDbContext(CallInfo callInfo)
+    private AppDbContext GetMockableAppDbContext(CallInfo callInfo)
     {
         // included Guid to be double safe from one test affecting another
-        var options =
+        DbContextOptions options =
             new DbContextOptionsBuilder()
                 .UseSqlite($"Data Source=TestDb{_testSessionID:N};Mode=Memory;Cache=Shared")
                 .Options;
 
-        var mockableDbContext =
+        AppDbContext mockableDbContext =
             Substitute.ForPartsOf<AppDbContext>(
                 options,
                 new AppDbContextMetaData(),
                 Substitute.For<ISystemInfoService>());
 
-        var mockableDbContextDatabase = Substitute.ForPartsOf<DatabaseFacade>(mockableDbContext);
+        DatabaseFacade mockableDbContextDatabase = Substitute.ForPartsOf<DatabaseFacade>(mockableDbContext);
         mockableDbContext.Configure().Database.Returns(mockableDbContextDatabase);
 
         return mockableDbContext;
@@ -66,12 +66,12 @@ public abstract class BaseTest : IDisposable
             return _dbContextFactoryMock;
         }
 
-        _dbContextFactoryMock = createTestAppDbContextFactory();
+        _dbContextFactoryMock = CreateTestAppDbContextFactory();
         _keepMemoryDbAliveDbContext = _dbContextFactoryMock.CreateDbContext();
         TestArrangeDbContext = _dbContextFactoryMock.CreateDbContext();
         TestAssertDbContext = _dbContextFactoryMock.CreateDbContext();
 
-        var database = _keepMemoryDbAliveDbContext.Database;
+        DatabaseFacade database = _keepMemoryDbAliveDbContext.Database;
         _keepMemoryDbAliveDbConnection = database.GetDbConnection();
         _keepMemoryDbAliveDbConnection.Open();
         database.EnsureCreated();

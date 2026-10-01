@@ -1,6 +1,6 @@
-﻿using NodaTime;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using NodaTime;
 
 namespace PrayerTimeEngine.Core.Data.JsonSerialization;
 

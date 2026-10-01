@@ -1,9 +1,10 @@
-﻿using NodaTime;
+﻿using System.Net;
+using NodaTime;
+using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Models.DTOs;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Services;
 using PrayerTimeEngine.Core.Tests.Common;
 using PrayerTimeEngine.Core.Tests.Common.TestData;
 using Refit;
-using System.Net;
 
 namespace PrayerTimeEngine.Core.Tests.Unit.Domain.DynamicPrayerTimes.Providers.Fazilet;
 
@@ -36,7 +37,7 @@ public class FaziletApiServiceTests : BaseTest
             };
 
         // ACT
-        var countries = (await _faziletApiService.GetCountries(default)).Countries;
+        List<FaziletCountryResponseDTO> countries = (await _faziletApiService.GetCountries(default)).Countries;
 
         // ASSERT
         countries.Should().HaveCount(208);
@@ -65,7 +66,7 @@ public class FaziletApiServiceTests : BaseTest
             };
 
         // ACT
-        var cities = await _faziletApiService.GetCitiesByCountryID(1, default);
+        List<FaziletCityResponseDTO> cities = await _faziletApiService.GetCitiesByCountryID(1, default);
 
         // ASSERT
         cities.Should().HaveCount(161);
@@ -96,7 +97,7 @@ public class FaziletApiServiceTests : BaseTest
             };
 
         // ACT
-        var times = await _faziletApiService.GetTimesByCityID(197, default);
+        FaziletGetTimesByCityIDResponseDTO times = await _faziletApiService.GetTimesByCityID(197, default);
 
         // ASSERT
         LocalDate assertDate = date.PlusDays(-1);

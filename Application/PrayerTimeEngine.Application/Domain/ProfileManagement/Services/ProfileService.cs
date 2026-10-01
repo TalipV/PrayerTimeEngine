@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+using System.Text;
+using Microsoft.Extensions.Logging;
 using NodaTime;
 using PrayerTimeEngine.Core.Common;
 using PrayerTimeEngine.Core.Common.Enum;
@@ -11,8 +12,6 @@ using PrayerTimeEngine.Core.Domain.MosquePrayerTimes;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Models;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Interfaces;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
-using System.Text;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Services;
 
@@ -27,7 +26,7 @@ public class ProfileService(
 {
     public long GetProfileVersion(int profileID) => profileVersionStore.GetVersion(profileID);
 
-    private void bumpProfileVersion(int profileID) => profileVersionStore.BumpVersion(profileID);
+    private void BumpProfileVersion(int profileID) => profileVersionStore.BumpVersion(profileID);
 
     public async Task<List<Profile>> GetProfiles(CancellationToken cancellationToken)
     {
@@ -35,7 +34,7 @@ public class ProfileService(
 
         if (profiles.Count == 0)
         {
-            profiles.Add(getDefaultProfile());
+            profiles.Add(GetDefaultProfile());
             await SaveProfile(profiles[0], cancellationToken).ConfigureAwait(false);
         }
 
@@ -46,10 +45,12 @@ public class ProfileService(
     {
         await profileRepository.SaveProfile(profile, cancellationToken).ConfigureAwait(false);
         if (profile.ID > 0)
-            bumpProfileVersion(profile.ID);
+        {
+            BumpProfileVersion(profile.ID);
+        }
     }
 
-    private static DynamicProfile getDefaultProfile()
+    private static DynamicProfile GetDefaultProfile()
     {
         var profile = new DynamicProfile
         {
@@ -294,11 +295,13 @@ public class ProfileService(
             bool anyOtherDynamicProfileExists = existingProfiles.OfType<DynamicProfile>().Any(x => x.ID != profile.ID);
 
             if (!anyOtherDynamicProfileExists)
+            {
                 throw new InvalidOperationException("Das letzte dynamische Profil kann nicht gelöscht werden. Es muss immer mindestens ein dynamisches Profil vorhanden sein.");
+            }
         }
 
         await profileRepository.DeleteProfile(profile, cancellationToken).ConfigureAwait(false);
-        bumpProfileVersion(profile.ID);
+        BumpProfileVersion(profile.ID);
     }
 
     public GenericSettingConfiguration GetTimeConfig(DynamicProfile profile, ETimeType timeType)
@@ -318,10 +321,12 @@ public class ProfileService(
     {
         var locationDataByDynamicPrayerTimeProvider = new List<(EDynamicPrayerTimeProviderType, BaseLocationData)>();
 
-        foreach (var dynamicPrayerTimeProvider in Enum.GetValues<EDynamicPrayerTimeProviderType>())
+        foreach (EDynamicPrayerTimeProviderType dynamicPrayerTimeProvider in Enum.GetValues<EDynamicPrayerTimeProviderType>())
         {
             if (dynamicPrayerTimeProvider == EDynamicPrayerTimeProviderType.None)
+            {
                 continue;
+            }
 
             BaseLocationData locationConfig = null;
             try
@@ -332,35 +337,39 @@ public class ProfileService(
             }
             catch (Exception exception)
             {
-                logger.LogError(exception, 
-                    "Error while retrieving location info for {DynamicPrayerTimeProviderFullName}", 
+                logger.LogError(exception,
+                    "Error while retrieving location info for {DynamicPrayerTimeProviderFullName}",
                     dynamicPrayerTimeProvider.GetType().FullName);
             }
 
             if (locationConfig != null)
+            {
                 locationDataByDynamicPrayerTimeProvider.Add((dynamicPrayerTimeProvider, locationConfig));
+            }
         }
 
         string newProfileName = $"{placeInfo?.City ?? "-"}, {profile.SequenceNo}";
 
         await profileRepository.UpdateLocationConfig(profile, placeInfo, locationDataByDynamicPrayerTimeProvider, newProfileName, cancellationToken);
-        bumpProfileVersion(profile.ID);
+        BumpProfileVersion(profile.ID);
     }
 
     public async Task UpdateTimeConfig(DynamicProfile profile, ETimeType timeType, GenericSettingConfiguration settings, CancellationToken cancellationToken)
     {
         await profileRepository.UpdateTimeConfig(profile, timeType, settings, cancellationToken).ConfigureAwait(false);
-        bumpProfileVersion(profile.ID);
+        BumpProfileVersion(profile.ID);
     }
 
     public string GetLocationDataDisplayText(DynamicProfile profile)
     {
         if (profile is null)
+        {
             return string.Empty;
+        }
 
-        MuwaqqitLocationData muwaqqitLocationData = GetLocationConfig(profile, EDynamicPrayerTimeProviderType.Muwaqqit) as MuwaqqitLocationData;
-        FaziletLocationData faziletLocationData = GetLocationConfig(profile, EDynamicPrayerTimeProviderType.Fazilet) as FaziletLocationData;
-        SemerkandLocationData semerkandLocationData = GetLocationConfig(profile, EDynamicPrayerTimeProviderType.Semerkand) as SemerkandLocationData;
+        var muwaqqitLocationData = GetLocationConfig(profile, EDynamicPrayerTimeProviderType.Muwaqqit) as MuwaqqitLocationData;
+        var faziletLocationData = GetLocationConfig(profile, EDynamicPrayerTimeProviderType.Fazilet) as FaziletLocationData;
+        var semerkandLocationData = GetLocationConfig(profile, EDynamicPrayerTimeProviderType.Semerkand) as SemerkandLocationData;
 
         return $"""
                 Muwaqqit:
@@ -395,13 +404,17 @@ public class ProfileService(
             foreach (ETimeType timeType in item.Value)
             {
                 if (!timeTypeAttributeService.ConfigurableTypes.Contains(timeType))
+                {
                     continue;
+                }
 
                 GenericSettingConfiguration config = GetTimeConfig(profile, timeType);
 
                 // profiles which were saved before a time type was introduced have no config for it
                 if (config is null)
+                {
                     continue;
+                }
 
                 outputText.Append(Environment.NewLine);
                 outputText.Append($"- {timeType} mit {config.Source}");
@@ -425,7 +438,7 @@ public class ProfileService(
 
     public List<GenericSettingConfiguration> GetActiveComplexTimeConfigs(DynamicProfile profile)
     {
-        return timeTypeAttributeService
+        return [.. timeTypeAttributeService
             .ComplexTypes
             .Select(x => GetTimeConfig(profile, x))
             .Where(config =>
@@ -433,8 +446,7 @@ public class ProfileService(
                 {
                     Source: not EDynamicPrayerTimeProviderType.None,
                     IsTimeShown: true
-                })
-            .ToList();
+                })];
     }
 
     public Task<MosqueProfile> CreateNewMosqueProfile(EMosquePrayerTimeProviderType providerType, string externalID, CancellationToken cancellationToken)
@@ -458,7 +470,7 @@ public class ProfileService(
     public async Task ChangeProfileName(Profile profile, string newProfileName, CancellationToken cancellationToken)
     {
         await profileRepository.ChangeProfileName(profile, newProfileName, cancellationToken).ConfigureAwait(false);
-        bumpProfileVersion(profile.ID);
+        BumpProfileVersion(profile.ID);
     }
 
     public ZonedDateTime GetCurrentZonedDateTime(DynamicProfile profile)

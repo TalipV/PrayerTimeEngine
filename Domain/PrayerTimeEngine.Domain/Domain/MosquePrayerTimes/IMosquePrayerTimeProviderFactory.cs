@@ -1,4 +1,4 @@
-﻿using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers;
+using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers;
 
 namespace PrayerTimeEngine.Core.Domain.MosquePrayerTimes;
 

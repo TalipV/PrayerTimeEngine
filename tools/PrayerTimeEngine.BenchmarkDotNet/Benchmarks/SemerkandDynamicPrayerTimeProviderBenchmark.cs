@@ -1,4 +1,4 @@
-﻿using BenchmarkDotNet.Attributes;
+using BenchmarkDotNet.Attributes;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -26,14 +26,14 @@ public class SemerkandDynamicPrayerTimeProviderBenchmark
 {
     #region data
 
-    private static readonly ZonedDateTime _zonedDateTime = new LocalDate(2023, 7, 29).AtStartOfDayInZone(TestDataHelper.EUROPE_VIENNA_TIME_ZONE);
+    private static readonly ZonedDateTime s_zonedDateTime = new LocalDate(2023, 7, 29).AtStartOfDayInZone(TestDataHelper.EUROPE_VIENNA_TIME_ZONE);
 
-    private static readonly List<GenericSettingConfiguration> _configs =
+    private static readonly List<GenericSettingConfiguration> s_configs =
         [
             new GenericSettingConfiguration { TimeType = ETimeType.DhuhrStart, Source = EDynamicPrayerTimeProviderType.Semerkand }
         ];
 
-    private static readonly SemerkandLocationData _locationData =
+    private static readonly SemerkandLocationData s_locationData =
         new()
         {
             CountryName = "Avusturya",
@@ -43,7 +43,7 @@ public class SemerkandDynamicPrayerTimeProviderBenchmark
 
     #endregion data
 
-    private static SemerkandDynamicPrayerTimeProvider getSemerkandDynamicPrayerTimeProvider_DataFromDbStorage(
+    private static SemerkandDynamicPrayerTimeProvider GetSemerkandDynamicPrayerTimeProvider_DataFromDbStorage(
         IDbContextFactory<AppDbContext> dbContextFactory)
     {
         // to make sure that before the benchmark the data is gotten from the APIService and stored in the db
@@ -52,7 +52,7 @@ public class SemerkandDynamicPrayerTimeProviderBenchmark
                 SubstitutionHelper.GetMockedSemerkandApiService(),
                 Substitute.For<IPlaceService>(),
                 Substitute.For<ILogger<SemerkandDynamicPrayerTimeProvider>>()
-            ).GetPrayerTimesAsync(_zonedDateTime, _locationData, _configs, default).GetAwaiter().GetResult();
+            ).GetPrayerTimesAsync(s_zonedDateTime, s_locationData, s_configs, default).GetAwaiter().GetResult();
 
         // throw exceptions when the calculator tries using the api
         ISemerkandApiService mockedSemerkandApiService = Substitute.For<ISemerkandApiService>();
@@ -66,13 +66,13 @@ public class SemerkandDynamicPrayerTimeProviderBenchmark
             );
     }
 
-    private static SemerkandDynamicPrayerTimeProvider getSemerkandDynamicPrayerTimeProvider_DataFromApi()
+    private static SemerkandDynamicPrayerTimeProvider GetSemerkandDynamicPrayerTimeProvider_DataFromApi()
     {
         // db doesn't return any data
-        var semerkandDbAccessMock = Substitute.For<ISemerkandRepository>();
+        ISemerkandRepository semerkandDbAccessMock = Substitute.For<ISemerkandRepository>();
         semerkandDbAccessMock.GetCountries(Arg.Any<CancellationToken>()).Returns([]);
         semerkandDbAccessMock.GetCitiesByCountryID(Arg.Any<int>(), Arg.Any<CancellationToken>()).Returns([]);
-        semerkandDbAccessMock.GetTimesByDateAndCityID(Arg.Any<LocalDate>(), Arg.Any<int>(), Arg.Any<CancellationToken>()).ReturnsNull<SemerkandDailyPrayerTimes>();
+        semerkandDbAccessMock.GetTimesByDateAndCityID(Arg.Any<LocalDate>(), Arg.Any<int>(), Arg.Any<CancellationToken>()).ReturnsNull();
 
         return new SemerkandDynamicPrayerTimeProvider(
                 // returns null per default
@@ -83,30 +83,30 @@ public class SemerkandDynamicPrayerTimeProviderBenchmark
             );
     }
 
-    private static SqliteConnection _dbContextKeepAliveSqlConnection;
+    private static SqliteConnection s_dbContextKeepAliveSqlConnection;
 
     [GlobalSetup]
     public static void Setup()
     {
-        _dbContextKeepAliveSqlConnection = new SqliteConnection("Data Source=:memory:");
-        _dbContextKeepAliveSqlConnection.Open();
+        s_dbContextKeepAliveSqlConnection = new SqliteConnection("Data Source=:memory:");
+        s_dbContextKeepAliveSqlConnection.Open();
 
         // Create the initial DbContext to initialize the database schema
-        var dbContext = getDbContext();
+        AppDbContext dbContext = GetDbContext();
         dbContext.Database.EnsureCreated();
 
-        var dbContextFactoryMock = Substitute.For<IDbContextFactory<AppDbContext>>();
-        dbContextFactoryMock.CreateDbContext().Returns(callInfo => getDbContext());
-        dbContextFactoryMock.CreateDbContextAsync().Returns(callInfo => Task.FromResult(getDbContext()));
+        IDbContextFactory<AppDbContext> dbContextFactoryMock = Substitute.For<IDbContextFactory<AppDbContext>>();
+        dbContextFactoryMock.CreateDbContext().Returns(callInfo => GetDbContext());
+        dbContextFactoryMock.CreateDbContextAsync().Returns(callInfo => Task.FromResult(GetDbContext()));
 
-        _semerkandDynamicPrayerTimeProvider_DataFromDbStorage = getSemerkandDynamicPrayerTimeProvider_DataFromDbStorage(dbContextFactoryMock);
-        _semerkandDynamicPrayerTimeProvider_DataFromApi = getSemerkandDynamicPrayerTimeProvider_DataFromApi();
+        s_semerkandDynamicPrayerTimeProvider_DataFromDbStorage = GetSemerkandDynamicPrayerTimeProvider_DataFromDbStorage(dbContextFactoryMock);
+        s_semerkandDynamicPrayerTimeProvider_DataFromApi = GetSemerkandDynamicPrayerTimeProvider_DataFromApi();
     }
 
-    private static AppDbContext getDbContext()
+    private static AppDbContext GetDbContext()
     {
-        var dbOptions = new DbContextOptionsBuilder()
-            .UseSqlite(_dbContextKeepAliveSqlConnection) // Use the existing connection
+        DbContextOptions dbOptions = new DbContextOptionsBuilder()
+            .UseSqlite(s_dbContextKeepAliveSqlConnection) // Use the existing connection
             .Options;
 
         var dbContext =
@@ -118,16 +118,16 @@ public class SemerkandDynamicPrayerTimeProviderBenchmark
         return dbContext;
     }
 
-    private static SemerkandDynamicPrayerTimeProvider _semerkandDynamicPrayerTimeProvider_DataFromDbStorage = null;
-    private static SemerkandDynamicPrayerTimeProvider _semerkandDynamicPrayerTimeProvider_DataFromApi = null;
+    private static SemerkandDynamicPrayerTimeProvider s_semerkandDynamicPrayerTimeProvider_DataFromDbStorage = null;
+    private static SemerkandDynamicPrayerTimeProvider s_semerkandDynamicPrayerTimeProvider_DataFromApi = null;
 
     [Benchmark]
     public List<(ETimeType TimeType, ZonedDateTime ZonedDateTime)> SemerkandDynamicPrayerTimeProvider_GetDataFromDb()
     {
-        var result = _semerkandDynamicPrayerTimeProvider_DataFromDbStorage.GetPrayerTimesAsync(
-            _zonedDateTime,
-            locationData: _locationData,
-            configurations: _configs,
+        List<(ETimeType TimeType, ZonedDateTime ZonedDateTime)> result = s_semerkandDynamicPrayerTimeProvider_DataFromDbStorage.GetPrayerTimesAsync(
+            s_zonedDateTime,
+            locationData: s_locationData,
+            configurations: s_configs,
             cancellationToken: default).GetAwaiter().GetResult();
 
         if (result.Count != 1)
@@ -141,10 +141,10 @@ public class SemerkandDynamicPrayerTimeProviderBenchmark
     [Benchmark]
     public List<(ETimeType TimeType, ZonedDateTime ZonedDateTime)> SemerkandDynamicPrayerTimeProvider_GetDataFromApi()
     {
-        var result = _semerkandDynamicPrayerTimeProvider_DataFromApi.GetPrayerTimesAsync(
-            _zonedDateTime,
-            locationData: _locationData,
-            configurations: _configs,
+        List<(ETimeType TimeType, ZonedDateTime ZonedDateTime)> result = s_semerkandDynamicPrayerTimeProvider_DataFromApi.GetPrayerTimesAsync(
+            s_zonedDateTime,
+            locationData: s_locationData,
+            configurations: s_configs,
             cancellationToken: default).GetAwaiter().GetResult();
 
         if (result.Count != 1)

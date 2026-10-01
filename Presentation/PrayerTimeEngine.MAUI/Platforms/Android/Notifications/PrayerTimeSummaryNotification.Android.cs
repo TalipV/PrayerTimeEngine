@@ -26,9 +26,9 @@ public class PrayerTimeSummaryNotification : Service
     internal const string CHANNEL_ID = "prayer_time_channel";
     private const int TIMER_FREQUENCY_MS = 1_000;
     private const int MAXIMUM_UPDATE_WAITING_DURATION_MS = 5_000;
-    private const int notificationId = 1000;
+    private const int NotificationId = 1000;
 
-    private readonly System.Timers.Timer updateTimer;
+    private readonly System.Timers.Timer _updateTimer;
 
     private readonly IProfileService _profileService;
     private readonly IDynamicPrayerTimeProviderManager _prayerTimeDynamicPrayerTimeProviderManager;
@@ -44,14 +44,14 @@ public class PrayerTimeSummaryNotification : Service
         _logger = MauiProgram.ServiceProvider.GetRequiredService<ILogger<PrayerTimeSummaryNotification>>();
         _systemInfoService = MauiProgram.ServiceProvider.GetRequiredService<ISystemInfoService>();
 
-        updateTimer = new System.Timers.Timer(TIMER_FREQUENCY_MS);
-        updateTimer.Elapsed += (sender, e) => Task.Run(UpdateNotification);
+        _updateTimer = new System.Timers.Timer(TIMER_FREQUENCY_MS);
+        _updateTimer.Elapsed += (sender, e) => Task.Run(UpdateNotification);
 
         // "hack" to make sure that the timer starts at a round second
         Task.Run(() =>
         {
             Thread.Sleep(1000 - DateTime.Now.Millisecond);
-            updateTimer.Start();
+            _updateTimer.Start();
         });
     }
 
@@ -59,21 +59,27 @@ public class PrayerTimeSummaryNotification : Service
 
     public override StartCommandResult OnStartCommand(Intent? intent, StartCommandFlags flags, int startId)
     {
-        var builder = getNotificationBuilder();
+        Notification.Builder builder = GetNotificationBuilder();
         builder.SetContentText("Loading...");
 
-        var initialNotification = builder.Build();
+        Notification initialNotification = builder.Build();
 
         try
         {
             _logger.LogInformation("Try start foreground service");
 
             if (OperatingSystem.IsAndroidVersionAtLeast(34))
-                StartForeground(notificationId, initialNotification, global::Android.Content.PM.ForegroundService.TypeSpecialUse);
+            {
+                StartForeground(NotificationId, initialNotification, global::Android.Content.PM.ForegroundService.TypeSpecialUse);
+            }
             else if (OperatingSystem.IsAndroidVersionAtLeast(29))
-                StartForeground(notificationId, initialNotification, global::Android.Content.PM.ForegroundService.TypeNone);
+            {
+                StartForeground(NotificationId, initialNotification, global::Android.Content.PM.ForegroundService.TypeNone);
+            }
             else
-                StartForeground(notificationId, initialNotification);
+            {
+                StartForeground(NotificationId, initialNotification);
+            }
         }
         catch (Exception ex)
         {
@@ -83,16 +89,16 @@ public class PrayerTimeSummaryNotification : Service
         return StartCommandResult.Sticky;
     }
 
-    private const int trueInt = 1;
-    private const int falseInt = 0;
-    private int isUpdateInProgress = 0;
+    private const int TrueInt = 1;
+    private const int FalseInt = 0;
+    private int _isUpdateInProgress = 0;
 
     private async Task UpdateNotification()
     {
-        // when isUpdateInProgress equals comparand (i.e. it equals "not in progress" then set it to value (i.e. to "in progress").
-        // Always return the previous value of isUpdateInProgress
+        // when _isUpdateInProgress equals comparand (i.e. it equals "not in progress" then set it to value (i.e. to "in progress").
+        // Always return the previous value of _isUpdateInProgress
         // This is thread safer than checking and then writing in two steps
-        if (Interlocked.CompareExchange(ref isUpdateInProgress, value: trueInt, comparand: falseInt) == trueInt)
+        if (Interlocked.CompareExchange(ref _isUpdateInProgress, value: TrueInt, comparand: FalseInt) == TrueInt)
         {
             // The previous value was "in progress"
             return;
@@ -101,69 +107,67 @@ public class PrayerTimeSummaryNotification : Service
         // The per-second render must never do (cancellable) network work - it only reads already
         // calculated times from the manager's in-memory cache. The short timeout therefore only guards
         // the local profile read, which cannot legitimately take seconds.
-        using (var renderCancellationTokenSource = new CancellationTokenSource(delay: TimeSpan.FromMilliseconds(MAXIMUM_UPDATE_WAITING_DURATION_MS)))
+        using var renderCancellationTokenSource = new CancellationTokenSource(delay: TimeSpan.FromMilliseconds(MAXIMUM_UPDATE_WAITING_DURATION_MS));
+        try
         {
-            try
+            List<Profile> profiles = await _profileService.GetProfiles(renderCancellationTokenSource.Token);
+
+            // potential for performance improvement
+            DynamicProfile mainProfile = profiles.OfType<DynamicProfile>().OrderBy(x => x.SequenceNo).First();
+
+            // Loading the prayer times (potentially over the network) happens off this per-second
+            // render path, with its own generous timeout, so a slow first fetch can never be canceled
+            // by the short render timeout above. Deduplicated so overlapping ticks don't stack.
+            EnsureProfilesLoadedInBackground(profiles, mainProfile);
+
+            Notification.Builder notificationBuilder = GetNotificationBuilder();
+
+            if (mainProfile == null)
             {
-                List<Profile> profiles = await _profileService.GetProfiles(renderCancellationTokenSource.Token);
-
-                // potential for performance improvement
-                DynamicProfile mainProfile = profiles.OfType<DynamicProfile>().OrderBy(x => x.SequenceNo).First();
-
-                // Loading the prayer times (potentially over the network) happens off this per-second
-                // render path, with its own generous timeout, so a slow first fetch can never be canceled
-                // by the short render timeout above. Deduplicated so overlapping ticks don't stack.
-                ensureProfilesLoadedInBackground(profiles, mainProfile);
-
-                var notificationBuilder = getNotificationBuilder();
-
-                if (mainProfile == null)
-                {
-                    applyContent(notificationBuilder, profileInfo: "No dynamic profile", progress: null);
-                }
-                else
-                {
-                    applyContent(
-                        notificationBuilder,
-                        profileInfo: mainProfile.PlaceInfo.City,
-                        getProgress(mainProfile));
-                }
-
-                var context = global::Android.App.Application.Context;
-                var notificationManager = context.GetSystemService(NotificationService) as NotificationManager
-                    ?? throw new Exception("NotificationManager could not be retrieved");
-                notificationManager.Notify(notificationId, notificationBuilder.Build());
+                ApplyContent(notificationBuilder, profileInfo: "No dynamic profile", progress: null);
             }
-            finally
+            else
             {
-                // Reset isUpdateInProgress to allow for new updates
-                Interlocked.Exchange(ref isUpdateInProgress, falseInt);
+                ApplyContent(
+                    notificationBuilder,
+                    profileInfo: mainProfile.PlaceInfo.City,
+                    GetProgress(mainProfile));
             }
+
+            Context context = global::Android.App.Application.Context;
+            NotificationManager notificationManager = context.GetSystemService(NotificationService) as NotificationManager
+                ?? throw new Exception("NotificationManager could not be retrieved");
+            notificationManager.Notify(NotificationId, notificationBuilder.Build());
+        }
+        finally
+        {
+            // Reset _isUpdateInProgress to allow for new updates
+            Interlocked.Exchange(ref _isUpdateInProgress, FalseInt);
         }
     }
 
     private Notification.Builder? _notificationBuilder;
 
-    private Notification.Builder getNotificationBuilder()
+    private Notification.Builder GetNotificationBuilder()
     {
         if (_notificationBuilder is null)
         {
             string title = "PrayerTimeEngine";
 
-            var context = global::Android.App.Application.Context;
+            Context context = global::Android.App.Application.Context;
 
             if (context?.PackageManager is null || context.PackageName is null)
             {
                 throw new Exception("Package information could not be retrieved");
             }
 
-            Intent intent = context.PackageManager.GetLaunchIntentForPackage(context.PackageName) 
+            Intent intent = context.PackageManager.GetLaunchIntentForPackage(context.PackageName)
                 ?? throw new Exception("Intent could not be retrieved");
 
             PendingIntent pendingIntent = PendingIntent.GetActivity(context, 0, intent, PendingIntentFlags.Immutable)
                 ?? throw new Exception("PendingIntent could not be retrieved");
 
-            var notificationBuilder = new Notification.Builder(context, CHANNEL_ID)
+            Notification.Builder notificationBuilder = new Notification.Builder(context, CHANNEL_ID)
                 .SetContentTitle(title)
                 .SetContentIntent(pendingIntent)
                 .SetSmallIcon(_Microsoft.Android.Resource.Designer.ResourceConstant.Drawable.ic_notification)
@@ -207,7 +211,7 @@ public class PrayerTimeSummaryNotification : Service
     /// between Fajr-End and Duha-Start, in which case no progress is shown at all.
     /// </para>
     /// </summary>
-    private CurrentTimeProgress? getProgress(DynamicProfile profile)
+    private CurrentTimeProgress? GetProgress(DynamicProfile profile)
     {
         ZonedDateTime now = _profileService.GetCurrentZonedDateTime(profile);
 
@@ -215,28 +219,32 @@ public class PrayerTimeSummaryNotification : Service
         // or after a reboot before the background load finished) simply show no progress instead of
         // forcing a network fetch under the short render timeout.
         if (!_prayerTimeDynamicPrayerTimeProviderManager.TryGetAlreadyCalculatedPrayerTimes(
-                profile.ID, 
-                now, 
+                profile.ID,
+                now,
                 out DynamicPrayerTimesDaySet prayerTimeBundle))
         {
             return null;
         }
 
-        Instant nowInstant = now.ToInstant();
+        var nowInstant = now.ToInstant();
         GenericPrayerTime? currentTime = null;
         ETimeSection currentSection = default;
 
         foreach ((ETimeSection section, GenericPrayerTime prayerTime) in prayerTimeBundle.AllPrayerTimes)
         {
             if (prayerTime?.Start is null || prayerTime.End is null)
+            {
                 continue;
+            }
 
             if (nowInstant < prayerTime.Start.Value.ToInstant() || nowInstant >= prayerTime.End.Value.ToInstant())
+            {
                 continue;
+            }
 
             if (currentTime is null
                 // prioritize the shorter one when two times overlap
-                || getDuration(prayerTime) < getDuration(currentTime))
+                || GetDuration(prayerTime) < GetDuration(currentTime))
             {
                 currentTime = prayerTime;
                 currentSection = section;
@@ -244,19 +252,23 @@ public class PrayerTimeSummaryNotification : Service
         }
 
         if (currentTime?.Start is null || currentTime.End is null)
-            return getGapProgress(now, prayerTimeBundle);
+        {
+            return GetGapProgress(now, prayerTimeBundle);
+        }
 
-        Instant start = currentTime.Start.Value.ToInstant();
-        double totalSeconds = getDuration(currentTime).TotalSeconds;
+        var start = currentTime.Start.Value.ToInstant();
+        double totalSeconds = GetDuration(currentTime).TotalSeconds;
 
         if (totalSeconds <= 0)
+        {
             return null;
+        }
 
         int elapsedPercent = (int)Math.Clamp((nowInstant - start).TotalSeconds / totalSeconds * PROGRESS_MAX, 0, PROGRESS_MAX);
 
         return new CurrentTimeProgress(
             elapsedPercent,
-            getBar(currentTime, totalSeconds),
+            GetBar(currentTime, totalSeconds),
             currentTime.Start.Value.ToString("HH:mm", null),
             currentTime.End.Value.ToString("HH:mm", null),
             (currentTime.End.Value - now).ToString("HH:mm:ss", null),
@@ -268,9 +280,9 @@ public class PrayerTimeSummaryNotification : Service
     /// ends where the next one begins, so it fits the very same bar. Both durations are spelled out
     /// underneath the two ends, since there is no prayer time whose name could carry the meaning.
     /// </summary>
-    private static CurrentTimeProgress? getGapProgress(ZonedDateTime now, DynamicPrayerTimesDaySet prayerTimeBundle)
+    private static CurrentTimeProgress? GetGapProgress(ZonedDateTime now, DynamicPrayerTimesDaySet prayerTimeBundle)
     {
-        Instant nowInstant = now.ToInstant();
+        var nowInstant = now.ToInstant();
 
         ZonedDateTime? previousEnd = null;
         ZonedDateTime? nextStart = null;
@@ -295,12 +307,16 @@ public class PrayerTimeSummaryNotification : Service
         }
 
         if (previousEnd is null || nextStart is null)
+        {
             return null;
+        }
 
         double totalSeconds = (nextStart.Value.ToInstant() - previousEnd.Value.ToInstant()).TotalSeconds;
 
         if (totalSeconds <= 0)
+        {
             return null;
+        }
 
         int elapsedPercent = (int)Math.Clamp(
             (nowInstant - previousEnd.Value.ToInstant()).TotalSeconds / totalSeconds * PROGRESS_MAX,
@@ -320,10 +336,12 @@ public class PrayerTimeSummaryNotification : Service
             IsGapBetweenTimesMode: true);
     }
 
-    private static Duration getDuration(GenericPrayerTime prayerTime)
+    private static Duration GetDuration(GenericPrayerTime prayerTime)
     {
         if (prayerTime?.Start is null || prayerTime.End is null)
+        {
             throw new ArgumentException("Prayer time start or end is null", nameof(prayerTime));
+        }
 
         return prayerTime.End.Value.ToInstant() - prayerTime.Start.Value.ToInstant();
     }
@@ -335,31 +353,34 @@ public class PrayerTimeSummaryNotification : Service
     /// <summary>
     /// Splits the prayer time at its sub times. Without usable sub times the bar stays undivided.
     /// </summary>
-    private static ProgressBarInfo getBar(GenericPrayerTime prayerTime, double totalSeconds)
+    private static ProgressBarInfo GetBar(GenericPrayerTime prayerTime, double totalSeconds)
     {
         if (prayerTime?.Start is null || prayerTime.End is null)
+        {
             throw new ArgumentException("Prayer time start or end is null", nameof(prayerTime));
+        }
 
-        Instant start = prayerTime.Start.Value.ToInstant();
-        Instant end = prayerTime.End.Value.ToInstant();
+        var start = prayerTime.Start.Value.ToInstant();
+        var end = prayerTime.End.Value.ToInstant();
 
         List<(string Name, Instant Time)> subTimes =
-            getSubTimes(prayerTime)
+            [.. GetSubTimes(prayerTime)
                     .Where(subTime => subTime.Time is not null)
                     .Select(subTime => (subTime.Name, Time: subTime.Time!.Value.ToInstant()))
                     .Where(subTime => start < subTime.Time && subTime.Time < end)
-                    .OrderBy(subTime => subTime.Time)
-                    .ToList();
+                    .OrderBy(subTime => subTime.Time)];
 
         if (subTimes.Count == 0)
+        {
             return new ProgressBarInfo([PROGRESS_MAX], []);
+        }
 
         return new ProgressBarInfo(
-            getSegmentLengths(start, end, subTimes.Select(subTime => subTime.Time).ToList(), totalSeconds),
+            GetSegmentLengths(start, end, [.. subTimes.Select(subTime => subTime.Time)], totalSeconds),
             [.. subTimes.Select(subTime => subTime.Name)]);
     }
 
-    private static int[] getSegmentLengths(Instant start, Instant end, List<Instant> subTimes, double totalSeconds)
+    private static int[] GetSegmentLengths(Instant start, Instant end, List<Instant> subTimes, double totalSeconds)
     {
         List<Instant> boundaries = [.. subTimes, end];
 
@@ -383,7 +404,7 @@ public class PrayerTimeSummaryNotification : Service
     }
 
     /// <summary>The sub times which divide a prayer time, in no particular order.</summary>
-    private static IEnumerable<(string Name, ZonedDateTime? Time)> getSubTimes(GenericPrayerTime prayerTime)
+    private static IEnumerable<(string Name, ZonedDateTime? Time)> GetSubTimes(GenericPrayerTime prayerTime)
     {
         return prayerTime switch
         {
@@ -409,7 +430,7 @@ public class PrayerTimeSummaryNotification : Service
     /// way to get the bar into the collapsed state, and the only way to label the sub times at all.
     /// </para>
     /// </summary>
-    private static void applyContent(
+    private static void ApplyContent(
         Notification.Builder notificationBuilder,
         string profileInfo,
         CurrentTimeProgress? progress)
@@ -430,8 +451,8 @@ public class PrayerTimeSummaryNotification : Service
         // requires expanding the notification first
         notificationBuilder
             .SetStyle(new Notification.DecoratedCustomViewStyle())
-            .SetCustomContentView(createViews(title, headline, progress))
-            .SetCustomBigContentView(createViews(title, headline, progress));
+            .SetCustomContentView(CreateViews(title, headline, progress))
+            .SetCustomBigContentView(CreateViews(title, headline, progress));
     }
 
     /// <summary>
@@ -442,12 +463,12 @@ public class PrayerTimeSummaryNotification : Service
     /// state gets the first division only, at full size, and the rest appears on expanding.
     /// </para>
     /// </summary>
-    private static global::Android.Widget.RemoteViews createViews(
+    private static global::Android.Widget.RemoteViews CreateViews(
         string title,
         string headline,
         CurrentTimeProgress? progress)
     {
-        var context = global::Android.App.Application.Context;
+        Context context = global::Android.App.Application.Context;
 
         var views = new global::Android.Widget.RemoteViews(
             context.PackageName,
@@ -456,7 +477,7 @@ public class PrayerTimeSummaryNotification : Service
         views.SetTextViewText(ResourceIds.Title, title);
         views.SetTextViewText(ResourceIds.Headline, headline);
 
-        applyBar(views, progress);
+        ApplyBar(views, progress);
 
         return views;
     }
@@ -466,16 +487,18 @@ public class PrayerTimeSummaryNotification : Service
     /// is running. They all divide the same span, so the start and end time end up underneath the
     /// whole stack instead of being repeated per bar.
     /// </summary>
-    private static void applyBar(global::Android.Widget.RemoteViews views, CurrentTimeProgress? progress)
+    private static void ApplyBar(global::Android.Widget.RemoteViews views, CurrentTimeProgress? progress)
     {
         views.SetViewVisibility(
-            ResourceIds.ProgressBar, 
-            progress is not null 
-                ? global::Android.Views.ViewStates.Visible 
+            ResourceIds.ProgressBar,
+            progress is not null
+                ? global::Android.Views.ViewStates.Visible
                 : global::Android.Views.ViewStates.Gone);
 
         if (progress is null)
+        {
             return;
+        }
 
         views.SetImageViewBitmap(
             ResourceIds.ProgressBar,
@@ -497,8 +520,8 @@ public class PrayerTimeSummaryNotification : Service
         public const int ProgressBar = _Microsoft.Android.Resource.Designer.ResourceConstant.Id.notification_progress_bar;
     }
 
-    private LocalDate _lastLoadedDate = new LocalDate(2000, 1, 1);
-    private int isLoadInProgress = 0;
+    private LocalDate _lastLoadedDate = new(2000, 1, 1);
+    private int _isLoadInProgress = 0;
 
     /// <summary>
     /// Ensures the prayer times of all profiles are calculated (and thereby cached) for the current day,
@@ -507,26 +530,27 @@ public class PrayerTimeSummaryNotification : Service
     /// Deduplicated so overlapping timer ticks never stack, and retried on the next tick until the main
     /// profile is available so a failed first fetch doesn't leave the notification blank all day.
     /// </summary>
-    private void ensureProfilesLoadedInBackground(List<Profile> profiles, DynamicProfile mainProfile)
+    private void EnsureProfilesLoadedInBackground(List<Profile> profiles, DynamicProfile mainProfile)
     {
         ZonedDateTime currentZonedDateTime = _systemInfoService.GetCurrentZonedDateTime();
 
         if (profiles.Count == 0 || _lastLoadedDate == currentZonedDateTime.Date)
+        {
             return;
+        }
 
-        // when isLoadInProgress equals "not in progress", set it to "in progress" and return the previous
+        // when _isLoadInProgress equals "not in progress", set it to "in progress" and return the previous
         // value. If a load is already running, skip this tick instead of starting a second one.
-        if (Interlocked.CompareExchange(ref isLoadInProgress, value: trueInt, comparand: falseInt) == trueInt)
+        if (Interlocked.CompareExchange(ref _isLoadInProgress, value: TrueInt, comparand: FalseInt) == TrueInt)
+        {
             return;
+        }
 
-        loadProfilesData(profiles, mainProfile, currentZonedDateTime)
-            .SafeFireAndForget(exception =>
-            {
-                _logger.LogError(exception, "Error while loading prayer time data for the notification");
-            });
+        LoadProfilesData(profiles, mainProfile, currentZonedDateTime)
+            .SafeFireAndForget(exception => _logger.LogError(exception, "Error while loading prayer time data for the notification"));
     }
 
-    private async Task loadProfilesData(List<Profile> profiles, DynamicProfile mainProfile, ZonedDateTime currentZonedDateTime)
+    private async Task LoadProfilesData(List<Profile> profiles, DynamicProfile mainProfile, ZonedDateTime currentZonedDateTime)
     {
         try
         {
@@ -568,7 +592,7 @@ public class PrayerTimeSummaryNotification : Service
         }
         finally
         {
-            Interlocked.Exchange(ref isLoadInProgress, falseInt);
+            Interlocked.Exchange(ref _isLoadInProgress, FalseInt);
         }
     }
 }

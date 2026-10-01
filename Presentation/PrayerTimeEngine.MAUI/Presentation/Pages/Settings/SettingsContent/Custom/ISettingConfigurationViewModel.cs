@@ -1,10 +1,10 @@
-﻿using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Models;
+using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Models;
 
 namespace PrayerTimeEngine.Presentation.Pages.Settings.SettingsContent.Custom;
 
 public interface ISettingConfigurationViewModel
 {
-    public GenericSettingConfiguration BuildSetting(int minuteAdjustment, bool isTimeShown);
-    public IView GetUI();
-    public void AssignSettingValues(GenericSettingConfiguration configuration);
+    GenericSettingConfiguration BuildSetting(int minuteAdjustment, bool isTimeShown);
+    IView GetUI();
+    void AssignSettingValues(GenericSettingConfiguration configuration);
 }

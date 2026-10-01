@@ -1,4 +1,4 @@
-﻿namespace PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Models;
+namespace PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Models;
 
 public class CalculatePrayerTimesResultVO
 {

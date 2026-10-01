@@ -1,4 +1,4 @@
-﻿using NodaTime;
+using NodaTime;
 using NodaTime.TimeZones;
 using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes;
@@ -14,23 +14,23 @@ namespace PrayerTimeEngine.Core.Tests.Common.TestData;
 
 public static class TestDataHelper
 {
-    private static readonly string BASE_TEST_DATA_FILE_PATH = Path.Combine(Directory.GetCurrentDirectory(), "TestData");
+    private static readonly string s_basE_TEST_DATA_FILE_PATH = Path.Combine(Directory.GetCurrentDirectory(), "TestData");
 
-    public static readonly string FAZILET_TEST_DATA_FILE_PATH = Path.Combine(BASE_TEST_DATA_FILE_PATH, "FaziletTestData");
-    public static readonly string SEMERKAND_TEST_DATA_FILE_PATH = Path.Combine(BASE_TEST_DATA_FILE_PATH, "SemerkandTestData");
-    public static readonly string MUWAQQIT_TEST_DATA_FILE_PATH = Path.Combine(BASE_TEST_DATA_FILE_PATH, "MuwaqqitTestData");
-    public static readonly string MAWAQIT_TEST_DATA_FILE_PATH = Path.Combine(BASE_TEST_DATA_FILE_PATH, "MawaqitTestData");
-    public static readonly string MYMOSQ_TEST_DATA_FILE_PATH = Path.Combine(BASE_TEST_DATA_FILE_PATH, "MyMosqTestData");
+    public static readonly string FAZILET_TEST_DATA_FILE_PATH = Path.Combine(s_basE_TEST_DATA_FILE_PATH, "FaziletTestData");
+    public static readonly string SEMERKAND_TEST_DATA_FILE_PATH = Path.Combine(s_basE_TEST_DATA_FILE_PATH, "SemerkandTestData");
+    public static readonly string MUWAQQIT_TEST_DATA_FILE_PATH = Path.Combine(s_basE_TEST_DATA_FILE_PATH, "MuwaqqitTestData");
+    public static readonly string MAWAQIT_TEST_DATA_FILE_PATH = Path.Combine(s_basE_TEST_DATA_FILE_PATH, "MawaqitTestData");
+    public static readonly string MYMOSQ_TEST_DATA_FILE_PATH = Path.Combine(s_basE_TEST_DATA_FILE_PATH, "MyMosqTestData");
 
-    public static readonly string LOCATIONIQ_TEST_DATA_FILE_PATH = Path.Combine(BASE_TEST_DATA_FILE_PATH, "LocationIQTestData");
+    public static readonly string LOCATIONIQ_TEST_DATA_FILE_PATH = Path.Combine(s_basE_TEST_DATA_FILE_PATH, "LocationIQTestData");
 
-    public static readonly string CONFIGURATION_TEST_DATA_FILE_PATH = Path.Combine(BASE_TEST_DATA_FILE_PATH, "Configuration");
+    public static readonly string CONFIGURATION_TEST_DATA_FILE_PATH = Path.Combine(s_basE_TEST_DATA_FILE_PATH, "Configuration");
 
     public static readonly DateTimeZone EUROPE_VIENNA_TIME_ZONE = DateTimeZoneProviders.Tzdb["Europe/Vienna"];
     public static readonly DateTimeZone EUROPE_BERLIN_TIME_ZONE = DateTimeZoneProviders.Tzdb["Europe/Berlin"];
 
     public static DynamicProfile CreateCompleteTestDynamicProfile(
-        int profileID = 1, 
+        int profileID = 1,
         string profileName = "Standard-Profil",
         int profileSequenceNo = 1)
     {
@@ -201,7 +201,7 @@ public static class TestDataHelper
     public static DynamicPrayerTimesDay CreateTestDynamicPrayerTimesDay()
     {
         var bundle = new DynamicPrayerTimesDay();
-        var zone = EUROPE_VIENNA_TIME_ZONE;
+        DateTimeZone zone = EUROPE_VIENNA_TIME_ZONE;
 
         bundle.Fajr.Start = new LocalDateTime(2023, 1, 1, 2, 0, 0).InZone(zone, Resolvers.StrictResolver);
         bundle.Fajr.End = new LocalDateTime(2023, 1, 1, 4, 0, 0).InZone(zone, Resolvers.StrictResolver);

@@ -1,4 +1,4 @@
-﻿using MvvmHelpers;
+using MvvmHelpers;
 using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Domain;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
@@ -57,7 +57,7 @@ public partial class SettingsHandlerPageViewModel(
         foreach (ETimeType timeType in timeTypeAttributeService.SectionToTimeTypes[section].Intersect(timeTypeAttributeService.ConfigurableTypes))
         {
             SettingsContentPage settingsContentPage = settingsContentPageFactory.Create();
-            SettingsContentPageViewModel tabViewModel = settingsContentPage.BindingContext as SettingsContentPageViewModel;
+            var tabViewModel = settingsContentPage.BindingContext as SettingsContentPageViewModel;
             tabViewModel.Initialize(profile, timeType);
             SettingsContentPages.Add(settingsContentPage);
         }

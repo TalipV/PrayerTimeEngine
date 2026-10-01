@@ -1,7 +1,7 @@
-﻿using NodaTime;
+using System.Text.Json.Serialization;
+using NodaTime;
 using PrayerTimeEngine.Core.Data.JsonSerialization;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Models.Entities;
-using System.Text.Json.Serialization;
 
 namespace PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Models.DTOs;
 
@@ -52,18 +52,18 @@ public class FaziletPrayerTimesResponseDTO
             CityID = cityID,
             TimeZone = timeZone,
             Date = Date,
-            Imsak = getInstantOrNull(Imsak),
-            Fajr = getInstantOrNull(Fajr),
-            Shuruq = getInstantOrNull(Shuruq),
-            Duha = getInstantOrNull(Duha),
-            Dhuhr = getInstantOrNull(Dhuhr),
-            Asr = getInstantOrNull(Asr),
-            Maghrib = getInstantOrNull(Maghrib),
-            Isha = getInstantOrNull(Isha),
+            Imsak = GetInstantOrNull(Imsak),
+            Fajr = GetInstantOrNull(Fajr),
+            Shuruq = GetInstantOrNull(Shuruq),
+            Duha = GetInstantOrNull(Duha),
+            Dhuhr = GetInstantOrNull(Dhuhr),
+            Asr = GetInstantOrNull(Asr),
+            Maghrib = GetInstantOrNull(Maghrib),
+            Isha = GetInstantOrNull(Isha),
         };
     }
 
-    private static Instant? getInstantOrNull(List<TimeDetail> timeDetails)
+    private static Instant? GetInstantOrNull(List<TimeDetail> timeDetails)
     {
         return timeDetails?.FirstOrDefault()?.OffsetDateTime.ToInstant();
     }

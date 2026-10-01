@@ -25,7 +25,7 @@ public class SemerkandDailyPrayerTimes : IDailyPrayerTimes, IEntity
 
     public ZonedDateTime? GetZonedDateTimeForTimeType(ETimeType timeType)
     {
-        Instant? Instant = timeType switch
+        Instant? instant = timeType switch
         {
             ETimeType.FajrStart => Fajr,
             ETimeType.FajrEnd => Shuruq,
@@ -41,6 +41,6 @@ public class SemerkandDailyPrayerTimes : IDailyPrayerTimes, IEntity
             _ => throw new ArgumentException($"Invalid {nameof(timeType)} value: {timeType}."),
         };
 
-        return Instant?.InZone(TimeZone);
+        return instant?.InZone(TimeZone);
     }
 }

@@ -1,9 +1,10 @@
-﻿using NodaTime;
+﻿using System.Net;
+using NodaTime;
+using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Semerkand.Models.DTOs;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Semerkand.Services;
 using PrayerTimeEngine.Core.Tests.Common;
 using PrayerTimeEngine.Core.Tests.Common.TestData;
 using Refit;
-using System.Net;
 
 namespace PrayerTimeEngine.Core.Tests.Unit.Domain.DynamicPrayerTimes.Providers.Semerkand;
 
@@ -36,7 +37,7 @@ public class SemerkandApiServiceTests : BaseTest
             };
 
         // ACT
-        var countries = await _semerkandApiService.GetCountries(default);
+        List<SemerkandCountryResponseDTO> countries = await _semerkandApiService.GetCountries(default);
 
         // ASSERT
         countries.Should().HaveCount(207);
@@ -66,7 +67,7 @@ public class SemerkandApiServiceTests : BaseTest
             };
 
         // ACT
-        var cities = await _semerkandApiService.GetCitiesByCountryID(1, default);
+        List<SemerkandCityResponseDTO> cities = await _semerkandApiService.GetCitiesByCountryID(1, default);
 
         // ASSERT
         cities.Should().HaveCount(204);
@@ -98,7 +99,7 @@ public class SemerkandApiServiceTests : BaseTest
             };
 
         // ACT
-        var times =
+        List<SemerkandPrayerTimesResponseDTO> times =
             await _semerkandApiService.GetTimesByCityID(
                 year: date.Year,
                 cityID: 197,

@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Data.EntityFramework;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes;
@@ -31,16 +31,16 @@ public class ProfileRepositoryTests : BaseTest
     public async Task GetProfiles_SavedThreeDifferentProfiles_RetrievedNormally()
     {
         // ARRANGE
-        var profile1 = TestDataHelper.CreateCompleteTestDynamicProfile(profileID: 1);
-        var profile2 = TestDataHelper.CreateCompleteTestDynamicProfile(profileID: 2);
-        var profile3 = TestDataHelper.CreateCompleteTestDynamicProfile(profileID: 3);
+        DynamicProfile profile1 = TestDataHelper.CreateCompleteTestDynamicProfile(profileID: 1);
+        DynamicProfile profile2 = TestDataHelper.CreateCompleteTestDynamicProfile(profileID: 2);
+        DynamicProfile profile3 = TestDataHelper.CreateCompleteTestDynamicProfile(profileID: 3);
         await TestArrangeDbContext.Profiles.AddAsync(profile1);
         await TestArrangeDbContext.Profiles.AddAsync(profile2);
         await TestArrangeDbContext.Profiles.AddAsync(profile3);
         await TestArrangeDbContext.SaveChangesAsync();
 
         // ACT
-        var profiles = await _profileRepository.GetProfiles(default);
+        List<Profile> profiles = await _profileRepository.GetProfiles(default);
 
         // ASSERT
         profiles.Should().NotBeNull().And.HaveCount(3);
@@ -58,17 +58,17 @@ public class ProfileRepositoryTests : BaseTest
     public async Task GetUntrackedReferenceOfProfile_ExistingProfile_ProfileRetrieved()
     {
         // ARRANGE
-        var profile = TestDataHelper.CreateCompleteTestDynamicProfile();
+        DynamicProfile profile = TestDataHelper.CreateCompleteTestDynamicProfile();
         await TestArrangeDbContext.Profiles.AddAsync(profile);
         await TestArrangeDbContext.SaveChangesAsync();
 
         // ACT
-        var untracktedProfile = await _profileRepository.GetUntrackedReferenceOfProfile(profile.ID, default);
+        Profile untracktedProfile = await _profileRepository.GetUntrackedReferenceOfProfile(profile.ID, default);
 
         // ASSERT
         profile.Should().BeEquivalentTo(untracktedProfile);
         ReferenceEquals(profile, untracktedProfile).Should().BeFalse(because: "they should be equal but not exactly the same");
-        TestAssertDbContext.Entry(untracktedProfile).State.Should().Be(Microsoft.EntityFrameworkCore.EntityState.Detached);
+        TestAssertDbContext.Entry(untracktedProfile).State.Should().Be(EntityState.Detached);
     }
 
     [Fact]
@@ -77,7 +77,7 @@ public class ProfileRepositoryTests : BaseTest
     {
         // ARRANGE
         // ACT
-        var untracktedProfile = await _profileRepository.GetUntrackedReferenceOfProfile(500, default);
+        Profile untracktedProfile = await _profileRepository.GetUntrackedReferenceOfProfile(500, default);
 
         // ASSERT
         untracktedProfile.Should().BeNull();
@@ -92,13 +92,13 @@ public class ProfileRepositoryTests : BaseTest
     public async Task SaveProfile_BasicProfile_SavedInDb()
     {
         // ARRANGE
-        var profile = TestDataHelper.CreateCompleteTestDynamicProfile();
+        DynamicProfile profile = TestDataHelper.CreateCompleteTestDynamicProfile();
 
         // ACT
         await _profileRepository.SaveProfile(profile, default);
 
         // ASSERT
-        var savedProfile =
+        DynamicProfile? savedProfile =
             TestAssertDbContext.DynamicProfiles
             .Include(x => x.PlaceInfo).ThenInclude(x => x.TimezoneInfo)
             .Include(x => x.TimeConfigs)
@@ -117,7 +117,7 @@ public class ProfileRepositoryTests : BaseTest
     public async Task UpdateLocationConfig_SingleLocation_OnlySingleLocationInProfile()
     {
         // ARRANGE
-        var profile = TestDataHelper.CreateCompleteTestDynamicProfile();
+        DynamicProfile profile = TestDataHelper.CreateCompleteTestDynamicProfile();
         await TestArrangeDbContext.Profiles.AddAsync(profile);
         await TestArrangeDbContext.SaveChangesAsync();
 
@@ -163,7 +163,7 @@ public class ProfileRepositoryTests : BaseTest
     public async Task UpdateTimeConfig_SingleUpdate_UpdatedAsExpected()
     {
         // ARRANGE
-        var profile = TestDataHelper.CreateCompleteTestDynamicProfile();
+        DynamicProfile profile = TestDataHelper.CreateCompleteTestDynamicProfile();
         await TestArrangeDbContext.Profiles.AddAsync(profile);
         await TestArrangeDbContext.SaveChangesAsync();
 
@@ -192,14 +192,14 @@ public class ProfileRepositoryTests : BaseTest
     public async Task CopyProfile_BasicTestProfile_NewProfileWithNewRelatedData()
     {
         // ARRANGE
-        var profile = TestDataHelper.CreateCompleteTestDynamicProfile();
+        DynamicProfile profile = TestDataHelper.CreateCompleteTestDynamicProfile();
         await TestArrangeDbContext.Profiles.AddAsync(profile);
         await TestArrangeDbContext.SaveChangesAsync();
         profile.ID.Should().Be(1, "this is a precondition");
         profile.SequenceNo.Should().Be(1, "this is a precondition");
 
         // ACT
-        DynamicProfile copiedProfile = (await _profileRepository.CopyProfile(profile, default) as DynamicProfile);
+        var copiedProfile = await _profileRepository.CopyProfile(profile, default) as DynamicProfile;
 
         // ASSERT
         copiedProfile.Should().NotBeNull();
@@ -267,7 +267,7 @@ public class ProfileRepositoryTests : BaseTest
     public async Task DeleteProfile_CopyTestProfileAndDeleteOriginalProfile_OriginalProfileDeleted()
     {
         // ARRANGE
-        var profile = TestDataHelper.CreateCompleteTestDynamicProfile();
+        DynamicProfile profile = TestDataHelper.CreateCompleteTestDynamicProfile();
         await TestArrangeDbContext.Profiles.AddAsync(profile);
         await TestArrangeDbContext.SaveChangesAsync();
         profile.ID.Should().Be(1, "this is a precondition");
@@ -278,7 +278,7 @@ public class ProfileRepositoryTests : BaseTest
         await _profileRepository.DeleteProfile(profile, default);
 
         // ASSERT
-        var profiles =
+        List<DynamicProfile> profiles =
             await TestAssertDbContext
                 .DynamicProfiles
                 .Include(x => x.PlaceInfo).ThenInclude(x => x.TimezoneInfo)

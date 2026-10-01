@@ -1,4 +1,4 @@
-﻿using NSubstitute;
+using NSubstitute;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Services;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Muwaqqit.Services;
@@ -8,13 +8,13 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Domain.DynamicPrayerTimes;
 
 public class DynamicPrayerTimeProviderFactoryTests
 {
-    private readonly IServiceProvider serviceProviderMock;
+    private readonly IServiceProvider _serviceProviderMock;
     private readonly DynamicPrayerTimeProviderFactory _dynamicPrayerTimeProviderFactory;
 
     public DynamicPrayerTimeProviderFactoryTests()
     {
-        serviceProviderMock = Substitute.For<IServiceProvider>();
-        _dynamicPrayerTimeProviderFactory = new DynamicPrayerTimeProviderFactory(serviceProviderMock);
+        _serviceProviderMock = Substitute.For<IServiceProvider>();
+        _dynamicPrayerTimeProviderFactory = new DynamicPrayerTimeProviderFactory(_serviceProviderMock);
     }
 
     #region GetDynamicPrayerTimeProviderByDynamicPrayerTimeProvider
@@ -29,7 +29,7 @@ public class DynamicPrayerTimeProviderFactoryTests
     {
         // ARRANGE
         Type requestedType = null;
-        serviceProviderMock.When(x => x.GetService(Arg.Any<Type>()))
+        _serviceProviderMock.When(x => x.GetService(Arg.Any<Type>()))
             .Do(x => requestedType = x.Arg<Type>());
 
         // ACT
@@ -43,8 +43,8 @@ public class DynamicPrayerTimeProviderFactoryTests
 
         // ASSERT
         requestedType.Should().Be(expectedType);
-        serviceProviderMock.ReceivedWithAnyArgs(1).GetService(default);
-        serviceProviderMock.Received(1).GetService(Arg.Is(expectedType));
+        _serviceProviderMock.ReceivedWithAnyArgs(1).GetService(default);
+        _serviceProviderMock.Received(1).GetService(Arg.Is(expectedType));
     }
 
     [Fact]

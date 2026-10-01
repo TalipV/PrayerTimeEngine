@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.Maui.Storage;
+using CommunityToolkit.Maui.Storage;
 using Microsoft.Extensions.Logging;
 using PrayerTimeEngine.Core.Common;
 using PrayerTimeEngine.Core.Domain.ConfigurationManagement;
@@ -8,7 +8,6 @@ using PrayerTimeEngine.Presentation.Pages.Main;
 using PrayerTimeEngine.Presentation.Pages.QiblahFinder;
 using PrayerTimeEngine.Presentation.Services;
 using PrayerTimeEngine.Presentation.Services.Navigation;
-using System.Text.Json;
 
 namespace PrayerTimeEngine.Presentation;
 
@@ -24,36 +23,36 @@ internal class MainPageOptionsMenuService(
         ILogger<MainPageOptionsMenuService> logger
     )
 {
-    private const string _optionsText = "Optionen";
+    private const string OptionsText = "Optionen";
 
-    private const string _generalOptionText = "... Allgemeines";
-    private const string _showTimeConfigsOverviewText = "Überblick: Zeiten-Konfiguration";
-    private const string _showLocationConfigsOverviewText = "Überblick: Ortsdaten";
-    private const string _showLogsText = "Logs anzeigen";
-    private const string _exportConfiguration = "Konfiguration exportieren";
-    private const string _importConfiguration = "Konfiguration importieren";
+    private const string GeneralOptionText = "... Allgemeines";
+    private const string ShowTimeConfigsOverviewText = "Überblick: Zeiten-Konfiguration";
+    private const string ShowLocationConfigsOverviewText = "Überblick: Ortsdaten";
+    private const string ShowLogsText = "Logs anzeigen";
+    private const string ExportConfigurationOptionsText = "Konfiguration exportieren";
+    private const string ImportConfigurationOptionsText = "Konfiguration importieren";
 
-    private const string _profileOptionsText = "... Profilverwaltung";
-    private const string _createNewDynamicProfileOptionsText = "Neues Profil erstellen";
-    private const string _createNewMosqueProfileOptionsText = "Neues Moschee-Profil erstellen";
-    private const string _changeProfileNameOptionsText = "Profilnamen bearbeiten";
-    private const string _deleteProfileOptionsText = "Profil löschen";
-    private const string _openMosqueProfileWebPageOptionsText = "Internetseite der Moschee-Zeiten öffnen";
+    private const string ProfileOptionsText = "... Profilverwaltung";
+    private const string CreateNewDynamicProfileOptionsText = "Neues Profil erstellen";
+    private const string CreateNewMosqueProfileOptionsText = "Neues Moschee-Profil erstellen";
+    private const string ChangeProfileNameOptionsText = "Profilnamen bearbeiten";
+    private const string DeleteProfileOptionsText = "Profil löschen";
+    private const string OpenMosqueProfileWebPageOptionsText = "Internetseite der Moschee-Zeiten öffnen";
 
-    private const string _technicalOptionText = "... Technisches";
-    private const string _showDbTablesText = "DB-Tabellen anzeigen";
-    private const string _saveDbFileText = "DB-Datei speichern";
-    private const string _deviceInfoText = "Geräte-Informationen";
+    private const string TechnicalOptionText = "... Technisches";
+    private const string ShowDbTablesText = "DB-Tabellen anzeigen";
+    private const string SaveDbFileText = "DB-Datei speichern";
+    private const string DeviceInfoText = "Geräte-Informationen";
 
-    private const string _systemOptionText = "... System";
-    private const string _resetAppText = "App-Daten zurücksetzen";
-    private const string _closeAppText = "App schließen";
+    private const string SystemOptionText = "... System";
+    private const string ResetAppText = "App-Daten zurücksetzen";
+    private const string CloseAppText = "App schließen";
 
-    private const string _goldPriceText = "Tool: Goldpreise";
-    private const string _qiblahToolText = "Tool: Qiblah";
+    private const string GoldPriceText = "Tool: Goldpreise";
+    private const string QiblahToolText = "Tool: Qiblah";
 
-    private const string _backText = "Zurück";
-    private const string _cancelText = "Abbrechen";
+    private const string BackText = "Zurück";
+    private const string CancelText = "Abbrechen";
 
     public async Task OpenOptionsMenu()
     {
@@ -73,84 +72,84 @@ internal class MainPageOptionsMenuService(
                 doRepeat = false;
 
                 switch (await page.DisplayActionSheetAsync(
-                    title: _optionsText,
-                    cancel: _cancelText,
+                    title: OptionsText,
+                    cancel: CancelText,
                     destruction: null,
-                    _generalOptionText,
-                    _profileOptionsText,
-                    _technicalOptionText,
-                    _systemOptionText,
-                    _goldPriceText,
-                    _qiblahToolText))
+                    GeneralOptionText,
+                    ProfileOptionsText,
+                    TechnicalOptionText,
+                    SystemOptionText,
+                    GoldPriceText,
+                    QiblahToolText))
                 {
-                    case _generalOptionText:
+                    case GeneralOptionText:
 
                         switch (await page.DisplayActionSheetAsync(
-                            title: _generalOptionText,
-                            cancel: _backText,
+                            title: GeneralOptionText,
+                            cancel: BackText,
                             destruction: null,
-                            _showTimeConfigsOverviewText,
-                            _showLocationConfigsOverviewText,
-                            _showLogsText,
-                            _exportConfiguration,
-                            _importConfiguration))
+                            ShowTimeConfigsOverviewText,
+                            ShowLocationConfigsOverviewText,
+                            ShowLogsText,
+                            ExportConfigurationOptionsText,
+                            ImportConfigurationOptionsText))
                         {
-                            case _showTimeConfigsOverviewText:
+                            case ShowTimeConfigsOverviewText:
                                 await page.DisplayAlertAsync("Info", viewModel.GetPrayerTimeConfigDisplayText(), "Ok");
                                 break;
-                            case _showLocationConfigsOverviewText:
+                            case ShowLocationConfigsOverviewText:
                                 await page.DisplayAlertAsync("Info", viewModel.GetLocationDataDisplayText(), "Ok");
                                 break;
-                            case _showLogsText:
+                            case ShowLogsText:
                                 viewModel.GoToLogsPageCommand.Execute(null);
                                 break;
-                            case _exportConfiguration:
-                                await exportConfiguration(cancellationToken);
+                            case ExportConfigurationOptionsText:
+                                await ExportConfiguration(cancellationToken);
                                 break;
-                            case _importConfiguration:
-                                await importConfiguration(cancellationToken);
+                            case ImportConfigurationOptionsText:
+                                await ImportConfiguration(cancellationToken);
                                 break;
-                            case _backText:
+                            case BackText:
                                 doRepeat = true;
                                 break;
                         }
 
                         break;
 
-                    case _profileOptionsText:
+                    case ProfileOptionsText:
 
                         List<string> options = [
-                            _createNewDynamicProfileOptionsText,
-                            _createNewMosqueProfileOptionsText,
-                            _changeProfileNameOptionsText,
-                            _deleteProfileOptionsText,
+                            CreateNewDynamicProfileOptionsText,
+                            CreateNewMosqueProfileOptionsText,
+                            ChangeProfileNameOptionsText,
+                            DeleteProfileOptionsText,
                         ];
 
                         if (viewModel.CurrentProfile is MosqueProfile mosqueProfile)
                         {
-                            options.Add(_openMosqueProfileWebPageOptionsText);
+                            options.Add(OpenMosqueProfileWebPageOptionsText);
                         }
 
                         switch (await page.DisplayActionSheetAsync(
-                            title: _profileOptionsText,
-                            cancel: _backText,
+                            title: ProfileOptionsText,
+                            cancel: BackText,
                             destruction: null,
                             buttons: [.. options]))
                         {
-                            case _createNewDynamicProfileOptionsText:
+                            case CreateNewDynamicProfileOptionsText:
                                 await viewModel.CreateNewProfile();
                                 break;
 
-                            case _createNewMosqueProfileOptionsText:
+                            case CreateNewMosqueProfileOptionsText:
 
-                                var items = Enum.GetValues<EMosquePrayerTimeProviderType>().ToList();
+                                List<EMosquePrayerTimeProviderType> items = [.. Enum.GetValues<EMosquePrayerTimeProviderType>()];
                                 items.Remove(EMosquePrayerTimeProviderType.None);
 
                                 string selectedItemText = await page.DisplayActionSheetAsync(
                                     title: "Moschee-App auswählen",
                                     cancel: "Abbrechen",
                                     destruction: null,
-                                    items.Select(x => x.ToString()).ToArray()
+                                    [.. items.Select(x => x.ToString())]
                                    );
 
                                 EMosquePrayerTimeProviderType selectedItem = items.FirstOrDefault(x => x.ToString() == selectedItemText);
@@ -168,7 +167,7 @@ internal class MainPageOptionsMenuService(
 
                                 break;
 
-                            case _changeProfileNameOptionsText:
+                            case ChangeProfileNameOptionsText:
                                 string currentProfileName = viewModel.CurrentProfile?.Name ?? "";
                                 string newProfileName =
                                     await page.DisplayPromptAsync("Profilname:",
@@ -183,34 +182,34 @@ internal class MainPageOptionsMenuService(
 
                                 break;
 
-                            case _deleteProfileOptionsText:
+                            case DeleteProfileOptionsText:
                                 await viewModel.DeleteCurrentProfile();
                                 break;
 
-                            case _openMosqueProfileWebPageOptionsText:
+                            case OpenMosqueProfileWebPageOptionsText:
                                 await viewModel.OpenMosqueInternetPage();
                                 break;
-                            case _backText:
+                            case BackText:
                                 doRepeat = true;
                                 break;
                         }
 
                         break;
 
-                    case _technicalOptionText:
+                    case TechnicalOptionText:
 
                         switch (await page.DisplayActionSheetAsync(
-                            title: _technicalOptionText,
-                            cancel: _backText,
+                            title: TechnicalOptionText,
+                            cancel: BackText,
                             destruction: null,
-                            _showDbTablesText,
-                            _saveDbFileText,
-                            _deviceInfoText))
+                            ShowDbTablesText,
+                            SaveDbFileText,
+                            DeviceInfoText))
                         {
-                            case _showDbTablesText:
+                            case ShowDbTablesText:
                                 await viewModel.ShowDatabaseTable();
                                 break;
-                            case _saveDbFileText:
+                            case SaveDbFileText:
                                 FolderPickerResult folderPickerResult = await FolderPicker.PickAsync(CancellationToken.None);
 
                                 if (folderPickerResult.Folder is not null)
@@ -223,7 +222,7 @@ internal class MainPageOptionsMenuService(
 
                                 break;
 
-                            case _deviceInfoText:
+                            case DeviceInfoText:
                                 await page.DisplayAlertAsync(
                                     "Geräteinformationen",
                                     $"""
@@ -235,53 +234,55 @@ internal class MainPageOptionsMenuService(
                                 """
                                     , "Ok");
                                 break;
-                            case _backText:
+                            case BackText:
                                 doRepeat = true;
                                 break;
                         }
 
                         break;
-                    case _systemOptionText:
+                    case SystemOptionText:
 
                         switch (await page.DisplayActionSheetAsync(
-                            title: _systemOptionText,
-                            cancel: _backText,
+                            title: SystemOptionText,
+                            cancel: BackText,
                             destruction: null,
-                            _resetAppText,
-                            _closeAppText))
+                            ResetAppText,
+                            CloseAppText))
                         {
-                            case _resetAppText:
-                                if (!await page.DisplayAlertAsync("Bestätigung", "Daten wirklich zurücksetzen?", "Ja", _cancelText))
+                            case ResetAppText:
+                                if (!await page.DisplayAlertAsync("Bestätigung", "Daten wirklich zurücksetzen?", "Ja", CancelText))
+                                {
                                     break;
+                                }
 
                                 preferenceService.SetDoReset();
 
                                 Application.Current.Quit();
                                 break;
-                            case _closeAppText:
+                            case CloseAppText:
                                 Application.Current.Quit();
                                 break;
-                            case _backText:
+                            case BackText:
                                 doRepeat = true;
                                 break;
                         }
 
                         break;
-                    case _goldPriceText:
-                        decimal goldEurPricePerGram = await getGoldGramEurAsync(AppApiKeys.MetalPrice);
-                        decimal silverEurPricePerGram = await getSilverGramEurAsync(AppApiKeys.MetalPrice);
+                    case GoldPriceText:
+                        decimal goldEurPricePerGram = await GetGoldGramEurAsync(AppApiKeys.MetalPrice);
+                        decimal silverEurPricePerGram = await GetSilverGramEurAsync(AppApiKeys.MetalPrice);
                         await page.DisplayAlertAsync("Info", $"""
                             Goldpreis pro Gramm: {goldEurPricePerGram:N5}€
-                            --> Nisab beträgt {(GOLD_NISAB_GRAMM * goldEurPricePerGram):N2}€ ({GOLD_NISAB_GRAMM:N2} g)
+                            --> Nisab beträgt {GOLD_NISAB_GRAMM * goldEurPricePerGram:N2}€ ({GOLD_NISAB_GRAMM:N2} g)
 
                             Silberpreis pro Gramm: {silverEurPricePerGram:N5}€
-                            --> Nisab beträgt {(SILVER_NISAB_GRAMM * silverEurPricePerGram):N2}€ ({SILVER_NISAB_GRAMM:N2} g)
+                            --> Nisab beträgt {SILVER_NISAB_GRAMM * silverEurPricePerGram:N2}€ ({SILVER_NISAB_GRAMM:N2} g)
                             """, "Ok");
                         break;
-                    case _qiblahToolText:
+                    case QiblahToolText:
                         await navigationService.NavigateTo<QiblahMapPage>();
                         break;
-                    case _cancelText:
+                    case CancelText:
                         break;
                 }
             }
@@ -297,7 +298,7 @@ internal class MainPageOptionsMenuService(
     private const decimal GOLD_NISAB_GRAMM = 84.7M;
     private const decimal SILVER_NISAB_GRAMM = 592.9M;
 
-    private static async Task<decimal> getGoldGramEurAsync(string apiKey)
+    private static async Task<decimal> GetGoldGramEurAsync(string apiKey)
     {
         // XAU --> gold
 
@@ -305,7 +306,7 @@ internal class MainPageOptionsMenuService(
         string url = $"https://api.metalpriceapi.com/v1/latest?api_key={apiKey}&base=EUR&currencies=XAU";
         string json = await http.GetStringAsync(url);
 
-        JsonDocument data = System.Text.Json.JsonDocument.Parse(json);
+        var data = System.Text.Json.JsonDocument.Parse(json);
         decimal eurPerOunce = data.RootElement
             .GetProperty("rates")
             .GetProperty("EURXAU")
@@ -316,7 +317,7 @@ internal class MainPageOptionsMenuService(
         return eurPerGramm;
     }
 
-    private static async Task<decimal> getSilverGramEurAsync(string apiKey)
+    private static async Task<decimal> GetSilverGramEurAsync(string apiKey)
     {
         // XAG --> silver
 
@@ -324,7 +325,7 @@ internal class MainPageOptionsMenuService(
         string url = $"https://api.metalpriceapi.com/v1/latest?api_key={apiKey}&base=EUR&currencies=XAG";
         string json = await http.GetStringAsync(url);
 
-        JsonDocument data = System.Text.Json.JsonDocument.Parse(json);
+        var data = System.Text.Json.JsonDocument.Parse(json);
         decimal eurPerOunce = data.RootElement
             .GetProperty("rates")
             .GetProperty("EURXAG")
@@ -335,9 +336,9 @@ internal class MainPageOptionsMenuService(
         return eurPerGramm;
     }
 
-    private async Task exportConfiguration(CancellationToken cancellationToken)
+    private async Task ExportConfiguration(CancellationToken cancellationToken)
     {
-        Profile[] profiles = viewModel.ProfilesWithModel.Select(x => x.Profile).ToArray();
+        Profile[] profiles = [.. viewModel.ProfilesWithModel.Select(x => x.Profile)];
 
         string serializedConfiguration = configurationImportExportService.SerializeConfiguration(new Configuration
         {
@@ -369,7 +370,7 @@ internal class MainPageOptionsMenuService(
         }
     }
 
-    private static readonly FilePickerFileType _configImportFilePickerFileType = new FilePickerFileType(new Dictionary<DevicePlatform, IEnumerable<string>>
+    private static readonly FilePickerFileType s_configImportFilePickerFileType = new(new Dictionary<DevicePlatform, IEnumerable<string>>
     {
         { DevicePlatform.WinUI, new[] { ".txt" } },
         { DevicePlatform.MacCatalyst, new[] { "public.plain-text" } },
@@ -377,15 +378,15 @@ internal class MainPageOptionsMenuService(
         { DevicePlatform.Android, new[] { "text/plain" } }
     });
 
-    private static readonly PickOptions _configImportPickOptions = new PickOptions
+    private static readonly PickOptions s_configImportPickOptions = new()
     {
         PickerTitle = "Bitte wählen Sie die Konfigurationsdatei aus",
-        FileTypes = _configImportFilePickerFileType
+        FileTypes = s_configImportFilePickerFileType
     };
 
-    private async Task importConfiguration(CancellationToken cancellationToken)
+    private async Task ImportConfiguration(CancellationToken cancellationToken)
     {
-        FileResult? pickedFile = await FilePicker.Default.PickAsync(_configImportPickOptions);
+        FileResult? pickedFile = await FilePicker.Default.PickAsync(s_configImportPickOptions);
 
         if (pickedFile == null)
         {

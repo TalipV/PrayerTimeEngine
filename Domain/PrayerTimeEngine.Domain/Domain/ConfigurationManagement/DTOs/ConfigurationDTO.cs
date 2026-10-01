@@ -1,4 +1,4 @@
-﻿namespace PrayerTimeEngine.Core.Domain.ConfigurationManagement.DTOs;
+namespace PrayerTimeEngine.Core.Domain.ConfigurationManagement.DTOs;
 
 internal class ConfigurationDTO
 {

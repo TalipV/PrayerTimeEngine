@@ -1,8 +1,7 @@
-﻿namespace PrayerTimeEngine.Core.Domain.IslamicCalendar.Interfaces
+namespace PrayerTimeEngine.Core.Domain.IslamicCalendar.Interfaces;
+
+public interface IIslamicDateCalculationService
 {
-    public interface IIslamicDateCalculationService
-    {
-        int GetWeeksUntilRamadan();
-        int GetWeeksUntilHajj();
-    }
+    int GetWeeksUntilRamadan();
+    int GetWeeksUntilHajj();
 }

@@ -1,7 +1,7 @@
-﻿using NodaTime;
+using System.Text.Json.Serialization;
+using NodaTime;
 using PrayerTimeEngine.Core.Data.JsonSerialization;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Muwaqqit.Models.Entities;
-using System.Text.Json.Serialization;
 
 namespace PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Muwaqqit.Models.DTOs;
 
@@ -99,35 +99,37 @@ public class MuwaqqitPrayerTimesResponseDTO
             Longitude = Longitude,
             Latitude = Latitude,
 
-            FajrDegree = getRoundedDegreeValue(FajrDegree),
-            AsrKarahaDegree = getRoundedDegreeValue(AsrKarahaDegree),
-            IshtibakDegree = getRoundedDegreeValue(IshtibakDegree),
-            IshaDegree = getRoundedDegreeValue(IshaDegree),
+            FajrDegree = GetRoundedDegreeValue(FajrDegree),
+            AsrKarahaDegree = GetRoundedDegreeValue(AsrKarahaDegree),
+            IshtibakDegree = GetRoundedDegreeValue(IshtibakDegree),
+            IshaDegree = GetRoundedDegreeValue(IshaDegree),
 
-            Fajr = getInstant(Fajr),
-            NextFajr = getInstant(NextFajr),
-            Shuruq = getInstant(Shuruq),
-            Duha = getInstant(Ishraq),
-            Dhuhr = getInstant(Dhuhr),
-            Asr = getInstant(Asr),
-            AsrMithlayn = getInstant(AsrMithlayn),
-            Maghrib = getInstant(Maghrib),
-            Isha = getInstant(Isha),
-            Ishtibak = getInstant(Ishtibak),
-            AsrKaraha = getInstant(AsrKaraha),
-            QiblaTime = getInstant(QiblaTime),
+            Fajr = GetInstant(Fajr),
+            NextFajr = GetInstant(NextFajr),
+            Shuruq = GetInstant(Shuruq),
+            Duha = GetInstant(Ishraq),
+            Dhuhr = GetInstant(Dhuhr),
+            Asr = GetInstant(Asr),
+            AsrMithlayn = GetInstant(AsrMithlayn),
+            Maghrib = GetInstant(Maghrib),
+            Isha = GetInstant(Isha),
+            Ishtibak = GetInstant(Ishtibak),
+            AsrKaraha = GetInstant(AsrKaraha),
+            QiblaTime = GetInstant(QiblaTime),
         };
     }
 
-    private static double getRoundedDegreeValue(double degree)
+    private static double GetRoundedDegreeValue(double degree)
     {
         return Math.Round(degree, 2);
     }
 
-    private static Instant? getInstant(OffsetDateTime? offsetDateTimeNullable)
+    private static Instant? GetInstant(OffsetDateTime? offsetDateTimeNullable)
     {
         if (offsetDateTimeNullable is not OffsetDateTime offsetDateTime)
+        {
             return null;
+        }
 
         // ignore fractions of seconds
         return Instant.FromUnixTimeSeconds(offsetDateTime.ToInstant().ToUnixTimeSeconds());

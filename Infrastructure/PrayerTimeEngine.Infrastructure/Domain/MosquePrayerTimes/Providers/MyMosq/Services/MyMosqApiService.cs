@@ -1,12 +1,12 @@
-﻿using NodaTime;
-using PrayerTimeEngine.Core.Data.WebSocket.Interfaces;
-using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.MyMosq.Interfaces;
-using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.MyMosq.Models.DTOs;
 using System.Net.WebSockets;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
+using NodaTime;
+using PrayerTimeEngine.Core.Data.WebSocket.Interfaces;
+using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.MyMosq.Interfaces;
+using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.MyMosq.Models.DTOs;
 
 namespace PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.MyMosq.Services;
 
@@ -22,7 +22,7 @@ public partial class MyMosqApiService(
     private const string WEBSOCKET_URL_TEMPLATE = "wss://{0}/.ws?v=5&p=1:734647730920:web:7632560710973b246b3f5d&ns=takvim-ch-default-rtdb";
 
     private const string EXTERNAL_ID_PLACEHOLDER_KEY = "EXTERNAL_ID_PLACEHOLDER";
-    private static readonly string INITIAL_MESSAGE_TEMPLATE = $$"""
+    private static readonly string s_initiaL_MESSAGE_TEMPLATE = $$"""
         {
             "t": "d",
             "d": {
@@ -40,10 +40,10 @@ public partial class MyMosqApiService(
 
     public async Task<List<MyMosqPrayerTimesDTO>> GetPrayerTimesAsync(LocalDate date, string externalID, CancellationToken cancellationToken)
     {
-        List<string> responseMessages = await readResponseMessages(externalID, cancellationToken)
+        List<string> responseMessages = await ReadResponseMessages(externalID, cancellationToken)
             .ToListAsync(cancellationToken).ConfigureAwait(false);
 
-        if (!areResponseMessagesValid(responseMessages))
+        if (!AreResponseMessagesValid(responseMessages))
         {
             throw new InvalidOperationException($"The externalID '{externalID}' led to an invalid response without prayer time data.");
         }
@@ -63,7 +63,7 @@ public partial class MyMosqApiService(
             JsonSerializer.Deserialize<MyMosqResponseDTO>(json: finaleMessage)?.PrayerTimes
             ?? throw new InvalidOperationException($"The externalID '{externalID}' led to a response without deserializable prayer time data.");
 
-        fixPrayerTimes(prayerTimes);
+        FixPrayerTimes(prayerTimes);
         return prayerTimes;
     }
 
@@ -71,11 +71,11 @@ public partial class MyMosqApiService(
         string externalID,
         CancellationToken cancellationToken)
     {
-        List<string> responseMessages = await readResponseMessages(externalID, cancellationToken).ToListAsync(cancellationToken);
-        return areResponseMessagesValid(responseMessages);
+        List<string> responseMessages = await ReadResponseMessages(externalID, cancellationToken).ToListAsync(cancellationToken);
+        return AreResponseMessagesValid(responseMessages);
     }
 
-    private static bool areResponseMessagesValid(List<string> responseMessages)
+    private static bool AreResponseMessagesValid(List<string> responseMessages)
     {
         // invalid pages send normal responses but don't contain any time data
         if (responseMessages.Count == 2 && responseMessages[1].EndsWith(PAYLOAD_END_FOR_INVALID_INPUT))
@@ -86,17 +86,17 @@ public partial class MyMosqApiService(
         return true;
     }
 
-    private async IAsyncEnumerable<string> readResponseMessages(
+    private async IAsyncEnumerable<string> ReadResponseMessages(
         string externalID,
         [EnumeratorCancellation] CancellationToken cancellationToken)
     {
-        string initialMessage = INITIAL_MESSAGE_TEMPLATE.Replace(EXTERNAL_ID_PLACEHOLDER_KEY, externalID);
-        string baseUrl = await getCorrectWebSocketURLAsync(initialMessage, cancellationToken);
+        string initialMessage = s_initiaL_MESSAGE_TEMPLATE.Replace(EXTERNAL_ID_PLACEHOLDER_KEY, externalID);
+        string baseUrl = await GetCorrectWebSocketURLAsync(initialMessage, cancellationToken);
 
         using IWebSocketClient webSocketClient = webSocketClientFactory.CreateWebSocketClient();
         await webSocketClient.ConnectAsync(new Uri(string.Format(WEBSOCKET_URL_TEMPLATE, baseUrl)), cancellationToken);
 
-        var bytesToSend = Encoding.UTF8.GetBytes(initialMessage);
+        byte[] bytesToSend = Encoding.UTF8.GetBytes(initialMessage);
         var arraySegment = new ArraySegment<byte>(bytesToSend);
         await webSocketClient.SendAsync(arraySegment, WebSocketMessageType.Text, true, cancellationToken);
 
@@ -119,18 +119,20 @@ public partial class MyMosqApiService(
             // Without this the next loop would get stuck forever at "ReceiveAsync"
             if (lastReadMessageSection.EndsWith(PAYLOAD_END_FOR_INVALID_INPUT)
                 || lastReadMessageSection.EndsWith(PAYLOAD_END_FOR_VALID_INPUT))
+            {
                 break;
+            }
         }
     }
 
-    private async Task<string> getCorrectWebSocketURLAsync(string initialMessage, CancellationToken cancellationToken)
+    private async Task<string> GetCorrectWebSocketURLAsync(string initialMessage, CancellationToken cancellationToken)
     {
         string defaultUrl = string.Format(WEBSOCKET_URL_TEMPLATE, WEBSOCKET_DEFAULT_BASE_URL);
 
         using IWebSocketClient webSocketClient = webSocketClientFactory.CreateWebSocketClient();
         await webSocketClient.ConnectAsync(new Uri(defaultUrl), cancellationToken);
 
-        var bytesToSend = Encoding.UTF8.GetBytes(initialMessage);
+        byte[] bytesToSend = Encoding.UTF8.GetBytes(initialMessage);
         var arraySegment = new ArraySegment<byte>(bytesToSend);
         await webSocketClient.SendAsync(arraySegment, WebSocketMessageType.Text, true, cancellationToken);
 
@@ -138,7 +140,7 @@ public partial class MyMosqApiService(
 
         WebSocketReceiveResult result = await webSocketClient.ReceiveAsync(new ArraySegment<byte>(buffer), cancellationToken);
         string textValue = Encoding.UTF8.GetString(buffer, 0, result.Count);
-        var regex = getWebSocketBaseURLExtractionRegex();
+        Regex regex = getWebSocketBaseURLExtractionRegex();
         Match match = regex.Match(textValue);
 
         if (!match.Success)
@@ -155,16 +157,20 @@ public partial class MyMosqApiService(
     /// This method makes fills all the jumu'ah values for each day with the Dhuhr value 
     /// of the next friday.. and other things. 
     /// </summary>
-    private static void fixPrayerTimes(List<MyMosqPrayerTimesDTO> prayerTimes)
+    private static void FixPrayerTimes(List<MyMosqPrayerTimesDTO> prayerTimes)
     {
         // replace "0:00" jumu'ah with NULL
-        foreach (var day in prayerTimes)
+        foreach (MyMosqPrayerTimesDTO day in prayerTimes)
         {
             if (day.Jumuah == new LocalTime(0, 0))
+            {
                 day.Jumuah = null;
+            }
 
             if (day.Jumuah2 == new LocalTime(0, 0))
+            {
                 day.Jumuah2 = null;
+            }
         }
 
         var fridays = prayerTimes
@@ -172,7 +178,7 @@ public partial class MyMosqApiService(
             .OrderBy(x => x.Date)
             .ToList();
 
-        foreach (var day in prayerTimes)
+        foreach (MyMosqPrayerTimesDTO day in prayerTimes)
         {
             // ">=" so that a friday counts as its own upcoming jumu'ah
             MyMosqPrayerTimesDTO nextFriday = fridays.FirstOrDefault(f => f.Date >= day.Date);

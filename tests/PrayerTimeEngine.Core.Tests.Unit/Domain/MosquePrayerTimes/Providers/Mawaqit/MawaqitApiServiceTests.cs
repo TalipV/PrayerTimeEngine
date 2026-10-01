@@ -1,9 +1,10 @@
-﻿using NodaTime;
+﻿using System.Net;
+using NodaTime;
 using PrayerTimeEngine.Core.Domain.Calculators.Mosques.Mawaqit.Services;
+using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.Mawaqit.Models.DTOs;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.Mawaqit.Models.Entities;
 using PrayerTimeEngine.Core.Tests.Common;
 using PrayerTimeEngine.Core.Tests.Common.TestData;
-using System.Net;
 
 namespace PrayerTimeEngine.Core.Tests.Unit.Domain.MosquePrayerTimes.Providers.Mawaqit;
 
@@ -52,7 +53,7 @@ public class MawaqitApiServiceTests : BaseTest
         string externalID = "hamza-koln";
 
         // ACT
-        var response = await _mawaqitApiService.GetPrayerTimesAsync(externalID, cancellationToken: default);
+        MawaqitResponseDTO response = await _mawaqitApiService.GetPrayerTimesAsync(externalID, cancellationToken: default);
         var times = response.ToMawaqitPrayerTimes(2024, externalID).ToList();
         MawaqitMosqueDailyPrayerTimes time = times.FirstOrDefault(x => x.Date == date);
 
@@ -88,7 +89,7 @@ public class MawaqitApiServiceTests : BaseTest
         string externalID = "hamza-koln";
 
         // ACT
-        var response = await _mawaqitApiService.GetPrayerTimesAsync(externalID, cancellationToken: default);
+        MawaqitResponseDTO response = await _mawaqitApiService.GetPrayerTimesAsync(externalID, cancellationToken: default);
         var times = response.ToMawaqitPrayerTimes(2024, externalID).ToList();
 
         // ASSERT

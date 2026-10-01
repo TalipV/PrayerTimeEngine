@@ -1,6 +1,6 @@
-﻿using PrayerTimeEngine.Core.Common.Enum;
-using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Muwaqqit.Models;
 using System.Text.Json.Serialization;
+using PrayerTimeEngine.Core.Common.Enum;
+using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Muwaqqit.Models;
 
 namespace PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Models;
 
@@ -18,7 +18,9 @@ public class GenericSettingConfiguration
     public override bool Equals(object obj)
     {
         if (obj is not GenericSettingConfiguration otherSettingConfig)
+        {
             return false;
+        }
 
         return TimeType == otherSettingConfig.TimeType
             && Source == otherSettingConfig.Source

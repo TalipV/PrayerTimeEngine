@@ -1,18 +1,19 @@
-﻿using NodaTime;
-using NodaTime.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using NodaTime;
+using NodaTime.Text;
 
 namespace PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.MyMosq.JsonConverters;
+
 public class LocalDateConverter : JsonConverter<LocalDate>
 {
-    private static readonly LocalDatePattern DatePattern = LocalDatePattern.CreateWithInvariantCulture("dd.MM.yyyy");
+    private static readonly LocalDatePattern s_datePattern = LocalDatePattern.CreateWithInvariantCulture("dd.MM.yyyy");
 
     public override LocalDate Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
         string dateString = reader.GetString();
 
-        if (DatePattern.Parse(dateString).TryGetValue(LocalDate.MinIsoValue, out LocalDate parsedDate))
+        if (s_datePattern.Parse(dateString).TryGetValue(LocalDate.MinIsoValue, out LocalDate parsedDate))
         {
             return parsedDate;
         }

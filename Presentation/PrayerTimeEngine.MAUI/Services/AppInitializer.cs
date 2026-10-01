@@ -12,7 +12,9 @@ internal class AppInitializer(
     public async Task InitializeAsync(CancellationToken cancellationToken = default)
     {
         if (IsInitialized)
+        {
             return;
+        }
 
         using AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
         await dbContext.Database.MigrateAsync(cancellationToken).ConfigureAwait(false);

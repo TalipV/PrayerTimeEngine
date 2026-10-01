@@ -1,4 +1,4 @@
-﻿using Microsoft.Maui.Controls.Shapes;
+using Microsoft.Maui.Controls.Shapes;
 using static CommunityToolkit.Maui.Markup.GridRowsColumns;
 
 namespace PrayerTimeEngine.Presentation.Pages.Settings.SettingsContent;
@@ -18,15 +18,15 @@ public partial class SettingsContentPage : ContentPage
 
     public SettingsContentPage(SettingsContentPageViewModel viewModel)
     {
-        Content = createUI();
+        Content = CreateUI();
 
         ViewModel = viewModel;
         BindingContext = ViewModel;
 
-        ViewModel.OnInitializeCustomUI_EventTrigger += onInitializeCustomUI_EventTrigger;
+        ViewModel.OnInitializeCustomUI_EventTrigger += OnInitializeCustomUI_EventTrigger;
     }
 
-    private Grid createUI()
+    private Grid CreateUI()
     {
         var grid = new Grid
         {
@@ -49,10 +49,10 @@ public partial class SettingsContentPage : ContentPage
         };
 
         _dynamicPrayerTimeProviderPickerLabel = new Label { Text = "Calculation Source", TextColor = AppColors.Text };
-        _dynamicPrayerTimeProviderPicker = createPicker();
+        _dynamicPrayerTimeProviderPicker = CreatePicker();
 
         var minuteAdjustmentLabel = new Label { Text = "Minute Adjustment", TextColor = AppColors.Text };
-        _minuteAdjustmentPicker = createPicker();
+        _minuteAdjustmentPicker = CreatePicker();
 
         _isTimeShownCheckBoxLabel = new Label { Text = "Shown:", TextColor = AppColors.Text };
         _isTimeShownCheckBox = new CheckBox { Color = AppColors.Accent };
@@ -84,7 +84,7 @@ public partial class SettingsContentPage : ContentPage
     /// Colours are set explicitly instead of following the system theme,
     /// because the app is on the fixed dark palette of <see cref="AppColors"/>.
     /// </summary>
-    private static Picker createPicker()
+    private static Picker CreatePicker()
     {
         return new Picker
         {
@@ -93,12 +93,12 @@ public partial class SettingsContentPage : ContentPage
         };
     }
 
-    private void onInitializeCustomUI_EventTrigger()
+    private void OnInitializeCustomUI_EventTrigger()
     {
-        configureCustomUISection();
+        ConfigureCustomUISection();
     }
 
-    private void configureCustomUISection()
+    private void ConfigureCustomUISection()
     {
         _configurableUIContainer.Children.Clear();
 

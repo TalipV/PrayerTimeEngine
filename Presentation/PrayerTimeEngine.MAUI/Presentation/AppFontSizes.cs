@@ -15,28 +15,28 @@ namespace PrayerTimeEngine.Presentation;
 /// </summary>
 public static class AppFontSizes
 {
-    private static readonly bool _isLargeIdiom =
+    private static readonly bool s_isLargeIdiom =
         DeviceInfo.Idiom == DeviceIdiom.Tablet
         || DeviceInfo.Idiom == DeviceIdiom.Desktop
         || DeviceInfo.Idiom == DeviceIdiom.TV;
 
-    private static double forIdiom(double phone, double large) => _isLargeIdiom ? large : phone;
+    private static double ForIdiom(double phone, double large) => s_isLargeIdiom ? large : phone;
 
     /// <summary>Profile name in the navigation bar.</summary>
-    public static double Title => forIdiom(21, 25);
+    public static double Title => ForIdiom(21, 25);
 
     /// <summary>Secondary info in the navigation bar, e.g. the weeks-until text.</summary>
-    public static double Subtitle => forIdiom(17, 20);
+    public static double Subtitle => ForIdiom(17, 20);
 
     /// <summary>Name of a prayer, e.g. "Fajr".</summary>
-    public static double PrayerName => forIdiom(22, 26);
+    public static double PrayerName => ForIdiom(22, 26);
 
     /// <summary>Start and end time of a prayer.</summary>
-    public static double PrayerTime => forIdiom(14, 17);
+    public static double PrayerTime => ForIdiom(14, 17);
 
     /// <summary>Name of a sub time, e.g. "Ghalas".</summary>
-    public static double SubTimeName => forIdiom(12, 14);
+    public static double SubTimeName => ForIdiom(12, 14);
 
     /// <summary>Value of a sub time.</summary>
-    public static double SubTime => forIdiom(12, 14);
+    public static double SubTime => ForIdiom(12, 14);
 }

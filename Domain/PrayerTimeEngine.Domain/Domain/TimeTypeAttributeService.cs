@@ -1,7 +1,7 @@
-﻿using PrayerTimeEngine.Core.Common.Attribute;
+using System.Reflection;
+using PrayerTimeEngine.Core.Common.Attribute;
 using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes;
-using System.Reflection;
 
 namespace PrayerTimeEngine.Core.Domain;
 
@@ -38,12 +38,12 @@ public class TimeTypeAttributeService
             MemberInfo[] memberInfos = enumType.GetMember(timeType.ToString());
             MemberInfo enumValueMemberInfo = memberInfos.FirstOrDefault(m => m.DeclaringType == enumType);
 
-            List<TimeTypeSupportedByAttribute> timeTypeSupportedByAttrs = enumValueMemberInfo.GetCustomAttributes<TimeTypeSupportedByAttribute>(false).ToList();
-            List<DegreeTimeTypeAttribute> degreeTimeTypeAttrs = enumValueMemberInfo.GetCustomAttributes<DegreeTimeTypeAttribute>(false).ToList();
-            List<ConfigurableSimpleTypeAttribute> configurableSimpleTimeTypeAttrs = enumValueMemberInfo.GetCustomAttributes<ConfigurableSimpleTypeAttribute>(false).ToList();
-            List<SimpleTimeTypeAttribute> simpleTimeTypeAttrs = enumValueMemberInfo.GetCustomAttributes<SimpleTimeTypeAttribute>(false).ToList();
-            List<IsNotHidableTimeTypeAttribute> notHideableTypeAttrs = enumValueMemberInfo.GetCustomAttributes<IsNotHidableTimeTypeAttribute>(false).ToList();
-            List<TimeTypeForSectionAttribute> timeTypeForSectionAttrs = enumValueMemberInfo.GetCustomAttributes<TimeTypeForSectionAttribute>(false).ToList();
+            var timeTypeSupportedByAttrs = enumValueMemberInfo.GetCustomAttributes<TimeTypeSupportedByAttribute>(false).ToList();
+            var degreeTimeTypeAttrs = enumValueMemberInfo.GetCustomAttributes<DegreeTimeTypeAttribute>(false).ToList();
+            var configurableSimpleTimeTypeAttrs = enumValueMemberInfo.GetCustomAttributes<ConfigurableSimpleTypeAttribute>(false).ToList();
+            var simpleTimeTypeAttrs = enumValueMemberInfo.GetCustomAttributes<SimpleTimeTypeAttribute>(false).ToList();
+            var notHideableTypeAttrs = enumValueMemberInfo.GetCustomAttributes<IsNotHidableTimeTypeAttribute>(false).ToList();
+            var timeTypeForSectionAttrs = enumValueMemberInfo.GetCustomAttributes<TimeTypeForSectionAttribute>(false).ToList();
 
             foreach (TimeTypeSupportedByAttribute attr in timeTypeSupportedByAttrs)
             {
@@ -76,7 +76,7 @@ public class TimeTypeAttributeService
                 NotHideableTypes.Add(timeType);
             }
 
-            foreach (var attr in timeTypeForSectionAttrs)
+            foreach (TimeTypeForSectionAttribute? attr in timeTypeForSectionAttrs)
             {
                 if (!SectionToTimeTypes.TryGetValue(attr.Section, out List<ETimeType> value))
                 {

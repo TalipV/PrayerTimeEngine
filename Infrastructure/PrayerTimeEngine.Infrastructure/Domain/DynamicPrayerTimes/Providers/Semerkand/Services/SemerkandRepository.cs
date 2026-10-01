@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using NodaTime;
 using PrayerTimeEngine.Core.Data.EntityFramework;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Semerkand.Interfaces;
@@ -12,27 +12,23 @@ public class SemerkandRepository(
 {
     public async Task<List<SemerkandCountry>> GetCountries(CancellationToken cancellationToken)
     {
-        using (AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken))
-        {
-            return await dbContext
-                .SemerkandCountries.AsNoTracking()
-                .ToListAsync(cancellationToken)
-                .ConfigureAwait(false);
-        }
+        using AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
+        return await dbContext
+            .SemerkandCountries.AsNoTracking()
+            .ToListAsync(cancellationToken)
+            .ConfigureAwait(false);
     }
 
     public async Task<bool> HasCountryData(CancellationToken cancellationToken)
     {
-        using (AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken))
-        {
-            return await dbContext
-                .SemerkandCountries
-                .AnyAsync(cancellationToken)
-                .ConfigureAwait(false);
-        }
+        using AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
+        return await dbContext
+            .SemerkandCountries
+            .AnyAsync(cancellationToken)
+            .ConfigureAwait(false);
     }
 
-    private static readonly Func<AppDbContext, string, Task<int?>> compiledQuery_GetCountryIDByName =
+    private static readonly Func<AppDbContext, string, Task<int?>> s_compiledQuery_GetCountryIDByName =
         EF.CompileAsyncQuery(
             (AppDbContext context, string countryName) =>
                 context.SemerkandCountries
@@ -42,13 +38,11 @@ public class SemerkandRepository(
 
     public async Task<int?> GetCountryIDByName(string countryName, CancellationToken cancellationToken)
     {
-        using (AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken))
-        {
-            return await compiledQuery_GetCountryIDByName(dbContext, countryName).ConfigureAwait(false);
-        }
+        using AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
+        return await s_compiledQuery_GetCountryIDByName(dbContext, countryName).ConfigureAwait(false);
     }
 
-    private static readonly Func<AppDbContext, int, IAsyncEnumerable<SemerkandCity>> compiledQuery_GetCitiesByCountryID =
+    private static readonly Func<AppDbContext, int, IAsyncEnumerable<SemerkandCity>> s_compiledQuery_GetCitiesByCountryID =
         EF.CompileAsyncQuery(
             (AppDbContext context, int countryId) =>
                 context.SemerkandCities
@@ -58,27 +52,23 @@ public class SemerkandRepository(
 
     public async Task<List<SemerkandCity>> GetCitiesByCountryID(int countryId, CancellationToken cancellationToken)
     {
-        using (AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken))
-        {
-            return await compiledQuery_GetCitiesByCountryID(dbContext, countryId)
-                .ToListAsync(cancellationToken)
-                .ConfigureAwait(false);
-        }
+        using AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
+        return await s_compiledQuery_GetCitiesByCountryID(dbContext, countryId)
+            .ToListAsync(cancellationToken)
+            .ConfigureAwait(false);
     }
 
     public async Task<bool> HasCityData(int countryID, CancellationToken cancellationToken)
     {
-        using (AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken))
-        {
-            return await dbContext
-                .SemerkandCities
-                .Where(x => x.CountryID == countryID)
-                .AnyAsync(cancellationToken)
-                .ConfigureAwait(false);
-        }
+        using AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
+        return await dbContext
+            .SemerkandCities
+            .Where(x => x.CountryID == countryID)
+            .AnyAsync(cancellationToken)
+            .ConfigureAwait(false);
     }
 
-    private static readonly Func<AppDbContext, int, string, Task<int?>> compiledQuery_GetCityIDByName =
+    private static readonly Func<AppDbContext, int, string, Task<int?>> s_compiledQuery_GetCityIDByName =
         EF.CompileAsyncQuery(
             (AppDbContext context, int countryID, string cityName) =>
                 context.SemerkandCities
@@ -88,13 +78,11 @@ public class SemerkandRepository(
 
     public async Task<int?> GetCityIDByName(int countryID, string cityName, CancellationToken cancellationToken)
     {
-        using (AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken))
-        {
-            return await compiledQuery_GetCityIDByName(dbContext, countryID, cityName).ConfigureAwait(false);
-        }
+        using AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
+        return await s_compiledQuery_GetCityIDByName(dbContext, countryID, cityName).ConfigureAwait(false);
     }
 
-    private static readonly Func<AppDbContext, LocalDate, int, Task<SemerkandDailyPrayerTimes>> compiledQuery_GetTimesByDateAndCityID =
+    private static readonly Func<AppDbContext, LocalDate, int, Task<SemerkandDailyPrayerTimes>> s_compiledQuery_GetTimesByDateAndCityID =
         EF.CompileAsyncQuery(
             (AppDbContext context, LocalDate date, int cityId) =>
                 context.SemerkandPrayerTimes
@@ -104,46 +92,36 @@ public class SemerkandRepository(
 
     public async Task<SemerkandDailyPrayerTimes> GetTimesByDateAndCityID(LocalDate date, int cityId, CancellationToken cancellationToken)
     {
-        using (AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken))
-        {
-            return await compiledQuery_GetTimesByDateAndCityID(dbContext, date, cityId).ConfigureAwait(false);
-        }
+        using AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
+        return await s_compiledQuery_GetTimesByDateAndCityID(dbContext, date, cityId).ConfigureAwait(false);
     }
 
     public async Task InsertPrayerTimesAsync(IEnumerable<SemerkandDailyPrayerTimes> semerkandPrayerTimesLst, CancellationToken cancellationToken)
     {
-        using (AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken))
-        {
-            await dbContext.SemerkandPrayerTimes.AddRangeAsync(semerkandPrayerTimesLst, cancellationToken).ConfigureAwait(false);
-            await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-        }
+        using AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
+        await dbContext.SemerkandPrayerTimes.AddRangeAsync(semerkandPrayerTimesLst, cancellationToken).ConfigureAwait(false);
+        await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
     }
 
     public async Task InsertCountries(IEnumerable<SemerkandCountry> countries, CancellationToken cancellationToken)
     {
-        using (AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken))
-        {
-            await dbContext.SemerkandCountries.AddRangeAsync(countries, cancellationToken: cancellationToken).ConfigureAwait(false);
-            await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-        }
+        using AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
+        await dbContext.SemerkandCountries.AddRangeAsync(countries, cancellationToken: cancellationToken).ConfigureAwait(false);
+        await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
     }
 
     public async Task InsertCities(IEnumerable<SemerkandCity> cities, CancellationToken cancellationToken)
     {
-        using (AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken))
-        {
-            await dbContext.SemerkandCities.AddRangeAsync(cities, cancellationToken: cancellationToken).ConfigureAwait(false);
-            await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-        }
+        using AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
+        await dbContext.SemerkandCities.AddRangeAsync(cities, cancellationToken: cancellationToken).ConfigureAwait(false);
+        await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
     }
 
     public async Task DeleteCacheDataAsync(LocalDate deleteBeforeDate, CancellationToken cancellationToken)
     {
-        using (AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken))
-        {
-            await dbContext.SemerkandPrayerTimes
-                .Where(p => p.Date < deleteBeforeDate)
-                .ExecuteDeleteAsync(cancellationToken).ConfigureAwait(false);
-        }
+        using AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
+        await dbContext.SemerkandPrayerTimes
+            .Where(p => p.Date < deleteBeforeDate)
+            .ExecuteDeleteAsync(cancellationToken).ConfigureAwait(false);
     }
 }

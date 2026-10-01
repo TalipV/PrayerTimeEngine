@@ -1,4 +1,4 @@
-﻿using PrayerTimeEngine.Core.Domain.PlaceManagement.Models;
+using PrayerTimeEngine.Core.Domain.PlaceManagement.Models;
 
 namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
 
@@ -13,7 +13,9 @@ public class DynamicProfile : Profile
     public override bool Equals(object obj)
     {
         if (obj is not DynamicProfile otherProfile)
+        {
             return false;
+        }
 
         if (!base.Equals(otherProfile))
         {
@@ -30,24 +32,36 @@ public class DynamicProfile : Profile
         foreach (ProfileTimeConfig timeConfig in TimeConfigs)
         {
             if (otherTimeConfigs.FirstOrDefault(x => Equals(x, timeConfig)) is ProfileTimeConfig match)
+            {
                 otherTimeConfigs.Remove(match);
+            }
             else
+            {
                 return false;
+            }
         }
         if (otherTimeConfigs.Count != 0)    // not possible but.. why not
+        {
             return false;
+        }
 
         // compare LocationConfigs irrespective of order
         var otherLocationConfigs = otherProfile.LocationConfigs.ToList();
-        foreach (var locationConfig in LocationConfigs)
+        foreach (ProfileLocationConfig locationConfig in LocationConfigs)
         {
             if (otherLocationConfigs.FirstOrDefault(x => Equals(x, locationConfig)) is ProfileLocationConfig match)
+            {
                 otherLocationConfigs.Remove(match);
+            }
             else
+            {
                 return false;
+            }
         }
         if (otherLocationConfigs.Count != 0)    // not possible but.. why not
+        {
             return false;
+        }
 
         return true;
     }
@@ -58,7 +72,7 @@ public class DynamicProfile : Profile
 
         // Aggregate hash codes of TimeConfigs
         int timeConfigsHash = 0;
-        foreach (var timeConfig in TimeConfigs)
+        foreach (ProfileTimeConfig timeConfig in TimeConfigs)
         {
             // Use unchecked to ignore overflow, as overflow is fine in hash code calculations
             unchecked
@@ -69,7 +83,7 @@ public class DynamicProfile : Profile
 
         // Aggregate hash codes of LocationConfigs
         int locationConfigsHash = 0;
-        foreach (var locationConfig in LocationConfigs)
+        foreach (ProfileLocationConfig locationConfig in LocationConfigs)
         {
             // Use unchecked to ignore overflow
             unchecked

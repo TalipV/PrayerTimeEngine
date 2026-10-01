@@ -1,4 +1,4 @@
-﻿using Android.App;
+using Android.App;
 using Android.Content.PM;
 using Android.OS;
 using PrayerTimeEngine.Platforms.Android.Notifications;
@@ -6,13 +6,13 @@ using PrayerTimeEngine.Platforms.Android.Notifications;
 namespace PrayerTimeEngine.Platforms.Android;
 
 [Activity(
-    Theme = "@style/Maui.SplashTheme", 
-    MainLauncher = true, 
-    ConfigurationChanges = ConfigChanges.ScreenSize 
-                        | ConfigChanges.Orientation 
-                        | ConfigChanges.UiMode 
-                        | ConfigChanges.ScreenLayout 
-                        | ConfigChanges.SmallestScreenSize 
+    Theme = "@style/Maui.SplashTheme",
+    MainLauncher = true,
+    ConfigurationChanges = ConfigChanges.ScreenSize
+                        | ConfigChanges.Orientation
+                        | ConfigChanges.UiMode
+                        | ConfigChanges.ScreenLayout
+                        | ConfigChanges.SmallestScreenSize
                         | ConfigChanges.Density,
     ScreenOrientation = ScreenOrientation.Portrait
 )]
@@ -24,10 +24,10 @@ public class MainActivity : MauiAppCompatActivity
     {
         Instance = this;
         base.OnCreate(savedInstanceState);
-        createNotificationChannel();
+        CreateNotificationChannel();
     }
 
-    void createNotificationChannel()
+    private void CreateNotificationChannel()
     {
         string name = "Prayer Time Notifications";
         string description = "Updates and reminders for upcoming prayer times.";

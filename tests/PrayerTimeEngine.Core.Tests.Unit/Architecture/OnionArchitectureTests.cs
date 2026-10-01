@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 using NetArchTest.Rules;
 using PrayerTimeEngine.Core.Application;
 using PrayerTimeEngine.Core.Domain;
@@ -13,11 +13,11 @@ namespace PrayerTimeEngine.Core.Tests.Unit.Architecture;
 /// </summary>
 public class OnionArchitectureTests
 {
-    private static readonly Assembly DomainAssembly = typeof(TimeTypeAttributeService).Assembly;
-    private static readonly Assembly ApplicationAssembly = typeof(ApplicationServiceCollectionExtensions).Assembly;
-    private static readonly Assembly InfrastructureAssembly = typeof(InfrastructureServiceCollectionExtensions).Assembly;
+    private static readonly Assembly s_domainAssembly = typeof(TimeTypeAttributeService).Assembly;
+    private static readonly Assembly s_applicationAssembly = typeof(ApplicationServiceCollectionExtensions).Assembly;
+    private static readonly Assembly s_infrastructureAssembly = typeof(InfrastructureServiceCollectionExtensions).Assembly;
 
-    private static readonly string[] InfrastructureFrameworks =
+    private static readonly string[] s_infrastructureFrameworks =
     [
         "Microsoft.EntityFrameworkCore",
         "Refit",
@@ -29,8 +29,8 @@ public class OnionArchitectureTests
     [Fact]
     public void Domain_should_not_depend_on_infrastructure_frameworks()
     {
-        TestResult result = Types.InAssembly(DomainAssembly)
-            .ShouldNot().HaveDependencyOnAny(InfrastructureFrameworks)
+        TestResult result = Types.InAssembly(s_domainAssembly)
+            .ShouldNot().HaveDependencyOnAny(s_infrastructureFrameworks)
             .GetResult();
 
         result.IsSuccessful.Should().BeTrue(
@@ -41,8 +41,8 @@ public class OnionArchitectureTests
     [Fact]
     public void Application_should_not_depend_on_infrastructure_frameworks()
     {
-        TestResult result = Types.InAssembly(ApplicationAssembly)
-            .ShouldNot().HaveDependencyOnAny(InfrastructureFrameworks)
+        TestResult result = Types.InAssembly(s_applicationAssembly)
+            .ShouldNot().HaveDependencyOnAny(s_infrastructureFrameworks)
             .GetResult();
 
         result.IsSuccessful.Should().BeTrue(
@@ -55,7 +55,7 @@ public class OnionArchitectureTests
     {
         // Sanity guard so the framework-name list above stays meaningful: at least the
         // repositories and Refit adapters in Infrastructure really do pull those frameworks.
-        TestResult result = Types.InAssembly(InfrastructureAssembly)
+        TestResult result = Types.InAssembly(s_infrastructureAssembly)
             .That().HaveNameEndingWith("Repository")
             .Should().HaveDependencyOn("Microsoft.EntityFrameworkCore")
             .GetResult();

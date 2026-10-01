@@ -1,10 +1,11 @@
+using System.Net;
 using NodaTime;
-using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Muwaqqit.Services;
+using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Muwaqqit.Models.DTOs;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Muwaqqit.Models.Entities;
+using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Muwaqqit.Services;
 using PrayerTimeEngine.Core.Tests.Common;
 using PrayerTimeEngine.Core.Tests.Common.TestData;
 using Refit;
-using System.Net;
 
 namespace PrayerTimeEngine.Core.Tests.Unit.Domain.DynamicPrayerTimes.Providers.Muwaqqit;
 
@@ -43,7 +44,7 @@ public class MuwaqqitApiServiceTests : BaseTest
             };
 
         // ACT
-        var response = await _muwaqqitApiService.GetPrayerTimesAsync(
+        MuwaqqitPrayerTimesResponseDTO response = await _muwaqqitApiService.GetPrayerTimesAsync(
             date: date.ToString("yyyy-MM-dd", null),
             longitude: 1M,
             latitude: 1M,

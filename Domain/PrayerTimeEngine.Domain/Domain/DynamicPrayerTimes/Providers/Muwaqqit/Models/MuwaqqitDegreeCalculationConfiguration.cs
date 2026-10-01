@@ -1,4 +1,4 @@
-﻿namespace PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Muwaqqit.Models;
+namespace PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Muwaqqit.Models;
 
 public class MuwaqqitDegreeCalculationConfiguration : MuwaqqitCalculationConfiguration
 {
@@ -9,7 +9,9 @@ public class MuwaqqitDegreeCalculationConfiguration : MuwaqqitCalculationConfigu
     public override bool Equals(object obj)
     {
         if (obj is not MuwaqqitDegreeCalculationConfiguration otherSettingConfig)
+        {
             return false;
+        }
 
         return base.Equals(otherSettingConfig)
             && Degree == otherSettingConfig.Degree;

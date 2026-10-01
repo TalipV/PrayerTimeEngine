@@ -1,4 +1,4 @@
-﻿using NodaTime;
+using NodaTime;
 using PrayerTimeEngine.Core.Common.Enum;
 
 namespace PrayerTimeEngine.Core.Domain.Models;

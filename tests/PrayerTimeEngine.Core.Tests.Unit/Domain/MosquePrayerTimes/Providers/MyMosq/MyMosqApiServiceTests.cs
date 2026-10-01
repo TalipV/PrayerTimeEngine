@@ -1,4 +1,5 @@
 ﻿using NodaTime;
+using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.MyMosq.Models.DTOs;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.MyMosq.Models.Entities;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.MyMosq.Services;
 using PrayerTimeEngine.Core.Tests.Common;
@@ -23,7 +24,7 @@ public class MyMosqApiServiceTests : BaseTest
         string externalID = "1239";
 
         // ACT
-        var response = await _myMosqApiService.GetPrayerTimesAsync(date, externalID, cancellationToken: default);
+        List<MyMosqPrayerTimesDTO> response = await _myMosqApiService.GetPrayerTimesAsync(date, externalID, cancellationToken: default);
         var times = response.Select(x => x.ToMyMosqPrayerTimes(externalID)).ToList();
         MyMosqMosqueDailyPrayerTimes time = times.FirstOrDefault(x => x.Date == date);
 
@@ -57,7 +58,7 @@ public class MyMosqApiServiceTests : BaseTest
         string externalID = "1239";
 
         // ACT
-        var response = await _myMosqApiService.GetPrayerTimesAsync(date, externalID, cancellationToken: default);
+        List<MyMosqPrayerTimesDTO> response = await _myMosqApiService.GetPrayerTimesAsync(date, externalID, cancellationToken: default);
         var times = response.Select(x => x.ToMyMosqPrayerTimes(externalID)).ToList();
 
         // ASSERT

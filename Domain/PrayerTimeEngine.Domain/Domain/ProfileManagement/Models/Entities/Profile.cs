@@ -1,4 +1,4 @@
-﻿using NodaTime;
+using NodaTime;
 using PrayerTimeEngine.Core.Data.EntityFramework;
 
 namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
@@ -15,7 +15,9 @@ public abstract class Profile : IEntity
     public override bool Equals(object obj)
     {
         if (obj is not Profile otherProfile)
+        {
             return false;
+        }
 
         if (ID != otherProfile.ID
             || SequenceNo != otherProfile.SequenceNo

@@ -33,6 +33,20 @@ Claude Code cloud sessions get a .NET SDK from the environment's setup script, b
 - The Domain/Application/Infrastructure builds emit ~160 nullable warnings today; they
   are pre-existing, so only worry about warnings your own change introduces.
 
+## Code style
+
+`.editorconfig` follows Microsoft's published C# coding and naming conventions, and
+`EnforceCodeStyleInBuild` turns every violation into a build **error**. Key naming rules:
+PascalCase for types, members, constants (also local constants) and local functions;
+`_camelCase` for private/internal instance fields; `s_camelCase` for private/internal
+static fields; `I`/`T` prefixes for interfaces/type parameters; camelCase for locals and
+parameters. `var` only when the type is apparent from the right-hand side.
+
+Most violations are auto-fixable: `dotnet format <project>.csproj --severity error`.
+Run it per project (not on the multi-targeted MAUI project as a whole: formatting several
+TFMs at once writes merge-conflict markers into shared files). Naming (IDE1006) is not
+auto-fixed; rename by hand (IDE rename refactoring).
+
 ## ONION architecture
 
 The solution follows the ONION model, enforced by project references (dependencies

@@ -1,8 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+using System.Reflection;
+using Microsoft.EntityFrameworkCore;
 using PrayerTimeEngine.Core.Data.EntityFramework;
 using PrayerTimeEngine.Presentation.Pages.Settings.SettingsHandler;
 using PropertyChanged;
-using System.Reflection;
 
 namespace PrayerTimeEngine.Presentation.Pages.DatabaseTables;
 
@@ -14,33 +14,37 @@ public partial class DatabaseTablesPageViewModel(
 
     public override void Initialize(params object[] parameter)
     {
-        fillDataDict();
+        FillDataDict();
 
-        TableOptions = _dataDict.Select(x => x.Key).ToList();
+        TableOptions = [.. _dataDict.Select(x => x.Key)];
         SelectedTableOption = TableOptions[0];
     }
 
     public List<string> TableOptions { get; set; }
 
-    [OnChangedMethod(nameof(onSelectedTableOptionChanged))]
+    [OnChangedMethod(nameof(OnSelectedTableOptionChanged))]
     public string SelectedTableOption { get; set; }
 
     public Action<List<object>> OnChangeSelectionAction { get; set; }
 
-    private void onSelectedTableOptionChanged()
+    private void OnSelectedTableOptionChanged()
     {
         if (string.IsNullOrWhiteSpace(SelectedTableOption))
+        {
             return;
+        }
 
         if (!_dataDict.TryGetValue(SelectedTableOption, out List<object> value))
+        {
             return;
+        }
 
         OnChangeSelectionAction?.Invoke(value);
     }
 
-    private void fillDataDict()
+    private void FillDataDict()
     {
-        List<PropertyInfo> dbSetPropertyInfos = typeof(AppDbContext)
+        var dbSetPropertyInfos = typeof(AppDbContext)
             .GetProperties()
             .Where(x => x.PropertyType.IsGenericType &&
                         x.PropertyType.GetGenericTypeDefinition() == typeof(DbSet<>))
@@ -53,7 +57,7 @@ public partial class DatabaseTablesPageViewModel(
             MethodInfo genericSet = setMethod.MakeGenericMethod(entityTypeOfDbSet);
             object dbSet = genericSet.Invoke(appDbContext, null);
 
-            var asNoTrackingMethod = typeof(EntityFrameworkQueryableExtensions)
+            MethodInfo asNoTrackingMethod = typeof(EntityFrameworkQueryableExtensions)
                     .GetMethods(BindingFlags.Public | BindingFlags.Static)
                     .First(m => m.Name == nameof(EntityFrameworkQueryableExtensions.AsNoTracking)
                                 && m.GetParameters().Length == 1)
@@ -66,7 +70,7 @@ public partial class DatabaseTablesPageViewModel(
 
             object dbSetFullResult = toListMethod.Invoke(null, [dbSetWithAsNoTracking]);
 
-            _dataDict[dbSetPropertyInfo.Name] = ((IEnumerable<object>)dbSetFullResult).ToList();
+            _dataDict[dbSetPropertyInfo.Name] = [.. (IEnumerable<object>)dbSetFullResult];
         }
     }
 

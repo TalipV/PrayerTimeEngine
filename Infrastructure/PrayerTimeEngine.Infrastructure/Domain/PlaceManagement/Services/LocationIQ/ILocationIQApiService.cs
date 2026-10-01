@@ -1,4 +1,4 @@
-﻿using PrayerTimeEngine.Core.Domain.PlaceManagement.Services.LocationIQ.DTOs;
+using PrayerTimeEngine.Core.Domain.PlaceManagement.Services.LocationIQ.DTOs;
 using Refit;
 
 namespace PrayerTimeEngine.Core.Domain.PlaceManagement.Services.LocationIQ;

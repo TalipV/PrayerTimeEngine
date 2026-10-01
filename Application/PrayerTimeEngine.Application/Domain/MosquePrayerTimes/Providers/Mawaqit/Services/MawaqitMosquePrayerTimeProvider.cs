@@ -3,6 +3,7 @@ using NodaTime;
 using PrayerTimeEngine.Core.Common;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Models;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.Mawaqit.Interfaces;
+using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.Mawaqit.Models.DTOs;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.Mawaqit.Models.Entities;
 
 namespace PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.Mawaqit.Services;
@@ -13,7 +14,7 @@ public class MawaqitMosquePrayerTimeProvider(
         ISystemInfoService systemInfoService
 ) : IMosquePrayerTimeProvider
 {
-    private static readonly AsyncKeyedLocker<string> getPrayerTimesLocker = new(o =>
+    private static readonly AsyncKeyedLocker<string> s_getPrayerTimesLocker = new(o =>
     {
         o.PoolSize = 20;
         o.PoolInitialFill = 1;
@@ -23,17 +24,17 @@ public class MawaqitMosquePrayerTimeProvider(
 
     public async Task<IMosqueDailyPrayerTimes> GetPrayerTimesAsync(LocalDate date, string externalID, CancellationToken cancellationToken)
     {
-        using (await getPrayerTimesLocker.LockAsync(externalID, cancellationToken).ConfigureAwait(false))
+        using (await s_getPrayerTimesLocker.LockAsync(externalID, cancellationToken).ConfigureAwait(false))
         {
             MawaqitMosqueDailyPrayerTimes prayerTimes = await mawaqitRepository.GetPrayerTimesAsync(date, externalID, cancellationToken).ConfigureAwait(false);
 
             if (prayerTimes is null)
             {
-                var responseDto = await mawaqitApiService.GetPrayerTimesAsync(externalID, cancellationToken);
+                MawaqitResponseDTO responseDto = await mawaqitApiService.GetPrayerTimesAsync(externalID, cancellationToken);
 
                 int currentYear = systemInfoService.GetCurrentZonedDateTime().Year;
 
-                List<MawaqitMosqueDailyPrayerTimes> prayerTimesLst = responseDto.ToMawaqitPrayerTimes(currentYear, externalID)
+                var prayerTimesLst = responseDto.ToMawaqitPrayerTimes(currentYear, externalID)
                     .Where(x => date <= x.Date && x.Date < date.PlusDays(MAX_EXTENT_OF_RETRIEVED_DAYS))
                     .ToList();
 

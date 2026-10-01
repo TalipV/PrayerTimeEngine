@@ -4,6 +4,7 @@ using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Models;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Muwaqqit.Interfaces;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Muwaqqit.Models;
+using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Muwaqqit.Models.DTOs;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Muwaqqit.Models.Entities;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Models;
 
@@ -34,7 +35,7 @@ public class MuwaqqitDynamicPrayerTimeProvider(
         decimal longitude = muwaqqitLocationData.Longitude;
         decimal latitude = muwaqqitLocationData.Latitude;
 
-        List<ETimeType> toBeCalculatedTimeTypes = configurations.Select(x => x.TimeType).ToList();
+        var toBeCalculatedTimeTypes = configurations.Select(x => x.TimeType).ToList();
         var calculatedTimes = new Dictionary<MuwaqqitDailyPrayerTimes, List<ETimeType>>();
 
         var toBeConsumedConfigurations = configurations.ToList();
@@ -42,18 +43,18 @@ public class MuwaqqitDynamicPrayerTimeProvider(
         while (toBeConsumedConfigurations.Count != 0)
         {
             List<ETimeType> consumedTimeTypes =
-                consumeDegreeValues(
+                ConsumeDegreeValues(
                     toBeConsumedConfigurations,
                     out double fajrDegree,
                     out double ishaDegree,
                     out double ishtibakDegree,
                     out double asrKarahaDegree);
 
-            MuwaqqitDailyPrayerTimes muwaqqitPrayerTimes = await getPrayerTimesInternal(date, longitude, latitude, fajrDegree, ishaDegree, ishtibakDegree, asrKarahaDegree, timezone, cancellationToken).ConfigureAwait(false);
+            MuwaqqitDailyPrayerTimes muwaqqitPrayerTimes = await GetPrayerTimesInternal(date, longitude, latitude, fajrDegree, ishaDegree, ishtibakDegree, asrKarahaDegree, timezone, cancellationToken).ConfigureAwait(false);
             calculatedTimes[muwaqqitPrayerTimes] = consumedTimeTypes;
         }
 
-        return calculatedTimes
+        return [.. calculatedTimes
             .SelectMany(x =>
             {
                 MuwaqqitDailyPrayerTimes muwaqqitPrayerTimes = x.Key;
@@ -62,11 +63,10 @@ public class MuwaqqitDynamicPrayerTimeProvider(
                 return timeTypes.Select(timeType => (TimeType: timeType, ZonedDateTime: muwaqqitPrayerTimes.GetZonedDateTimeForTimeType(timeType)));
             })
             .Where(x => x.ZonedDateTime is not null)    // missing times are simply not returned
-            .Select(x => (x.TimeType, x.ZonedDateTime.Value))
-            .ToList();
+            .Select(x => (x.TimeType, x.ZonedDateTime.Value))];
     }
 
-    private List<ETimeType> consumeDegreeValues(
+    private List<ETimeType> ConsumeDegreeValues(
         List<GenericSettingConfiguration> muwaqqitConfigs,
         out double fajrDegree,
         out double ishaDegree,
@@ -176,13 +176,13 @@ public class MuwaqqitDynamicPrayerTimeProvider(
         return [];
     }
 
-    private static readonly AsyncKeyedLocker<(ZonedDateTime date, decimal longitude, decimal latitude, double fajrDegree, double ishaDegree, double ishtibakDegree, double asrKarahaDegree, string timezone)> getPrayerTimesLocker = new(o =>
+    private static readonly AsyncKeyedLocker<(ZonedDateTime date, decimal longitude, decimal latitude, double fajrDegree, double ishaDegree, double ishtibakDegree, double asrKarahaDegree, string timezone)> s_getPrayerTimesLocker = new(o =>
     {
         o.PoolSize = 20;
         o.PoolInitialFill = 1;
     });
 
-    private async Task<MuwaqqitDailyPrayerTimes> getPrayerTimesInternal(
+    private async Task<MuwaqqitDailyPrayerTimes> GetPrayerTimesInternal(
         ZonedDateTime date,
         decimal longitude,
         decimal latitude,
@@ -193,15 +193,15 @@ public class MuwaqqitDynamicPrayerTimeProvider(
         string timezone,
         CancellationToken cancellationToken)
     {
-        var lockTuple = (date, longitude, latitude, fajrDegree, ishaDegree, ishtibakDegree, asrKarahaDegree, timezone);
+        (ZonedDateTime date, decimal longitude, decimal latitude, double fajrDegree, double ishaDegree, double ishtibakDegree, double asrKarahaDegree, string timezone) lockTuple = (date, longitude, latitude, fajrDegree, ishaDegree, ishtibakDegree, asrKarahaDegree, timezone);
 
-        using (await getPrayerTimesLocker.LockAsync(lockTuple, cancellationToken).ConfigureAwait(false))
+        using (await s_getPrayerTimesLocker.LockAsync(lockTuple, cancellationToken).ConfigureAwait(false))
         {
             MuwaqqitDailyPrayerTimes prayerTimes = await muwaqqitRepository.GetPrayerTimesAsync(date.Date, longitude, latitude, fajrDegree, ishaDegree, ishtibakDegree, asrKarahaDegree, cancellationToken).ConfigureAwait(false);
 
             if (prayerTimes is null)
             {
-                var apiResponse =
+                MuwaqqitPrayerTimesResponseDTO apiResponse =
                     await muwaqqitApiService.GetPrayerTimesAsync(
                         date: date.ToString("yyyy-MM-dd", null),
                         longitude: longitude,

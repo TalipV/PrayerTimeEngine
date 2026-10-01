@@ -1,4 +1,5 @@
-﻿using AsyncKeyedLock;
+using System.Globalization;
+using AsyncKeyedLock;
 using Microsoft.Extensions.Logging;
 using NodaTime;
 using PrayerTimeEngine.Core.Common;
@@ -7,7 +8,6 @@ using PrayerTimeEngine.Core.Domain.PlaceManagement.Models;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Services.LocationIQ;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Services.LocationIQ.DTOs;
 using Refit;
-using System.Globalization;
 
 namespace PrayerTimeEngine.Core.Domain.PlaceManagement.Services;
 
@@ -22,7 +22,7 @@ public class PlaceService(
 
     public async Task<ProfilePlaceInfo> GetTimezoneInfo(BasicPlaceInfo basicPlaceInfo, CancellationToken cancellationToken)
     {
-        await ensureCooldown(cancellationToken).ConfigureAwait(false);
+        await EnsureCooldown(cancellationToken).ConfigureAwait(false);
 
         LocationIQTimezoneResponseDTO locationIQTimezone =
             await locationIQApiService.GetTimezoneAsync(
@@ -53,19 +53,17 @@ public class PlaceService(
 
     public async Task<List<BasicPlaceInfo>> SearchPlacesAsync(string searchTerm, string language, CancellationToken cancellationToken)
     {
-        await ensureCooldown(cancellationToken).ConfigureAwait(false);
+        await EnsureCooldown(cancellationToken).ConfigureAwait(false);
 
         try
         {
-            var places = await locationIQApiService.GetPlacesAsync(
+            List<LocationIQPlace> places = await locationIQApiService.GetPlacesAsync(
                     language,
                     searchTerm,
                     _apiKey,
                     cancellationToken).ConfigureAwait(false);
 
-            return places.Select(x => getlocationIQPlace(x, language))
-                .Where(x => !string.IsNullOrWhiteSpace(x.City) && !string.IsNullOrWhiteSpace(x.Country))
-                .ToList();
+            return [.. places.Select(x => GetlocationIQPlace(x, language)).Where(x => !string.IsNullOrWhiteSpace(x.City) && !string.IsNullOrWhiteSpace(x.Country))];
         }
         catch (ApiException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
         {
@@ -75,9 +73,9 @@ public class PlaceService(
 
     public async Task<BasicPlaceInfo> GetPlaceBasedOnPlace(BasicPlaceInfo inputPlace, string language, CancellationToken cancellationToken)
     {
-        await ensureCooldown(cancellationToken).ConfigureAwait(false);
+        await EnsureCooldown(cancellationToken).ConfigureAwait(false);
 
-        var place = await locationIQApiService.GetSpecificPlaceAsync(
+        LocationIQPlace place = await locationIQApiService.GetSpecificPlaceAsync(
                 language,
                 inputPlace.Latitude,
                 inputPlace.Longitude,
@@ -85,24 +83,24 @@ public class PlaceService(
                 _apiKey,
                 cancellationToken).ConfigureAwait(false);
 
-        return getlocationIQPlace(place, language);
+        return GetlocationIQPlace(place, language);
     }
 
     // only allowed two calls per second
     private const int NECESSARY_COOL_DOWN_MS = 500;
-    private static readonly AsyncNonKeyedLocker _semaphore = new(1);
-    private static Instant? lastCooldownCheck;
+    private static readonly AsyncNonKeyedLocker s_semaphore = new(1);
+    private static Instant? s_lastCooldownCheck;
 
-    private async Task ensureCooldown(CancellationToken cancellationToken)
+    private async Task EnsureCooldown(CancellationToken cancellationToken)
     {
-        using (await _semaphore.LockAsync(cancellationToken).ConfigureAwait(false))
+        using (await s_semaphore.LockAsync(cancellationToken).ConfigureAwait(false))
         {
             try
             {
-                if (lastCooldownCheck is not null)
+                if (s_lastCooldownCheck is not null)
                 {
                     Instant currentInstant = systemInfoService.GetCurrentInstant();
-                    int millisecondsSinceLastCooldownCheck = (int)Math.Floor((currentInstant - lastCooldownCheck.Value).TotalMilliseconds);
+                    int millisecondsSinceLastCooldownCheck = (int)Math.Floor((currentInstant - s_lastCooldownCheck.Value).TotalMilliseconds);
 
                     if (millisecondsSinceLastCooldownCheck < NECESSARY_COOL_DOWN_MS)
                     {
@@ -117,13 +115,13 @@ public class PlaceService(
             }
             finally
             {
-                lastCooldownCheck = systemInfoService.GetCurrentInstant();
-                logger.LogDebug("Cooldown end at {Instant} ms", lastCooldownCheck.Value.ToUnixTimeMilliseconds());
+                s_lastCooldownCheck = systemInfoService.GetCurrentInstant();
+                logger.LogDebug("Cooldown end at {Instant} ms", s_lastCooldownCheck.Value.ToUnixTimeMilliseconds());
             }
         }
     }
 
-    private static BasicPlaceInfo getlocationIQPlace(LocationIQPlace locationIQPlace, string languageCode)
+    private static BasicPlaceInfo GetlocationIQPlace(LocationIQPlace locationIQPlace, string languageCode)
     {
         return new BasicPlaceInfo
         {

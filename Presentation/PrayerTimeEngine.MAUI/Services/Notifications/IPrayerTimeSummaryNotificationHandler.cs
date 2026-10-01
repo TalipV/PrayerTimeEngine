@@ -1,4 +1,4 @@
-﻿namespace PrayerTimeEngine.Services.Notifications;
+namespace PrayerTimeEngine.Services.Notifications;
 
 public interface IPrayerTimeSummaryNotificationHandler
 {

@@ -1,4 +1,4 @@
-﻿using PrayerTimeEngine.Presentation.Views.MosquePrayerTimes;
+using PrayerTimeEngine.Presentation.Views.MosquePrayerTimes;
 using PrayerTimeEngine.Presentation.Views.PrayerTimes;
 
 namespace PrayerTimeEngine.Presentation;
@@ -11,9 +11,13 @@ public class ProfileDataTemplateSelector : DataTemplateSelector
     protected override DataTemplate OnSelectTemplate(object item, BindableObject container)
     {
         if (item is DynamicPrayerTimeViewModel)
+        {
             return PrayerTimesTemplate;
+        }
         else if (item is MosquePrayerTimeViewModel)
+        {
             return MosquePrayerTimeTemplate;
+        }
 
         throw new NotImplementedException($"Type '{item.GetType().Name ?? "NULL"}' not supported");
     }

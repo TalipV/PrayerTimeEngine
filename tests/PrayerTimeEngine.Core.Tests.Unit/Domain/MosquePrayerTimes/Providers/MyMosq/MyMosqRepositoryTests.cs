@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using NodaTime;
 using PrayerTimeEngine.Core.Data.EntityFramework;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.MyMosq.Models.Entities;
@@ -49,7 +49,7 @@ public class MyMosqRepositoryTests : BaseTest
         await TestArrangeDbContext.SaveChangesAsync();
 
         // ACT
-        var retrievedTime = await _myMosqRepository.GetPrayerTimesAsync(myMosqTime.Date, externalID, default);
+        MyMosqMosqueDailyPrayerTimes retrievedTime = await _myMosqRepository.GetPrayerTimesAsync(myMosqTime.Date, externalID, default);
 
         // ASSERT
         retrievedTime.Should().BeEquivalentTo(myMosqTime);
@@ -85,7 +85,7 @@ public class MyMosqRepositoryTests : BaseTest
         await _myMosqRepository.InsertPrayerTimesAsync([newMyMosqTime], default);
 
         // ASSERT
-        var insertedTime = await TestAssertDbContext.MyMosqPrayerTimes.FindAsync(newMyMosqTime.ID);
+        MyMosqMosqueDailyPrayerTimes? insertedTime = await TestAssertDbContext.MyMosqPrayerTimes.FindAsync(newMyMosqTime.ID);
         insertedTime.Should().BeEquivalentTo(newMyMosqTime);
     }
 
@@ -93,31 +93,44 @@ public class MyMosqRepositoryTests : BaseTest
     public async Task DeleteCacheDataAsync_RemoveOlderEntries_KeepNewerOnes()
     {
         // ARRANGE
-        var baseDate = new LocalDate(2023, 1, 1).AtStartOfDayInZone(DateTimeZone.Utc);
+        ZonedDateTime baseDate = new LocalDate(2023, 1, 1).AtStartOfDayInZone(DateTimeZone.Utc);
         ZonedDateTime oldDate = baseDate.Minus(Duration.FromDays(5));
         ZonedDateTime newDate = baseDate.Plus(Duration.FromDays(1));
 
         var oldTime = new MyMosqMosqueDailyPrayerTimes
         {
             Date = oldDate.Date,
-            ExternalID = "1", Fajr = oldDate.LocalDateTime.TimeOfDay, FajrCongregation = oldDate.LocalDateTime.TimeOfDay, 
-            Shuruq = oldDate.LocalDateTime.TimeOfDay, Dhuhr = oldDate.LocalDateTime.TimeOfDay, 
-            DhuhrCongregation = oldDate.LocalDateTime.TimeOfDay, Asr = oldDate.LocalDateTime.TimeOfDay, 
-            AsrCongregation = oldDate.LocalDateTime.TimeOfDay, Maghrib = oldDate.LocalDateTime.TimeOfDay, 
-            MaghribCongregation = oldDate.LocalDateTime.TimeOfDay, Isha = oldDate.LocalDateTime.TimeOfDay, 
-            IshaCongregation = oldDate.LocalDateTime.TimeOfDay, Jumuah = oldDate.LocalDateTime.TimeOfDay, 
+            ExternalID = "1",
+            Fajr = oldDate.LocalDateTime.TimeOfDay,
+            FajrCongregation = oldDate.LocalDateTime.TimeOfDay,
+            Shuruq = oldDate.LocalDateTime.TimeOfDay,
+            Dhuhr = oldDate.LocalDateTime.TimeOfDay,
+            DhuhrCongregation = oldDate.LocalDateTime.TimeOfDay,
+            Asr = oldDate.LocalDateTime.TimeOfDay,
+            AsrCongregation = oldDate.LocalDateTime.TimeOfDay,
+            Maghrib = oldDate.LocalDateTime.TimeOfDay,
+            MaghribCongregation = oldDate.LocalDateTime.TimeOfDay,
+            Isha = oldDate.LocalDateTime.TimeOfDay,
+            IshaCongregation = oldDate.LocalDateTime.TimeOfDay,
+            Jumuah = oldDate.LocalDateTime.TimeOfDay,
             Jumuah2 = oldDate.LocalDateTime.TimeOfDay,
         };
         var newTime = new MyMosqMosqueDailyPrayerTimes
         {
             Date = newDate.Date,
             ExternalID = "1",
-            Fajr = newDate.LocalDateTime.TimeOfDay, FajrCongregation = newDate.LocalDateTime.TimeOfDay,
-            Shuruq = newDate.LocalDateTime.TimeOfDay, Dhuhr = newDate.LocalDateTime.TimeOfDay,
-            DhuhrCongregation = newDate.LocalDateTime.TimeOfDay, Asr = newDate.LocalDateTime.TimeOfDay,
-            AsrCongregation = newDate.LocalDateTime.TimeOfDay, Maghrib = newDate.LocalDateTime.TimeOfDay,
-            MaghribCongregation = newDate.LocalDateTime.TimeOfDay,Isha = newDate.LocalDateTime.TimeOfDay,
-            IshaCongregation = newDate.LocalDateTime.TimeOfDay, Jumuah = newDate.LocalDateTime.TimeOfDay, 
+            Fajr = newDate.LocalDateTime.TimeOfDay,
+            FajrCongregation = newDate.LocalDateTime.TimeOfDay,
+            Shuruq = newDate.LocalDateTime.TimeOfDay,
+            Dhuhr = newDate.LocalDateTime.TimeOfDay,
+            DhuhrCongregation = newDate.LocalDateTime.TimeOfDay,
+            Asr = newDate.LocalDateTime.TimeOfDay,
+            AsrCongregation = newDate.LocalDateTime.TimeOfDay,
+            Maghrib = newDate.LocalDateTime.TimeOfDay,
+            MaghribCongregation = newDate.LocalDateTime.TimeOfDay,
+            Isha = newDate.LocalDateTime.TimeOfDay,
+            IshaCongregation = newDate.LocalDateTime.TimeOfDay,
+            Jumuah = newDate.LocalDateTime.TimeOfDay,
             Jumuah2 = newDate.LocalDateTime.TimeOfDay,
         };
 

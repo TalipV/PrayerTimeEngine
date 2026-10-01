@@ -1,8 +1,8 @@
-﻿using NodaTime;
+using System.Reflection;
+using NodaTime;
 using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Models;
-using System.Reflection;
 using UraniumUI.Material.Controls;
 
 namespace PrayerTimeEngine.Presentation.Pages.DatabaseTables;
@@ -32,7 +32,7 @@ public partial class DatabaseTablesPage : ContentPage
 
     // Maybe adding some attribute to exclude specific properties would be a more intuitive option?
     // But it would only be for this specific debug feature so here like this is fine, I guess.
-    private readonly HashSet<Type> validTypes =
+    private readonly HashSet<Type> _validTypes =
     [
         typeof(string),
         typeof(int), typeof(int?),
@@ -51,14 +51,16 @@ public partial class DatabaseTablesPage : ContentPage
     public void PopulateTabViewWithItems(List<object> list)
     {
         if (list.Count == 0)
+        {
             return;
+        }
 
         _dataGrid.ItemsSource = null;
         _dataGrid.Columns.Clear();
 
-        List<PropertyInfo> propertyInfos =
+        var propertyInfos =
             list.First().GetType().GetProperties()
-                .Where(x => validTypes.Contains(x.PropertyType))
+                .Where(x => _validTypes.Contains(x.PropertyType))
                 .ToList();
 
         foreach (PropertyInfo prop in propertyInfos)

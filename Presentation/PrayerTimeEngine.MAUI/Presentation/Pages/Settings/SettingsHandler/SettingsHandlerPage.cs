@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using PrayerTimeEngine.Presentation.Pages.Settings.SettingsContent;
 using PrayerTimeEngine.Presentation.Services;
 using UraniumUI.Material.Controls;
@@ -45,7 +45,7 @@ public partial class SettingsHandlerPage : ContentPage
         {
             foreach (SettingsContentPage settingContentPages in _viewModel.SettingsContentPages)
             {
-                var content = settingContentPages.Content;
+                View content = settingContentPages.Content;
                 settingContentPages.RemoveLogicalChild(content); // Causes warning if View is added to another page if not removed from former page
 
                 var tabItem = new TabItem
@@ -74,7 +74,7 @@ public partial class SettingsHandlerPage : ContentPage
             base.OnDisappearing();
 
             // for ViewModel to handle setting saving
-            await onDisappearingForAllSettingContentPages().ConfigureAwait(false);
+            await OnDisappearingForAllSettingContentPages().ConfigureAwait(false);
         }
         catch (Exception exception)
         {
@@ -83,7 +83,7 @@ public partial class SettingsHandlerPage : ContentPage
         }
     }
 
-    private async Task onDisappearingForAllSettingContentPages()
+    private async Task OnDisappearingForAllSettingContentPages()
     {
         foreach (SettingsContentPageViewModel contentPageViewModel in _viewModel.SettingsContentPages.Select(x => x.ViewModel))
         {

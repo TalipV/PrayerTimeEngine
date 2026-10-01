@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using PrayerTimeEngine.Core.Data.WebSocket.Interfaces;
 
 namespace PrayerTimeEngine.Core.Data.WebSocket;

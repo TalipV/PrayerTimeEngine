@@ -2,6 +2,7 @@
 using NodaTime;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Models;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.MyMosq.Interfaces;
+using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.MyMosq.Models.DTOs;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.MyMosq.Models.Entities;
 
 namespace PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.MyMosq.Services;
@@ -11,7 +12,7 @@ public class MyMosqMosquePrayerTimeProvider(
     IMyMosqApiService myMosqApiService
 ) : IMosquePrayerTimeProvider
 {
-    private static readonly AsyncKeyedLocker<string> getPrayerTimesLocker = new(o =>
+    private static readonly AsyncKeyedLocker<string> s_getPrayerTimesLocker = new(o =>
     {
         o.PoolSize = 20;
         o.PoolInitialFill = 1;
@@ -21,15 +22,15 @@ public class MyMosqMosquePrayerTimeProvider(
 
     public async Task<IMosqueDailyPrayerTimes> GetPrayerTimesAsync(LocalDate date, string externalID, CancellationToken cancellationToken)
     {
-        using (await getPrayerTimesLocker.LockAsync(externalID, cancellationToken).ConfigureAwait(false))
+        using (await s_getPrayerTimesLocker.LockAsync(externalID, cancellationToken).ConfigureAwait(false))
         {
             MyMosqMosqueDailyPrayerTimes prayerTimes = await myMosqRepository.GetPrayerTimesAsync(date, externalID, cancellationToken).ConfigureAwait(false);
 
             if (prayerTimes is null)
             {
-                var responseDto = await myMosqApiService.GetPrayerTimesAsync(date, externalID, cancellationToken);
+                List<MyMosqPrayerTimesDTO> responseDto = await myMosqApiService.GetPrayerTimesAsync(date, externalID, cancellationToken);
 
-                List<MyMosqMosqueDailyPrayerTimes> prayerTimesLst = responseDto
+                var prayerTimesLst = responseDto
                     .Select(x => x.ToMyMosqPrayerTimes(externalID))
                     .Where(x => date <= x.Date && x.Date < date.PlusDays(MAX_EXTENT_OF_RETRIEVED_DAYS))
                     .ToList();

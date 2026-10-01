@@ -1,3 +1,4 @@
+using System.Net.WebSockets;
 using Microsoft.Extensions.DependencyInjection;
 using NodaTime;
 using PrayerTimeEngine.Core.Data.WebSocket;
@@ -6,7 +7,6 @@ using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Models;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.MyMosq.Interfaces;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.MyMosq.Services;
 using PrayerTimeEngine.Core.Tests.Common;
-using System.Net.WebSockets;
 
 namespace PrayerTimeEngine.Core.Tests.Live.Domain.MosquePrayerTimes.Providers.MyMosq;
 
@@ -23,17 +23,14 @@ public class MyMosqLiveApiTests : BaseTest
     public async Task GetPrayerTimesAsync_DifferentExternalIDs_NoErrors(string externalID)
     {
         // ARRANGE
-        ServiceProvider serviceProvider = createServiceProvider(
+        ServiceProvider serviceProvider = CreateServiceProvider(
             configureServiceCollection: serviceCollection =>
             {
                 serviceCollection.AddSingleton(GetHandledDbContextFactory());
                 serviceCollection.AddTransient<IMyMosqRepository, MyMosqRepository>();
                 serviceCollection.AddTransient<IMyMosqApiService, MyMosqApiService>();
                 serviceCollection.AddSingleton<IWebSocketClientFactory, WebSocketClientFactory>();
-                serviceCollection.AddTransient<IWebSocketClient, WebSocketClient>(factory =>
-                {
-                    return new WebSocketClient(new ClientWebSocket());
-                });
+                serviceCollection.AddTransient<IWebSocketClient, WebSocketClient>(factory => new WebSocketClient(new ClientWebSocket()));
                 serviceCollection.AddTransient<MyMosqMosquePrayerTimeProvider>();
             });
 
@@ -54,18 +51,15 @@ public class MyMosqLiveApiTests : BaseTest
         string externalID, bool isValid)
     {
         // ARRANGE
-        ServiceProvider serviceProvider = createServiceProvider(
+        ServiceProvider serviceProvider = CreateServiceProvider(
             configureServiceCollection: serviceCollection =>
             {
                 serviceCollection.AddSingleton(GetHandledDbContextFactory());
                 serviceCollection.AddTransient<IMyMosqRepository, MyMosqRepository>();
                 serviceCollection.AddTransient<IMyMosqApiService, MyMosqApiService>();
                 serviceCollection.AddSingleton<IWebSocketClientFactory, WebSocketClientFactory>();
-                serviceCollection.AddTransient<IWebSocketClient, WebSocketClient>(factory =>
-                {
-                    return new WebSocketClient(new ClientWebSocket());
-                });
-                serviceCollection.AddTransient<MyMosqMosquePrayerTimeProvider> ();
+                serviceCollection.AddTransient<IWebSocketClient, WebSocketClient>(factory => new WebSocketClient(new ClientWebSocket()));
+                serviceCollection.AddTransient<MyMosqMosquePrayerTimeProvider>();
             });
 
         var date = new LocalDate(2024, 8, 30);

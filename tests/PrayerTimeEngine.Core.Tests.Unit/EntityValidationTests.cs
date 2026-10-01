@@ -1,6 +1,6 @@
-﻿using PrayerTimeEngine.Core.Common.Enum;
-using PrayerTimeEngine.Core.Data.EntityFramework;
 using System.Reflection;
+using PrayerTimeEngine.Core.Common.Enum;
+using PrayerTimeEngine.Core.Data.EntityFramework;
 
 namespace PrayerTimeEngine.Core.Tests.Unit;
 
@@ -21,7 +21,7 @@ public class EntityValidationTests
 
         foreach (Type enumType in assembly.GetTypes().Where(t => t.IsEnum))
         {
-            var enumValues = Enum.GetValues(enumType);
+            Array enumValues = Enum.GetValues(enumType);
 
             if (enumValues.Length == enumValues.OfType<object>().ToHashSet().Count)
             {
