@@ -29,6 +29,11 @@ jobs:
           # SDK version is pinned in global.json, so CI and local builds use the same SDK.
           global-json-file: global.json
 
+      # global.json pins sdk.workloadVersion; the SDK refuses to evaluate any project
+      # until that workload set is installed, even projects that use no workloads.
+      - name: Install workload set from global.json
+        run: dotnet workload update
+
       - name: Run live API tests
         run: >
           dotnet test tests/PrayerTimeEngine.Core.Tests.Live/PrayerTimeEngine.Core.Tests.Live.csproj

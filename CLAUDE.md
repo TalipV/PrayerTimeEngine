@@ -16,6 +16,10 @@ Claude Code cloud sessions get a .NET SDK from the environment's setup script, b
 - `dotnet build PrayerTimeEngine.slnx` fails with `error NETSDK1147` because of the
   MAUI project. This is expected and says nothing about the code — do not try to
   install `maui-android` to work around it.
+- `global.json` pins the exact SDK and workload set version. Install that SDK, then run
+  `dotnet workload update` once in the repo root (installs only the workload set
+  manifests, no workloads). Without it every project fails with `MSB4242 ... Workload
+  version ... was not found`.
 - Build and test the non-MAUI projects instead. The former `PrayerTimeEngine.Core`
   was split into three ONION rings (`PrayerTimeEngine.Domain`,
   `PrayerTimeEngine.Application`, `PrayerTimeEngine.Infrastructure`); building the
