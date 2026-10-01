@@ -1,6 +1,6 @@
-﻿using Microsoft.Extensions.Logging;
 using System.Collections.Concurrent;
 using System.Reflection;
+using Microsoft.Extensions.Logging;
 
 namespace PrayerTimeEngine.Core.Common;
 
@@ -9,7 +9,7 @@ public static class MethodTimeLogger
     public static ILogger Logger { get; set; }
 
     // temporary solution of course
-    public static readonly ConcurrentBag<string> _notLoggedStuff = [];
+    public static readonly ConcurrentBag<string> NotLoggedStuff = [];
 
 #pragma warning disable IDE0060 // Remove unused parameter
     public static void Log(MethodBase methodBase, TimeSpan timeSpan, string message)
@@ -17,12 +17,12 @@ public static class MethodTimeLogger
     {
         if (Logger is null)
         {
-            _notLoggedStuff.Add(
+            NotLoggedStuff.Add(
                 $"TIME-LOGGER: {methodBase.DeclaringType}.{methodBase.Name}, {timeSpan.TotalMilliseconds:N0} ms");
             return;
         }
 
-        executeMissedOutLogs();
+        ExecuteMissedOutLogs();
 
         Logger.LogInformation(
             "TIME-LOGGER: {DeclaringType}.{MethodName}, {Milliseconds} ms",
@@ -31,11 +31,13 @@ public static class MethodTimeLogger
             timeSpan.TotalMilliseconds.ToString("N0"));
     }
 
-    private static void executeMissedOutLogs()
+    private static void ExecuteMissedOutLogs()
     {
-        foreach (var notLoggedMessage in _notLoggedStuff.Reverse())
+        foreach (string? notLoggedMessage in NotLoggedStuff.Reverse())
+        {
             Logger.LogInformation("{Message}", notLoggedMessage);
+        }
 
-        _notLoggedStuff.Clear();
+        NotLoggedStuff.Clear();
     }
 }

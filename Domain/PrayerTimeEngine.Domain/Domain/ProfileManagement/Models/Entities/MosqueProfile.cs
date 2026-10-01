@@ -1,4 +1,4 @@
-﻿using PrayerTimeEngine.Core.Domain.MosquePrayerTimes;
+using PrayerTimeEngine.Core.Domain.MosquePrayerTimes;
 
 namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
 
@@ -12,18 +12,22 @@ public class MosqueProfile : Profile
     public override bool Equals(object obj)
     {
         if (obj is not MosqueProfile otherProfile)
+        {
             return false;
+        }
 
-        if (this.ExternalID != otherProfile.ExternalID
-            || this.MosqueProviderType != otherProfile.MosqueProviderType)
+        if (ExternalID != otherProfile.ExternalID
+            || MosqueProviderType != otherProfile.MosqueProviderType)
+        {
             return false;
+        }
 
         return true;
     }
 
     public override int GetHashCode()
     {
-        return HashCode.Combine(base.GetHashCode(), this.ExternalID, this.MosqueProviderType);
+        return HashCode.Combine(base.GetHashCode(), ExternalID, MosqueProviderType);
     }
 
     #endregion System.Object overrides

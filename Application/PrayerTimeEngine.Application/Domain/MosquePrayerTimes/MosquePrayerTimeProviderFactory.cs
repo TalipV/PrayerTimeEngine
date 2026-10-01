@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.Mawaqit.Services;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.MyMosq.Services;

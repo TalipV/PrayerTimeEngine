@@ -1,27 +1,27 @@
-﻿using NodaTime;
+using NodaTime;
 
 namespace PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Models;
 
 public interface IMosqueDailyPrayerTimes
 {
-    public string ExternalID { get; }
-    public Instant? InsertInstant { get; }
+    string ExternalID { get; }
+    Instant? InsertInstant { get; }
 
-    public LocalDate Date { get; }
+    LocalDate Date { get; }
 
-    public LocalTime? Fajr { get; }
-    public LocalTime? Shuruq { get; }
-    public LocalTime? Dhuhr { get; }
-    public LocalTime? Asr { get; }
-    public LocalTime? Maghrib { get; }
-    public LocalTime? Isha { get; }
+    LocalTime? Fajr { get; }
+    LocalTime? Shuruq { get; }
+    LocalTime? Dhuhr { get; }
+    LocalTime? Asr { get; }
+    LocalTime? Maghrib { get; }
+    LocalTime? Isha { get; }
 
-    public LocalTime? Jumuah { get; }
-    public LocalTime? Jumuah2 { get; }
+    LocalTime? Jumuah { get; }
+    LocalTime? Jumuah2 { get; }
 
-    public LocalTime? FajrCongregation { get; }
-    public LocalTime? DhuhrCongregation { get; }
-    public LocalTime? AsrCongregation { get; }
-    public LocalTime? MaghribCongregation { get; }
-    public LocalTime? IshaCongregation { get; }
+    LocalTime? FajrCongregation { get; }
+    LocalTime? DhuhrCongregation { get; }
+    LocalTime? AsrCongregation { get; }
+    LocalTime? MaghribCongregation { get; }
+    LocalTime? IshaCongregation { get; }
 }

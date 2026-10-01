@@ -1,4 +1,4 @@
-﻿using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Models;
+using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Models;
 
 namespace PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Muwaqqit.Models;
 
@@ -14,7 +14,9 @@ public class MuwaqqitLocationData : BaseLocationData
     public override bool Equals(object obj)
     {
         if (obj is not MuwaqqitLocationData otherLocationData)
+        {
             return false;
+        }
 
         return Longitude == otherLocationData.Longitude
             && Latitude == otherLocationData.Latitude

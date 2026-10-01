@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+using System.Net;
+using Microsoft.Extensions.Logging;
 using NSubstitute;
 using PrayerTimeEngine.Core.Common;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Models;
@@ -7,7 +8,6 @@ using PrayerTimeEngine.Core.Domain.PlaceManagement.Services.LocationIQ;
 using PrayerTimeEngine.Core.Tests.Common;
 using PrayerTimeEngine.Core.Tests.Common.TestData;
 using Refit;
-using System.Net;
 
 namespace PrayerTimeEngine.Core.Tests.Unit.Domain.PlaceManagement;
 
@@ -164,7 +164,7 @@ public class PlaceServiceTests : BaseTest
             };
 
         // ACT
-        var result = await _placeService.GetTimezoneInfo(somePlaceInfo, default);
+        ProfilePlaceInfo result = await _placeService.GetTimezoneInfo(somePlaceInfo, default);
 
         // ASSERT
         result.TimezoneInfo.Should().NotBeNull();

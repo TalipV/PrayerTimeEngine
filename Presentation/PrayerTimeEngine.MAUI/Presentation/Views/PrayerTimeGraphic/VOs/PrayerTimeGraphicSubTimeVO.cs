@@ -1,4 +1,4 @@
-﻿using NodaTime;
+using NodaTime;
 
 namespace PrayerTimeEngine.Presentation.Views.PrayerTimeGraphic.VOs;
 

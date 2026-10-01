@@ -1,4 +1,4 @@
-﻿using PrayerTimeEngine.Core.Common;
+using PrayerTimeEngine.Core.Common;
 
 namespace PrayerTimeEngine.Services;
 

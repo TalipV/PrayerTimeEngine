@@ -1,4 +1,4 @@
-﻿using NodaTime;
+using NodaTime;
 using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Domain.Models;
 using PrayerTimeEngine.Core.Domain.Models.PrayerTimes;
@@ -122,7 +122,9 @@ public class DynamicPrayerTimesDay
     public override bool Equals(object? obj)
     {
         if (obj is not DynamicPrayerTimesDay otherBasePrayerTimesSet)
+        {
             return false;
+        }
 
         return Equals(Fajr, otherBasePrayerTimesSet.Fajr)
             && Equals(Duha, otherBasePrayerTimesSet.Duha)

@@ -1,4 +1,4 @@
-﻿using PrayerTimeEngine.Core.Common.Enum;
+using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Models;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Muwaqqit.Models;
 using PropertyChanged;
@@ -11,7 +11,7 @@ public class MuwaqqitDegreeSettingConfigurationViewModel : ISettingConfiguration
     public MuwaqqitDegreeSettingConfigurationViewModel(ETimeType timeType)
     {
         TimeType = timeType;
-        DegreeItemsSource = getItemSource(TimeType);
+        DegreeItemsSource = GetItemSource(TimeType);
         SelectedDegree = DegreeItemsSource.First();
     }
 
@@ -32,28 +32,28 @@ public class MuwaqqitDegreeSettingConfigurationViewModel : ISettingConfiguration
             };
     }
 
-    private StackLayout stackLayout = null;
+    private StackLayout _stackLayout = null;
 
     public IView GetUI()
     {
-        if (stackLayout is null)
+        if (_stackLayout is null)
         {
-            stackLayout = new StackLayout
+            _stackLayout = new StackLayout
             {
                 BindingContext = this
             };
 
-            stackLayout.Children.Add(new Label { Text = "Degree", TextColor = AppColors.Text });
+            _stackLayout.Children.Add(new Label { Text = "Degree", TextColor = AppColors.Text });
 
             var picker = new Picker
             {
                 ItemsSource = DegreeItemsSource.ToList()
             };
             picker.SetBinding(Picker.SelectedItemProperty, new Binding(nameof(SelectedDegree)));
-            stackLayout.Children.Add(picker);
+            _stackLayout.Children.Add(picker);
         }
 
-        return stackLayout;
+        return _stackLayout;
     }
 
     public void AssignSettingValues(GenericSettingConfiguration configuration)
@@ -63,11 +63,11 @@ public class MuwaqqitDegreeSettingConfigurationViewModel : ISettingConfiguration
             throw new ArgumentException($"{nameof(configuration)} is not of type {nameof(MuwaqqitDegreeCalculationConfiguration)}");
         }
 
-        DegreeItemsSource = getItemSource(TimeType);
+        DegreeItemsSource = GetItemSource(TimeType);
         SelectedDegree = muwaqqitConfig.Degree;
     }
 
-    private static IReadOnlyCollection<double> getItemSource(ETimeType timeType)
+    private static IReadOnlyCollection<double> GetItemSource(ETimeType timeType)
     {
         if (timeType == ETimeType.DuhaStart || timeType == ETimeType.AsrKaraha)
         {

@@ -24,7 +24,7 @@ public class MuwaqqitRepositoryTests : BaseTest
     {
         // ARRANGE
         var date = new LocalDate(2023, 7, 30);
-        var dateTimeZone = TestDataHelper.EUROPE_VIENNA_TIME_ZONE;
+        DateTimeZone dateTimeZone = TestDataHelper.EUROPE_VIENNA_TIME_ZONE;
         var muwaqqitTime = new MuwaqqitDailyPrayerTimes
         {
             Date = date,
@@ -35,25 +35,25 @@ public class MuwaqqitRepositoryTests : BaseTest
             IshaDegree = 1,
             IshtibakDegree = 1,
             AsrKarahaDegree = 1,
-            Fajr = instant(2023, 7, 30, 2, 27, 04),
-            NextFajr = instant(2023, 7, 31, 2, 28, 04),
-            Shuruq = instant(2023, 7, 30, 3, 49, 53),
-            Duha = instant(2023, 7, 30, 4, 49, 53),
-            Dhuhr = instant(2023, 7, 30, 11, 21, 22),
-            Asr = instant(2023, 7, 30, 15, 25, 53),
-            AsrMithlayn = instant(2023, 7, 30, 16, 25, 53),
-            AsrKaraha = instant(2023, 7, 30, 17, 25, 53),
-            Maghrib = instant(2023, 7, 30, 18, 50, 59),
-            Ishtibak = instant(2023, 7, 30, 19, 50, 59),
-            Isha = instant(2023, 7, 30, 20, 13, 17),
-            QiblaTime = instant(2023, 7, 30, 9, 21, 22)
+            Fajr = Instant(2023, 7, 30, 2, 27, 04),
+            NextFajr = Instant(2023, 7, 31, 2, 28, 04),
+            Shuruq = Instant(2023, 7, 30, 3, 49, 53),
+            Duha = Instant(2023, 7, 30, 4, 49, 53),
+            Dhuhr = Instant(2023, 7, 30, 11, 21, 22),
+            Asr = Instant(2023, 7, 30, 15, 25, 53),
+            AsrMithlayn = Instant(2023, 7, 30, 16, 25, 53),
+            AsrKaraha = Instant(2023, 7, 30, 17, 25, 53),
+            Maghrib = Instant(2023, 7, 30, 18, 50, 59),
+            Ishtibak = Instant(2023, 7, 30, 19, 50, 59),
+            Isha = Instant(2023, 7, 30, 20, 13, 17),
+            QiblaTime = Instant(2023, 7, 30, 9, 21, 22)
         };
 
         await TestArrangeDbContext.MuwaqqitPrayerTimes.AddAsync(muwaqqitTime);
         await TestArrangeDbContext.SaveChangesAsync();
 
         // ACT
-        var retrievedTime = await _muwaqqitRepository.GetPrayerTimesAsync(
+        MuwaqqitDailyPrayerTimes retrievedTime = await _muwaqqitRepository.GetPrayerTimesAsync(
             muwaqqitTime.Date,
             muwaqqitTime.Longitude,
             muwaqqitTime.Latitude,
@@ -72,7 +72,7 @@ public class MuwaqqitRepositoryTests : BaseTest
     {
         // ARRANGE
         var date = new LocalDate(2023, 7, 31);
-        var dateTimeZone = TestDataHelper.EUROPE_VIENNA_TIME_ZONE;
+        DateTimeZone dateTimeZone = TestDataHelper.EUROPE_VIENNA_TIME_ZONE;
         var newMuwaqqitTime = new MuwaqqitDailyPrayerTimes
         {
             Date = date,
@@ -83,25 +83,25 @@ public class MuwaqqitRepositoryTests : BaseTest
             IshaDegree = 1,
             IshtibakDegree = 1,
             AsrKarahaDegree = 1,
-            Fajr = instant(2023, 7, 30, 2, 27, 04),
-            NextFajr = instant(2023, 7, 31, 2, 28, 04),
-            Shuruq = instant(2023, 7, 30, 3, 49, 53),
-            Duha = instant(2023, 7, 30, 4, 49, 53),
-            Dhuhr = instant(2023, 7, 30, 11, 21, 22),
-            Asr = instant(2023, 7, 30, 15, 25, 53),
-            AsrMithlayn = instant(2023, 7, 30, 16, 25, 53),
-            AsrKaraha = instant(2023, 7, 30, 17, 25, 53),
-            Maghrib = instant(2023, 7, 30, 18, 50, 59),
-            Ishtibak = instant(2023, 7, 30, 19, 50, 59),
-            Isha = instant(2023, 7, 30, 20, 13, 17),
-            QiblaTime = instant(2023, 7, 30, 9, 21, 22)
+            Fajr = Instant(2023, 7, 30, 2, 27, 04),
+            NextFajr = Instant(2023, 7, 31, 2, 28, 04),
+            Shuruq = Instant(2023, 7, 30, 3, 49, 53),
+            Duha = Instant(2023, 7, 30, 4, 49, 53),
+            Dhuhr = Instant(2023, 7, 30, 11, 21, 22),
+            Asr = Instant(2023, 7, 30, 15, 25, 53),
+            AsrMithlayn = Instant(2023, 7, 30, 16, 25, 53),
+            AsrKaraha = Instant(2023, 7, 30, 17, 25, 53),
+            Maghrib = Instant(2023, 7, 30, 18, 50, 59),
+            Ishtibak = Instant(2023, 7, 30, 19, 50, 59),
+            Isha = Instant(2023, 7, 30, 20, 13, 17),
+            QiblaTime = Instant(2023, 7, 30, 9, 21, 22)
         };
 
         // ACT
         await _muwaqqitRepository.InsertPrayerTimesAsync([newMuwaqqitTime], default);
 
         // ASSERT
-        var insertedTime = await TestAssertDbContext.MuwaqqitPrayerTimes.FindAsync(newMuwaqqitTime.ID);
+        MuwaqqitDailyPrayerTimes? insertedTime = await TestAssertDbContext.MuwaqqitPrayerTimes.FindAsync(newMuwaqqitTime.ID);
         insertedTime.Should().BeEquivalentTo(newMuwaqqitTime, options => options.IgnoringCyclicReferences());
     }
 
@@ -109,7 +109,7 @@ public class MuwaqqitRepositoryTests : BaseTest
     public async Task DeleteCacheDataAsync_RemoveOlderEntries_KeepNewerOnes()
     {
         // ARRANGE
-        var baseDate = new LocalDate(2023, 1, 1).AtStartOfDayInZone(DateTimeZone.Utc);
+        ZonedDateTime baseDate = new LocalDate(2023, 1, 1).AtStartOfDayInZone(DateTimeZone.Utc);
         ZonedDateTime oldDate = baseDate.Minus(Duration.FromDays(5));
         ZonedDateTime newDate = baseDate.Plus(Duration.FromDays(1));
 
@@ -117,18 +117,46 @@ public class MuwaqqitRepositoryTests : BaseTest
         {
             Date = oldDate.Date,
             TimeZone = DateTimeZone.Utc,
-            Latitude = 1, Longitude = 1, FajrDegree = 1, IshaDegree = 1, IshtibakDegree = 1, AsrKarahaDegree = 1,
-            Fajr = oldDate.ToInstant(), NextFajr = oldDate.ToInstant(), Shuruq = oldDate.ToInstant(), Duha = oldDate.ToInstant(), Dhuhr = oldDate.ToInstant(), Asr = oldDate.ToInstant(),
-            AsrMithlayn = oldDate.ToInstant(), AsrKaraha = oldDate.ToInstant(), Maghrib = oldDate.ToInstant(), Ishtibak = oldDate.ToInstant(), Isha = oldDate.ToInstant(),
+            Latitude = 1,
+            Longitude = 1,
+            FajrDegree = 1,
+            IshaDegree = 1,
+            IshtibakDegree = 1,
+            AsrKarahaDegree = 1,
+            Fajr = oldDate.ToInstant(),
+            NextFajr = oldDate.ToInstant(),
+            Shuruq = oldDate.ToInstant(),
+            Duha = oldDate.ToInstant(),
+            Dhuhr = oldDate.ToInstant(),
+            Asr = oldDate.ToInstant(),
+            AsrMithlayn = oldDate.ToInstant(),
+            AsrKaraha = oldDate.ToInstant(),
+            Maghrib = oldDate.ToInstant(),
+            Ishtibak = oldDate.ToInstant(),
+            Isha = oldDate.ToInstant(),
             QiblaTime = oldDate.ToInstant(),
         };
         var newTime = new MuwaqqitDailyPrayerTimes
         {
             Date = newDate.Date,
             TimeZone = DateTimeZone.Utc,
-            Latitude = 1, Longitude = 1, FajrDegree = 1, IshaDegree = 1, IshtibakDegree = 1, AsrKarahaDegree = 1,
-            Fajr = newDate.ToInstant(), NextFajr = newDate.ToInstant(), Shuruq = newDate.ToInstant(), Duha = newDate.ToInstant(), Dhuhr = newDate.ToInstant(), Asr = newDate.ToInstant(),
-            AsrMithlayn = newDate.ToInstant(), AsrKaraha = newDate.ToInstant(), Maghrib = newDate.ToInstant(), Ishtibak = newDate.ToInstant(), Isha = newDate.ToInstant(),
+            Latitude = 1,
+            Longitude = 1,
+            FajrDegree = 1,
+            IshaDegree = 1,
+            IshtibakDegree = 1,
+            AsrKarahaDegree = 1,
+            Fajr = newDate.ToInstant(),
+            NextFajr = newDate.ToInstant(),
+            Shuruq = newDate.ToInstant(),
+            Duha = newDate.ToInstant(),
+            Dhuhr = newDate.ToInstant(),
+            Asr = newDate.ToInstant(),
+            AsrMithlayn = newDate.ToInstant(),
+            AsrKaraha = newDate.ToInstant(),
+            Maghrib = newDate.ToInstant(),
+            Ishtibak = newDate.ToInstant(),
+            Isha = newDate.ToInstant(),
             QiblaTime = newDate.ToInstant(),
         };
 
@@ -146,8 +174,8 @@ public class MuwaqqitRepositoryTests : BaseTest
         (await TestAssertDbContext.MuwaqqitPrayerTimes.FindAsync(newTime.ID)).Should().NotBeNull();
     }
 
-    private static Instant instant(int year, int month, int day, int hour, int minute, int second)
+    private static Instant Instant(int year, int month, int day, int hour, int minute, int second)
     {
-        return Instant.FromUtc(year, month, day, hour, minute, second);
+        return NodaTime.Instant.FromUtc(year, month, day, hour, minute, second);
     }
 }

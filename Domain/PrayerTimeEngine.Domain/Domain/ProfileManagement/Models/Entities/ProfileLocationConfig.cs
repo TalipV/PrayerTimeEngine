@@ -1,4 +1,4 @@
-﻿using NodaTime;
+using NodaTime;
 using PrayerTimeEngine.Core.Data.EntityFramework;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Models;
@@ -19,7 +19,9 @@ public class ProfileLocationConfig : IEntity
     public override bool Equals(object obj)
     {
         if (obj is not ProfileLocationConfig otherLocationConfig)
+        {
             return false;
+        }
 
         return ID == otherLocationConfig.ID
             && ProfileID == otherLocationConfig.ProfileID

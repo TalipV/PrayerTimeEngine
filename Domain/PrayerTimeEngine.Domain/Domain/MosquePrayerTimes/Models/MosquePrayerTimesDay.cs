@@ -1,4 +1,4 @@
-﻿using NodaTime;
+using NodaTime;
 using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Domain.Models;
 
@@ -35,7 +35,9 @@ public class MosquePrayerTimesDay : IPrayerTimesDay
     public override bool Equals(object obj)
     {
         if (obj is not MosquePrayerTimesDay otherMosquePrayerTimesSet)
+        {
             return false;
+        }
 
         return Equals(Fajr, otherMosquePrayerTimesSet.Fajr)
             && Equals(Dhuhr, otherMosquePrayerTimesSet.Dhuhr)

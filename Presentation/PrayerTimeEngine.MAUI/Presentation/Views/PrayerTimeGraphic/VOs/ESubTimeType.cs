@@ -1,4 +1,4 @@
-﻿namespace PrayerTimeEngine.Presentation.Views.PrayerTimeGraphic.VOs;
+namespace PrayerTimeEngine.Presentation.Views.PrayerTimeGraphic.VOs;
 
 public enum ESubTimeType
 {

@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using NodaTime;
 using NSubstitute;
 using NSubstitute.ReceivedExtensions;
@@ -103,7 +103,7 @@ public class SemerkandDynamicPrayerTimeProviderTests : BaseTest
         ZonedDateTime zonedDateTime = date.AtStartOfDayInZone(dateTimeZone);
         ZonedDateTime nextFajrZonedDateTime = nextFajrDate.AtStartOfDayInZone(dateTimeZone);
 
-        var shuruqZonedDateTime1 = zonedDateTime.PlusHours(7);
+        ZonedDateTime shuruqZonedDateTime1 = zonedDateTime.PlusHours(7);
         var semerkandPrayerTimesDTO1 = new SemerkandPrayerTimesResponseDTO
         {
             DayOfYear = zonedDateTime.DayOfYear,
@@ -151,7 +151,7 @@ public class SemerkandDynamicPrayerTimeProviderTests : BaseTest
             ];
 
         // ACT
-        var calculationResult = await _semerkandDynamicPrayerTimeProvider.GetPrayerTimesAsync(zonedDateTime, locationData, configurations, default);
+        List<(ETimeType TimeType, ZonedDateTime ZonedDateTime)> calculationResult = await _semerkandDynamicPrayerTimeProvider.GetPrayerTimesAsync(zonedDateTime, locationData, configurations, default);
 
         // ASSERT
         calculationResult.Should().NotBeNull().And.HaveCount(1);
@@ -185,7 +185,7 @@ public class SemerkandDynamicPrayerTimeProviderTests : BaseTest
         ZonedDateTime zonedDateTime = date.AtStartOfDayInZone(dateTimeZone);
         ZonedDateTime nextFajrZonedDateTime = nextFajrDate.AtStartOfDayInZone(dateTimeZone);
 
-        var shuruqZonedDateTime1 = zonedDateTime.PlusHours(7);
+        ZonedDateTime shuruqZonedDateTime1 = zonedDateTime.PlusHours(7);
         var semerkandPrayerTimesDTO1 = new SemerkandPrayerTimesResponseDTO
         {
             DayOfYear = zonedDateTime.DayOfYear,
@@ -230,7 +230,7 @@ public class SemerkandDynamicPrayerTimeProviderTests : BaseTest
             ];
 
         // ACT
-        var calculationResult = await _semerkandDynamicPrayerTimeProvider.GetPrayerTimesAsync(zonedDateTime, locationData, configurations, default);
+        List<(ETimeType TimeType, ZonedDateTime ZonedDateTime)> calculationResult = await _semerkandDynamicPrayerTimeProvider.GetPrayerTimesAsync(zonedDateTime, locationData, configurations, default);
 
         // ASSERT
         calculationResult.Should().NotBeNull().And.HaveCount(1);

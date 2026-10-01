@@ -1,4 +1,4 @@
-﻿using NodaTime;
+using NodaTime;
 
 namespace PrayerTimeEngine.Core.Domain.Models;
 
@@ -12,10 +12,12 @@ public class GenericPrayerTime
     public override bool Equals(object obj)
     {
         if (obj is not GenericPrayerTime otherTime)
+        {
             return false;
+        }
 
-        return this.Start == otherTime.Start
-            && this.End == otherTime.End;
+        return Start == otherTime.Start
+            && End == otherTime.End;
     }
 
     public override int GetHashCode()

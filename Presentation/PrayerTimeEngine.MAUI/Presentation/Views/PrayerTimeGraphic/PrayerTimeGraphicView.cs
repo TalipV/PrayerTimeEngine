@@ -1,4 +1,4 @@
-﻿using NodaTime;
+using NodaTime;
 using PrayerTimeEngine.Core.Common;
 using PrayerTimeEngine.Presentation.Views.PrayerTimeGraphic.VOs;
 
@@ -8,22 +8,24 @@ public class PrayerTimeGraphicView(
         ISystemInfoService systemInfoService
     ) : IDrawable
 {
-    private readonly Color PrayerTimeColor = AppColors.GraphicSurface;
+    private readonly Color _prayerTimeColor = AppColors.GraphicSurface;
 
-    private readonly Color PrayerMainTextColor = AppColors.Text;
-    private readonly Color CurrentTimeTextColor = AppColors.CurrentTime;
+    private readonly Color _prayerMainTextColor = AppColors.Text;
+    private readonly Color _currentTimeTextColor = AppColors.CurrentTime;
 
-    private readonly Color PrayerSubTimeBorderColor = AppColors.Text;
-    private readonly Color PrayerSubTimeTextColor = AppColors.Text;
+    private readonly Color _prayerSubTimeBorderColor = AppColors.Text;
+    private readonly Color _prayerSubTimeTextColor = AppColors.Text;
 
     public PrayerTimeGraphicTimeVO PrayerTimeGraphicTime { get; set; }
 
     public void Draw(ICanvas canvas, RectF fullRectangle)
     {
         if (PrayerTimeGraphicTime is null)
+        {
             return;
+        }
 
-        canvas.FillColor = PrayerTimeColor;
+        canvas.FillColor = _prayerTimeColor;
         var mainGraphicRectangle =
             new RectF(
                 x: 40,
@@ -36,7 +38,7 @@ public class PrayerTimeGraphicView(
 
         foreach (PrayerTimeGraphicSubTimeVO timeVO in PrayerTimeGraphicTime.SubTimeVOs)
         {
-            drawSubTime(
+            DrawSubTime(
                 canvas,
                 mainGraphicRectangle,
                 timeVO.Name,
@@ -46,11 +48,11 @@ public class PrayerTimeGraphicView(
             );
         }
 
-        drawPrayerTimeTexts(canvas, fullRectangle);
-        drawCurrentTimeIndicator(canvas, mainGraphicRectangle);
+        DrawPrayerTimeTexts(canvas, fullRectangle);
+        DrawCurrentTimeIndicator(canvas, mainGraphicRectangle);
     }
 
-    private void drawCurrentTimeIndicator(ICanvas canvas, RectF baseRectangle)
+    private void DrawCurrentTimeIndicator(ICanvas canvas, RectF baseRectangle)
     {
         ZonedDateTime currentZonedDateTime = systemInfoService.GetCurrentZonedDateTime();
 
@@ -61,7 +63,7 @@ public class PrayerTimeGraphicView(
             return;
         }
 
-        float relativePos = getRelativeDepthByInstant(currentZonedDateTime.ToInstant(), baseRectangle);
+        float relativePos = GetRelativeDepthByInstant(currentZonedDateTime.ToInstant(), baseRectangle);
 
         var indicatorRectangle =
             new RectF(
@@ -70,8 +72,8 @@ public class PrayerTimeGraphicView(
                 width: baseRectangle.Width,
                 height: 2);
 
-        canvas.FillColor = CurrentTimeTextColor;
-        canvas.FontColor = CurrentTimeTextColor;
+        canvas.FillColor = _currentTimeTextColor;
+        canvas.FontColor = _currentTimeTextColor;
         canvas.FillRectangle(indicatorRectangle);
 
         // CURRENT TIME TEXT
@@ -84,7 +86,7 @@ public class PrayerTimeGraphicView(
             HorizontalAlignment.Center, VerticalAlignment.Center);
     }
 
-    private float getRelativeDepthByInstant(Instant dateTime, RectF rectangle)
+    private float GetRelativeDepthByInstant(Instant dateTime, RectF rectangle)
     {
         if (dateTime <= PrayerTimeGraphicTime.Start.ToInstant())
         {
@@ -99,15 +101,15 @@ public class PrayerTimeGraphicView(
         return Math.Max(rectangle.Height * percentageOfDuration, 0);
     }
 
-    private void drawPrayerTimeTexts(ICanvas canvas, RectF dirtyRect)
+    private void DrawPrayerTimeTexts(ICanvas canvas, RectF dirtyRect)
     {
-        canvas.FontColor = PrayerMainTextColor;
+        canvas.FontColor = _prayerMainTextColor;
         canvas.FontSize = 20f;
 
         // PRAYER NAME TEXT
         canvas.DrawString(
             PrayerTimeGraphicTime.Title,
-            x: dirtyRect.Width / 2 - 40,
+            x: (dirtyRect.Width / 2) - 40,
             y: 15,
             width: 90,
             height: 30,
@@ -134,7 +136,7 @@ public class PrayerTimeGraphicView(
             HorizontalAlignment.Center, VerticalAlignment.Center);
     }
 
-    private void drawSubTime(
+    private void DrawSubTime(
         ICanvas canvas, RectF innerBackgroundRectangle, string name,
         Instant startDateTime, Instant endDateTime,
         ESubTimeType type)
@@ -142,7 +144,7 @@ public class PrayerTimeGraphicView(
         float leftPos;
         float width;
 
-        float regularWidth = innerBackgroundRectangle.Right - innerBackgroundRectangle.Width / 2.0F;
+        float regularWidth = innerBackgroundRectangle.Right - (innerBackgroundRectangle.Width / 2.0F);
 
         switch (type)
         {
@@ -151,19 +153,19 @@ public class PrayerTimeGraphicView(
                 width = innerBackgroundRectangle.Right - leftPos;
                 break;
             case ESubTimeType.RightHalf:
-                leftPos = innerBackgroundRectangle.Width / 2.0f + regularWidth / 2.0f;
+                leftPos = (innerBackgroundRectangle.Width / 2.0f) + (regularWidth / 2.0f);
                 width = innerBackgroundRectangle.Right - leftPos;
                 break;
             case ESubTimeType.LeftHalf:
                 leftPos = innerBackgroundRectangle.Width / 2.0f;
-                width = innerBackgroundRectangle.Right - regularWidth / 2.0f - leftPos;
+                width = innerBackgroundRectangle.Right - (regularWidth / 2.0f) - leftPos;
                 break;
             default:
                 throw new NotImplementedException($"{type} was not implemented!");
         }
 
-        float topPos = innerBackgroundRectangle.Top + getRelativeDepthByInstant(startDateTime, innerBackgroundRectangle);
-        float height = getRelativeDepthByInstant(endDateTime, innerBackgroundRectangle) - getRelativeDepthByInstant(startDateTime, innerBackgroundRectangle);
+        float topPos = innerBackgroundRectangle.Top + GetRelativeDepthByInstant(startDateTime, innerBackgroundRectangle);
+        float height = GetRelativeDepthByInstant(endDateTime, innerBackgroundRectangle) - GetRelativeDepthByInstant(startDateTime, innerBackgroundRectangle);
 
         var innerSubtimeBackgroundRectangle =
             new RectF(
@@ -175,12 +177,12 @@ public class PrayerTimeGraphicView(
 
         if (innerSubtimeBackgroundRectangle.Height > 0)
         {
-            canvas.FillColor = canvas.FontColor = canvas.StrokeColor = PrayerSubTimeBorderColor;
+            canvas.FillColor = canvas.FontColor = canvas.StrokeColor = _prayerSubTimeBorderColor;
             canvas.DrawRectangle(innerSubtimeBackgroundRectangle);
 
             if (innerSubtimeBackgroundRectangle.Height > 10)
             {
-                canvas.FontColor = PrayerSubTimeTextColor;
+                canvas.FontColor = _prayerSubTimeTextColor;
 
                 canvas.DrawString(
                     name,

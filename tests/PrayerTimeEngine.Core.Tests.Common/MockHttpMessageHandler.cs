@@ -1,4 +1,4 @@
-﻿namespace PrayerTimeEngine.Core.Tests.Common;
+namespace PrayerTimeEngine.Core.Tests.Common;
 
 public class MockHttpMessageHandler(
         Func<HttpRequestMessage, HttpResponseMessage> handleRequestFunc = null

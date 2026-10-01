@@ -16,7 +16,7 @@ public class MawaqitMosquePrayerTimeProviderTests : BaseTest
         // ARRANGE
         var date = new LocalDate(2024, 8, 29);
 
-        ServiceProvider serviceProvider = createServiceProvider(
+        ServiceProvider serviceProvider = CreateServiceProvider(
             configureServiceCollection: serviceCollection =>
             {
                 serviceCollection.AddSingleton(GetHandledDbContextFactory());
@@ -28,7 +28,7 @@ public class MawaqitMosquePrayerTimeProviderTests : BaseTest
 
         string externalID = "hamza-koln";
         MawaqitMosquePrayerTimeProvider mawaqitMosquePrayerTimeProvider = serviceProvider.GetRequiredService<MawaqitMosquePrayerTimeProvider>();
-        
+
         // ACT
         IMosqueDailyPrayerTimes result = await mawaqitMosquePrayerTimeProvider.GetPrayerTimesAsync(date, externalID, default);
 

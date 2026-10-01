@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.Maui.Alerts;
+using CommunityToolkit.Maui.Alerts;
 using CommunityToolkit.Maui.Core;
 
 namespace PrayerTimeEngine.Presentation.Services;
@@ -7,37 +7,28 @@ public class ToastMessageService(IDispatcher dispatcher)
 {
     public void Show(string text)
     {
-        dispatcher.Dispatch(async () =>
-        {
-            await Toast.Make(
+        dispatcher.Dispatch(async () => await Toast.Make(
                     message: text,
                     duration: ToastDuration.Short,
                     textSize: 14)
-            .Show();
-        });
+            .Show());
     }
 
     public void ShowWarning(string text)
     {
-        dispatcher.Dispatch(async () =>
-        {
-            await Toast.Make(
+        dispatcher.Dispatch(async () => await Toast.Make(
                     message: $"WARNING: {text}",
                     duration: ToastDuration.Short,
                     textSize: 14)
-            .Show();
-        });
+            .Show());
     }
 
     public void ShowError(string text)
     {
-        dispatcher.Dispatch(async () =>
-        {
-            await Toast.Make(
+        dispatcher.Dispatch(async () => await Toast.Make(
                     message: $"ERROR: {text}",
                     duration: ToastDuration.Short,
                     textSize: 14)
-            .Show();
-        });
+            .Show());
     }
 }

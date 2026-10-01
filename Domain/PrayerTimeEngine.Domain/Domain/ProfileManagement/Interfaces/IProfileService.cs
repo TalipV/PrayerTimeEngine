@@ -1,4 +1,4 @@
-﻿using NodaTime;
+using NodaTime;
 using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Models;
@@ -10,21 +10,21 @@ namespace PrayerTimeEngine.Core.Domain.ProfileManagement.Interfaces;
 
 public interface IProfileService
 {
-    public Task<List<Profile>> GetProfiles(CancellationToken cancellationToken);
+    Task<List<Profile>> GetProfiles(CancellationToken cancellationToken);
     Task<Profile> GetUntrackedReferenceOfProfile(int profileID, CancellationToken cancellationToken);
 
-    public Task SaveProfile(Profile profile, CancellationToken cancellationToken);
+    Task SaveProfile(Profile profile, CancellationToken cancellationToken);
     Task DeleteProfile(Profile profile, CancellationToken cancellationToken);
     Task<Profile> CopyProfile(Profile profile, CancellationToken cancellationToken);
 
-    public GenericSettingConfiguration GetTimeConfig(DynamicProfile profile, ETimeType timeType);
-    public BaseLocationData GetLocationConfig(DynamicProfile profile, EDynamicPrayerTimeProviderType dynamicPrayerTimeProviderType);
+    GenericSettingConfiguration GetTimeConfig(DynamicProfile profile, ETimeType timeType);
+    BaseLocationData GetLocationConfig(DynamicProfile profile, EDynamicPrayerTimeProviderType dynamicPrayerTimeProviderType);
 
-    public Task UpdateLocationConfig(DynamicProfile profile, ProfilePlaceInfo placeInfo, CancellationToken cancellationToken);
-    public Task UpdateTimeConfig(DynamicProfile profile, ETimeType timeType, GenericSettingConfiguration settings, CancellationToken cancellationToken);
+    Task UpdateLocationConfig(DynamicProfile profile, ProfilePlaceInfo placeInfo, CancellationToken cancellationToken);
+    Task UpdateTimeConfig(DynamicProfile profile, ETimeType timeType, GenericSettingConfiguration settings, CancellationToken cancellationToken);
 
-    public string GetLocationDataDisplayText(DynamicProfile profile);
-    public string GetPrayerTimeConfigDisplayText(DynamicProfile profile);
+    string GetLocationDataDisplayText(DynamicProfile profile);
+    string GetPrayerTimeConfigDisplayText(DynamicProfile profile);
 
     List<GenericSettingConfiguration> GetActiveComplexTimeConfigs(DynamicProfile profile);
     Task<MosqueProfile> CreateNewMosqueProfile(EMosquePrayerTimeProviderType selectedItem, string externalID, CancellationToken cancellationToken);

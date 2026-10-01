@@ -46,9 +46,9 @@ internal static class PrayerTimeProgressBarRenderer
     /// <summary>
     /// Text colour of the labels, chosen for the notification background of the current theme.
     /// </summary>
-    private static Color getLabelColor()
+    private static Color GetLabelColor()
     {
-        Configuration configuration = getAndroidContextResources().Configuration
+        Configuration configuration = GetAndroidContextResources().Configuration
             ?? throw new Exception("Failed to retrieve Android resource configuration");
 
         UiMode uiMode = configuration.UiMode
@@ -79,7 +79,7 @@ internal static class PrayerTimeProgressBarRenderer
         string? endSubText = null,
         bool drawAsConnector = false)
     {
-        DisplayMetrics displayMetrics = getAndroidContextResources().DisplayMetrics
+        DisplayMetrics displayMetrics = GetAndroidContextResources().DisplayMetrics
             ?? throw new Exception("Failed to retrieve Android resource display metrics");
 
         // drawn at roughly the width it will be shown at, so the labels are not scaled sideways
@@ -89,7 +89,7 @@ internal static class PrayerTimeProgressBarRenderer
         float barHeight = BAR_HEIGHT_DP * density;
         float segmentGap = SEGMENT_GAP_DP * density;
 
-        Paint paint = new Paint { AntiAlias = true, TextSize = LABEL_TEXT_SIZE_DP * density };
+        var paint = new Paint { AntiAlias = true, TextSize = LABEL_TEXT_SIZE_DP * density };
 
         // a line of text reaches above and below its baseline, and the part below is what holds the
         // descenders of a "y" or a "g". Sizing rows by the font size alone would cut those off.
@@ -102,30 +102,32 @@ internal static class PrayerTimeProgressBarRenderer
         float barAreaHeight = drawAsConnector
             ? Math.Max(CONNECTOR_STROKE_DP, 2f * CONNECTOR_MARKER_RADIUS_DP) * density
             : barHeight;
-        float rowHeight = barAreaHeight + LABEL_GAP_DP * density + textHeight;
+        float rowHeight = barAreaHeight + (LABEL_GAP_DP * density) + textHeight;
 
         bool hasSubTexts = !string.IsNullOrEmpty(startSubText) || !string.IsNullOrEmpty(endSubText);
-        float subRowHeight = hasSubTexts ? SUB_ROW_GAP_DP * density + textHeight : 0f;
+        float subRowHeight = hasSubTexts ? (SUB_ROW_GAP_DP * density) + textHeight : 0f;
 
         float totalHeight = rowHeight + subRowHeight;
 
-        Bitmap bitmap = Bitmap.CreateBitmap(bitmapWidth, (int)Math.Ceiling(totalHeight), Bitmap.Config.Argb8888);
+        var bitmap = Bitmap.CreateBitmap(bitmapWidth, (int)Math.Ceiling(totalHeight), Bitmap.Config.Argb8888);
 
-        Canvas canvas = new Canvas(bitmap);
+        var canvas = new Canvas(bitmap);
 
-        Color accentColor = new Color(AppColors.AccentArgb);
-        Color trackColor = Color.Argb(TRACK_ALPHA, accentColor.R, accentColor.G, accentColor.B);
+        var accentColor = new Color(AppColors.AccentArgb);
+        var trackColor = Color.Argb(TRACK_ALPHA, accentColor.R, accentColor.G, accentColor.B);
 
         float baselineY = rowHeight - textDescent;
 
         List<float> boundaryPositions = drawAsConnector
-            ? drawConnector(canvas, paint, elapsedPercent, barAreaHeight, bitmapWidth, density, accentColor, trackColor)
-            : drawBar(canvas, paint, segmentLengths, elapsedPercent, barHeight, bitmapWidth, segmentGap, accentColor, trackColor);
+            ? DrawConnector(canvas, paint, elapsedPercent, barAreaHeight, bitmapWidth, density, accentColor, trackColor)
+            : DrawBar(canvas, paint, segmentLengths, elapsedPercent, barHeight, bitmapWidth, segmentGap, accentColor, trackColor);
 
-        drawTexts(canvas, paint, labels, boundaryPositions, bitmapWidth, baselineY, density, startText, endText);
+        DrawTexts(canvas, paint, labels, boundaryPositions, bitmapWidth, baselineY, density, startText, endText);
 
         if (hasSubTexts)
-            drawSubTexts(canvas, paint, bitmapWidth, baselineY + subRowHeight, startSubText, endSubText);
+        {
+            DrawSubTexts(canvas, paint, bitmapWidth, baselineY + subRowHeight, startSubText, endSubText);
+        }
 
         return bitmap;
     }
@@ -135,7 +137,7 @@ internal static class PrayerTimeProgressBarRenderer
     /// solid bar of a running prayer time.
     /// </summary>
     /// <returns>No transitions to label, a wait is not divided into anything.</returns>
-    private static List<float> drawConnector(
+    private static List<float> DrawConnector(
         Canvas canvas,
         Paint paint,
         int elapsedPercent,
@@ -150,8 +152,8 @@ internal static class PrayerTimeProgressBarRenderer
 
         // the round caps would stick out over the edges of the bitmap otherwise
         float lineStart = strokeWidth / 2f;
-        float lineEnd = bitmapWidth - strokeWidth / 2f;
-        float progressX = lineStart + (lineEnd - lineStart) * elapsedPercent / 100f;
+        float lineEnd = bitmapWidth - (strokeWidth / 2f);
+        float progressX = lineStart + ((lineEnd - lineStart) * elapsedPercent / 100f);
 
         paint.SetStyle(Paint.Style.Stroke);
         paint.StrokeWidth = strokeWidth;
@@ -164,7 +166,9 @@ internal static class PrayerTimeProgressBarRenderer
         paint.Color = accentColor;
 
         if (progressX > lineStart)
+        {
             canvas.DrawLine(lineStart, centerY, progressX, centerY, paint);
+        }
 
         paint.SetPathEffect(null);
         paint.SetStyle(Paint.Style.Fill);
@@ -177,7 +181,7 @@ internal static class PrayerTimeProgressBarRenderer
     /// <summary>
     /// Second line underneath the two times, for whatever belongs directly to them.
     /// </summary>
-    private static void drawSubTexts(
+    private static void DrawSubTexts(
         Canvas canvas,
         Paint paint,
         int bitmapWidth,
@@ -201,7 +205,7 @@ internal static class PrayerTimeProgressBarRenderer
     /// <returns>
     /// The x position of every transition between two sections, for the labels below.
     /// </returns>
-    private static List<float> drawBar(
+    private static List<float> DrawBar(
         Canvas canvas,
         Paint paint,
         int[] segmentLengths,
@@ -213,9 +217,9 @@ internal static class PrayerTimeProgressBarRenderer
         Color trackColor)
     {
         float radius = barHeight / 2f;
-        float usableWidth = bitmapWidth - segmentGap * Math.Max(0, segmentLengths.Length - 1);
+        float usableWidth = bitmapWidth - (segmentGap * Math.Max(0, segmentLengths.Length - 1));
 
-        List<float> boundaryPositions = new List<float>();
+        List<float> boundaryPositions = [];
         float left = 0f;
         int consumedPercent = 0;
 
@@ -234,20 +238,20 @@ internal static class PrayerTimeProgressBarRenderer
             if (filledRatio > 0f)
             {
                 paint.Color = accentColor;
-                canvas.DrawRoundRect(left, 0f, left + segmentWidth * filledRatio, barHeight, radius, radius, paint);
+                canvas.DrawRoundRect(left, 0f, left + (segmentWidth * filledRatio), barHeight, radius, radius, paint);
             }
 
             consumedPercent += segmentLength;
             left += segmentWidth;
 
-            boundaryPositions.Add(left + segmentGap / 2f);
+            boundaryPositions.Add(left + (segmentGap / 2f));
             left += segmentGap;
         }
 
         return boundaryPositions;
     }
 
-    private static void drawTexts(
+    private static void DrawTexts(
         Canvas canvas,
         Paint paint,
         string[] labels,
@@ -258,7 +262,7 @@ internal static class PrayerTimeProgressBarRenderer
         string startText,
         string endText)
     {
-        paint.Color = getLabelColor();
+        paint.Color = GetLabelColor();
         paint.TextAlign = Paint.Align.Center;
 
         // bars above the bottom one leave the times out, the room goes to their own labels instead
@@ -294,13 +298,15 @@ internal static class PrayerTimeProgressBarRenderer
 
             // no room left between the start and end time, so the label would only overlap them
             if (minX > maxX)
+            {
                 continue;
+            }
 
             canvas.DrawText(label, Math.Clamp(boundaryPositions[i], minX, maxX), baselineY, paint);
         }
     }
 
-    private static Resources getAndroidContextResources()
+    private static Resources GetAndroidContextResources()
     {
         return global::Android.App.Application.Context.Resources
             ?? throw new Exception("Failed to retrieve Android context resources");

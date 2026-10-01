@@ -1,4 +1,4 @@
-﻿using NodaTime;
+using NodaTime;
 using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Domain.Models;
 
@@ -18,11 +18,10 @@ public class DynamicPrayerTimesDaySet : IPrayerTimesDay
         {
             // Sorting?
             // Not creating a new list each time?
-            return this.PreviousDay.AllPrayerTimes
-                .Concat(this.CurrentDay.AllPrayerTimes)
-                .Concat(this.NextDay.AllPrayerTimes)
-                .Select(x => (Section: x.Item1, Times: x.Item2))
-                .ToList();
+            return [.. PreviousDay.AllPrayerTimes
+                .Concat(CurrentDay.AllPrayerTimes)
+                .Concat(NextDay.AllPrayerTimes)
+                .Select(x => (x.Section, x.Times))];
         }
     }
 
@@ -31,9 +30,11 @@ public class DynamicPrayerTimesDaySet : IPrayerTimesDay
     public override bool Equals(object obj)
     {
         if (obj is not DynamicPrayerTimesDaySet otherDynamicPrayerTimesSet)
+        {
             return false;
+        }
 
-        return this.Equals(otherDynamicPrayerTimesSet.CurrentDay)
+        return Equals(otherDynamicPrayerTimesSet.CurrentDay)
             && Equals(PreviousDay, otherDynamicPrayerTimesSet.PreviousDay)
             && Equals(NextDay, otherDynamicPrayerTimesSet.NextDay);
     }

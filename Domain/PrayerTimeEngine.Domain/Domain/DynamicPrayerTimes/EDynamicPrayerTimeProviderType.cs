@@ -1,4 +1,4 @@
-﻿namespace PrayerTimeEngine.Core.Domain.DynamicPrayerTimes;
+namespace PrayerTimeEngine.Core.Domain.DynamicPrayerTimes;
 
 public enum EDynamicPrayerTimeProviderType
 {

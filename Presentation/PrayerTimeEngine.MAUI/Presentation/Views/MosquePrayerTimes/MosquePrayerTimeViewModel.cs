@@ -1,4 +1,4 @@
-﻿using NodaTime;
+using NodaTime;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Management;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Models;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;

@@ -1,6 +1,6 @@
-﻿using CommunityToolkit.Maui.Markup;
-using CommunityToolkit.Maui.Views;
 using System.Collections.ObjectModel;
+using CommunityToolkit.Maui.Markup;
+using CommunityToolkit.Maui.Views;
 using static CommunityToolkit.Maui.Markup.GridRowsColumns;
 
 namespace PrayerTimeEngine.Presentation.Popups;
@@ -24,7 +24,7 @@ public sealed partial class MultiSelectPopup : Popup<List<MultiSelectOption>>
         Content = BuildContent();
     }
 
-    VerticalStackLayout BuildContent() =>
+    private VerticalStackLayout BuildContent() =>
         new()
         {
             HorizontalOptions = LayoutOptions.Center,
@@ -51,12 +51,12 @@ public sealed partial class MultiSelectPopup : Popup<List<MultiSelectOption>>
                                 Padding = new Thickness(0, 4)
                             };
 
-                            var checkBox = new CheckBox()
+                            CheckBox checkBox = new CheckBox()
                                 .Bind(CheckBox.IsCheckedProperty, nameof(MultiSelectOption.IsSelected))
                                 .CenterVertical()
                                 .Column(0);
 
-                            var label = new Label()
+                            Label label = new Label()
                                 .Bind(Label.TextProperty, nameof(MultiSelectOption.Text))
                                 .TextColor(Colors.Black)
                                 .LineBreakMode(LineBreakMode.WordWrap)
@@ -91,14 +91,14 @@ public sealed partial class MultiSelectPopup : Popup<List<MultiSelectOption>>
             }
         };
 
-    async void OnCancelClicked(object sender, EventArgs e)
+    private async void OnCancelClicked(object sender, EventArgs e)
     {
         await CloseAsync([]);
     }
 
-    async void OnOkClicked(object sender, EventArgs e)
+    private async void OnOkClicked(object sender, EventArgs e)
     {
-        List<MultiSelectOption> selected = Options.Where(o => o.IsSelected).ToList();
+        var selected = Options.Where(o => o.IsSelected).ToList();
         await CloseAsync(selected);
     }
 }

@@ -1,8 +1,9 @@
-﻿using BruTile.Cache;
+using BruTile.Cache;
 using BruTile.Predefined;
 using ExCSS;
 using Mapsui;
 using Mapsui.Layers;
+using Mapsui.Nts;
 using Mapsui.Nts.Extensions;
 using Mapsui.Projections;
 using Mapsui.Styles;
@@ -15,42 +16,43 @@ using PrayerTimeEngine.Extensions;
 using PrayerTimeEngine.Presentation.Services;
 using Brush = Mapsui.Styles.Brush;
 using Color = Mapsui.Styles.Color;
-using Polygon = NetTopologySuite.Geometries.Polygon;
 using Location = Microsoft.Maui.Devices.Sensors.Location;
+using Polygon = NetTopologySuite.Geometries.Polygon;
 
 namespace PrayerTimeEngine.Presentation.Pages.QiblahFinder;
+
 public sealed partial class QiblahMapPage : ContentPage
 {
-    public static readonly MPoint KAABA_COORDINATES = toMercator(latitude: 21.422487, longitude: 39.826206);
+    public static readonly MPoint KAABA_COORDINATES = ToMercator(latitude: 21.422487, longitude: 39.826206);
 
     // OpenStreetMap's volunteer-run tile servers require a User-Agent that clearly identifies
     // the application, otherwise requests are blocked with HTTP 403 (see osm.wiki/Blocked and
     // https://operations.osmfoundation.org/policies/tiles/). Mapsui's default "user-agent-of-*"
     // value does not satisfy this, so we provide an explicit one with app name, version and a
     // contact URL.
-    private static readonly string OSM_USER_AGENT =
+    private static readonly string s_osM_USER_AGENT =
         $"PrayerTimeEngine/{AppInfo.Current.VersionString} (+https://github.com/TalipV/PrayerTimeEngine)";
 
     // The OSM tile usage policy requires tiles to be cached locally (min. 7 days) instead of
     // being re-downloaded for repeated views. Mapsui only keeps an in-memory cache by default,
     // which is lost on every app restart, so we provide a persistent one on disk.
     // DefaultCache is read by CreateTileLayer, hence it has to be set before that call.
-    private static readonly TimeSpan OSM_TILE_CACHE_DURATION = TimeSpan.FromDays(30);
+    private static readonly TimeSpan s_osM_TILE_CACHE_DURATION = TimeSpan.FromDays(30);
 
     static QiblahMapPage()
     {
         OpenStreetMap.DefaultCache ??= new FileCache(
             directory: Path.Combine(FileSystem.CacheDirectory, "osm-tiles"),
             format: "png",
-            cacheExpireTime: OSM_TILE_CACHE_DURATION);
+            cacheExpireTime: s_osM_TILE_CACHE_DURATION);
     }
 
-    private static int _isRefreshingLocation = 0;
+    private static int s_isRefreshingLocation = 0;
 
     private readonly ToastMessageService _toastMessageService;
     private readonly ILogger<QiblahMapPage> _logger;
 
-    private readonly MapControl _mapControl = new MapControl();
+    private readonly MapControl _mapControl = new();
     private readonly TileLayer _tileLayer;
     private readonly MemoryLayer _qiblahLineLayer;
     private readonly MemoryLayer _toleranceLayer;
@@ -61,19 +63,19 @@ public sealed partial class QiblahMapPage : ContentPage
         ToastMessageService toastMessageService,
         ILogger<QiblahMapPage> logger)
     {
-        this._toastMessageService = toastMessageService;
-        this._logger = logger;
+        _toastMessageService = toastMessageService;
+        _logger = logger;
 
-        this._mapControl.Map = new Mapsui.Map();
-        configureZoomLevel();
+        _mapControl.Map = new Mapsui.Map();
+        ConfigureZoomLevel();
 
-        this._tileLayer = OpenStreetMap.CreateTileLayer(OSM_USER_AGENT);
-        this._mapControl.Map.Layers.Add(_tileLayer);
+        _tileLayer = OpenStreetMap.CreateTileLayer(s_osM_USER_AGENT);
+        _mapControl.Map.Layers.Add(_tileLayer);
 
-        this._qiblahLineLayer = new MemoryLayer();
-        this._mapControl.Map.Layers.Add(_qiblahLineLayer);
+        _qiblahLineLayer = new MemoryLayer();
+        _mapControl.Map.Layers.Add(_qiblahLineLayer);
 
-        this._toleranceLayer = new MemoryLayer
+        _toleranceLayer = new MemoryLayer
         {
             Style = new VectorStyle
             {
@@ -82,7 +84,7 @@ public sealed partial class QiblahMapPage : ContentPage
                 Outline = null
             }
         };
-        this._mapControl.Map.Layers.Add(_toleranceLayer);
+        _mapControl.Map.Layers.Add(_toleranceLayer);
 
         var gpsButton = new ImageButton
         {
@@ -96,19 +98,19 @@ public sealed partial class QiblahMapPage : ContentPage
             VerticalOptions = LayoutOptions.Start,
             Margin = new Thickness(10)
         };
-        gpsButton.Clicked += locateButton_Clicked;
+        gpsButton.Clicked += LocateButton_Clicked;
 
         Content = new Grid
         {
             Children = { _mapControl, gpsButton }
         };
 
-        this._mapControl.MapTapped += this._mapControl_MapTapped;
+        _mapControl.MapTapped += MapControl_MapTapped;
     }
 
-    private async void locateButton_Clicked(object sender, EventArgs e)
+    private async void LocateButton_Clicked(object sender, EventArgs e)
     {
-        await locateAndShowCurrentPosition();
+        await LocateAndShowCurrentPosition();
     }
 
     /// <summary>
@@ -120,16 +122,18 @@ public sealed partial class QiblahMapPage : ContentPage
     /// what happened when the location service of the device was switched off
     /// (<see cref="FeatureNotEnabledException"/>).
     /// </remarks>
-    private async Task locateAndShowCurrentPosition()
+    private async Task LocateAndShowCurrentPosition()
     {
         try
         {
-            MPoint? point = await getCurrentLocation();
+            MPoint? point = await GetCurrentLocation();
             if (point is null)
+            {
                 return;
+            }
 
-            setCurrentPoint(point);
-            redrawCurrentPoint();
+            SetCurrentPoint(point);
+            RedrawCurrentPoint();
         }
         catch (Exception exception)
         {
@@ -138,7 +142,7 @@ public sealed partial class QiblahMapPage : ContentPage
         }
     }
 
-    private void configureZoomLevel()
+    private void ConfigureZoomLevel()
     {
         var schema = new GlobalSphericalMercator();
         var resolutions = schema.Resolutions.Select(r => r.Value.UnitsPerPixel).ToList();
@@ -151,29 +155,29 @@ public sealed partial class QiblahMapPage : ContentPage
         _mapControl.Map.Navigator.OverrideResolutions = resolutions;
     }
 
-    private void zoomToLocationWithCorrectRotation()
+    private void ZoomToLocationWithCorrectRotation()
     {
         MPoint userCoordinates = _currentPoint.Point;
         double angle = _currentPoint.QiblahAngle;
 
-        this._mapControl.Map.Navigator.CenterOn(userCoordinates);
+        _mapControl.Map.Navigator.CenterOn(userCoordinates);
 
         // Zoom index -> resolution (higher index = deeper zoom)
         int zoomLevel = 19;
-        double resolution = this._mapControl.Map.Navigator.OverrideResolutions[zoomLevel];
-        this._mapControl.Map.Navigator.ZoomTo(resolution);
-        this._mapControl.Map.Navigator.ZoomTo(0.1);
-        this._mapControl.Map.Navigator.RotateTo(angle);
+        double resolution = _mapControl.Map.Navigator.OverrideResolutions[zoomLevel];
+        _mapControl.Map.Navigator.ZoomTo(resolution);
+        _mapControl.Map.Navigator.ZoomTo(0.1);
+        _mapControl.Map.Navigator.RotateTo(angle);
     }
 
-    private void zoomChanged()
+    private void ZoomChanged()
     {
         if (_currentPoint.Point == null)
         {
             return;
         }
 
-        drawQiblahToleranceSector();
+        DrawQiblahToleranceSector();
     }
 
     protected override async void OnAppearing()
@@ -181,57 +185,59 @@ public sealed partial class QiblahMapPage : ContentPage
         base.OnAppearing();
 
         // subscribed here instead of in the constructor so that it is symmetrical to OnDisappearing
-        _mapControl.Map.Navigator.ViewportChanged -= navigator_ViewportChanged;
-        _mapControl.Map.Navigator.ViewportChanged += navigator_ViewportChanged;
+        _mapControl.Map.Navigator.ViewportChanged -= Navigator_ViewportChanged;
+        _mapControl.Map.Navigator.ViewportChanged += Navigator_ViewportChanged;
 
-        await locateAndShowCurrentPosition();
+        await LocateAndShowCurrentPosition();
     }
 
-    private void setCurrentPoint(MPoint newPoint)
+    private void SetCurrentPoint(MPoint newPoint)
     {
-        double angle = calculateScreenAngle(newPoint.ToCoordinate());
+        double angle = CalculateScreenAngle(newPoint.ToCoordinate());
         _currentPoint = (newPoint, angle);
     }
 
     protected override void OnDisappearing()
     {
-        _mapControl.Map.Navigator.ViewportChanged -= navigator_ViewportChanged;
+        _mapControl.Map.Navigator.ViewportChanged -= Navigator_ViewportChanged;
         base.OnDisappearing();
     }
 
-    private async void _mapControl_MapTapped(object sender, MapEventArgs e)
+    private async void MapControl_MapTapped(object sender, MapEventArgs e)
     {
-        setCurrentPoint(e.WorldPosition);
-        redrawCurrentPoint(jumpToPoint: false);
+        SetCurrentPoint(e.WorldPosition);
+        RedrawCurrentPoint(jumpToPoint: false);
     }
 
-    private void redrawCurrentPoint(bool jumpToPoint = true)
+    private void RedrawCurrentPoint(bool jumpToPoint = true)
     {
         if (_currentPoint.Point == null)
         {
             return;
         }
 
-        drawQiblahToleranceSector();
-        drawQiblahLine();
+        DrawQiblahToleranceSector();
+        DrawQiblahLine();
 
         if (jumpToPoint)
-            zoomToLocationWithCorrectRotation();
+        {
+            ZoomToLocationWithCorrectRotation();
+        }
     }
 
-    private void drawQiblahLine()
+    private void DrawQiblahLine()
     {
         var lineString = new LineString([_currentPoint.Point.ToCoordinate(), KAABA_COORDINATES.ToCoordinate()]);
-        var feature = lineString.ToFeature();
+        GeometryFeature feature = lineString.ToFeature();
         feature.Styles.Add(new VectorStyle
         {
-            Line = new Pen(Mapsui.Styles.Color.Yellow, 2)
+            Line = new Pen(Color.Yellow, 2)
         });
 
-        this._qiblahLineLayer.Features = [feature];
+        _qiblahLineLayer.Features = [feature];
     }
 
-    private void drawQiblahToleranceSector()
+    private void DrawQiblahToleranceSector()
     {
         double angle = _currentPoint.QiblahAngle;
         double startAngle = 360 - angle - 45;
@@ -240,7 +246,7 @@ public sealed partial class QiblahMapPage : ContentPage
         double resolution = _mapControl.Map.Navigator.Viewport.Resolution;
         double radiusMeters = resolution * 120;
 
-        _toleranceLayer.Features = createSectorOutline(
+        _toleranceLayer.Features = CreateSectorOutline(
                 center: _currentPoint.Point.ToCoordinate(),
                 radiusMeters: radiusMeters,
                 startAngleDeg: startAngle,
@@ -248,7 +254,7 @@ public sealed partial class QiblahMapPage : ContentPage
     }
 
     /// <returns>The current location or <c>null</c> if it could not be determined (the user has already been informed in that case).</returns>
-    private async Task<MPoint?> getCurrentLocation()
+    private async Task<MPoint?> GetCurrentLocation()
     {
         Location? location;
 
@@ -262,12 +268,12 @@ public sealed partial class QiblahMapPage : ContentPage
             }
             else if (location.Timestamp < DateTimeOffset.UtcNow.AddMinutes(-2))
             {
-                if (Interlocked.CompareExchange(ref _isRefreshingLocation, 1, 0) == 0)
+                if (Interlocked.CompareExchange(ref s_isRefreshingLocation, 1, 0) == 0)
                 {
                     // fire and forget: only warms up the last known location for the next call,
                     // a failure (e.g. location switched off in the meantime) is irrelevant
                     _ = Geolocation.GetLocationAsync(new GeolocationRequest(GeolocationAccuracy.Best))
-                        .ContinueWith(_ => Interlocked.Exchange(ref _isRefreshingLocation, 0));
+                        .ContinueWith(_ => Interlocked.Exchange(ref s_isRefreshingLocation, 0));
                 }
             }
         }
@@ -283,7 +289,9 @@ public sealed partial class QiblahMapPage : ContentPage
                 cancel: "Abbrechen");
 
             if (openSettings)
-                openLocationSettings();
+            {
+                OpenLocationSettings();
+            }
 
             return null;
         }
@@ -299,7 +307,9 @@ public sealed partial class QiblahMapPage : ContentPage
                 cancel: "Abbrechen");
 
             if (openSettings)
+            {
                 AppInfo.Current.ShowSettingsUI();
+            }
 
             return null;
         }
@@ -316,17 +326,17 @@ public sealed partial class QiblahMapPage : ContentPage
             return null;
         }
 
-        return toMercator(location.Latitude, location.Longitude);
+        return ToMercator(location.Latitude, location.Longitude);
     }
 
-    private void openLocationSettings()
+    private void OpenLocationSettings()
     {
         try
         {
 #if ANDROID
-            var intent = new global::Android.Content.Intent(global::Android.Provider.Settings.ActionLocationSourceSettings);
-            intent.AddFlags(global::Android.Content.ActivityFlags.NewTask);
-            global::Android.App.Application.Context.StartActivity(intent);
+            var intent = new Android.Content.Intent(Android.Provider.Settings.ActionLocationSourceSettings);
+            intent.AddFlags(Android.Content.ActivityFlags.NewTask);
+            Android.App.Application.Context.StartActivity(intent);
 #else
             AppInfo.Current.ShowSettingsUI();
 #endif
@@ -338,7 +348,7 @@ public sealed partial class QiblahMapPage : ContentPage
         }
     }
 
-    private static double calculateScreenAngle(Coordinate coordinates)
+    private static double CalculateScreenAngle(Coordinate coordinates)
     {
         double dx = KAABA_COORDINATES.X - coordinates.X;
         double dy = KAABA_COORDINATES.Y - coordinates.Y;
@@ -349,7 +359,7 @@ public sealed partial class QiblahMapPage : ContentPage
         return 360 - angleDegrees;
     }
 
-    private static List<Mapsui.IFeature> createSectorOutline(
+    private static List<IFeature> CreateSectorOutline(
         Coordinate center,
         double radiusMeters,
         double startAngleDeg,
@@ -362,18 +372,18 @@ public sealed partial class QiblahMapPage : ContentPage
                      .Select(i => startAngleDeg + (sweepDeg * i / segments)))
         {
             double radians = angle * Math.PI / 180.0;
-            double x = center.X + radiusMeters * Math.Sin(radians);
-            double y = center.Y + radiusMeters * Math.Cos(radians);
+            double x = center.X + (radiusMeters * Math.Sin(radians));
+            double y = center.Y + (radiusMeters * Math.Cos(radians));
 
             polygonPoints.Add(new Coordinate(x, y));
         }
 
         polygonPoints.Add(center); // close polygon
 
-        var linearRing = new LinearRing(polygonPoints.ToArray());
+        var linearRing = new LinearRing([.. polygonPoints]);
         var polygon = new Polygon(linearRing);
 
-        var feature = GeometryExtensions.ToFeature(polygon);
+        GeometryFeature feature = GeometryExtensions.ToFeature(polygon);
 
         feature.Styles.Add(new VectorStyle
         {
@@ -383,14 +393,14 @@ public sealed partial class QiblahMapPage : ContentPage
         return [feature];
     }
 
-    private static MPoint toMercator(double latitude, double longitude)
+    private static MPoint ToMercator(double latitude, double longitude)
     {
         (double x, double y) = SphericalMercator.FromLonLat(longitude, latitude);
         return new MPoint(x, y);
     }
 
-    private void navigator_ViewportChanged(object sender, ViewportChangedEventArgs e)
+    private void Navigator_ViewportChanged(object sender, ViewportChangedEventArgs e)
     {
-        zoomChanged();
+        ZoomChanged();
     }
 }

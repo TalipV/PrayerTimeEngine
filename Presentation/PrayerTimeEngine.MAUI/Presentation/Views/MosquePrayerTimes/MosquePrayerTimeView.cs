@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.Maui.Markup;
+using CommunityToolkit.Maui.Markup;
 using NodaTime;
 using PrayerTimeEngine.Core.Common;
 using PrayerTimeEngine.Core.Domain.Models;
@@ -14,19 +14,19 @@ public partial class MosquePrayerTimeView : ContentView
     public MosquePrayerTimeView(ISystemInfoService systemInfoService)
     {
         _systemInfoService = systemInfoService;
-        Content = createUI();
+        Content = CreateUI();
     }
 
-    private ScrollView createUI()
+    private ScrollView CreateUI()
     {
         // The rows are Auto so that the content determines its own height instead of being squeezed
         // into fixed proportions. Anything that doesn't fit on a small screen is reachable by scrolling.
-        var mainGrid = new Grid
+        Grid mainGrid = new Grid
         {
             RowSpacing = 2,
             RowDefinitions = Rows.Define(
-                Auto, Auto, Auto, Auto, Auto, 
-                Auto, Auto, Auto, Auto, Auto, 
+                Auto, Auto, Auto, Auto, Auto,
+                Auto, Auto, Auto, Auto, Auto,
                 Auto, Auto, Auto, Auto, Auto
             ),
             ColumnDefinitions = Columns.Define(
@@ -41,24 +41,24 @@ public partial class MosquePrayerTimeView : ContentView
 
         int startRowNo = 1;
 
-        addPrayerTimeUI(mainGrid, "Fajr", nameof(MosquePrayerTimesDay.Fajr),
+        AddPrayerTimeUI(mainGrid, "Fajr", nameof(MosquePrayerTimesDay.Fajr),
             startRowNo, startColumnNo: 0);
-        addPrayerTimeUI(mainGrid, "Jumu'ah", nameof(MosquePrayerTimesDay.Jumuah),
+        AddPrayerTimeUI(mainGrid, "Jumu'ah", nameof(MosquePrayerTimesDay.Jumuah),
             startRowNo, startColumnNo: 3,
             subtime1Name: "Jumuah2", subtime1Binding: $"{nameof(MosquePrayerTimesDay.Jumuah2)}.{nameof(GenericPrayerTime.Start)}");
-        addPrayerTimeUI(mainGrid, "Dhuhr", nameof(MosquePrayerTimesDay.Dhuhr),
+        AddPrayerTimeUI(mainGrid, "Dhuhr", nameof(MosquePrayerTimesDay.Dhuhr),
             startRowNo + 4, startColumnNo: 0);
-        addPrayerTimeUI(mainGrid, "Asr", nameof(MosquePrayerTimesDay.Asr),
+        AddPrayerTimeUI(mainGrid, "Asr", nameof(MosquePrayerTimesDay.Asr),
             startRowNo + 4, startColumnNo: 3);
-        addPrayerTimeUI(mainGrid, "Maghrib", nameof(MosquePrayerTimesDay.Maghrib),
+        AddPrayerTimeUI(mainGrid, "Maghrib", nameof(MosquePrayerTimesDay.Maghrib),
             startRowNo + 8, startColumnNo: 0);
-        addPrayerTimeUI(mainGrid, "Isha", nameof(MosquePrayerTimesDay.Isha),
+        AddPrayerTimeUI(mainGrid, "Isha", nameof(MosquePrayerTimesDay.Isha),
             startRowNo + 8, startColumnNo: 3);
 
         return new ScrollView { Content = mainGrid };
     }
 
-    private void addPrayerTimeUI(
+    private void AddPrayerTimeUI(
         Grid grid,
         string prayerName,
         string bindingText,
@@ -89,7 +89,9 @@ public partial class MosquePrayerTimeView : ContentView
             convert: (MosquePrayerTime prayerTime) =>
             {
                 if (prayerTime.Start == null)
+                {
                     return "xx:xx";
+                }
 
                 ZonedDateTime? prayerTimeStartDisplayValue = _systemInfoService.GetInCurrentZone(prayerTime.Start);
                 ZonedDateTime? prayerTimeEndDisplayValue = _systemInfoService.GetInCurrentZone(prayerTime.End);
@@ -137,12 +139,9 @@ public partial class MosquePrayerTimeView : ContentView
                 VerticalOptions = LayoutOptions.Center
             };
             subtime1DisplayText.Bind(
-                Label.TextProperty, 
+                Label.TextProperty,
                 $"{nameof(MosquePrayerTimeViewModel.PrayerTimesSet)}.{subtime1Binding}",
-                convert: (ZonedDateTime? subTime1) =>
-                {
-                    return _systemInfoService.GetInCurrentZone(subTime1);
-                },
+                convert: (ZonedDateTime? subTime1) => _systemInfoService.GetInCurrentZone(subTime1),
                 stringFormat: "{0:HH:mm:ss}");
 
             grid.AddWithSpan(subtime1Label, startRowNo + 2, startColumnNo);

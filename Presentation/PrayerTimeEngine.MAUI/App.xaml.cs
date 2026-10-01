@@ -1,4 +1,4 @@
-﻿using MetroLog.Maui;
+using MetroLog.Maui;
 using PrayerTimeEngine.Presentation;
 using PrayerTimeEngine.Presentation.Pages.Main;
 

@@ -1,40 +1,12 @@
-﻿using CommunityToolkit.Maui;
+using System.Text;
+using CommunityToolkit.Maui;
 using CommunityToolkit.Maui.Markup;
 using MetroLog.MicrosoftExtensions;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Plugin.Maui.DebugRainbows;
 using PrayerTimeEngine.Core.Application;
 using PrayerTimeEngine.Core.Common;
 using PrayerTimeEngine.Core.Infrastructure;
-using PrayerTimeEngine.Core.Data.EntityFramework;
-using PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels;
-using PrayerTimeEngine.Core.Data.WebSocket;
-using PrayerTimeEngine.Core.Data.WebSocket.Interfaces;
-using PrayerTimeEngine.Core.Domain;
-using PrayerTimeEngine.Core.Domain.Calculators.Mosques.Mawaqit.Services;
-using PrayerTimeEngine.Core.Domain.ConfigurationManagement;
-using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes;
-using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Management;
-using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Interfaces;
-using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Services;
-using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Muwaqqit.Interfaces;
-using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Muwaqqit.Services;
-using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Semerkand.Interfaces;
-using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Semerkand.Services;
-using PrayerTimeEngine.Core.Domain.IslamicCalendar.Interfaces;
-using PrayerTimeEngine.Core.Domain.IslamicCalendar.Services;
-using PrayerTimeEngine.Core.Domain.MosquePrayerTimes;
-using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Management;
-using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.Mawaqit.Interfaces;
-using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.Mawaqit.Services;
-using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.MyMosq.Interfaces;
-using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.MyMosq.Services;
-using PrayerTimeEngine.Core.Domain.PlaceManagement.Interfaces;
-using PrayerTimeEngine.Core.Domain.PlaceManagement.Services;
-using PrayerTimeEngine.Core.Domain.PlaceManagement.Services.LocationIQ;
-using PrayerTimeEngine.Core.Domain.ProfileManagement.Interfaces;
-using PrayerTimeEngine.Core.Domain.ProfileManagement.Services;
 using PrayerTimeEngine.Presentation.Pages.DatabaseTables;
 using PrayerTimeEngine.Presentation.Pages.Main;
 using PrayerTimeEngine.Presentation.Pages.QiblahFinder;
@@ -50,10 +22,7 @@ using PrayerTimeEngine.Presentation.Views.PrayerTimeGraphic;
 using PrayerTimeEngine.Presentation.Views.PrayerTimes;
 using PrayerTimeEngine.Services;
 using PrayerTimeEngine.Services.Notifications;
-using Refit;
 using SkiaSharp.Views.Maui.Controls.Hosting;
-using System.Net.WebSockets;
-using System.Text;
 using UraniumUI;
 
 namespace PrayerTimeEngine;
@@ -103,7 +72,7 @@ namespace PrayerTimeEngine;
  * - "MosquePrayerTimes" and variations used for all kinds of things! Better names!
  * - Check if using multiple profiles from differing timezones works fine (graphic, mosque times, swiping back and forth, ...)
  * - Qiblah map tiles: currently OpenStreetMap's volunteer-run tile servers (tile.openstreetmap.org)
- *   with an explicit, policy-compliant User-Agent (see QiblahMapPage.OSM_USER_AGENT). This fixed the
+ *   with an explicit, policy-compliant User-Agent (see QiblahMapPage.s_osM_USER_AGENT). This fixed the
  *   HTTP 403 "Access blocked" (osm.wiki/Blocked), but those servers are officially not meant for
  *   broadly distributed apps and enforcement can tighten again at any time. Consider switching to a
  *   tile provider intended for apps (e.g. Thunderforest / MapTiler / Carto, API-key based) if the app
@@ -150,10 +119,7 @@ public static class MauiProgram
             .UseMauiApp<App>()
             .UseSkiaSharp()
             .UseMauiCommunityToolkitMarkup()
-            .UseMauiCommunityToolkit(options =>
-            {
-                options.SetShouldEnableSnackbarOnWindows(true);
-            })
+            .UseMauiCommunityToolkit(options => options.SetShouldEnableSnackbarOnWindows(true))
             .UseUraniumUI()
             .UseUraniumUIMaterial()
             .UseDebugRainbows(new DebugRainbowsOptions { ShowRainbows = false })
@@ -163,8 +129,8 @@ public static class MauiProgram
                 fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
             });
 
-        addLogging(builder);
-        addDependencyInjectionServices(builder.Services);
+        AddLogging(builder);
+        AddDependencyInjectionServices(builder.Services);
 
         MauiApp mauiApp = builder.Build();
         ServiceProvider = mauiApp.Services;
@@ -174,7 +140,7 @@ public static class MauiProgram
         return mauiApp;
     }
 
-    class LoggingLayout : MetroLog.Layouts.Layout
+    private class LoggingLayout : MetroLog.Layouts.Layout
     {
         public override string GetFormattedString(MetroLog.LogWriteContext context, MetroLog.LogEventInfo info)
         {
@@ -191,7 +157,7 @@ public static class MauiProgram
         }
     }
 
-    private static void addLogging(MauiAppBuilder builder)
+    private static void AddLogging(MauiAppBuilder builder)
     {
         builder.Logging
             .SetMinimumLevel(LogLevel.Trace)
@@ -230,7 +196,7 @@ public static class MauiProgram
                 });
     }
 
-    private static void addDependencyInjectionServices(IServiceCollection serviceCollection)
+    private static void AddDependencyInjectionServices(IServiceCollection serviceCollection)
     {
         // Note: Microsoft recommends explicit HttpClient instances without DI for MAUI
 
@@ -245,13 +211,13 @@ public static class MauiProgram
         serviceCollection.AddApplication();
         serviceCollection.AddInfrastructure(AppConfig.DATABASE_PATH, AppApiKeys.LocationIQ);
 
-        addPresentationLayerServices(serviceCollection);
-        addPlatformSpecificServices(serviceCollection);
+        AddPresentationLayerServices(serviceCollection);
+        AddPlatformSpecificServices(serviceCollection);
     }
 
-    private static void addPresentationLayerServices(IServiceCollection serviceCollection)
+    private static void AddPresentationLayerServices(IServiceCollection serviceCollection)
     {
-        serviceCollection.AddTransient<IBrowser>(factory => Browser.Default);
+        serviceCollection.AddTransient(factory => Browser.Default);
 
         serviceCollection.AddTransient<INavigationService, NavigationService>();
         serviceCollection.AddTransient<ToastMessageService>();
@@ -278,7 +244,7 @@ public static class MauiProgram
         serviceCollection.AddTransient<QiblahMapPage>();
     }
 
-    private static void addPlatformSpecificServices(IServiceCollection serviceCollection)
+    private static void AddPlatformSpecificServices(IServiceCollection serviceCollection)
     {
 #if ANDROID
         serviceCollection.AddTransient<IPrayerTimeSummaryNotificationHandler, Platforms.Android.Notifications.PrayerTimeSummaryNotificationHandler>();

@@ -1,4 +1,4 @@
-﻿using AsyncKeyedLock;
+using AsyncKeyedLock;
 using Microsoft.Extensions.Logging;
 using NodaTime;
 using PrayerTimeEngine.Core.Common.Enum;
@@ -57,36 +57,35 @@ public class SemerkandDynamicPrayerTimeProvider(
             throw new Exception("Time requested for timezone that differs from provided location data!");
         }
 
-        SemerkandDailyPrayerTimes semerkandPrayerTimes = await getPrayerTimesInternal(date, countryName, cityName, timezoneName, cancellationToken).ConfigureAwait(false);
+        SemerkandDailyPrayerTimes semerkandPrayerTimes = await GetPrayerTimesInternal(date, countryName, cityName, timezoneName, cancellationToken).ConfigureAwait(false);
 
-        return configurations
+        return [.. configurations
             .Select(x => (x.TimeType, ZonedDateTime: semerkandPrayerTimes.GetZonedDateTimeForTimeType(x.TimeType)))
             .Where(x => x.ZonedDateTime is not null)    // missing times are simply not returned
-            .Select(x => (x.TimeType, x.ZonedDateTime.Value))
-            .ToList();
+            .Select(x => (x.TimeType, x.ZonedDateTime.Value))];
     }
 
-    private async Task<SemerkandDailyPrayerTimes> getPrayerTimesInternal(ZonedDateTime date, string countryName, string cityName, string timezoneName, CancellationToken cancellationToken)
+    private async Task<SemerkandDailyPrayerTimes> GetPrayerTimesInternal(ZonedDateTime date, string countryName, string cityName, string timezoneName, CancellationToken cancellationToken)
     {
         int countryID = await GetCountryID(countryName, throwIfNotFound: true, cancellationToken).ConfigureAwait(false);
         int cityID = await GetCityID(cityName, countryID, throwIfNotFound: true, cancellationToken).ConfigureAwait(false);
 
         SemerkandDailyPrayerTimes prayerTimes =
-            await getPrayerTimesByDateAndCityID(
+            await GetPrayerTimesByDateAndCityID(
                 date,
                 timezoneName,
                 cityID,
                 cancellationToken).ConfigureAwait(false)
             ?? throw new Exception($"Prayer times for the {date} could not be found for an unknown reason.");
 
-        prayerTimes.NextFajr = (await getPrayerTimesByDateAndCityID(date.Plus(Duration.FromDays(1)), timezoneName, cityID, cancellationToken).ConfigureAwait(false))?.Fajr;
+        prayerTimes.NextFajr = (await GetPrayerTimesByDateAndCityID(date.Plus(Duration.FromDays(1)), timezoneName, cityID, cancellationToken).ConfigureAwait(false))?.Fajr;
 
         return prayerTimes;
     }
 
     // locked per city (without the date) so that parallel calculations of multiple days
     // don't trigger redundant API fetches: the first one fills the db cache, the others then hit it
-    private static readonly AsyncKeyedLocker<int> getPrayerTimesLocker = new(o =>
+    private static readonly AsyncKeyedLocker<int> s_getPrayerTimesLocker = new(o =>
     {
         o.PoolSize = 20;
         o.PoolInitialFill = 1;
@@ -94,9 +93,9 @@ public class SemerkandDynamicPrayerTimeProvider(
 
     internal const int MAX_EXTENT_OF_RETRIEVED_DAYS = 5;
 
-    private async Task<SemerkandDailyPrayerTimes> getPrayerTimesByDateAndCityID(ZonedDateTime date, string timezone, int cityID, CancellationToken cancellationToken)
+    private async Task<SemerkandDailyPrayerTimes> GetPrayerTimesByDateAndCityID(ZonedDateTime date, string timezone, int cityID, CancellationToken cancellationToken)
     {
-        using (await getPrayerTimesLocker.LockAsync(cityID, cancellationToken).ConfigureAwait(false))
+        using (await s_getPrayerTimesLocker.LockAsync(cityID, cancellationToken).ConfigureAwait(false))
         {
             SemerkandDailyPrayerTimes prayerTimes =
                 await semerkandRepository.GetTimesByDateAndCityID(
@@ -112,7 +111,7 @@ public class SemerkandDynamicPrayerTimeProvider(
                         cityID,
                         cancellationToken).ConfigureAwait(false);
 
-                var dateTimeZone = DateTimeZoneProviders.Tzdb[timezone];
+                DateTimeZone dateTimeZone = DateTimeZoneProviders.Tzdb[timezone];
                 var firstDayOfYear = new LocalDate(date.Year, 1, 1);
 
                 SemerkandDailyPrayerTimes previousDay = null;
@@ -122,14 +121,16 @@ public class SemerkandDynamicPrayerTimeProvider(
                 {
                     // a gap in the API data invalidates the previous day as reference
                     if (previousDay is not null && previousDay.DayOfYear != semerkandTimesDTO.DayOfYear - 1)
+                    {
                         previousDay = null;
+                    }
 
                     SemerkandDailyPrayerTimes semerkandPrayerTimes = semerkandTimesDTO.ToSemerkandPrayerTimes(cityID, dateTimeZone, firstDayOfYear, previousDay);
                     previousDay = semerkandPrayerTimes;
 
                     // only add prayer times that are not before the request date
                     // but still before the maximum extent of to-be-retrieved days
-                    if (date.Date <= semerkandPrayerTimes.Date 
+                    if (date.Date <= semerkandPrayerTimes.Date
                         && semerkandPrayerTimes.Date < date.Plus(Duration.FromDays(MAX_EXTENT_OF_RETRIEVED_DAYS)).Date)
                     {
                         prayerTimesLst.Add(semerkandPrayerTimes);
@@ -145,18 +146,20 @@ public class SemerkandDynamicPrayerTimeProvider(
         }
     }
 
-    private static readonly AsyncNonKeyedLocker semaphoreTryGetCityID = new(1);
+    private static readonly AsyncNonKeyedLocker s_semaphoreTryGetCityID = new(1);
 
     protected override async Task<int> GetCityID(string cityName, int countryID, bool throwIfNotFound, CancellationToken cancellationToken)
     {
         // check-then-act has to be thread safe
-        using (await semaphoreTryGetCityID.LockAsync(cancellationToken).ConfigureAwait(false))
+        using (await s_semaphoreTryGetCityID.LockAsync(cancellationToken).ConfigureAwait(false))
         {
             int? cityID = await semerkandRepository.GetCityIDByName(countryID, cityName, cancellationToken).ConfigureAwait(false);
 
             // city found
             if (cityID is not null)
+            {
                 return cityID.Value;
+            }
 
             // unknown city
             if (await semerkandRepository.HasCityData(countryID, cancellationToken).ConfigureAwait(false))
@@ -167,8 +170,8 @@ public class SemerkandDynamicPrayerTimeProvider(
             }
 
             // load cities through HTTP request and save them
-            var cityResponseDTOs = await semerkandApiService.GetCitiesByCountryID(countryID, cancellationToken).ConfigureAwait(false);
-            var cities = cityResponseDTOs.Select(x => new SemerkandCity { ID = x.ID, Name = x.Name, CountryID = countryID });
+            List<SemerkandCityResponseDTO> cityResponseDTOs = await semerkandApiService.GetCitiesByCountryID(countryID, cancellationToken).ConfigureAwait(false);
+            IEnumerable<SemerkandCity> cities = cityResponseDTOs.Select(x => new SemerkandCity { ID = x.ID, Name = x.Name, CountryID = countryID });
             await semerkandRepository.InsertCities(cities, cancellationToken).ConfigureAwait(false);
 
             return cityResponseDTOs.FirstOrDefault(x => x.Name == cityName)?.ID
@@ -178,18 +181,20 @@ public class SemerkandDynamicPrayerTimeProvider(
         }
     }
 
-    private static readonly AsyncNonKeyedLocker semaphoreTryGetCountryID = new(1);
+    private static readonly AsyncNonKeyedLocker s_semaphoreTryGetCountryID = new(1);
 
     protected override async Task<int> GetCountryID(string countryName, bool throwIfNotFound, CancellationToken cancellationToken)
     {
         // check-then-act has to be thread safe
-        using (await semaphoreTryGetCountryID.LockAsync(cancellationToken).ConfigureAwait(false))
+        using (await s_semaphoreTryGetCountryID.LockAsync(cancellationToken).ConfigureAwait(false))
         {
             int? countryID = await semerkandRepository.GetCountryIDByName(countryName, cancellationToken).ConfigureAwait(false);
 
             // country found
             if (countryID is not null)
+            {
                 return countryID.Value;
+            }
 
             // unknown country
             if (await semerkandRepository.HasCountryData(cancellationToken).ConfigureAwait(false))
@@ -200,8 +205,8 @@ public class SemerkandDynamicPrayerTimeProvider(
             }
 
             // load countries through HTTP request and save them
-            var countryResponseDTOs = await semerkandApiService.GetCountries(cancellationToken).ConfigureAwait(false);
-            var countries = countryResponseDTOs.Select(x => new SemerkandCountry { ID = x.ID, Name = x.Name });
+            List<SemerkandCountryResponseDTO> countryResponseDTOs = await semerkandApiService.GetCountries(cancellationToken).ConfigureAwait(false);
+            IEnumerable<SemerkandCountry> countries = countryResponseDTOs.Select(x => new SemerkandCountry { ID = x.ID, Name = x.Name });
             await semerkandRepository.InsertCountries(countries, cancellationToken).ConfigureAwait(false);
 
             return countryResponseDTOs.FirstOrDefault(x => x.Name == countryName)?.ID

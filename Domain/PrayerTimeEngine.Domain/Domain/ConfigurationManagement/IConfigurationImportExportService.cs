@@ -1,4 +1,5 @@
-﻿namespace PrayerTimeEngine.Core.Domain.ConfigurationManagement;
+namespace PrayerTimeEngine.Core.Domain.ConfigurationManagement;
+
 public interface IConfigurationImportExportService
 {
     string SerializeConfiguration(Configuration configuration);

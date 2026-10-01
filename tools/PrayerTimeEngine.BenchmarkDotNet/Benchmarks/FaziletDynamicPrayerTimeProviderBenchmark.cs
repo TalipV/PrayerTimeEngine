@@ -1,4 +1,4 @@
-﻿using BenchmarkDotNet.Attributes;
+using BenchmarkDotNet.Attributes;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -26,14 +26,14 @@ public class FaziletDynamicPrayerTimeProviderBenchmark
 {
     #region data
 
-    private static readonly ZonedDateTime _zonedDateTime = new LocalDate(2023, 7, 29).AtStartOfDayInZone(TestDataHelper.EUROPE_VIENNA_TIME_ZONE);
+    private static readonly ZonedDateTime s_zonedDateTime = new LocalDate(2023, 7, 29).AtStartOfDayInZone(TestDataHelper.EUROPE_VIENNA_TIME_ZONE);
 
-    private static readonly List<GenericSettingConfiguration> _configs =
+    private static readonly List<GenericSettingConfiguration> s_configs =
         [
             new GenericSettingConfiguration { TimeType = ETimeType.DhuhrStart, Source = EDynamicPrayerTimeProviderType.Fazilet }
         ];
 
-    private static readonly FaziletLocationData _locationData =
+    private static readonly FaziletLocationData s_locationData =
         new()
         {
             CountryName = "Avusturya",
@@ -42,7 +42,7 @@ public class FaziletDynamicPrayerTimeProviderBenchmark
 
     #endregion data
 
-    private static FaziletDynamicPrayerTimeProvider getFaziletDynamicPrayerTimeProvider_DataFromDbStorage(
+    private static FaziletDynamicPrayerTimeProvider GetFaziletDynamicPrayerTimeProvider_DataFromDbStorage(
         IDbContextFactory<AppDbContext> dbContextFactory)
     {
         // to make sure that before the benchmark the data is gotten from the APIService and stored in the db
@@ -51,7 +51,7 @@ public class FaziletDynamicPrayerTimeProviderBenchmark
                 SubstitutionHelper.GetMockedFaziletApiService(),
                 Substitute.For<IPlaceService>(),
                 Substitute.For<ILogger<FaziletDynamicPrayerTimeProvider>>()
-            ).GetPrayerTimesAsync(_zonedDateTime, _locationData, _configs, default).GetAwaiter().GetResult();
+            ).GetPrayerTimesAsync(s_zonedDateTime, s_locationData, s_configs, default).GetAwaiter().GetResult();
 
         // throw exceptions when the calculator tries using the api
         IFaziletApiService mockedFaziletApiService = Substitute.For<IFaziletApiService>();
@@ -65,13 +65,13 @@ public class FaziletDynamicPrayerTimeProviderBenchmark
             );
     }
 
-    private static FaziletDynamicPrayerTimeProvider getFaziletDynamicPrayerTimeProvider_DataFromApi()
+    private static FaziletDynamicPrayerTimeProvider GetFaziletDynamicPrayerTimeProvider_DataFromApi()
     {
         // db doesn't return any data
-        var faziletDbAccessMock = Substitute.For<IFaziletRepository>();
+        IFaziletRepository faziletDbAccessMock = Substitute.For<IFaziletRepository>();
         faziletDbAccessMock.GetCountries(Arg.Any<CancellationToken>()).Returns([]);
         faziletDbAccessMock.GetCitiesByCountryID(Arg.Any<int>(), Arg.Any<CancellationToken>()).Returns([]);
-        faziletDbAccessMock.GetTimesByDateAndCityID(Arg.Any<LocalDate>(), Arg.Any<int>(), Arg.Any<CancellationToken>()).ReturnsNull<FaziletDailyPrayerTimes>();
+        faziletDbAccessMock.GetTimesByDateAndCityID(Arg.Any<LocalDate>(), Arg.Any<int>(), Arg.Any<CancellationToken>()).ReturnsNull();
 
         return new FaziletDynamicPrayerTimeProvider(
                 // returns null per default
@@ -82,30 +82,30 @@ public class FaziletDynamicPrayerTimeProviderBenchmark
             );
     }
 
-    private static SqliteConnection _dbContextKeepAliveSqlConnection;
+    private static SqliteConnection s_dbContextKeepAliveSqlConnection;
 
     [GlobalSetup]
     public static void Setup()
     {
-        _dbContextKeepAliveSqlConnection = new SqliteConnection("Data Source=:memory:");
-        _dbContextKeepAliveSqlConnection.Open();
+        s_dbContextKeepAliveSqlConnection = new SqliteConnection("Data Source=:memory:");
+        s_dbContextKeepAliveSqlConnection.Open();
 
         // Create the initial DbContext to initialize the database schema
-        var dbContext = getDbContext();
+        AppDbContext dbContext = GetDbContext();
         dbContext.Database.EnsureCreated();
 
-        var dbContextFactoryMock = Substitute.For<IDbContextFactory<AppDbContext>>();
-        dbContextFactoryMock.CreateDbContext().Returns(callInfo => getDbContext());
-        dbContextFactoryMock.CreateDbContextAsync().Returns(callInfo => Task.FromResult(getDbContext()));
+        IDbContextFactory<AppDbContext> dbContextFactoryMock = Substitute.For<IDbContextFactory<AppDbContext>>();
+        dbContextFactoryMock.CreateDbContext().Returns(callInfo => GetDbContext());
+        dbContextFactoryMock.CreateDbContextAsync().Returns(callInfo => Task.FromResult(GetDbContext()));
 
-        _faziletDynamicPrayerTimeProvider_DataFromDbStorage = getFaziletDynamicPrayerTimeProvider_DataFromDbStorage(dbContextFactoryMock);
-        _faziletDynamicPrayerTimeProvider_DataFromApi = getFaziletDynamicPrayerTimeProvider_DataFromApi();
+        s_faziletDynamicPrayerTimeProvider_DataFromDbStorage = GetFaziletDynamicPrayerTimeProvider_DataFromDbStorage(dbContextFactoryMock);
+        s_faziletDynamicPrayerTimeProvider_DataFromApi = GetFaziletDynamicPrayerTimeProvider_DataFromApi();
     }
 
-    private static AppDbContext getDbContext()
+    private static AppDbContext GetDbContext()
     {
-        var dbOptions = new DbContextOptionsBuilder()
-            .UseSqlite(_dbContextKeepAliveSqlConnection) // Use the existing connection
+        DbContextOptions dbOptions = new DbContextOptionsBuilder()
+            .UseSqlite(s_dbContextKeepAliveSqlConnection) // Use the existing connection
             .Options;
 
         var dbContext =
@@ -117,16 +117,16 @@ public class FaziletDynamicPrayerTimeProviderBenchmark
         return dbContext;
     }
 
-    private static FaziletDynamicPrayerTimeProvider _faziletDynamicPrayerTimeProvider_DataFromDbStorage = null;
-    private static FaziletDynamicPrayerTimeProvider _faziletDynamicPrayerTimeProvider_DataFromApi = null;
+    private static FaziletDynamicPrayerTimeProvider s_faziletDynamicPrayerTimeProvider_DataFromDbStorage = null;
+    private static FaziletDynamicPrayerTimeProvider s_faziletDynamicPrayerTimeProvider_DataFromApi = null;
 
     [Benchmark]
     public List<(ETimeType TimeType, ZonedDateTime ZonedDateTime)> FaziletDynamicPrayerTimeProvider_GetDataFromDb()
     {
-        var result = _faziletDynamicPrayerTimeProvider_DataFromDbStorage.GetPrayerTimesAsync(
-            _zonedDateTime,
-            locationData: _locationData,
-            configurations: _configs,
+        List<(ETimeType TimeType, ZonedDateTime ZonedDateTime)> result = s_faziletDynamicPrayerTimeProvider_DataFromDbStorage.GetPrayerTimesAsync(
+            s_zonedDateTime,
+            locationData: s_locationData,
+            configurations: s_configs,
             cancellationToken: default).GetAwaiter().GetResult();
 
         if (result.Count != 1)
@@ -140,10 +140,10 @@ public class FaziletDynamicPrayerTimeProviderBenchmark
     [Benchmark]
     public List<(ETimeType TimeType, ZonedDateTime ZonedDateTime)> FaziletDynamicPrayerTimeProvider_GetDataFromApi()
     {
-        var result = _faziletDynamicPrayerTimeProvider_DataFromApi.GetPrayerTimesAsync(
-            _zonedDateTime,
-            locationData: _locationData,
-            configurations: _configs,
+        List<(ETimeType TimeType, ZonedDateTime ZonedDateTime)> result = s_faziletDynamicPrayerTimeProvider_DataFromApi.GetPrayerTimesAsync(
+            s_zonedDateTime,
+            locationData: s_locationData,
+            configurations: s_configs,
             cancellationToken: default).GetAwaiter().GetResult();
 
         if (result.Count != 1)

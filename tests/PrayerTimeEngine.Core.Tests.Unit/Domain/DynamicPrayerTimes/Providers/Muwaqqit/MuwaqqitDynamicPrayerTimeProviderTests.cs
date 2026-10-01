@@ -1,4 +1,4 @@
-﻿using NodaTime;
+using NodaTime;
 using NSubstitute;
 using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Domain;
@@ -41,7 +41,7 @@ public class MuwaqqitDynamicPrayerTimeProviderTests : BaseTest
             Latitude = 21.4225M,
             TimezoneName = "Asia/Riyadh"
         };
-        var zonedDateTime = date.AtStartOfDayInZone(DateTimeZoneProviders.Tzdb[locationData.TimezoneName]);
+        ZonedDateTime zonedDateTime = date.AtStartOfDayInZone(DateTimeZoneProviders.Tzdb[locationData.TimezoneName]);
         List<GenericSettingConfiguration> configurations =
         [
             new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.FajrStart, Degree = 18 },
@@ -103,7 +103,7 @@ public class MuwaqqitDynamicPrayerTimeProviderTests : BaseTest
             Latitude = 66.5039M,   // northern location without a true night in summer
             TimezoneName = "Europe/Helsinki"
         };
-        var zonedDateTime = date.AtStartOfDayInZone(DateTimeZoneProviders.Tzdb[locationData.TimezoneName]);
+        ZonedDateTime zonedDateTime = date.AtStartOfDayInZone(DateTimeZoneProviders.Tzdb[locationData.TimezoneName]);
         List<GenericSettingConfiguration> configurations =
         [
             new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.FajrStart, Degree = 18 },

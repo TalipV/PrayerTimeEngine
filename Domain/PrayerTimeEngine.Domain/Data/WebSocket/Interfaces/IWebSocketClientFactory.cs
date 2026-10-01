@@ -1,4 +1,4 @@
-﻿namespace PrayerTimeEngine.Core.Data.WebSocket.Interfaces;
+namespace PrayerTimeEngine.Core.Data.WebSocket.Interfaces;
 
 public interface IWebSocketClientFactory
 {

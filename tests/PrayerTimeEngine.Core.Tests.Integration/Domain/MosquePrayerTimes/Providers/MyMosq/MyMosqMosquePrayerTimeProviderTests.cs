@@ -15,7 +15,7 @@ public class MyMosqMosquePrayerTimeProviderTests : BaseTest
     public async Task GetPrayerTimesAsync_NormalInput_PrayerTimesForThatDay()
     {
         // ARRANGE
-        ServiceProvider serviceProvider = createServiceProvider(
+        ServiceProvider serviceProvider = CreateServiceProvider(
             configureServiceCollection: serviceCollection =>
             {
                 serviceCollection.AddSingleton(GetHandledDbContextFactory());

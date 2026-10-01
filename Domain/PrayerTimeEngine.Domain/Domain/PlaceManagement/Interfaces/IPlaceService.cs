@@ -1,4 +1,4 @@
-﻿using PrayerTimeEngine.Core.Domain.PlaceManagement.Models;
+using PrayerTimeEngine.Core.Domain.PlaceManagement.Models;
 
 namespace PrayerTimeEngine.Core.Domain.PlaceManagement.Interfaces;
 

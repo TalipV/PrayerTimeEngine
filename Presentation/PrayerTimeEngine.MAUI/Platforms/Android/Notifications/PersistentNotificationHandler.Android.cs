@@ -1,4 +1,5 @@
-﻿using PrayerTimeEngine.Platforms.Android.Permissions;
+﻿using Android.Content;
+using PrayerTimeEngine.Platforms.Android.Permissions;
 using PrayerTimeEngine.Services.Notifications;
 
 namespace PrayerTimeEngine.Platforms.Android.Notifications;
@@ -27,7 +28,7 @@ public class PrayerTimeSummaryNotificationHandler : IPrayerTimeSummaryNotificati
 
         if (permissionGranted)
         {
-            await showBatteryOptimizationWarningIfNeeded();
+            await ShowBatteryOptimizationWarningIfNeeded();
 
             var startIntent =
                 new global::Android.Content.Intent(
@@ -38,22 +39,26 @@ public class PrayerTimeSummaryNotificationHandler : IPrayerTimeSummaryNotificati
         }
     }
 
-    private async Task showBatteryOptimizationWarningIfNeeded()
+    private async Task ShowBatteryOptimizationWarningIfNeeded()
     {
         if (global::Android.OS.Build.VERSION.SdkInt < global::Android.OS.BuildVersionCodes.M)
+        {
             return;
+        }
 
-        var context = global::Android.App.Application.Context;
-        var package = context.PackageName;
+        Context context = global::Android.App.Application.Context;
+        string? package = context.PackageName;
 
         var pm = (global::Android.OS.PowerManager)context.GetSystemService(global::Android.Content.Context.PowerService);
         bool alreadyIgnoringBatteryOptim = pm.IsIgnoringBatteryOptimizations(package);
 
         if (alreadyIgnoringBatteryOptim)
+        {
             return;
+        }
 
         // Show dialog in UI thread
-        var dispatcher = MauiProgram.ServiceProvider.GetRequiredService<IDispatcher>();
+        IDispatcher dispatcher = MauiProgram.ServiceProvider.GetRequiredService<IDispatcher>();
 
         await dispatcher.DispatchAsync(async () =>
         {
@@ -64,7 +69,9 @@ public class PrayerTimeSummaryNotificationHandler : IPrayerTimeSummaryNotificati
                 cancel: "Nein, danke");
 
             if (!openSettings)
+            {
                 return;
+            }
 
             var intent = new global::Android.Content.Intent(
                 global::Android.Provider.Settings.ActionIgnoreBatteryOptimizationSettings);

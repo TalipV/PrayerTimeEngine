@@ -1,4 +1,4 @@
-﻿using NodaTime;
+using NodaTime;
 using NSubstitute;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Models;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.MyMosq.Interfaces;

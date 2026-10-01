@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using NodaTime;
 using PrayerTimeEngine.Core.Data.EntityFramework;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Interfaces;
@@ -12,27 +12,23 @@ public class FaziletRepository(
 {
     public async Task<List<FaziletCountry>> GetCountries(CancellationToken cancellationToken)
     {
-        using (AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken))
-        {
-            return await dbContext
-                .FaziletCountries.AsNoTracking()
-                .ToListAsync(cancellationToken)
-                .ConfigureAwait(false);
-        }
+        using AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
+        return await dbContext
+            .FaziletCountries.AsNoTracking()
+            .ToListAsync(cancellationToken)
+            .ConfigureAwait(false);
     }
 
     public async Task<bool> HasCountryData(CancellationToken cancellationToken)
     {
-        using (AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken))
-        {
-            return await dbContext
-                .FaziletCountries
-                .AnyAsync(cancellationToken)
-                .ConfigureAwait(false);
-        }
+        using AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
+        return await dbContext
+            .FaziletCountries
+            .AnyAsync(cancellationToken)
+            .ConfigureAwait(false);
     }
 
-    private static readonly Func<AppDbContext, string, Task<int?>> compiledQuery_GetCountryIDByName =
+    private static readonly Func<AppDbContext, string, Task<int?>> s_compiledQuery_GetCountryIDByName =
         EF.CompileAsyncQuery(
             (AppDbContext context, string countryName) =>
                 context.FaziletCountries
@@ -42,14 +38,12 @@ public class FaziletRepository(
 
     public async Task<int?> GetCountryIDByName(string countryName, CancellationToken cancellationToken)
     {
-        using (AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken))
-        {
-            // cancellation?
-            return await compiledQuery_GetCountryIDByName(dbContext, countryName).ConfigureAwait(false);
-        }
+        using AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
+        // cancellation?
+        return await s_compiledQuery_GetCountryIDByName(dbContext, countryName).ConfigureAwait(false);
     }
 
-    private static readonly Func<AppDbContext, int, IAsyncEnumerable<FaziletCity>> compiledQuery_GetCitiesByCountryID =
+    private static readonly Func<AppDbContext, int, IAsyncEnumerable<FaziletCity>> s_compiledQuery_GetCitiesByCountryID =
         EF.CompileAsyncQuery(
             (AppDbContext context, int countryId) =>
                 context.FaziletCities
@@ -59,28 +53,24 @@ public class FaziletRepository(
 
     public async Task<List<FaziletCity>> GetCitiesByCountryID(int countryId, CancellationToken cancellationToken)
     {
-        using (AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken))
-        {
-            return await compiledQuery_GetCitiesByCountryID(dbContext, countryId)
-                .ToListAsync(cancellationToken)
-                .AsTask()
-                .ConfigureAwait(false);
-        }
+        using AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
+        return await s_compiledQuery_GetCitiesByCountryID(dbContext, countryId)
+            .ToListAsync(cancellationToken)
+            .AsTask()
+            .ConfigureAwait(false);
     }
 
     public async Task<bool> HasCityData(int countryID, CancellationToken cancellationToken)
     {
-        using (AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken))
-        {
-            return await dbContext
-                .FaziletCities
-                .Where(x => x.CountryID == countryID)
-                .AnyAsync(cancellationToken)
-                .ConfigureAwait(false);
-        }
+        using AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
+        return await dbContext
+            .FaziletCities
+            .Where(x => x.CountryID == countryID)
+            .AnyAsync(cancellationToken)
+            .ConfigureAwait(false);
     }
 
-    private static readonly Func<AppDbContext, int, string, Task<int?>> compiledQuery_GetCityIDByName =
+    private static readonly Func<AppDbContext, int, string, Task<int?>> s_compiledQuery_GetCityIDByName =
         EF.CompileAsyncQuery(
             (AppDbContext context, int countryID, string cityName) =>
                 context.FaziletCities
@@ -90,14 +80,12 @@ public class FaziletRepository(
 
     public async Task<int?> GetCityIDByName(int countryID, string cityName, CancellationToken cancellationToken)
     {
-        using (AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken))
-        {
-            // cancellation?
-            return await compiledQuery_GetCityIDByName(dbContext, countryID, cityName).ConfigureAwait(false);
-        }
+        using AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
+        // cancellation?
+        return await s_compiledQuery_GetCityIDByName(dbContext, countryID, cityName).ConfigureAwait(false);
     }
 
-    private static readonly Func<AppDbContext, LocalDate, int, Task<FaziletDailyPrayerTimes>> compiledQuery_GetTimesByDateAndCityID =
+    private static readonly Func<AppDbContext, LocalDate, int, Task<FaziletDailyPrayerTimes>> s_compiledQuery_GetTimesByDateAndCityID =
         EF.CompileAsyncQuery(
             (AppDbContext context, LocalDate date, int cityId) =>
                 context.FaziletPrayerTimes
@@ -107,47 +95,37 @@ public class FaziletRepository(
 
     public async Task<FaziletDailyPrayerTimes> GetTimesByDateAndCityID(LocalDate date, int cityId, CancellationToken cancellationToken)
     {
-        using (AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken))
-        {
-            // cancellation?
-            return await compiledQuery_GetTimesByDateAndCityID(dbContext, date, cityId).ConfigureAwait(false);
-        }
+        using AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
+        // cancellation?
+        return await s_compiledQuery_GetTimesByDateAndCityID(dbContext, date, cityId).ConfigureAwait(false);
     }
 
     public async Task InsertPrayerTimesAsync(IEnumerable<FaziletDailyPrayerTimes> faziletPrayerTimesLst, CancellationToken cancellationToken)
     {
-        using (AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken))
-        {
-            await dbContext.FaziletPrayerTimes.AddRangeAsync(faziletPrayerTimesLst, cancellationToken).ConfigureAwait(false);
-            await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-        }
+        using AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
+        await dbContext.FaziletPrayerTimes.AddRangeAsync(faziletPrayerTimesLst, cancellationToken).ConfigureAwait(false);
+        await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
     }
 
     public async Task InsertCountries(IEnumerable<FaziletCountry> countries, CancellationToken cancellationToken)
     {
-        using (AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken))
-        {
-            await dbContext.FaziletCountries.AddRangeAsync(countries, cancellationToken: cancellationToken).ConfigureAwait(false);
-            await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-        }
+        using AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
+        await dbContext.FaziletCountries.AddRangeAsync(countries, cancellationToken: cancellationToken).ConfigureAwait(false);
+        await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
     }
 
     public async Task InsertCities(IEnumerable<FaziletCity> cities, CancellationToken cancellationToken)
     {
-        using (AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken))
-        {
-            await dbContext.FaziletCities.AddRangeAsync(cities, cancellationToken: cancellationToken).ConfigureAwait(false);
-            await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-        }
+        using AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
+        await dbContext.FaziletCities.AddRangeAsync(cities, cancellationToken: cancellationToken).ConfigureAwait(false);
+        await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
     }
 
     public async Task DeleteCacheDataAsync(LocalDate deleteBeforeDate, CancellationToken cancellationToken)
     {
-        using (AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken))
-        {
-            await dbContext.FaziletPrayerTimes
-                .Where(p => p.Date < deleteBeforeDate)
-                .ExecuteDeleteAsync(cancellationToken).ConfigureAwait(false);
-        }
+        using AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
+        await dbContext.FaziletPrayerTimes
+            .Where(p => p.Date < deleteBeforeDate)
+            .ExecuteDeleteAsync(cancellationToken).ConfigureAwait(false);
     }
 }

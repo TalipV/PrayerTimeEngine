@@ -1,4 +1,4 @@
-﻿using BenchmarkDotNet.Attributes;
+using BenchmarkDotNet.Attributes;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using NodaTime;
@@ -24,9 +24,9 @@ public class MuwaqqitDynamicPrayerTimeProviderBenchmark
 {
     #region data
 
-    private static readonly ZonedDateTime _zonedDateTime = new LocalDate(2023, 7, 30).AtStartOfDayInZone(TestDataHelper.EUROPE_VIENNA_TIME_ZONE);
+    private static readonly ZonedDateTime s_zonedDateTime = new LocalDate(2023, 7, 30).AtStartOfDayInZone(TestDataHelper.EUROPE_VIENNA_TIME_ZONE);
 
-    private static readonly List<GenericSettingConfiguration> _configs =
+    private static readonly List<GenericSettingConfiguration> s_configs =
         [
             new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.FajrStart, Degree = -12.0 },
             new GenericSettingConfiguration { TimeType = ETimeType.FajrEnd, Source = EDynamicPrayerTimeProviderType.Muwaqqit },
@@ -46,7 +46,7 @@ public class MuwaqqitDynamicPrayerTimeProviderBenchmark
             new MuwaqqitDegreeCalculationConfiguration { TimeType = ETimeType.IshaEnd, Degree = -15.0 },
         ];
 
-    private static readonly MuwaqqitLocationData _locationData =
+    private static readonly MuwaqqitLocationData s_locationData =
         new()
         {
             Latitude = 47.2803835M,
@@ -56,7 +56,7 @@ public class MuwaqqitDynamicPrayerTimeProviderBenchmark
 
     #endregion data
 
-    private static MuwaqqitDynamicPrayerTimeProvider getMuwaqqitDynamicPrayerTimeProvider_DataFromDbStorage(
+    private static MuwaqqitDynamicPrayerTimeProvider GetMuwaqqitDynamicPrayerTimeProvider_DataFromDbStorage(
         IDbContextFactory<AppDbContext> dbContextFactory)
     {
         // to make sure that before the benchmark the data is gotten from the APIService and stored in the db
@@ -64,7 +64,7 @@ public class MuwaqqitDynamicPrayerTimeProviderBenchmark
                 new MuwaqqitRepository(dbContextFactory),
                 SubstitutionHelper.GetMockedMuwaqqitApiService(),
                 new TimeTypeAttributeService()
-            ).GetPrayerTimesAsync(_zonedDateTime, _locationData, _configs, default).GetAwaiter().GetResult();
+            ).GetPrayerTimesAsync(s_zonedDateTime, s_locationData, s_configs, default).GetAwaiter().GetResult();
 
         // throw exceptions when the calculator tries using the api
         IMuwaqqitApiService mockedMuwaqqitApiService = Substitute.For<IMuwaqqitApiService>();
@@ -77,7 +77,7 @@ public class MuwaqqitDynamicPrayerTimeProviderBenchmark
             );
     }
 
-    private static MuwaqqitDynamicPrayerTimeProvider getMuwaqqitDynamicPrayerTimeProvider_DataFromApi()
+    private static MuwaqqitDynamicPrayerTimeProvider GetMuwaqqitDynamicPrayerTimeProvider_DataFromApi()
     {
         return new MuwaqqitDynamicPrayerTimeProvider(
                 // returns null per default
@@ -87,30 +87,30 @@ public class MuwaqqitDynamicPrayerTimeProviderBenchmark
             );
     }
 
-    private static SqliteConnection _dbContextKeepAliveSqlConnection;
+    private static SqliteConnection s_dbContextKeepAliveSqlConnection;
 
     [GlobalSetup]
     public static void Setup()
     {
-        _dbContextKeepAliveSqlConnection = new SqliteConnection("Data Source=:memory:");
-        _dbContextKeepAliveSqlConnection.Open();
+        s_dbContextKeepAliveSqlConnection = new SqliteConnection("Data Source=:memory:");
+        s_dbContextKeepAliveSqlConnection.Open();
 
         // Create the initial DbContext to initialize the database schema
-        var dbContext = getDbContext();
+        AppDbContext dbContext = GetDbContext();
         dbContext.Database.EnsureCreated();
 
-        var dbContextFactoryMock = Substitute.For<IDbContextFactory<AppDbContext>>();
-        dbContextFactoryMock.CreateDbContext().Returns(callInfo => getDbContext());
-        dbContextFactoryMock.CreateDbContextAsync().Returns(callInfo => Task.FromResult(getDbContext()));
+        IDbContextFactory<AppDbContext> dbContextFactoryMock = Substitute.For<IDbContextFactory<AppDbContext>>();
+        dbContextFactoryMock.CreateDbContext().Returns(callInfo => GetDbContext());
+        dbContextFactoryMock.CreateDbContextAsync().Returns(callInfo => Task.FromResult(GetDbContext()));
 
-        _muwaqqitDynamicPrayerTimeProvider_DataFromDbStorage = getMuwaqqitDynamicPrayerTimeProvider_DataFromDbStorage(dbContextFactoryMock);
-        _muwaqqitDynamicPrayerTimeProvider_DataFromApi = getMuwaqqitDynamicPrayerTimeProvider_DataFromApi();
+        s_muwaqqitDynamicPrayerTimeProvider_DataFromDbStorage = GetMuwaqqitDynamicPrayerTimeProvider_DataFromDbStorage(dbContextFactoryMock);
+        s_muwaqqitDynamicPrayerTimeProvider_DataFromApi = GetMuwaqqitDynamicPrayerTimeProvider_DataFromApi();
     }
 
-    private static AppDbContext getDbContext()
+    private static AppDbContext GetDbContext()
     {
-        var dbOptions = new DbContextOptionsBuilder()
-            .UseSqlite(_dbContextKeepAliveSqlConnection) // Use the existing connection
+        DbContextOptions dbOptions = new DbContextOptionsBuilder()
+            .UseSqlite(s_dbContextKeepAliveSqlConnection) // Use the existing connection
             .Options;
 
         var dbContext =
@@ -122,16 +122,16 @@ public class MuwaqqitDynamicPrayerTimeProviderBenchmark
         return dbContext;
     }
 
-    private static MuwaqqitDynamicPrayerTimeProvider _muwaqqitDynamicPrayerTimeProvider_DataFromDbStorage = null;
-    private static MuwaqqitDynamicPrayerTimeProvider _muwaqqitDynamicPrayerTimeProvider_DataFromApi = null;
+    private static MuwaqqitDynamicPrayerTimeProvider s_muwaqqitDynamicPrayerTimeProvider_DataFromDbStorage = null;
+    private static MuwaqqitDynamicPrayerTimeProvider s_muwaqqitDynamicPrayerTimeProvider_DataFromApi = null;
 
     [Benchmark]
     public List<(ETimeType TimeType, ZonedDateTime ZonedDateTime)> MuwaqqitDynamicPrayerTimeProvider_GetDataFromDb()
     {
-        var result = _muwaqqitDynamicPrayerTimeProvider_DataFromDbStorage.GetPrayerTimesAsync(
-            _zonedDateTime,
-            locationData: _locationData,
-            configurations: _configs,
+        List<(ETimeType TimeType, ZonedDateTime ZonedDateTime)> result = s_muwaqqitDynamicPrayerTimeProvider_DataFromDbStorage.GetPrayerTimesAsync(
+            s_zonedDateTime,
+            locationData: s_locationData,
+            configurations: s_configs,
             cancellationToken: default).GetAwaiter().GetResult();
 
         if (result.Count != 16)
@@ -145,10 +145,10 @@ public class MuwaqqitDynamicPrayerTimeProviderBenchmark
     [Benchmark]
     public List<(ETimeType TimeType, ZonedDateTime ZonedDateTime)> MuwaqqitDynamicPrayerTimeProvider_GetDataFromApi()
     {
-        var result = _muwaqqitDynamicPrayerTimeProvider_DataFromApi.GetPrayerTimesAsync(
-            _zonedDateTime,
-            locationData: _locationData,
-            configurations: _configs,
+        List<(ETimeType TimeType, ZonedDateTime ZonedDateTime)> result = s_muwaqqitDynamicPrayerTimeProvider_DataFromApi.GetPrayerTimesAsync(
+            s_zonedDateTime,
+            locationData: s_locationData,
+            configurations: s_configs,
             cancellationToken: default).GetAwaiter().GetResult();
 
         if (result.Count != 16)

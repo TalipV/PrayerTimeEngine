@@ -11,10 +11,12 @@ public class BootBroadcastReceiver : BroadcastReceiver
     public override void OnReceive(Context context, Intent intent)
     {
         if (intent?.Action != Intent.ActionBootCompleted)
+        {
             return;
+        }
 
         var startIntent =
-            new global::Android.Content.Intent(
+            new Intent(
                 global::Android.App.Application.Context,
                 typeof(PrayerTimeSummaryNotification));
 

@@ -1,6 +1,6 @@
-﻿using NodaTime;
-using PrayerTimeEngine.Core.Common;
 using System.Globalization;
+using NodaTime;
+using PrayerTimeEngine.Core.Common;
 
 namespace PrayerTimeEngine.Services;
 

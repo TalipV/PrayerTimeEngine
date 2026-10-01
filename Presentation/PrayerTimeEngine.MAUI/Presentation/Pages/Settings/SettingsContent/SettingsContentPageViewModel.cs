@@ -1,4 +1,4 @@
-﻿using PrayerTimeEngine.Core.Common.Enum;
+using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Domain;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Models;
@@ -81,8 +81,8 @@ public class SettingsContentPageViewModel(
         ShowDynamicPrayerTimeProviderPicker = !timeTypeAttributeService.ConfigurableSimpleTypes.Contains(timeType);
         IsTimeShownCheckBoxVisible = !timeTypeAttributeService.NotHideableTypes.Contains(timeType);
 
-        DynamicPrayerTimeProviders = getDynamicPrayerTimeProvider();
-        MinuteAdjustments = getMinuteAdjustmentSource();
+        DynamicPrayerTimeProviders = GetDynamicPrayerTimeProvider();
+        MinuteAdjustments = GetMinuteAdjustmentSource();
 
         Profile = profile;
         GenericSettingConfiguration calculationConfiguration =
@@ -102,7 +102,9 @@ public class SettingsContentPageViewModel(
     public void OnSelectedDynamicPrayerTimeProviderChanged()
     {
         if (!_isInitialized)
+        {
             return;
+        }
 
         if (SelectedDynamicPrayerTimeProvider == EDynamicPrayerTimeProviderType.Muwaqqit
             && timeTypeAttributeService.DegreeTypes.Contains(TimeType))
@@ -119,7 +121,7 @@ public class SettingsContentPageViewModel(
 
     public Task OnDisappearing()
     {
-        GenericSettingConfiguration settings = getCurrentCalculationConfiguration();
+        GenericSettingConfiguration settings = GetCurrentCalculationConfiguration();
         return profileService.UpdateTimeConfig(Profile, TimeType, settings, default);
     }
 
@@ -127,17 +129,17 @@ public class SettingsContentPageViewModel(
 
     #region private methods
 
-    private GenericSettingConfiguration getCurrentCalculationConfiguration()
+    private GenericSettingConfiguration GetCurrentCalculationConfiguration()
     {
         if (CustomSettingConfigurationViewModel is not null)
         {
             return CustomSettingConfigurationViewModel.BuildSetting(SelectedMinuteAdjustment, IsTimeShown);
         }
 
-        return getGeneralCalculationConfiguration();
+        return GetGeneralCalculationConfiguration();
     }
 
-    private GenericSettingConfiguration getGeneralCalculationConfiguration()
+    private GenericSettingConfiguration GetGeneralCalculationConfiguration()
     {
         return
             new GenericSettingConfiguration
@@ -149,7 +151,7 @@ public class SettingsContentPageViewModel(
             };
     }
 
-    private List<EDynamicPrayerTimeProviderType> getDynamicPrayerTimeProvider()
+    private List<EDynamicPrayerTimeProviderType> GetDynamicPrayerTimeProvider()
     {
         if (!timeTypeAttributeService.TimeTypeCompatibleSources.TryGetValue(TimeType, out IReadOnlyList<EDynamicPrayerTimeProviderType> dynamicPrayerTimeProviders))
         {
@@ -159,11 +161,11 @@ public class SettingsContentPageViewModel(
         return [.. dynamicPrayerTimeProviders];
     }
 
-    private List<int> getMinuteAdjustmentSource()
+    private List<int> GetMinuteAdjustmentSource()
     {
         if (TimeType == ETimeType.DuhaEnd)
         {
-            return Enumerable.Range(-40, 35).ToList();
+            return [.. Enumerable.Range(-40, 35)];
         }
         else if (TimeType == ETimeType.MaghribSufficientTime)
         {
@@ -171,7 +173,7 @@ public class SettingsContentPageViewModel(
         }
         else
         {
-            return Enumerable.Range(start: -30, count: 46).ToList();
+            return [.. Enumerable.Range(start: -30, count: 46)];
         }
     }
 

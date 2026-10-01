@@ -1,11 +1,11 @@
-﻿using NSubstitute;
+using System.Text.Json;
+using NSubstitute;
 using PrayerTimeEngine.Core.Domain.ConfigurationManagement;
 using PrayerTimeEngine.Core.Domain.ConfigurationManagement.DTOs;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Interfaces;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
 using PrayerTimeEngine.Core.Tests.Common;
 using PrayerTimeEngine.Core.Tests.Common.TestData;
-using System.Text.Json;
 
 namespace PrayerTimeEngine.Core.Tests.Unit.Domain.ConfigurationManagement;
 
@@ -32,7 +32,7 @@ public class ConfigurationImportExportServiceTests : BaseTest
                 TestDataHelper.CreateCompleteTestMosqueProfile(profileID: 3, profileName: "Profil Two", profileSequenceNo: 4),
                 TestDataHelper.CreateCompleteTestDynamicProfile(profileID: 5, profileName: "Profil Three", profileSequenceNo: 6),
             ];
-        inputProfiles = inputProfiles.OrderBy(x => x.SequenceNo).ToArray();
+        inputProfiles = [.. inputProfiles.OrderBy(x => x.SequenceNo)];
 
         var inputConfiguration = new Configuration
         {

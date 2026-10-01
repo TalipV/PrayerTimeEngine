@@ -1,4 +1,4 @@
-﻿using PrayerTimeEngine.Presentation.Pages.DatabaseTables;
+using PrayerTimeEngine.Presentation.Pages.DatabaseTables;
 using PrayerTimeEngine.Presentation.Pages.Main;
 using PrayerTimeEngine.Presentation.Pages.Settings.SettingsHandler;
 
@@ -6,10 +6,10 @@ namespace PrayerTimeEngine.Presentation.Services.Navigation;
 
 public interface INavigationService
 {
-    Task NavigateTo<TViewModel>(params object[] parameter) 
+    Task NavigateTo<TViewModel>(params object[] parameter)
         where TViewModel : CustomBaseViewModel;
-    Task NavigateTo<PageType>()
-        where PageType : Page;
+    Task NavigateTo<TPageType>()
+        where TPageType : Page;
 
     Task NavigateBack();
 }
@@ -26,12 +26,12 @@ public class NavigationService(
             [typeof(DatabaseTablesPageViewModel)] = typeof(DatabaseTablesPage),
         };
 
-    public async Task NavigateTo<TViewModel>(params object[] parameter) 
+    public async Task NavigateTo<TViewModel>(params object[] parameter)
         where TViewModel : CustomBaseViewModel
     {
-        var targetType = _mapping[typeof(TViewModel)];
+        Type targetType = _mapping[typeof(TViewModel)];
 
-        NavigationPage navigationPage = getNavigationPage();
+        NavigationPage navigationPage = GetNavigationPage();
         var page = (Page)serviceProvider.GetRequiredService(targetType);
         if (page.BindingContext is TViewModel viewModel)
         {
@@ -40,11 +40,11 @@ public class NavigationService(
         await navigationPage.PushAsync(page).ConfigureAwait(false);
     }
 
-    public async Task NavigateTo<PageType>()
-        where PageType : Page
+    public async Task NavigateTo<TPageType>()
+        where TPageType : Page
     {
-        NavigationPage navigationPage = getNavigationPage();
-        Page page = serviceProvider.GetRequiredService<PageType>();
+        NavigationPage navigationPage = GetNavigationPage();
+        Page page = serviceProvider.GetRequiredService<TPageType>();
         await navigationPage.PushAsync(page).ConfigureAwait(false);
     }
 
@@ -56,7 +56,7 @@ public class NavigationService(
         }
     }
 
-    private static NavigationPage getNavigationPage()
+    private static NavigationPage GetNavigationPage()
     {
         if (Application.Current.Windows[0].Page is not NavigationPage navigationPage)
         {

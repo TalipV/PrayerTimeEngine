@@ -1,4 +1,4 @@
-﻿namespace PrayerTimeEngine.Core.Domain.MosquePrayerTimes;
+namespace PrayerTimeEngine.Core.Domain.MosquePrayerTimes;
 
 public enum EMosquePrayerTimeProviderType
 {

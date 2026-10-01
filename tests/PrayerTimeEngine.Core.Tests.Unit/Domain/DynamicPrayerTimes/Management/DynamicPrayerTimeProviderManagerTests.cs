@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Logging;
-using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities;
 using NodaTime;
 using NSubstitute;
 using PrayerTimeEngine.Core.Common;
@@ -11,6 +10,7 @@ using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Models;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Muwaqqit.Models;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Interfaces;
+using PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
 using PrayerTimeEngine.Core.Tests.Common;
 using PrayerTimeEngine.Core.Tests.Common.TestData;
 
@@ -41,17 +41,17 @@ public class DynamicPrayerTimeProviderManagerTests : BaseTest
     public async Task CalculatePrayerTimesAsync_OneComplexCalculation_CalculatedSuccessfully()
     {
         // ARRANGE
-        var profile = TestDataHelper.CreateCompleteTestDynamicProfile();
+        DynamicProfile profile = TestDataHelper.CreateCompleteTestDynamicProfile();
         ZonedDateTime zonedDate = new LocalDate(2024, 1, 1).AtStartOfDayInZone(DateTimeZone.Utc);
         ZonedDateTime zonedDateOneDayBefore = zonedDate.Plus(Duration.FromDays(-1));
         ZonedDateTime zonedDateOneDayAfter = zonedDate.Plus(Duration.FromDays(1));
 
-        var muwaqqitLocationData = Substitute.ForPartsOf<BaseLocationData>();
+        BaseLocationData muwaqqitLocationData = Substitute.ForPartsOf<BaseLocationData>();
         _profileServiceMock.GetUntrackedReferenceOfProfile(Arg.Any<int>(), Arg.Any<CancellationToken>()).Returns(profile);
         _profileServiceMock.GetLocationConfig(Arg.Is(profile), Arg.Is(EDynamicPrayerTimeProviderType.Muwaqqit)).Returns(muwaqqitLocationData);
 
         GenericSettingConfiguration muwaqqitConfig = new MuwaqqitDegreeCalculationConfiguration { Degree = 14, TimeType = ETimeType.FajrStart };
-        var muwaqqitPrayerTimeServiceMock = Substitute.For<IDynamicPrayerTimeProvider>();
+        IDynamicPrayerTimeProvider muwaqqitPrayerTimeServiceMock = Substitute.For<IDynamicPrayerTimeProvider>();
 
         _prayerTimeServiceFactoryMock.GetDynamicPrayerTimeProviderByDynamicPrayerTimeProvider(Arg.Is(EDynamicPrayerTimeProviderType.Muwaqqit)).Returns(muwaqqitPrayerTimeServiceMock);
 
@@ -66,13 +66,19 @@ public class DynamicPrayerTimeProviderManagerTests : BaseTest
                 Arg.Any<CancellationToken>())
             .Returns(callInfo =>
             {
-                var dateInput = callInfo.Arg<ZonedDateTime>();
+                ZonedDateTime dateInput = callInfo.Arg<ZonedDateTime>();
                 if (dateInput == zonedDateOneDayBefore)
+                {
                     return Task.FromResult(muwaqqitReturnValuePreviousDay);
+                }
                 else if (dateInput == zonedDate)
+                {
                     return Task.FromResult(muwaqqitReturnValueCurrentDay);
+                }
                 else if (dateInput == zonedDateOneDayAfter)
+                {
                     return Task.FromResult(muwaqqitReturnValueNextDay);
+                }
 
                 throw new Exception("Unreachable");
             });
@@ -95,12 +101,12 @@ public class DynamicPrayerTimeProviderManagerTests : BaseTest
                 Arg.Is(zonedDate),
                 Arg.Is(muwaqqitLocationData),
                 Arg.Is<List<GenericSettingConfiguration>>(x => x.Contains(muwaqqitConfig)),
-                Arg.Any<CancellationToken>());        
+                Arg.Any<CancellationToken>());
         await muwaqqitPrayerTimeServiceMock.Received(1).GetPrayerTimesAsync(
                 Arg.Is(zonedDateOneDayBefore),
                 Arg.Is(muwaqqitLocationData),
                 Arg.Is<List<GenericSettingConfiguration>>(x => x.Contains(muwaqqitConfig)),
-                Arg.Any<CancellationToken>());    
+                Arg.Any<CancellationToken>());
         await muwaqqitPrayerTimeServiceMock.Received(1).GetPrayerTimesAsync(
                 Arg.Is(zonedDateOneDayAfter),
                 Arg.Is(muwaqqitLocationData),
@@ -112,27 +118,27 @@ public class DynamicPrayerTimeProviderManagerTests : BaseTest
     public async Task CalculatePrayerTimesAsync_OneComplexCalculationFails_ReturnsCalculationErrors()
     {
         // ARRANGE
-        var profile = TestDataHelper.CreateCompleteTestDynamicProfile();
+        DynamicProfile profile = TestDataHelper.CreateCompleteTestDynamicProfile();
         ZonedDateTime zonedDate = new LocalDate(2024, 1, 1).AtStartOfDayInZone(DateTimeZone.Utc);
 
-        var muwaqqitLocationData = Substitute.ForPartsOf<BaseLocationData>();
+        BaseLocationData muwaqqitLocationData = Substitute.ForPartsOf<BaseLocationData>();
         _profileServiceMock.GetUntrackedReferenceOfProfile(
-                Arg.Any<int>(), 
+                Arg.Any<int>(),
                 Arg.Any<CancellationToken>())
             .Returns(profile);
         _profileServiceMock.GetLocationConfig(
-                Arg.Is(profile), 
+                Arg.Is(profile),
                 Arg.Is(EDynamicPrayerTimeProviderType.Muwaqqit))
             .Returns(muwaqqitLocationData);
 
         GenericSettingConfiguration muwaqqitConfig = new MuwaqqitDegreeCalculationConfiguration { Degree = 14, TimeType = ETimeType.FajrStart };
-        var muwaqqitPrayerTimeServiceMock = Substitute.For<IDynamicPrayerTimeProvider>();
+        IDynamicPrayerTimeProvider muwaqqitPrayerTimeServiceMock = Substitute.For<IDynamicPrayerTimeProvider>();
 
         _prayerTimeServiceFactoryMock
             .GetDynamicPrayerTimeProviderByDynamicPrayerTimeProvider(Arg.Is(EDynamicPrayerTimeProviderType.Muwaqqit))
             .Returns(muwaqqitPrayerTimeServiceMock);
 
-        InvalidOperationException expextedException = new InvalidOperationException("calculator failed");
+        var expextedException = new InvalidOperationException("calculator failed");
         muwaqqitPrayerTimeServiceMock.GetPrayerTimesAsync(
                 Arg.Any<ZonedDateTime>(),
                 Arg.Is(muwaqqitLocationData),
@@ -144,10 +150,10 @@ public class DynamicPrayerTimeProviderManagerTests : BaseTest
         muwaqqitPrayerTimeServiceMock.GetUnsupportedTimeTypes().Returns([]);
 
         // ACT
-        CalculatePrayerTimesResultVO result = 
+        CalculatePrayerTimesResultVO result =
             await _dynamicPrayerTimeProviderManager.CalculatePrayerTimesAsync(
-                profile.ID, 
-                zonedDate, 
+                profile.ID,
+                zonedDate,
                 default);
 
         // ASSERT
@@ -164,16 +170,16 @@ public class DynamicPrayerTimeProviderManagerTests : BaseTest
     public async Task CalculatePrayerTimesAsync_OneOfTwoProvidersFails_OtherProviderStillCalculated()
     {
         // ARRANGE
-        var profile = TestDataHelper.CreateCompleteTestDynamicProfile();
+        DynamicProfile profile = TestDataHelper.CreateCompleteTestDynamicProfile();
         ZonedDateTime zonedDate = new LocalDate(2024, 1, 1).AtStartOfDayInZone(DateTimeZone.Utc);
 
         _profileServiceMock.GetUntrackedReferenceOfProfile(Arg.Any<int>(), Arg.Any<CancellationToken>()).Returns(profile);
 
         // failing Muwaqqit provider
-        var muwaqqitLocationData = Substitute.ForPartsOf<BaseLocationData>();
+        BaseLocationData muwaqqitLocationData = Substitute.ForPartsOf<BaseLocationData>();
         _profileServiceMock.GetLocationConfig(Arg.Is(profile), Arg.Is(EDynamicPrayerTimeProviderType.Muwaqqit)).Returns(muwaqqitLocationData);
         GenericSettingConfiguration muwaqqitConfig = new MuwaqqitDegreeCalculationConfiguration { Degree = 14, TimeType = ETimeType.FajrStart };
-        var muwaqqitPrayerTimeServiceMock = Substitute.For<IDynamicPrayerTimeProvider>();
+        IDynamicPrayerTimeProvider muwaqqitPrayerTimeServiceMock = Substitute.For<IDynamicPrayerTimeProvider>();
         muwaqqitPrayerTimeServiceMock.GetUnsupportedTimeTypes().Returns([]);
         muwaqqitPrayerTimeServiceMock.GetPrayerTimesAsync(
                 Arg.Any<ZonedDateTime>(),
@@ -184,10 +190,10 @@ public class DynamicPrayerTimeProviderManagerTests : BaseTest
         _prayerTimeServiceFactoryMock.GetDynamicPrayerTimeProviderByDynamicPrayerTimeProvider(Arg.Is(EDynamicPrayerTimeProviderType.Muwaqqit)).Returns(muwaqqitPrayerTimeServiceMock);
 
         // succeeding Fazilet provider
-        var faziletLocationData = Substitute.ForPartsOf<BaseLocationData>();
+        BaseLocationData faziletLocationData = Substitute.ForPartsOf<BaseLocationData>();
         _profileServiceMock.GetLocationConfig(Arg.Is(profile), Arg.Is(EDynamicPrayerTimeProviderType.Fazilet)).Returns(faziletLocationData);
         GenericSettingConfiguration faziletConfig = new() { TimeType = ETimeType.DhuhrStart, Source = EDynamicPrayerTimeProviderType.Fazilet };
-        var faziletPrayerTimeServiceMock = Substitute.For<IDynamicPrayerTimeProvider>();
+        IDynamicPrayerTimeProvider faziletPrayerTimeServiceMock = Substitute.For<IDynamicPrayerTimeProvider>();
         faziletPrayerTimeServiceMock.GetUnsupportedTimeTypes().Returns([]);
         faziletPrayerTimeServiceMock.GetPrayerTimesAsync(
                 Arg.Any<ZonedDateTime>(),
@@ -220,7 +226,7 @@ public class DynamicPrayerTimeProviderManagerTests : BaseTest
     public async Task CalculatePrayerTimesAsync_ProviderWithoutLocationData_ProviderSkippedWithoutErrors()
     {
         // ARRANGE
-        var profile = TestDataHelper.CreateCompleteTestDynamicProfile();
+        DynamicProfile profile = TestDataHelper.CreateCompleteTestDynamicProfile();
         ZonedDateTime zonedDate = new LocalDate(2024, 1, 1).AtStartOfDayInZone(DateTimeZone.Utc);
 
         _profileServiceMock.GetUntrackedReferenceOfProfile(Arg.Any<int>(), Arg.Any<CancellationToken>()).Returns(profile);
@@ -230,10 +236,10 @@ public class DynamicPrayerTimeProviderManagerTests : BaseTest
         GenericSettingConfiguration muwaqqitConfig = new MuwaqqitDegreeCalculationConfiguration { Degree = 14, TimeType = ETimeType.FajrStart };
 
         // Fazilet with location data
-        var faziletLocationData = Substitute.ForPartsOf<BaseLocationData>();
+        BaseLocationData faziletLocationData = Substitute.ForPartsOf<BaseLocationData>();
         _profileServiceMock.GetLocationConfig(Arg.Is(profile), Arg.Is(EDynamicPrayerTimeProviderType.Fazilet)).Returns(faziletLocationData);
         GenericSettingConfiguration faziletConfig = new() { TimeType = ETimeType.DhuhrStart, Source = EDynamicPrayerTimeProviderType.Fazilet };
-        var faziletPrayerTimeServiceMock = Substitute.For<IDynamicPrayerTimeProvider>();
+        IDynamicPrayerTimeProvider faziletPrayerTimeServiceMock = Substitute.For<IDynamicPrayerTimeProvider>();
         faziletPrayerTimeServiceMock.GetUnsupportedTimeTypes().Returns([]);
         faziletPrayerTimeServiceMock.GetPrayerTimesAsync(
                 Arg.Any<ZonedDateTime>(),
@@ -264,24 +270,24 @@ public class DynamicPrayerTimeProviderManagerTests : BaseTest
     public async Task CalculatePrayerTimesAsync_ConfigsWithUnsupportedTimeTypes_ReturnsCalculationErrorsInsteadOfThrowing()
     {
         // ARRANGE
-        var profile = TestDataHelper.CreateCompleteTestDynamicProfile();
+        DynamicProfile profile = TestDataHelper.CreateCompleteTestDynamicProfile();
         ZonedDateTime zonedDate = new LocalDate(2024, 1, 1).AtStartOfDayInZone(DateTimeZone.Utc);
 
         _profileServiceMock.GetUntrackedReferenceOfProfile(Arg.Any<int>(), Arg.Any<CancellationToken>()).Returns(profile);
 
         // Muwaqqit with a config whose time type it doesn't support
-        var muwaqqitLocationData = Substitute.ForPartsOf<BaseLocationData>();
+        BaseLocationData muwaqqitLocationData = Substitute.ForPartsOf<BaseLocationData>();
         _profileServiceMock.GetLocationConfig(Arg.Is(profile), Arg.Is(EDynamicPrayerTimeProviderType.Muwaqqit)).Returns(muwaqqitLocationData);
         GenericSettingConfiguration muwaqqitConfig = new MuwaqqitDegreeCalculationConfiguration { Degree = 14, TimeType = ETimeType.FajrStart };
-        var muwaqqitPrayerTimeServiceMock = Substitute.For<IDynamicPrayerTimeProvider>();
+        IDynamicPrayerTimeProvider muwaqqitPrayerTimeServiceMock = Substitute.For<IDynamicPrayerTimeProvider>();
         muwaqqitPrayerTimeServiceMock.GetUnsupportedTimeTypes().Returns([ETimeType.FajrStart]);
         _prayerTimeServiceFactoryMock.GetDynamicPrayerTimeProviderByDynamicPrayerTimeProvider(Arg.Is(EDynamicPrayerTimeProviderType.Muwaqqit)).Returns(muwaqqitPrayerTimeServiceMock);
 
         // valid Fazilet provider
-        var faziletLocationData = Substitute.ForPartsOf<BaseLocationData>();
+        BaseLocationData faziletLocationData = Substitute.ForPartsOf<BaseLocationData>();
         _profileServiceMock.GetLocationConfig(Arg.Is(profile), Arg.Is(EDynamicPrayerTimeProviderType.Fazilet)).Returns(faziletLocationData);
         GenericSettingConfiguration faziletConfig = new() { TimeType = ETimeType.DhuhrStart, Source = EDynamicPrayerTimeProviderType.Fazilet };
-        var faziletPrayerTimeServiceMock = Substitute.For<IDynamicPrayerTimeProvider>();
+        IDynamicPrayerTimeProvider faziletPrayerTimeServiceMock = Substitute.For<IDynamicPrayerTimeProvider>();
         faziletPrayerTimeServiceMock.GetUnsupportedTimeTypes().Returns([]);
         faziletPrayerTimeServiceMock.GetPrayerTimesAsync(
                 Arg.Any<ZonedDateTime>(),
@@ -311,15 +317,15 @@ public class DynamicPrayerTimeProviderManagerTests : BaseTest
     public async Task CalculatePrayerTimesAsync_SuccessfulCalculation_SecondCallServedFromCache()
     {
         // ARRANGE
-        var profile = TestDataHelper.CreateCompleteTestDynamicProfile();
+        DynamicProfile profile = TestDataHelper.CreateCompleteTestDynamicProfile();
         ZonedDateTime zonedDate = new LocalDate(2024, 1, 1).AtStartOfDayInZone(DateTimeZone.Utc);
 
-        var muwaqqitLocationData = Substitute.ForPartsOf<BaseLocationData>();
+        BaseLocationData muwaqqitLocationData = Substitute.ForPartsOf<BaseLocationData>();
         _profileServiceMock.GetUntrackedReferenceOfProfile(Arg.Any<int>(), Arg.Any<CancellationToken>()).Returns(profile);
         _profileServiceMock.GetLocationConfig(Arg.Is(profile), Arg.Is(EDynamicPrayerTimeProviderType.Muwaqqit)).Returns(muwaqqitLocationData);
 
         GenericSettingConfiguration muwaqqitConfig = new MuwaqqitDegreeCalculationConfiguration { Degree = 14, TimeType = ETimeType.FajrStart };
-        var muwaqqitPrayerTimeServiceMock = Substitute.For<IDynamicPrayerTimeProvider>();
+        IDynamicPrayerTimeProvider muwaqqitPrayerTimeServiceMock = Substitute.For<IDynamicPrayerTimeProvider>();
         muwaqqitPrayerTimeServiceMock.GetUnsupportedTimeTypes().Returns([]);
         muwaqqitPrayerTimeServiceMock.GetPrayerTimesAsync(
                 Arg.Any<ZonedDateTime>(),
@@ -347,15 +353,15 @@ public class DynamicPrayerTimeProviderManagerTests : BaseTest
     public async Task CalculatePrayerTimesAsync_FailedCalculation_SecondCallRecalculates()
     {
         // ARRANGE
-        var profile = TestDataHelper.CreateCompleteTestDynamicProfile();
+        DynamicProfile profile = TestDataHelper.CreateCompleteTestDynamicProfile();
         ZonedDateTime zonedDate = new LocalDate(2024, 1, 1).AtStartOfDayInZone(DateTimeZone.Utc);
 
-        var muwaqqitLocationData = Substitute.ForPartsOf<BaseLocationData>();
+        BaseLocationData muwaqqitLocationData = Substitute.ForPartsOf<BaseLocationData>();
         _profileServiceMock.GetUntrackedReferenceOfProfile(Arg.Any<int>(), Arg.Any<CancellationToken>()).Returns(profile);
         _profileServiceMock.GetLocationConfig(Arg.Is(profile), Arg.Is(EDynamicPrayerTimeProviderType.Muwaqqit)).Returns(muwaqqitLocationData);
 
         GenericSettingConfiguration muwaqqitConfig = new MuwaqqitDegreeCalculationConfiguration { Degree = 14, TimeType = ETimeType.FajrStart };
-        var muwaqqitPrayerTimeServiceMock = Substitute.For<IDynamicPrayerTimeProvider>();
+        IDynamicPrayerTimeProvider muwaqqitPrayerTimeServiceMock = Substitute.For<IDynamicPrayerTimeProvider>();
         muwaqqitPrayerTimeServiceMock.GetUnsupportedTimeTypes().Returns([]);
         muwaqqitPrayerTimeServiceMock.GetPrayerTimesAsync(
                 Arg.Any<ZonedDateTime>(),
@@ -383,16 +389,16 @@ public class DynamicPrayerTimeProviderManagerTests : BaseTest
     public async Task CalculatePrayerTimesAsync_RequestForOtherDate_OnlyLatestCalculationCached()
     {
         // ARRANGE
-        var profile = TestDataHelper.CreateCompleteTestDynamicProfile();
+        DynamicProfile profile = TestDataHelper.CreateCompleteTestDynamicProfile();
         ZonedDateTime firstZonedDate = new LocalDate(2024, 1, 1).AtStartOfDayInZone(DateTimeZone.Utc);
         ZonedDateTime secondZonedDate = new LocalDate(2024, 1, 5).AtStartOfDayInZone(DateTimeZone.Utc);
 
-        var muwaqqitLocationData = Substitute.ForPartsOf<BaseLocationData>();
+        BaseLocationData muwaqqitLocationData = Substitute.ForPartsOf<BaseLocationData>();
         _profileServiceMock.GetUntrackedReferenceOfProfile(Arg.Any<int>(), Arg.Any<CancellationToken>()).Returns(profile);
         _profileServiceMock.GetLocationConfig(Arg.Is(profile), Arg.Is(EDynamicPrayerTimeProviderType.Muwaqqit)).Returns(muwaqqitLocationData);
 
         GenericSettingConfiguration muwaqqitConfig = new MuwaqqitDegreeCalculationConfiguration { Degree = 14, TimeType = ETimeType.FajrStart };
-        var muwaqqitPrayerTimeServiceMock = Substitute.For<IDynamicPrayerTimeProvider>();
+        IDynamicPrayerTimeProvider muwaqqitPrayerTimeServiceMock = Substitute.For<IDynamicPrayerTimeProvider>();
         muwaqqitPrayerTimeServiceMock.GetUnsupportedTimeTypes().Returns([]);
         muwaqqitPrayerTimeServiceMock.GetPrayerTimesAsync(
                 Arg.Any<ZonedDateTime>(),
@@ -423,7 +429,7 @@ public class DynamicPrayerTimeProviderManagerTests : BaseTest
     public void TryGetAlreadyCalculatedPrayerTimes_NothingCalculatedYet_ReturnsFalseWithoutCalculating()
     {
         // ARRANGE
-        var profile = TestDataHelper.CreateCompleteTestDynamicProfile();
+        DynamicProfile profile = TestDataHelper.CreateCompleteTestDynamicProfile();
         ZonedDateTime zonedDate = new LocalDate(2024, 1, 1).AtStartOfDayInZone(DateTimeZone.Utc);
 
         // ACT
@@ -441,15 +447,15 @@ public class DynamicPrayerTimeProviderManagerTests : BaseTest
     public async Task TryGetAlreadyCalculatedPrayerTimes_AfterSuccessfulCalculation_ReturnsCachedDaySetWithoutRecalculating()
     {
         // ARRANGE
-        var profile = TestDataHelper.CreateCompleteTestDynamicProfile();
+        DynamicProfile profile = TestDataHelper.CreateCompleteTestDynamicProfile();
         ZonedDateTime zonedDate = new LocalDate(2024, 1, 1).AtStartOfDayInZone(DateTimeZone.Utc);
 
-        var muwaqqitLocationData = Substitute.ForPartsOf<BaseLocationData>();
+        BaseLocationData muwaqqitLocationData = Substitute.ForPartsOf<BaseLocationData>();
         _profileServiceMock.GetUntrackedReferenceOfProfile(Arg.Any<int>(), Arg.Any<CancellationToken>()).Returns(profile);
         _profileServiceMock.GetLocationConfig(Arg.Is(profile), Arg.Is(EDynamicPrayerTimeProviderType.Muwaqqit)).Returns(muwaqqitLocationData);
 
         GenericSettingConfiguration muwaqqitConfig = new MuwaqqitDegreeCalculationConfiguration { Degree = 14, TimeType = ETimeType.FajrStart };
-        var muwaqqitPrayerTimeServiceMock = Substitute.For<IDynamicPrayerTimeProvider>();
+        IDynamicPrayerTimeProvider muwaqqitPrayerTimeServiceMock = Substitute.For<IDynamicPrayerTimeProvider>();
         muwaqqitPrayerTimeServiceMock.GetUnsupportedTimeTypes().Returns([]);
         muwaqqitPrayerTimeServiceMock.GetPrayerTimesAsync(
                 Arg.Any<ZonedDateTime>(),
@@ -479,16 +485,16 @@ public class DynamicPrayerTimeProviderManagerTests : BaseTest
     public async Task TryGetAlreadyCalculatedPrayerTimes_ForOtherDateThanCalculated_ReturnsFalse()
     {
         // ARRANGE
-        var profile = TestDataHelper.CreateCompleteTestDynamicProfile();
+        DynamicProfile profile = TestDataHelper.CreateCompleteTestDynamicProfile();
         ZonedDateTime calculatedDate = new LocalDate(2024, 1, 1).AtStartOfDayInZone(DateTimeZone.Utc);
         ZonedDateTime otherDate = new LocalDate(2024, 1, 2).AtStartOfDayInZone(DateTimeZone.Utc);
 
-        var muwaqqitLocationData = Substitute.ForPartsOf<BaseLocationData>();
+        BaseLocationData muwaqqitLocationData = Substitute.ForPartsOf<BaseLocationData>();
         _profileServiceMock.GetUntrackedReferenceOfProfile(Arg.Any<int>(), Arg.Any<CancellationToken>()).Returns(profile);
         _profileServiceMock.GetLocationConfig(Arg.Is(profile), Arg.Is(EDynamicPrayerTimeProviderType.Muwaqqit)).Returns(muwaqqitLocationData);
 
         GenericSettingConfiguration muwaqqitConfig = new MuwaqqitDegreeCalculationConfiguration { Degree = 14, TimeType = ETimeType.FajrStart };
-        var muwaqqitPrayerTimeServiceMock = Substitute.For<IDynamicPrayerTimeProvider>();
+        IDynamicPrayerTimeProvider muwaqqitPrayerTimeServiceMock = Substitute.For<IDynamicPrayerTimeProvider>();
         muwaqqitPrayerTimeServiceMock.GetUnsupportedTimeTypes().Returns([]);
         muwaqqitPrayerTimeServiceMock.GetPrayerTimesAsync(
                 Arg.Any<ZonedDateTime>(),
@@ -518,15 +524,15 @@ public class DynamicPrayerTimeProviderManagerTests : BaseTest
     public async Task CalculatePrayerTimesAsync_CanceledTokenAndProviderThrowsNonCancellationException_ThrowsOperationCanceledAndDoesNotCache()
     {
         // ARRANGE
-        var profile = TestDataHelper.CreateCompleteTestDynamicProfile();
+        DynamicProfile profile = TestDataHelper.CreateCompleteTestDynamicProfile();
         ZonedDateTime zonedDate = new LocalDate(2024, 1, 1).AtStartOfDayInZone(DateTimeZone.Utc);
 
-        var muwaqqitLocationData = Substitute.ForPartsOf<BaseLocationData>();
+        BaseLocationData muwaqqitLocationData = Substitute.ForPartsOf<BaseLocationData>();
         _profileServiceMock.GetUntrackedReferenceOfProfile(Arg.Any<int>(), Arg.Any<CancellationToken>()).Returns(profile);
         _profileServiceMock.GetLocationConfig(Arg.Is(profile), Arg.Is(EDynamicPrayerTimeProviderType.Muwaqqit)).Returns(muwaqqitLocationData);
 
         GenericSettingConfiguration muwaqqitConfig = new MuwaqqitDegreeCalculationConfiguration { Degree = 14, TimeType = ETimeType.FajrStart };
-        var muwaqqitPrayerTimeServiceMock = Substitute.For<IDynamicPrayerTimeProvider>();
+        IDynamicPrayerTimeProvider muwaqqitPrayerTimeServiceMock = Substitute.For<IDynamicPrayerTimeProvider>();
         muwaqqitPrayerTimeServiceMock.GetUnsupportedTimeTypes().Returns([]);
 
         // a canceled request that bubbles up from the HTTP stack as something other than a plain

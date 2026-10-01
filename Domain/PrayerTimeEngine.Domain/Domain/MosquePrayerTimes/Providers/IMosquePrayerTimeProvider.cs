@@ -1,4 +1,4 @@
-﻿using NodaTime;
+using NodaTime;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Models;
 
 namespace PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers;

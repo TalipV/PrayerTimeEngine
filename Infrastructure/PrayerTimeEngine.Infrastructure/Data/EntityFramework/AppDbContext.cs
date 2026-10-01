@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+using System.Reflection;
+using System.Text.Json;
+using Microsoft.EntityFrameworkCore;
 using NodaTime;
 using PrayerTimeEngine.Core.Common;
 using PrayerTimeEngine.Core.Common.Extensions;
@@ -10,8 +12,6 @@ using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.Mawaqit.Models.En
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.MyMosq.Models.Entities;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Models;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
-using System.Reflection;
-using System.Text.Json;
 
 namespace PrayerTimeEngine.Core.Data.EntityFramework;
 
@@ -82,9 +82,9 @@ public class AppDbContext(
         modelBuilder.Entity<SemerkandCountry>().Property(x => x.ID).ValueGeneratedNever();
         modelBuilder.Entity<SemerkandCity>().Property(x => x.ID).ValueGeneratedNever();
 
-        foreach (var type in appDbContextMetaData.GetDbSetPropertyTypes())
+        foreach (Type type in appDbContextMetaData.GetDbSetPropertyTypes())
         {
-            configureNodaTimeProperties(modelBuilder, type);
+            ConfigureNodaTimeProperties(modelBuilder, type);
         }
 
         modelBuilder
@@ -106,7 +106,7 @@ public class AppDbContext(
             .HasForeignKey<ProfilePlaceInfo>(x => x.ProfileID);
     }
 
-    private static void configureNodaTimeProperties(ModelBuilder modelBuilder, Type type)
+    private static void ConfigureNodaTimeProperties(ModelBuilder modelBuilder, Type type)
     {
         foreach (PropertyInfo item in type.GetProperties())
         {
@@ -221,29 +221,30 @@ public class AppDbContext(
                     );
             }
 
-        };
+        }
+        ;
     }
 
     public override int SaveChanges()
     {
-        onBeforeSave();
+        OnBeforeSave();
         return base.SaveChanges();
     }
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
-        onBeforeSave();
+        OnBeforeSave();
         return base.SaveChangesAsync(cancellationToken);
     }
 
-    private void onBeforeSave()
+    private void OnBeforeSave()
     {
-        setInsertInstant();
+        SetInsertInstant();
     }
 
-    private void setInsertInstant()
+    private void SetInsertInstant()
     {
-        List<IEntity> insertedAtEntities = ChangeTracker.Entries()
+        var insertedAtEntities = ChangeTracker.Entries()
             .Where(e => e.State == EntityState.Added && e.Entity is IEntity)
             .Select(x => x.Entity).OfType<IEntity>()
             .ToList();

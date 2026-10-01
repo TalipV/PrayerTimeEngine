@@ -1,4 +1,4 @@
-﻿using PrayerTimeEngine.Core.Domain.ConfigurationManagement.DTOs;
+using PrayerTimeEngine.Core.Domain.ConfigurationManagement.DTOs;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Models;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
 
@@ -10,8 +10,8 @@ internal static class ConfigurationMapper
     {
         return new ConfigurationDTO
         {
-            DynamicProfileConfigs = configuration.Profiles.OfType<DynamicProfile>().Select(dynamicProfileToDTO).ToArray(),
-            MosqueProfileConfigs = configuration.Profiles.OfType<MosqueProfile>().Select(mosqueProfileToDTO).ToArray(),
+            DynamicProfileConfigs = [.. configuration.Profiles.OfType<DynamicProfile>().Select(DynamicProfileToDTO)],
+            MosqueProfileConfigs = [.. configuration.Profiles.OfType<MosqueProfile>().Select(MosqueProfileToDTO)],
         };
     }
 
@@ -32,11 +32,11 @@ internal static class ConfigurationMapper
         {
             if (profileDTO is DynamicProfileConfigDTO dynamicProfileConfigDTO)
             {
-                profiles.Add(dynamicProfileDTOToEntity(dynamicProfileConfigDTO));
+                profiles.Add(DynamicProfileDTOToEntity(dynamicProfileConfigDTO));
             }
             else if (profileDTO is MosqueProfileConfigDTO mosqueProfileConfigDTO)
             {
-                profiles.Add(mosqueProfileDTOToEntity(mosqueProfileConfigDTO));
+                profiles.Add(MosqueProfileDTOToEntity(mosqueProfileConfigDTO));
             }
             else
             {
@@ -50,7 +50,7 @@ internal static class ConfigurationMapper
         };
     }
 
-    private static MosqueProfileConfigDTO mosqueProfileToDTO(MosqueProfile profile)
+    private static MosqueProfileConfigDTO MosqueProfileToDTO(MosqueProfile profile)
     {
         return new MosqueProfileConfigDTO
         {
@@ -61,22 +61,24 @@ internal static class ConfigurationMapper
         };
     }
 
-    private static DynamicProfileConfigDTO dynamicProfileToDTO(DynamicProfile profile)
+    private static DynamicProfileConfigDTO DynamicProfileToDTO(DynamicProfile profile)
     {
         return new DynamicProfileConfigDTO
         {
             Name = profile.Name,
             SequenceNo = profile.SequenceNo,
-            PlaceInfo = placeInfoToDTO(profile.PlaceInfo),
-            TimeConfigs = profile.TimeConfigs?.Select(timeConfigToDTO).ToList(),
-            LocationConfigs = profile.LocationConfigs?.Select(locationConfigToDTO).ToList()
+            PlaceInfo = PlaceInfoToDTO(profile.PlaceInfo),
+            TimeConfigs = profile.TimeConfigs?.Select(TimeConfigToDTO).ToList(),
+            LocationConfigs = profile.LocationConfigs?.Select(LocationConfigToDTO).ToList()
         };
     }
 
-    private static PlaceInfoDTO placeInfoToDTO(ProfilePlaceInfo placeInfo)
+    private static PlaceInfoDTO PlaceInfoToDTO(ProfilePlaceInfo placeInfo)
     {
-        if (placeInfo == null) 
+        if (placeInfo == null)
+        {
             return null;
+        }
 
         return new PlaceInfoDTO
         {
@@ -97,10 +99,12 @@ internal static class ConfigurationMapper
         };
     }
 
-    private static TimeConfigDTO timeConfigToDTO(ProfileTimeConfig timeConfig)
+    private static TimeConfigDTO TimeConfigToDTO(ProfileTimeConfig timeConfig)
     {
-        if (timeConfig == null) 
+        if (timeConfig == null)
+        {
             return null;
+        }
 
         return new TimeConfigDTO
         {
@@ -109,10 +113,12 @@ internal static class ConfigurationMapper
         };
     }
 
-    private static LocationConfigDTO locationConfigToDTO(ProfileLocationConfig locationConfig)
+    private static LocationConfigDTO LocationConfigToDTO(ProfileLocationConfig locationConfig)
     {
-        if (locationConfig == null) 
+        if (locationConfig == null)
+        {
             return null;
+        }
 
         return new LocationConfigDTO
         {
@@ -121,7 +127,7 @@ internal static class ConfigurationMapper
         };
     }
 
-    private static DynamicProfile dynamicProfileDTOToEntity(DynamicProfileConfigDTO dynamicProfileConfigDTO)
+    private static DynamicProfile DynamicProfileDTOToEntity(DynamicProfileConfigDTO dynamicProfileConfigDTO)
     {
         var dynamicProfile = new DynamicProfile()
         {
@@ -146,22 +152,16 @@ internal static class ConfigurationMapper
                 },
             },
 
-            LocationConfigs = dynamicProfileConfigDTO.LocationConfigs.Select(locationConfigDTO =>
+            LocationConfigs = [.. dynamicProfileConfigDTO.LocationConfigs.Select(locationConfigDTO => new ProfileLocationConfig
             {
-                return new ProfileLocationConfig
-                {
-                    DynamicPrayerTimeProvider = locationConfigDTO.ProviderType,
-                    LocationData = locationConfigDTO.LocationData,
-                };
-            }).ToList(),
-            TimeConfigs = dynamicProfileConfigDTO.TimeConfigs.Select(timeConfigDTO =>
+                DynamicPrayerTimeProvider = locationConfigDTO.ProviderType,
+                LocationData = locationConfigDTO.LocationData,
+            })],
+            TimeConfigs = [.. dynamicProfileConfigDTO.TimeConfigs.Select(timeConfigDTO => new ProfileTimeConfig
             {
-                return new ProfileTimeConfig
-                {
-                    TimeType = timeConfigDTO.TimeType,
-                    CalculationConfiguration = timeConfigDTO.CalculationConfiguration,
-                };
-            }).ToList(),
+                TimeType = timeConfigDTO.TimeType,
+                CalculationConfiguration = timeConfigDTO.CalculationConfiguration,
+            })],
 
             SequenceNo = dynamicProfileConfigDTO.SequenceNo,
         };
@@ -169,7 +169,7 @@ internal static class ConfigurationMapper
         return dynamicProfile;
     }
 
-    private static MosqueProfile mosqueProfileDTOToEntity(MosqueProfileConfigDTO mosqueProfileConfigDTO)
+    private static MosqueProfile MosqueProfileDTOToEntity(MosqueProfileConfigDTO mosqueProfileConfigDTO)
     {
         var mosqueProfile = new MosqueProfile
         {

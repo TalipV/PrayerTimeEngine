@@ -1,4 +1,4 @@
-﻿using NodaTime;
+using NodaTime;
 using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Management;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Models;
@@ -40,26 +40,28 @@ public class DynamicPrayerTimeViewModel(
 
     public override async Task RefreshData(ZonedDateTime zonedDateTime, CancellationToken cancellationToken)
     {
-        await dispatcher.DispatchAsync(showHideSpecificTimes);
+        await dispatcher.DispatchAsync(ShowHideSpecificTimes);
         await base.RefreshData(zonedDateTime, cancellationToken);
     }
 
-    private void showHideSpecificTimes()
+    private void ShowHideSpecificTimes()
     {
-        ShowFajrGhalas = isCalculationShown(ETimeType.FajrGhalas);
-        ShowFajrRedness = isCalculationShown(ETimeType.FajrKaraha);
+        ShowFajrGhalas = IsCalculationShown(ETimeType.FajrGhalas);
+        ShowFajrRedness = IsCalculationShown(ETimeType.FajrKaraha);
 
-        ShowMithlayn = isCalculationShown(ETimeType.AsrMithlayn);
-        ShowKaraha = isCalculationShown(ETimeType.AsrKaraha);
+        ShowMithlayn = IsCalculationShown(ETimeType.AsrMithlayn);
+        ShowKaraha = IsCalculationShown(ETimeType.AsrKaraha);
 
-        ShowMaghribSufficientTime = isCalculationShown(ETimeType.MaghribSufficientTime);
-        ShowIshtibak = isCalculationShown(ETimeType.MaghribIshtibak);
+        ShowMaghribSufficientTime = IsCalculationShown(ETimeType.MaghribSufficientTime);
+        ShowIshtibak = IsCalculationShown(ETimeType.MaghribIshtibak);
     }
 
-    private bool isCalculationShown(ETimeType timeData)
+    private bool IsCalculationShown(ETimeType timeData)
     {
         if (ProfileActual is null)
+        {
             return false;
+        }
 
         return profileService.GetTimeConfig(ProfileActual, timeData)?.IsTimeShown == true;
     }
@@ -68,29 +70,29 @@ public class DynamicPrayerTimeViewModel(
     {
         if (prayerTime is FajrPrayerTime fajrPrayerTime)
         {
-            return createFajrPrayerTimeGraphicSubTimeVO(fajrPrayerTime);
+            return CreateFajrPrayerTimeGraphicSubTimeVO(fajrPrayerTime);
         }
         else if (prayerTime is DuhaPrayerTime duhaPrayerTime)
         {
-            return createDuhaPrayerTimeGraphicSubTimeVO(duhaPrayerTime);
+            return CreateDuhaPrayerTimeGraphicSubTimeVO(duhaPrayerTime);
         }
         else if (prayerTime is AsrPrayerTime asrPrayerTime)
         {
-            return createAsrPrayerTimeGraphicSubTimeVO(asrPrayerTime);
+            return CreateAsrPrayerTimeGraphicSubTimeVO(asrPrayerTime);
         }
         else if (prayerTime is MaghribPrayerTime maghribPrayerTime)
         {
-            return createMaghribPrayerTimeGraphicSubTimeVO(maghribPrayerTime);
+            return CreateMaghribPrayerTimeGraphicSubTimeVO(maghribPrayerTime);
         }
         else if (prayerTime is IshaPrayerTime ishaPrayerTime)
         {
-            return createIshaPrayerTimeGraphicSubTimeVO(ishaPrayerTime);
+            return CreateIshaPrayerTimeGraphicSubTimeVO(ishaPrayerTime);
         }
 
         return [];
     }
 
-    private static List<PrayerTimeGraphicSubTimeVO> createFajrPrayerTimeGraphicSubTimeVO(FajrPrayerTime fajrPrayerTime)
+    private static List<PrayerTimeGraphicSubTimeVO> CreateFajrPrayerTimeGraphicSubTimeVO(FajrPrayerTime fajrPrayerTime)
     {
         if (fajrPrayerTime.Ghalas is null || fajrPrayerTime.Karaha is null)
         {
@@ -119,7 +121,7 @@ public class DynamicPrayerTimeViewModel(
             ];
     }
 
-    private static List<PrayerTimeGraphicSubTimeVO> createDuhaPrayerTimeGraphicSubTimeVO(DuhaPrayerTime duhaPrayerTime)
+    private static List<PrayerTimeGraphicSubTimeVO> CreateDuhaPrayerTimeGraphicSubTimeVO(DuhaPrayerTime duhaPrayerTime)
     {
         if (duhaPrayerTime.QuarterOfDay is null)
         {
@@ -142,7 +144,7 @@ public class DynamicPrayerTimeViewModel(
             ];
     }
 
-    private static List<PrayerTimeGraphicSubTimeVO> createAsrPrayerTimeGraphicSubTimeVO(AsrPrayerTime asrPrayerTime)
+    private static List<PrayerTimeGraphicSubTimeVO> CreateAsrPrayerTimeGraphicSubTimeVO(AsrPrayerTime asrPrayerTime)
     {
         if (asrPrayerTime.Mithlayn is null || asrPrayerTime.Karaha is null)
         {
@@ -171,33 +173,33 @@ public class DynamicPrayerTimeViewModel(
             ];
     }
 
-    private static List<PrayerTimeGraphicSubTimeVO> createMaghribPrayerTimeGraphicSubTimeVO(MaghribPrayerTime maghribPrayerTime, IshaPrayerTime ishaPrayerTime = null)
+    private static List<PrayerTimeGraphicSubTimeVO> CreateMaghribPrayerTimeGraphicSubTimeVO(MaghribPrayerTime maghribPrayerTime, IshaPrayerTime ishaPrayerTime = null)
     {
         if (maghribPrayerTime.SufficientTime is null || maghribPrayerTime.Ishtibak is null)
         {
             return [];
         }
 
-        Instant mainStart = maghribPrayerTime.Start.Value.ToInstant();
-        Instant mainEnd = maghribPrayerTime.End.Value.ToInstant();
+        var mainStart = maghribPrayerTime.Start.Value.ToInstant();
+        var mainEnd = maghribPrayerTime.End.Value.ToInstant();
 
         List<PrayerTimeGraphicSubTimeVO> result = [];
 
-        addSubTimeIfValid(mainStart, mainEnd, result, "Normal", maghribPrayerTime.Start.Value.ToInstant(), maghribPrayerTime.SufficientTime.Value.ToInstant());
-        addSubTimeIfValid(mainStart, mainEnd, result, "Karaha1", maghribPrayerTime.SufficientTime.Value.ToInstant(), maghribPrayerTime.Ishtibak.Value.ToInstant());
-        addSubTimeIfValid(mainStart, mainEnd, result, "Karaha2", maghribPrayerTime.Ishtibak.Value.ToInstant(), maghribPrayerTime.End.Value.ToInstant());
+        AddSubTimeIfValid(mainStart, mainEnd, result, "Normal", maghribPrayerTime.Start.Value.ToInstant(), maghribPrayerTime.SufficientTime.Value.ToInstant());
+        AddSubTimeIfValid(mainStart, mainEnd, result, "Karaha1", maghribPrayerTime.SufficientTime.Value.ToInstant(), maghribPrayerTime.Ishtibak.Value.ToInstant());
+        AddSubTimeIfValid(mainStart, mainEnd, result, "Karaha2", maghribPrayerTime.Ishtibak.Value.ToInstant(), maghribPrayerTime.End.Value.ToInstant());
 
         if (ishaPrayerTime != null)
         {
-            addSubTimeIfValid(mainStart, mainEnd, result, "1/3", maghribPrayerTime.Start.Value.ToInstant(), ishaPrayerTime.FirstThirdOfNight.Value.ToInstant(), ESubTimeType.RightHalf);
-            addSubTimeIfValid(mainStart, mainEnd, result, "2/3", ishaPrayerTime.FirstThirdOfNight.Value.ToInstant(), ishaPrayerTime.SecondThirdOfNight.Value.ToInstant(), ESubTimeType.RightHalf);
-            addSubTimeIfValid(mainStart, mainEnd, result, "3/3", ishaPrayerTime.SecondThirdOfNight.Value.ToInstant(), maghribPrayerTime.End.Value.ToInstant(), ESubTimeType.RightHalf);
+            AddSubTimeIfValid(mainStart, mainEnd, result, "1/3", maghribPrayerTime.Start.Value.ToInstant(), ishaPrayerTime.FirstThirdOfNight.Value.ToInstant(), ESubTimeType.RightHalf);
+            AddSubTimeIfValid(mainStart, mainEnd, result, "2/3", ishaPrayerTime.FirstThirdOfNight.Value.ToInstant(), ishaPrayerTime.SecondThirdOfNight.Value.ToInstant(), ESubTimeType.RightHalf);
+            AddSubTimeIfValid(mainStart, mainEnd, result, "3/3", ishaPrayerTime.SecondThirdOfNight.Value.ToInstant(), maghribPrayerTime.End.Value.ToInstant(), ESubTimeType.RightHalf);
         }
 
         return result;
     }
 
-    private static List<PrayerTimeGraphicSubTimeVO> createIshaPrayerTimeGraphicSubTimeVO(IshaPrayerTime ishaPrayerTime)
+    private static List<PrayerTimeGraphicSubTimeVO> CreateIshaPrayerTimeGraphicSubTimeVO(IshaPrayerTime ishaPrayerTime)
     {
         if (ishaPrayerTime.FirstThirdOfNight is null
             || ishaPrayerTime.SecondThirdOfNight is null
@@ -206,26 +208,26 @@ public class DynamicPrayerTimeViewModel(
             return [];
         }
 
-        Instant mainStart = ishaPrayerTime.Start.Value.ToInstant();
-        Instant mainEnd = ishaPrayerTime.End.Value.ToInstant();
+        var mainStart = ishaPrayerTime.Start.Value.ToInstant();
+        var mainEnd = ishaPrayerTime.End.Value.ToInstant();
 
         List<PrayerTimeGraphicSubTimeVO> result = [];
 
-        addSubTimeIfValid(mainStart, mainEnd, result, "1/3", ishaPrayerTime.Start.Value.ToInstant(), ishaPrayerTime.FirstThirdOfNight.Value.ToInstant(), ESubTimeType.RightHalf);
-        addSubTimeIfValid(mainStart, mainEnd, result, "2/3", ishaPrayerTime.FirstThirdOfNight.Value.ToInstant(), ishaPrayerTime.SecondThirdOfNight.Value.ToInstant(), ESubTimeType.RightHalf);
-        addSubTimeIfValid(mainStart, mainEnd, result, "3/3", ishaPrayerTime.SecondThirdOfNight.Value.ToInstant(), ishaPrayerTime.End.Value.ToInstant(), ESubTimeType.RightHalf);
-        
-        addSubTimeIfValid(mainStart, mainEnd, result, "1/2", ishaPrayerTime.Start.Value.ToInstant(), ishaPrayerTime.MiddleOfNight.Value.ToInstant(), ESubTimeType.LeftHalf);
-        addSubTimeIfValid(mainStart, mainEnd, result, "2/2", ishaPrayerTime.MiddleOfNight.Value.ToInstant(), ishaPrayerTime.End.Value.ToInstant(), ESubTimeType.LeftHalf);
+        AddSubTimeIfValid(mainStart, mainEnd, result, "1/3", ishaPrayerTime.Start.Value.ToInstant(), ishaPrayerTime.FirstThirdOfNight.Value.ToInstant(), ESubTimeType.RightHalf);
+        AddSubTimeIfValid(mainStart, mainEnd, result, "2/3", ishaPrayerTime.FirstThirdOfNight.Value.ToInstant(), ishaPrayerTime.SecondThirdOfNight.Value.ToInstant(), ESubTimeType.RightHalf);
+        AddSubTimeIfValid(mainStart, mainEnd, result, "3/3", ishaPrayerTime.SecondThirdOfNight.Value.ToInstant(), ishaPrayerTime.End.Value.ToInstant(), ESubTimeType.RightHalf);
+
+        AddSubTimeIfValid(mainStart, mainEnd, result, "1/2", ishaPrayerTime.Start.Value.ToInstant(), ishaPrayerTime.MiddleOfNight.Value.ToInstant(), ESubTimeType.LeftHalf);
+        AddSubTimeIfValid(mainStart, mainEnd, result, "2/2", ishaPrayerTime.MiddleOfNight.Value.ToInstant(), ishaPrayerTime.End.Value.ToInstant(), ESubTimeType.LeftHalf);
 
         return result;
     }
 
-    private static void addSubTimeIfValid(
-        Instant mainStart, Instant mainEnd, 
-        List<PrayerTimeGraphicSubTimeVO> result, 
-        string name, 
-        Instant subTimeStart, Instant subTimeEnd, 
+    private static void AddSubTimeIfValid(
+        Instant mainStart, Instant mainEnd,
+        List<PrayerTimeGraphicSubTimeVO> result,
+        string name,
+        Instant subTimeStart, Instant subTimeEnd,
         ESubTimeType type = ESubTimeType.FullHalf)
     {
         // non existent time

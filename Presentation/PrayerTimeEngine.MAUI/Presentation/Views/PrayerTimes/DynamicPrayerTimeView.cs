@@ -27,33 +27,33 @@ public partial class DynamicPrayerTimeView : ContentView
     /// The whole view is derived from these two columns, so adding or removing a time
     /// is a change to the description and never to row or column indices.
     /// </summary>
-    private static BlockDefinition[][] getColumns() =>
+    private static BlockDefinition[][] GetColumns() =>
     [
         [
-            new BlockDefinition("Fajr", ETimeSection.Fajr, currentDayBinding(nameof(DynamicPrayerTimesDay.Fajr)),
+            new BlockDefinition("Fajr", ETimeSection.Fajr, CurrentDayBinding(nameof(DynamicPrayerTimesDay.Fajr)),
             [
                 new SubTimeDefinition("Ghalas", nameof(FajrPrayerTime.Ghalas), nameof(DynamicPrayerTimeViewModel.ShowFajrGhalas)),
                 new SubTimeDefinition("Redness", nameof(FajrPrayerTime.Karaha), nameof(DynamicPrayerTimeViewModel.ShowFajrRedness)),
             ]),
-            new BlockDefinition("Dhuhr", ETimeSection.Dhuhr, currentDayBinding(nameof(DynamicPrayerTimesDay.Dhuhr)), []),
-            new BlockDefinition("Maghrib", ETimeSection.Maghrib, currentDayBinding(nameof(DynamicPrayerTimesDay.Maghrib)),
+            new BlockDefinition("Dhuhr", ETimeSection.Dhuhr, CurrentDayBinding(nameof(DynamicPrayerTimesDay.Dhuhr)), []),
+            new BlockDefinition("Maghrib", ETimeSection.Maghrib, CurrentDayBinding(nameof(DynamicPrayerTimesDay.Maghrib)),
             [
                 new SubTimeDefinition("Sufficient", nameof(MaghribPrayerTime.SufficientTime), nameof(DynamicPrayerTimeViewModel.ShowMaghribSufficientTime)),
                 new SubTimeDefinition("Ishtibak", nameof(MaghribPrayerTime.Ishtibak), nameof(DynamicPrayerTimeViewModel.ShowIshtibak)),
             ]),
         ],
         [
-            new BlockDefinition("Duha", ETimeSection.Duha, currentDayBinding(nameof(DynamicPrayerTimesDay.Duha)),
+            new BlockDefinition("Duha", ETimeSection.Duha, CurrentDayBinding(nameof(DynamicPrayerTimesDay.Duha)),
             [
                 new SubTimeDefinition("Quarter", nameof(DuhaPrayerTime.QuarterOfDay)),
                 new SubTimeDefinition("Half*", nameof(DuhaPrayerTime.HalfOfDay)),
             ]),
-            new BlockDefinition("Asr", ETimeSection.Asr, currentDayBinding(nameof(DynamicPrayerTimesDay.Asr)),
+            new BlockDefinition("Asr", ETimeSection.Asr, CurrentDayBinding(nameof(DynamicPrayerTimesDay.Asr)),
             [
                 new SubTimeDefinition("Mithlayn", nameof(AsrPrayerTime.Mithlayn), nameof(DynamicPrayerTimeViewModel.ShowMithlayn)),
                 new SubTimeDefinition("Karaha", nameof(AsrPrayerTime.Karaha), nameof(DynamicPrayerTimeViewModel.ShowKaraha)),
             ]),
-            new BlockDefinition("Isha", ETimeSection.Isha, currentDayBinding(nameof(DynamicPrayerTimesDay.Isha)),
+            new BlockDefinition("Isha", ETimeSection.Isha, CurrentDayBinding(nameof(DynamicPrayerTimesDay.Isha)),
             [
                 new SubTimeDefinition("1/3", nameof(IshaPrayerTime.FirstThirdOfNight)),
                 new SubTimeDefinition("1/2", nameof(IshaPrayerTime.MiddleOfNight)),
@@ -66,10 +66,10 @@ public partial class DynamicPrayerTimeView : ContentView
     /// A single moment instead of a range, and not tied to one section of the day, so it gets
     /// its own row below both columns instead of a place in the prayer order.
     /// </summary>
-    private static BlockDefinition getMomentBlock()
-        => new("Qibla", ETimeSection.General, currentDayBinding(nameof(DynamicPrayerTimesDay.Qibla)), [], ShowOnlyStartTime: true);
+    private static BlockDefinition GetMomentBlock()
+        => new("Qibla", ETimeSection.General, CurrentDayBinding(nameof(DynamicPrayerTimesDay.Qibla)), [], ShowOnlyStartTime: true);
 
-    private static string currentDayBinding(string prayerTimeProperty)
+    private static string CurrentDayBinding(string prayerTimeProperty)
         => $"{nameof(DynamicPrayerTimesDaySet.CurrentDay)}.{prayerTimeProperty}";
 
     #endregion layout description
@@ -125,17 +125,17 @@ public partial class DynamicPrayerTimeView : ContentView
     {
         _mainPageViewModel = mainPageViewModel;
         _systemInfoService = systemInfoService;
-        Content = createUI();
+        Content = CreateUI();
     }
 
     /// <summary>
     /// Both columns live in the same grid, so a row is exactly as high as the taller of its two
     /// blocks and the pairs stay on one line no matter how many sub times they have.
     /// </summary>
-    private View createUI()
+    private View CreateUI()
     {
-        BlockDefinition[][] columns = getColumns();
-        BlockDefinition momentBlock = getMomentBlock();
+        BlockDefinition[][] columns = GetColumns();
+        BlockDefinition momentBlock = GetMomentBlock();
 
         _blockRowCount = columns.Max(column => column.Length);
 
@@ -156,25 +156,25 @@ public partial class DynamicPrayerTimeView : ContentView
 
             for (int rowIndex = 0; rowIndex < blocks.Length; rowIndex++)
             {
-                mainGrid.Add(createBlock(blocks[rowIndex]), column: columnIndex, row: rowIndex);
+                mainGrid.Add(CreateBlock(blocks[rowIndex]), column: columnIndex, row: rowIndex);
             }
         }
 
-        mainGrid.AddWithSpan(createMomentRow(momentBlock), row: _blockRowCount + 1, column: 0, columnSpan: 2);
+        mainGrid.AddWithSpan(CreateMomentRow(momentBlock), row: _blockRowCount + 1, column: 0, columnSpan: 2);
 
         // the moment row is a single line, as high as the larger of its two labels, and every row
         // is followed by a gap which has to be part of the height the view asks for
         _requiredLineUnits =
-            columns.Max(getRequiredLineUnits)
+            columns.Max(GetRequiredLineUnits)
             + 1.0
-            + (_blockRowCount + 1) * MIN_ROW_GAP_RATIO;
-        _requiredEmWidth = columns.Max(getRequiredEmWidth);
-        mainGrid.SizeChanged += (_, _) => applyTypeScale(mainGrid);
+            + ((_blockRowCount + 1) * MIN_ROW_GAP_RATIO);
+        _requiredEmWidth = columns.Max(GetRequiredEmWidth);
+        mainGrid.SizeChanged += (_, _) => ApplyTypeScale(mainGrid);
 
         return mainGrid;
     }
 
-    private View createBlock(BlockDefinition block)
+    private View CreateBlock(BlockDefinition block)
     {
         var blockLayout = new VerticalStackLayout { VerticalOptions = LayoutOptions.Start };
 
@@ -192,7 +192,7 @@ public partial class DynamicPrayerTimeView : ContentView
             CommandParameter = block.Section
         });
 
-        Label prayerDurationLabel = createTimeLabel(block);
+        Label prayerDurationLabel = CreateTimeLabel(block);
 
         blockLayout.Add(prayerNameLabel);
         blockLayout.Add(prayerDurationLabel);
@@ -202,13 +202,13 @@ public partial class DynamicPrayerTimeView : ContentView
 
         foreach (SubTimeDefinition subTime in block.SubTimes)
         {
-            blockLayout.Add(createSubTime(block, subTime));
+            blockLayout.Add(CreateSubTime(block, subTime));
         }
 
         return blockLayout;
     }
 
-    private Label createTimeLabel(BlockDefinition block)
+    private Label CreateTimeLabel(BlockDefinition block)
     {
         var timeLabel = new Label
         {
@@ -241,7 +241,7 @@ public partial class DynamicPrayerTimeView : ContentView
     /// <summary>
     /// Name and value on one line, so the row stays flat and does not compete with the prayers.
     /// </summary>
-    private View createMomentRow(BlockDefinition block)
+    private View CreateMomentRow(BlockDefinition block)
     {
         var nameLabel = new Label
         {
@@ -257,7 +257,7 @@ public partial class DynamicPrayerTimeView : ContentView
             CommandParameter = block.Section
         });
 
-        Label timeLabel = createTimeLabel(block);
+        Label timeLabel = CreateTimeLabel(block);
         timeLabel.VerticalOptions = LayoutOptions.Center;
 
         // same sizes as a prayer and its time, the row only differs in being on one line
@@ -271,7 +271,7 @@ public partial class DynamicPrayerTimeView : ContentView
         };
     }
 
-    private View createSubTime(BlockDefinition block, SubTimeDefinition subTime)
+    private View CreateSubTime(BlockDefinition block, SubTimeDefinition subTime)
     {
         // the name takes what it needs, the value keeps to the right edge so the values line up
         var subTimeGrid = new Grid
@@ -314,14 +314,14 @@ public partial class DynamicPrayerTimeView : ContentView
         return subTimeGrid;
     }
 
-    private static double getRequiredLineUnits(BlockDefinition[] blocks)
-        => blocks.Sum(block => 1.0 + PRAYER_TIME_RATIO + block.SubTimes.Length * SUB_TIME_RATIO);
+    private static double GetRequiredLineUnits(BlockDefinition[] blocks)
+        => blocks.Sum(block => 1.0 + PRAYER_TIME_RATIO + (block.SubTimes.Length * SUB_TIME_RATIO));
 
     /// <summary>
     /// The widest line of a column is either a full time range or the longest sub time line,
     /// which is its name and its value next to each other.
     /// </summary>
-    private static double getRequiredEmWidth(BlockDefinition[] blocks)
+    private static double GetRequiredEmWidth(BlockDefinition[] blocks)
     {
         double timeRangeWidth = TIME_RANGE_EM_WIDTH * PRAYER_TIME_RATIO;
 
@@ -332,7 +332,7 @@ public partial class DynamicPrayerTimeView : ContentView
             .Max();
 
         double subTimeWidth =
-            (longestSubTimeName * LETTER_EM_WIDTH + SUB_TIME_GAP_EM_WIDTH + TIME_EM_WIDTH) * SUB_TIME_RATIO;
+            ((longestSubTimeName * LETTER_EM_WIDTH) + SUB_TIME_GAP_EM_WIDTH + TIME_EM_WIDTH) * SUB_TIME_RATIO;
 
         return Math.Max(timeRangeWidth, subTimeWidth);
     }
@@ -341,13 +341,15 @@ public partial class DynamicPrayerTimeView : ContentView
     /// Derives the font size from the space the view actually got: large enough to fill the
     /// height, small enough that a full time range still fits into one column.
     /// </summary>
-    private void applyTypeScale(Grid mainGrid)
+    private void ApplyTypeScale(Grid mainGrid)
     {
         double height = mainGrid.Height - mainGrid.Padding.VerticalThickness;
         double width = mainGrid.Width - mainGrid.Padding.HorizontalThickness - mainGrid.ColumnSpacing;
 
         if (width <= 0 || height <= 0 || _requiredLineUnits <= 0)
+        {
             return;
+        }
 
         double fontSizeByHeight = height / (_requiredLineUnits * LINE_HEIGHT_RATIO);
 
@@ -358,7 +360,9 @@ public partial class DynamicPrayerTimeView : ContentView
 
         // resizing the labels changes the layout again, so ignore the resulting echo
         if (Math.Abs(fontSize - _lastAppliedFontSize) < 0.5)
+        {
             return;
+        }
 
         _lastAppliedFontSize = fontSize;
 
@@ -367,7 +371,7 @@ public partial class DynamicPrayerTimeView : ContentView
             label.FontSize = fontSize * ratio;
         }
 
-        applyRowSpacing(mainGrid, height, fontSize);
+        ApplyRowSpacing(mainGrid, height, fontSize);
     }
 
     /// <summary>
@@ -375,7 +379,7 @@ public partial class DynamicPrayerTimeView : ContentView
     /// remainder is spent on the gaps between the rows, the rest lands in the star row and
     /// therefore between the last prayer and the moment row.
     /// </summary>
-    private void applyRowSpacing(Grid mainGrid, double height, double fontSize)
+    private void ApplyRowSpacing(Grid mainGrid, double height, double fontSize)
     {
         double neededHeight = fontSize * _requiredLineUnits * LINE_HEIGHT_RATIO;
         double leftoverHeight = Math.Max(0, height - neededHeight);
@@ -383,6 +387,6 @@ public partial class DynamicPrayerTimeView : ContentView
         // one gap per block row plus the one in front of the moment row
         double distributedGap = leftoverHeight / (_blockRowCount + 1) * ROW_SPACING_SHARE;
 
-        mainGrid.RowSpacing = fontSize * MIN_ROW_GAP_RATIO + distributedGap;
+        mainGrid.RowSpacing = (fontSize * MIN_ROW_GAP_RATIO) + distributedGap;
     }
 }

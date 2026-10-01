@@ -1,4 +1,8 @@
-﻿using NodaTime;
+using System.Globalization;
+using System.Net;
+using System.Net.WebSockets;
+using System.Text;
+using NodaTime;
 using NSubstitute;
 using PrayerTimeEngine.Core.Common;
 using PrayerTimeEngine.Core.Data.WebSocket.Interfaces;
@@ -12,10 +16,6 @@ using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Semerkand.Servic
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.Mawaqit.Interfaces;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.MyMosq.Services;
 using Refit;
-using System.Globalization;
-using System.Net;
-using System.Net.WebSockets;
-using System.Text;
 
 namespace PrayerTimeEngine.Core.Tests.Common.TestData;
 
@@ -27,7 +27,7 @@ public class SubstitutionHelper
 
     public static ISemerkandApiService GetMockedSemerkandApiService()
     {
-        static HttpResponseMessage handleRequestFunc(HttpRequestMessage request)
+        static HttpResponseMessage HandleRequestFunc(HttpRequestMessage request)
         {
             Stream responseStream = request.RequestUri.AbsoluteUri switch
             {
@@ -46,7 +46,7 @@ public class SubstitutionHelper
             };
         }
 
-        var mockHttpMessageHandler = new MockHttpMessageHandler(handleRequestFunc);
+        var mockHttpMessageHandler = new MockHttpMessageHandler(HandleRequestFunc);
         var httpClient = new HttpClient(mockHttpMessageHandler) { BaseAddress = new Uri("https://semerkandtakvimi.com/api/") };
 
         return new SemerkandApiService(RestService.For<ISemerkandApiClient>(httpClient));
@@ -54,7 +54,7 @@ public class SubstitutionHelper
 
     public static IMuwaqqitApiService GetMockedMuwaqqitApiService()
     {
-        static HttpResponseMessage handleRequestFunc(HttpRequestMessage request)
+        static HttpResponseMessage HandleRequestFunc(HttpRequestMessage request)
         {
             Stream responseStream =
                 request.RequestUri.AbsoluteUri switch
@@ -73,7 +73,7 @@ public class SubstitutionHelper
             };
         }
 
-        var mockHttpMessageHandler = new MockHttpMessageHandler(handleRequestFunc);
+        var mockHttpMessageHandler = new MockHttpMessageHandler(HandleRequestFunc);
         var httpClient = new HttpClient(mockHttpMessageHandler)
         {
             BaseAddress = new Uri(MUWAQQIT_BASE_URL)
@@ -84,7 +84,7 @@ public class SubstitutionHelper
 
     public static IFaziletApiService GetMockedFaziletApiService()
     {
-        static HttpResponseMessage handleRequestFunc(HttpRequestMessage request)
+        static HttpResponseMessage HandleRequestFunc(HttpRequestMessage request)
         {
             Stream responseStream = request.RequestUri.AbsoluteUri switch
             {
@@ -103,7 +103,7 @@ public class SubstitutionHelper
             };
         }
 
-        var mockHttpMessageHandler = new MockHttpMessageHandler(handleRequestFunc);
+        var mockHttpMessageHandler = new MockHttpMessageHandler(HandleRequestFunc);
         var httpClient = new HttpClient(mockHttpMessageHandler) { BaseAddress = new Uri(FAZILET_BASE_URL) };
 
         return new FaziletApiService(RestService.For<IFaziletApiClient>(httpClient));
@@ -111,7 +111,7 @@ public class SubstitutionHelper
 
     public static IMawaqitApiService GetMockedMawaqitApiService()
     {
-        static HttpResponseMessage handleRequestFunc(HttpRequestMessage request)
+        static HttpResponseMessage HandleRequestFunc(HttpRequestMessage request)
         {
             Stream responseStream =
                 request.RequestUri.AbsoluteUri switch
@@ -127,7 +127,7 @@ public class SubstitutionHelper
             };
         }
 
-        var mockHttpMessageHandler = new MockHttpMessageHandler(handleRequestFunc);
+        var mockHttpMessageHandler = new MockHttpMessageHandler(HandleRequestFunc);
         var httpClient = new HttpClient(mockHttpMessageHandler)
         {
             BaseAddress = new Uri("https://mawaqit.net/de/")
@@ -138,9 +138,9 @@ public class SubstitutionHelper
 
     private const string WEB_SOCKET_MESSAGE_SEPARATOR_TEXT = "#CUSTOM-SEPARATOR#";
 
-    private static IWebSocketClient getMockedMyMosqWebSocketClient()
+    private static IWebSocketClient GetMockedMyMosqWebSocketClient()
     {
-        var mockWebSocketClient = Substitute.For<IWebSocketClient>();
+        IWebSocketClient mockWebSocketClient = Substitute.For<IWebSocketClient>();
 
         mockWebSocketClient.SendAsync(Arg.Any<ArraySegment<byte>>(), Arg.Any<WebSocketMessageType>(), Arg.Any<bool>(), Arg.Any<CancellationToken>())
             .Returns(callInfo =>
@@ -148,21 +148,21 @@ public class SubstitutionHelper
                 ArraySegment<byte> arraySegment = callInfo.Arg<ArraySegment<byte>>();
                 string inputMessage = Encoding.UTF8.GetString(arraySegment.Array, arraySegment.Offset, arraySegment.Count);
 
-                var filePath = Path.Combine(
+                string filePath = Path.Combine(
                     TestDataHelper.MYMOSQ_TEST_DATA_FILE_PATH,
                     inputMessage.Contains("\"p\": \"/prayerTimes/1239\"")
                         ? "MyMosq_WebSocketMessage_20240830_1239.txt"
                         : "MyMosq_WebSocketMessage_20240830_InvalidMosqueID.txt");
 
-                var fileContent = File.ReadAllText(filePath);
+                string fileContent = File.ReadAllText(filePath);
                 var messages = new Queue<string>(fileContent.Split(WEB_SOCKET_MESSAGE_SEPARATOR_TEXT));
 
                 mockWebSocketClient.ReceiveAsync(Arg.Any<ArraySegment<byte>>(), Arg.Any<CancellationToken>())
                     .Returns(callInfo =>
                     {
                         ArraySegment<byte> arraySegment = callInfo.Arg<ArraySegment<byte>>();
-                        var message = messages.Dequeue();
-                        var byteArray = Encoding.UTF8.GetBytes(message);
+                        string message = messages.Dequeue();
+                        byte[] byteArray = Encoding.UTF8.GetBytes(message);
                         Array.Copy(byteArray, arraySegment.Array, byteArray.Length);
 
                         return new WebSocketReceiveResult(count: byteArray.Length, messageType: WebSocketMessageType.Text, endOfMessage: true);
@@ -178,15 +178,15 @@ public class SubstitutionHelper
 
     public static MyMosqApiService GetMockedMyMosqApiService()
     {
-        var _mockWebSocketClient = getMockedMyMosqWebSocketClient();
-        var _mockWebSocketClientFactory = Substitute.For<IWebSocketClientFactory>();
-        _mockWebSocketClientFactory.CreateWebSocketClient().Returns(_mockWebSocketClient);
-        return new MyMosqApiService(_mockWebSocketClientFactory);
+        IWebSocketClient mockWebSocketClient = GetMockedMyMosqWebSocketClient();
+        IWebSocketClientFactory mockWebSocketClientFactory = Substitute.For<IWebSocketClientFactory>();
+        mockWebSocketClientFactory.CreateWebSocketClient().Returns(mockWebSocketClient);
+        return new MyMosqApiService(mockWebSocketClientFactory);
     }
 
     public static ISystemInfoService GetMockedSystemInfoService(ZonedDateTime zonedDateTime)
     {
-        var mock = Substitute.For<ISystemInfoService>();
+        ISystemInfoService mock = Substitute.For<ISystemInfoService>();
         mock.GetCurrentInstant().Returns(zonedDateTime.ToInstant());
         mock.GetCurrentZonedDateTime().Returns(zonedDateTime);
         mock.GetSystemTimeZone().Returns(zonedDateTime.Zone);

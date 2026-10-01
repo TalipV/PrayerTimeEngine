@@ -1,4 +1,4 @@
-﻿using Android;
+using Android;
 using static Microsoft.Maui.ApplicationModel.Permissions;
 
 namespace PrayerTimeEngine.Platforms.Android.Permissions;
@@ -10,7 +10,9 @@ public class PostNotifications : BasePlatformPermission
         get
         {
             if (!OperatingSystem.IsAndroidVersionAtLeast(33))
+            {
                 throw new NotImplementedException();
+            }
 
             return
             [

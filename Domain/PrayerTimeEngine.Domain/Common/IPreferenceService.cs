@@ -1,4 +1,4 @@
-﻿namespace PrayerTimeEngine.Core.Common;
+namespace PrayerTimeEngine.Core.Common;
 
 public interface IPreferenceService
 {

@@ -1,5 +1,5 @@
-﻿using NodaTime;
 using System.Globalization;
+using NodaTime;
 
 namespace PrayerTimeEngine.Core.Common;
 

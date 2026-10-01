@@ -20,7 +20,7 @@ public class SemerkandDynamicPrayerTimeProviderTests : BaseTest
     public async Task GetPrayerTimesAsync_NormalInput_PrayerTimesForThatDay()
     {
         // ARRANGE
-        ServiceProvider serviceProvider = createServiceProvider(
+        ServiceProvider serviceProvider = CreateServiceProvider(
             configureServiceCollection: serviceCollection =>
             {
                 serviceCollection.AddSingleton(GetHandledDbContextFactory());
@@ -41,7 +41,7 @@ public class SemerkandDynamicPrayerTimeProviderTests : BaseTest
             CityName = "Innsbruck",
             TimezoneName = TestDataHelper.EUROPE_VIENNA_TIME_ZONE.Id
         };
-        var dateTimeZone = DateTimeZoneProviders.Tzdb[locationData.TimezoneName];
+        DateTimeZone dateTimeZone = DateTimeZoneProviders.Tzdb[locationData.TimezoneName];
 
         List<GenericSettingConfiguration> configs =
             [
@@ -91,7 +91,7 @@ public class SemerkandDynamicPrayerTimeProviderTests : BaseTest
     public async Task GetPrayerTimesAsync_BugCaseIshaEndDSTTimeChange_IshaEndExtractedProperly()
     {
         // ARRANGE
-        ServiceProvider serviceProvider = createServiceProvider(
+        ServiceProvider serviceProvider = CreateServiceProvider(
             configureServiceCollection: serviceCollection =>
             {
                 serviceCollection.AddSingleton(GetHandledDbContextFactory());
@@ -112,7 +112,7 @@ public class SemerkandDynamicPrayerTimeProviderTests : BaseTest
             CityName = "Leverkusen",
             TimezoneName = TestDataHelper.EUROPE_VIENNA_TIME_ZONE.Id
         };
-        var dateTimeZone = DateTimeZoneProviders.Tzdb[locationData.TimezoneName];
+        DateTimeZone dateTimeZone = DateTimeZoneProviders.Tzdb[locationData.TimezoneName];
 
         List<GenericSettingConfiguration> configs =
             [

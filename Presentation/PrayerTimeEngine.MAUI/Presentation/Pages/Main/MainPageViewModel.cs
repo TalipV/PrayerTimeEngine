@@ -1,4 +1,5 @@
-﻿using MetroLog.Maui;
+using System.Windows.Input;
+using MetroLog.Maui;
 using Microsoft.Extensions.Logging;
 using NodaTime;
 using PrayerTimeEngine.Core.Common;
@@ -21,7 +22,6 @@ using PrayerTimeEngine.Presentation.Views.PrayerTimes;
 using PrayerTimeEngine.Services;
 using PrayerTimeEngine.Services.Notifications;
 using PropertyChanged;
-using System.Windows.Input;
 
 namespace PrayerTimeEngine.Presentation.Pages.Main;
 
@@ -44,7 +44,7 @@ public partial class MainPageViewModel(
 {
     #region fields
 
-    private Debounce.Core.Debouncer debouncer;
+    private Debounce.Core.Debouncer _debouncer;
     private bool _isSettingsPageOpening = false;
 
     #endregion fields
@@ -53,7 +53,7 @@ public partial class MainPageViewModel(
 
     public List<IPrayerTimeViewModel> ProfilesWithModel { get; set; }
 
-    [OnChangedMethod(nameof(onCurrentProfileWithModelChanged))]
+    [OnChangedMethod(nameof(OnCurrentProfileWithModelChanged))]
     public IPrayerTimeViewModel CurrentProfileWithModel { get; set; }
     public Profile CurrentProfile
     {
@@ -63,7 +63,7 @@ public partial class MainPageViewModel(
         }
     }
 
-    [OnChangedMethod(nameof(onSelectedPlaceChanged))]
+    [OnChangedMethod(nameof(OnSelectedPlaceChanged))]
     public string SelectedPlaceText { get; set; }
 
     public bool IsLoadingPrayerTimes { get; set; }
@@ -88,13 +88,13 @@ public partial class MainPageViewModel(
     {
         get
         {
-            return !IsLoadingPrayerTimesOrSelectedPlace && this.CurrentProfile is DynamicProfile;
+            return !IsLoadingPrayerTimesOrSelectedPlace && CurrentProfile is DynamicProfile;
         }
     }
 
     public bool IsMainPageEnabled { get; private set; } = false;
 
-    [OnChangedMethod(nameof(onPlaceSearchTextChanged))]
+    [OnChangedMethod(nameof(OnPlaceSearchTextChanged))]
     public string PlaceSearchText { get; set; }
     public IEnumerable<BasicPlaceInfo> FoundPlaces { get; set; }
     public IEnumerable<string> FoundPlacesSelectionTexts { get; set; }
@@ -110,7 +110,7 @@ public partial class MainPageViewModel(
             weeksUntilLabelLines.Add((weeksUntilHajjSeason, $"{weeksUntilHajjSeason} Wochen bis Hajj"));
             weeksUntilLabelLines.Add((weeksUntilRamadan, $"{weeksUntilRamadan} Wochen bis Ramadan"));
             return string.Join(
-                Environment.NewLine, 
+                Environment.NewLine,
                 weeksUntilLabelLines
                     .Where(x => x.WeeksCount < 25)
                     .OrderByDescending(x => x.WeeksCount)
@@ -132,7 +132,7 @@ public partial class MainPageViewModel(
                     }
 
                     // stop loading times and stop loading places
-                    loadingTimesCancellationTokenSource?.Cancel();
+                    _loadingTimesCancellationTokenSource?.Cancel();
                     _placeSearchCancellationTokenSource?.Cancel();
 
                     try
@@ -152,16 +152,16 @@ public partial class MainPageViewModel(
 
     #region public methods
 
-    public void onPlaceSearchTextChanged()
+    public void OnPlaceSearchTextChanged()
     {
-        if (!isValidPlaceSearchText())
+        if (!IsValidPlaceSearchText())
         {
-            resetPlaceInput(resetPlaceSearchText: false);
+            ResetPlaceInput(resetPlaceSearchText: false);
             return;
         }
 
-        debouncer ??= new Debounce.Core.Debouncer(searchPlace, intervalMs: 600);
-        debouncer.Debounce();
+        _debouncer ??= new Debounce.Core.Debouncer(SearchPlace, intervalMs: 600);
+        _debouncer.Debounce();
     }
 
     private CancellationTokenSource _placeSearchCancellationTokenSource;
@@ -194,7 +194,9 @@ public partial class MainPageViewModel(
             currentTokenSource?.Dispose();
 
             if (_placeSearchCancellationTokenSource == currentTokenSource)
+            {
                 _placeSearchCancellationTokenSource = null;
+            }
         }
 
         return [];
@@ -202,7 +204,7 @@ public partial class MainPageViewModel(
 
     public async Task OnActualAppearing()
     {
-        await refreshData();
+        await RefreshData();
     }
 
     public async Task CreateNewProfile()
@@ -211,8 +213,8 @@ public partial class MainPageViewModel(
         {
             CancellationToken cancellationToken = default;
 
-            var copiedProfile = await profileService.CopyProfile(CurrentProfile, cancellationToken);
-            await reloadProfiles(copiedProfile.ID);
+            Profile copiedProfile = await profileService.CopyProfile(CurrentProfile, cancellationToken);
+            await ReloadProfiles(copiedProfile.ID);
         }
         catch (Exception exception)
         {
@@ -234,8 +236,8 @@ public partial class MainPageViewModel(
                 return;
             }
 
-            var newMosqueProfile = await profileService.CreateNewMosqueProfile(selectedItem, externalID, cancellationToken);
-            await reloadProfiles(newMosqueProfile.ID);
+            MosqueProfile newMosqueProfile = await profileService.CreateNewMosqueProfile(selectedItem, externalID, cancellationToken);
+            await ReloadProfiles(newMosqueProfile.ID);
         }
         catch (Exception exception)
         {
@@ -251,7 +253,7 @@ public partial class MainPageViewModel(
             CancellationToken cancellationToken = default;
 
             await profileService.DeleteProfile(CurrentProfile, cancellationToken);
-            await reloadProfiles();
+            await ReloadProfiles();
         }
         catch (Exception exception)
         {
@@ -330,7 +332,9 @@ public partial class MainPageViewModel(
     public Task OpenMosqueInternetPage()
     {
         if (CurrentProfile is not MosqueProfile mosque)
+        {
             return Task.CompletedTask;
+        }
 
         string url = mosque.MosqueProviderType switch
         {
@@ -340,38 +344,40 @@ public partial class MainPageViewModel(
         };
 
         if (string.IsNullOrWhiteSpace(url))
+        {
             return Task.CompletedTask;
+        }
 
         return browser.OpenAsync(new Uri(url));
     }
 
     public async Task ReloadAfterConfigurationImport()
     {
-        await reloadProfiles();
-        await refreshData();
+        await ReloadProfiles();
+        await RefreshData();
     }
 
     #endregion public methods
 
     #region private methods
 
-    private async void searchPlace()
+    private async void SearchPlace()
     {
-        if (!isValidPlaceSearchText())
+        if (!IsValidPlaceSearchText())
         {
             return;
         }
         FoundPlaces = await PerformPlaceSearch(PlaceSearchText);
-        FoundPlacesSelectionTexts = FoundPlaces.Select(x => x.DisplayText).Distinct().OrderBy(x => x).Take(7).ToList();
+        FoundPlacesSelectionTexts = [.. FoundPlaces.Select(x => x.DisplayText).Distinct().OrderBy(x => x).Take(7)];
     }
 
-    private bool isValidPlaceSearchText()
+    private bool IsValidPlaceSearchText()
     {
         return !string.IsNullOrWhiteSpace(PlaceSearchText)
             && PlaceSearchText.Replace(" ", string.Empty).Length > 4;
     }
 
-    private async Task reloadProfiles(int selectedProfile = 1)
+    private async Task ReloadProfiles(int selectedProfile = 1)
     {
         List<Profile> profiles = await profileService.GetProfiles(cancellationToken: default);
 
@@ -379,7 +385,7 @@ public partial class MainPageViewModel(
         try
         {
             _suspendOnCurrentProfileWithModelChanged = true;
-            ProfilesWithModel = profiles.Select(prayerTimeViewModelFactory.Create).ToList();
+            ProfilesWithModel = [.. profiles.Select(prayerTimeViewModelFactory.Create)];
         }
         finally
         {
@@ -394,12 +400,12 @@ public partial class MainPageViewModel(
 
     // concurrent loading is prevent in that subsequent loading requests are ignored when a previous one is currently running
     // but that one can be cancelled by things like leaving the page
-    private long isLoadPrayerTimesRunningInterlockedInt = 0;  // 0 for false, 1 for true
-    private CancellationTokenSource loadingTimesCancellationTokenSource;
+    private long _isLoadPrayerTimesRunningInterlockedInt = 0;  // 0 for false, 1 for true
+    private CancellationTokenSource _loadingTimesCancellationTokenSource;
     private bool _firstLoadDone = false;
     private bool _wasColdStart = false;
 
-    private async Task refreshData()
+    private async Task RefreshData()
     {
         string refreshCallID = DebugUtil.GenerateDebugID();
         logger.LogInformation("Refreshing data started. ({RefreshCallID})", refreshCallID);
@@ -407,36 +413,38 @@ public partial class MainPageViewModel(
         try
         {
             if (!appInitializer.IsInitialized)
-                await onBeforeFirstLoad();
+            {
+                await OnBeforeFirstLoad();
+            }
 
             try
             {
-                var currentProfile = CurrentProfile;
+                Profile? currentProfile = CurrentProfile;
 
-                if (currentProfile is null || Interlocked.CompareExchange(ref isLoadPrayerTimesRunningInterlockedInt, 1, 0) == 1)
+                if (currentProfile is null || Interlocked.CompareExchange(ref _isLoadPrayerTimesRunningInterlockedInt, 1, 0) == 1)
                 {
                     return;
                 }
 
                 IsLoadingPrayerTimes = true;
 
-                loadingTimesCancellationTokenSource?.Cancel();
-                loadingTimesCancellationTokenSource?.Dispose();
-                loadingTimesCancellationTokenSource = new CancellationTokenSource();
+                _loadingTimesCancellationTokenSource?.Cancel();
+                _loadingTimesCancellationTokenSource?.Dispose();
+                _loadingTimesCancellationTokenSource = new CancellationTokenSource();
 
                 DateTimeZone dateTimeZone = profileService.GetDateTimeZone(currentProfile);
                 ZonedDateTime zonedDateTime =
                     systemInfoService.GetCurrentInstant()
                         .InZone(dateTimeZone);
 
-                await CurrentProfileWithModel.RefreshData(zonedDateTime, loadingTimesCancellationTokenSource.Token);
-                showCalculationErrorsIfNeeded(CurrentProfileWithModel);
+                await CurrentProfileWithModel.RefreshData(zonedDateTime, _loadingTimesCancellationTokenSource.Token);
+                ShowCalculationErrorsIfNeeded(CurrentProfileWithModel);
 
                 OnAfterLoadingPrayerTimes_EventTrigger?.Invoke();
             }
             finally
             {
-                Interlocked.Exchange(ref isLoadPrayerTimesRunningInterlockedInt, 0);  // Reset the flag to allow future runs
+                Interlocked.Exchange(ref _isLoadPrayerTimesRunningInterlockedInt, 0);  // Reset the flag to allow future runs
                 IsLoadingPrayerTimes = false;
             }
         }
@@ -457,14 +465,14 @@ public partial class MainPageViewModel(
             if (!_firstLoadDone)
             {
                 _firstLoadDone = true;
-                onAfterFirstLoad();
+                OnAfterFirstLoad();
             }
         }
 
         logger.LogInformation("Refreshing data finished. ({RefreshCallID})", refreshCallID);
     }
 
-    private void showCalculationErrorsIfNeeded(IPrayerTimeViewModel prayerTimeViewModel)
+    private void ShowCalculationErrorsIfNeeded(IPrayerTimeViewModel prayerTimeViewModel)
     {
         // currently only supported for dynamic times
         if (prayerTimeViewModel is not DynamicPrayerTimeViewModel dynamicPrayerTimeViewModel)
@@ -490,7 +498,7 @@ public partial class MainPageViewModel(
         toastMessageService.ShowWarning($"Calculation for the following providers failed: {failedCalculators}");
     }
 
-    private async Task onBeforeFirstLoad()
+    private async Task OnBeforeFirstLoad()
     {
         // the AppInitializer is a singleton, so it is only uninitialized when this process is fresh,
         // which means this is a real app start and not just a recreated activity of a long living process
@@ -501,7 +509,7 @@ public partial class MainPageViewModel(
         try
         {
             _suspendOnCurrentProfileWithModelChanged = true;
-            await reloadProfiles();
+            await ReloadProfiles();
         }
         finally
         {
@@ -509,7 +517,7 @@ public partial class MainPageViewModel(
         }
     }
 
-    private void onAfterFirstLoad()
+    private void OnAfterFirstLoad()
     {
         try
         {
@@ -539,7 +547,7 @@ public partial class MainPageViewModel(
     // TODO use different approach
     private bool _suspendOnCurrentProfileWithModelChanged = false;
 
-    private async void onCurrentProfileWithModelChanged()
+    private async void OnCurrentProfileWithModelChanged()
     {
         OnPropertyChanged(nameof(IsSearchBoxEnabled));
 
@@ -548,10 +556,10 @@ public partial class MainPageViewModel(
             return;
         }
 
-        await refreshData();
+        await RefreshData();
     }
 
-    private void onSelectedPlaceChanged()
+    private void OnSelectedPlaceChanged()
     {
         string selectedPlaceText = SelectedPlaceText;
 
@@ -567,9 +575,11 @@ public partial class MainPageViewModel(
             BasicPlaceInfo selectedPlace = FoundPlaces.FirstOrDefault(x => x.DisplayText == selectedPlaceText);
 
             if (CurrentProfile is not DynamicProfile currentProfile || selectedPlace is null)
+            {
                 return;
+            }
 
-            await dispatcher.DispatchAsync(() => resetPlaceInput());
+            await dispatcher.DispatchAsync(() => ResetPlaceInput());
 
             try
             {
@@ -585,12 +595,12 @@ public partial class MainPageViewModel(
                 // notify UI for updates
                 await dispatcher.DispatchAsync(() => OnPropertyChanged(nameof(CurrentProfile)));
 
-                HashSet<EDynamicPrayerTimeProviderType> locationConfigDynamicPrayerTimeProviders =
+                var locationConfigDynamicPrayerTimeProviders =
                     currentProfile.LocationConfigs
                         .Where(x => x.LocationData != null)
                         .Select(x => x.DynamicPrayerTimeProvider)
                         .ToHashSet();
-                List<EDynamicPrayerTimeProviderType> missingLocationInfo =
+                var missingLocationInfo =
                     Enum.GetValues<EDynamicPrayerTimeProviderType>()
                         .Where(enumValue => enumValue != EDynamicPrayerTimeProviderType.None && !locationConfigDynamicPrayerTimeProviders.Contains(enumValue))
                         .OrderBy(x => x.ToString())
@@ -611,14 +621,16 @@ public partial class MainPageViewModel(
                 IsLoadingSelectedPlace = false;
             }
 
-            await refreshData();
+            await RefreshData();
         });
     }
 
-    private void resetPlaceInput(bool resetPlaceSearchText = true)
+    private void ResetPlaceInput(bool resetPlaceSearchText = true)
     {
         if (resetPlaceSearchText)
+        {
             PlaceSearchText = string.Empty;
+        }
 
         SelectedPlaceText = string.Empty;
         FoundPlaces = [];

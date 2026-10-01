@@ -1,4 +1,4 @@
-﻿using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Models;
+using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Models;
 
 namespace PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Semerkand.Models;
 
@@ -14,7 +14,9 @@ public class SemerkandLocationData : BaseLocationData
     public override bool Equals(object obj)
     {
         if (obj is not SemerkandLocationData otherLocationData)
+        {
             return false;
+        }
 
         return CountryName == otherLocationData.CountryName
             && CityName == otherLocationData.CityName

@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using PrayerTimeEngine.Core.Domain;
 using PrayerTimeEngine.Core.Domain.ConfigurationManagement;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes;

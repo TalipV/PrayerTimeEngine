@@ -1,8 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+using System.Globalization;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using NodaTime;
 using PrayerTimeEngine.Core.Common;
-using System.Globalization;
 
 namespace PrayerTimeEngine.Core.Data.EntityFramework;
 

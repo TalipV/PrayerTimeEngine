@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using PrayerTimeEngine.Core.Data.EntityFramework;
 using PrayerTimeEngine.Core.Domain.ConfigurationManagement;
@@ -12,9 +12,9 @@ namespace PrayerTimeEngine.Core.Tests.Integration.Domain.ConfigurationManagement
 
 public class ConfigurationImportExportServiceTests : BaseTest
 {
-    private ServiceProvider getServiceProvider()
+    private ServiceProvider GetServiceProvider()
     {
-        return createServiceProvider(
+        return CreateServiceProvider(
             serviceCollection =>
             {
                 serviceCollection.AddSingleton(GetHandledDbContextFactory());
@@ -28,17 +28,17 @@ public class ConfigurationImportExportServiceTests : BaseTest
     public async Task SerializeConfigurationANDImport_TwoDynamicProfilesAndOneMosqueProfile_ImportedProfilesAsExportedOnes()
     {
         // ARRANGE
-        ServiceProvider serviceProvider = getServiceProvider();
-        using var dbContext = serviceProvider.GetRequiredService<IDbContextFactory<AppDbContext>>().CreateDbContext();
+        ServiceProvider serviceProvider = GetServiceProvider();
+        using AppDbContext dbContext = serviceProvider.GetRequiredService<IDbContextFactory<AppDbContext>>().CreateDbContext();
 
-        var configurationImportExportService = serviceProvider.GetRequiredService<ConfigurationImportExportService>();
+        ConfigurationImportExportService configurationImportExportService = serviceProvider.GetRequiredService<ConfigurationImportExportService>();
 
         Profile[] inputProfiles = [
                 TestDataHelper.CreateCompleteTestDynamicProfile(profileID: 1, profileName: "Profil One", profileSequenceNo: 2),
                 TestDataHelper.CreateCompleteTestMosqueProfile(profileID: 3, profileName: "Profil Two", profileSequenceNo: 4),
                 TestDataHelper.CreateCompleteTestDynamicProfile(profileID: 5, profileName: "Profil Three", profileSequenceNo: 6),
             ];
-        inputProfiles = inputProfiles.OrderBy(x => x.SequenceNo).ToArray();
+        inputProfiles = [.. inputProfiles.OrderBy(x => x.SequenceNo)];
 
         var inputConfiguration = new Configuration
         {
@@ -52,10 +52,9 @@ public class ConfigurationImportExportServiceTests : BaseTest
         // ASSERT
         (await dbContext.DynamicProfiles.CountAsync()).Should().Be(2);
         (await dbContext.MosqueProfiles.CountAsync()).Should().Be(1);
-        Profile[] outputProfiles = outputConfiguration.Profiles
+        Profile[] outputProfiles = [.. outputConfiguration.Profiles
             .OrderBy(x => x.SequenceNo)
-            .Should().HaveCount(3).And.Subject
-            .ToArray();
+            .Should().HaveCount(3).And.Subject];
 
         outputProfiles.Should().BeEquivalentTo(
             inputProfiles,
@@ -76,17 +75,17 @@ public class ConfigurationImportExportServiceTests : BaseTest
     public async Task Import_TwoDynamicProfilesAndOneMosqueProfile_ImportedProfilesAsExpected()
     {
         // ARRANGE
-        ServiceProvider serviceProvider = getServiceProvider();
-        using var dbContext = serviceProvider.GetRequiredService<IDbContextFactory<AppDbContext>>().CreateDbContext();
+        ServiceProvider serviceProvider = GetServiceProvider();
+        using AppDbContext dbContext = serviceProvider.GetRequiredService<IDbContextFactory<AppDbContext>>().CreateDbContext();
 
-        var configurationImportExportService = serviceProvider.GetRequiredService<ConfigurationImportExportService>();
+        ConfigurationImportExportService configurationImportExportService = serviceProvider.GetRequiredService<ConfigurationImportExportService>();
 
         Profile[] inputProfiles = [
                 TestDataHelper.CreateCompleteTestDynamicProfile(profileID: 1, profileName: "Profil One", profileSequenceNo: 2),
                 TestDataHelper.CreateCompleteTestMosqueProfile(profileID: 3, profileName: "Profil Two", profileSequenceNo: 4),
                 TestDataHelper.CreateCompleteTestDynamicProfile(profileID: 5, profileName: "Profil Three", profileSequenceNo: 6),
             ];
-        inputProfiles = inputProfiles.OrderBy(x => x.SequenceNo).ToArray();
+        inputProfiles = [.. inputProfiles.OrderBy(x => x.SequenceNo)];
 
         string serializedTestProfiles = File.ReadAllText(Path.Combine(TestDataHelper.CONFIGURATION_TEST_DATA_FILE_PATH, "SerializedConfigurationTwoDynamicOneMosque.txt"));
 
@@ -96,10 +95,9 @@ public class ConfigurationImportExportServiceTests : BaseTest
         // ASSERT
         (await dbContext.DynamicProfiles.CountAsync()).Should().Be(2);
         (await dbContext.MosqueProfiles.CountAsync()).Should().Be(1);
-        Profile[] outputProfiles = outputConfiguration.Profiles
+        Profile[] outputProfiles = [.. outputConfiguration.Profiles
             .OrderBy(x => x.SequenceNo)
-            .Should().HaveCount(3).And.Subject
-            .ToArray();
+            .Should().HaveCount(3).And.Subject];
 
         outputProfiles.Should().BeEquivalentTo(
             inputProfiles,

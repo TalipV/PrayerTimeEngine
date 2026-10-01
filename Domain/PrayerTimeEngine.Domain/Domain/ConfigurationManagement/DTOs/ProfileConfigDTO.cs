@@ -1,4 +1,4 @@
-﻿namespace PrayerTimeEngine.Core.Domain.ConfigurationManagement.DTOs;
+namespace PrayerTimeEngine.Core.Domain.ConfigurationManagement.DTOs;
 
 /// <summary>
 /// Configuration DTO for <see cref="ProfileManagement.Models.Entities.Profile"/>

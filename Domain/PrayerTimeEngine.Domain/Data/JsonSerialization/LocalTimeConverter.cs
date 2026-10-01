@@ -1,24 +1,24 @@
-﻿using NodaTime;
-using NodaTime.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using NodaTime;
+using NodaTime.Text;
 
 namespace PrayerTimeEngine.Core.Data.JsonSerialization;
 
 public class LocalTimeConverter : JsonConverter<LocalTime>
 {
-    private static readonly LocalTimePattern LongTimePattern = LocalTimePattern.CreateWithInvariantCulture("HH:mm:ss");
-    private static readonly LocalTimePattern ShortTimePattern = LocalTimePattern.CreateWithInvariantCulture("HH:mm");
+    private static readonly LocalTimePattern s_longTimePattern = LocalTimePattern.CreateWithInvariantCulture("HH:mm:ss");
+    private static readonly LocalTimePattern s_shortTimePattern = LocalTimePattern.CreateWithInvariantCulture("HH:mm");
 
     public override LocalTime Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
         string timeString = reader.GetString().Replace("*", "");
 
-        if (LongTimePattern.Parse(timeString).TryGetValue(LocalTime.MinValue, out LocalTime parsedLocalTime))
+        if (s_longTimePattern.Parse(timeString).TryGetValue(LocalTime.MinValue, out LocalTime parsedLocalTime))
         {
             return parsedLocalTime;
         }
-        else if (ShortTimePattern.Parse(timeString).TryGetValue(LocalTime.MinValue, out parsedLocalTime))
+        else if (s_shortTimePattern.Parse(timeString).TryGetValue(LocalTime.MinValue, out parsedLocalTime))
         {
             return parsedLocalTime;
         }
@@ -28,7 +28,7 @@ public class LocalTimeConverter : JsonConverter<LocalTime>
 
     public override void Write(Utf8JsonWriter writer, LocalTime value, JsonSerializerOptions options)
     {
-        string timeString = LongTimePattern.Format(value);
+        string timeString = s_longTimePattern.Format(value);
         writer.WriteStringValue(timeString);
     }
 }
