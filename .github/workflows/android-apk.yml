@@ -85,8 +85,11 @@ jobs:
           # SDK version is pinned in global.json, so CI and local builds use the same SDK.
           global-json-file: global.json
 
+      # No --version: the workload set version comes from global.json (sdk.workloadVersion).
       - name: Install MAUI Android workload
-        run: dotnet workload install maui-android --version 10.0.401
+        run: |
+          dotnet workload install maui-android
+          dotnet workload --version
 
       - name: Restore keystore
         env:
