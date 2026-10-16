@@ -1,0 +1,39 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    Wear OS app (Galaxy Watch). Shows the prayer times the phone app hands over through the
+    Wear OS data layer as a tile and as a watch face complication.
+    References the Domain ring only: the progress calculation and the payload are shared with
+    the phone, everything with EF Core / HTTP stays on the phone.
+  -->
+
+  <PropertyGroup>
+    <TargetFramework>$(NetVersion)-android</TargetFramework>
+    <!-- Wear OS 3 -->
+    <SupportedOSPlatformVersion>30</SupportedOSPlatformVersion>
+    <OutputType>Exe</OutputType>
+    <!-- not ...Wear.Android: inside that namespace "Android.App" etc. would resolve to it instead of the SDK -->
+    <RootNamespace>PrayerTimeEngine.Wear</RootNamespace>
+    <!-- The data layer only connects apps with the same package name and signing key as the phone app. -->
+    <ApplicationId>com.companyname.prayertimeengine</ApplicationId>
+    <ApplicationTitle>PrayerTimeEngine</ApplicationTitle>
+    <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
+    <ApplicationVersion>1</ApplicationVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Domain\PrayerTimeEngine.Domain\PrayerTimeEngine.Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Xamarin.AndroidX.Wear.Tiles" Version="1.6.2" />
+    <PackageReference Include="Xamarin.AndroidX.Wear.ProtoLayout" Version="1.4.2" />
+    <PackageReference Include="Xamarin.AndroidX.Wear.ProtoLayout.Expression" Version="1.4.2" />
+    <PackageReference Include="Xamarin.AndroidX.Wear.WatchFace.Complications.Data.Source" Version="1.3.0.2" />
+    <PackageReference Include="Xamarin.AndroidX.Concurrent.Futures" Version="1.3.0.4" />
+    <PackageReference Include="Xamarin.GooglePlayServices.Wearable" Version="120.0.1.2" />
+    <!-- Play services pull Fragment 1.9.0, Preference still the 1.8.9 Ktx extensions - D8 rejects that mix -->
+    <PackageReference Include="Xamarin.AndroidX.Fragment.Ktx" Version="1.9.0" />
+  </ItemGroup>
+
+</Project>

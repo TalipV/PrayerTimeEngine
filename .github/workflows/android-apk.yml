@@ -130,9 +130,23 @@ jobs:
           -p:AndroidSigningKeyPass='${{ secrets.ANDROID_KEY_PASSWORD }}'
           -p:AndroidSigningStorePass='${{ secrets.ANDROID_KEYSTORE_PASSWORD }}'
 
+      # Same keystore as the phone app: the Wear OS data layer only connects the two apps when
+      # package name and signing key match.
+      - name: Build Wear OS APK
+        run: >
+          dotnet publish Presentation/PrayerTimeEngine.Wear.Android/PrayerTimeEngine.Wear.Android.csproj
+          -c Release
+          -p:AndroidKeyStore=true
+          -p:AndroidSigningKeyStore="$RUNNER_TEMP/signing.keystore"
+          -p:AndroidSigningKeyAlias=${{ secrets.ANDROID_KEY_ALIAS }}
+          -p:AndroidSigningKeyPass='${{ secrets.ANDROID_KEY_PASSWORD }}'
+          -p:AndroidSigningStorePass='${{ secrets.ANDROID_KEYSTORE_PASSWORD }}'
+
       - name: Collect APKs
         run: |
           mkdir -p out
+          cp Presentation/PrayerTimeEngine.Wear.Android/bin/Release/net10.0-android/*-Signed.apk \
+             "out/PrayerTimeEngine-wear.apk"
           cp Presentation/PrayerTimeEngine.MAUI/bin/Debug/net10.0-android/*-Signed.apk \
              "out/PrayerTimeEngine-debug.apk"
           cp Presentation/PrayerTimeEngine.MAUI/bin/Release/net10.0-android/*-Signed.apk \
@@ -166,5 +180,8 @@ jobs:
 
             Fester Download-Link (zeigt immer auf den neuesten Build):
             https://github.com/${{ github.repository }}/releases/download/latest/PrayerTimeEngine-release.apk
+
+            Galaxy Watch (Wear OS), per adb auf die Uhr installieren:
+            https://github.com/${{ github.repository }}/releases/download/latest/PrayerTimeEngine-wear.apk
           prerelease: true
           files: out/*.apk

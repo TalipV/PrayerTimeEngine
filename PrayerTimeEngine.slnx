@@ -24,6 +24,9 @@
       <Deploy Solution="*|Any CPU" />
       <Deploy Solution="Debug|x64" />
     </Project>
+    <Project Path="Presentation\PrayerTimeEngine.Wear.Android\PrayerTimeEngine.Wear.Android.csproj">
+      <Deploy />
+    </Project>
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests\PrayerTimeEngine.Core.Tests.Common\PrayerTimeEngine.Core.Tests.Common.csproj" />
