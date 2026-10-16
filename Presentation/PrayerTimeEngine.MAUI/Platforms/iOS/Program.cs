@@ -1,6 +1,6 @@
-﻿using UIKit;
+using UIKit;
 
-namespace PrayerTimeEngine.Platforms.iOS;
+namespace PrayerTimeEngine.Platforms.IOS;
 
 public class Program
 {

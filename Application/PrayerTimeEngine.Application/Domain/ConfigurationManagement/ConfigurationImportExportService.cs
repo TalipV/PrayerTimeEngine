@@ -11,7 +11,7 @@ public class ConfigurationImportExportService : IConfigurationImportExportServic
 
     public ConfigurationImportExportService(IProfileRepository profileRepository)
     {
-        this._profileRepository = profileRepository;
+        _profileRepository = profileRepository;
 
         _jsonOptions = new JsonSerializerOptions
         {
