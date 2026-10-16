@@ -53,6 +53,12 @@
     <PackageReference Include="UraniumUI.Material" Version="3.0.0" />
   </ItemGroup>
 
+  <ItemGroup Condition="$(TargetFramework.Contains('-android'))">
+    <!-- data layer to hand the prayer times to the Wear OS app. Newer versions pull AndroidX
+         packages beyond the ones Microsoft.Maui.Core pins (NU1107), so only update along with MAUI. -->
+    <PackageReference Include="Xamarin.GooglePlayServices.Wearable" Version="120.0.1.2" />
+  </ItemGroup>
+
   <ItemGroup>
     <!-- App Icon -->
     <MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#0B1524" />

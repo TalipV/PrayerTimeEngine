@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+  <uses-feature android:name="android.hardware.type.watch" />
+  <application android:label="PrayerTimeEngine" android:icon="@drawable/ic_prayer" android:allowBackup="true">
+    <uses-library android:name="com.google.android.wearable" android:required="false" />
+    <!-- the times come from the phone app, the watch app is useless without it -->
+    <meta-data android:name="com.google.android.wearable.standalone" android:value="false" />
+  </application>
+</manifest>

@@ -33,7 +33,8 @@ Claude Code cloud sessions get a .NET SDK from the environment's setup script, b
   dotnet test PrayerTimeEngine.Core.Tests.Unit/PrayerTimeEngine.Core.Tests.Unit.csproj
   dotnet test PrayerTimeEngine.Core.Tests.Integration/PrayerTimeEngine.Core.Tests.Integration.csproj
   ```
-- `PrayerTimeEngine.MAUI` is built by GitHub Actions (`.github/workflows`), not here.
+- `PrayerTimeEngine.MAUI` and `PrayerTimeEngine.Wear.Android` are built by GitHub Actions
+  (`.github/workflows`), not here.
 - The Domain/Application/Infrastructure builds emit ~160 nullable warnings today; they
   are pre-existing, so only worry about warnings your own change introduces.
 
@@ -79,6 +80,16 @@ point inward only):
 - **`PrayerTimeEngine.MAUI`** (ring 4, presentation) — UI + the real composition root,
   which calls `AddApplication()` + `AddInfrastructure(...)` and registers the
   platform-specific port implementations.
+
+- **`PrayerTimeEngine.Wear.Android`** (ring 4, presentation) — Wear OS app (plain .NET for Android,
+  no MAUI) with a tile and a watch face complication. References Domain only. The phone app
+  sends the prayer times through the Wear OS data layer (`WearDataSender` →
+  `WearPrayerTimesPayload` on path `/prayer-times`); the watch derives countdown and progress
+  itself with the shared `PrayerTimeProgressCalculator`. It needs the same `ApplicationId` and
+  signing key as the phone app, otherwise the data layer does not connect the two.
+  The .NET binding of `androidx.wear.protolayout` omits every member that takes a dimension, so
+  the tile layout is written in Java (`Java/PrayerTimeArcLayout.java`, compiled and bound via
+  `AndroidJavaSource`).
 
 Namespaces are still rooted at `PrayerTimeEngine.Core.*` (a deliberate no-churn choice);
 the rings are enforced by the csproj references, not by namespace names.

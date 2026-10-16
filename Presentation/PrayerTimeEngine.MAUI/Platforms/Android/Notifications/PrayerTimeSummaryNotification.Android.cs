@@ -5,14 +5,14 @@ using AsyncAwaitBestPractices;
 using Microsoft.Extensions.Logging;
 using NodaTime;
 using PrayerTimeEngine.Core.Common;
-using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Management;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Models;
-using PrayerTimeEngine.Core.Domain.Models;
-using PrayerTimeEngine.Core.Domain.Models.PrayerTimes;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Management;
+using PrayerTimeEngine.Core.Domain.PrayerTimeProgress;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Interfaces;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
+using PrayerTimeEngine.Core.Domain.Wear;
+using PrayerTimeEngine.Platforms.Android.Wear;
 using PrayerTimeEngine.Presentation;
 
 namespace PrayerTimeEngine.Platforms.Android.Notifications;
@@ -182,15 +182,12 @@ public class PrayerTimeSummaryNotification : Service
         return _notificationBuilder;
     }
 
-    /// <summary>Everything is expressed as a share of the prayer time, so the bar never needs its length.</summary>
-    private const int PROGRESS_MAX = 100;
-
     /// <summary>The sections the sub times cut the prayer time into, plus their names.</summary>
     private sealed record ProgressBarInfo(int[] SegmentLengths, string[] Labels);
 
     /// <summary>
     /// How far the currently running prayer time has advanced, plus the bar showing it. The section
-    /// lengths of that bar add up to <see cref="PROGRESS_MAX"/>.
+    /// lengths of that bar add up to <see cref="PrayerTimeProgressCalculator.PROGRESS_MAX"/>.
     /// </summary>
     private sealed record CurrentTimeProgress(
         int ElapsedPercent,
@@ -204,12 +201,8 @@ public class PrayerTimeSummaryNotification : Service
         bool IsGapBetweenTimesMode = false);
 
     /// <summary>
-    /// Progress of the prayer time which currently contains <paramref name="now"/>.
-    /// <para>
-    /// Prayer times overlap, so the shortest window containing <paramref name="now"/> wins - that is
-    /// the most specific information there is. Returns <c>null</c> when no window contains it, e.g.
-    /// between Fajr-End and Duha-Start, in which case no progress is shown at all.
-    /// </para>
+    /// Progress of the prayer time which currently contains now, or of the gap between two of them.
+    /// The calculation itself is shared with the watch, this only turns it into the texts shown here.
     /// </summary>
     private CurrentTimeProgress? GetProgress(DynamicProfile profile)
     {
@@ -226,200 +219,64 @@ public class PrayerTimeSummaryNotification : Service
             return null;
         }
 
-        var nowInstant = now.ToInstant();
-        GenericPrayerTime? currentTime = null;
-        ETimeSection currentSection = default;
+        List<PrayerTimeWindow> windows = PrayerTimeWindow.FromPrayerTimes(prayerTimeBundle.AllPrayerTimes);
 
-        foreach ((ETimeSection section, GenericPrayerTime prayerTime) in prayerTimeBundle.AllPrayerTimes)
-        {
-            if (prayerTime?.Start is null || prayerTime.End is null)
-            {
-                continue;
-            }
+        SendToWearOnceAMinute(profile, now, windows);
 
-            if (nowInstant < prayerTime.Start.Value.ToInstant() || nowInstant >= prayerTime.End.Value.ToInstant())
-            {
-                continue;
-            }
+        PrayerTimeProgressInfo? progress = PrayerTimeProgressCalculator.Calculate(windows, now.ToInstant());
 
-            if (currentTime is null
-                // prioritize the shorter one when two times overlap
-                || GetDuration(prayerTime) < GetDuration(currentTime))
-            {
-                currentTime = prayerTime;
-                currentSection = section;
-            }
-        }
-
-        if (currentTime?.Start is null || currentTime.End is null)
-        {
-            return GetGapProgress(now, prayerTimeBundle);
-        }
-
-        var start = currentTime.Start.Value.ToInstant();
-        double totalSeconds = GetDuration(currentTime).TotalSeconds;
-
-        if (totalSeconds <= 0)
+        if (progress is null)
         {
             return null;
         }
 
-        int elapsedPercent = (int)Math.Clamp((nowInstant - start).TotalSeconds / totalSeconds * PROGRESS_MAX, 0, PROGRESS_MAX);
+        if (progress.IsGapBetweenTimes)
+        {
+            // both durations are spelled out underneath the two ends, since there is no prayer time
+            // whose name could carry the meaning
+            return new CurrentTimeProgress(
+                ElapsedPercent: progress.ElapsedPercent,
+                Bar: new ProgressBarInfo(progress.SegmentLengths, progress.Labels),
+                StartText: progress.Start.ToString("HH:mm", null),
+                EndText: progress.End.ToString("HH:mm", null),
+                // the two durations below the bar say everything, a third one in the header would only repeat them
+                RemainingText: string.Empty,
+                SectionText: $"{progress.PreviousSection} → {progress.Section}",
+                StartSubText: $"({(now - progress.Start).ToString("HH:mm:ss", null)})",
+                EndSubText: $"({(progress.End - now).ToString("HH:mm:ss", null)})",
+                IsGapBetweenTimesMode: true);
+        }
 
         return new CurrentTimeProgress(
-            elapsedPercent,
-            GetBar(currentTime, totalSeconds),
-            currentTime.Start.Value.ToString("HH:mm", null),
-            currentTime.End.Value.ToString("HH:mm", null),
-            (currentTime.End.Value - now).ToString("HH:mm:ss", null),
-            currentSection.ToString());
+            progress.ElapsedPercent,
+            new ProgressBarInfo(progress.SegmentLengths, progress.Labels),
+            progress.Start.ToString("HH:mm", null),
+            progress.End.ToString("HH:mm", null),
+            (progress.End - now).ToString("HH:mm:ss", null),
+            progress.Section.ToString());
     }
+
+    private long _lastWearSendMinute = -1;
 
     /// <summary>
-    /// Progress through the gap between two prayer times: it starts where the previous one ended and
-    /// ends where the next one begins, so it fits the very same bar. Both durations are spelled out
-    /// underneath the two ends, since there is no prayer time whose name could carry the meaning.
+    /// Hands the times to the watch. Checked once a minute only, and the sender skips identical
+    /// payloads, so the watch is only woken up when the times actually changed (new day, other profile).
     /// </summary>
-    private static CurrentTimeProgress? GetGapProgress(ZonedDateTime now, DynamicPrayerTimesDaySet prayerTimeBundle)
+    private void SendToWearOnceAMinute(DynamicProfile profile, ZonedDateTime now, List<PrayerTimeWindow> windows)
     {
-        var nowInstant = now.ToInstant();
+        long minute = now.ToInstant().ToUnixTimeSeconds() / 60;
 
-        ZonedDateTime? previousEnd = null;
-        ZonedDateTime? nextStart = null;
-        ETimeSection previousSection = default;
-        ETimeSection nextSection = default;
-
-        foreach ((ETimeSection section, GenericPrayerTime prayerTime) in prayerTimeBundle.AllPrayerTimes)
+        if (minute == _lastWearSendMinute)
         {
-            if (prayerTime?.End?.ToInstant() <= nowInstant
-                && (previousEnd is null || previousEnd.Value.ToInstant() < prayerTime.End.Value.ToInstant()))
-            {
-                previousEnd = prayerTime.End;
-                previousSection = section;
-            }
-
-            if (nowInstant < prayerTime?.Start?.ToInstant()
-                && (nextStart is null || prayerTime.Start.Value.ToInstant() < nextStart.Value.ToInstant()))
-            {
-                nextStart = prayerTime.Start;
-                nextSection = section;
-            }
+            return;
         }
 
-        if (previousEnd is null || nextStart is null)
-        {
-            return null;
-        }
+        _lastWearSendMinute = minute;
 
-        double totalSeconds = (nextStart.Value.ToInstant() - previousEnd.Value.ToInstant()).TotalSeconds;
+        var payload = WearPrayerTimesPayload.Create(profile.Name, profile.PlaceInfo?.City ?? string.Empty, now.Zone, windows);
 
-        if (totalSeconds <= 0)
-        {
-            return null;
-        }
-
-        int elapsedPercent = (int)Math.Clamp(
-            (nowInstant - previousEnd.Value.ToInstant()).TotalSeconds / totalSeconds * PROGRESS_MAX,
-            0,
-            PROGRESS_MAX);
-
-        return new CurrentTimeProgress(
-            ElapsedPercent: elapsedPercent,
-            Bar: new ProgressBarInfo([PROGRESS_MAX], []),
-            StartText: previousEnd.Value.ToString("HH:mm", null),
-            EndText: nextStart.Value.ToString("HH:mm", null),
-            // the two durations below the bar say everything, a third one in the header would only repeat them
-            RemainingText: string.Empty,
-            SectionText: $"{previousSection} → {nextSection}",
-            StartSubText: $"({(now - previousEnd.Value).ToString("HH:mm:ss", null)})",
-            EndSubText: $"({(nextStart.Value - now).ToString("HH:mm:ss", null)})",
-            IsGapBetweenTimesMode: true);
-    }
-
-    private static Duration GetDuration(GenericPrayerTime prayerTime)
-    {
-        if (prayerTime?.Start is null || prayerTime.End is null)
-        {
-            throw new ArgumentException("Prayer time start or end is null", nameof(prayerTime));
-        }
-
-        return prayerTime.End.Value.ToInstant() - prayerTime.Start.Value.ToInstant();
-    }
-
-    /// <summary>
-    /// Builds one bar per division of the prayer time, each split at the sub times of that division.
-    /// A prayer time without usable sub times ends up with a single undivided bar.
-    /// </summary>
-    /// <summary>
-    /// Splits the prayer time at its sub times. Without usable sub times the bar stays undivided.
-    /// </summary>
-    private static ProgressBarInfo GetBar(GenericPrayerTime prayerTime, double totalSeconds)
-    {
-        if (prayerTime?.Start is null || prayerTime.End is null)
-        {
-            throw new ArgumentException("Prayer time start or end is null", nameof(prayerTime));
-        }
-
-        var start = prayerTime.Start.Value.ToInstant();
-        var end = prayerTime.End.Value.ToInstant();
-
-        List<(string Name, Instant Time)> subTimes =
-            [.. GetSubTimes(prayerTime)
-                    .Where(subTime => subTime.Time is not null)
-                    .Select(subTime => (subTime.Name, Time: subTime.Time!.Value.ToInstant()))
-                    .Where(subTime => start < subTime.Time && subTime.Time < end)
-                    .OrderBy(subTime => subTime.Time)];
-
-        if (subTimes.Count == 0)
-        {
-            return new ProgressBarInfo([PROGRESS_MAX], []);
-        }
-
-        return new ProgressBarInfo(
-            GetSegmentLengths(start, end, [.. subTimes.Select(subTime => subTime.Time)], totalSeconds),
-            [.. subTimes.Select(subTime => subTime.Name)]);
-    }
-
-    private static int[] GetSegmentLengths(Instant start, Instant end, List<Instant> subTimes, double totalSeconds)
-    {
-        List<Instant> boundaries = [.. subTimes, end];
-
-        int[] lengths = new int[boundaries.Count];
-        Instant sectionStart = start;
-        int assigned = 0;
-
-        for (int i = 0; i < boundaries.Count; i++)
-        {
-            bool isLastSection = i == boundaries.Count - 1;
-
-            lengths[i] = isLastSection
-                ? PROGRESS_MAX - assigned // take whatever is left
-                : (int)Math.Round((boundaries[i] - sectionStart).TotalSeconds / totalSeconds * PROGRESS_MAX);
-
-            assigned += lengths[i];
-            sectionStart = boundaries[i];
-        }
-
-        return lengths;
-    }
-
-    /// <summary>The sub times which divide a prayer time, in no particular order.</summary>
-    private static IEnumerable<(string Name, ZonedDateTime? Time)> GetSubTimes(GenericPrayerTime prayerTime)
-    {
-        return prayerTime switch
-        {
-            FajrPrayerTime fajr => [("Ghalas", fajr.Ghalas), ("Redness", fajr.Karaha)],
-            DuhaPrayerTime duha => [("1/4", duha.QuarterOfDay), ("1/2", duha.HalfOfDay)],
-            AsrPrayerTime asr => [("Mithlayn", asr.Mithlayn), ("Karaha", asr.Karaha)],
-            MaghribPrayerTime maghrib => [("Sufficient", maghrib.SufficientTime), ("Ishtibak", maghrib.Ishtibak)],
-            IshaPrayerTime isha =>
-            [
-                ("1/3", isha.FirstThirdOfNight),
-                ("1/2", isha.MiddleOfNight),
-                ("2/3", isha.SecondThirdOfNight)
-            ],
-            _ => []
-        };
+        WearDataSender.SendAsync(global::Android.App.Application.Context, payload, _logger)
+            .SafeFireAndForget(exception => _logger.LogError(exception, "Error while sending prayer times to the watch"));
     }
 
     /// <summary>
