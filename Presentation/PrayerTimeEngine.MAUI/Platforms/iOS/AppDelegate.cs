@@ -1,6 +1,6 @@
-﻿using Foundation;
+using Foundation;
 
-namespace PrayerTimeEngine.Platforms.iOS;
+namespace PrayerTimeEngine.Platforms.IOS;
 
 [Register("AppDelegate")]
 public class AppDelegate : MauiUIApplicationDelegate
