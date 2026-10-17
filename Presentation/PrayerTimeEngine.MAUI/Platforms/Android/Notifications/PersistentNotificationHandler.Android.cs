@@ -1,4 +1,4 @@
-﻿using Android.Content;
+using Android.Content;
 using PrayerTimeEngine.Platforms.Android.Permissions;
 using PrayerTimeEngine.Services.Notifications;
 
@@ -31,7 +31,7 @@ public class PrayerTimeSummaryNotificationHandler : IPrayerTimeSummaryNotificati
             await ShowBatteryOptimizationWarningIfNeeded();
 
             var startIntent =
-                new global::Android.Content.Intent(
+                new Intent(
                     global::Android.App.Application.Context,
                     typeof(PrayerTimeSummaryNotification));
 
@@ -49,7 +49,7 @@ public class PrayerTimeSummaryNotificationHandler : IPrayerTimeSummaryNotificati
         Context context = global::Android.App.Application.Context;
         string? package = context.PackageName;
 
-        var pm = (global::Android.OS.PowerManager)context.GetSystemService(global::Android.Content.Context.PowerService);
+        var pm = (global::Android.OS.PowerManager)context.GetSystemService(Context.PowerService);
         bool alreadyIgnoringBatteryOptim = pm.IsIgnoringBatteryOptimizations(package);
 
         if (alreadyIgnoringBatteryOptim)
@@ -73,10 +73,10 @@ public class PrayerTimeSummaryNotificationHandler : IPrayerTimeSummaryNotificati
                 return;
             }
 
-            var intent = new global::Android.Content.Intent(
+            var intent = new Intent(
                 global::Android.Provider.Settings.ActionIgnoreBatteryOptimizationSettings);
 
-            intent.SetFlags(global::Android.Content.ActivityFlags.NewTask);
+            intent.SetFlags(ActivityFlags.NewTask);
             context.StartActivity(intent);
         });
     }
