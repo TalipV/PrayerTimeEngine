@@ -16,7 +16,8 @@ Claude Code cloud sessions get a .NET SDK from the environment's setup script, b
 - `dotnet build PrayerTimeEngine.slnx` fails with `error NETSDK1147` because of the
   MAUI project. This is expected and says nothing about the code — do not try to
   install `maui-android` to work around it.
-- `global.json` pins the exact SDK and workload set version. Install that SDK, then run
+- `global.json` pins the SDK feature band (any `10.0.4xx` patch) and the exact workload
+  set version. Install an SDK from that band, then run
   `dotnet workload update` once in the repo root (installs only the workload set
   manifests, no workloads). Without it every project fails with `MSB4242 ... Workload
   version ... was not found`.
@@ -47,10 +48,16 @@ static fields; `I`/`T` prefixes for interfaces/type parameters; camelCase for lo
 parameters. `var` only when the type is apparent from the right-hand side.
 
 `global.json` is the single source of truth for toolchain versions: the .NET SDK
-(`sdk.version`, `rollForward: disable`) and the MAUI workload set (`sdk.workloadVersion`).
-GitHub Actions reads both from it, so local and CI builds run the same SDK, analyzers and
-workloads. To upgrade, change `global.json`, then locally (admin shell, in the repo root)
-run `dotnet workload update` so the new workload set is installed.
+(`sdk.version` + `rollForward: latestPatch`) and the MAUI workload set (`sdk.workloadVersion`).
+`latestPatch` pins the SDK *feature band*, not the exact patch: `sdk.version` is only the
+lower bound, and any newer patch of the same band (`10.0.4xx`) is accepted, so a Visual Studio
+update that replaces one patch with the next does not break the build. New analyzer rules (and
+the build errors they cause under `EnforceCodeStyleInBuild`) arrive with a new feature band or
+major version, never with a patch, and those still require a deliberate change here.
+GitHub Actions reads both values (`setup-dotnet` installs the newest patch of the band), so
+local and CI builds run the same analyzers and workloads. To move to a new band, change
+`global.json`, then locally (admin shell, in the repo root) run `dotnet workload update` so
+the matching workload set is installed.
 
 Most violations are auto-fixable: `dotnet format <project>.csproj --severity error`.
 Run it per project (not on the multi-targeted MAUI project as a whole: formatting several
