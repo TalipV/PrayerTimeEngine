@@ -41,9 +41,9 @@
     <PackageReference Include="Mapsui.Maui" Version="5.1.0" />
     <PackageReference Include="MethodTimer.Fody" Version="3.2.3" PrivateAssets="All" />
     <PackageReference Include="MetroLog.Maui" Version="2.1.0" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.12" />
-    <PackageReference Include="Microsoft.Extensions.Http" Version="10.0.12" />
-    <PackageReference Include="Microsoft.Extensions.Http.Resilience" Version="10.10.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.13" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="10.0.13" />
+    <PackageReference Include="Microsoft.Extensions.Http.Resilience" Version="10.11.0" />
     <PackageReference Include="Microsoft.Maui.Controls" Version="10.0.110" />
     <PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="10.0.110" />
     <PackageReference Include="Plugin.Maui.DebugRainbows" Version="1.2.2" />
