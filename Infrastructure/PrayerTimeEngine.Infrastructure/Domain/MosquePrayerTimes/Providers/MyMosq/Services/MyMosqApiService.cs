@@ -38,6 +38,9 @@ public partial class MyMosqApiService(
     private const string PAYLOAD_END_FOR_VALID_INPUT = "}}}}}";
     private const string PAYLOAD_END_FOR_INVALID_INPUT = "\"d\":null}}}";
 
+    private const int CONNECT_MAX_ATTEMPTS = 3;
+    private static readonly TimeSpan s_connectRetryBaseDelay = TimeSpan.FromMilliseconds(250);
+
     public async Task<List<MyMosqPrayerTimesDTO>> GetPrayerTimesAsync(LocalDate date, string externalID, CancellationToken cancellationToken)
     {
         List<string> responseMessages = await ReadResponseMessages(externalID, cancellationToken)
@@ -93,8 +96,7 @@ public partial class MyMosqApiService(
         string initialMessage = s_initiaL_MESSAGE_TEMPLATE.Replace(EXTERNAL_ID_PLACEHOLDER_KEY, externalID);
         string baseUrl = await GetCorrectWebSocketURLAsync(initialMessage, cancellationToken);
 
-        using IWebSocketClient webSocketClient = webSocketClientFactory.CreateWebSocketClient();
-        await webSocketClient.ConnectAsync(new Uri(string.Format(WEBSOCKET_URL_TEMPLATE, baseUrl)), cancellationToken);
+        using IWebSocketClient webSocketClient = await ConnectWithRetryAsync(new Uri(string.Format(WEBSOCKET_URL_TEMPLATE, baseUrl)), cancellationToken);
 
         byte[] bytesToSend = Encoding.UTF8.GetBytes(initialMessage);
         var arraySegment = new ArraySegment<byte>(bytesToSend);
@@ -129,8 +131,7 @@ public partial class MyMosqApiService(
     {
         string defaultUrl = string.Format(WEBSOCKET_URL_TEMPLATE, WEBSOCKET_DEFAULT_BASE_URL);
 
-        using IWebSocketClient webSocketClient = webSocketClientFactory.CreateWebSocketClient();
-        await webSocketClient.ConnectAsync(new Uri(defaultUrl), cancellationToken);
+        using IWebSocketClient webSocketClient = await ConnectWithRetryAsync(new Uri(defaultUrl), cancellationToken);
 
         byte[] bytesToSend = Encoding.UTF8.GetBytes(initialMessage);
         var arraySegment = new ArraySegment<byte>(bytesToSend);
@@ -149,6 +150,42 @@ public partial class MyMosqApiService(
         }
 
         return match.Value;
+    }
+
+    /// <summary>
+    /// Firebase occasionally drops the connection during the TLS handshake. The HttpClient resilience
+    /// pipeline does not cover WebSockets, so transient connect failures are retried here.
+    /// A <see cref="System.Net.WebSockets.ClientWebSocket"/> can't be reused after a failed connect,
+    /// hence a new client per attempt.
+    /// </summary>
+    private async Task<IWebSocketClient> ConnectWithRetryAsync(Uri uri, CancellationToken cancellationToken)
+    {
+        for (int attempt = 1; ; attempt++)
+        {
+            IWebSocketClient webSocketClient = webSocketClientFactory.CreateWebSocketClient();
+
+            try
+            {
+                await webSocketClient.ConnectAsync(uri, cancellationToken).ConfigureAwait(false);
+                return webSocketClient;
+            }
+            catch (Exception exception) when (attempt < CONNECT_MAX_ATTEMPTS && IsTransientConnectException(exception, cancellationToken))
+            {
+                webSocketClient.Dispose();
+                await Task.Delay(s_connectRetryBaseDelay * attempt, cancellationToken).ConfigureAwait(false);
+            }
+            catch
+            {
+                webSocketClient.Dispose();
+                throw;
+            }
+        }
+    }
+
+    private static bool IsTransientConnectException(Exception exception, CancellationToken cancellationToken)
+    {
+        return !cancellationToken.IsCancellationRequested
+            && exception is WebSocketException or HttpRequestException or IOException;
     }
 
     /// <summary>

@@ -138,7 +138,7 @@ public class SubstitutionHelper
 
     private const string WEB_SOCKET_MESSAGE_SEPARATOR_TEXT = "#CUSTOM-SEPARATOR#";
 
-    private static IWebSocketClient GetMockedMyMosqWebSocketClient()
+    public static IWebSocketClient GetMockedMyMosqWebSocketClient()
     {
         IWebSocketClient mockWebSocketClient = Substitute.For<IWebSocketClient>();
 
