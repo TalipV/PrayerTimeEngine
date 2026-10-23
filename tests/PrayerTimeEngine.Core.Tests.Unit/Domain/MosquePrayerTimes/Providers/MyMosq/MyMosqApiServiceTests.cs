@@ -1,4 +1,7 @@
-﻿using NodaTime;
+﻿using System.Net.WebSockets;
+using NodaTime;
+using NSubstitute;
+using PrayerTimeEngine.Core.Data.WebSocket.Interfaces;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.MyMosq.Models.DTOs;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.MyMosq.Models.Entities;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.MyMosq.Services;
@@ -137,5 +140,58 @@ public class MyMosqApiServiceTests : BaseTest
 
         // ASSERT
         response.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task GetPrayerTimesAsync_TransientConnectFailure_RetriesWithNewClient()
+    {
+        // ARRANGE
+        var date = new LocalDate(2024, 8, 30);
+        string externalID = "1239";
+
+        IWebSocketClient failingWebSocketClient = GetFailingWebSocketClient();
+        IWebSocketClient workingWebSocketClient = SubstitutionHelper.GetMockedMyMosqWebSocketClient();
+        IWebSocketClientFactory webSocketClientFactory = Substitute.For<IWebSocketClientFactory>();
+        webSocketClientFactory.CreateWebSocketClient().Returns(failingWebSocketClient, workingWebSocketClient);
+        var myMosqApiService = new MyMosqApiService(webSocketClientFactory);
+
+        // ACT
+        List<MyMosqPrayerTimesDTO> response = await myMosqApiService.GetPrayerTimesAsync(date, externalID, cancellationToken: default);
+
+        // ASSERT
+        response.Should().HaveCount(366);
+
+        // one failed attempt, then one client for the URL lookup and one for the actual request
+        webSocketClientFactory.Received(3).CreateWebSocketClient();
+        failingWebSocketClient.Received(1).Dispose();
+    }
+
+    [Fact]
+    public async Task GetPrayerTimesAsync_PersistentConnectFailure_ThrowsAfterThreeAttempts()
+    {
+        // ARRANGE
+        var date = new LocalDate(2024, 8, 30);
+        string externalID = "1239";
+
+        IWebSocketClient failingWebSocketClient = GetFailingWebSocketClient();
+        IWebSocketClientFactory webSocketClientFactory = Substitute.For<IWebSocketClientFactory>();
+        webSocketClientFactory.CreateWebSocketClient().Returns(failingWebSocketClient);
+        var myMosqApiService = new MyMosqApiService(webSocketClientFactory);
+
+        // ACT
+        Func<Task> testAction = async () => await myMosqApiService.GetPrayerTimesAsync(date, externalID, cancellationToken: default);
+
+        // ASSERT
+        await testAction.Should().ThrowExactlyAsync<WebSocketException>();
+        await failingWebSocketClient.ReceivedWithAnyArgs(3).ConnectAsync(default, default);
+        failingWebSocketClient.Received(3).Dispose();
+    }
+
+    private static IWebSocketClient GetFailingWebSocketClient()
+    {
+        IWebSocketClient failingWebSocketClient = Substitute.For<IWebSocketClient>();
+        failingWebSocketClient.ConnectAsync(Arg.Any<Uri>(), Arg.Any<CancellationToken>())
+            .Returns(Task.FromException(new WebSocketException("Unable to connect to the remote server")));
+        return failingWebSocketClient;
     }
 }
