@@ -2,7 +2,7 @@ name: Android APKs
 
 on:
   push:
-    branches: [ master ]
+    branches: [ main ]
   workflow_dispatch:
 
 permissions:
@@ -161,7 +161,7 @@ jobs:
           target_commitish: ${{ github.sha }}
           name: Latest build (${{ env.BUILD_DATE }})
           body: |
-            Automatischer Build von `master` — Commit ${{ github.sha }}
+            Automatischer Build von `main` — Commit ${{ github.sha }}
             Stand: ${{ env.BUILD_DATE }}
 
             Fester Download-Link (zeigt immer auf den neuesten Build):
