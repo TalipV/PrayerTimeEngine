@@ -1,10 +1,10 @@
-﻿{
+{
   "DynamicProfileConfigs": [
     {
       "PlaceInfo": {
         "ExternalID": "343647974",
-        "Longitude": 11.41337,
-        "Latitude": 47.2803835,
+        "Longitude": 11.4041024,
+        "Latitude": 47.2692124,
         "InfoLanguageCode": "de",
         "Country": "\u00D6sterreich",
         "State": null,
@@ -219,8 +219,8 @@
           "ProviderType": 5,
           "LocationData": {
             "$type": "MuwaqqitLocationData",
-            "Longitude": 11.41337,
-            "Latitude": 47.2803835,
+            "Longitude": 11.4041024,
+            "Latitude": 47.2692124,
             "TimezoneName": "Europe/Vienna",
             "Source": 5
           }
@@ -251,8 +251,8 @@
     {
       "PlaceInfo": {
         "ExternalID": "343647974",
-        "Longitude": 11.41337,
-        "Latitude": 47.2803835,
+        "Longitude": 11.4041024,
+        "Latitude": 47.2692124,
         "InfoLanguageCode": "de",
         "Country": "\u00D6sterreich",
         "State": null,
@@ -467,8 +467,8 @@
           "ProviderType": 5,
           "LocationData": {
             "$type": "MuwaqqitLocationData",
-            "Longitude": 11.41337,
-            "Latitude": 47.2803835,
+            "Longitude": 11.4041024,
+            "Latitude": 47.2692124,
             "TimezoneName": "Europe/Vienna",
             "Source": 5
           }

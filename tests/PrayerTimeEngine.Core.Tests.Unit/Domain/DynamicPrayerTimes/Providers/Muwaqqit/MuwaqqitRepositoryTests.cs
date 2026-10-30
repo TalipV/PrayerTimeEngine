@@ -29,8 +29,8 @@ public class MuwaqqitRepositoryTests : BaseTest
         {
             Date = date,
             TimeZone = dateTimeZone,
-            Latitude = 47.2803835M,
-            Longitude = 11.41337M,
+            Latitude = 47.2692124M,
+            Longitude = 11.4041024M,
             FajrDegree = 1,
             IshaDegree = 1,
             IshtibakDegree = 1,
@@ -77,8 +77,8 @@ public class MuwaqqitRepositoryTests : BaseTest
         {
             Date = date,
             TimeZone = dateTimeZone,
-            Latitude = 47.2803835M,
-            Longitude = 11.41337M,
+            Latitude = 47.2692124M,
+            Longitude = 11.4041024M,
             FajrDegree = 1,
             IshaDegree = 1,
             IshtibakDegree = 1,

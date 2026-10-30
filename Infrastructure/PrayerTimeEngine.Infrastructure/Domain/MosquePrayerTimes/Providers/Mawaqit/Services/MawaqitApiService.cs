@@ -31,7 +31,8 @@ public partial class MawaqitApiService(
         var doc = new HtmlDocument();
         doc.LoadHtml(pageContent);
 
-        HtmlNode scriptNode = doc.DocumentNode.SelectSingleNode("//script[contains(text(), 'var confData = ')]")
+        // the declaration keyword changes over time (Mawaqit switched from "var" to "let" in October 2026)
+        HtmlNode scriptNode = doc.DocumentNode.SelectSingleNode("//script[contains(text(), 'confData = ')]")
             ?? throw new Exception($"Script containing confData not found for {externalID}");
 
         // fix
@@ -46,7 +47,7 @@ public partial class MawaqitApiService(
         return JsonSerializer.Deserialize<MawaqitResponseDTO>(match.Groups[1].Value);
     }
 
-    [GeneratedRegex(@"var confData = (.*?);", RegexOptions.Singleline)]
+    [GeneratedRegex(@"(?:var|let|const) confData = (.*?);", RegexOptions.Singleline)]
     private static partial Regex confDataExtractionRegex();
 
     public async Task<bool> ValidateData(string externalID, CancellationToken cancellationToken)

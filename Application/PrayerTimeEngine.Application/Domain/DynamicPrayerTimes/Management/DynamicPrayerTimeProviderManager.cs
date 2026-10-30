@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using System.Diagnostics.CodeAnalysis;
 using AsyncAwaitBestPractices;
 using Microsoft.Extensions.Logging;
 using NodaTime;
@@ -24,28 +25,69 @@ public class DynamicPrayerTimeProviderManager(
         DynamicPrayerTimeCalculationErrorVO CalculationError);
 
     /// <summary>
-    /// Caches the most recent successful calculation per profile because consumers like the
+    /// Caches the most recent calculation per profile because consumers like the
     /// persistent notification request the same times again every few seconds.
     ///
     /// Only a single day set is kept per profile (practically the current day), so newer
     /// calculations just replace older ones and the cache stays bounded without any clean up logic.
+    ///
+    /// A partial result (at least one provider failed) is cached as well, so the times of the
+    /// working providers stay available, but only until the failed providers may be retried.
     /// </summary>
     private readonly ConcurrentDictionary<int, CachedDaySetEntry> _cachedDaySetByProfileID = new();
 
     private sealed record CachedDaySetEntry(
         ZonedDateTime Date,
         long ProfileVersion,
-        DynamicPrayerTimesDaySet DaySet);
+        DynamicPrayerTimesDaySet DaySet,
+        List<DynamicPrayerTimeCalculationErrorVO> CalculationErrors,
+        Instant? RecalculateAt);
 
-    private bool TryGetCachedDaySet(
+    /// <summary>
+    /// Identifies a single provider request: one provider for one profile configuration on one day.
+    /// </summary>
+    private sealed record ProviderRequestKey(
+        EDynamicPrayerTimeProviderType ProviderType,
+        int ProfileID,
+        long ProfileVersion,
+        LocalDate Date);
+
+    private sealed class ProviderFailureState
+    {
+        public int ConsecutiveFailureCount { get; set; }
+        public Instant RetryAt { get; set; }
+        public Exception? LastException { get; set; }
+    }
+
+    private static readonly Duration s_initialRetryDelay = Duration.FromSeconds(30);
+    private static readonly Duration s_maximumRetryDelay = Duration.FromMinutes(15);
+
+    /// <summary>
+    /// Backoff per failed provider request. Without it every consumer retries a failed provider
+    /// immediately, e.g. the persistent notification on every tick, which hammers an unavailable
+    /// API every few seconds for as long as it is down.
+    /// </summary>
+    private readonly ConcurrentDictionary<ProviderRequestKey, ProviderFailureState> _failureStateByRequest = new();
+
+    private bool TryGetCachedEntry(
         int profileID,
         ZonedDateTime date,
-        out DynamicPrayerTimesDaySet daySet)
+        long profileVersion,
+        [NotNullWhen(true)] out CachedDaySetEntry? cacheEntry)
     {
-        if (_cachedDaySetByProfileID.TryGetValue(profileID, out CachedDaySetEntry cacheEntry)
+        return _cachedDaySetByProfileID.TryGetValue(profileID, out cacheEntry)
             && cacheEntry.Date == date
             // reusing the cache is only valid as long as the profile configuration stayed the same
-            && cacheEntry.ProfileVersion == profileService.GetProfileVersion(profileID))
+            && cacheEntry.ProfileVersion == profileVersion;
+    }
+
+    public bool TryGetAlreadyCalculatedPrayerTimes(int profileID, ZonedDateTime date, out DynamicPrayerTimesDaySet daySet)
+    {
+        // normalize identically to CalculatePrayerTimesAsync so the cache key (start of day) matches
+        date = date.LocalDateTime.Date.AtStartOfDayInZone(date.Zone);
+
+        // partial results are returned as well, showing the available times beats showing none
+        if (TryGetCachedEntry(profileID, date, profileService.GetProfileVersion(profileID), out CachedDaySetEntry? cacheEntry))
         {
             daySet = cacheEntry.DaySet;
             return true;
@@ -55,26 +97,21 @@ public class DynamicPrayerTimeProviderManager(
         return false;
     }
 
-    public bool TryGetAlreadyCalculatedPrayerTimes(int profileID, ZonedDateTime date, out DynamicPrayerTimesDaySet daySet)
-    {
-        // normalize identically to CalculatePrayerTimesAsync so the cache key (start of day) matches
-        date = date.LocalDateTime.Date.AtStartOfDayInZone(date.Zone);
-
-        return TryGetCachedDaySet(profileID, date, out daySet);
-    }
-
     public async Task<CalculatePrayerTimesResultVO> CalculatePrayerTimesAsync(int profileID, ZonedDateTime date, CancellationToken cancellationToken)
     {
         date = date.LocalDateTime.Date.AtStartOfDayInZone(date.Zone);
+        long profileVersion = profileService.GetProfileVersion(profileID);
 
         // Fast path: version check is in-memory, no DB round-trip needed
-        if (TryGetCachedDaySet(profileID, date, out DynamicPrayerTimesDaySet prayerTimeEntity))
+        if (TryGetCachedEntry(profileID, date, profileVersion, out CachedDaySetEntry? cacheEntry)
+            && (cacheEntry.RecalculateAt is null || systemInfoService.GetCurrentInstant() < cacheEntry.RecalculateAt))
         {
-            prayerTimeEntity.DataCalculationTimestamp = systemInfoService.GetCurrentZonedDateTime();
+            cacheEntry.DaySet.DataCalculationTimestamp = systemInfoService.GetCurrentZonedDateTime();
 
             return new CalculatePrayerTimesResultVO
             {
-                DynamicPrayerTimesDaySet = prayerTimeEntity
+                DynamicPrayerTimesDaySet = cacheEntry.DaySet,
+                CalculationErrors = [.. cacheEntry.CalculationErrors]
             };
         }
 
@@ -84,7 +121,7 @@ public class DynamicPrayerTimeProviderManager(
         DynamicProfile dynamicProfile = profile as DynamicProfile
             ?? throw new Exception($"The Profile with the ID '{profileID}' is not a {nameof(DynamicProfile)}");
 
-        prayerTimeEntity = new DynamicPrayerTimesDaySet
+        var prayerTimeEntity = new DynamicPrayerTimesDaySet
         {
             PreviousDay = new DynamicPrayerTimesDay(),
             CurrentDay = new DynamicPrayerTimesDay(),
@@ -92,9 +129,9 @@ public class DynamicPrayerTimeProviderManager(
         };
 
         // the three days are calculated in parallel (and within each day the providers are requested in parallel)
-        Task<List<DynamicPrayerTimeCalculationErrorVO>> currentDayTask = CalculateInternal(prayerTimeEntity.CurrentDay, dynamicProfile, date, cancellationToken);
-        Task<List<DynamicPrayerTimeCalculationErrorVO>> previousDayTask = CalculateInternal(prayerTimeEntity.PreviousDay, dynamicProfile, date.Plus(Duration.FromDays(-1)), cancellationToken);
-        Task<List<DynamicPrayerTimeCalculationErrorVO>> nextDayTask = CalculateInternal(prayerTimeEntity.NextDay, dynamicProfile, date.Plus(Duration.FromDays(1)), cancellationToken);
+        Task<List<DynamicPrayerTimeCalculationErrorVO>> currentDayTask = CalculateInternal(prayerTimeEntity.CurrentDay, dynamicProfile, profileVersion, date, cancellationToken);
+        Task<List<DynamicPrayerTimeCalculationErrorVO>> previousDayTask = CalculateInternal(prayerTimeEntity.PreviousDay, dynamicProfile, profileVersion, date.Plus(Duration.FromDays(-1)), cancellationToken);
+        Task<List<DynamicPrayerTimeCalculationErrorVO>> nextDayTask = CalculateInternal(prayerTimeEntity.NextDay, dynamicProfile, profileVersion, date.Plus(Duration.FromDays(1)), cancellationToken);
 
         await Task.WhenAll(currentDayTask, previousDayTask, nextDayTask).ConfigureAwait(false);
 
@@ -103,14 +140,15 @@ public class DynamicPrayerTimeProviderManager(
 
         prayerTimeEntity.DataCalculationTimestamp = systemInfoService.GetCurrentZonedDateTime();
 
-        // erroneous results are not cached so that the next request retries the calculation
-        if (calculationErrors.Count == 0)
-        {
-            _cachedDaySetByProfileID[dynamicProfile.ID] = new CachedDaySetEntry(
-                date,
-                profileService.GetProfileVersion(dynamicProfile.ID),
-                prayerTimeEntity);
-        }
+        // erroneous results are cached too, but only until the earliest failed provider may be retried
+        _cachedDaySetByProfileID[dynamicProfile.ID] = new CachedDaySetEntry(
+            date,
+            profileVersion,
+            prayerTimeEntity,
+            calculationErrors,
+            RecalculateAt: calculationErrors.Count == 0
+                ? null
+                : GetEarliestRetryAt(dynamicProfile.ID, profileVersion, calculationErrors));
 
         // execute without awaiting because we don't want to await and block for this side quest
         CleanUpOldCacheData(cancellationToken).SafeFireAndForget(exception => logger.LogError(exception, "Error during cleanUpOldCacheData"));
@@ -125,10 +163,11 @@ public class DynamicPrayerTimeProviderManager(
     private async Task<List<DynamicPrayerTimeCalculationErrorVO>> CalculateInternal(
         DynamicPrayerTimesDay targetSet,
         DynamicProfile profile,
+        long profileVersion,
         ZonedDateTime date,
         CancellationToken ct)
     {
-        (List<(ETimeType TimeType, ZonedDateTime ZonedDateTime)>? prayerTimes, List<DynamicPrayerTimeCalculationErrorVO>? calculationErrors) = await CalculateComplexTypes(profile, date, ct).ConfigureAwait(false);
+        (List<(ETimeType TimeType, ZonedDateTime ZonedDateTime)>? prayerTimes, List<DynamicPrayerTimeCalculationErrorVO>? calculationErrors) = await CalculateComplexTypes(profile, profileVersion, date, ct).ConfigureAwait(false);
 
         foreach ((ETimeType type, ZonedDateTime time) in prayerTimes)
         {
@@ -177,6 +216,7 @@ public class DynamicPrayerTimeProviderManager(
 
     private async Task<(List<(ETimeType TimeType, ZonedDateTime ZonedDateTime)> PrayerTimes, List<DynamicPrayerTimeCalculationErrorVO> CalculationErrors)> CalculateComplexTypes(
         DynamicProfile dynamicProfile,
+        long profileVersion,
         ZonedDateTime date,
         CancellationToken cancellationToken)
     {
@@ -197,7 +237,7 @@ public class DynamicPrayerTimeProviderManager(
 
             calculatorTasks.Add(CalculateComplexTypesForCalculator(
                 locationData,
-                dynamicPrayerTimeProviderType,
+                new ProviderRequestKey(dynamicPrayerTimeProviderType, dynamicProfile.ID, profileVersion, date.LocalDateTime.Date),
                 configs,
                 date,
                 cancellationToken));
@@ -215,11 +255,19 @@ public class DynamicPrayerTimeProviderManager(
 
     private async Task<ComplexCalculationResult> CalculateComplexTypesForCalculator(
         BaseLocationData locationData,
-        EDynamicPrayerTimeProviderType dynamicPrayerTimeProviderType,
+        ProviderRequestKey requestKey,
         List<GenericSettingConfiguration> configs,
         ZonedDateTime date,
         CancellationToken cancellationToken)
     {
+        EDynamicPrayerTimeProviderType dynamicPrayerTimeProviderType = requestKey.ProviderType;
+
+        // the provider failed only recently for this request, so it is not asked again before its retry delay passed
+        if (TryGetActiveBackoff(requestKey, out Exception? lastException))
+        {
+            return new ComplexCalculationResult([], CreateCalculationError(requestKey, configs, lastException));
+        }
+
         try
         {
             IDynamicPrayerTimeProvider dynamicPrayerTimeProvider = prayerTimeServiceFactory.GetDynamicPrayerTimeProviderByDynamicPrayerTimeProvider(dynamicPrayerTimeProviderType);
@@ -229,6 +277,8 @@ public class DynamicPrayerTimeProviderManager(
 
             List<(ETimeType TimeType, ZonedDateTime ZonedDateTime)> calculationResults =
                 await dynamicPrayerTimeProvider.GetPrayerTimesAsync(date, locationData, configs, cancellationToken).ConfigureAwait(false);
+
+            RegisterSuccess(requestKey);
 
             return new ComplexCalculationResult(
                 PrayerTimes: [.. calculationResults
@@ -249,21 +299,139 @@ public class DynamicPrayerTimeProviderManager(
         }
         catch (Exception exception)
         {
-            logger.LogError(exception,
-                "Error while calculating complex prayer times for {DynamicPrayerTimeProviderType} on {Date}",
-                dynamicPrayerTimeProviderType,
-                date.LocalDateTime.Date);
+            RegisterFailure(requestKey, exception);
 
-            return new ComplexCalculationResult(
-                [],
-                new DynamicPrayerTimeCalculationErrorVO
-                {
-                    DynamicPrayerTimeProviderType = dynamicPrayerTimeProviderType,
-                    Date = date.LocalDateTime.Date,
-                    TimeTypes = [.. configs.Select(x => x.TimeType).Distinct().OrderBy(x => x.ToString())],
-                    Exception = exception,
-                });
+            return new ComplexCalculationResult([], CreateCalculationError(requestKey, configs, exception));
         }
+    }
+
+    private static DynamicPrayerTimeCalculationErrorVO CreateCalculationError(
+        ProviderRequestKey requestKey,
+        List<GenericSettingConfiguration> configs,
+        Exception exception)
+    {
+        return new DynamicPrayerTimeCalculationErrorVO
+        {
+            DynamicPrayerTimeProviderType = requestKey.ProviderType,
+            Date = requestKey.Date,
+            TimeTypes = [.. configs.Select(x => x.TimeType).Distinct().OrderBy(x => x.ToString())],
+            Exception = exception,
+        };
+    }
+
+    private bool TryGetActiveBackoff(ProviderRequestKey requestKey, [NotNullWhen(true)] out Exception? lastException)
+    {
+        if (_failureStateByRequest.TryGetValue(requestKey, out ProviderFailureState? failureState))
+        {
+            lock (failureState)
+            {
+                if (failureState.LastException is not null && systemInfoService.GetCurrentInstant() < failureState.RetryAt)
+                {
+                    lastException = failureState.LastException;
+                    return true;
+                }
+            }
+        }
+
+        lastException = null;
+        return false;
+    }
+
+    /// <summary>
+    /// Starts the next, longer backoff period for the request. Only the first failure of an outage is
+    /// logged as an error (with the stack trace); the following ones are logged once per backoff period
+    /// as a short warning, so an outage of several hours doesn't flood the log.
+    /// </summary>
+    private void RegisterFailure(ProviderRequestKey requestKey, Exception exception)
+    {
+        Instant now = systemInfoService.GetCurrentInstant();
+
+        // stale entries (e.g. of an outage that ended without a later successful request for that day)
+        foreach (ProviderRequestKey staleKey in _failureStateByRequest.Keys.Where(key => key.Date < requestKey.Date.PlusDays(-3)))
+        {
+            _failureStateByRequest.TryRemove(staleKey, out _);
+        }
+
+        ProviderFailureState failureState = _failureStateByRequest.GetOrAdd(requestKey, _ => new ProviderFailureState());
+        int consecutiveFailureCount;
+        Duration retryDelay;
+
+        lock (failureState)
+        {
+            failureState.LastException = exception;
+
+            // a parallel request for the same key already failed and started the current backoff period
+            if (failureState.ConsecutiveFailureCount > 0 && now < failureState.RetryAt)
+            {
+                return;
+            }
+
+            failureState.ConsecutiveFailureCount++;
+            consecutiveFailureCount = failureState.ConsecutiveFailureCount;
+            retryDelay = GetRetryDelay(consecutiveFailureCount);
+            failureState.RetryAt = now + retryDelay;
+        }
+
+        if (consecutiveFailureCount == 1)
+        {
+            logger.LogError(exception,
+                "Error while calculating complex prayer times for {DynamicPrayerTimeProviderType} on {Date}, next attempt in {RetryDelay}",
+                requestKey.ProviderType,
+                requestKey.Date,
+                retryDelay);
+        }
+        else
+        {
+            logger.LogWarning(
+                "Complex prayer times for {DynamicPrayerTimeProviderType} on {Date} still failing ({ConsecutiveFailureCount} consecutive failures, last error: {ErrorMessage}), next attempt in {RetryDelay}",
+                requestKey.ProviderType,
+                requestKey.Date,
+                consecutiveFailureCount,
+                exception.Message,
+                retryDelay);
+        }
+    }
+
+    private void RegisterSuccess(ProviderRequestKey requestKey)
+    {
+        if (_failureStateByRequest.TryRemove(requestKey, out ProviderFailureState? failureState))
+        {
+            logger.LogInformation(
+                "Complex prayer times for {DynamicPrayerTimeProviderType} on {Date} available again after {ConsecutiveFailureCount} consecutive failures",
+                requestKey.ProviderType,
+                requestKey.Date,
+                failureState.ConsecutiveFailureCount);
+        }
+    }
+
+    /// <summary>Doubles with every consecutive failure: 30 s, 1 min, 2 min, ... up to 15 min.</summary>
+    private static Duration GetRetryDelay(int consecutiveFailureCount)
+    {
+        Duration retryDelay = s_initialRetryDelay * Math.Pow(2, Math.Min(consecutiveFailureCount - 1, 10));
+        return retryDelay < s_maximumRetryDelay ? retryDelay : s_maximumRetryDelay;
+    }
+
+    private Instant GetEarliestRetryAt(int profileID, long profileVersion, List<DynamicPrayerTimeCalculationErrorVO> calculationErrors)
+    {
+        Instant now = systemInfoService.GetCurrentInstant();
+
+        return calculationErrors
+            .Select(error =>
+            {
+                var requestKey = new ProviderRequestKey(error.DynamicPrayerTimeProviderType, profileID, profileVersion, error.Date);
+
+                if (!_failureStateByRequest.TryGetValue(requestKey, out ProviderFailureState? failureState))
+                {
+                    // no backoff (anymore), e.g. because a parallel calculation succeeded in the meantime
+                    return now;
+                }
+
+                lock (failureState)
+                {
+                    return failureState.RetryAt;
+                }
+            })
+            .Min();
     }
 
     /// <summary>

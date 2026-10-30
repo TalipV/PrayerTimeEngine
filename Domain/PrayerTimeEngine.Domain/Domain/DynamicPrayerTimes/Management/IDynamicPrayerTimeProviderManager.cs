@@ -13,6 +13,8 @@ public interface IDynamicPrayerTimeProviderManager
     /// notification that only want to render already calculated times and must not be blocked or fail
     /// when nothing has been calculated yet. Returns <c>false</c> (and a null <paramref name="daySet"/>)
     /// when no result is available; how availability is determined is an implementation detail.
+    /// The returned day set may be partial when some providers failed; only
+    /// <see cref="CalculatePrayerTimesAsync"/> reports the calculation errors.
     /// </summary>
     bool TryGetAlreadyCalculatedPrayerTimes(int profileID, ZonedDateTime zoneDate, out DynamicPrayerTimesDaySet daySet);
 }

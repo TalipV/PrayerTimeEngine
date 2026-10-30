@@ -59,6 +59,19 @@ local and CI builds run the same analyzers and workloads. To move to a new band,
 `global.json`, then locally (admin shell, in the repo root) run `dotnet workload update` so
 the matching workload set is installed.
 
+**Keep `sdk.workloadVersion` in step with Visual Studio.** Visual Studio installs its own
+MAUI/Android workload packs and updates them with every VS update. When the pinned workload
+set expects other pack versions than VS has installed, local CLI builds of the MAUI project
+fail with `NETSDK1147` (e.g. `maui-android` / `android` missing) or `MSB4242` (workload
+version not found). Do not remove the pin (CI would then pick up every new workload release
+on its own). Instead, after a VS update, find the set that matches VS's packs
+(`dotnet workload search version 10.0.40x` lists the Android/MAUI manifest versions of a set;
+compare them with `C:\Program Files\dotnet\packs\Microsoft.Maui.Sdk` and
+`Microsoft.Android.Sdk.Windows`), raise `sdk.workloadVersion` to it deliberately and run
+`dotnet workload update` in an admin shell. Remind the user of this whenever a VS update is
+mentioned or one of these errors shows up. (Last bump: 10.0.401 → 10.0.402 on 2026-10-20,
+matching android 36.1.118 / MAUI 10.0.110.)
+
 Most violations are auto-fixable: `dotnet format <project>.csproj --severity error`.
 Run it per project (not on the multi-targeted MAUI project as a whole: formatting several
 TFMs at once writes merge-conflict markers into shared files). Naming (IDE1006) is not

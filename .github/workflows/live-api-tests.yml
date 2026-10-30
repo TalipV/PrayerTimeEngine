@@ -1,12 +1,16 @@
 name: Live API tests
 
-# The live-API tests hit real external services (e.g. the MyMosq Firebase API), so
-# they are non-deterministic and must NOT gate pushes or the APK release. They run on
-# a nightly schedule (and on demand) to surface breaking changes on the provider side,
-# decoupled from feature work.
+# The live-API tests hit real external services (Fazilet, Semerkand, Muwaqqit, Mawaqit,
+# MyMosq, LocationIQ), so they are non-deterministic and must NOT gate pushes or the APK
+# release. They run on a schedule (and on demand) to surface outages and breaking
+# changes on the provider side, decoupled from feature work.
 on:
   schedule:
-    - cron: '0 3 * * *'   # daily at 03:00 UTC
+    # Twice a day (00:00 and 12:00 UTC). GitHub starts scheduled runs late under load (observed:
+    # 5-7 hours), so a fixed evening slot isn't reliable; two runs 12 hours apart still surface an
+    # outage within the same day, before the app has to fetch the next day's data at midnight
+    # (Fazilet only ever delivers up to tomorrow).
+    - cron: '0 0,12 * * *'
   workflow_dispatch:
 
 permissions:

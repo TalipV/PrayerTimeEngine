@@ -66,8 +66,8 @@ public class MuwaqqitApiServiceTests : BaseTest
         time.AsrKarahaDegree.Should().Be(3.5);
         time.IshtibakDegree.Should().Be(-8);
         time.IshaDegree.Should().Be(-12);
-        time.Latitude.Should().Be(47.2803835M);
-        time.Longitude.Should().Be(11.41337M);
+        time.Latitude.Should().Be(47.2692124M);
+        time.Longitude.Should().Be(11.4041024M);
         time.InsertInstant.Should().BeNull();
 
         time.Asr.Should().Be(Instant.FromUtc(2023, 7, 30, 15, 25, 53));

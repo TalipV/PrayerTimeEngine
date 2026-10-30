@@ -38,8 +38,8 @@ public class MuwaqqitDynamicPrayerTimeProviderTests : BaseTest
         var date = new LocalDate(2023, 7, 30);
         var locationData = new MuwaqqitLocationData
         {
-            Latitude = 47.2803835M,
-            Longitude = 11.41337M,
+            Latitude = 47.2692124M,
+            Longitude = 11.4041024M,
             TimezoneName = TestDataHelper.EUROPE_VIENNA_TIME_ZONE.Id
         };
         DateTimeZone dateTimeZone = DateTimeZoneProviders.Tzdb[locationData.TimezoneName];

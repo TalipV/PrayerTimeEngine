@@ -49,8 +49,8 @@ public class MuwaqqitDynamicPrayerTimeProviderBenchmark
     private static readonly MuwaqqitLocationData s_locationData =
         new()
         {
-            Latitude = 47.2803835M,
-            Longitude = 11.41337M,
+            Latitude = 47.2692124M,
+            Longitude = 11.4041024M,
             TimezoneName = TestDataHelper.EUROPE_VIENNA_TIME_ZONE.Id
         };
 

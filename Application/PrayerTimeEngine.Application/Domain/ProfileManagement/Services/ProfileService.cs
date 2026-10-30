@@ -59,8 +59,8 @@ public class ProfileService(
             PlaceInfo = new ProfilePlaceInfo
             {
                 ExternalID = "343647974",
-                Latitude = 47.2803835M,
-                Longitude = 11.41337M,
+                Latitude = 47.2692124M,
+                Longitude = 11.4041024M,
                 InfoLanguageCode = "de",
                 Country = "Österreich",
                 City = "Innsbruck",
@@ -87,8 +87,8 @@ public class ProfileService(
                     LocationData =
                         new MuwaqqitLocationData
                         {
-                            Latitude = 47.2803835M,
-                            Longitude = 11.41337M,
+                            Latitude = 47.2692124M,
+                            Longitude = 11.4041024M,
                             TimezoneName = "Europe/Vienna"
                         }
                 },

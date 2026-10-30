@@ -520,21 +520,31 @@ public class PrayerTimeSummaryNotification : Service
         public const int ProgressBar = _Microsoft.Android.Resource.Designer.ResourceConstant.Id.notification_progress_bar;
     }
 
+    /// <summary>
+    /// Minimum time between two load attempts while the main profile could not be calculated completely.
+    /// The manager's backoff keeps a failing provider from being requested too often anyway, this only
+    /// avoids running the whole load every second for nothing.
+    /// </summary>
+    private static readonly Duration s_loadRetryInterval = Duration.FromSeconds(30);
+
     private LocalDate _lastLoadedDate = new(2000, 1, 1);
+    private Instant _nextLoadAttempt = Instant.MinValue;
     private int _isLoadInProgress = 0;
 
     /// <summary>
     /// Ensures the prayer times of all profiles are calculated (and thereby cached) for the current day,
     /// off the per-second render path. The actual fetch may need the network, so it runs with a generous
     /// timeout (bounded by the HttpClient/resilience pipeline) instead of the short render timeout.
-    /// Deduplicated so overlapping timer ticks never stack, and retried on the next tick until the main
-    /// profile is available so a failed first fetch doesn't leave the notification blank all day.
+    /// Deduplicated so overlapping timer ticks never stack, and retried every <see cref="s_loadRetryInterval"/>
+    /// until the main profile is calculated completely, so a failed fetch doesn't stay unnoticed all day.
     /// </summary>
     private void EnsureProfilesLoadedInBackground(List<Profile> profiles, DynamicProfile mainProfile)
     {
         ZonedDateTime currentZonedDateTime = _systemInfoService.GetCurrentZonedDateTime();
 
-        if (profiles.Count == 0 || _lastLoadedDate == currentZonedDateTime.Date)
+        if (profiles.Count == 0
+            || _lastLoadedDate == currentZonedDateTime.Date
+            || currentZonedDateTime.ToInstant() < _nextLoadAttempt)
         {
             return;
         }
@@ -554,6 +564,10 @@ public class PrayerTimeSummaryNotification : Service
     {
         try
         {
+            // set up front so that an exception during the load doesn't lead to a retry on every tick
+            _nextLoadAttempt = currentZonedDateTime.ToInstant() + s_loadRetryInterval;
+            bool isMainProfileComplete = false;
+
             // load the rendered (main) profile first so the notification comes alive as soon as possible
             IEnumerable<Profile> orderedProfiles = profiles.OrderByDescending(profile => ReferenceEquals(profile, mainProfile));
 
@@ -564,7 +578,13 @@ public class PrayerTimeSummaryNotification : Service
                 // is exactly what prevents the short render timeout from canceling a slow first request.
                 if (profile is DynamicProfile dynamicProfile)
                 {
-                    await _prayerTimeDynamicPrayerTimeProviderManager.CalculatePrayerTimesAsync(dynamicProfile.ID, currentZonedDateTime, CancellationToken.None);
+                    CalculatePrayerTimesResultVO result =
+                        await _prayerTimeDynamicPrayerTimeProviderManager.CalculatePrayerTimesAsync(dynamicProfile.ID, currentZonedDateTime, CancellationToken.None);
+
+                    if (ReferenceEquals(profile, mainProfile))
+                    {
+                        isMainProfileComplete = result.CalculationErrors.Count == 0;
+                    }
                 }
                 else if (profile is MosqueProfile mosqueProfile)
                 {
@@ -576,18 +596,20 @@ public class PrayerTimeSummaryNotification : Service
                 }
             }
 
-            // only consider the day loaded once the profile the notification renders is actually cached,
-            // so a failed fetch is retried on the next tick instead of being skipped for the rest of the day
-            if (_prayerTimeDynamicPrayerTimeProviderManager.TryGetAlreadyCalculatedPrayerTimes(mainProfile.ID, currentZonedDateTime, out _))
+            // only consider the day loaded once the profile the notification renders is calculated completely,
+            // so a failed provider is retried later instead of being skipped for the rest of the day.
+            // The failure itself is already logged by the manager.
+            if (isMainProfileComplete)
             {
                 _lastLoadedDate = currentZonedDateTime.Date;
             }
             else
             {
-                _logger.LogWarning(
-                    "Prayer times for the rendered profile {ProfileID} are still not available after loading for {Date}; day will be retried on the next tick",
+                _logger.LogDebug(
+                    "Prayer times for the rendered profile {ProfileID} are incomplete for {Date}; retrying in {RetryInterval}",
                     mainProfile.ID,
-                    currentZonedDateTime.Date);
+                    currentZonedDateTime.Date,
+                    s_loadRetryInterval);
             }
         }
         finally
