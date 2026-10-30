@@ -1,17 +1,12 @@
 using Android.Content;
 using PrayerTimeEngine.Platforms.Android.Permissions;
 using PrayerTimeEngine.Services.Notifications;
+using PrayerTimeEngine.Presentation.Localization;
 
 namespace PrayerTimeEngine.Platforms.Android.Notifications;
 
 public class PrayerTimeSummaryNotificationHandler : IPrayerTimeSummaryNotificationHandler
 {
-    private const string BATTERY_OPTIMIZATION_WARNING_TEXT = """
-                Damit die Gebetszeiten-Benachrichtigung zuverlässig funktioniert, muss die App von den Akku-Optimierungen ausgenommen sein.
-
-                Bitte wählen Sie unter Batterieeinstellungen die Option 'Unbeschränkt' bzw. 'Nicht optimieren' aus.
-                """;
-
     public async Task ExecuteAsync()
     {
         bool permissionGranted = true;
@@ -63,10 +58,10 @@ public class PrayerTimeSummaryNotificationHandler : IPrayerTimeSummaryNotificati
         await dispatcher.DispatchAsync(async () =>
         {
             bool openSettings = await Application.Current.Windows[0].Page.DisplayAlertAsync(
-                title: "Akku-Optimierung",
-                message: BATTERY_OPTIMIZATION_WARNING_TEXT,
-                accept: "Einstellungen",
-                cancel: "Nein, danke");
+                title: AppResources.BatteryOptimization_Title,
+                message: AppResources.BatteryOptimization_Message,
+                accept: AppResources.BatteryOptimization_Accept,
+                cancel: AppResources.BatteryOptimization_Decline);
 
             if (!openSettings)
             {

@@ -13,8 +13,13 @@ public class PrayerTimeGraphicView(
     private readonly Color _prayerMainTextColor = AppColors.Text;
     private readonly Color _currentTimeTextColor = AppColors.CurrentTime;
 
-    private readonly Color _prayerSubTimeBorderColor = AppColors.Text;
-    private readonly Color _prayerSubTimeTextColor = AppColors.Text;
+    private readonly Color _prayerSubTimeBorderColor = AppColors.Border;
+    private readonly Color _prayerSubTimeFillColor = AppColors.Card;
+    private readonly Color _prayerSubTimeTextColor = AppColors.TextMuted;
+
+    // gap between neighbouring sub time boxes, so they read as separate blocks instead of a table
+    private const float SUB_TIME_INSET = 2;
+    private const float SUB_TIME_CORNER_RADIUS = 3;
 
     public PrayerTimeGraphicTimeVO PrayerTimeGraphicTime { get; set; }
 
@@ -32,7 +37,7 @@ public class PrayerTimeGraphicView(
                 y: 40,
                 width: fullRectangle.Width - 40,
                 height: fullRectangle.Height - 40);
-        canvas.FillRoundedRectangle(mainGraphicRectangle, 15.0);
+        canvas.FillRoundedRectangle(mainGraphicRectangle, 6.0);
 
         canvas.FontSize = 12;
 
@@ -104,36 +109,39 @@ public class PrayerTimeGraphicView(
     private void DrawPrayerTimeTexts(ICanvas canvas, RectF dirtyRect)
     {
         canvas.FontColor = _prayerMainTextColor;
-        canvas.FontSize = 20f;
+        canvas.Font = Microsoft.Maui.Graphics.Font.DefaultBold;
+        canvas.FontSize = 18f;
 
-        // PRAYER NAME TEXT
+        // PRAYER NAME TEXT, centered above the body of the graphic
         canvas.DrawString(
             PrayerTimeGraphicTime.Title,
-            x: (dirtyRect.Width / 2) - 40,
-            y: 15,
-            width: 90,
+            x: 40,
+            y: 4,
+            width: dirtyRect.Width - 40,
             height: 30,
             HorizontalAlignment.Center, VerticalAlignment.Center);
 
-        canvas.FontSize = 15f;
+        canvas.Font = Microsoft.Maui.Graphics.Font.Default;
+        canvas.FontColor = _prayerMainTextColor;
+        canvas.FontSize = 13f;
 
-        // PRAYER TIME BEGINNING TEXT
+        // PRAYER TIME BEGINNING TEXT, level with the top edge of the body
         canvas.DrawString(
             PrayerTimeGraphicTime.Start.ToString("HH:mm", null),
-            x: -25,
+            x: 0,
             y: 30,
-            width: 90,
+            width: 36,
             height: 20,
-            HorizontalAlignment.Center, VerticalAlignment.Center);
+            HorizontalAlignment.Right, VerticalAlignment.Center);
 
-        // PRAYER TIME END TEXT
+        // PRAYER TIME END TEXT, level with the bottom edge of the body
         canvas.DrawString(
             PrayerTimeGraphicTime.End.ToString("HH:mm", null),
-            x: -25,
+            x: 0,
             y: dirtyRect.Height - 20,
-            width: 90,
+            width: 36,
             height: 20,
-            HorizontalAlignment.Center, VerticalAlignment.Center);
+            HorizontalAlignment.Right, VerticalAlignment.Center);
     }
 
     private void DrawSubTime(
@@ -169,16 +177,20 @@ public class PrayerTimeGraphicView(
 
         var innerSubtimeBackgroundRectangle =
             new RectF(
-                x: leftPos,
-                y: topPos,
-                width: width,
-                height: height
+                x: leftPos + SUB_TIME_INSET,
+                y: topPos + SUB_TIME_INSET,
+                width: width - (2 * SUB_TIME_INSET),
+                height: height - (2 * SUB_TIME_INSET)
             );
 
         if (innerSubtimeBackgroundRectangle.Height > 0)
         {
-            canvas.FillColor = canvas.FontColor = canvas.StrokeColor = _prayerSubTimeBorderColor;
-            canvas.DrawRectangle(innerSubtimeBackgroundRectangle);
+            canvas.FillColor = _prayerSubTimeFillColor;
+            canvas.FillRoundedRectangle(innerSubtimeBackgroundRectangle, SUB_TIME_CORNER_RADIUS);
+
+            canvas.StrokeColor = _prayerSubTimeBorderColor;
+            canvas.StrokeSize = 1;
+            canvas.DrawRoundedRectangle(innerSubtimeBackgroundRectangle, SUB_TIME_CORNER_RADIUS);
 
             if (innerSubtimeBackgroundRectangle.Height > 10)
             {

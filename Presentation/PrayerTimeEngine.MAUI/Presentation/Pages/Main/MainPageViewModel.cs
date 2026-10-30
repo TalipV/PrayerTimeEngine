@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Windows.Input;
 using MetroLog.Maui;
 using Microsoft.Extensions.Logging;
@@ -6,6 +7,7 @@ using PrayerTimeEngine.Core.Common;
 using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Models;
+using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Muwaqqit.Models;
 using PrayerTimeEngine.Core.Domain.IslamicCalendar.Interfaces;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Management;
@@ -22,6 +24,7 @@ using PrayerTimeEngine.Presentation.Views.PrayerTimes;
 using PrayerTimeEngine.Services;
 using PrayerTimeEngine.Services.Notifications;
 using PropertyChanged;
+using PrayerTimeEngine.Presentation.Localization;
 
 namespace PrayerTimeEngine.Presentation.Pages.Main;
 
@@ -31,6 +34,7 @@ public partial class MainPageViewModel(
         IBrowser browser,
         ToastMessageService toastMessageService,
         FavoritePlacesService favoritePlacesService,
+        ProfileOverviewTextService profileOverviewTextService,
         ISystemInfoService systemInfoService,
         IMosquePrayerTimeProviderManager mosquePrayerTimeProviderManager,
         PrayerTimeViewModelFactory prayerTimeViewModelFactory,
@@ -112,8 +116,8 @@ public partial class MainPageViewModel(
             int weeksUntilHajjSeason = islamicDateCalculationService.GetWeeksUntilHajj();
 
             List<(int WeeksCount, string Text)> weeksUntilLabelLines = [];
-            weeksUntilLabelLines.Add((weeksUntilHajjSeason, $"{weeksUntilHajjSeason} Wochen bis Hajj"));
-            weeksUntilLabelLines.Add((weeksUntilRamadan, $"{weeksUntilRamadan} Wochen bis Ramadan"));
+            weeksUntilLabelLines.Add((weeksUntilHajjSeason, string.Format(AppResources.MainPage_WeeksUntilHajj, weeksUntilHajjSeason)));
+            weeksUntilLabelLines.Add((weeksUntilRamadan, string.Format(AppResources.MainPage_WeeksUntilRamadan, weeksUntilRamadan)));
             return string.Join(
                 Environment.NewLine,
                 weeksUntilLabelLines
@@ -333,17 +337,17 @@ public partial class MainPageViewModel(
         {
             if (CurrentProfile is not DynamicProfile dynamicProfile)
             {
-                return $"Not supported for '{CurrentProfile?.GetType().Name ?? "NULL"}'!";
+                return string.Format(AppResources.Common_NotSupportedForProfile, CurrentProfile?.GetType().Name ?? "NULL");
             }
 
-            return profileService.GetPrayerTimeConfigDisplayText(dynamicProfile);
+            return profileOverviewTextService.GetTimeConfigurationText(dynamicProfile);
         }
         catch (Exception exception)
         {
             logger.LogError(exception, "Error while deleting current profile");
             toastMessageService.ShowError(exception.Message);
 
-            return $"ERROR: {exception.Message}";
+            return string.Format(AppResources.Common_ErrorWithMessage, exception.Message);
         }
     }
 
@@ -353,18 +357,49 @@ public partial class MainPageViewModel(
         {
             if (CurrentProfile is not DynamicProfile dynamicProfile)
             {
-                return $"Not supported for '{CurrentProfile?.GetType().Name ?? "NULL"}'!";
+                return string.Format(AppResources.Common_NotSupportedForProfile, CurrentProfile?.GetType().Name ?? "NULL");
             }
 
-            return profileService.GetLocationDataDisplayText(dynamicProfile);
+            return profileOverviewTextService.GetLocationDataText(dynamicProfile);
         }
         catch (Exception exception)
         {
             logger.LogError(exception, "Error while deleting current profile");
             toastMessageService.ShowError(exception.Message);
 
-            return $"ERROR: {exception.Message}";
+            return string.Format(AppResources.Common_ErrorWithMessage, exception.Message);
         }
+    }
+
+    /// <summary>
+    /// The coordinates the location overview shows (those of Muwaqqit, the only source working with
+    /// coordinates), or <c>null</c> when the current profile has none.
+    /// </summary>
+    public (decimal Latitude, decimal Longitude)? GetLocationCoordinates()
+    {
+        if (CurrentProfile is not DynamicProfile dynamicProfile
+            || profileService.GetLocationConfig(dynamicProfile, EDynamicPrayerTimeProviderType.Muwaqqit) is not MuwaqqitLocationData muwaqqitLocationData)
+        {
+            return null;
+        }
+
+        return (muwaqqitLocationData.Latitude, muwaqqitLocationData.Longitude);
+    }
+
+    /// <summary>
+    /// Opens the coordinates in the map app of the device. The geo URI lets the user pick any installed
+    /// map app; Google Maps in the browser is the fallback for devices without one.
+    /// </summary>
+    public async Task OpenCoordinatesInMapApp(decimal latitude, decimal longitude)
+    {
+        string coordinates = string.Create(CultureInfo.InvariantCulture, $"{latitude},{longitude}");
+
+        if (await Launcher.Default.TryOpenAsync(new Uri($"geo:{coordinates}?q={coordinates}")))
+        {
+            return;
+        }
+
+        await browser.OpenAsync(new Uri($"https://www.google.com/maps/search/?api=1&query={coordinates}"));
     }
 
     public Task ChangeProfileName(string newProfileName)
@@ -475,7 +510,7 @@ public partial class MainPageViewModel(
 
         if (shownFavorites.Count > 0 && normalResults.Count > 0)
         {
-            items.Add(new PlaceSearchResultItem { IsSeparator = true, DisplayText = "Suchergebnisse" });
+            items.Add(new PlaceSearchResultItem { IsSeparator = true, DisplayText = AppResources.MainPage_SearchResults });
         }
 
         foreach (BasicPlaceInfo result in normalResults)
@@ -611,7 +646,7 @@ public partial class MainPageViewModel(
                 .Distinct()
                 .OrderBy(x => x));
 
-        toastMessageService.ShowWarning($"Calculation for the following providers failed: {failedCalculators}");
+        toastMessageService.ShowWarning(string.Format(AppResources.MainPage_CalculationFailed, failedCalculators));
     }
 
     private async Task OnBeforeFirstLoad()
@@ -649,7 +684,7 @@ public partial class MainPageViewModel(
             // otherwise report an astronomically high start up time
             if (_wasColdStart && startUpTimeMS < 60_000)
             {
-                toastMessageService.Show($"{startUpTimeMS:N0}ms to start!");
+                toastMessageService.Show(string.Format(AppResources.MainPage_StartUpTime, startUpTimeMS.ToString("N0")));
             }
             dispatcher.Dispatch(async () => await prayerTimeNotificationManager.StartPrayerTimeSummaryNotification());
         }
@@ -720,15 +755,15 @@ public partial class MainPageViewModel(
                 if (missingLocationInfo.Count != 0)
                 {
                     logger.LogWarning("Location information missing for the following calculation sources: {@DynamicPrayerTimeProviders}", missingLocationInfo);
-                    toastMessageService.ShowWarning($"Location information missing for {string.Join(", ", missingLocationInfo)}");
+                    toastMessageService.ShowWarning(string.Format(AppResources.MainPage_LocationInformationMissing, string.Join(", ", missingLocationInfo)));
                 }
 
                 // offer to save the just selected place as a favorite (only if it is not one already)
                 if (!await favoritePlacesService.IsFavoriteAsync(selectedPlace, cancellationToken: default))
                 {
                     toastMessageService.ShowAction(
-                        text: $"„{selectedPlace.City}“ zu Favoriten hinzufügen?",
-                        actionText: "Add",
+                        text: string.Format(AppResources.MainPage_AddFavoriteQuestion, selectedPlace.City),
+                        actionText: AppResources.MainPage_AddFavoriteAction,
                         action: async () =>
                         {
                             try

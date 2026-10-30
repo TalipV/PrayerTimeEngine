@@ -4,6 +4,7 @@ using PrayerTimeEngine.Core.Domain.Models;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
 using PrayerTimeEngine.Presentation.Views.PrayerTimeGraphic.VOs;
 using PropertyChanged;
+using PrayerTimeEngine.Presentation.Localization;
 
 namespace PrayerTimeEngine.Presentation.Views;
 
@@ -49,7 +50,7 @@ public abstract class BasePrayerTimeViewModel<TProfileType, TPrayerTimeSetType>(
 
         return new PrayerTimeGraphicTimeVO
         {
-            Title = currentPrayerTime.Section.ToString(),
+            Title = LocalizedNames.GetSectionName(currentPrayerTime.Section),
             Start = currentPrayerTime.Times.Start.Value,
             End = currentPrayerTime.Times.End.Value,
             SubTimeVOs = CreatePrayerTimeGraphicSubTimeVO(currentPrayerTime.Times)

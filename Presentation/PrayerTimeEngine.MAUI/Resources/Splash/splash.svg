@@ -15,7 +15,7 @@
         fill="none" stroke="#EFB03E" stroke-width="24" stroke-linecap="round" />
 
   <!-- Fajr: 16 Grad unter dem Osthorizont -->
-  <circle cx="351" cy="263" r="15" fill="#0B1524" stroke="#EFB03E" stroke-width="8" />
+  <circle cx="351" cy="263" r="15" fill="#101114" stroke="#EFB03E" stroke-width="8" />
 
   <!-- Dhuhr: Zenit -->
   <circle cx="241" cy="101" r="18" fill="#FFD37A" />
@@ -27,7 +27,7 @@
   <circle cx="100" cy="228" r="18" fill="#FFD37A" />
 
   <!-- Isha: 16 Grad unter dem Westhorizont -->
-  <circle cx="105" cy="263" r="15" fill="#0B1524" stroke="#EFB03E" stroke-width="8" />
+  <circle cx="105" cy="263" r="15" fill="#101114" stroke="#EFB03E" stroke-width="8" />
 
   </g>
 </svg>

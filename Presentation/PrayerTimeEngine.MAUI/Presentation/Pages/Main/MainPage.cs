@@ -7,6 +7,7 @@ using PrayerTimeEngine.Presentation.Views.MosquePrayerTimes;
 using PrayerTimeEngine.Presentation.Views.PrayerTimeGraphic;
 using PrayerTimeEngine.Presentation.Views.PrayerTimes;
 using static CommunityToolkit.Maui.Markup.GridRowsColumns;
+using PrayerTimeEngine.Presentation.Localization;
 
 namespace PrayerTimeEngine.Presentation.Pages.Main;
 
@@ -51,14 +52,6 @@ public partial class MainPage : ContentPage
         BackgroundColor = AppColors.Background;
 
         viewModel.OnAfterLoadingPrayerTimes_EventTrigger += ViewModel_OnAfterLoadingPrayerTimes_EventTrigger;
-
-        _profileDisplayNameTextInfo.GestureRecognizers
-            .Add(
-                new TapGestureRecognizer
-                {
-                    Command = new Command(async () => await _mainPageOptionsMenuService.OpenOptionsMenu().ConfigureAwait(false)),
-                    NumberOfTapsRequired = 2,
-                });
     }
 
     private void ViewModel_OnAfterLoadingPrayerTimes_EventTrigger()
@@ -134,25 +127,30 @@ public partial class MainPage : ContentPage
         {
             ColumnDefinitions = Columns.Define(
                 GridLength.Star,
-                GridLength.Star)
+                GridLength.Auto,
+                GridLength.Auto)
         };
 
         _profileDisplayNameTextInfo = new Label()
-            .Column(0).Row(0).Paddings(0, 0, 20, 0)
+            .Column(0).Row(0)
             .Start().CenterVertical()
-            .MinWidth(20) // otherwise we can't reach the menu by tapping an empty label
             .FontSize(AppFontSizes.Title)
+            .Font(bold: true)
             .TextColor(AppColors.Text)
             .Bind(Label.TextProperty, $"{nameof(MainPageViewModel.CurrentProfile)}.{nameof(Profile.Name)}");
+        _profileDisplayNameTextInfo.LineBreakMode = LineBreakMode.TailTruncation;
         _titleGrid.Add(_profileDisplayNameTextInfo);
 
         _weeksUntilTextInfo = new Label()
-            .Column(1).Row(0).Paddings(0, 0, 20, 0)
+            .Column(1).Row(0).Paddings(12, 0, 4, 0)
             .End().CenterVertical()
-            .FontSize(AppFontSizes.Subtitle)
-            .TextColor(AppColors.Text)
+            .FontSize(AppFontSizes.Subtitle - 3)
+            .TextColor(AppColors.TextMuted)
             .Bind(Label.TextProperty, $"{nameof(MainPageViewModel.WeeksUntilLabelText)}");
+        _weeksUntilTextInfo.HorizontalTextAlignment = TextAlignment.End;
         _titleGrid.Add(_weeksUntilTextInfo);
+
+        _titleGrid.Add(CreateOptionsMenuButton(), column: 2, row: 0);
 
         NavigationPage.SetTitleView(this, _titleGrid);
 
@@ -274,15 +272,51 @@ public partial class MainPage : ContentPage
         return mainGrid;
     }
 
+    /// <summary>
+    /// Visible entry point of the options menu at the right edge of the title bar, where Android apps
+    /// usually put their overflow menu. Replaces the hidden double tap on the profile name.
+    /// </summary>
+    private View CreateOptionsMenuButton()
+    {
+        var menuIcon = new Label
+        {
+            Text = "⋮",
+            FontSize = 26,
+            FontAttributes = FontAttributes.Bold,
+            TextColor = AppColors.Text,
+            HorizontalTextAlignment = TextAlignment.Center,
+            VerticalTextAlignment = TextAlignment.Center,
+        };
+
+        // the glyph itself is narrow, the surrounding area gives it a comfortable touch target
+        var menuButton = new Grid
+        {
+            WidthRequest = 44,
+            HeightRequest = 44,
+            BackgroundColor = Colors.Transparent,
+            VerticalOptions = LayoutOptions.Center,
+            Margin = new Thickness(0, 0, 8, 0),
+            Children = { menuIcon }
+        };
+        SemanticProperties.SetDescription(menuButton, AppResources.MainPage_OptionsButton);
+
+        menuButton.GestureRecognizers.Add(new TapGestureRecognizer
+        {
+            Command = new Command(async () => await _mainPageOptionsMenuService.OpenOptionsMenu().ConfigureAwait(false))
+        });
+
+        return menuButton;
+    }
+
     /// <summary>The search input field. Bound to the search text; opens/closes the dropdown on focus change.</summary>
     private Border CreateSearchField()
     {
         Entry searchEntry = new Entry
         {
-            Placeholder = "Search",
+            Placeholder = AppResources.MainPage_SearchPlaceholder,
             BackgroundColor = Colors.Transparent,
             TextColor = AppColors.Text,
-            PlaceholderColor = AppColors.Text,
+            PlaceholderColor = AppColors.TextMuted,
             VerticalOptions = LayoutOptions.Center,
         }
         .Bind(Entry.TextProperty, nameof(MainPageViewModel.PlaceSearchText))
@@ -295,12 +329,24 @@ public partial class MainPage : ContentPage
         searchEntry.Unfocused += (_, _) => _viewModel.OnSearchUnfocused();
         _searchEntry = searchEntry;
 
+#if ANDROID
+        // the field already sits in a rounded border, so the native underline of the EditText only adds noise
+        searchEntry.HandlerChanged += (_, _) =>
+        {
+            if (searchEntry.Handler?.PlatformView is Android.Widget.EditText editText)
+            {
+                editText.BackgroundTintList = Android.Content.Res.ColorStateList.ValueOf(Android.Graphics.Color.Transparent);
+            }
+        };
+#endif
+
         return new Border
         {
-            BackgroundColor = AppColors.Surface,
-            Stroke = AppColors.Border,
-            StrokeShape = new RoundRectangle { CornerRadius = 8 },
-            Padding = new Thickness(8, 0),
+            BackgroundColor = AppColors.Card,
+            StrokeThickness = 0,
+            StrokeShape = new RoundRectangle { CornerRadius = 6 },
+            Padding = new Thickness(12, 0),
+            HeightRequest = 44,
             VerticalOptions = LayoutOptions.Start,
             Content = searchEntry,
         };
@@ -327,9 +373,9 @@ public partial class MainPage : ContentPage
 
         return new Border
         {
-            BackgroundColor = Color.FromArgb("#132038"),
+            BackgroundColor = AppColors.Card,
             Stroke = AppColors.Border,
-            StrokeShape = new RoundRectangle { CornerRadius = 8 },
+            StrokeShape = new RoundRectangle { CornerRadius = 6 },
             // initial guess; corrected to the field's real height once it is measured (see CreateUI)
             Margin = new Thickness(0, 52, 0, 0),
             VerticalOptions = LayoutOptions.Start,
@@ -346,7 +392,7 @@ public partial class MainPage : ContentPage
         {
             Text = "★",
             FontSize = 14,
-            TextColor = AppColors.Accent,
+            TextColor = AppColors.Text,
             VerticalOptions = LayoutOptions.Center,
         }
         .Bind(IsVisibleProperty, nameof(PlaceSearchResultItem.IsFavorite));
@@ -366,7 +412,7 @@ public partial class MainPage : ContentPage
         {
             Text = "✕",
             FontSize = 13,
-            TextColor = Color.FromArgb("#7F8EA8"),
+            TextColor = AppColors.TextMuted,
             BackgroundColor = Colors.Transparent,
             BorderWidth = 0,
             Padding = new Thickness(6, 0),
@@ -397,7 +443,7 @@ public partial class MainPage : ContentPage
         {
             FontSize = 10,
             CharacterSpacing = 1.2,
-            TextColor = Color.FromArgb("#7F8EA8"),
+            TextColor = AppColors.TextMuted,
             VerticalOptions = LayoutOptions.Center,
         }
         .Bind(Label.TextProperty, nameof(PlaceSearchResultItem.DisplayText));
@@ -406,7 +452,7 @@ public partial class MainPage : ContentPage
         {
             Spacing = 8,
             Padding = new Thickness(14, 6),
-            BackgroundColor = Color.FromArgb("#0F1B30"),
+            BackgroundColor = AppColors.Background,
             Children = { separatorLabel }
         }
         .Bind(IsVisibleProperty, nameof(PlaceSearchResultItem.IsSeparator));
@@ -416,7 +462,7 @@ public partial class MainPage : ContentPage
         // the long-press fired, which made the rows completely unresponsive.
         var container = new Grid
         {
-            BackgroundColor = Color.FromArgb("#132038"),
+            BackgroundColor = AppColors.Card,
         };
         container.Add(placeRow);
         container.Add(separatorRow);
@@ -442,10 +488,10 @@ public partial class MainPage : ContentPage
         }
 
         bool remove = await DisplayAlertAsync(
-            "Favorit entfernen?",
-            $"„{item.DisplayText}“ aus den Favoriten entfernen?",
-            "Ja",
-            "Nein");
+            AppResources.MainPage_RemoveFavoriteTitle,
+            string.Format(AppResources.MainPage_RemoveFavoriteMessage, item.DisplayText),
+            AppResources.Common_Yes,
+            AppResources.Common_No);
 
         if (remove)
         {

@@ -14,6 +14,7 @@ using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Management;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Interfaces;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
 using PrayerTimeEngine.Presentation;
+using PrayerTimeEngine.Presentation.Localization;
 
 namespace PrayerTimeEngine.Platforms.Android.Notifications;
 
@@ -60,7 +61,7 @@ public class PrayerTimeSummaryNotification : Service
     public override StartCommandResult OnStartCommand(Intent? intent, StartCommandFlags flags, int startId)
     {
         Notification.Builder builder = GetNotificationBuilder();
-        builder.SetContentText("Loading...");
+        builder.SetContentText(AppResources.Notification_Loading);
 
         Notification initialNotification = builder.Build();
 
@@ -124,7 +125,7 @@ public class PrayerTimeSummaryNotification : Service
 
             if (mainProfile == null)
             {
-                ApplyContent(notificationBuilder, profileInfo: "No dynamic profile", progress: null);
+                ApplyContent(notificationBuilder, profileInfo: AppResources.Notification_NoDynamicProfile, progress: null);
             }
             else
             {
@@ -408,10 +409,10 @@ public class PrayerTimeSummaryNotification : Service
     {
         return prayerTime switch
         {
-            FajrPrayerTime fajr => [("Ghalas", fajr.Ghalas), ("Redness", fajr.Karaha)],
+            FajrPrayerTime fajr => [(AppResources.SubTime_Ghalas, fajr.Ghalas), (AppResources.SubTime_Redness, fajr.Karaha)],
             DuhaPrayerTime duha => [("1/4", duha.QuarterOfDay), ("1/2", duha.HalfOfDay)],
-            AsrPrayerTime asr => [("Mithlayn", asr.Mithlayn), ("Karaha", asr.Karaha)],
-            MaghribPrayerTime maghrib => [("Sufficient", maghrib.SufficientTime), ("Ishtibak", maghrib.Ishtibak)],
+            AsrPrayerTime asr => [(AppResources.SubTime_Mithlayn, asr.Mithlayn), (AppResources.SubTime_Karaha, asr.Karaha)],
+            MaghribPrayerTime maghrib => [(AppResources.SubTime_Sufficient, maghrib.SufficientTime), (AppResources.SubTime_Ishtibak, maghrib.Ishtibak)],
             IshaPrayerTime isha =>
             [
                 ("1/3", isha.FirstThirdOfNight),
@@ -578,8 +579,14 @@ public class PrayerTimeSummaryNotification : Service
                 // is exactly what prevents the short render timeout from canceling a slow first request.
                 if (profile is DynamicProfile dynamicProfile)
                 {
+                    // in the profile's own time zone like the main page does, not in the device's: providers like
+                    // Semerkand reject a request whose zone differs from their location data (e.g. a Vienna profile
+                    // on a device set to Berlin), even when both zones have the same offset
                     CalculatePrayerTimesResultVO result =
-                        await _prayerTimeDynamicPrayerTimeProviderManager.CalculatePrayerTimesAsync(dynamicProfile.ID, currentZonedDateTime, CancellationToken.None);
+                        await _prayerTimeDynamicPrayerTimeProviderManager.CalculatePrayerTimesAsync(
+                            dynamicProfile.ID,
+                            _profileService.GetCurrentZonedDateTime(dynamicProfile),
+                            CancellationToken.None);
 
                     if (ReferenceEquals(profile, mainProfile))
                     {

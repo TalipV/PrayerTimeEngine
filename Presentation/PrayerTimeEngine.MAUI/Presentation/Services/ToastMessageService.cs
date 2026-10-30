@@ -1,5 +1,6 @@
 using CommunityToolkit.Maui.Alerts;
 using CommunityToolkit.Maui.Core;
+using PrayerTimeEngine.Presentation.Localization;
 
 namespace PrayerTimeEngine.Presentation.Services;
 
@@ -19,7 +20,7 @@ public class ToastMessageService(IDispatcher dispatcher)
             {
                 BackgroundColor = AppColors.Surface,
                 TextColor = AppColors.Text,
-                ActionButtonTextColor = AppColors.Accent,
+                ActionButtonTextColor = AppColors.Text,
                 CornerRadius = new CornerRadius(10),
             };
 
@@ -45,7 +46,7 @@ public class ToastMessageService(IDispatcher dispatcher)
     public void ShowWarning(string text)
     {
         dispatcher.Dispatch(async () => await Toast.Make(
-                    message: $"WARNING: {text}",
+                    message: string.Format(AppResources.Toast_Warning, text),
                     duration: ToastDuration.Short,
                     textSize: 14)
             .Show());
@@ -54,7 +55,7 @@ public class ToastMessageService(IDispatcher dispatcher)
     public void ShowError(string text)
     {
         dispatcher.Dispatch(async () => await Toast.Make(
-                    message: $"ERROR: {text}",
+                    message: string.Format(AppResources.Toast_Error, text),
                     duration: ToastDuration.Short,
                     textSize: 14)
             .Show());

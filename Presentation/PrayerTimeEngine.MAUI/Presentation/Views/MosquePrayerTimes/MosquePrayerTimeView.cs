@@ -4,6 +4,7 @@ using PrayerTimeEngine.Core.Common;
 using PrayerTimeEngine.Core.Domain.Models;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Models;
 using static CommunityToolkit.Maui.Markup.GridRowsColumns;
+using PrayerTimeEngine.Presentation.Localization;
 
 namespace PrayerTimeEngine.Presentation.Views.MosquePrayerTimes;
 
@@ -41,18 +42,18 @@ public partial class MosquePrayerTimeView : ContentView
 
         int startRowNo = 1;
 
-        AddPrayerTimeUI(mainGrid, "Fajr", nameof(MosquePrayerTimesDay.Fajr),
+        AddPrayerTimeUI(mainGrid, AppResources.Prayer_Fajr, nameof(MosquePrayerTimesDay.Fajr),
             startRowNo, startColumnNo: 0);
-        AddPrayerTimeUI(mainGrid, "Jumu'ah", nameof(MosquePrayerTimesDay.Jumuah),
+        AddPrayerTimeUI(mainGrid, AppResources.Prayer_Jumuah, nameof(MosquePrayerTimesDay.Jumuah),
             startRowNo, startColumnNo: 3,
-            subtime1Name: "Jumuah2", subtime1Binding: $"{nameof(MosquePrayerTimesDay.Jumuah2)}.{nameof(GenericPrayerTime.Start)}");
-        AddPrayerTimeUI(mainGrid, "Dhuhr", nameof(MosquePrayerTimesDay.Dhuhr),
+            subtime1Name: AppResources.SubTime_Jumuah2, subtime1Binding: $"{nameof(MosquePrayerTimesDay.Jumuah2)}.{nameof(GenericPrayerTime.Start)}");
+        AddPrayerTimeUI(mainGrid, AppResources.Prayer_Dhuhr, nameof(MosquePrayerTimesDay.Dhuhr),
             startRowNo + 4, startColumnNo: 0);
-        AddPrayerTimeUI(mainGrid, "Asr", nameof(MosquePrayerTimesDay.Asr),
+        AddPrayerTimeUI(mainGrid, AppResources.Prayer_Asr, nameof(MosquePrayerTimesDay.Asr),
             startRowNo + 4, startColumnNo: 3);
-        AddPrayerTimeUI(mainGrid, "Maghrib", nameof(MosquePrayerTimesDay.Maghrib),
+        AddPrayerTimeUI(mainGrid, AppResources.Prayer_Maghrib, nameof(MosquePrayerTimesDay.Maghrib),
             startRowNo + 8, startColumnNo: 0);
-        AddPrayerTimeUI(mainGrid, "Isha", nameof(MosquePrayerTimesDay.Isha),
+        AddPrayerTimeUI(mainGrid, AppResources.Prayer_Isha, nameof(MosquePrayerTimesDay.Isha),
             startRowNo + 8, startColumnNo: 3);
 
         return new ScrollView { Content = mainGrid };
@@ -105,7 +106,7 @@ public partial class MosquePrayerTimeView : ContentView
                 string fullTimeText = startTime;
 
                 // TODO improve
-                if (prayerName == "Fajr")
+                if (prayerName == AppResources.Prayer_Fajr)
                 {
                     fullTimeText += $"-{endTime}";
                 }

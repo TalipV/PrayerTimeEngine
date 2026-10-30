@@ -8,6 +8,7 @@ using PrayerTimeEngine.Core.Domain.ProfileManagement.Interfaces;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
 using PrayerTimeEngine.Presentation.Views.PrayerTimeGraphic.VOs;
 using PropertyChanged;
+using PrayerTimeEngine.Presentation.Localization;
 
 namespace PrayerTimeEngine.Presentation.Views.PrayerTimes;
 
@@ -102,19 +103,19 @@ public class DynamicPrayerTimeViewModel(
         return [
             new PrayerTimeGraphicSubTimeVO
                 {
-                    Name = "Ikhtiyar",
+                    Name = AppResources.SubTime_Ikhtiyar,
                     Start = fajrPrayerTime.Start.Value.ToInstant(),
                     End = fajrPrayerTime.Ghalas.Value.ToInstant()
                 },
                 new PrayerTimeGraphicSubTimeVO
                 {
-                    Name = "Normal",
+                    Name = AppResources.SubTime_Normal,
                     Start = fajrPrayerTime.Ghalas.Value.ToInstant(),
                     End = fajrPrayerTime.Karaha.Value.ToInstant()
                 },
                 new PrayerTimeGraphicSubTimeVO
                 {
-                    Name = "Karaha",
+                    Name = AppResources.SubTime_Karaha,
                     Start = fajrPrayerTime.Karaha.Value.ToInstant(),
                     End = fajrPrayerTime.End.Value.ToInstant()
                 },
@@ -131,7 +132,7 @@ public class DynamicPrayerTimeViewModel(
         return [
             new PrayerTimeGraphicSubTimeVO
                 {
-                    Name = "Normal",
+                    Name = AppResources.SubTime_Normal,
                     Start = duhaPrayerTime.Start.Value.ToInstant(),
                     End = duhaPrayerTime.QuarterOfDay.Value.ToInstant()
                 },
@@ -154,19 +155,19 @@ public class DynamicPrayerTimeViewModel(
         return [
             new PrayerTimeGraphicSubTimeVO
                 {
-                    Name = "Ikhtiyar",
+                    Name = AppResources.SubTime_Ikhtiyar,
                     Start = asrPrayerTime.Start.Value.ToInstant(),
                     End = asrPrayerTime.Mithlayn.Value.ToInstant()
                 },
                 new PrayerTimeGraphicSubTimeVO
                 {
-                    Name = "Normal",
+                    Name = AppResources.SubTime_Normal,
                     Start = asrPrayerTime.Mithlayn.Value.ToInstant(),
                     End = asrPrayerTime.Karaha.Value.ToInstant()
                 },
                 new PrayerTimeGraphicSubTimeVO
                 {
-                    Name = "Karaha",
+                    Name = AppResources.SubTime_Karaha,
                     Start = asrPrayerTime.Karaha.Value.ToInstant(),
                     End = asrPrayerTime.End.Value.ToInstant()
                 },
@@ -185,7 +186,7 @@ public class DynamicPrayerTimeViewModel(
 
         List<PrayerTimeGraphicSubTimeVO> result = [];
 
-        AddSubTimeIfValid(mainStart, mainEnd, result, "Normal", maghribPrayerTime.Start.Value.ToInstant(), maghribPrayerTime.SufficientTime.Value.ToInstant());
+        AddSubTimeIfValid(mainStart, mainEnd, result, AppResources.SubTime_Normal, maghribPrayerTime.Start.Value.ToInstant(), maghribPrayerTime.SufficientTime.Value.ToInstant());
         AddSubTimeIfValid(mainStart, mainEnd, result, "Karaha1", maghribPrayerTime.SufficientTime.Value.ToInstant(), maghribPrayerTime.Ishtibak.Value.ToInstant());
         AddSubTimeIfValid(mainStart, mainEnd, result, "Karaha2", maghribPrayerTime.Ishtibak.Value.ToInstant(), maghribPrayerTime.End.Value.ToInstant());
 

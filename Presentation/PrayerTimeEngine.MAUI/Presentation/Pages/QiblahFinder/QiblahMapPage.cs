@@ -18,6 +18,7 @@ using Brush = Mapsui.Styles.Brush;
 using Color = Mapsui.Styles.Color;
 using Location = Microsoft.Maui.Devices.Sensors.Location;
 using Polygon = NetTopologySuite.Geometries.Polygon;
+using PrayerTimeEngine.Presentation.Localization;
 
 namespace PrayerTimeEngine.Presentation.Pages.QiblahFinder;
 
@@ -282,11 +283,10 @@ public sealed partial class QiblahMapPage : ContentPage
             _logger.LogWarning(exception, "Location service is switched off");
 
             bool openSettings = await DisplayAlertAsync(
-                title: "Standort deaktiviert",
-                message: "Der Standort ist auf dem Gerät ausgeschaltet. Schalte ihn ein und tippe danach auf den Standort-Button "
-                       + "oder tippe auf die Karte, um deine Position manuell zu setzen.",
-                accept: "Einstellungen öffnen",
-                cancel: "Abbrechen");
+                title: AppResources.Qiblah_LocationDisabledTitle,
+                message: AppResources.Qiblah_LocationDisabledMessage,
+                accept: AppResources.Common_OpenSettings,
+                cancel: AppResources.Common_Cancel);
 
             if (openSettings)
             {
@@ -300,11 +300,10 @@ public sealed partial class QiblahMapPage : ContentPage
             _logger.LogWarning(exception, "Location permission not granted");
 
             bool openSettings = await DisplayAlertAsync(
-                title: "Keine Berechtigung",
-                message: "Die App hat keine Berechtigung für den Standort. Erteile sie in den App-Einstellungen "
-                       + "oder tippe auf die Karte, um deine Position manuell zu setzen.",
-                accept: "Einstellungen öffnen",
-                cancel: "Abbrechen");
+                title: AppResources.Qiblah_NoPermissionTitle,
+                message: AppResources.Qiblah_NoPermissionMessage,
+                accept: AppResources.Common_OpenSettings,
+                cancel: AppResources.Common_Cancel);
 
             if (openSettings)
             {
@@ -316,13 +315,13 @@ public sealed partial class QiblahMapPage : ContentPage
         catch (FeatureNotSupportedException exception)
         {
             _logger.LogWarning(exception, "Location is not supported on this device");
-            _toastMessageService.ShowWarning("Standortbestimmung wird auf diesem Gerät nicht unterstützt. Tippe auf die Karte, um deine Position zu setzen.");
+            _toastMessageService.ShowWarning(AppResources.Qiblah_LocationNotSupported);
             return null;
         }
 
         if (location is null)
         {
-            _toastMessageService.ShowWarning("Standort konnte nicht ermittelt werden. Tippe auf die Karte, um deine Position zu setzen.");
+            _toastMessageService.ShowWarning(AppResources.Qiblah_LocationNotDetermined);
             return null;
         }
 
@@ -344,7 +343,7 @@ public sealed partial class QiblahMapPage : ContentPage
         catch (Exception exception)
         {
             _logger.LogError(exception, "Opening the location settings failed");
-            _toastMessageService.ShowError("Einstellungen konnten nicht geöffnet werden.");
+            _toastMessageService.ShowError(AppResources.Qiblah_SettingsNotOpened);
         }
     }
 

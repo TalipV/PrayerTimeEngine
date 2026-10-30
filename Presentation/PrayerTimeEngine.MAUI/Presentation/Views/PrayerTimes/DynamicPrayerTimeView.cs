@@ -1,4 +1,5 @@
 using CommunityToolkit.Maui.Markup;
+using Microsoft.Maui.Controls.Shapes;
 using NodaTime;
 using PrayerTimeEngine.Core.Common;
 using PrayerTimeEngine.Core.Common.Enum;
@@ -7,6 +8,7 @@ using PrayerTimeEngine.Core.Domain.Models;
 using PrayerTimeEngine.Core.Domain.Models.PrayerTimes;
 using PrayerTimeEngine.Presentation.Pages.Main;
 using static CommunityToolkit.Maui.Markup.GridRowsColumns;
+using PrayerTimeEngine.Presentation.Localization;
 
 namespace PrayerTimeEngine.Presentation.Views.PrayerTimes;
 
@@ -30,30 +32,30 @@ public partial class DynamicPrayerTimeView : ContentView
     private static BlockDefinition[][] GetColumns() =>
     [
         [
-            new BlockDefinition("Fajr", ETimeSection.Fajr, CurrentDayBinding(nameof(DynamicPrayerTimesDay.Fajr)),
+            new BlockDefinition(AppResources.Prayer_Fajr, ETimeSection.Fajr, CurrentDayBinding(nameof(DynamicPrayerTimesDay.Fajr)),
             [
-                new SubTimeDefinition("Ghalas", nameof(FajrPrayerTime.Ghalas), nameof(DynamicPrayerTimeViewModel.ShowFajrGhalas)),
-                new SubTimeDefinition("Redness", nameof(FajrPrayerTime.Karaha), nameof(DynamicPrayerTimeViewModel.ShowFajrRedness)),
+                new SubTimeDefinition(AppResources.SubTime_Ghalas, nameof(FajrPrayerTime.Ghalas), nameof(DynamicPrayerTimeViewModel.ShowFajrGhalas)),
+                new SubTimeDefinition(AppResources.SubTime_Redness, nameof(FajrPrayerTime.Karaha), nameof(DynamicPrayerTimeViewModel.ShowFajrRedness)),
             ]),
-            new BlockDefinition("Dhuhr", ETimeSection.Dhuhr, CurrentDayBinding(nameof(DynamicPrayerTimesDay.Dhuhr)), []),
-            new BlockDefinition("Maghrib", ETimeSection.Maghrib, CurrentDayBinding(nameof(DynamicPrayerTimesDay.Maghrib)),
+            new BlockDefinition(AppResources.Prayer_Dhuhr, ETimeSection.Dhuhr, CurrentDayBinding(nameof(DynamicPrayerTimesDay.Dhuhr)), []),
+            new BlockDefinition(AppResources.Prayer_Maghrib, ETimeSection.Maghrib, CurrentDayBinding(nameof(DynamicPrayerTimesDay.Maghrib)),
             [
-                new SubTimeDefinition("Sufficient", nameof(MaghribPrayerTime.SufficientTime), nameof(DynamicPrayerTimeViewModel.ShowMaghribSufficientTime)),
-                new SubTimeDefinition("Ishtibak", nameof(MaghribPrayerTime.Ishtibak), nameof(DynamicPrayerTimeViewModel.ShowIshtibak)),
+                new SubTimeDefinition(AppResources.SubTime_Sufficient, nameof(MaghribPrayerTime.SufficientTime), nameof(DynamicPrayerTimeViewModel.ShowMaghribSufficientTime)),
+                new SubTimeDefinition(AppResources.SubTime_Ishtibak, nameof(MaghribPrayerTime.Ishtibak), nameof(DynamicPrayerTimeViewModel.ShowIshtibak)),
             ]),
         ],
         [
-            new BlockDefinition("Duha", ETimeSection.Duha, CurrentDayBinding(nameof(DynamicPrayerTimesDay.Duha)),
+            new BlockDefinition(AppResources.Prayer_Duha, ETimeSection.Duha, CurrentDayBinding(nameof(DynamicPrayerTimesDay.Duha)),
             [
-                new SubTimeDefinition("Quarter", nameof(DuhaPrayerTime.QuarterOfDay)),
-                new SubTimeDefinition("Half*", nameof(DuhaPrayerTime.HalfOfDay)),
+                new SubTimeDefinition(AppResources.SubTime_Quarter, nameof(DuhaPrayerTime.QuarterOfDay)),
+                new SubTimeDefinition(AppResources.SubTime_Half, nameof(DuhaPrayerTime.HalfOfDay)),
             ]),
-            new BlockDefinition("Asr", ETimeSection.Asr, CurrentDayBinding(nameof(DynamicPrayerTimesDay.Asr)),
+            new BlockDefinition(AppResources.Prayer_Asr, ETimeSection.Asr, CurrentDayBinding(nameof(DynamicPrayerTimesDay.Asr)),
             [
-                new SubTimeDefinition("Mithlayn", nameof(AsrPrayerTime.Mithlayn), nameof(DynamicPrayerTimeViewModel.ShowMithlayn)),
-                new SubTimeDefinition("Karaha", nameof(AsrPrayerTime.Karaha), nameof(DynamicPrayerTimeViewModel.ShowKaraha)),
+                new SubTimeDefinition(AppResources.SubTime_Mithlayn, nameof(AsrPrayerTime.Mithlayn), nameof(DynamicPrayerTimeViewModel.ShowMithlayn)),
+                new SubTimeDefinition(AppResources.SubTime_Karaha, nameof(AsrPrayerTime.Karaha), nameof(DynamicPrayerTimeViewModel.ShowKaraha)),
             ]),
-            new BlockDefinition("Isha", ETimeSection.Isha, CurrentDayBinding(nameof(DynamicPrayerTimesDay.Isha)),
+            new BlockDefinition(AppResources.Prayer_Isha, ETimeSection.Isha, CurrentDayBinding(nameof(DynamicPrayerTimesDay.Isha)),
             [
                 new SubTimeDefinition("1/3", nameof(IshaPrayerTime.FirstThirdOfNight)),
                 new SubTimeDefinition("1/2", nameof(IshaPrayerTime.MiddleOfNight)),
@@ -67,7 +69,7 @@ public partial class DynamicPrayerTimeView : ContentView
     /// its own row below both columns instead of a place in the prayer order.
     /// </summary>
     private static BlockDefinition GetMomentBlock()
-        => new("Qibla", ETimeSection.General, CurrentDayBinding(nameof(DynamicPrayerTimesDay.Qibla)), [], ShowOnlyStartTime: true);
+        => new(AppResources.Prayer_Qibla, ETimeSection.General, CurrentDayBinding(nameof(DynamicPrayerTimesDay.Qibla)), [], ShowOnlyStartTime: true);
 
     private static string CurrentDayBinding(string prayerTimeProperty)
         => $"{nameof(DynamicPrayerTimesDaySet.CurrentDay)}.{prayerTimeProperty}";
@@ -93,8 +95,14 @@ public partial class DynamicPrayerTimeView : ContentView
     private const double SUB_TIME_GAP_EM_WIDTH = 1.0;
 
     // gap between two rows, as a share of the prayer name size, so the rows stay apart even when
-    // there is no unused height left to distribute
-    private const double MIN_ROW_GAP_RATIO = 0.9;
+    // there is no unused height left to distribute. Small, because the cards already separate the rows.
+    private const double MIN_ROW_GAP_RATIO = 0.4;
+
+    // every block sits on its own card, whose padding is fixed and therefore not part of the type scale
+    private const double CARD_PADDING_HORIZONTAL = 12;
+    private const double CARD_PADDING_VERTICAL = 10;
+    private const double CARD_CORNER_RADIUS = 14;
+    private const double CARD_STROKE_THICKNESS = 1.5;
 
     // how much of the unused height goes into the gaps on top of that, the rest stays at the bottom
     private const double ROW_SPACING_SHARE = 0.75;
@@ -144,8 +152,8 @@ public partial class DynamicPrayerTimeView : ContentView
 
         var mainGrid = new Grid
         {
-            Padding = new Thickness(10, 14, 10, 10),
-            ColumnSpacing = 14,
+            Padding = new Thickness(0, 12, 0, 6),
+            ColumnSpacing = 10,
             RowDefinitions = Rows.Define(rows),
             ColumnDefinitions = Columns.Define(Star, Star)
         };
@@ -186,12 +194,6 @@ public partial class DynamicPrayerTimeView : ContentView
             HorizontalOptions = LayoutOptions.Start
         };
 
-        prayerNameLabel.GestureRecognizers.Add(new TapGestureRecognizer
-        {
-            Command = _mainPageViewModel.GoToSettingsPageCommand,
-            CommandParameter = block.Section
-        });
-
         Label prayerDurationLabel = CreateTimeLabel(block);
 
         blockLayout.Add(prayerNameLabel);
@@ -205,7 +207,61 @@ public partial class DynamicPrayerTimeView : ContentView
             blockLayout.Add(CreateSubTime(block, subTime));
         }
 
-        return blockLayout;
+        Border card = CreateCard(block, blockLayout);
+        // the running prayer only sits on a lighter card: a quiet hint instead of a coloured frame
+        BindToCurrentPrayer(card, BackgroundColorProperty, block, isCurrent => isCurrent ? AppColors.Surface : AppColors.Card);
+        BindToCurrentPrayer(card, Border.StrokeProperty, block, isCurrent => new SolidColorBrush(isCurrent ? AppColors.Surface : AppColors.Card));
+
+        return card;
+    }
+
+    /// <summary>
+    /// The card around a block. The whole card opens the settings of its section, which is a much
+    /// larger target than the prayer name alone.
+    /// </summary>
+    private Border CreateCard(BlockDefinition block, View content)
+    {
+        var card = new Border
+        {
+            BackgroundColor = AppColors.Card,
+            Stroke = AppColors.Card,
+            StrokeThickness = CARD_STROKE_THICKNESS,
+            StrokeShape = new RoundRectangle { CornerRadius = CARD_CORNER_RADIUS },
+            Padding = new Thickness(CARD_PADDING_HORIZONTAL, CARD_PADDING_VERTICAL),
+            Content = content
+        };
+
+        card.GestureRecognizers.Add(new TapGestureRecognizer
+        {
+            Command = _mainPageViewModel.GoToSettingsPageCommand,
+            CommandParameter = block.Section
+        });
+
+        return card;
+    }
+
+    /// <summary>
+    /// Highlights the prayer whose time is running right now. Evaluated whenever the times are
+    /// refreshed, which also happens when the app comes back to the foreground.
+    /// </summary>
+    private void BindToCurrentPrayer<TValue>(BindableObject target, BindableProperty property, BlockDefinition block, Func<bool, TValue> valueSelector)
+    {
+        target.SetBinding(
+            property,
+            new Binding(
+                $"{nameof(DynamicPrayerTimeViewModel.PrayerTimesSet)}.{block.Binding}",
+                converter: new FuncConverter<GenericPrayerTime?, TValue>(prayerTime => valueSelector(IsCurrentPrayer(prayerTime)))));
+    }
+
+    private bool IsCurrentPrayer(GenericPrayerTime? prayerTime)
+    {
+        if (prayerTime?.Start is not ZonedDateTime start || prayerTime.End is not ZonedDateTime end)
+        {
+            return false;
+        }
+
+        Instant now = _systemInfoService.GetCurrentInstant();
+        return start.ToInstant() <= now && now < end.ToInstant();
     }
 
     private Label CreateTimeLabel(BlockDefinition block)
@@ -251,24 +307,22 @@ public partial class DynamicPrayerTimeView : ContentView
             VerticalOptions = LayoutOptions.Center
         };
 
-        nameLabel.GestureRecognizers.Add(new TapGestureRecognizer
-        {
-            Command = _mainPageViewModel.GoToSettingsPageCommand,
-            CommandParameter = block.Section
-        });
-
         Label timeLabel = CreateTimeLabel(block);
         timeLabel.VerticalOptions = LayoutOptions.Center;
+        timeLabel.HorizontalOptions = LayoutOptions.End;
 
         // same sizes as a prayer and its time, the row only differs in being on one line
         _scaledLabels.Add((nameLabel, 1.0));
         _scaledLabels.Add((timeLabel, PRAYER_TIME_RATIO));
 
-        return new HorizontalStackLayout
+        var rowGrid = new Grid
         {
-            Spacing = 10,
-            Children = { nameLabel, timeLabel }
+            ColumnDefinitions = Columns.Define(Auto, Star)
         };
+        rowGrid.Add(nameLabel, column: 0);
+        rowGrid.Add(timeLabel, column: 1);
+
+        return CreateCard(block, rowGrid);
     }
 
     private View CreateSubTime(BlockDefinition block, SubTimeDefinition subTime)
@@ -282,7 +336,7 @@ public partial class DynamicPrayerTimeView : ContentView
         var nameLabel = new Label
         {
             Text = subTime.Name,
-            TextColor = AppColors.Text,
+            TextColor = AppColors.TextMuted,
             HorizontalOptions = LayoutOptions.Start,
             VerticalOptions = LayoutOptions.Center
         };
@@ -343,7 +397,9 @@ public partial class DynamicPrayerTimeView : ContentView
     /// </summary>
     private void ApplyTypeScale(Grid mainGrid)
     {
-        double height = mainGrid.Height - mainGrid.Padding.VerticalThickness;
+        // the card paddings of every row (block rows plus the moment row) and of one column are fixed
+        double cardHeight = (_blockRowCount + 1) * GetCardVerticalThickness();
+        double height = mainGrid.Height - mainGrid.Padding.VerticalThickness - cardHeight;
         double width = mainGrid.Width - mainGrid.Padding.HorizontalThickness - mainGrid.ColumnSpacing;
 
         if (width <= 0 || height <= 0 || _requiredLineUnits <= 0)
@@ -353,7 +409,7 @@ public partial class DynamicPrayerTimeView : ContentView
 
         double fontSizeByHeight = height / (_requiredLineUnits * LINE_HEIGHT_RATIO);
 
-        double columnWidth = width / 2;
+        double columnWidth = (width / 2) - (2 * (CARD_PADDING_HORIZONTAL + CARD_STROKE_THICKNESS));
         double fontSizeByWidth = columnWidth / _requiredEmWidth;
 
         double fontSize = Math.Min(fontSizeByHeight, fontSizeByWidth);
@@ -373,6 +429,9 @@ public partial class DynamicPrayerTimeView : ContentView
 
         ApplyRowSpacing(mainGrid, height, fontSize);
     }
+
+    private static double GetCardVerticalThickness()
+        => 2 * (CARD_PADDING_VERTICAL + CARD_STROKE_THICKNESS);
 
     /// <summary>
     /// When the width limits the font size, the text does not fill the height. Most of that

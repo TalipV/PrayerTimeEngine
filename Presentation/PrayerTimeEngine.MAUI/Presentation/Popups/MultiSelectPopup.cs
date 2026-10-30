@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using CommunityToolkit.Maui.Markup;
 using CommunityToolkit.Maui.Views;
 using static CommunityToolkit.Maui.Markup.GridRowsColumns;
+using PrayerTimeEngine.Presentation.Localization;
 
 namespace PrayerTimeEngine.Presentation.Popups;
 
@@ -76,12 +77,12 @@ public sealed partial class MultiSelectPopup : Popup<List<MultiSelectOption>>
                     Children =
                     {
                         new Button()
-                            .Text("OK")
+                            .Text(AppResources.Popup_Ok)
                             .FontSize(14)
                             .Invoke(b => b.Clicked += OnOkClicked),
 
                         new Button()
-                            .Text("Cancel")
+                            .Text(AppResources.Popup_Cancel)
                             .FontSize(14)
                             .Invoke(b => b.Clicked += OnCancelClicked),
                     }

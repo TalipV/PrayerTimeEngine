@@ -2,6 +2,7 @@ using Android.App;
 using Android.Content.PM;
 using Android.OS;
 using PrayerTimeEngine.Platforms.Android.Notifications;
+using PrayerTimeEngine.Presentation.Localization;
 
 namespace PrayerTimeEngine.Platforms.Android;
 
@@ -29,8 +30,8 @@ public class MainActivity : MauiAppCompatActivity
 
     private void CreateNotificationChannel()
     {
-        string name = "Prayer Time Notifications";
-        string description = "Updates and reminders for upcoming prayer times.";
+        string name = AppResources.Notification_ChannelName;
+        string description = AppResources.Notification_ChannelDescription;
 
         var channel = new NotificationChannel(PrayerTimeSummaryNotification.CHANNEL_ID, name, NotificationImportance.Default)
         {

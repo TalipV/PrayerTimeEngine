@@ -11,4 +11,11 @@
 	<uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 	<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 	<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+	<!-- package visibility (Android 11+), so Launcher.TryOpenAsync can see map apps for geo: URIs -->
+	<queries>
+		<intent>
+			<action android:name="android.intent.action.VIEW" />
+			<data android:scheme="geo" />
+		</intent>
+	</queries>
 </manifest>

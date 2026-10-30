@@ -33,6 +33,11 @@ public partial class SettingsHandlerPageViewModel(
 
     public List<SettingsContentPage> SettingsContentPages = [];
 
+    /// <summary>The section the page configures, e.g. Fajr. Shown as the page title.</summary>
+    public ETimeSection Section { get; private set; }
+
+    public string ProfileName { get; private set; } = string.Empty;
+
     #endregion properties
 
     #region public methods
@@ -53,6 +58,9 @@ public partial class SettingsHandlerPageViewModel(
         {
             throw new ArgumentException($"{nameof(parameter)}[1] is not an {nameof(ETimeSection)}");
         }
+
+        Section = section;
+        ProfileName = profile.Name;
 
         foreach (ETimeType timeType in timeTypeAttributeService.SectionToTimeTypes[section].Intersect(timeTypeAttributeService.ConfigurableTypes))
         {

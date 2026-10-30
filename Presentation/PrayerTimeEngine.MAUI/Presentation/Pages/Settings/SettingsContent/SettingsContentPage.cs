@@ -1,5 +1,6 @@
 using Microsoft.Maui.Controls.Shapes;
 using static CommunityToolkit.Maui.Markup.GridRowsColumns;
+using PrayerTimeEngine.Presentation.Localization;
 
 namespace PrayerTimeEngine.Presentation.Pages.Settings.SettingsContent;
 
@@ -15,6 +16,7 @@ public partial class SettingsContentPage : ContentPage
     private Label _dynamicPrayerTimeProviderPickerLabel;
     private Label _isTimeShownCheckBoxLabel;
     private CheckBox _isTimeShownCheckBox;
+    private Grid _isTimeShownRow;
 
     public SettingsContentPage(SettingsContentPageViewModel viewModel)
     {
@@ -26,58 +28,84 @@ public partial class SettingsContentPage : ContentPage
         ViewModel.OnInitializeCustomUI_EventTrigger += OnInitializeCustomUI_EventTrigger;
     }
 
-    private Grid CreateUI()
+    /// <summary>
+    /// One card with the general settings of the time and, below it, the settings that only
+    /// some calculation sources have (e.g. the Muwaqqit degree).
+    /// </summary>
+    private VerticalStackLayout CreateUI()
     {
-        var grid = new Grid
-        {
-            Padding = new Thickness(15),
-            RowDefinitions = Rows.Define(
-                    GridLength.Auto,
-                    GridLength.Auto,
-                    GridLength.Auto,
-                    GridLength.Auto,
-                    GridLength.Star,
-                    new GridLength(4, GridUnitType.Star),
-                    new GridLength(4, GridUnitType.Star)
-                ),
-            ColumnDefinitions = Columns.Define(
-                    GridLength.Auto,
-                    GridLength.Star,
-                    GridLength.Star,
-                    GridLength.Star
-                )
-        };
-
-        _dynamicPrayerTimeProviderPickerLabel = new Label { Text = "Calculation Source", TextColor = AppColors.Text };
+        _dynamicPrayerTimeProviderPickerLabel = CreateFieldLabel(AppResources.Settings_CalculationSource);
         _dynamicPrayerTimeProviderPicker = CreatePicker();
 
-        var minuteAdjustmentLabel = new Label { Text = "Minute Adjustment", TextColor = AppColors.Text };
+        Label minuteAdjustmentLabel = CreateFieldLabel(AppResources.Settings_MinuteAdjustment);
         _minuteAdjustmentPicker = CreatePicker();
 
-        _isTimeShownCheckBoxLabel = new Label { Text = "Shown:", TextColor = AppColors.Text };
-        _isTimeShownCheckBox = new CheckBox { Color = AppColors.Accent };
-
-        var line = new Line
+        _isTimeShownCheckBoxLabel = new Label
         {
-            X1 = 0,
-            Y1 = 10,
-            X2 = 350,
-            Y2 = 10,
-            Stroke = AppColors.Border
+            Text = AppResources.Settings_Shown,
+            TextColor = AppColors.Text,
+            FontSize = 15,
+            VerticalOptions = LayoutOptions.Center
+        };
+        _isTimeShownCheckBox = new CheckBox
+        {
+            Color = AppColors.Text,
+            HorizontalOptions = LayoutOptions.End,
+            VerticalOptions = LayoutOptions.Center
         };
 
-        _configurableUIContainer = [];
+        var fieldGrid = new Grid
+        {
+            ColumnSpacing = 16,
+            RowSpacing = 2,
+            RowDefinitions = Rows.Define(GridLength.Auto, GridLength.Auto),
+            ColumnDefinitions = Columns.Define(GridLength.Star, GridLength.Star)
+        };
+        fieldGrid.Add(_dynamicPrayerTimeProviderPickerLabel, column: 0, row: 0);
+        fieldGrid.Add(_dynamicPrayerTimeProviderPicker, column: 0, row: 1);
+        fieldGrid.Add(minuteAdjustmentLabel, column: 1, row: 0);
+        fieldGrid.Add(_minuteAdjustmentPicker, column: 1, row: 1);
 
-        grid.AddWithSpan(view: _dynamicPrayerTimeProviderPickerLabel);
-        grid.AddWithSpan(view: _dynamicPrayerTimeProviderPicker, row: 1, column: 0);
-        grid.AddWithSpan(view: minuteAdjustmentLabel, column: 2, columnSpan: 3);
-        grid.AddWithSpan(view: _minuteAdjustmentPicker, row: 1, column: 2);
-        grid.AddWithSpan(view: _isTimeShownCheckBoxLabel, row: 2, columnSpan: 3);
-        grid.AddWithSpan(view: _isTimeShownCheckBox, row: 3, column: 0);
-        grid.AddWithSpan(view: line, row: 4, columnSpan: 4);
-        grid.AddWithSpan(view: _configurableUIContainer, row: 5, columnSpan: 2);
+        _isTimeShownRow = new Grid
+        {
+            ColumnDefinitions = Columns.Define(GridLength.Star, GridLength.Auto)
+        };
+        _isTimeShownRow.Add(_isTimeShownCheckBoxLabel, column: 0);
+        _isTimeShownRow.Add(_isTimeShownCheckBox, column: 1);
 
-        return grid;
+        // only shown when a calculation source brings its own settings, otherwise it would add an empty gap to the card
+        _configurableUIContainer = new StackLayout { IsVisible = false };
+
+        // no ScrollView: the content is short, and on Android a ScrollView would swallow the
+        // horizontal swipe the settings page uses to switch between the tabs
+        var card = new Border
+        {
+            BackgroundColor = AppColors.Card,
+            Stroke = AppColors.Card,
+            StrokeShape = new RoundRectangle { CornerRadius = 14 },
+            Padding = new Thickness(16, 14),
+            Content = new VerticalStackLayout
+            {
+                Spacing = 14,
+                Children = { fieldGrid, _isTimeShownRow, _configurableUIContainer }
+            }
+        };
+
+        return new VerticalStackLayout
+        {
+            Padding = new Thickness(14, 16),
+            Children = { card }
+        };
+    }
+
+    private static Label CreateFieldLabel(string text)
+    {
+        return new Label
+        {
+            Text = text,
+            TextColor = AppColors.TextMuted,
+            FontSize = 13
+        };
     }
 
     /// <summary>
@@ -101,6 +129,7 @@ public partial class SettingsContentPage : ContentPage
     private void ConfigureCustomUISection()
     {
         _configurableUIContainer.Children.Clear();
+        _configurableUIContainer.IsVisible = false;
 
         if (ViewModel.CustomSettingConfigurationViewModel is null)
         {
@@ -110,6 +139,7 @@ public partial class SettingsContentPage : ContentPage
         if (ViewModel.CustomSettingConfigurationViewModel.GetUI() is IView customSettingConfiguration)
         {
             _configurableUIContainer.Children.Add(customSettingConfiguration);
+            _configurableUIContainer.IsVisible = true;
         }
     }
 
@@ -125,6 +155,6 @@ public partial class SettingsContentPage : ContentPage
 
         _isTimeShownCheckBoxLabel.SetBinding(IsVisibleProperty, nameof(SettingsContentPageViewModel.IsTimeShownCheckBoxVisible), BindingMode.Default);
         _isTimeShownCheckBox.SetBinding(CheckBox.IsCheckedProperty, nameof(SettingsContentPageViewModel.IsTimeShown), BindingMode.TwoWay);
-        _isTimeShownCheckBox.SetBinding(IsVisibleProperty, nameof(SettingsContentPageViewModel.IsTimeShownCheckBoxVisible), BindingMode.Default);
+        _isTimeShownRow.SetBinding(IsVisibleProperty, nameof(SettingsContentPageViewModel.IsTimeShownCheckBoxVisible), BindingMode.Default);
     }
 }

@@ -1,0 +1,436 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Common_Cancel" xml:space="preserve">
+    <value>Abbrechen</value>
+  </data>
+  <data name="Common_Ok" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="Common_Yes" xml:space="preserve">
+    <value>Ja</value>
+  </data>
+  <data name="Common_No" xml:space="preserve">
+    <value>Nein</value>
+  </data>
+  <data name="Common_Error" xml:space="preserve">
+    <value>Fehler</value>
+  </data>
+  <data name="Common_Success" xml:space="preserve">
+    <value>Erfolg</value>
+  </data>
+  <data name="Common_Confirmation" xml:space="preserve">
+    <value>Bestätigung</value>
+  </data>
+  <data name="Common_Aborted" xml:space="preserve">
+    <value>Abbruch</value>
+  </data>
+  <data name="Common_OpenSettings" xml:space="preserve">
+    <value>Einstellungen öffnen</value>
+    <comment>Button that opens the system settings</comment>
+  </data>
+  <data name="Common_NotSupportedForProfile" xml:space="preserve">
+    <value>Für „{0}“ nicht unterstützt.</value>
+    <comment>{0}: type of the profile</comment>
+  </data>
+  <data name="Common_ErrorWithMessage" xml:space="preserve">
+    <value>Fehler: {0}</value>
+    <comment>{0}: error message</comment>
+  </data>
+  <data name="Toast_Warning" xml:space="preserve">
+    <value>Warnung: {0}</value>
+    <comment>{0}: warning text</comment>
+  </data>
+  <data name="Toast_Error" xml:space="preserve">
+    <value>Fehler: {0}</value>
+    <comment>{0}: error text</comment>
+  </data>
+  <data name="Prayer_Fajr" xml:space="preserve">
+    <value>Fajr</value>
+    <comment>Name of the prayer time</comment>
+  </data>
+  <data name="Prayer_Duha" xml:space="preserve">
+    <value>Duha</value>
+    <comment>Name of the prayer time</comment>
+  </data>
+  <data name="Prayer_Dhuhr" xml:space="preserve">
+    <value>Dhuhr</value>
+    <comment>Name of the prayer time</comment>
+  </data>
+  <data name="Prayer_Asr" xml:space="preserve">
+    <value>Asr</value>
+    <comment>Name of the prayer time</comment>
+  </data>
+  <data name="Prayer_Maghrib" xml:space="preserve">
+    <value>Maghrib</value>
+    <comment>Name of the prayer time</comment>
+  </data>
+  <data name="Prayer_Isha" xml:space="preserve">
+    <value>Isha</value>
+    <comment>Name of the prayer time</comment>
+  </data>
+  <data name="Prayer_Jumuah" xml:space="preserve">
+    <value>Jumu'ah</value>
+    <comment>Name of the Friday prayer</comment>
+  </data>
+  <data name="Prayer_General" xml:space="preserve">
+    <value>Allgemein</value>
+    <comment>Section with the times that belong to no prayer, e.g. Qibla</comment>
+  </data>
+  <data name="Prayer_Qibla" xml:space="preserve">
+    <value>Qibla</value>
+    <comment>Time at which the sun stands exactly in the direction of the Qibla</comment>
+  </data>
+  <data name="SubTime_Ghalas" xml:space="preserve">
+    <value>Ghalas</value>
+    <comment>Sub time of Fajr</comment>
+  </data>
+  <data name="SubTime_Redness" xml:space="preserve">
+    <value>Röte</value>
+    <comment>Sub time of Fajr: the sky reddens before sunrise</comment>
+  </data>
+  <data name="SubTime_Quarter" xml:space="preserve">
+    <value>Viertel</value>
+    <comment>Sub time of Duha: first quarter of the day</comment>
+  </data>
+  <data name="SubTime_Half" xml:space="preserve">
+    <value>Hälfte*</value>
+    <comment>Sub time of Duha: half of the day</comment>
+  </data>
+  <data name="SubTime_Mithlayn" xml:space="preserve">
+    <value>Mithlayn</value>
+    <comment>Sub time of Asr</comment>
+  </data>
+  <data name="SubTime_Karaha" xml:space="preserve">
+    <value>Karaha</value>
+    <comment>Sub time of Asr and Fajr</comment>
+  </data>
+  <data name="SubTime_Sufficient" xml:space="preserve">
+    <value>Ausreichend</value>
+    <comment>Sub time of Maghrib</comment>
+  </data>
+  <data name="SubTime_Ishtibak" xml:space="preserve">
+    <value>Ishtibak</value>
+    <comment>Sub time of Maghrib</comment>
+  </data>
+  <data name="SubTime_Jumuah2" xml:space="preserve">
+    <value>Jumu'ah 2</value>
+    <comment>Second Friday prayer of a mosque</comment>
+  </data>
+  <data name="SubTime_Ikhtiyar" xml:space="preserve">
+    <value>Ikhtiyar</value>
+    <comment>Part of a prayer time in the time graphic</comment>
+  </data>
+  <data name="SubTime_Normal" xml:space="preserve">
+    <value>Normal</value>
+    <comment>Part of a prayer time in the time graphic</comment>
+  </data>
+  <data name="TimeType_Start" xml:space="preserve">
+    <value>Beginn</value>
+    <comment>Settings tab: start of a prayer time</comment>
+  </data>
+  <data name="TimeType_End" xml:space="preserve">
+    <value>Ende</value>
+    <comment>Settings tab: end of a prayer time</comment>
+  </data>
+  <data name="TimeType_FirstThird" xml:space="preserve">
+    <value>Erstes Drittel</value>
+    <comment>Settings tab: first third of the night</comment>
+  </data>
+  <data name="TimeType_Midnight" xml:space="preserve">
+    <value>Mitte der Nacht</value>
+    <comment>Settings tab: middle of the night</comment>
+  </data>
+  <data name="TimeType_SecondThird" xml:space="preserve">
+    <value>Zweites Drittel</value>
+    <comment>Settings tab: second third of the night</comment>
+  </data>
+  <data name="MainPage_SearchPlaceholder" xml:space="preserve">
+    <value>Ort suchen</value>
+  </data>
+  <data name="MainPage_OptionsButton" xml:space="preserve">
+    <value>Optionen</value>
+    <comment>Accessibility description of the menu button</comment>
+  </data>
+  <data name="MainPage_SearchResults" xml:space="preserve">
+    <value>Suchergebnisse</value>
+    <comment>Separator between favorites and search results</comment>
+  </data>
+  <data name="MainPage_RemoveFavoriteTitle" xml:space="preserve">
+    <value>Favorit entfernen?</value>
+  </data>
+  <data name="MainPage_RemoveFavoriteMessage" xml:space="preserve">
+    <value>„{0}“ aus den Favoriten entfernen?</value>
+    <comment>{0}: name of the place</comment>
+  </data>
+  <data name="MainPage_AddFavoriteQuestion" xml:space="preserve">
+    <value>„{0}“ zu den Favoriten hinzufügen?</value>
+    <comment>{0}: name of the city</comment>
+  </data>
+  <data name="MainPage_AddFavoriteAction" xml:space="preserve">
+    <value>Hinzufügen</value>
+    <comment>Button in the add-favorite snackbar</comment>
+  </data>
+  <data name="MainPage_WeeksUntilHajj" xml:space="preserve">
+    <value>{0} Wochen bis Hajj</value>
+    <comment>{0}: number of weeks</comment>
+  </data>
+  <data name="MainPage_WeeksUntilRamadan" xml:space="preserve">
+    <value>{0} Wochen bis Ramadan</value>
+    <comment>{0}: number of weeks</comment>
+  </data>
+  <data name="MainPage_CalculationFailed" xml:space="preserve">
+    <value>Berechnung fehlgeschlagen für: {0}</value>
+    <comment>{0}: list of calculation sources</comment>
+  </data>
+  <data name="MainPage_LocationInformationMissing" xml:space="preserve">
+    <value>Ortsangaben fehlen für: {0}</value>
+    <comment>{0}: list of calculation sources</comment>
+  </data>
+  <data name="MainPage_StartUpTime" xml:space="preserve">
+    <value>Start in {0} ms</value>
+    <comment>{0}: start up time in milliseconds</comment>
+  </data>
+  <data name="Menu_Title" xml:space="preserve">
+    <value>Optionen</value>
+  </data>
+  <data name="Menu_SectionProfile" xml:space="preserve">
+    <value>Profil</value>
+  </data>
+  <data name="Menu_ChangeProfileName" xml:space="preserve">
+    <value>Profilnamen bearbeiten</value>
+  </data>
+  <data name="Menu_CreateProfile" xml:space="preserve">
+    <value>Neues Profil erstellen</value>
+  </data>
+  <data name="Menu_CreateMosqueProfile" xml:space="preserve">
+    <value>Neues Moschee-Profil erstellen</value>
+  </data>
+  <data name="Menu_OpenMosqueWebPage" xml:space="preserve">
+    <value>Internetseite der Moschee-Zeiten öffnen</value>
+  </data>
+  <data name="Menu_DeleteProfile" xml:space="preserve">
+    <value>Profil löschen</value>
+  </data>
+  <data name="Menu_SectionOverview" xml:space="preserve">
+    <value>Überblick</value>
+  </data>
+  <data name="Menu_TimeConfigurationOverview" xml:space="preserve">
+    <value>Zeiten-Konfiguration</value>
+  </data>
+  <data name="Menu_LocationOverview" xml:space="preserve">
+    <value>Ortsdaten</value>
+  </data>
+  <data name="Menu_SectionTools" xml:space="preserve">
+    <value>Werkzeuge</value>
+  </data>
+  <data name="Menu_Qiblah" xml:space="preserve">
+    <value>Qibla-Richtung</value>
+  </data>
+  <data name="Menu_GoldPrices" xml:space="preserve">
+    <value>Goldpreise</value>
+  </data>
+  <data name="Menu_SectionConfiguration" xml:space="preserve">
+    <value>Konfiguration</value>
+  </data>
+  <data name="Menu_ExportConfiguration" xml:space="preserve">
+    <value>Konfiguration exportieren</value>
+  </data>
+  <data name="Menu_ImportConfiguration" xml:space="preserve">
+    <value>Konfiguration importieren</value>
+  </data>
+  <data name="Menu_SectionTechnical" xml:space="preserve">
+    <value>Technisches</value>
+  </data>
+  <data name="Menu_ShowLogs" xml:space="preserve">
+    <value>Logs anzeigen</value>
+  </data>
+  <data name="Menu_ShowDatabaseTables" xml:space="preserve">
+    <value>Datenbank-Tabellen anzeigen</value>
+  </data>
+  <data name="Menu_SaveDatabaseFile" xml:space="preserve">
+    <value>Datenbank-Datei speichern</value>
+  </data>
+  <data name="Menu_DeviceInformation" xml:space="preserve">
+    <value>Geräteinformationen</value>
+  </data>
+  <data name="Menu_SectionSystem" xml:space="preserve">
+    <value>System</value>
+  </data>
+  <data name="Menu_ResetApp" xml:space="preserve">
+    <value>App-Daten zurücksetzen</value>
+  </data>
+  <data name="Menu_CloseApp" xml:space="preserve">
+    <value>App schließen</value>
+  </data>
+  <data name="Menu_OpenInMap" xml:space="preserve">
+    <value>In Karte öffnen</value>
+    <comment>Button in the location overview</comment>
+  </data>
+  <data name="Menu_SelectMosqueApp" xml:space="preserve">
+    <value>Moschee-App auswählen</value>
+  </data>
+  <data name="Menu_MosqueIdentifierTitle" xml:space="preserve">
+    <value>Kennung</value>
+  </data>
+  <data name="Menu_MosqueIdentifierMessage" xml:space="preserve">
+    <value>Kennung der jeweiligen Moschee eingeben</value>
+  </data>
+  <data name="Menu_ProfileNamePrompt" xml:space="preserve">
+    <value>Profilname</value>
+  </data>
+  <data name="Menu_DeleteProfileConfirmation" xml:space="preserve">
+    <value>Profil „{0}“ wirklich löschen?</value>
+    <comment>{0}: name of the profile</comment>
+  </data>
+  <data name="Menu_Delete" xml:space="preserve">
+    <value>Löschen</value>
+  </data>
+  <data name="Menu_ResetAppConfirmation" xml:space="preserve">
+    <value>App-Daten wirklich zurücksetzen?</value>
+  </data>
+  <data name="Menu_DeviceInformationText" xml:space="preserve">
+    <value>Modell: {0}, {1}
+Art: {2}, {3}
+Betriebssystem: {4}, {5}
+Auflösung: {6}x{7} (Dichte: {8})
+Zeitzone: {9}</value>
+    <comment>{0} manufacturer, {1} model, {2} idiom, {3} device type, {4} platform, {5} version, {6} height, {7} width, {8} density, {9} time zone</comment>
+  </data>
+  <data name="Menu_GoldPricesText" xml:space="preserve">
+    <value>Goldpreis pro Gramm: {0:N5} €
+Nisab: {1:N2} € ({2:N2} g)
+
+Silberpreis pro Gramm: {3:N5} €
+Nisab: {4:N2} € ({5:N2} g)</value>
+    <comment>{0} gold price per gram, {1} gold nisab in EUR, {2} gold nisab in gram, {3}-{5} the same for silver</comment>
+  </data>
+  <data name="Menu_ExportSuccessful" xml:space="preserve">
+    <value>Die Konfiguration wurde exportiert.</value>
+  </data>
+  <data name="Menu_ExportFailed" xml:space="preserve">
+    <value>Fehler beim Exportieren: {0}</value>
+    <comment>{0}: error message</comment>
+  </data>
+  <data name="Menu_ImportSuccessful" xml:space="preserve">
+    <value>Die Konfiguration wurde importiert.</value>
+  </data>
+  <data name="Menu_ImportFailed" xml:space="preserve">
+    <value>Fehler beim Importieren: {0}</value>
+    <comment>{0}: error message</comment>
+  </data>
+  <data name="Menu_NoFileSelected" xml:space="preserve">
+    <value>Es wurde keine Datei ausgewählt.</value>
+  </data>
+  <data name="Menu_SelectConfigurationFile" xml:space="preserve">
+    <value>Konfigurationsdatei auswählen</value>
+  </data>
+  <data name="Overview_TimeConfigurationEntry" xml:space="preserve">
+    <value>{0} mit {1}</value>
+    <comment>Time configuration overview: {0} time, {1} calculation source</comment>
+  </data>
+  <data name="Overview_Degree" xml:space="preserve">
+    <value>{0}°</value>
+    <comment>Sun angle of the Muwaqqit calculation</comment>
+  </data>
+  <data name="Overview_MinuteAdjustment" xml:space="preserve">
+    <value>{0:+0;-0} min</value>
+    <comment>Minute adjustment of a time</comment>
+  </data>
+  <data name="Overview_Coordinates" xml:space="preserve">
+    <value>Koordinaten</value>
+  </data>
+  <data name="Overview_TimeZone" xml:space="preserve">
+    <value>Zeitzone</value>
+  </data>
+  <data name="Overview_Country" xml:space="preserve">
+    <value>Land</value>
+  </data>
+  <data name="Overview_City" xml:space="preserve">
+    <value>Stadt</value>
+  </data>
+  <data name="Overview_NotSet" xml:space="preserve">
+    <value>nicht gesetzt</value>
+    <comment>Value of a location field without data</comment>
+  </data>
+  <data name="Settings_CalculationSource" xml:space="preserve">
+    <value>Berechnungsquelle</value>
+  </data>
+  <data name="Settings_MinuteAdjustment" xml:space="preserve">
+    <value>Minutenanpassung</value>
+  </data>
+  <data name="Settings_Shown" xml:space="preserve">
+    <value>Anzeigen</value>
+    <comment>Whether the time is shown on the main page</comment>
+  </data>
+  <data name="Settings_Degree" xml:space="preserve">
+    <value>Grad</value>
+    <comment>Sun angle of the Muwaqqit calculation</comment>
+  </data>
+  <data name="Popup_Ok" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="Popup_Cancel" xml:space="preserve">
+    <value>Abbrechen</value>
+  </data>
+  <data name="BatteryOptimization_Title" xml:space="preserve">
+    <value>Akku-Optimierung</value>
+  </data>
+  <data name="BatteryOptimization_Message" xml:space="preserve">
+    <value>Damit die Gebetszeiten-Benachrichtigung zuverlässig funktioniert, muss die App von den Akku-Optimierungen ausgenommen sein.
+
+Bitte wählen Sie unter Batterieeinstellungen die Option „Unbeschränkt“ bzw. „Nicht optimieren“ aus.</value>
+  </data>
+  <data name="BatteryOptimization_Accept" xml:space="preserve">
+    <value>Einstellungen</value>
+  </data>
+  <data name="BatteryOptimization_Decline" xml:space="preserve">
+    <value>Nein, danke</value>
+  </data>
+  <data name="Notification_ChannelName" xml:space="preserve">
+    <value>Gebetszeiten</value>
+    <comment>Name of the Android notification channel</comment>
+  </data>
+  <data name="Notification_ChannelDescription" xml:space="preserve">
+    <value>Aktuelle und kommende Gebetszeiten</value>
+    <comment>Description of the Android notification channel</comment>
+  </data>
+  <data name="Notification_Loading" xml:space="preserve">
+    <value>Wird geladen …</value>
+  </data>
+  <data name="Notification_NoDynamicProfile" xml:space="preserve">
+    <value>Kein Profil mit berechneten Zeiten</value>
+  </data>
+  <data name="Qiblah_LocationDisabledTitle" xml:space="preserve">
+    <value>Standort deaktiviert</value>
+  </data>
+  <data name="Qiblah_LocationDisabledMessage" xml:space="preserve">
+    <value>Der Standort ist auf dem Gerät ausgeschaltet. Schalte ihn ein und tippe danach auf den Standort-Button oder tippe auf die Karte, um deine Position manuell zu setzen.</value>
+  </data>
+  <data name="Qiblah_NoPermissionTitle" xml:space="preserve">
+    <value>Keine Berechtigung</value>
+  </data>
+  <data name="Qiblah_NoPermissionMessage" xml:space="preserve">
+    <value>Die App hat keine Berechtigung für den Standort. Erteile sie in den App-Einstellungen oder tippe auf die Karte, um deine Position manuell zu setzen.</value>
+  </data>
+  <data name="Qiblah_LocationNotSupported" xml:space="preserve">
+    <value>Standortbestimmung wird auf diesem Gerät nicht unterstützt. Tippe auf die Karte, um deine Position zu setzen.</value>
+  </data>
+  <data name="Qiblah_LocationNotDetermined" xml:space="preserve">
+    <value>Standort konnte nicht ermittelt werden. Tippe auf die Karte, um deine Position zu setzen.</value>
+  </data>
+  <data name="Qiblah_SettingsNotOpened" xml:space="preserve">
+    <value>Einstellungen konnten nicht geöffnet werden.</value>
+  </data>
+</root>

@@ -1,0 +1,382 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Common_Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Common_Ok" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="Common_Yes" xml:space="preserve">
+    <value>Yes</value>
+  </data>
+  <data name="Common_No" xml:space="preserve">
+    <value>No</value>
+  </data>
+  <data name="Common_Error" xml:space="preserve">
+    <value>Error</value>
+  </data>
+  <data name="Common_Success" xml:space="preserve">
+    <value>Success</value>
+  </data>
+  <data name="Common_Confirmation" xml:space="preserve">
+    <value>Confirmation</value>
+  </data>
+  <data name="Common_Aborted" xml:space="preserve">
+    <value>Cancelled</value>
+  </data>
+  <data name="Common_OpenSettings" xml:space="preserve">
+    <value>Open settings</value>
+  </data>
+  <data name="Common_NotSupportedForProfile" xml:space="preserve">
+    <value>Not supported for '{0}'.</value>
+  </data>
+  <data name="Common_ErrorWithMessage" xml:space="preserve">
+    <value>Error: {0}</value>
+  </data>
+  <data name="Toast_Warning" xml:space="preserve">
+    <value>Warning: {0}</value>
+  </data>
+  <data name="Toast_Error" xml:space="preserve">
+    <value>Error: {0}</value>
+  </data>
+  <data name="Prayer_Fajr" xml:space="preserve">
+    <value>Fajr</value>
+  </data>
+  <data name="Prayer_Duha" xml:space="preserve">
+    <value>Duha</value>
+  </data>
+  <data name="Prayer_Dhuhr" xml:space="preserve">
+    <value>Dhuhr</value>
+  </data>
+  <data name="Prayer_Asr" xml:space="preserve">
+    <value>Asr</value>
+  </data>
+  <data name="Prayer_Maghrib" xml:space="preserve">
+    <value>Maghrib</value>
+  </data>
+  <data name="Prayer_Isha" xml:space="preserve">
+    <value>Isha</value>
+  </data>
+  <data name="Prayer_Jumuah" xml:space="preserve">
+    <value>Jumu'ah</value>
+  </data>
+  <data name="Prayer_General" xml:space="preserve">
+    <value>General</value>
+  </data>
+  <data name="Prayer_Qibla" xml:space="preserve">
+    <value>Qibla</value>
+  </data>
+  <data name="SubTime_Ghalas" xml:space="preserve">
+    <value>Ghalas</value>
+  </data>
+  <data name="SubTime_Redness" xml:space="preserve">
+    <value>Redness</value>
+  </data>
+  <data name="SubTime_Quarter" xml:space="preserve">
+    <value>Quarter</value>
+  </data>
+  <data name="SubTime_Half" xml:space="preserve">
+    <value>Half*</value>
+  </data>
+  <data name="SubTime_Mithlayn" xml:space="preserve">
+    <value>Mithlayn</value>
+  </data>
+  <data name="SubTime_Karaha" xml:space="preserve">
+    <value>Karaha</value>
+  </data>
+  <data name="SubTime_Sufficient" xml:space="preserve">
+    <value>Sufficient</value>
+  </data>
+  <data name="SubTime_Ishtibak" xml:space="preserve">
+    <value>Ishtibak</value>
+  </data>
+  <data name="SubTime_Jumuah2" xml:space="preserve">
+    <value>Jumu'ah 2</value>
+  </data>
+  <data name="SubTime_Ikhtiyar" xml:space="preserve">
+    <value>Ikhtiyar</value>
+  </data>
+  <data name="SubTime_Normal" xml:space="preserve">
+    <value>Normal</value>
+  </data>
+  <data name="TimeType_Start" xml:space="preserve">
+    <value>Start</value>
+  </data>
+  <data name="TimeType_End" xml:space="preserve">
+    <value>End</value>
+  </data>
+  <data name="TimeType_FirstThird" xml:space="preserve">
+    <value>First third</value>
+  </data>
+  <data name="TimeType_Midnight" xml:space="preserve">
+    <value>Middle of the night</value>
+  </data>
+  <data name="TimeType_SecondThird" xml:space="preserve">
+    <value>Second third</value>
+  </data>
+  <data name="MainPage_SearchPlaceholder" xml:space="preserve">
+    <value>Search location</value>
+  </data>
+  <data name="MainPage_OptionsButton" xml:space="preserve">
+    <value>Options</value>
+  </data>
+  <data name="MainPage_SearchResults" xml:space="preserve">
+    <value>Search results</value>
+  </data>
+  <data name="MainPage_RemoveFavoriteTitle" xml:space="preserve">
+    <value>Remove favorite?</value>
+  </data>
+  <data name="MainPage_RemoveFavoriteMessage" xml:space="preserve">
+    <value>Remove '{0}' from the favorites?</value>
+  </data>
+  <data name="MainPage_AddFavoriteQuestion" xml:space="preserve">
+    <value>Add '{0}' to the favorites?</value>
+  </data>
+  <data name="MainPage_AddFavoriteAction" xml:space="preserve">
+    <value>Add</value>
+  </data>
+  <data name="MainPage_WeeksUntilHajj" xml:space="preserve">
+    <value>{0} weeks until Hajj</value>
+  </data>
+  <data name="MainPage_WeeksUntilRamadan" xml:space="preserve">
+    <value>{0} weeks until Ramadan</value>
+  </data>
+  <data name="MainPage_CalculationFailed" xml:space="preserve">
+    <value>Calculation failed for: {0}</value>
+  </data>
+  <data name="MainPage_LocationInformationMissing" xml:space="preserve">
+    <value>Location information missing for: {0}</value>
+  </data>
+  <data name="MainPage_StartUpTime" xml:space="preserve">
+    <value>Started in {0} ms</value>
+  </data>
+  <data name="Menu_Title" xml:space="preserve">
+    <value>Options</value>
+  </data>
+  <data name="Menu_SectionProfile" xml:space="preserve">
+    <value>Profile</value>
+  </data>
+  <data name="Menu_ChangeProfileName" xml:space="preserve">
+    <value>Rename profile</value>
+  </data>
+  <data name="Menu_CreateProfile" xml:space="preserve">
+    <value>New profile</value>
+  </data>
+  <data name="Menu_CreateMosqueProfile" xml:space="preserve">
+    <value>New mosque profile</value>
+  </data>
+  <data name="Menu_OpenMosqueWebPage" xml:space="preserve">
+    <value>Open the mosque's prayer time website</value>
+  </data>
+  <data name="Menu_DeleteProfile" xml:space="preserve">
+    <value>Delete profile</value>
+  </data>
+  <data name="Menu_SectionOverview" xml:space="preserve">
+    <value>Overview</value>
+  </data>
+  <data name="Menu_TimeConfigurationOverview" xml:space="preserve">
+    <value>Time configuration</value>
+  </data>
+  <data name="Menu_LocationOverview" xml:space="preserve">
+    <value>Location data</value>
+  </data>
+  <data name="Menu_SectionTools" xml:space="preserve">
+    <value>Tools</value>
+  </data>
+  <data name="Menu_Qiblah" xml:space="preserve">
+    <value>Qibla direction</value>
+  </data>
+  <data name="Menu_GoldPrices" xml:space="preserve">
+    <value>Gold prices</value>
+  </data>
+  <data name="Menu_SectionConfiguration" xml:space="preserve">
+    <value>Configuration</value>
+  </data>
+  <data name="Menu_ExportConfiguration" xml:space="preserve">
+    <value>Export configuration</value>
+  </data>
+  <data name="Menu_ImportConfiguration" xml:space="preserve">
+    <value>Import configuration</value>
+  </data>
+  <data name="Menu_SectionTechnical" xml:space="preserve">
+    <value>Technical</value>
+  </data>
+  <data name="Menu_ShowLogs" xml:space="preserve">
+    <value>Show logs</value>
+  </data>
+  <data name="Menu_ShowDatabaseTables" xml:space="preserve">
+    <value>Show database tables</value>
+  </data>
+  <data name="Menu_SaveDatabaseFile" xml:space="preserve">
+    <value>Save database file</value>
+  </data>
+  <data name="Menu_DeviceInformation" xml:space="preserve">
+    <value>Device information</value>
+  </data>
+  <data name="Menu_SectionSystem" xml:space="preserve">
+    <value>System</value>
+  </data>
+  <data name="Menu_ResetApp" xml:space="preserve">
+    <value>Reset app data</value>
+  </data>
+  <data name="Menu_CloseApp" xml:space="preserve">
+    <value>Close app</value>
+  </data>
+  <data name="Menu_OpenInMap" xml:space="preserve">
+    <value>Open in map</value>
+  </data>
+  <data name="Menu_SelectMosqueApp" xml:space="preserve">
+    <value>Select mosque app</value>
+  </data>
+  <data name="Menu_MosqueIdentifierTitle" xml:space="preserve">
+    <value>Identifier</value>
+  </data>
+  <data name="Menu_MosqueIdentifierMessage" xml:space="preserve">
+    <value>Enter the identifier of the mosque</value>
+  </data>
+  <data name="Menu_ProfileNamePrompt" xml:space="preserve">
+    <value>Profile name</value>
+  </data>
+  <data name="Menu_DeleteProfileConfirmation" xml:space="preserve">
+    <value>Really delete profile '{0}'?</value>
+  </data>
+  <data name="Menu_Delete" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="Menu_ResetAppConfirmation" xml:space="preserve">
+    <value>Really reset the app data?</value>
+  </data>
+  <data name="Menu_DeviceInformationText" xml:space="preserve">
+    <value>Model: {0}, {1}
+Type: {2}, {3}
+Operating system: {4}, {5}
+Resolution: {6}x{7} (density: {8})
+Time zone: {9}</value>
+  </data>
+  <data name="Menu_GoldPricesText" xml:space="preserve">
+    <value>Gold price per gram: €{0:N5}
+Nisab: €{1:N2} ({2:N2} g)
+
+Silver price per gram: €{3:N5}
+Nisab: €{4:N2} ({5:N2} g)</value>
+  </data>
+  <data name="Menu_ExportSuccessful" xml:space="preserve">
+    <value>The configuration was exported.</value>
+  </data>
+  <data name="Menu_ExportFailed" xml:space="preserve">
+    <value>Export failed: {0}</value>
+  </data>
+  <data name="Menu_ImportSuccessful" xml:space="preserve">
+    <value>The configuration was imported.</value>
+  </data>
+  <data name="Menu_ImportFailed" xml:space="preserve">
+    <value>Import failed: {0}</value>
+  </data>
+  <data name="Menu_NoFileSelected" xml:space="preserve">
+    <value>No file was selected.</value>
+  </data>
+  <data name="Menu_SelectConfigurationFile" xml:space="preserve">
+    <value>Select the configuration file</value>
+  </data>
+  <data name="Overview_TimeConfigurationEntry" xml:space="preserve">
+    <value>{0} with {1}</value>
+  </data>
+  <data name="Overview_Degree" xml:space="preserve">
+    <value>{0}°</value>
+  </data>
+  <data name="Overview_MinuteAdjustment" xml:space="preserve">
+    <value>{0:+0;-0} min</value>
+  </data>
+  <data name="Overview_Coordinates" xml:space="preserve">
+    <value>Coordinates</value>
+  </data>
+  <data name="Overview_TimeZone" xml:space="preserve">
+    <value>Time zone</value>
+  </data>
+  <data name="Overview_Country" xml:space="preserve">
+    <value>Country</value>
+  </data>
+  <data name="Overview_City" xml:space="preserve">
+    <value>City</value>
+  </data>
+  <data name="Overview_NotSet" xml:space="preserve">
+    <value>not set</value>
+  </data>
+  <data name="Settings_CalculationSource" xml:space="preserve">
+    <value>Calculation source</value>
+  </data>
+  <data name="Settings_MinuteAdjustment" xml:space="preserve">
+    <value>Minute adjustment</value>
+  </data>
+  <data name="Settings_Shown" xml:space="preserve">
+    <value>Show</value>
+  </data>
+  <data name="Settings_Degree" xml:space="preserve">
+    <value>Degree</value>
+  </data>
+  <data name="Popup_Ok" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="Popup_Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="BatteryOptimization_Title" xml:space="preserve">
+    <value>Battery optimization</value>
+  </data>
+  <data name="BatteryOptimization_Message" xml:space="preserve">
+    <value>For the prayer time notification to work reliably, the app has to be excluded from battery optimization.
+
+Please choose 'Unrestricted' or 'Don't optimize' in the battery settings.</value>
+  </data>
+  <data name="BatteryOptimization_Accept" xml:space="preserve">
+    <value>Settings</value>
+  </data>
+  <data name="BatteryOptimization_Decline" xml:space="preserve">
+    <value>No, thanks</value>
+  </data>
+  <data name="Notification_ChannelName" xml:space="preserve">
+    <value>Prayer times</value>
+  </data>
+  <data name="Notification_ChannelDescription" xml:space="preserve">
+    <value>Current and upcoming prayer times</value>
+  </data>
+  <data name="Notification_Loading" xml:space="preserve">
+    <value>Loading …</value>
+  </data>
+  <data name="Notification_NoDynamicProfile" xml:space="preserve">
+    <value>No profile with calculated times</value>
+  </data>
+  <data name="Qiblah_LocationDisabledTitle" xml:space="preserve">
+    <value>Location turned off</value>
+  </data>
+  <data name="Qiblah_LocationDisabledMessage" xml:space="preserve">
+    <value>Location is turned off on this device. Turn it on and then tap the location button, or tap the map to set your position manually.</value>
+  </data>
+  <data name="Qiblah_NoPermissionTitle" xml:space="preserve">
+    <value>No permission</value>
+  </data>
+  <data name="Qiblah_NoPermissionMessage" xml:space="preserve">
+    <value>The app has no permission to access the location. Grant it in the app settings, or tap the map to set your position manually.</value>
+  </data>
+  <data name="Qiblah_LocationNotSupported" xml:space="preserve">
+    <value>Location is not supported on this device. Tap the map to set your position.</value>
+  </data>
+  <data name="Qiblah_LocationNotDetermined" xml:space="preserve">
+    <value>The location could not be determined. Tap the map to set your position.</value>
+  </data>
+  <data name="Qiblah_SettingsNotOpened" xml:space="preserve">
+    <value>The settings could not be opened.</value>
+  </data>
+</root>

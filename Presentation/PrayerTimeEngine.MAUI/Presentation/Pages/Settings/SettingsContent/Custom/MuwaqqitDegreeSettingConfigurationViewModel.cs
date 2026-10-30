@@ -2,6 +2,7 @@ using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Models;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Muwaqqit.Models;
 using PropertyChanged;
+using PrayerTimeEngine.Presentation.Localization;
 
 namespace PrayerTimeEngine.Presentation.Pages.Settings.SettingsContent.Custom;
 
@@ -43,7 +44,7 @@ public class MuwaqqitDegreeSettingConfigurationViewModel : ISettingConfiguration
                 BindingContext = this
             };
 
-            _stackLayout.Children.Add(new Label { Text = "Degree", TextColor = AppColors.Text });
+            _stackLayout.Children.Add(new Label { Text = AppResources.Settings_Degree, TextColor = AppColors.Text });
 
             var picker = new Picker
             {
