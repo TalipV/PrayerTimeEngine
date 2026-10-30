@@ -1,11 +1,11 @@
 using CommunityToolkit.Maui.Markup;
+using Microsoft.Maui.Controls.Shapes;
 using NodaTime;
 using PrayerTimeEngine.Core.Common;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
 using PrayerTimeEngine.Presentation.Views.MosquePrayerTimes;
 using PrayerTimeEngine.Presentation.Views.PrayerTimeGraphic;
 using PrayerTimeEngine.Presentation.Views.PrayerTimes;
-using UraniumUI.Material.Controls;
 using static CommunityToolkit.Maui.Markup.GridRowsColumns;
 
 namespace PrayerTimeEngine.Presentation.Pages.Main;
@@ -121,6 +121,7 @@ public partial class MainPage : ContentPage
     private readonly PrayerTimeGraphicView _prayerTimeGraphicView;
     private GraphicsView _prayerTimeGraphicViewBaseView;
     private CarouselView _carouselView;
+    private Entry _searchEntry;
 
     private Grid CreateUI()
     {
@@ -161,28 +162,23 @@ public partial class MainPage : ContentPage
         _titleGrid.WidthRequest = 415;
 #endif
 
-        AutoCompleteTextField searchBox =
-            new AutoCompleteTextField
+        Border searchField = CreateSearchField();
+        Border searchDropdown = CreateSearchDropdown();
+
+        // position the dropdown directly below the search field. It is added spanning all rows
+        // (see below) so it floats as an overlay and does not take up layout space / push content down.
+        searchField.SizeChanged += (_, _) =>
+        {
+            if (searchField.Height > 0)
             {
-                Title = "Search",
-                VerticalOptions = LayoutOptions.Center,
-                BorderColor = AppColors.Border,
-                InputBackgroundColor = AppColors.Surface,
-                TextColor = AppColors.Text,
-                TitleColor = AppColors.Text,
+                searchDropdown.Margin = new Thickness(0, searchField.Height + 2, 0, 0);
             }
-            .Bind(AutoCompleteTextField.ItemsSourceProperty, nameof(MainPageViewModel.FoundPlacesSelectionTexts))
-            .Bind(AutoCompleteTextField.SelectedTextProperty, nameof(MainPageViewModel.SelectedPlaceText))
-            .Bind(AutoCompleteTextField.TextProperty, nameof(MainPageViewModel.PlaceSearchText))
-            .Bind<AutoCompleteTextField, bool, bool>(
-                IsEnabledProperty,
-                nameof(MainPageViewModel.IsSearchBoxEnabled),
-                convert: value => value);
+        };
 
         Grid mainGrid = new Grid
         {
             RowDefinitions = Rows.Define(
-                new GridLength(2, GridUnitType.Star),
+                GridLength.Auto,
                 new GridLength(11, GridUnitType.Star),
                 new GridLength(7, GridUnitType.Star)
             )
@@ -215,9 +211,37 @@ public partial class MainPage : ContentPage
             convert: value => value,
             mode: BindingMode.TwoWay);
 
-        mainGrid.AddWithSpan(searchBox, row: 0, column: 0);
+        // invisible full-page layer that catches taps outside the dropdown and closes it.
+        // Needed because on Android tapping a non-focusable area does not unfocus the search Entry,
+        // so the Unfocused event alone can't be relied on to dismiss the suggestions.
+        Grid searchDismissScrim = new Grid
+        {
+            // a fully transparent color would not receive touches on all platforms, so use near-zero alpha
+            BackgroundColor = Color.FromRgba(0, 0, 0, 0.01),
+        }
+        .Bind(IsVisibleProperty, nameof(MainPageViewModel.IsSearchDropdownVisible));
+        searchDismissScrim.GestureRecognizers.Add(
+            new TapGestureRecognizer
+            {
+                Command = new Command(() =>
+                {
+                    _searchEntry?.Unfocus();
+                    _viewModel.CloseSearchDropdown();
+                })
+            });
+
         mainGrid.AddWithSpan(_carouselView, row: 1, column: 0);
         mainGrid.AddWithSpan(_prayerTimeGraphicViewBaseView, row: 2, column: 0);
+        mainGrid.AddWithSpan(searchDismissScrim, row: 0, column: 0, rowSpan: 3);
+        mainGrid.AddWithSpan(searchField, row: 0, column: 0);
+        // spans all rows so the overlay can extend over the content below the field without resizing row 0
+        mainGrid.AddWithSpan(searchDropdown, row: 0, column: 0, rowSpan: 3);
+
+        // stacking order: page content (0) < scrim (1) < search field (2) < dropdown overlay (3)
+        // so taps on the field and the dropdown work, while taps anywhere else hit the scrim and dismiss it
+        searchDismissScrim.ZIndex = 1;
+        searchField.ZIndex = 2;
+        searchDropdown.ZIndex = 3;
 
         mainGrid.SetBinding(OpacityProperty, new Binding(nameof(MainPageViewModel.LoadingStatusOpacityValue)));
 
@@ -248,5 +272,184 @@ public partial class MainPage : ContentPage
         }
 
         return mainGrid;
+    }
+
+    /// <summary>The search input field. Bound to the search text; opens/closes the dropdown on focus change.</summary>
+    private Border CreateSearchField()
+    {
+        Entry searchEntry = new Entry
+        {
+            Placeholder = "Search",
+            BackgroundColor = Colors.Transparent,
+            TextColor = AppColors.Text,
+            PlaceholderColor = AppColors.Text,
+            VerticalOptions = LayoutOptions.Center,
+        }
+        .Bind(Entry.TextProperty, nameof(MainPageViewModel.PlaceSearchText))
+        .Bind<Entry, bool, bool>(
+            IsEnabledProperty,
+            nameof(MainPageViewModel.IsSearchBoxEnabled),
+            convert: value => value);
+
+        searchEntry.Focused += async (_, _) => await _viewModel.OnSearchFocused();
+        searchEntry.Unfocused += (_, _) => _viewModel.OnSearchUnfocused();
+        _searchEntry = searchEntry;
+
+        return new Border
+        {
+            BackgroundColor = AppColors.Surface,
+            Stroke = AppColors.Border,
+            StrokeShape = new RoundRectangle { CornerRadius = 8 },
+            Padding = new Thickness(8, 0),
+            VerticalOptions = LayoutOptions.Start,
+            Content = searchEntry,
+        };
+    }
+
+    /// <summary>
+    /// The custom suggestion dropdown (favorites, a separator, then normal results).
+    /// Rendered as a floating overlay - it is added to the grid spanning all rows and anchored to the
+    /// top, so it never takes up layout space or pushes the prayer times down.
+    /// A custom dropdown (instead of the native autocomplete) is also needed because the native Android
+    /// autocomplete adapter filters the suggestion list itself, which would drop the favorites-vs-results
+    /// separator row and any favorite that does not match the typed text.
+    /// </summary>
+    private Border CreateSearchDropdown()
+    {
+        // BindableLayout on a plain stack (no CollectionView, no ScrollView) so the overlay is exactly
+        // as tall as the rows it actually shows - a ScrollView would grab a fixed/greedy height instead.
+        // The list is small (favorites + separator + up to 7 results), so no virtualization/scroll is needed.
+        var suggestionStack = new VerticalStackLayout { Spacing = 0 };
+        BindableLayout.SetItemTemplate(suggestionStack, new DataTemplate(CreateSearchItemRow));
+        suggestionStack.SetBinding(
+            BindableLayout.ItemsSourceProperty,
+            new Binding(nameof(MainPageViewModel.SearchItems)));
+
+        return new Border
+        {
+            BackgroundColor = Color.FromArgb("#132038"),
+            Stroke = AppColors.Border,
+            StrokeShape = new RoundRectangle { CornerRadius = 8 },
+            // initial guess; corrected to the field's real height once it is measured (see CreateUI)
+            Margin = new Thickness(0, 52, 0, 0),
+            VerticalOptions = LayoutOptions.Start,
+            Content = suggestionStack,
+        }
+        .Bind(IsVisibleProperty, nameof(MainPageViewModel.IsSearchDropdownVisible));
+    }
+
+    /// <summary>Builds one dropdown row: either a place row (with a star for favorites) or the separator row.</summary>
+    private View CreateSearchItemRow()
+    {
+        // place row (favorite or normal result)
+        Label star = new Label
+        {
+            Text = "★",
+            FontSize = 14,
+            TextColor = AppColors.Accent,
+            VerticalOptions = LayoutOptions.Center,
+        }
+        .Bind(IsVisibleProperty, nameof(PlaceSearchResultItem.IsFavorite));
+
+        Label placeLabel = new Label
+        {
+            FontSize = 13,
+            TextColor = AppColors.Text,
+            VerticalOptions = LayoutOptions.Center,
+        }
+        .Bind(Label.TextProperty, nameof(PlaceSearchResultItem.DisplayText));
+
+        // remove button, only shown on favorite rows. Tapping it asks for confirmation and removes
+        // the favorite. It is a Button (not a tap gesture) so its tap is consumed and does not also
+        // trigger the row's select gesture.
+        Button removeButton = new Button
+        {
+            Text = "✕",
+            FontSize = 13,
+            TextColor = Color.FromArgb("#7F8EA8"),
+            BackgroundColor = Colors.Transparent,
+            BorderWidth = 0,
+            Padding = new Thickness(6, 0),
+            HeightRequest = 34,
+            WidthRequest = 40,
+            VerticalOptions = LayoutOptions.Center,
+        }
+        .Bind(IsVisibleProperty, nameof(PlaceSearchResultItem.IsFavorite));
+        removeButton.Command = new Command<PlaceSearchResultItem>(async item => await ConfirmRemoveFavorite(item));
+        removeButton.SetBinding(Button.CommandParameterProperty, new Binding("."));
+
+        Grid placeRow = new Grid
+        {
+            ColumnDefinitions = Columns.Define(GridLength.Auto, GridLength.Star, GridLength.Auto),
+            ColumnSpacing = 9,
+            Padding = new Thickness(14, 5, 4, 5),
+        }
+        .Bind<Grid, bool, bool>(
+            IsVisibleProperty,
+            nameof(PlaceSearchResultItem.IsSeparator),
+            convert: isSeparator => !isSeparator);
+        placeRow.Add(star, column: 0, row: 0);
+        placeRow.Add(placeLabel, column: 1, row: 0);
+        placeRow.Add(removeButton, column: 2, row: 0);
+
+        // separator row between favorites and normal results
+        Label separatorLabel = new Label
+        {
+            FontSize = 10,
+            CharacterSpacing = 1.2,
+            TextColor = Color.FromArgb("#7F8EA8"),
+            VerticalOptions = LayoutOptions.Center,
+        }
+        .Bind(Label.TextProperty, nameof(PlaceSearchResultItem.DisplayText));
+
+        HorizontalStackLayout separatorRow = new HorizontalStackLayout
+        {
+            Spacing = 8,
+            Padding = new Thickness(14, 6),
+            BackgroundColor = Color.FromArgb("#0F1B30"),
+            Children = { separatorLabel }
+        }
+        .Bind(IsVisibleProperty, nameof(PlaceSearchResultItem.IsSeparator));
+
+        // Opaque background so the whole row reliably receives touch on Android. A background-less
+        // layout only gets touches where a child is actually drawn; without it neither the tap nor
+        // the long-press fired, which made the rows completely unresponsive.
+        var container = new Grid
+        {
+            BackgroundColor = Color.FromArgb("#132038"),
+        };
+        container.Add(placeRow);
+        container.Add(separatorRow);
+
+        // tap -> select the place (reliable gesture recognizer; parameter is the row's own item)
+        var tap = new TapGestureRecognizer();
+        tap.SetBinding(
+            TapGestureRecognizer.CommandProperty,
+            new Binding(nameof(MainPageViewModel.SelectPlaceCommand), source: _viewModel));
+        tap.SetBinding(TapGestureRecognizer.CommandParameterProperty, new Binding("."));
+        container.GestureRecognizers.Add(tap);
+
+        return container;
+    }
+
+    /// <summary>Asks for confirmation and, if accepted, removes the given favorite row.</summary>
+    private async Task ConfirmRemoveFavorite(PlaceSearchResultItem item)
+    {
+        // only favorite rows can be removed (not the separator or normal search results)
+        if (item is null || !item.IsFavorite || item.Place is null)
+        {
+            return;
+        }
+
+        bool remove = await DisplayAlertAsync(
+            "Favorit entfernen?",
+            $"„{item.DisplayText}“ aus den Favoriten entfernen?",
+            "Ja",
+            "Nein");
+
+        if (remove)
+        {
+            await _viewModel.RemoveFavorite(item.Place);
+        }
     }
 }

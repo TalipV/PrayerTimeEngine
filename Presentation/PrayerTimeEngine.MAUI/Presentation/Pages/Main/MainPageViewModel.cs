@@ -30,6 +30,7 @@ public partial class MainPageViewModel(
         IDispatcher dispatcher,
         IBrowser browser,
         ToastMessageService toastMessageService,
+        FavoritePlacesService favoritePlacesService,
         ISystemInfoService systemInfoService,
         IMosquePrayerTimeProviderManager mosquePrayerTimeProviderManager,
         PrayerTimeViewModelFactory prayerTimeViewModelFactory,
@@ -63,9 +64,6 @@ public partial class MainPageViewModel(
         }
     }
 
-    [OnChangedMethod(nameof(OnSelectedPlaceChanged))]
-    public string SelectedPlaceText { get; set; }
-
     public bool IsLoadingPrayerTimes { get; set; }
 
     public double LoadingStatusOpacityValue
@@ -96,8 +94,15 @@ public partial class MainPageViewModel(
 
     [OnChangedMethod(nameof(OnPlaceSearchTextChanged))]
     public string PlaceSearchText { get; set; }
-    public IEnumerable<BasicPlaceInfo> FoundPlaces { get; set; }
-    public IEnumerable<string> FoundPlacesSelectionTexts { get; set; }
+
+    /// <summary>Rows shown in the custom search dropdown: favorites, a separator, then normal results.</summary>
+    public List<PlaceSearchResultItem> SearchItems { get; set; } = [];
+
+    /// <summary>Whether the search dropdown is currently shown below the search field.</summary>
+    public bool IsSearchDropdownVisible { get; set; }
+
+    // last normal search results, kept so focusing the field can re-show the dropdown without re-searching
+    private List<BasicPlaceInfo> _lastResults = [];
 
     public string WeeksUntilLabelText
     {
@@ -152,17 +157,72 @@ public partial class MainPageViewModel(
 
     #region public methods
 
-    public void OnPlaceSearchTextChanged()
+    public async void OnPlaceSearchTextChanged()
     {
         if (!IsValidPlaceSearchText())
         {
-            ResetPlaceInput(resetPlaceSearchText: false);
+            // no (valid) search text yet: drop old results but still offer favorites
+            _lastResults = [];
+            await BuildSearchItemsAsync([]);
             return;
         }
 
         _debouncer ??= new Debounce.Core.Debouncer(SearchPlace, intervalMs: 600);
         _debouncer.Debounce();
     }
+
+    /// <summary>Called when the search field gets focus: (re)builds and shows the dropdown (favorites first).</summary>
+    public async Task OnSearchFocused()
+    {
+        await BuildSearchItemsAsync(_lastResults);
+    }
+
+    /// <summary>Called when the search field loses focus. Delayed so a row tap can still register first.</summary>
+    public void OnSearchUnfocused()
+    {
+        dispatcher.DispatchDelayed(
+            TimeSpan.FromMilliseconds(200),
+            () => IsSearchDropdownVisible = false);
+    }
+
+    /// <summary>Closes the suggestion dropdown (e.g. when the user taps outside of it).</summary>
+    public void CloseSearchDropdown()
+    {
+        IsSearchDropdownVisible = false;
+    }
+
+    /// <summary>Removes a place from the favorites and refreshes the dropdown so the row disappears.</summary>
+    public async Task RemoveFavorite(BasicPlaceInfo place)
+    {
+        if (place is null)
+        {
+            return;
+        }
+
+        try
+        {
+            await favoritePlacesService.RemoveAsync(place, cancellationToken: default);
+        }
+        catch (Exception exception)
+        {
+            logger.LogError(exception, "Error while removing a favorite place");
+            toastMessageService.ShowError(exception.Message);
+        }
+
+        await BuildSearchItemsAsync(_lastResults);
+    }
+
+    public ICommand SelectPlaceCommand
+        => new Command<PlaceSearchResultItem>(item =>
+        {
+            if (item is null || item.IsSeparator || item.Place is null)
+            {
+                return;
+            }
+
+            IsSearchDropdownVisible = false;
+            SelectPlace(item.Place);
+        });
 
     private CancellationTokenSource _placeSearchCancellationTokenSource;
 
@@ -367,8 +427,64 @@ public partial class MainPageViewModel(
         {
             return;
         }
-        FoundPlaces = await PerformPlaceSearch(PlaceSearchText);
-        FoundPlacesSelectionTexts = [.. FoundPlaces.Select(x => x.DisplayText).Distinct().OrderBy(x => x).Take(7)];
+
+        List<BasicPlaceInfo> results = await PerformPlaceSearch(PlaceSearchText);
+        await BuildSearchItemsAsync(results);
+    }
+
+    /// <summary>
+    /// Loads the favorites from the database and then builds the dropdown rows on the UI thread.
+    /// </summary>
+    private async Task BuildSearchItemsAsync(List<BasicPlaceInfo> results)
+    {
+        List<FavoritePlace> favorites = await favoritePlacesService.GetFavoritesAsync(cancellationToken: default);
+
+        // building touches bound collections, so make sure it runs on the UI thread
+        await dispatcher.DispatchAsync(() => BuildSearchItems(results, favorites));
+    }
+
+    /// <summary>
+    /// Builds the dropdown rows: matching favorites first, a separator, then the normal results.
+    /// With no search text, all favorites are offered so they are available right at the start of a search.
+    /// </summary>
+    private void BuildSearchItems(List<BasicPlaceInfo> results, List<FavoritePlace> favorites)
+    {
+        _lastResults = results ?? [];
+        string search = (PlaceSearchText ?? string.Empty).Trim();
+
+        List<FavoritePlace> shownFavorites =
+            string.IsNullOrWhiteSpace(search)
+                ? favorites
+                : [.. favorites.Where(f => f.DisplayText.Contains(search, StringComparison.OrdinalIgnoreCase))];
+
+        HashSet<string> favoriteKeys = [.. shownFavorites.Select(f => f.DisplayText)];
+        List<BasicPlaceInfo> normalResults =
+            [.. _lastResults
+                .Where(r => !favoriteKeys.Contains(r.DisplayText))
+                .GroupBy(r => r.DisplayText)
+                .Select(g => g.First())
+                .OrderBy(r => r.DisplayText)
+                .Take(7)];
+
+        var items = new List<PlaceSearchResultItem>();
+
+        foreach (FavoritePlace favorite in shownFavorites)
+        {
+            items.Add(new PlaceSearchResultItem { DisplayText = favorite.DisplayText, IsFavorite = true, Place = favorite });
+        }
+
+        if (shownFavorites.Count > 0 && normalResults.Count > 0)
+        {
+            items.Add(new PlaceSearchResultItem { IsSeparator = true, DisplayText = "Suchergebnisse" });
+        }
+
+        foreach (BasicPlaceInfo result in normalResults)
+        {
+            items.Add(new PlaceSearchResultItem { DisplayText = result.DisplayText, IsFavorite = false, Place = result });
+        }
+
+        SearchItems = items;
+        IsSearchDropdownVisible = items.Count > 0;
     }
 
     private bool IsValidPlaceSearchText()
@@ -559,22 +675,18 @@ public partial class MainPageViewModel(
         await RefreshData();
     }
 
-    private void OnSelectedPlaceChanged()
+    private void SelectPlace(BasicPlaceInfo selectedPlace)
     {
-        string selectedPlaceText = SelectedPlaceText;
-
-        if (string.IsNullOrWhiteSpace(selectedPlaceText))
+        if (selectedPlace is null)
         {
             return;
         }
 
-        logger.LogInformation("Place '{SelectedPlace}' was selected", selectedPlaceText);
+        logger.LogInformation("Place '{SelectedPlace}' was selected", selectedPlace.DisplayText);
 
         Task.Run(async () =>
         {
-            BasicPlaceInfo selectedPlace = FoundPlaces.FirstOrDefault(x => x.DisplayText == selectedPlaceText);
-
-            if (CurrentProfile is not DynamicProfile currentProfile || selectedPlace is null)
+            if (CurrentProfile is not DynamicProfile currentProfile)
             {
                 return;
             }
@@ -610,6 +722,27 @@ public partial class MainPageViewModel(
                     logger.LogWarning("Location information missing for the following calculation sources: {@DynamicPrayerTimeProviders}", missingLocationInfo);
                     toastMessageService.ShowWarning($"Location information missing for {string.Join(", ", missingLocationInfo)}");
                 }
+
+                // offer to save the just selected place as a favorite (only if it is not one already)
+                if (!await favoritePlacesService.IsFavoriteAsync(selectedPlace, cancellationToken: default))
+                {
+                    toastMessageService.ShowAction(
+                        text: $"„{selectedPlace.City}“ zu Favoriten hinzufügen?",
+                        actionText: "Add",
+                        action: async () =>
+                        {
+                            try
+                            {
+                                await favoritePlacesService.AddAsync(selectedPlace, cancellationToken: default);
+                            }
+                            catch (Exception exception)
+                            {
+                                logger.LogError(exception, "Error while adding a favorite place");
+                                toastMessageService.ShowError(exception.Message);
+                            }
+                        },
+                        duration: TimeSpan.FromSeconds(5));
+                }
             }
             catch (Exception exception)
             {
@@ -632,9 +765,9 @@ public partial class MainPageViewModel(
             PlaceSearchText = string.Empty;
         }
 
-        SelectedPlaceText = string.Empty;
-        FoundPlaces = [];
-        FoundPlacesSelectionTexts = [];
+        _lastResults = [];
+        SearchItems = [];
+        IsSearchDropdownVisible = false;
     }
 
     #endregion private methods

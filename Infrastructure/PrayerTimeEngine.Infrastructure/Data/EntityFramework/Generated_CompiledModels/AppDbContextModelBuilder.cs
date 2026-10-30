@@ -11,7 +11,7 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
     public partial class AppDbContextModel
     {
         private AppDbContextModel()
-            : base(skipDetectChanges: false, modelId: new Guid("0f840171-84b5-40be-9f78-83cbdb830650"), entityTypeCount: 16)
+            : base(skipDetectChanges: false, modelId: new Guid("f3d08036-971f-46f2-bb71-b017f9b4940f"), entityTypeCount: 17)
         {
         }
 
@@ -26,6 +26,7 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
             var semerkandDailyPrayerTimes = SemerkandDailyPrayerTimesEntityType.Create(this);
             var mawaqitMosqueDailyPrayerTimes = MawaqitMosqueDailyPrayerTimesEntityType.Create(this);
             var myMosqMosqueDailyPrayerTimes = MyMosqMosqueDailyPrayerTimesEntityType.Create(this);
+            var favoritePlace = FavoritePlaceEntityType.Create(this);
             var profilePlaceInfo = ProfilePlaceInfoEntityType.Create(this);
             var timezoneInfo = TimezoneInfoEntityType.Create(this);
             var profile = ProfileEntityType.Create(this);
@@ -50,6 +51,7 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
             SemerkandDailyPrayerTimesEntityType.CreateAnnotations(semerkandDailyPrayerTimes);
             MawaqitMosqueDailyPrayerTimesEntityType.CreateAnnotations(mawaqitMosqueDailyPrayerTimes);
             MyMosqMosqueDailyPrayerTimesEntityType.CreateAnnotations(myMosqMosqueDailyPrayerTimes);
+            FavoritePlaceEntityType.CreateAnnotations(favoritePlace);
             ProfilePlaceInfoEntityType.CreateAnnotations(profilePlaceInfo);
             TimezoneInfoEntityType.CreateAnnotations(timezoneInfo);
             ProfileEntityType.CreateAnnotations(profile);
@@ -58,7 +60,7 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels
             DynamicProfileEntityType.CreateAnnotations(dynamicProfile);
             MosqueProfileEntityType.CreateAnnotations(mosqueProfile);
 
-            AddAnnotation("ProductVersion", "10.0.11");
+            AddAnnotation("ProductVersion", "10.0.14");
         }
     }
 }

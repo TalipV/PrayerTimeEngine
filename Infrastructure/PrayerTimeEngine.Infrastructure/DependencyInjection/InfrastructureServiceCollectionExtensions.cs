@@ -68,6 +68,7 @@ public static class InfrastructureServiceCollectionExtensions
         services.AddSingleton<AppDbContextMetaData>();
 
         services.AddTransient<IProfileRepository, ProfileRepository>();
+        services.AddTransient<IFavoritePlaceRepository, FavoritePlaceRepository>();
     }
 
     private static void AddWebSocket(IServiceCollection services)

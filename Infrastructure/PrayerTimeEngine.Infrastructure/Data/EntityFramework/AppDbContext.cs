@@ -30,6 +30,7 @@ public class AppDbContext(
     public DbSet<ProfileTimeConfig> ProfileConfigs { get; set; }
     public DbSet<ProfilePlaceInfo> PlaceInfos { get; set; }
     public DbSet<TimezoneInfo> TimezoneInfos { get; set; }
+    public DbSet<FavoritePlace> FavoritePlaces { get; set; }
 
     public DbSet<MuwaqqitDailyPrayerTimes> MuwaqqitPrayerTimes { get; set; }
 

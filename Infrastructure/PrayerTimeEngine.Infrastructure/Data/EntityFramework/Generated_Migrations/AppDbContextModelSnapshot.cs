@@ -14,7 +14,7 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "10.0.11");
+            modelBuilder.HasAnnotation("ProductVersion", "10.0.14");
 
             modelBuilder.Entity("PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Models.Entities.FaziletCity", b =>
                 {
@@ -391,6 +391,57 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_Migrations
                     b.HasKey("ID");
 
                     b.ToTable("MyMosqPrayerTimes");
+                });
+
+            modelBuilder.Entity("PrayerTimeEngine.Core.Domain.PlaceManagement.Models.FavoritePlace", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("City")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CityDistrict")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Country")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ExternalID")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("InfoLanguageCode")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("InsertInstant")
+                        .HasColumnType("TEXT");
+
+                    b.Property<decimal>("Latitude")
+                        .HasColumnType("TEXT");
+
+                    b.Property<decimal>("Longitude")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("PostCode")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("State")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Street")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("FavoritePlaces");
                 });
 
             modelBuilder.Entity("PrayerTimeEngine.Core.Domain.PlaceManagement.Models.ProfilePlaceInfo", b =>
