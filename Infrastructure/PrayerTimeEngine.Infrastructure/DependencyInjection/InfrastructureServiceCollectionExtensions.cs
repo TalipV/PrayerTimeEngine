@@ -100,7 +100,7 @@ public static class InfrastructureServiceCollectionExtensions
         // FAZILET
         services.AddTransient<IFaziletRepository, FaziletRepository>();
         services.AddTransient<IPrayerTimeCacheCleaner, FaziletRepository>();
-        AddResilientRefitClient<IFaziletApiClient>(services, "https://fazilettakvimi.com/api/cms/");
+        AddResilientRefitClient<IFaziletApiClient>(services, "https://backend.fazilettakvimi.com/content/public/");
         services.AddTransient<IFaziletApiService, FaziletApiService>();
 
         // SEMERKAND

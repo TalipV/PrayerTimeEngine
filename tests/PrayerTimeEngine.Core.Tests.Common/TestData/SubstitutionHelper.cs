@@ -22,7 +22,7 @@ namespace PrayerTimeEngine.Core.Tests.Common.TestData;
 public class SubstitutionHelper
 {
     private const string SEMERKAND_BASE_URL = @"https://semerkandtakvimi.com/api";
-    private const string FAZILET_BASE_URL = @"https://fazilettakvimi.com/api/cms";
+    private const string FAZILET_BASE_URL = @"https://backend.fazilettakvimi.com/content/public";
     private const string MUWAQQIT_BASE_URL = @"https://www.muwaqqit.com";
 
     public static ISemerkandApiService GetMockedSemerkandApiService()
