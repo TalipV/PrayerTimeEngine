@@ -241,7 +241,8 @@ public partial class DynamicPrayerTimeView : ContentView
     }
 
     /// <summary>
-    /// Highlights the prayer whose time is running right now. Evaluated whenever the times are
+    /// Highlights the prayer whose time is running right now or, in a gap between two prayer times,
+    /// the next one; the same prayer the graphic shows. Evaluated whenever the times are
     /// refreshed, which also happens when the app comes back to the foreground.
     /// </summary>
     private void BindToCurrentPrayer<TValue>(BindableObject target, BindableProperty property, BlockDefinition block, Func<bool, TValue> valueSelector)
@@ -249,19 +250,23 @@ public partial class DynamicPrayerTimeView : ContentView
         target.SetBinding(
             property,
             new Binding(
-                $"{nameof(DynamicPrayerTimeViewModel.PrayerTimesSet)}.{block.Binding}",
-                converter: new FuncConverter<GenericPrayerTime?, TValue>(prayerTime => valueSelector(IsCurrentPrayer(prayerTime)))));
+                nameof(DynamicPrayerTimeViewModel.PrayerTimesSet),
+                converter: new FuncConverter<IPrayerTimesDay?, TValue>(prayerTimesSet => valueSelector(IsCurrentPrayer(prayerTimesSet, block)))));
     }
 
-    private bool IsCurrentPrayer(GenericPrayerTime? prayerTime)
+    private bool IsCurrentPrayer(IPrayerTimesDay? prayerTimesSet, BlockDefinition block)
     {
-        if (prayerTime?.Start is not ZonedDateTime start || prayerTime.End is not ZonedDateTime end)
+        if (prayerTimesSet is not DynamicPrayerTimesDaySet { CurrentDay: DynamicPrayerTimesDay currentDay })
         {
             return false;
         }
 
-        Instant now = _systemInfoService.GetCurrentInstant();
-        return start.ToInstant() <= now && now < end.ToInstant();
+        GenericPrayerTime? highlightedPrayerTime = prayerTimesSet.GetCurrentOrNextPrayerTime(_systemInfoService.GetCurrentInstant()).Times;
+
+        // compared by reference: the set also holds the previous and the next day, whose prayer
+        // times are not the ones shown on the cards
+        return highlightedPrayerTime is not null
+            && currentDay.AllPrayerTimes.Any(x => x.Section == block.Section && ReferenceEquals(x.Times, highlightedPrayerTime));
     }
 
     private Label CreateTimeLabel(BlockDefinition block)
