@@ -33,15 +33,7 @@ public abstract class BasePrayerTimeViewModel<TProfileType, TPrayerTimeSetType>(
             return null;
         }
 
-        (ETimeSection Section, GenericPrayerTime Times) currentPrayerTime = PrayerTimesSet.AllPrayerTimes
-                .FirstOrDefault(x => x.Times.Start?.ToInstant() <= instant && instant <= x.Times.End?.ToInstant());
-
-        if (currentPrayerTime == default)
-        {
-            currentPrayerTime = PrayerTimesSet.AllPrayerTimes
-                    .OrderBy(x => x.Times.Start?.ToInstant())
-                    .FirstOrDefault(x => x.Times.Start?.ToInstant() > instant);
-        }
+        (ETimeSection Section, GenericPrayerTime Times) currentPrayerTime = PrayerTimesSet.GetCurrentOrNextPrayerTime(instant);
 
         if (currentPrayerTime == default || currentPrayerTime.Times?.Start is null || currentPrayerTime.Times?.End is null)
         {
