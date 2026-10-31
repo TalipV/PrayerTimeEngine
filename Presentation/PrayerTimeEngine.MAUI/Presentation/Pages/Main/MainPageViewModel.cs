@@ -70,21 +70,15 @@ public partial class MainPageViewModel(
 
     public bool IsLoadingPrayerTimes { get; set; }
 
-    public double LoadingStatusOpacityValue
-    {
-        get
-        {
-            if (IsLoadingPrayerTimesOrSelectedPlace)
-            {
-                return 0.8;
-            }
-
-            return 1;
-        }
-    }
     public bool IsLoadingPrayerTimesOrSelectedPlace => IsLoadingPrayerTimes || IsLoadingSelectedPlace;
 
     public bool IsLoadingSelectedPlace { get; set; }
+
+    /// <summary>Text of the loading indicator on the main page, naming what is currently being loaded.</summary>
+    public string LoadingStatusText =>
+        IsLoadingSelectedPlace
+            ? AppResources.MainPage_LoadingPlace
+            : AppResources.MainPage_LoadingPrayerTimes;
 
     public bool IsSearchBoxEnabled
     {

@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using CommunityToolkit.Maui.Markup;
 using Microsoft.Maui.Controls.Shapes;
 using NodaTime;
@@ -52,6 +53,16 @@ public partial class MainPage : ContentPage
         BackgroundColor = AppColors.Background;
 
         viewModel.OnAfterLoadingPrayerTimes_EventTrigger += ViewModel_OnAfterLoadingPrayerTimes_EventTrigger;
+        viewModel.PropertyChanged += ViewModel_PropertyChanged;
+    }
+
+    private void ViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(MainPageViewModel.IsLoadingPrayerTimesOrSelectedPlace))
+        {
+            // the loading flags are set from background threads
+            _dispatcher.Dispatch(() => _ = UpdateLoadingIndicatorAsync(_viewModel.IsLoadingPrayerTimesOrSelectedPlace));
+        }
     }
 
     private void ViewModel_OnAfterLoadingPrayerTimes_EventTrigger()
@@ -115,6 +126,9 @@ public partial class MainPage : ContentPage
     private GraphicsView _prayerTimeGraphicViewBaseView;
     private CarouselView _carouselView;
     private Entry _searchEntry;
+    private Grid _contentGrid;
+    private Border _loadingIndicator;
+    private ActivityIndicator _loadingSpinner;
 
     private Grid CreateUI()
     {
@@ -187,8 +201,7 @@ public partial class MainPage : ContentPage
         _prayerTimeGraphicViewBaseView = new GraphicsView
         {
             Drawable = _prayerTimeGraphicView
-        }
-        .Bind(OpacityProperty, nameof(MainPageViewModel.LoadingStatusOpacityValue));
+        };
 
         _carouselView = new CarouselView
         {
@@ -241,8 +254,6 @@ public partial class MainPage : ContentPage
         searchField.ZIndex = 2;
         searchDropdown.ZIndex = 3;
 
-        mainGrid.SetBinding(OpacityProperty, new Binding(nameof(MainPageViewModel.LoadingStatusOpacityValue)));
-
         if (OperatingSystem.IsWindows() || OperatingSystem.IsMacCatalyst())
         {
             // swiping carousel view doesn't work on Windows so this workaround will have to do, at least for now
@@ -269,8 +280,155 @@ public partial class MainPage : ContentPage
                     });
         }
 
-        return mainGrid;
+        _contentGrid = mainGrid;
+        _loadingIndicator = CreateLoadingIndicator();
+
+        // the indicator lives outside of the content grid, so dimming the content does not dim the indicator too
+        return new Grid
+        {
+            Children = { mainGrid, _loadingIndicator }
+        };
     }
+
+    #region loading indicator
+
+    /// <summary>
+    /// Loads that finish faster than this never show the indicator, so cached data does not make the screen flicker.
+    /// </summary>
+    private const int LOADING_INDICATOR_DELAY_MS = 150;
+
+    /// <summary>Once shown, the indicator stays at least this long, so it does not just flash up and vanish.</summary>
+    private const int LOADING_INDICATOR_MIN_VISIBLE_MS = 450;
+
+    private const uint LOADING_INDICATOR_FADE_MS = 180;
+
+    /// <summary>Opacity of the page content while loading: clearly in the background, but still recognizable.</summary>
+    private const double LOADING_CONTENT_OPACITY = 0.3;
+
+    /// <summary>Incremented on every loading state change, so outdated delayed updates can tell they are outdated.</summary>
+    private int _loadingIndicatorVersion;
+    private long _loadingIndicatorShownAtMs;
+
+    /// <summary>
+    /// A pill in the middle of the page with an accent-coloured spinner and a text naming what is being loaded.
+    /// It is input transparent, so it never changes what can be tapped while loading.
+    /// </summary>
+    private Border CreateLoadingIndicator()
+    {
+        _loadingSpinner = new ActivityIndicator
+        {
+            Color = AppColors.Accent,
+            WidthRequest = 26,
+            HeightRequest = 26,
+            IsRunning = false,
+            VerticalOptions = LayoutOptions.Center,
+        };
+
+        Label loadingLabel = new Label
+        {
+            FontSize = 16,
+            FontAttributes = FontAttributes.Bold,
+            TextColor = AppColors.Text,
+            VerticalOptions = LayoutOptions.Center,
+        }
+        .Bind(Label.TextProperty, nameof(MainPageViewModel.LoadingStatusText));
+
+        var loadingIndicator = new Border
+        {
+            BackgroundColor = AppColors.Surface,
+            Stroke = AppColors.Accent,
+            StrokeThickness = 1.5,
+            StrokeShape = new RoundRectangle { CornerRadius = 28 },
+            Padding = new Thickness(22, 14, 26, 14),
+            HorizontalOptions = LayoutOptions.Center,
+            VerticalOptions = LayoutOptions.Center,
+            Shadow = new Shadow
+            {
+                Brush = Brush.Black,
+                Opacity = 0.6f,
+                Radius = 24,
+                Offset = new Point(0, 6),
+            },
+            InputTransparent = true,
+            IsVisible = false,
+            Opacity = 0,
+            Content = new HorizontalStackLayout
+            {
+                Spacing = 14,
+                Children = { _loadingSpinner, loadingLabel }
+            },
+        };
+        return loadingIndicator;
+    }
+
+    private async Task UpdateLoadingIndicatorAsync(bool isLoading)
+    {
+        int version = ++_loadingIndicatorVersion;
+
+        if (isLoading)
+        {
+            if (_loadingIndicator.IsVisible)
+            {
+                // already shown (e.g. the place was loaded and now the prayer times follow): just make sure it is fully visible
+                await ShowLoadingIndicatorAsync();
+                return;
+            }
+
+            await Task.Delay(LOADING_INDICATOR_DELAY_MS);
+
+            if (version != _loadingIndicatorVersion)
+            {
+                return;
+            }
+
+            _loadingIndicatorShownAtMs = Environment.TickCount64;
+            await ShowLoadingIndicatorAsync();
+        }
+        else
+        {
+            if (!_loadingIndicator.IsVisible)
+            {
+                return;
+            }
+
+            long remainingMs = LOADING_INDICATOR_MIN_VISIBLE_MS - (Environment.TickCount64 - _loadingIndicatorShownAtMs);
+            if (remainingMs > 0)
+            {
+                await Task.Delay((int)remainingMs);
+            }
+
+            if (version != _loadingIndicatorVersion)
+            {
+                return;
+            }
+
+            _loadingIndicator.CancelAnimations();
+            _contentGrid.CancelAnimations();
+            await Task.WhenAll(
+                _loadingIndicator.FadeToAsync(0, LOADING_INDICATOR_FADE_MS, Easing.CubicIn),
+                _contentGrid.FadeToAsync(1, LOADING_INDICATOR_FADE_MS, Easing.CubicIn));
+
+            if (version == _loadingIndicatorVersion)
+            {
+                _loadingIndicator.IsVisible = false;
+                _loadingSpinner.IsRunning = false;
+            }
+        }
+    }
+
+    private Task ShowLoadingIndicatorAsync()
+    {
+        _loadingSpinner.IsRunning = true;
+        _loadingIndicator.IsVisible = true;
+
+        _loadingIndicator.CancelAnimations();
+        _contentGrid.CancelAnimations();
+        return Task.WhenAll(
+            _loadingIndicator.FadeToAsync(1, LOADING_INDICATOR_FADE_MS, Easing.CubicOut),
+            _contentGrid.FadeToAsync(LOADING_CONTENT_OPACITY, LOADING_INDICATOR_FADE_MS, Easing.CubicOut));
+    }
+
+    #endregion loading indicator
 
     /// <summary>
     /// Visible entry point of the options menu at the right edge of the title bar, where Android apps

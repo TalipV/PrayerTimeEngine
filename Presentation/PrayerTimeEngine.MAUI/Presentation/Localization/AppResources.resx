@@ -159,6 +159,14 @@
   <data name="MainPage_SearchPlaceholder" xml:space="preserve">
     <value>Ort suchen</value>
   </data>
+  <data name="MainPage_LoadingPrayerTimes" xml:space="preserve">
+    <value>Gebetszeiten werden geladen …</value>
+    <comment>Loading indicator on the main page</comment>
+  </data>
+  <data name="MainPage_LoadingPlace" xml:space="preserve">
+    <value>Ort wird übernommen …</value>
+    <comment>Loading indicator on the main page while a selected place is being applied</comment>
+  </data>
   <data name="MainPage_OptionsButton" xml:space="preserve">
     <value>Optionen</value>
     <comment>Accessibility description of the menu button</comment>
@@ -385,18 +393,16 @@ Nisab: {4:N2} € ({5:N2} g)</value>
     <value>Abbrechen</value>
   </data>
   <data name="BatteryOptimization_Title" xml:space="preserve">
-    <value>Akku-Optimierung</value>
+    <value>Benachrichtigung aktiv halten</value>
   </data>
   <data name="BatteryOptimization_Message" xml:space="preserve">
-    <value>Damit die Gebetszeiten-Benachrichtigung zuverlässig funktioniert, muss die App von den Akku-Optimierungen ausgenommen sein.
-
-Bitte wählen Sie unter Batterieeinstellungen die Option „Unbeschränkt“ bzw. „Nicht optimieren“ aus.</value>
+    <value>Erlaube der App, im Hintergrund zu laufen – sonst kann Android die Gebetszeiten-Benachrichtigung beenden.</value>
   </data>
   <data name="BatteryOptimization_Accept" xml:space="preserve">
-    <value>Einstellungen</value>
+    <value>Erlauben</value>
   </data>
   <data name="BatteryOptimization_Decline" xml:space="preserve">
-    <value>Nein, danke</value>
+    <value>Später</value>
   </data>
   <data name="Notification_ChannelName" xml:space="preserve">
     <value>Gebetszeiten</value>

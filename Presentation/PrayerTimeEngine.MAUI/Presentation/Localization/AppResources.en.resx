@@ -129,6 +129,12 @@
   <data name="MainPage_SearchPlaceholder" xml:space="preserve">
     <value>Search location</value>
   </data>
+  <data name="MainPage_LoadingPrayerTimes" xml:space="preserve">
+    <value>Loading prayer times …</value>
+  </data>
+  <data name="MainPage_LoadingPlace" xml:space="preserve">
+    <value>Applying location …</value>
+  </data>
   <data name="MainPage_OptionsButton" xml:space="preserve">
     <value>Options</value>
   </data>
@@ -333,18 +339,16 @@ Nisab: €{4:N2} ({5:N2} g)</value>
     <value>Cancel</value>
   </data>
   <data name="BatteryOptimization_Title" xml:space="preserve">
-    <value>Battery optimization</value>
+    <value>Keep the notification running</value>
   </data>
   <data name="BatteryOptimization_Message" xml:space="preserve">
-    <value>For the prayer time notification to work reliably, the app has to be excluded from battery optimization.
-
-Please choose 'Unrestricted' or 'Don't optimize' in the battery settings.</value>
+    <value>Allow the app to run in the background, otherwise Android may stop the prayer time notification.</value>
   </data>
   <data name="BatteryOptimization_Accept" xml:space="preserve">
-    <value>Settings</value>
+    <value>Allow</value>
   </data>
   <data name="BatteryOptimization_Decline" xml:space="preserve">
-    <value>No, thanks</value>
+    <value>Later</value>
   </data>
   <data name="Notification_ChannelName" xml:space="preserve">
     <value>Prayer times</value>

@@ -9,6 +9,8 @@
 	<uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 	<uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
 	<uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+	<!-- lets the battery optimization hint open the one-tap system dialog for this app instead of the list of all apps -->
+	<uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
 	<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 	<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 	<!-- package visibility (Android 11+), so Launcher.TryOpenAsync can see map apps for geo: URIs -->

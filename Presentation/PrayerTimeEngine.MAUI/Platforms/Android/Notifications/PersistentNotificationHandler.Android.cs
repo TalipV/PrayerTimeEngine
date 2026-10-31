@@ -1,4 +1,7 @@
 using Android.Content;
+using CommunityToolkit.Maui.Core;
+using CommunityToolkit.Maui.Extensions;
+using PrayerTimeEngine.Presentation.Popups;
 using PrayerTimeEngine.Platforms.Android.Permissions;
 using PrayerTimeEngine.Services.Notifications;
 using PrayerTimeEngine.Presentation.Localization;
@@ -57,22 +60,48 @@ public class PrayerTimeSummaryNotificationHandler : IPrayerTimeSummaryNotificati
 
         await dispatcher.DispatchAsync(async () =>
         {
-            bool openSettings = await Application.Current.Windows[0].Page.DisplayAlertAsync(
-                title: AppResources.BatteryOptimization_Title,
-                message: AppResources.BatteryOptimization_Message,
-                accept: AppResources.BatteryOptimization_Accept,
-                cancel: AppResources.BatteryOptimization_Decline);
+            Page? rootPage = Application.Current?.Windows.FirstOrDefault()?.Page;
+            Page? page = (rootPage as NavigationPage)?.CurrentPage ?? rootPage;
 
-            if (!openSettings)
+            if (page is null)
             {
                 return;
             }
 
-            var intent = new Intent(
-                global::Android.Provider.Settings.ActionIgnoreBatteryOptimizationSettings);
+            IPopupResult<bool> popupResult = await page.ShowPopupAsync<bool>(
+                new BatteryOptimizationPopup(),
+                BatteryOptimizationPopup.CreatePopupOptions());
 
-            intent.SetFlags(ActivityFlags.NewTask);
-            context.StartActivity(intent);
+            if (!popupResult.Result)
+            {
+                return;
+            }
+
+            RequestBatteryOptimizationExemption(context, package);
         });
+    }
+
+    /// <summary>
+    /// Opens the system dialog that exempts exactly this app with a single tap ("Allow"). Only if a
+    /// device does not offer it, falls back to the list of all apps, where the user has to find this
+    /// app and pick "Don't optimize" themselves.
+    /// </summary>
+    private static void RequestBatteryOptimizationExemption(Context context, string? package)
+    {
+        try
+        {
+            var requestIntent = new Intent(
+                global::Android.Provider.Settings.ActionRequestIgnoreBatteryOptimizations,
+                global::Android.Net.Uri.Parse($"package:{package}"));
+            requestIntent.SetFlags(ActivityFlags.NewTask);
+            context.StartActivity(requestIntent);
+        }
+        catch (ActivityNotFoundException)
+        {
+            var settingsIntent = new Intent(
+                global::Android.Provider.Settings.ActionIgnoreBatteryOptimizationSettings);
+            settingsIntent.SetFlags(ActivityFlags.NewTask);
+            context.StartActivity(settingsIntent);
+        }
     }
 }
