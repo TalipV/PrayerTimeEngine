@@ -4,7 +4,6 @@ using CommunityToolkit.Maui.Extensions;
 using PrayerTimeEngine.Presentation.Popups;
 using PrayerTimeEngine.Platforms.Android.Permissions;
 using PrayerTimeEngine.Services.Notifications;
-using PrayerTimeEngine.Presentation.Localization;
 
 namespace PrayerTimeEngine.Platforms.Android.Notifications;
 
