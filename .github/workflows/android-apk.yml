@@ -109,17 +109,7 @@ jobs:
       - name: Build date
         run: echo "BUILD_DATE=$(date -u +%Y-%m-%d)" >> "$GITHUB_ENV"
 
-      - name: Build Debug APK
-        run: >
-          dotnet build Presentation/PrayerTimeEngine.MAUI/PrayerTimeEngine.MAUI.csproj
-          -c Debug -f net10.0-android -t:SignAndroidPackage
-          -p:AndroidKeyStore=true
-          -p:AndroidSigningKeyStore="$RUNNER_TEMP/signing.keystore"
-          -p:AndroidSigningKeyAlias=${{ secrets.ANDROID_KEY_ALIAS }}
-          -p:AndroidSigningKeyPass='${{ secrets.ANDROID_KEY_PASSWORD }}'
-          -p:AndroidSigningStorePass='${{ secrets.ANDROID_KEYSTORE_PASSWORD }}'
-
-      - name: Build Release APK
+      - name: Build APK
         run: >
           dotnet publish Presentation/PrayerTimeEngine.MAUI/PrayerTimeEngine.MAUI.csproj
           -c Release -f net10.0-android
@@ -130,13 +120,11 @@ jobs:
           -p:AndroidSigningKeyPass='${{ secrets.ANDROID_KEY_PASSWORD }}'
           -p:AndroidSigningStorePass='${{ secrets.ANDROID_KEYSTORE_PASSWORD }}'
 
-      - name: Collect APKs
+      - name: Collect APK
         run: |
           mkdir -p out
-          cp Presentation/PrayerTimeEngine.MAUI/bin/Debug/net10.0-android/*-Signed.apk \
-             "out/PrayerTimeEngine-debug.apk"
           cp Presentation/PrayerTimeEngine.MAUI/bin/Release/net10.0-android/*-Signed.apk \
-             "out/PrayerTimeEngine-release.apk"
+             "out/PrayerTimeEngine.apk"
           ls -lh out
 
       - name: Upload build artifacts
@@ -165,6 +153,6 @@ jobs:
             Stand: ${{ env.BUILD_DATE }}
 
             Fester Download-Link (zeigt immer auf den neuesten Build):
-            https://github.com/${{ github.repository }}/releases/download/latest/PrayerTimeEngine-release.apk
+            https://github.com/${{ github.repository }}/releases/download/latest/PrayerTimeEngine.apk
           prerelease: true
           files: out/*.apk
