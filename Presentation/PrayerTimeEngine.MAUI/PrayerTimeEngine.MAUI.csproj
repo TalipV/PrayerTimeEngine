@@ -44,17 +44,16 @@
     <CreatePackage>false</CreatePackage>
   </PropertyGroup>
 
+  <!-- Since .NET 11 the app runs on CoreCLR (Mono is no longer supported). Release builds
+       are trimmed and precompiled with composite ReadyToRun by default; by default only part
+       of the methods is precompiled, the rest is compiled on the device at runtime.
+       Full ReadyToRun precompiles (almost) every method: faster start and fewer runtime
+       compilations, at the cost of a larger APK and a longer build. NativeAOT would go
+       further but is experimental on Android in .NET 11. -->
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <MauiEnableFullReadyToRun>true</MauiEnableFullReadyToRun>
     <DebugType>none</DebugType>
     <DebugSymbols>false</DebugSymbols>
-  </PropertyGroup>
-
-  <!-- Mono AOT settings. Since .NET 11, Android runs on CoreCLR by default, and CoreCLR
-       rejects RunAOTCompilation (XA1044); they only apply if Mono is switched back on. -->
-  <PropertyGroup Condition=" '$(Configuration)' == 'Release' And '$(UseMonoRuntime)' == 'true' ">
-    <RunAOTCompilation>true</RunAOTCompilation>
-    <AndroidEnableProfiledAot>false</AndroidEnableProfiledAot>
-    <EnableLLVM>true</EnableLLVM>
   </PropertyGroup>
 
   <ItemGroup>
