@@ -5,6 +5,7 @@ using System.Text;
 using NodaTime;
 using NSubstitute;
 using PrayerTimeEngine.Core.Common;
+using PrayerTimeEngine.Core.Data.JsonSerialization;
 using PrayerTimeEngine.Core.Data.WebSocket.Interfaces;
 using PrayerTimeEngine.Core.Domain.Calculators.Mosques.Mawaqit.Services;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Interfaces;
@@ -49,7 +50,7 @@ public class SubstitutionHelper
         var mockHttpMessageHandler = new MockHttpMessageHandler(HandleRequestFunc);
         var httpClient = new HttpClient(mockHttpMessageHandler) { BaseAddress = new Uri("https://semerkandtakvimi.com/api/") };
 
-        return new SemerkandApiService(RestService.For<ISemerkandApiClient>(httpClient));
+        return new SemerkandApiService(RestService.ForGenerated<ISemerkandApiClient>(httpClient, RefitJsonContext.Default));
     }
 
     public static IMuwaqqitApiService GetMockedMuwaqqitApiService()
@@ -79,7 +80,7 @@ public class SubstitutionHelper
             BaseAddress = new Uri(MUWAQQIT_BASE_URL)
         };
 
-        return new MuwaqqitApiService(RestService.For<IMuwaqqitApiClient>(httpClient));
+        return new MuwaqqitApiService(RestService.ForGenerated<IMuwaqqitApiClient>(httpClient, RefitJsonContext.Default));
     }
 
     public static IFaziletApiService GetMockedFaziletApiService()
@@ -106,7 +107,7 @@ public class SubstitutionHelper
         var mockHttpMessageHandler = new MockHttpMessageHandler(HandleRequestFunc);
         var httpClient = new HttpClient(mockHttpMessageHandler) { BaseAddress = new Uri(FAZILET_BASE_URL) };
 
-        return new FaziletApiService(RestService.For<IFaziletApiClient>(httpClient));
+        return new FaziletApiService(RestService.ForGenerated<IFaziletApiClient>(httpClient, RefitJsonContext.Default));
     }
 
     public static IMawaqitApiService GetMockedMawaqitApiService()

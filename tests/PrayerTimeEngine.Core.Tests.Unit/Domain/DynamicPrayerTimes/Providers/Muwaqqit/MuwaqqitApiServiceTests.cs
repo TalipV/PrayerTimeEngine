@@ -1,3 +1,4 @@
+using PrayerTimeEngine.Core.Data.JsonSerialization;
 using System.Net;
 using NodaTime;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Muwaqqit.Models.DTOs;
@@ -21,7 +22,7 @@ public class MuwaqqitApiServiceTests : BaseTest
         {
             BaseAddress = new Uri(@"https://www.muwaqqit.com/")
         };
-        _muwaqqitApiService = RestService.For<IMuwaqqitApiClient>(httpClient);
+        _muwaqqitApiService = RestService.ForGenerated<IMuwaqqitApiClient>(httpClient, RefitJsonContext.Default);
     }
 
     [Fact]

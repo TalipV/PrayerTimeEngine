@@ -2,6 +2,7 @@ using System.Net;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 using PrayerTimeEngine.Core.Common;
+using PrayerTimeEngine.Core.Data.JsonSerialization;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Models;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Services;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Services.LocationIQ;
@@ -24,7 +25,7 @@ public class PlaceServiceTests : BaseTest
             BaseAddress = new Uri("https://eu1.locationiq.com/v1/")
         };
         _placeService = new PlaceService(
-            RestService.For<ILocationIQApiService>(httpClient),
+            RestService.ForGenerated<ILocationIQApiService>(httpClient, RefitJsonContext.Default),
             Substitute.For<ISystemInfoService>(),
             Substitute.For<ILogger<PlaceService>>(),
             apiKey: "test-key");

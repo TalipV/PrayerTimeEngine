@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using PrayerTimeEngine.Core.Data.JsonSerialization;
 using NodaTime;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Models.DTOs;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Services;
@@ -17,7 +18,7 @@ public class FaziletApiServiceTests : BaseTest
     {
         _mockHttpMessageHandler = new MockHttpMessageHandler();
         var httpClient = new HttpClient(_mockHttpMessageHandler) { BaseAddress = new Uri("https://test.com/") };
-        _faziletApiService = RestService.For<IFaziletApiClient>(httpClient);
+        _faziletApiService = RestService.ForGenerated<IFaziletApiClient>(httpClient, RefitJsonContext.Default);
     }
 
     [Fact]

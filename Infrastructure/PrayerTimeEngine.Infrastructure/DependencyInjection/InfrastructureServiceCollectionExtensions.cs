@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using PrayerTimeEngine.Core.Common;
 using PrayerTimeEngine.Core.Data.EntityFramework;
 using PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels;
+using PrayerTimeEngine.Core.Data.JsonSerialization;
 using PrayerTimeEngine.Core.Data.WebSocket;
 using PrayerTimeEngine.Core.Data.WebSocket.Interfaces;
 using PrayerTimeEngine.Core.Domain;
@@ -88,7 +89,7 @@ public static class InfrastructureServiceCollectionExtensions
             };
 
             return new PlaceService(
-                RestService.For<ILocationIQApiService>(httpClient),
+                RestService.ForGenerated<ILocationIQApiService>(httpClient, RefitJsonContext.Default),
                 sp.GetRequiredService<ISystemInfoService>(),
                 sp.GetRequiredService<ILogger<PlaceService>>(),
                 locationIQApiKey);
@@ -141,7 +142,7 @@ public static class InfrastructureServiceCollectionExtensions
         where TClient : class
     {
         IHttpClientBuilder httpClientBuilder = services
-            .AddRefitGeneratedClient<TClient>()
+            .AddRefitGeneratedClient<TClient>(RefitJsonContext.Default)
             .ConfigureHttpClient(config =>
             {
                 config.Timeout = TimeSpan.FromSeconds(HTTP_REQUEST_TIMEOUT_SECONDS);

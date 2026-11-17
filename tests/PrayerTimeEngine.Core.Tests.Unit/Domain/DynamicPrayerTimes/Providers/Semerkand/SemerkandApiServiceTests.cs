@@ -1,5 +1,6 @@
-﻿using System.Net;
+using System.Net;
 using NodaTime;
+using PrayerTimeEngine.Core.Data.JsonSerialization;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Semerkand.Models.DTOs;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Semerkand.Services;
 using PrayerTimeEngine.Core.Tests.Common;
@@ -17,7 +18,7 @@ public class SemerkandApiServiceTests : BaseTest
     {
         _mockHttpMessageHandler = new MockHttpMessageHandler();
         var httpClient = new HttpClient(_mockHttpMessageHandler) { BaseAddress = new Uri("https://semerkandtakvimi.com/api/") };
-        _semerkandApiService = RestService.For<ISemerkandApiClient>(httpClient);
+        _semerkandApiService = RestService.ForGenerated<ISemerkandApiClient>(httpClient, RefitJsonContext.Default);
     }
 
     [Fact]
