@@ -52,6 +52,10 @@
        further but is experimental on Android in .NET 11. -->
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <MauiEnableFullReadyToRun>true</MauiEnableFullReadyToRun>
+    <!-- Release APKs go to real phones, which are all arm64; the emulator (x64) gets Debug builds.
+         Set here, not on the command line: a global RuntimeIdentifiers would leak into the
+         referenced class libraries and break their build (MSB3030). -->
+    <RuntimeIdentifiers Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">android-arm64</RuntimeIdentifiers>
     <DebugType>none</DebugType>
     <DebugSymbols>false</DebugSymbols>
   </PropertyGroup>
