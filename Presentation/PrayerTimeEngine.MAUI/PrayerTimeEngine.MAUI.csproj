@@ -22,6 +22,14 @@
                       PublicClass="true" />
   </ItemGroup>
 
+  <!-- On Windows, WinUI's XamlPreCompile compiles the C# code inside PrepareResources, before
+       CoreResGen has generated AppResources.Designer.cs (=> CS0103 "AppResources" not found).
+       Generate the resources first; ResGen then does not run a second time. -->
+  <Target Name="GenerateResourcesBeforeXamlPreCompile"
+          BeforeTargets="XamlPreCompile"
+          DependsOnTargets="PrepareResourceNames;ResGen"
+          Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'" />
+
   <PropertyGroup>
     <ApplicationTitle>PrayerTimeEngine</ApplicationTitle>
     <ApplicationId>com.companyname.prayertimeengine</ApplicationId>
@@ -51,21 +59,20 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="CommunityToolkit.Maui" Version="15.0.1" />
-    <PackageReference Include="CommunityToolkit.Maui.Markup" Version="8.0.0" />
+    <PackageReference Include="CommunityToolkit.Maui" Version="17.0.0" />
+    <PackageReference Include="CommunityToolkit.Maui.Markup" Version="9.0.0" />
     <PackageReference Include="Debounce.Core" Version="1.0.0" />
     <PackageReference Include="Mapsui.Maui" Version="5.1.0" />
     <PackageReference Include="MethodTimer.Fody" Version="3.2.3" PrivateAssets="All" />
     <PackageReference Include="MetroLog.Maui" Version="2.1.0" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.14" />
-    <PackageReference Include="Microsoft.Extensions.Http" Version="10.0.14" />
-    <PackageReference Include="Microsoft.Extensions.Http.Resilience" Version="10.11.0" />
-    <PackageReference Include="Microsoft.Maui.Controls" Version="10.0.120" />
-    <PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="10.0.120" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="11.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="11.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Http.Resilience" Version="11.0.0" />
+    <PackageReference Include="Microsoft.Maui.Controls" Version="11.0.10" />
     <PackageReference Include="Plugin.Maui.DebugRainbows" Version="1.2.2" />
     <PackageReference Include="PropertyChanged.Fody" Version="4.1.0" PrivateAssets="All" />
     <PackageReference Include="Refractored.MvvmHelpers" Version="1.6.2" />
-    <PackageReference Include="SkiaSharp.Views.Maui.Controls" Version="4.154.0" />
+    <PackageReference Include="SkiaSharp.Views.Maui.Controls" Version="4.156.1" />
     <PackageReference Include="UraniumUI.Material" Version="3.0.0" />
   </ItemGroup>
 

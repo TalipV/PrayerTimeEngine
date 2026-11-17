@@ -3,7 +3,7 @@
   <!-- IsPackable/IsTestProject and the test host (Test.Sdk, xunit.runner) come from tests/Directory.Build.props. -->
 
   <ItemGroup>
-    <PackageReference Include="coverlet.collector" Version="10.1.0">
+    <PackageReference Include="coverlet.collector" Version="10.1.1">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
@@ -25,7 +25,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Update="Microsoft.NET.Test.Sdk" Version="18.11.0" />
     <PackageReference Update="xunit.runner.visualstudio" Version="4.0.1" />
   </ItemGroup>
   

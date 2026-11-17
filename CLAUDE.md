@@ -16,7 +16,7 @@ Claude Code cloud sessions get a .NET SDK from the environment's setup script, b
 - `dotnet build PrayerTimeEngine.slnx` fails with `error NETSDK1147` because of the
   MAUI project. This is expected and says nothing about the code — do not try to
   install `maui-android` to work around it.
-- `global.json` pins the SDK feature band (any `10.0.4xx` patch) and the exact workload
+- `global.json` pins the SDK feature band (any `11.0.1xx` patch) and the exact workload
   set version. Install an SDK from that band, then run
   `dotnet workload update` once in the repo root (installs only the workload set
   manifests, no workloads). Without it every project fails with `MSB4242 ... Workload
@@ -50,7 +50,7 @@ parameters. `var` only when the type is apparent from the right-hand side.
 `global.json` is the single source of truth for toolchain versions: the .NET SDK
 (`sdk.version` + `rollForward: latestPatch`) and the MAUI workload set (`sdk.workloadVersion`).
 `latestPatch` pins the SDK *feature band*, not the exact patch: `sdk.version` is only the
-lower bound, and any newer patch of the same band (`10.0.4xx`) is accepted, so a Visual Studio
+lower bound, and any newer patch of the same band (`11.0.1xx`) is accepted, so a Visual Studio
 update that replaces one patch with the next does not break the build. New analyzer rules (and
 the build errors they cause under `EnforceCodeStyleInBuild`) arrive with a new feature band or
 major version, never with a patch, and those still require a deliberate change here.
@@ -65,12 +65,12 @@ set expects other pack versions than VS has installed, local CLI builds of the M
 fail with `NETSDK1147` (e.g. `maui-android` / `android` missing) or `MSB4242` (workload
 version not found). Do not remove the pin (CI would then pick up every new workload release
 on its own). Instead, after a VS update, find the set that matches VS's packs
-(`dotnet workload search version 10.0.40x` lists the Android/MAUI manifest versions of a set;
+(`dotnet workload search version 11.0.100` lists the Android/MAUI manifest versions of a set;
 compare them with `C:\Program Files\dotnet\packs\Microsoft.Maui.Sdk` and
 `Microsoft.Android.Sdk.Windows`), raise `sdk.workloadVersion` to it deliberately and run
 `dotnet workload update` in an admin shell. Remind the user of this whenever a VS update is
-mentioned or one of these errors shows up. (Last bump: 10.0.401 → 10.0.402 on 2026-10-20,
-matching android 36.1.118 / MAUI 10.0.110.)
+mentioned or one of these errors shows up. (Last bump: 10.0.402 → 11.0.100.1 on 2026-11-17, the move to .NET 11,
+matching android 37.2.31 / MAUI 11.0.0 from VS 18.12.)
 
 Most violations are auto-fixable: `dotnet format <project>.csproj --severity error`.
 Run it per project (not on the multi-targeted MAUI project as a whole: formatting several
@@ -84,7 +84,7 @@ point inward only):
 
 - **`PrayerTimeEngine.Domain`** (ring 1) — entities, value objects, enums, domain
   services and the technology-free PORT interfaces (repositories, `I*ApiService`
-  gateways, `IPlaceService`, ...). References only NodaTime + logging abstractions;
+  gateways, `IPlaceService`, ...). References only NodaTime (the logging abstractions come with the .NET 11 shared framework);
   no EF Core / Refit / HTTP.
 - **`PrayerTimeEngine.Application`** (ring 2) — use-case orchestration (provider
   managers, factories, the concrete prayer-time providers, `ProfileService`,
@@ -118,7 +118,7 @@ The runtime uses a **compiled model** (`AppDbContextModel.Instance`). After any 
 model configuration or entities, regenerate it (needs the `dotnet-ef` global tool):
 
 ```
-dotnet tool install --global dotnet-ef --version 10.0.11   # once
+dotnet tool install --global dotnet-ef --version 11.0.0   # once
 dotnet ef dbcontext optimize \
   --output-dir Data/EntityFramework/Generated_CompiledModels \
   --namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels \

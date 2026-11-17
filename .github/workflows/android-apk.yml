@@ -83,7 +83,8 @@ jobs:
       - uses: actions/setup-java@v6
         with:
           distribution: temurin
-          java-version: '17'
+          # .NET 11 for Android (API 37) requires JDK 21 or newer
+          java-version: '21'
 
       - uses: actions/setup-dotnet@v6
         with:
@@ -100,6 +101,15 @@ jobs:
         run: |
           dotnet workload install maui-android
           dotnet workload --version
+
+      # The runner image does not necessarily ship the Android platform that the
+      # target framework needs (net11.0-android = API 37); install whatever is missing.
+      - name: Install Android SDK dependencies
+        run: >
+          dotnet build Presentation/PrayerTimeEngine.MAUI/PrayerTimeEngine.MAUI.csproj
+          -t:InstallAndroidDependencies -f net11.0-android
+          -p:AndroidSdkDirectory="$ANDROID_HOME"
+          -p:AcceptAndroidSDKLicenses=True
 
       - name: Restore keystore
         env:
@@ -118,7 +128,7 @@ jobs:
       - name: Build APK
         run: >
           dotnet publish Presentation/PrayerTimeEngine.MAUI/PrayerTimeEngine.MAUI.csproj
-          -c Release -f net10.0-android
+          -c Release -f net11.0-android
           -p:EnableLLVM=false
           -p:AndroidKeyStore=true
           -p:AndroidSigningKeyStore="$RUNNER_TEMP/signing.keystore"
@@ -130,7 +140,7 @@ jobs:
       - name: Collect APK
         run: |
           mkdir -p out
-          cp Presentation/PrayerTimeEngine.MAUI/bin/Release/net10.0-android/*-Signed.apk \
+          cp Presentation/PrayerTimeEngine.MAUI/bin/Release/net11.0-android/*-Signed.apk \
              "out/PrayerTimeEngine.apk"
           ls -lh out
 
