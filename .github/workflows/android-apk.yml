@@ -106,8 +106,14 @@ jobs:
           KEYSTORE_B64: ${{ secrets.ANDROID_KEYSTORE_B64 }}
         run: echo "$KEYSTORE_B64" | base64 -d > "$RUNNER_TEMP/signing.keystore"
 
-      - name: Build date
-        run: echo "BUILD_DATE=$(date -u +%Y-%m-%d)" >> "$GITHUB_ENV"
+      # APP_VERSION is the display version from the csproj; the run number becomes the
+      # Android versionCode, so every build counts up and installs as an update.
+      - name: Build info
+        run: |
+          echo "BUILD_DATE=$(date -u +%Y-%m-%d)" >> "$GITHUB_ENV"
+          version=$(sed -n 's:.*<ApplicationDisplayVersion>\(.*\)</ApplicationDisplayVersion>.*:\1:p' Presentation/PrayerTimeEngine.MAUI/PrayerTimeEngine.MAUI.csproj)
+          if [ -z "$version" ]; then echo "::error::ApplicationDisplayVersion not found in csproj."; exit 1; fi
+          echo "APP_VERSION=$version" >> "$GITHUB_ENV"
 
       - name: Build APK
         run: >
@@ -119,6 +125,7 @@ jobs:
           -p:AndroidSigningKeyAlias=${{ secrets.ANDROID_KEY_ALIAS }}
           -p:AndroidSigningKeyPass='${{ secrets.ANDROID_KEY_PASSWORD }}'
           -p:AndroidSigningStorePass='${{ secrets.ANDROID_KEYSTORE_PASSWORD }}'
+          -p:ApplicationVersion=${{ github.run_number }}
 
       - name: Collect APK
         run: |
@@ -126,6 +133,9 @@ jobs:
           cp Presentation/PrayerTimeEngine.MAUI/bin/Release/net10.0-android/*-Signed.apk \
              "out/PrayerTimeEngine.apk"
           ls -lh out
+
+      - name: Put version into APK file name
+        run: mv out/PrayerTimeEngine.apk "out/PrayerTimeEngine-${APP_VERSION}-build${{ github.run_number }}.apk"
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v7
@@ -147,12 +157,13 @@ jobs:
         with:
           tag_name: latest
           target_commitish: ${{ github.sha }}
-          name: Latest build (${{ env.BUILD_DATE }})
+          name: ${{ env.APP_VERSION }} (Build ${{ github.run_number }}, ${{ env.BUILD_DATE }})
           body: |
             Automatischer Build von `main` — Commit ${{ github.sha }}
+            Version: ${{ env.APP_VERSION }} (Build ${{ github.run_number }})
             Stand: ${{ env.BUILD_DATE }}
 
-            Fester Download-Link (zeigt immer auf den neuesten Build):
-            https://github.com/${{ github.repository }}/releases/download/latest/PrayerTimeEngine.apk
+            Fester Link auf diese Seite (zeigt immer den neuesten Build):
+            https://github.com/${{ github.repository }}/releases/tag/latest
           prerelease: true
           files: out/*.apk
