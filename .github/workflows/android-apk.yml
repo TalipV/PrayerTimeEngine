@@ -135,7 +135,7 @@ jobs:
           ls -lh out
 
       - name: Put version into APK file name
-        run: mv out/PrayerTimeEngine.apk "out/PrayerTimeEngine-${APP_VERSION}-build${{ github.run_number }}.apk"
+        run: mv out/PrayerTimeEngine.apk "out/PrayerTimeEngine-${APP_VERSION}.apk"
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v7
