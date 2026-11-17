@@ -120,7 +120,8 @@ jobs:
       # Android versionCode, so every build counts up and installs as an update.
       - name: Build info
         run: |
-          echo "BUILD_DATE=$(date -u +%Y-%m-%d)" >> "$GITHUB_ENV"
+          # build start, German time (CET/CEST)
+          echo "BUILD_DATE=$(TZ=Europe/Berlin date "+%Y-%m-%d %H:%M %Z")" >> "$GITHUB_ENV"
           version=$(sed -n 's:.*<ApplicationDisplayVersion>\(.*\)</ApplicationDisplayVersion>.*:\1:p' Presentation/PrayerTimeEngine.MAUI/PrayerTimeEngine.MAUI.csproj)
           if [ -z "$version" ]; then echo "::error::ApplicationDisplayVersion not found in csproj."; exit 1; fi
           echo "APP_VERSION=$version" >> "$GITHUB_ENV"
