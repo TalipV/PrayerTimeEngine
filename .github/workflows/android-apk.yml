@@ -129,6 +129,7 @@ jobs:
         run: >
           dotnet publish Presentation/PrayerTimeEngine.MAUI/PrayerTimeEngine.MAUI.csproj
           -c Release -f net11.0-android
+          -p:RuntimeIdentifiers=android-arm64
           -p:AndroidKeyStore=true
           -p:AndroidSigningKeyStore="$RUNNER_TEMP/signing.keystore"
           -p:AndroidSigningKeyAlias=${{ secrets.ANDROID_KEY_ALIAS }}
