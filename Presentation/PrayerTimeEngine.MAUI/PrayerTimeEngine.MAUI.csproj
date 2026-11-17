@@ -45,11 +45,16 @@
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DebugType>none</DebugType>
+    <DebugSymbols>false</DebugSymbols>
+  </PropertyGroup>
+
+  <!-- Mono AOT settings. Since .NET 11, Android runs on CoreCLR by default, and CoreCLR
+       rejects RunAOTCompilation (XA1044); they only apply if Mono is switched back on. -->
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' And '$(UseMonoRuntime)' == 'true' ">
     <RunAOTCompilation>true</RunAOTCompilation>
     <AndroidEnableProfiledAot>false</AndroidEnableProfiledAot>
     <EnableLLVM>true</EnableLLVM>
-    <DebugType>none</DebugType>
-    <DebugSymbols>false</DebugSymbols>
   </PropertyGroup>
 
   <ItemGroup>
