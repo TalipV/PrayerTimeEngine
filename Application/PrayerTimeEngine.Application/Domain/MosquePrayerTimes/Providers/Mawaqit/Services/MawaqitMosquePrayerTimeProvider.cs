@@ -51,4 +51,13 @@ public class MawaqitMosquePrayerTimeProvider(
     {
         return mawaqitApiService.ValidateData(externalID, cancellationToken);
     }
+
+    /// <summary>
+    /// Stores the slug (<c>assunnah-frechen</c>) in every case, also when the input was Mawaqit's numeric
+    /// mosque ID (<c>id/11504</c>), so that the profile keeps the readable identifier and the web page link.
+    /// </summary>
+    public Task<string?> NormalizeExternalIDAsync(string externalID, CancellationToken cancellationToken)
+    {
+        return mawaqitApiService.GetSlugAsync(externalID, cancellationToken);
+    }
 }

@@ -55,4 +55,45 @@ public partial class MawaqitApiService(
         HttpResponseMessage response = await httpClient.GetAsync(externalID, cancellationToken);
         return response.StatusCode != System.Net.HttpStatusCode.NotFound;
     }
+
+    public async Task<string?> GetSlugAsync(string externalID, CancellationToken cancellationToken)
+    {
+        HttpResponseMessage response = await httpClient.GetAsync(externalID, cancellationToken);
+
+        if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+        {
+            return null;
+        }
+
+        if (!response.IsSuccessStatusCode)
+        {
+            throw new Exception($"Failed to fetch data for {externalID}");
+        }
+
+        string pageContent = await response.Content.ReadAsStringAsync(cancellationToken);
+        var doc = new HtmlDocument();
+        doc.LoadHtml(pageContent);
+
+        // every mosque page (also the one under "id/11504") names its slug page as the canonical one,
+        // e.g. <link rel="canonical" href="https://mawaqit.net/de/assunnah-frechen" />
+        string? canonicalUrl = doc.DocumentNode
+            .SelectSingleNode("//link[@rel='canonical']")
+            ?.GetAttributeValue("href", null);
+
+        if (Uri.TryCreate(canonicalUrl, UriKind.Absolute, out Uri? canonicalUri)
+            && canonicalUri.Segments.Length > 0)
+        {
+            string slug = canonicalUri.Segments[^1].Trim('/');
+
+            if (slug.Length > 0 && !int.TryParse(slug, out _))
+            {
+                return slug;
+            }
+        }
+
+        // without a usable canonical link, a slug input is still fine as it is; a numeric ID is not
+        return externalID.StartsWith("id/", StringComparison.OrdinalIgnoreCase)
+            ? throw new Exception($"The slug of the mosque {externalID} could not be determined")
+            : externalID;
+    }
 }

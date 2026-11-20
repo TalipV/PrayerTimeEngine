@@ -4,12 +4,12 @@ using CommunityToolkit.Maui.Storage;
 using Microsoft.Extensions.Logging;
 using PrayerTimeEngine.Core.Common;
 using PrayerTimeEngine.Core.Domain.ConfigurationManagement;
-using PrayerTimeEngine.Core.Domain.MosquePrayerTimes;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
 using PrayerTimeEngine.Presentation.Pages.Main;
 using PrayerTimeEngine.Presentation.Pages.QiblahFinder;
 using PrayerTimeEngine.Presentation.Popups;
 using PrayerTimeEngine.Presentation.Services;
+using PrayerTimeEngine.Presentation.Services.MosqueSharing;
 using PrayerTimeEngine.Presentation.Services.Navigation;
 using PrayerTimeEngine.Presentation.Localization;
 
@@ -24,6 +24,7 @@ internal class MainPageOptionsMenuService(
         IConfigurationImportExportService configurationImportExportService,
         IPreferenceService preferenceService,
         ISystemInfoService systemInfoService,
+        IMosqueShareTarget mosqueShareTarget,
         ILogger<MainPageOptionsMenuService> logger
     )
 {
@@ -102,6 +103,63 @@ internal class MainPageOptionsMenuService(
         return sections;
     }
 
+    /// <summary>
+    /// Opens the dialog for a new mosque profile and creates the profile. While the dialog is open, the app is
+    /// offered in the share menus of other apps, so that a mosque can be shared from the Mawaqit app into it.
+    /// </summary>
+    /// <param name="sharedText">A text shared before the dialog was open (the app was restarted for the share).</param>
+    private async Task CreateMosqueProfile(string? sharedText, CancellationToken cancellationToken)
+    {
+        var popup = new CreateMosqueProfilePopup(mosqueShareTarget.IsSupported);
+
+        if (!string.IsNullOrWhiteSpace(sharedText))
+        {
+            popup.ApplySharedText(sharedText);
+        }
+
+        void OnTextReceived(object? sender, string text)
+        {
+            popup.ApplySharedText(text);
+        }
+
+        MosqueProfileRequest? request;
+
+        mosqueShareTarget.TextReceived += OnTextReceived;
+        mosqueShareTarget.Activate();
+
+        try
+        {
+            IPopupResult<MosqueProfileRequest?> popupResult =
+                await page.ShowPopupAsync<MosqueProfileRequest?>(popup, CreateMosqueProfilePopup.CreatePopupOptions(), cancellationToken);
+
+            request = popupResult.Result;
+        }
+        finally
+        {
+            mosqueShareTarget.TextReceived -= OnTextReceived;
+            mosqueShareTarget.Deactivate();
+        }
+
+        if (request is not null)
+        {
+            await viewModel.CreateNewMosqueProfile(request.ProviderType, request.ExternalID, request.MosqueName);
+        }
+    }
+
+    /// <summary>Opens the dialog for a new mosque profile with a text that was shared before the dialog was open.</summary>
+    public async Task CreateMosqueProfileFromSharedText(string sharedText)
+    {
+        try
+        {
+            await CreateMosqueProfile(sharedText, CancellationToken.None);
+        }
+        catch (Exception exception)
+        {
+            logger.LogError(exception, "Error while creating a mosque profile from a shared text");
+            toastMessageService.ShowError(exception.Message);
+        }
+    }
+
     public async Task OpenOptionsMenu()
     {
         if (viewModel.CurrentProfileWithModel == null)
@@ -144,30 +202,7 @@ internal class MainPageOptionsMenuService(
                     break;
 
                 case EOptionsMenuAction.CreateMosqueProfile:
-
-                    List<EMosquePrayerTimeProviderType> items = [.. Enum.GetValues<EMosquePrayerTimeProviderType>()];
-                    items.Remove(EMosquePrayerTimeProviderType.None);
-
-                    string selectedItemText = await page.DisplayActionSheetAsync(
-                        title: AppResources.Menu_SelectMosqueApp,
-                        cancel: AppResources.Common_Cancel,
-                        destruction: null,
-                        [.. items.Select(x => x.ToString())]
-                       );
-
-                    EMosquePrayerTimeProviderType selectedItem = items.FirstOrDefault(x => x.ToString() == selectedItemText);
-
-                    if (selectedItem != EMosquePrayerTimeProviderType.None)
-                    {
-                        string externalID = await page.DisplayPromptAsync(
-                            title: AppResources.Menu_MosqueIdentifierTitle,
-                            message: AppResources.Menu_MosqueIdentifierMessage,
-                            initialValue: "",
-                            keyboard: Keyboard.Text) ?? "";
-
-                        await viewModel.CreateNewMosqueProfile(selectedItem, externalID);
-                    }
-
+                    await CreateMosqueProfile(sharedText: null, cancellationToken);
                     break;
 
                 case EOptionsMenuAction.OpenMosqueWebPage:

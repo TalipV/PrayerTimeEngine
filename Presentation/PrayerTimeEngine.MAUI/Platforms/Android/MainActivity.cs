@@ -2,6 +2,7 @@ using Android.App;
 using Android.Content.PM;
 using Android.OS;
 using PrayerTimeEngine.Platforms.Android.Notifications;
+using PrayerTimeEngine.Platforms.Android.Sharing;
 using PrayerTimeEngine.Presentation.Localization;
 
 namespace PrayerTimeEngine.Platforms.Android;
@@ -26,6 +27,10 @@ public class MainActivity : MauiAppCompatActivity
         Instance = this;
         base.OnCreate(savedInstanceState);
         CreateNotificationChannel();
+
+        // the share entry belongs to the dialog for a new mosque profile; if the system closed the app
+        // while that dialog was open, the entry must not stay in the share menus of other apps
+        AndroidMosqueShareTarget.SetReceiverEnabled(this, enabled: false);
     }
 
     private void CreateNotificationChannel()

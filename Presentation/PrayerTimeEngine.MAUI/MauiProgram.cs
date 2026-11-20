@@ -14,6 +14,7 @@ using PrayerTimeEngine.Presentation.Pages.Settings.SettingsContent;
 using PrayerTimeEngine.Presentation.Pages.Settings.SettingsContent.Custom;
 using PrayerTimeEngine.Presentation.Pages.Settings.SettingsHandler;
 using PrayerTimeEngine.Presentation.Services;
+using PrayerTimeEngine.Presentation.Services.MosqueSharing;
 using PrayerTimeEngine.Presentation.Services.Navigation;
 using PrayerTimeEngine.Presentation.Services.SettingsContentPageFactory;
 using PrayerTimeEngine.Presentation.Views;
@@ -250,9 +251,11 @@ public static class MauiProgram
     {
 #if ANDROID
         serviceCollection.AddTransient<IPrayerTimeSummaryNotificationHandler, Platforms.Android.Notifications.PrayerTimeSummaryNotificationHandler>();
+        serviceCollection.AddSingleton<IMosqueShareTarget, Platforms.Android.Sharing.AndroidMosqueShareTarget>();
 #else
         // TODO implement for other platforms someday (at least iOS)
         serviceCollection.AddTransient<IPrayerTimeSummaryNotificationHandler, NoOpPrayerTimeSummaryNotificationHandler>();
+        serviceCollection.AddSingleton<IMosqueShareTarget, NoOpMosqueShareTarget>();
 #endif
     }
 }

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- name of the app's entry in the share menu of other apps (only offered while the dialog for a new mosque profile is open) -->
+    <string name="mosque_share_target_label">Als Moschee hinzufügen</string>
+</resources>
