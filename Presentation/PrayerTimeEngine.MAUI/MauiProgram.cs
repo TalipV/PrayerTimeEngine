@@ -224,6 +224,7 @@ public static class MauiProgram
         serviceCollection.AddTransient<ToastMessageService>();
         serviceCollection.AddTransient<ProfileOverviewTextService>();
         serviceCollection.AddTransient<FavoritePlacesService>();
+        serviceCollection.AddTransient<WelcomeService>();
 
         serviceCollection.AddTransient<MainPage>();
         serviceCollection.AddTransient<MainPageViewModel>();

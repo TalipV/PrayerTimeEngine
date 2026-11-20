@@ -40,6 +40,7 @@ public partial class MainPageViewModel(
         IMosquePrayerTimeProviderManager mosquePrayerTimeProviderManager,
         PrayerTimeViewModelFactory prayerTimeViewModelFactory,
         NotificationService prayerTimeNotificationManager,
+        WelcomeService welcomeService,
         IPlaceService placeService,
         IProfileService profileService,
         INavigationService navigationService,
@@ -684,7 +685,20 @@ public partial class MainPageViewModel(
             {
                 toastMessageService.Show(string.Format(AppResources.MainPage_StartUpTime, startUpTimeMS.ToString("N0")));
             }
-            dispatcher.Dispatch(async () => await prayerTimeNotificationManager.StartPrayerTimeSummaryNotification());
+            dispatcher.Dispatch(async () =>
+            {
+                // the welcome notice comes first, before the notification permission and the battery optimization hint
+                try
+                {
+                    await welcomeService.ShowIfNotConfirmedAsync();
+                }
+                catch (Exception exception)
+                {
+                    logger.LogError(exception, "Error while showing the welcome notice");
+                }
+
+                await prayerTimeNotificationManager.StartPrayerTimeSummaryNotification();
+            });
         }
         catch (Exception exception)
         {
