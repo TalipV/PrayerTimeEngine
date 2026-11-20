@@ -6,7 +6,8 @@ namespace PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Services;
 /// <summary>
 /// Finds the mosque in what the user pasted or shared into the app:
 /// <list type="bullet">
-/// <item>the text of the Mawaqit app's "Share" button (mosque name, website, <c>https://mawaqit.net/en/id/11504</c>, ...)</item>
+/// <item>the text of the Mawaqit app's "Share" button (mosque name, website, <c>https://mawaqit.net/en/id/11504</c>, ...),
+/// in whatever language the Mawaqit app shows it: only its links are used, never its (translated) labels</item>
 /// <item>a Mawaqit browser link (<c>https://mawaqit.net/de/assunnah-frechen</c>)</item>
 /// <item>a MyMosq browser link (<c>https://mymosq.com/mosque/1239</c>)</item>
 /// <item>a plain identifier, as it had to be typed in before (<c>assunnah-frechen</c>, <c>1239</c>)</item>
@@ -35,19 +36,13 @@ public static partial class MosqueReferenceParser
         Match match = MawaqitMosqueIDRegex().Match(input);
         if (match.Success)
         {
-            return new MosqueReference(
-                EMosquePrayerTimeProviderType.Mawaqit,
-                MAWAQIT_MOSQUE_ID_PREFIX + match.Groups["id"].Value,
-                GetMawaqitMosqueName(input));
+            return new MosqueReference(EMosquePrayerTimeProviderType.Mawaqit, MAWAQIT_MOSQUE_ID_PREFIX + match.Groups["id"].Value);
         }
 
         match = MawaqitSlugRegex().Match(input);
         if (match.Success)
         {
-            return new MosqueReference(
-                EMosquePrayerTimeProviderType.Mawaqit,
-                match.Groups["slug"].Value,
-                GetMawaqitMosqueName(input));
+            return new MosqueReference(EMosquePrayerTimeProviderType.Mawaqit, match.Groups["slug"].Value);
         }
 
         match = MyMosqMosqueRegex().Match(input);
@@ -71,12 +66,6 @@ public static partial class MosqueReferenceParser
         return null;
     }
 
-    private static string? GetMawaqitMosqueName(string input)
-    {
-        Match match = MawaqitMosqueNameRegex().Match(input);
-        return match.Success ? match.Groups["name"].Value : null;
-    }
-
     // e.g. https://mawaqit.net/en/id/11504
     [GeneratedRegex(@"mawaqit\.net/(?:[a-z]{2}(?:[-_][a-z]{2,4})?/)?id/(?<id>\d+)", RegexOptions.IgnoreCase)]
     private static partial Regex MawaqitMosqueIDRegex();
@@ -84,11 +73,6 @@ public static partial class MosqueReferenceParser
     // e.g. https://mawaqit.net/de/assunnah-frechen, .../de/m/assunnah-frechen (mobile view), .../de/w/assunnah-frechen (widget)
     [GeneratedRegex(@"mawaqit\.net/[a-z]{2}(?:[-_][a-z]{2,4})?/(?:[mw]/)?(?!id(?:[/?#]|$))(?<slug>[a-z0-9][a-z0-9-]*)(?![a-z0-9-])", RegexOptions.IgnoreCase)]
     private static partial Regex MawaqitSlugRegex();
-
-    // first line of the Mawaqit app's share text: "Mosque name - As-Sunnah Moschee Frechen - Frechen";
-    // the name also ends at the next "•", because a single-line text field turns the line breaks into spaces
-    [GeneratedRegex(@"Mosque name\s*-\s*(?<name>[^\r\n•]*[^\s•])", RegexOptions.IgnoreCase)]
-    private static partial Regex MawaqitMosqueNameRegex();
 
     // e.g. https://mymosq.com/mosque/1239
     [GeneratedRegex(@"mymosq\.com/mosque/(?<id>[a-z0-9_-]+)", RegexOptions.IgnoreCase)]

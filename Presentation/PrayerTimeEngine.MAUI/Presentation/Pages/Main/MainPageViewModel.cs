@@ -11,6 +11,7 @@ using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Muwaqqit.Models;
 using PrayerTimeEngine.Core.Domain.IslamicCalendar.Interfaces;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Management;
+using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Models;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Interfaces;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Models;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Interfaces;
@@ -281,23 +282,23 @@ public partial class MainPageViewModel(
         }
     }
 
-    public async Task CreateNewMosqueProfile(EMosquePrayerTimeProviderType providerType, string externalID, string? mosqueName)
+    public async Task CreateNewMosqueProfile(EMosquePrayerTimeProviderType providerType, string externalID)
     {
         try
         {
             CancellationToken cancellationToken = default;
 
-            // e.g. Mawaqit's numeric "id/11504" from the share text becomes the slug "assunnah-frechen";
-            // null when the mosque does not exist
-            string? normalizedExternalID = await mosquePrayerTimeProviderManager.NormalizeExternalIDAsync(providerType, externalID, cancellationToken);
+            // e.g. Mawaqit's numeric "id/11504" from the share text becomes the slug "assunnah-frechen", together
+            // with the mosque's name from the mosque app (independent of any language); null when the mosque does not exist
+            MosqueIdentity? mosqueIdentity = await mosquePrayerTimeProviderManager.GetMosqueIdentityAsync(providerType, externalID, cancellationToken);
 
-            if (normalizedExternalID is null)
+            if (mosqueIdentity is null)
             {
                 toastMessageService.ShowError(string.Format(AppResources.MosqueProfile_NotFound, providerType));
                 return;
             }
 
-            MosqueProfile newMosqueProfile = await profileService.CreateNewMosqueProfile(providerType, normalizedExternalID, mosqueName, cancellationToken);
+            MosqueProfile newMosqueProfile = await profileService.CreateNewMosqueProfile(providerType, mosqueIdentity.ExternalID, mosqueIdentity.Name, cancellationToken);
             await ReloadProfiles(newMosqueProfile.ID);
         }
         catch (Exception exception)

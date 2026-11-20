@@ -8,7 +8,7 @@ using PrayerTimeEngine.Presentation.Localization;
 namespace PrayerTimeEngine.Presentation.Popups;
 
 /// <summary>The mosque the user wants a profile for.</summary>
-public sealed record MosqueProfileRequest(EMosquePrayerTimeProviderType ProviderType, string ExternalID, string? MosqueName);
+public sealed record MosqueProfileRequest(EMosquePrayerTimeProviderType ProviderType, string ExternalID);
 
 /// <summary>
 /// Dialog for a new mosque profile. The mosque comes either from the Mawaqit app's "Share" button (offered
@@ -34,8 +34,6 @@ public sealed partial class CreateMosqueProfilePopup : Popup<MosqueProfileReques
     private MosqueReference? _reference;
     private EMosquePrayerTimeProviderType _selectedProviderType = EMosquePrayerTimeProviderType.None;
 
-    // the shared text carries the mosque name, the link shown in the field afterwards does not
-    private MosqueReference? _sharedReference;
 
     private bool _isPulsing;
 
@@ -88,12 +86,12 @@ public sealed partial class CreateMosqueProfilePopup : Popup<MosqueProfileReques
 
     /// <summary>
     /// Takes a text shared from another app (e.g. the Mawaqit app's share text) into the dialog.
-    /// The recognized mosque is shown as its link in the text field; the name from the shared text is kept.
+    /// The recognized mosque is shown as its link in the text field (the mosque's name is looked up in the mosque app
+    /// when the profile is created, so the language of the shared text does not matter).
     /// </summary>
     public void ApplySharedText(string sharedText)
     {
         MosqueReference? reference = MosqueReferenceParser.Parse(sharedText);
-        _sharedReference = reference;
 
         string singleLineText = sharedText.ReplaceLineEndings(" ").Trim();
 
@@ -526,17 +524,6 @@ public sealed partial class CreateMosqueProfilePopup : Popup<MosqueProfileReques
     {
         string input = _inputEntry.Text ?? "";
         MosqueReference? reference = MosqueReferenceParser.Parse(input);
-
-        // the link that ApplySharedText put into the field stands for the shared text, including its mosque name
-        if (reference is not null
-            && reference.MosqueName is null
-            && _sharedReference?.MosqueName is not null
-            && reference.ProviderType == _sharedReference.ProviderType
-            && reference.ExternalID == _sharedReference.ExternalID)
-        {
-            reference = _sharedReference;
-        }
-
         _reference = reference;
 
         bool needsProviderSelection = reference is not null && reference.ProviderType == EMosquePrayerTimeProviderType.None;
@@ -566,7 +553,7 @@ public sealed partial class CreateMosqueProfilePopup : Popup<MosqueProfileReques
             _statusLabel.Text = "✓ " + string.Format(
                 AppResources.MosqueProfile_Recognized,
                 reference.ProviderType,
-                reference.MosqueName ?? reference.ExternalID);
+                reference.ExternalID);
             _statusLabel.TextColor = AppColors.Accent;
         }
         else
@@ -592,7 +579,7 @@ public sealed partial class CreateMosqueProfilePopup : Popup<MosqueProfileReques
 
         return providerType == EMosquePrayerTimeProviderType.None
             ? null
-            : new MosqueProfileRequest(providerType, _reference.ExternalID, _reference.MosqueName);
+            : new MosqueProfileRequest(providerType, _reference.ExternalID);
     }
 
     #endregion Recognition
