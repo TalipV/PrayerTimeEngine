@@ -478,4 +478,25 @@ Nisab: {4:N2} € ({5:N2} g)</value>
   <data name="MosqueProfile_NotFound" xml:space="preserve">
     <value>Diese Moschee wurde bei {0} nicht gefunden.</value>
   </data>
+  <data name="Welcome_Title" xml:space="preserve">
+    <value>Willkommen bei PrayerTimeEngine</value>
+  </data>
+  <data name="Welcome_Intro" xml:space="preserve">
+    <value>Bevor es losgeht, ein wichtiger Hinweis:</value>
+  </data>
+  <data name="Welcome_PrivateTitle" xml:space="preserve">
+    <value>Nur für den privaten Gebrauch</value>
+  </data>
+  <data name="Welcome_PrivateText" xml:space="preserve">
+    <value>Diese App ist ein privates Projekt und wird ausschließlich für private Zwecke angeboten.</value>
+  </data>
+  <data name="Welcome_FaziletTitle" xml:space="preserve">
+    <value>Nur mit aktivem Fazilet-Abonnement</value>
+  </data>
+  <data name="Welcome_FaziletText" xml:space="preserve">
+    <value>Die App ist nur für Personen bestimmt, die ein aktives Fazilet-Abonnement haben.</value>
+  </data>
+  <data name="Welcome_Accept" xml:space="preserve">
+    <value>Verstanden</value>
+  </data>
 </root>
