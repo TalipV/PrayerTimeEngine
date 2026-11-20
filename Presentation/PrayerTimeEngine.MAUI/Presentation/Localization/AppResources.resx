@@ -343,6 +343,10 @@ Nisab: {4:N2} € ({5:N2} g)</value>
     <value>{0}°</value>
     <comment>Sun angle of the Muwaqqit calculation</comment>
   </data>
+  <data name="Overview_Method" xml:space="preserve">
+    <value>Methode {0}</value>
+    <comment>Base calculation method of the Waqti calculation</comment>
+  </data>
   <data name="Overview_MinuteAdjustment" xml:space="preserve">
     <value>{0:+0;-0} min</value>
     <comment>Minute adjustment of a time</comment>
@@ -376,6 +380,10 @@ Nisab: {4:N2} € ({5:N2} g)</value>
   <data name="Settings_Degree" xml:space="preserve">
     <value>Grad</value>
     <comment>Sun angle of the Muwaqqit calculation</comment>
+  </data>
+  <data name="Settings_Method" xml:space="preserve">
+    <value>Methode</value>
+    <comment>Base calculation method of the Waqti calculation</comment>
   </data>
   <data name="Popup_Ok" xml:space="preserve">
     <value>OK</value>

@@ -7,23 +7,23 @@ public enum ETimeType
 {
     #region Fajr
 
-    [TimeTypeSupportedBy(EDynamicPrayerTimeProviderType.None, EDynamicPrayerTimeProviderType.Muwaqqit, EDynamicPrayerTimeProviderType.Fazilet, EDynamicPrayerTimeProviderType.Semerkand)]
+    [TimeTypeSupportedBy(EDynamicPrayerTimeProviderType.None, EDynamicPrayerTimeProviderType.Muwaqqit, EDynamicPrayerTimeProviderType.Fazilet, EDynamicPrayerTimeProviderType.Semerkand, EDynamicPrayerTimeProviderType.Waqti)]
     [TimeTypeForSection(ETimeSection.Fajr)]
     [DegreeTimeType]
     [IsNotHidableTimeType]
     FajrStart = 100,
 
-    [TimeTypeSupportedBy(EDynamicPrayerTimeProviderType.None, EDynamicPrayerTimeProviderType.Muwaqqit, EDynamicPrayerTimeProviderType.Fazilet, EDynamicPrayerTimeProviderType.Semerkand)]
+    [TimeTypeSupportedBy(EDynamicPrayerTimeProviderType.None, EDynamicPrayerTimeProviderType.Muwaqqit, EDynamicPrayerTimeProviderType.Fazilet, EDynamicPrayerTimeProviderType.Semerkand, EDynamicPrayerTimeProviderType.Waqti)]
     [TimeTypeForSection(ETimeSection.Fajr)]
     [IsNotHidableTimeType]
     FajrEnd = 110,
 
-    [TimeTypeSupportedBy(EDynamicPrayerTimeProviderType.None, EDynamicPrayerTimeProviderType.Muwaqqit)]
+    [TimeTypeSupportedBy(EDynamicPrayerTimeProviderType.None, EDynamicPrayerTimeProviderType.Muwaqqit, EDynamicPrayerTimeProviderType.Waqti)]
     [TimeTypeForSection(ETimeSection.Fajr)]
     [DegreeTimeType]
     FajrGhalas = 120,
 
-    [TimeTypeSupportedBy(EDynamicPrayerTimeProviderType.None, EDynamicPrayerTimeProviderType.Muwaqqit)]
+    [TimeTypeSupportedBy(EDynamicPrayerTimeProviderType.None, EDynamicPrayerTimeProviderType.Muwaqqit, EDynamicPrayerTimeProviderType.Waqti)]
     [TimeTypeForSection(ETimeSection.Fajr)]
     [DegreeTimeType]
     FajrKaraha = 130,
@@ -32,7 +32,7 @@ public enum ETimeType
 
     #region Duha
 
-    [TimeTypeSupportedBy(EDynamicPrayerTimeProviderType.None, EDynamicPrayerTimeProviderType.Muwaqqit, EDynamicPrayerTimeProviderType.Fazilet)]
+    [TimeTypeSupportedBy(EDynamicPrayerTimeProviderType.None, EDynamicPrayerTimeProviderType.Muwaqqit, EDynamicPrayerTimeProviderType.Fazilet, EDynamicPrayerTimeProviderType.Waqti)]
     [TimeTypeForSection(ETimeSection.Duha)]
     [DegreeTimeType]
     [IsNotHidableTimeType]
@@ -55,12 +55,12 @@ public enum ETimeType
 
     #region Dhuhr
 
-    [TimeTypeSupportedBy(EDynamicPrayerTimeProviderType.None, EDynamicPrayerTimeProviderType.Muwaqqit, EDynamicPrayerTimeProviderType.Fazilet, EDynamicPrayerTimeProviderType.Semerkand)]
+    [TimeTypeSupportedBy(EDynamicPrayerTimeProviderType.None, EDynamicPrayerTimeProviderType.Muwaqqit, EDynamicPrayerTimeProviderType.Fazilet, EDynamicPrayerTimeProviderType.Semerkand, EDynamicPrayerTimeProviderType.Waqti)]
     [TimeTypeForSection(ETimeSection.Dhuhr)]
     [IsNotHidableTimeType]
     DhuhrStart = 300,
 
-    [TimeTypeSupportedBy(EDynamicPrayerTimeProviderType.None, EDynamicPrayerTimeProviderType.Muwaqqit, EDynamicPrayerTimeProviderType.Fazilet, EDynamicPrayerTimeProviderType.Semerkand)]
+    [TimeTypeSupportedBy(EDynamicPrayerTimeProviderType.None, EDynamicPrayerTimeProviderType.Muwaqqit, EDynamicPrayerTimeProviderType.Fazilet, EDynamicPrayerTimeProviderType.Semerkand, EDynamicPrayerTimeProviderType.Waqti)]
     [TimeTypeForSection(ETimeSection.Dhuhr)]
     [IsNotHidableTimeType]
     DhuhrEnd = 310,
@@ -69,21 +69,21 @@ public enum ETimeType
 
     #region Asr
 
-    [TimeTypeSupportedBy(EDynamicPrayerTimeProviderType.None, EDynamicPrayerTimeProviderType.Muwaqqit, EDynamicPrayerTimeProviderType.Fazilet, EDynamicPrayerTimeProviderType.Semerkand)]
+    [TimeTypeSupportedBy(EDynamicPrayerTimeProviderType.None, EDynamicPrayerTimeProviderType.Muwaqqit, EDynamicPrayerTimeProviderType.Fazilet, EDynamicPrayerTimeProviderType.Semerkand, EDynamicPrayerTimeProviderType.Waqti)]
     [TimeTypeForSection(ETimeSection.Asr)]
     [IsNotHidableTimeType]
     AsrStart = 400,
 
-    [TimeTypeSupportedBy(EDynamicPrayerTimeProviderType.None, EDynamicPrayerTimeProviderType.Muwaqqit, EDynamicPrayerTimeProviderType.Fazilet, EDynamicPrayerTimeProviderType.Semerkand)]
+    [TimeTypeSupportedBy(EDynamicPrayerTimeProviderType.None, EDynamicPrayerTimeProviderType.Muwaqqit, EDynamicPrayerTimeProviderType.Fazilet, EDynamicPrayerTimeProviderType.Semerkand, EDynamicPrayerTimeProviderType.Waqti)]
     [TimeTypeForSection(ETimeSection.Asr)]
     [IsNotHidableTimeType]
     AsrEnd = 410,
 
-    [TimeTypeSupportedBy(EDynamicPrayerTimeProviderType.None, EDynamicPrayerTimeProviderType.Muwaqqit)]
+    [TimeTypeSupportedBy(EDynamicPrayerTimeProviderType.None, EDynamicPrayerTimeProviderType.Muwaqqit, EDynamicPrayerTimeProviderType.Waqti)]
     [TimeTypeForSection(ETimeSection.Asr)]
     AsrMithlayn = 420,
 
-    [TimeTypeSupportedBy(EDynamicPrayerTimeProviderType.None, EDynamicPrayerTimeProviderType.Muwaqqit)]
+    [TimeTypeSupportedBy(EDynamicPrayerTimeProviderType.None, EDynamicPrayerTimeProviderType.Muwaqqit, EDynamicPrayerTimeProviderType.Waqti)]
     [TimeTypeForSection(ETimeSection.Asr)]
     [DegreeTimeType]
     AsrKaraha = 430,
@@ -92,12 +92,12 @@ public enum ETimeType
 
     #region Maghrib
 
-    [TimeTypeSupportedBy(EDynamicPrayerTimeProviderType.None, EDynamicPrayerTimeProviderType.Muwaqqit, EDynamicPrayerTimeProviderType.Fazilet, EDynamicPrayerTimeProviderType.Semerkand)]
+    [TimeTypeSupportedBy(EDynamicPrayerTimeProviderType.None, EDynamicPrayerTimeProviderType.Muwaqqit, EDynamicPrayerTimeProviderType.Fazilet, EDynamicPrayerTimeProviderType.Semerkand, EDynamicPrayerTimeProviderType.Waqti)]
     [TimeTypeForSection(ETimeSection.Maghrib)]
     [IsNotHidableTimeType]
     MaghribStart = 500,
 
-    [TimeTypeSupportedBy(EDynamicPrayerTimeProviderType.None, EDynamicPrayerTimeProviderType.Muwaqqit, EDynamicPrayerTimeProviderType.Fazilet, EDynamicPrayerTimeProviderType.Semerkand)]
+    [TimeTypeSupportedBy(EDynamicPrayerTimeProviderType.None, EDynamicPrayerTimeProviderType.Muwaqqit, EDynamicPrayerTimeProviderType.Fazilet, EDynamicPrayerTimeProviderType.Semerkand, EDynamicPrayerTimeProviderType.Waqti)]
     [TimeTypeForSection(ETimeSection.Maghrib)]
     [DegreeTimeType]
     [IsNotHidableTimeType]
@@ -107,7 +107,7 @@ public enum ETimeType
     [ConfigurableSimpleType]
     MaghribSufficientTime = 520,
 
-    [TimeTypeSupportedBy(EDynamicPrayerTimeProviderType.None, EDynamicPrayerTimeProviderType.Muwaqqit)]
+    [TimeTypeSupportedBy(EDynamicPrayerTimeProviderType.None, EDynamicPrayerTimeProviderType.Muwaqqit, EDynamicPrayerTimeProviderType.Waqti)]
     [TimeTypeForSection(ETimeSection.Maghrib)]
     [DegreeTimeType]
     MaghribIshtibak = 530,
@@ -116,13 +116,13 @@ public enum ETimeType
 
     #region Isha
 
-    [TimeTypeSupportedBy(EDynamicPrayerTimeProviderType.None, EDynamicPrayerTimeProviderType.Muwaqqit, EDynamicPrayerTimeProviderType.Fazilet, EDynamicPrayerTimeProviderType.Semerkand)]
+    [TimeTypeSupportedBy(EDynamicPrayerTimeProviderType.None, EDynamicPrayerTimeProviderType.Muwaqqit, EDynamicPrayerTimeProviderType.Fazilet, EDynamicPrayerTimeProviderType.Semerkand, EDynamicPrayerTimeProviderType.Waqti)]
     [TimeTypeForSection(ETimeSection.Isha)]
     [DegreeTimeType]
     [IsNotHidableTimeType]
     IshaStart = 600,
 
-    [TimeTypeSupportedBy(EDynamicPrayerTimeProviderType.None, EDynamicPrayerTimeProviderType.Muwaqqit, EDynamicPrayerTimeProviderType.Fazilet, EDynamicPrayerTimeProviderType.Semerkand)]
+    [TimeTypeSupportedBy(EDynamicPrayerTimeProviderType.None, EDynamicPrayerTimeProviderType.Muwaqqit, EDynamicPrayerTimeProviderType.Fazilet, EDynamicPrayerTimeProviderType.Semerkand, EDynamicPrayerTimeProviderType.Waqti)]
     [TimeTypeForSection(ETimeSection.Isha)]
     [DegreeTimeType]
     [IsNotHidableTimeType]

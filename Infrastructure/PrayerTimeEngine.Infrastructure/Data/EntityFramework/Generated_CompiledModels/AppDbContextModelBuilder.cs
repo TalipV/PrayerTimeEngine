@@ -11,7 +11,7 @@ namespace PrayerTimeEngine.Core.Data.EntityFramework.Generated_CompiledModels;
 public partial class AppDbContextModel
 {
     private AppDbContextModel()
-        : base(skipDetectChanges: false, modelId: new Guid("c22b8708-39cb-4d54-80b8-704d0ac9b1b2"), entityTypeCount: 17)
+        : base(skipDetectChanges: false, modelId: new Guid("e4839503-e0dc-4577-aee9-ace4aae36cd6"), entityTypeCount: 18)
     {
     }
 
@@ -24,6 +24,7 @@ public partial class AppDbContextModel
         var semerkandCity = SemerkandCityEntityType.Create(this);
         var semerkandCountry = SemerkandCountryEntityType.Create(this);
         var semerkandDailyPrayerTimes = SemerkandDailyPrayerTimesEntityType.Create(this);
+        var waqtiDailyPrayerTimes = WaqtiDailyPrayerTimesEntityType.Create(this);
         var mawaqitMosqueDailyPrayerTimes = MawaqitMosqueDailyPrayerTimesEntityType.Create(this);
         var myMosqMosqueDailyPrayerTimes = MyMosqMosqueDailyPrayerTimesEntityType.Create(this);
         var favoritePlace = FavoritePlaceEntityType.Create(this);
@@ -49,6 +50,7 @@ public partial class AppDbContextModel
         SemerkandCityEntityType.CreateAnnotations(semerkandCity);
         SemerkandCountryEntityType.CreateAnnotations(semerkandCountry);
         SemerkandDailyPrayerTimesEntityType.CreateAnnotations(semerkandDailyPrayerTimes);
+        WaqtiDailyPrayerTimesEntityType.CreateAnnotations(waqtiDailyPrayerTimes);
         MawaqitMosqueDailyPrayerTimesEntityType.CreateAnnotations(mawaqitMosqueDailyPrayerTimes);
         MyMosqMosqueDailyPrayerTimesEntityType.CreateAnnotations(myMosqMosqueDailyPrayerTimes);
         FavoritePlaceEntityType.CreateAnnotations(favoritePlace);

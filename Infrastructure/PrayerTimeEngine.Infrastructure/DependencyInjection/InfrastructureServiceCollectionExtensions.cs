@@ -16,6 +16,8 @@ using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Muwaqqit.Interfa
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Muwaqqit.Services;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Semerkand.Interfaces;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Semerkand.Services;
+using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Waqti.Interfaces;
+using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Waqti.Services;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.Mawaqit.Interfaces;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.Mawaqit.Services;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.MyMosq.Interfaces;
@@ -115,6 +117,12 @@ public static class InfrastructureServiceCollectionExtensions
         services.AddTransient<IPrayerTimeCacheCleaner, MuwaqqitRepository>();
         AddResilientRefitClient<IMuwaqqitApiClient>(services, "https://www.muwaqqit.com/");
         services.AddTransient<IMuwaqqitApiService, MuwaqqitApiService>();
+
+        // WAQTI
+        services.AddTransient<IWaqtiRepository, WaqtiRepository>();
+        services.AddTransient<IPrayerTimeCacheCleaner, WaqtiRepository>();
+        AddResilientRefitClient<IWaqtiApiClient>(services, "https://www.waqti.app/");
+        services.AddTransient<IWaqtiApiService, WaqtiApiService>();
     }
 
     private static void AddMosquePrayerTimeProviders(IServiceCollection services)

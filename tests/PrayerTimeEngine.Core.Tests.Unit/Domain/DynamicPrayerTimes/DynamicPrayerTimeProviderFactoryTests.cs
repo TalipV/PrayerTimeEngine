@@ -3,6 +3,7 @@ using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Services;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Muwaqqit.Services;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Semerkand.Services;
+using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Waqti.Services;
 
 namespace PrayerTimeEngine.Core.Tests.Unit.Domain.DynamicPrayerTimes;
 
@@ -23,6 +24,7 @@ public class DynamicPrayerTimeProviderFactoryTests
     [InlineData(EDynamicPrayerTimeProviderType.Muwaqqit, typeof(MuwaqqitDynamicPrayerTimeProvider))]
     [InlineData(EDynamicPrayerTimeProviderType.Fazilet, typeof(FaziletDynamicPrayerTimeProvider))]
     [InlineData(EDynamicPrayerTimeProviderType.Semerkand, typeof(SemerkandDynamicPrayerTimeProvider))]
+    [InlineData(EDynamicPrayerTimeProviderType.Waqti, typeof(WaqtiDynamicPrayerTimeProvider))]
     [Trait("Method", "GetDynamicPrayerTimeProviderByDynamicPrayerTimeProvider")]
     public void GetDynamicPrayerTimeProviderByDynamicPrayerTimeProvider_DifferentValidDynamicPrayerTimeProviders_RightTypeReturned(
         EDynamicPrayerTimeProviderType dynamicPrayerTimeProviderType, Type expectedType)

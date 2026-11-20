@@ -3,6 +3,7 @@ using System.Text.Json.Serialization;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Models.DTOs;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Muwaqqit.Models.DTOs;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Semerkand.Models.DTOs;
+using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Waqti.Models.DTOs;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Services.LocationIQ.DTOs;
 
 namespace PrayerTimeEngine.Core.Data.JsonSerialization;
@@ -27,6 +28,9 @@ namespace PrayerTimeEngine.Core.Data.JsonSerialization;
 [JsonSerializable(typeof(List<SemerkandCountryResponseDTO>))]
 [JsonSerializable(typeof(List<SemerkandCityResponseDTO>))]
 [JsonSerializable(typeof(List<SemerkandPrayerTimesResponseDTO>))]
+// Waqti
+[JsonSerializable(typeof(WaqtiMonthPrayerTimesRequestDTO))]
+[JsonSerializable(typeof(List<WaqtiDailyPrayerTimesResponseDTO>))]
 // LocationIQ
 [JsonSerializable(typeof(LocationIQTimezoneResponseDTO))]
 [JsonSerializable(typeof(List<LocationIQPlace>))]

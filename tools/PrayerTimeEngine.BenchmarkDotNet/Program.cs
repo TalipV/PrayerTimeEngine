@@ -6,6 +6,7 @@ Type[] types =
         typeof(SemerkandDynamicPrayerTimeProviderBenchmark),
         typeof(FaziletDynamicPrayerTimeProviderBenchmark),
         typeof(MuwaqqitDynamicPrayerTimeProviderBenchmark),
+        typeof(WaqtiDynamicPrayerTimeProviderBenchmark),
         typeof(MawaqitMosquePrayerTimeProviderBenchmark),
         typeof(MyMosqMosquePrayerTimeProviderBenchmark),
     ];

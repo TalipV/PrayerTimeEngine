@@ -2,12 +2,14 @@ using System.Text.Json.Serialization;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Models;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Muwaqqit.Models;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Semerkand.Models;
+using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Waqti.Models;
 
 namespace PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Models;
 
 [JsonDerivedType(typeof(MuwaqqitLocationData), typeDiscriminator: "MuwaqqitLocationData")]
 [JsonDerivedType(typeof(SemerkandLocationData), typeDiscriminator: "SemerkandLocationData")]
 [JsonDerivedType(typeof(FaziletLocationData), typeDiscriminator: "FaziletLocationData")]
+[JsonDerivedType(typeof(WaqtiLocationData), typeDiscriminator: "WaqtiLocationData")]
 public abstract class BaseLocationData
 {
     [JsonIgnore]

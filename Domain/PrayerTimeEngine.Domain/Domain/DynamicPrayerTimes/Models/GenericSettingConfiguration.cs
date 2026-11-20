@@ -1,11 +1,13 @@
 using System.Text.Json.Serialization;
 using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Muwaqqit.Models;
+using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Waqti.Models;
 
 namespace PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Models;
 
 [JsonDerivedType(typeof(GenericSettingConfiguration), typeDiscriminator: "GenericConfig")]
 [JsonDerivedType(typeof(MuwaqqitDegreeCalculationConfiguration), typeDiscriminator: "MuwaqqitDegreeConfig")]
+[JsonDerivedType(typeof(WaqtiCalculationConfiguration), typeDiscriminator: "WaqtiConfig")]
 public class GenericSettingConfiguration
 {
     public required ETimeType TimeType { get; init; }

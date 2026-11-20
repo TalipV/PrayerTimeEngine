@@ -14,6 +14,8 @@ using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Muwaqqit.Interfa
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Muwaqqit.Services;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Semerkand.Interfaces;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Semerkand.Services;
+using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Waqti.Interfaces;
+using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Waqti.Services;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.Mawaqit.Interfaces;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.MyMosq.Services;
 using Refit;
@@ -25,6 +27,7 @@ public class SubstitutionHelper
     private const string SEMERKAND_BASE_URL = @"https://semerkandtakvimi.com/api";
     private const string FAZILET_BASE_URL = @"https://backend.fazilettakvimi.com/content/public";
     private const string MUWAQQIT_BASE_URL = @"https://www.muwaqqit.com";
+    private const string WAQTI_BASE_URL = @"https://www.waqti.app";
 
     public static ISemerkandApiService GetMockedSemerkandApiService()
     {
@@ -81,6 +84,49 @@ public class SubstitutionHelper
         };
 
         return new MuwaqqitApiService(RestService.ForGenerated<IMuwaqqitApiClient>(httpClient, RefitJsonContext.Default));
+    }
+
+    /// <summary>
+    /// Waqti answers a POST request, so the response is chosen by the request body (location,
+    /// month and method) instead of the URL.
+    /// </summary>
+    public static IWaqtiApiService GetMockedWaqtiApiService()
+    {
+        static HttpResponseMessage HandleRequestFunc(HttpRequestMessage request)
+        {
+            if (request.Method != HttpMethod.Post
+                || request.RequestUri.AbsoluteUri != $"{WAQTI_BASE_URL}/api/quarkus/prayer/times_monthCustom")
+            {
+                throw new Exception($"No response registered for {request.Method} {request.RequestUri.AbsoluteUri}");
+            }
+
+            string body = request.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+            const string InnsbruckJuly2023 = @"{""latitude"":47.2692124,""longitude"":11.4041024,""elevation"":0,""timezone"":""Europe/Vienna"",""year"":2023,""month"":7,";
+
+            Stream responseStream = body switch
+            {
+                InnsbruckJuly2023 + @"""method"":""Mwl2007""}" => File.OpenRead(Path.Combine(TestDataHelper.WAQTI_TEST_DATA_FILE_PATH, "Waqti_TestPrayerTimeData_202307_Innsbruck_Mwl2007.txt")),
+                InnsbruckJuly2023 + @"""method"":""Diyanet""}" => File.OpenRead(Path.Combine(TestDataHelper.WAQTI_TEST_DATA_FILE_PATH, "Waqti_TestPrayerTimeData_202307_Innsbruck_Diyanet.txt")),
+                // angle overrides for the derived times (Ghalas, Karaha, Asr Karaha, Ishtibak)
+                InnsbruckJuly2023 + @"""method"":""Mwl2007"",""overrides"":{""fajrAngle"":4.5,""ishaaAngle"":-4.5}}" => File.OpenRead(Path.Combine(TestDataHelper.WAQTI_TEST_DATA_FILE_PATH, "Waqti_TestPrayerTimeData_202307_Innsbruck_Mwl2007_Fajr4.5_Ishaa-4.5.txt")),
+                InnsbruckJuly2023 + @"""method"":""Mwl2007"",""overrides"":{""fajrAngle"":7.5,""ishaaAngle"":10}}" => File.OpenRead(Path.Combine(TestDataHelper.WAQTI_TEST_DATA_FILE_PATH, "Waqti_TestPrayerTimeData_202307_Innsbruck_Mwl2007_Fajr7.5_Ishaa10.txt")),
+                _ => throw new Exception($"No response registered for request body: {body}")
+            };
+
+            return new HttpResponseMessage
+            {
+                StatusCode = HttpStatusCode.OK,
+                Content = new StreamContent(responseStream)
+            };
+        }
+
+        var mockHttpMessageHandler = new MockHttpMessageHandler(HandleRequestFunc);
+        var httpClient = new HttpClient(mockHttpMessageHandler)
+        {
+            BaseAddress = new Uri(WAQTI_BASE_URL)
+        };
+
+        return new WaqtiApiService(RestService.ForGenerated<IWaqtiApiClient>(httpClient, RefitJsonContext.Default));
     }
 
     public static IFaziletApiService GetMockedFaziletApiService()

@@ -6,6 +6,7 @@ using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Models;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Models;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Muwaqqit.Models;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Semerkand.Models;
+using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Waqti.Models;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Interfaces;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
 using PrayerTimeEngine.Presentation.Localization;
@@ -49,6 +50,12 @@ public class ProfileOverviewTextService(
                 {
                     text.Append($" ({string.Format(AppResources.Overview_Degree, degreeConfig.Degree)})");
                 }
+                else if (config is WaqtiCalculationConfiguration waqtiConfig)
+                {
+                    text.Append(waqtiConfig.Degree is double waqtiDegree
+                        ? $" ({string.Format(AppResources.Overview_Method, waqtiConfig.Method)}, {string.Format(AppResources.Overview_Degree, waqtiDegree)})"
+                        : $" ({string.Format(AppResources.Overview_Method, waqtiConfig.Method)})");
+                }
 
                 if (config.MinuteAdjustment != 0)
                 {
@@ -69,10 +76,15 @@ public class ProfileOverviewTextService(
         var muwaqqitLocationData = profileService.GetLocationConfig(profile, EDynamicPrayerTimeProviderType.Muwaqqit) as MuwaqqitLocationData;
         var faziletLocationData = profileService.GetLocationConfig(profile, EDynamicPrayerTimeProviderType.Fazilet) as FaziletLocationData;
         var semerkandLocationData = profileService.GetLocationConfig(profile, EDynamicPrayerTimeProviderType.Semerkand) as SemerkandLocationData;
+        var waqtiLocationData = profileService.GetLocationConfig(profile, EDynamicPrayerTimeProviderType.Waqti) as WaqtiLocationData;
 
         string coordinates = muwaqqitLocationData is null
             ? AppResources.Overview_NotSet
             : $"{muwaqqitLocationData.Latitude} / {muwaqqitLocationData.Longitude}";
+
+        string waqtiCoordinates = waqtiLocationData is null
+            ? AppResources.Overview_NotSet
+            : $"{waqtiLocationData.Latitude} / {waqtiLocationData.Longitude}";
 
         return $"""
             Muwaqqit
@@ -86,6 +98,10 @@ public class ProfileOverviewTextService(
             Semerkand
             - {AppResources.Overview_Country}: {OrNotSet(semerkandLocationData?.CountryName)}
             - {AppResources.Overview_City}: {OrNotSet(semerkandLocationData?.CityName)}
+
+            Waqti
+            - {AppResources.Overview_Coordinates}: {waqtiCoordinates}
+            - {AppResources.Overview_TimeZone}: {OrNotSet(waqtiLocationData?.TimezoneName)}
             """;
     }
 

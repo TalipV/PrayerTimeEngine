@@ -6,6 +6,9 @@ using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Muwaqqit.Interfa
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Muwaqqit.Models.DTOs;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Semerkand.Interfaces;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Semerkand.Models.DTOs;
+using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Waqti.Interfaces;
+using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Waqti.Models;
+using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Waqti.Models.DTOs;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.Mawaqit.Interfaces;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.Mawaqit.Models.DTOs;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Interfaces;
@@ -80,6 +83,67 @@ public class LiveApiTests : LiveApiTestBase
         times.Fajr.Should().NotBeNull();
         times.Dhuhr.Should().NotBeNull();
         times.Fajr.Value.Date.Should().Be(s_today);
+    }
+
+    [Fact]
+    public async Task Waqti_GetTimesForInnsbruck_ReturnsWholeMonthWithToday()
+    {
+        // ARRANGE
+        IWaqtiApiService apiService = ServiceProvider.GetRequiredService<IWaqtiApiService>();
+
+        // ACT
+        List<WaqtiDailyPrayerTimesResponseDTO> times = await apiService.GetMonthPrayerTimesAsync(
+            new WaqtiMonthPrayerTimesRequestDTO
+            {
+                Latitude = 47.2692124M,
+                Longitude = 11.4041024M,
+                Elevation = 0,
+                Timezone = "Europe/Vienna",
+                Year = s_today.Year,
+                Month = s_today.Month,
+                Method = WaqtiMethods.DEFAULT_METHOD,
+            },
+            cancellationToken: default);
+
+        // ASSERT
+        times.Should().HaveCount(CalendarSystem.Iso.GetDaysInMonth(s_today.Year, s_today.Month));
+        WaqtiDailyPrayerTimesResponseDTO today = times.Single(x => x.Date == s_today);
+        today.Method.Should().Be(WaqtiMethods.DEFAULT_METHOD);
+        today.Fajr.Should().NotBeNull();
+        today.Fajr!.Instant.Should().NotBeNull();
+        today.Dhuhr.Should().NotBeNull();
+        today.Dhuhr!.Instant.Should().NotBeNull();
+        today.Ishaa.Should().NotBeNull();
+        today.Ishaa!.Instant.Should().NotBeNull();
+    }
+
+    [Fact]
+    public async Task Waqti_GetTimesWithAngleOverridesForInnsbruck_ReturnsExactTimesOfTheAngles()
+    {
+        // ARRANGE
+        IWaqtiApiService apiService = ServiceProvider.GetRequiredService<IWaqtiApiService>();
+
+        // ACT (the overrides the app uses for Ghalas and Ishtibak)
+        List<WaqtiDailyPrayerTimesResponseDTO> times = await apiService.GetMonthPrayerTimesAsync(
+            new WaqtiMonthPrayerTimesRequestDTO
+            {
+                Latitude = 47.2692124M,
+                Longitude = 11.4041024M,
+                Elevation = 0,
+                Timezone = "Europe/Vienna",
+                Year = s_today.Year,
+                Month = s_today.Month,
+                Method = WaqtiMethods.DEFAULT_METHOD,
+                Overrides = new WaqtiOverridesRequestDTO { FajrAngle = 7.5, IshaaAngle = 10 },
+            },
+            cancellationToken: default);
+
+        // ASSERT
+        WaqtiDailyPrayerTimesResponseDTO today = times.Single(x => x.Date == s_today);
+        today.Fajr.Should().NotBeNull();
+        today.Fajr!.GetRawInstantIfValid().Should().NotBeNull();
+        today.Ishaa.Should().NotBeNull();
+        today.Ishaa!.GetRawInstantIfValid().Should().NotBeNull();
     }
 
     [Fact]

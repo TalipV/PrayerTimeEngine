@@ -241,6 +241,7 @@ public static class MauiProgram
         serviceCollection.AddTransient<SettingsContentPage>();
         serviceCollection.AddTransient<SettingsContentPageViewModel>();
         serviceCollection.AddTransient<MuwaqqitDegreeSettingConfigurationViewModel>();
+        serviceCollection.AddTransient<WaqtiMethodSettingConfigurationViewModel>();
 
         serviceCollection.AddTransient<DatabaseTablesPage>();
         serviceCollection.AddTransient<DatabaseTablesPageViewModel>();

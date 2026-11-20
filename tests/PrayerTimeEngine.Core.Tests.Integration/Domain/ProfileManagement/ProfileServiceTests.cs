@@ -12,6 +12,7 @@ using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Models;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Models;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Muwaqqit.Models;
+using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Waqti.Models;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Semerkand.Models;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Models;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Interfaces;
@@ -84,6 +85,7 @@ public class ProfileServiceTests : BaseTest
             [EDynamicPrayerTimeProviderType.Muwaqqit] = new MuwaqqitLocationData { Latitude = 50.9413M, Longitude = 6.9583M, TimezoneName = TestDataHelper.EUROPE_BERLIN_TIME_ZONE.Id },
             [EDynamicPrayerTimeProviderType.Fazilet] = new FaziletLocationData { CountryName = "Almanya", CityName = newPlaceInfo.City },
             [EDynamicPrayerTimeProviderType.Semerkand] = new SemerkandLocationData { CountryName = "Almanya", CityName = newPlaceInfo.City, TimezoneName = TestDataHelper.EUROPE_BERLIN_TIME_ZONE.Id },
+            [EDynamicPrayerTimeProviderType.Waqti] = new WaqtiLocationData { Latitude = 50.9413M, Longitude = 6.9583M, TimezoneName = TestDataHelper.EUROPE_BERLIN_TIME_ZONE.Id },
         };
 
         // ACT
@@ -139,6 +141,7 @@ public class ProfileServiceTests : BaseTest
             [EDynamicPrayerTimeProviderType.Muwaqqit] = new MuwaqqitLocationData { Latitude = 50.9413M, Longitude = 6.9583M, TimezoneName = TestDataHelper.EUROPE_BERLIN_TIME_ZONE.Id },
             [EDynamicPrayerTimeProviderType.Fazilet] = new FaziletLocationData { CountryName = "Almanya", CityName = "Köln" },
             [EDynamicPrayerTimeProviderType.Semerkand] = new SemerkandLocationData { CountryName = "Almanya", CityName = "Köln", TimezoneName = TestDataHelper.EUROPE_BERLIN_TIME_ZONE.Id },
+            [EDynamicPrayerTimeProviderType.Waqti] = new WaqtiLocationData { Latitude = 50.9413M, Longitude = 6.9583M, TimezoneName = TestDataHelper.EUROPE_BERLIN_TIME_ZONE.Id },
         };
 
         var newPlaceInfo =

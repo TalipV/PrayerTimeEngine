@@ -8,6 +8,7 @@ using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Models;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Models.Entities;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Muwaqqit.Models.Entities;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Semerkand.Models.Entities;
+using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Waqti.Models.Entities;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.Mawaqit.Models.Entities;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.MyMosq.Models.Entities;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Models;
@@ -41,6 +42,8 @@ public class AppDbContext(
     public DbSet<SemerkandCountry> SemerkandCountries { get; set; }
     public DbSet<SemerkandCity> SemerkandCities { get; set; }
     public DbSet<SemerkandDailyPrayerTimes> SemerkandPrayerTimes { get; set; }
+
+    public DbSet<WaqtiDailyPrayerTimes> WaqtiPrayerTimes { get; set; }
 
     public DbSet<MawaqitMosqueDailyPrayerTimes> MawaqitPrayerTimes { get; set; }
     public DbSet<MyMosqMosqueDailyPrayerTimes> MyMosqPrayerTimes { get; set; }

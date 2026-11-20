@@ -7,6 +7,7 @@ using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Models;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Models;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Muwaqqit.Models;
+using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Waqti.Models;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Semerkand.Models;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Models;
@@ -114,6 +115,19 @@ public class ProfileService(
                         {
                             CountryName = "Avusturya",
                             CityName = "Innsbruck",
+                            TimezoneName = "Europe/Vienna"
+                        }
+                },
+                new()
+                {
+                    DynamicPrayerTimeProvider = EDynamicPrayerTimeProviderType.Waqti,
+                    ProfileID = profile.ID,
+                    Profile = profile,
+                    LocationData =
+                        new WaqtiLocationData
+                        {
+                            Latitude = 47.2692124M,
+                            Longitude = 11.4041024M,
                             TimezoneName = "Europe/Vienna"
                         }
                 },
@@ -370,6 +384,7 @@ public class ProfileService(
         var muwaqqitLocationData = GetLocationConfig(profile, EDynamicPrayerTimeProviderType.Muwaqqit) as MuwaqqitLocationData;
         var faziletLocationData = GetLocationConfig(profile, EDynamicPrayerTimeProviderType.Fazilet) as FaziletLocationData;
         var semerkandLocationData = GetLocationConfig(profile, EDynamicPrayerTimeProviderType.Semerkand) as SemerkandLocationData;
+        var waqtiLocationData = GetLocationConfig(profile, EDynamicPrayerTimeProviderType.Waqti) as WaqtiLocationData;
 
         return $"""
                 Muwaqqit:
@@ -389,6 +404,12 @@ public class ProfileService(
                     '{semerkandLocationData?.CountryName}'
                     - City 
                     '{semerkandLocationData?.CityName}'
+                
+                Waqti:
+                    - Coordinates:  
+                    ({waqtiLocationData?.Latitude} / {waqtiLocationData?.Longitude})
+                    - Timezone:     
+                    '{waqtiLocationData?.TimezoneName}'
                 """;
     }
 
@@ -421,6 +442,12 @@ public class ProfileService(
                 if (config is MuwaqqitDegreeCalculationConfiguration degreeConfig)
                 {
                     outputText.Append($" ({degreeConfig.Degree}°)");
+                }
+                else if (config is WaqtiCalculationConfiguration waqtiConfig)
+                {
+                    outputText.Append(waqtiConfig.Degree is double waqtiDegree
+                        ? $" ({waqtiConfig.Method}, {waqtiDegree}°)"
+                        : $" ({waqtiConfig.Method})");
                 }
 
                 if (config.MinuteAdjustment != 0)

@@ -6,6 +6,7 @@ using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Management;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Services;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Muwaqqit.Services;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Semerkand.Services;
+using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Waqti.Services;
 using PrayerTimeEngine.Core.Domain.IslamicCalendar.Interfaces;
 using PrayerTimeEngine.Core.Domain.IslamicCalendar.Services;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes;
@@ -40,6 +41,7 @@ public static class ApplicationServiceCollectionExtensions
         services.AddTransient<FaziletDynamicPrayerTimeProvider>();
         services.AddTransient<SemerkandDynamicPrayerTimeProvider>();
         services.AddTransient<MuwaqqitDynamicPrayerTimeProvider>();
+        services.AddTransient<WaqtiDynamicPrayerTimeProvider>();
 
         // mosque prayer times
         services.AddTransient<IMosquePrayerTimeProviderManager, MosquePrayerTimeProviderManager>();

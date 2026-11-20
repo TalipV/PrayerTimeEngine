@@ -293,6 +293,9 @@ Nisab: €{4:N2} ({5:N2} g)</value>
   <data name="Overview_Degree" xml:space="preserve">
     <value>{0}°</value>
   </data>
+  <data name="Overview_Method" xml:space="preserve">
+    <value>Method {0}</value>
+  </data>
   <data name="Overview_MinuteAdjustment" xml:space="preserve">
     <value>{0:+0;-0} min</value>
   </data>
@@ -322,6 +325,9 @@ Nisab: €{4:N2} ({5:N2} g)</value>
   </data>
   <data name="Settings_Degree" xml:space="preserve">
     <value>Degree</value>
+  </data>
+  <data name="Settings_Method" xml:space="preserve">
+    <value>Method</value>
   </data>
   <data name="Popup_Ok" xml:space="preserve">
     <value>OK</value>

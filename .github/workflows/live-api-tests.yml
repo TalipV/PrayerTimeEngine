@@ -1,6 +1,6 @@
 name: Live API tests
 
-# The live-API tests hit real external services (Fazilet, Semerkand, Muwaqqit, Mawaqit,
+# The live-API tests hit real external services (Fazilet, Semerkand, Muwaqqit, Waqti, Mawaqit,
 # MyMosq, LocationIQ), so they are non-deterministic and must NOT gate pushes or the APK
 # release. They run on a schedule (and on demand) to surface outages and breaking
 # changes on the provider side, decoupled from feature work.

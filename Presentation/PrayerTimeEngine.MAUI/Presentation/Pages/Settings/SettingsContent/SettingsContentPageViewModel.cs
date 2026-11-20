@@ -111,6 +111,10 @@ public class SettingsContentPageViewModel(
         {
             CustomSettingConfigurationViewModel = new MuwaqqitDegreeSettingConfigurationViewModel(TimeType);
         }
+        else if (SelectedDynamicPrayerTimeProvider == EDynamicPrayerTimeProviderType.Waqti)
+        {
+            CustomSettingConfigurationViewModel = new WaqtiMethodSettingConfigurationViewModel(TimeType);
+        }
         else
         {
             CustomSettingConfigurationViewModel = null;

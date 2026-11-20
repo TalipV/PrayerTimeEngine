@@ -5,6 +5,7 @@ using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Models;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Models;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Muwaqqit.Models;
+using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Waqti.Models;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Semerkand.Models;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Models;
@@ -19,6 +20,7 @@ public static class TestDataHelper
     public static readonly string FAZILET_TEST_DATA_FILE_PATH = Path.Combine(s_basE_TEST_DATA_FILE_PATH, "FaziletTestData");
     public static readonly string SEMERKAND_TEST_DATA_FILE_PATH = Path.Combine(s_basE_TEST_DATA_FILE_PATH, "SemerkandTestData");
     public static readonly string MUWAQQIT_TEST_DATA_FILE_PATH = Path.Combine(s_basE_TEST_DATA_FILE_PATH, "MuwaqqitTestData");
+    public static readonly string WAQTI_TEST_DATA_FILE_PATH = Path.Combine(s_basE_TEST_DATA_FILE_PATH, "WaqtiTestData");
     public static readonly string MAWAQIT_TEST_DATA_FILE_PATH = Path.Combine(s_basE_TEST_DATA_FILE_PATH, "MawaqitTestData");
     public static readonly string MYMOSQ_TEST_DATA_FILE_PATH = Path.Combine(s_basE_TEST_DATA_FILE_PATH, "MyMosqTestData");
 
@@ -73,6 +75,11 @@ public static class TestDataHelper
                     {
                         DynamicPrayerTimeProvider = EDynamicPrayerTimeProviderType.Semerkand,
                         LocationData = new SemerkandLocationData{ CountryName = "Avusturya", CityName = "Innsbruck", TimezoneName = EUROPE_VIENNA_TIME_ZONE.Id }
+                    },
+                    new()
+                    {
+                        DynamicPrayerTimeProvider = EDynamicPrayerTimeProviderType.Waqti,
+                        LocationData = new WaqtiLocationData{ Latitude = 47.2692124M,Longitude = 11.4041024M, TimezoneName = EUROPE_VIENNA_TIME_ZONE.Id }
                     },
                 ],
 

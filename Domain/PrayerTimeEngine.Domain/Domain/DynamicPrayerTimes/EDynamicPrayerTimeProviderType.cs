@@ -7,4 +7,5 @@ public enum EDynamicPrayerTimeProviderType
     Fazilet = 10,
     Semerkand = 15,
     //AlAdhan = 20,
+    Waqti = 25,
 }

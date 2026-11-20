@@ -68,7 +68,7 @@ public class MuwaqqitDegreeSettingConfigurationViewModel : ISettingConfiguration
         SelectedDegree = muwaqqitConfig.Degree;
     }
 
-    private static IReadOnlyCollection<double> GetItemSource(ETimeType timeType)
+    internal static IReadOnlyCollection<double> GetItemSource(ETimeType timeType)
     {
         if (timeType == ETimeType.DuhaStart || timeType == ETimeType.AsrKaraha)
         {

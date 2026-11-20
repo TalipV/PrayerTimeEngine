@@ -243,6 +243,16 @@
             "TimezoneName": "Europe/Vienna",
             "Source": 15
           }
+        },
+        {
+          "ProviderType": 25,
+          "LocationData": {
+            "$type": "WaqtiLocationData",
+            "Longitude": 11.4041024,
+            "Latitude": 47.2692124,
+            "TimezoneName": "Europe/Vienna",
+            "Source": 25
+          }
         }
       ],
       "Name": "Profil One",
@@ -490,6 +500,16 @@
             "CityName": "Innsbruck",
             "TimezoneName": "Europe/Vienna",
             "Source": 15
+          }
+        },
+        {
+          "ProviderType": 25,
+          "LocationData": {
+            "$type": "WaqtiLocationData",
+            "Longitude": 11.4041024,
+            "Latitude": 47.2692124,
+            "TimezoneName": "Europe/Vienna",
+            "Source": 25
           }
         }
       ],
