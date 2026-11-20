@@ -103,7 +103,10 @@
     <value>Ishtibak</value>
   </data>
   <data name="SubTime_Jumuah2" xml:space="preserve">
-    <value>Jumu'ah 2</value>
+    <value>2nd Jumu'ah</value>
+  </data>
+  <data name="SubTime_Iqama" xml:space="preserve">
+    <value>Iqama</value>
   </data>
   <data name="SubTime_Ikhtiyar" xml:space="preserve">
     <value>Ikhtiyar</value>

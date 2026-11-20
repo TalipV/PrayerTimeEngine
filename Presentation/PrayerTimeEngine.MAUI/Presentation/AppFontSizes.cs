@@ -27,16 +27,4 @@ public static class AppFontSizes
 
     /// <summary>Secondary info in the navigation bar, e.g. the weeks-until text.</summary>
     public static double Subtitle => ForIdiom(17, 20);
-
-    /// <summary>Name of a prayer, e.g. "Fajr".</summary>
-    public static double PrayerName => ForIdiom(22, 26);
-
-    /// <summary>Start and end time of a prayer.</summary>
-    public static double PrayerTime => ForIdiom(14, 17);
-
-    /// <summary>Name of a sub time, e.g. "Ghalas".</summary>
-    public static double SubTimeName => ForIdiom(12, 14);
-
-    /// <summary>Value of a sub time.</summary>
-    public static double SubTime => ForIdiom(12, 14);
 }

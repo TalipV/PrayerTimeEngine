@@ -125,8 +125,12 @@
     <comment>Sub time of Maghrib</comment>
   </data>
   <data name="SubTime_Jumuah2" xml:space="preserve">
-    <value>Jumu'ah 2</value>
-    <comment>Second Friday prayer of a mosque</comment>
+    <value>2. Jumu'ah</value>
+    <comment>Second Friday prayer of a mosque, shown as sub time of Jumu'ah</comment>
+  </data>
+  <data name="SubTime_Iqama" xml:space="preserve">
+    <value>Iqama</value>
+    <comment>Start of the congregational prayer of a mosque, shown as sub time of a prayer</comment>
   </data>
   <data name="SubTime_Ikhtiyar" xml:space="preserve">
     <value>Ikhtiyar</value>

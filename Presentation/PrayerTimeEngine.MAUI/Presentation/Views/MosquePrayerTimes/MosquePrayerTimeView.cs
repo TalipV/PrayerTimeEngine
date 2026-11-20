@@ -1,152 +1,111 @@
-using CommunityToolkit.Maui.Markup;
 using NodaTime;
 using PrayerTimeEngine.Core.Common;
+using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Domain.Models;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Models;
-using static CommunityToolkit.Maui.Markup.GridRowsColumns;
 using PrayerTimeEngine.Presentation.Localization;
 
 namespace PrayerTimeEngine.Presentation.Views.MosquePrayerTimes;
 
-public partial class MosquePrayerTimeView : ContentView
+public partial class MosquePrayerTimeView : PrayerTimeCardsView
 {
-    private readonly ISystemInfoService _systemInfoService;
+    // mosques publish their times to the minute
+    private const string TimeFormat = "HH:mm";
+    private const string MissingTime = "xx:xx";
 
     public MosquePrayerTimeView(ISystemInfoService systemInfoService)
+        : base(systemInfoService)
     {
-        _systemInfoService = systemInfoService;
-        Content = CreateUI();
+        InitializeUI();
     }
 
-    private ScrollView CreateUI()
+    protected override double MainTimeEmWidth => 5.8;  // "00:00 - 00:00"
+    protected override double SubTimeEmWidth => 2.6;   // "00:00"
+
+    protected override List<(ETimeSection Section, GenericPrayerTime Times)> GetDisplayedPrayerTimes(IPrayerTimesDay prayerTimesSet)
+        => prayerTimesSet.AllPrayerTimes;
+
+    /// <summary>
+    /// Same order as the other profiles, with Jumu'ah in the place of Duha. The second Friday
+    /// prayer belongs to Jumu'ah, so it is one of its sub times instead of a card of its own.
+    /// </summary>
+    protected override BlockDefinition[][] GetColumns() =>
+    [
+        [
+            CreatePrayerBlock(AppResources.Prayer_Fajr, ETimeSection.Fajr, nameof(MosquePrayerTimesDay.Fajr), showEnd: true),
+            CreatePrayerBlock(AppResources.Prayer_Dhuhr, ETimeSection.Dhuhr, nameof(MosquePrayerTimesDay.Dhuhr)),
+            CreatePrayerBlock(AppResources.Prayer_Maghrib, ETimeSection.Maghrib, nameof(MosquePrayerTimesDay.Maghrib)),
+        ],
+        [
+            CreateJumuahBlock(),
+            CreatePrayerBlock(AppResources.Prayer_Asr, ETimeSection.Asr, nameof(MosquePrayerTimesDay.Asr)),
+            CreatePrayerBlock(AppResources.Prayer_Isha, ETimeSection.Isha, nameof(MosquePrayerTimesDay.Isha)),
+        ],
+    ];
+
+    /// <summary>
+    /// The start of the prayer time and, as its sub time, the start of the congregational prayer,
+    /// which is only shown when the mosque publishes one.
+    /// </summary>
+    private BlockDefinition CreatePrayerBlock(string name, ETimeSection section, string prayerTimeProperty, bool showEnd = false)
     {
-        // The rows are Auto so that the content determines its own height instead of being squeezed
-        // into fixed proportions. Anything that doesn't fit on a small screen is reachable by scrolling.
-        Grid mainGrid = new Grid
+        string binding = PrayerTimeBinding(prayerTimeProperty);
+
+        return new BlockDefinition(
+            name,
+            section,
+            binding,
+            value =>
+            {
+                var prayerTime = value as MosquePrayerTime;
+                string startTime = FormatTime(prayerTime?.Start) ?? MissingTime;
+
+                return showEnd
+                    ? $"{startTime} - {FormatTime(prayerTime?.End) ?? MissingTime}"
+                    : startTime;
+            },
+            [
+                new SubTimeDefinition(
+                    AppResources.SubTime_Iqama,
+                    binding,
+                    value => FormatTime(GetCongregationStart(value as MosquePrayerTime)) ?? "",
+                    ShowBinding: binding,
+                    ShowConverter: value => GetCongregationStart(value as MosquePrayerTime) is not null)
+            ]);
+    }
+
+    private BlockDefinition CreateJumuahBlock()
+    {
+        string jumuah2StartBinding = $"{PrayerTimeBinding(nameof(MosquePrayerTimesDay.Jumuah2))}.{nameof(GenericPrayerTime.Start)}";
+
+        return new BlockDefinition(
+            AppResources.Prayer_Jumuah,
+            ETimeSection.General,
+            PrayerTimeBinding(nameof(MosquePrayerTimesDay.Jumuah)),
+            value => FormatTime((value as MosquePrayerTime)?.Start) ?? MissingTime,
+            [
+                new SubTimeDefinition(
+                    AppResources.SubTime_Jumuah2,
+                    jumuah2StartBinding,
+                    value => FormatTime(value as ZonedDateTime?) ?? "",
+                    ShowBinding: jumuah2StartBinding,
+                    ShowConverter: value => value is not null)
+            ]);
+    }
+
+    private static ZonedDateTime? GetCongregationStart(MosquePrayerTime? prayerTime)
+    {
+        if (prayerTime?.Start is not ZonedDateTime start || prayerTime.CongregationStartOffset <= 0)
         {
-            RowSpacing = 2,
-            RowDefinitions = Rows.Define(
-                Auto, Auto, Auto, Auto, Auto,
-                Auto, Auto, Auto, Auto, Auto,
-                Auto, Auto, Auto, Auto, Auto
-            ),
-            ColumnDefinitions = Columns.Define(
-                new GridLength(3, GridUnitType.Star),
-                new GridLength(4, GridUnitType.Star),
-                new GridLength(2, GridUnitType.Star),
-                new GridLength(3, GridUnitType.Star),
-                new GridLength(4, GridUnitType.Star)
-            )
+            return null;
         }
-        .Paddings(10, 20, 10, 20);
 
-        int startRowNo = 1;
-
-        AddPrayerTimeUI(mainGrid, AppResources.Prayer_Fajr, nameof(MosquePrayerTimesDay.Fajr),
-            startRowNo, startColumnNo: 0);
-        AddPrayerTimeUI(mainGrid, AppResources.Prayer_Jumuah, nameof(MosquePrayerTimesDay.Jumuah),
-            startRowNo, startColumnNo: 3,
-            subtime1Name: AppResources.SubTime_Jumuah2, subtime1Binding: $"{nameof(MosquePrayerTimesDay.Jumuah2)}.{nameof(GenericPrayerTime.Start)}");
-        AddPrayerTimeUI(mainGrid, AppResources.Prayer_Dhuhr, nameof(MosquePrayerTimesDay.Dhuhr),
-            startRowNo + 4, startColumnNo: 0);
-        AddPrayerTimeUI(mainGrid, AppResources.Prayer_Asr, nameof(MosquePrayerTimesDay.Asr),
-            startRowNo + 4, startColumnNo: 3);
-        AddPrayerTimeUI(mainGrid, AppResources.Prayer_Maghrib, nameof(MosquePrayerTimesDay.Maghrib),
-            startRowNo + 8, startColumnNo: 0);
-        AddPrayerTimeUI(mainGrid, AppResources.Prayer_Isha, nameof(MosquePrayerTimesDay.Isha),
-            startRowNo + 8, startColumnNo: 3);
-
-        return new ScrollView { Content = mainGrid };
+        return start.PlusMinutes(prayerTime.CongregationStartOffset);
     }
 
-    private void AddPrayerTimeUI(
-        Grid grid,
-        string prayerName,
-        string bindingText,
-        int startRowNo, int startColumnNo,
-        string subtime1Binding = null, string subtime1Name = null)
-    {
-        var prayerNameLabel = new Label
-        {
-            Text = prayerName,
-            TextColor = AppColors.Text,
-            FontSize = AppFontSizes.PrayerName,
-            FontAttributes = FontAttributes.Bold,
-            HorizontalOptions = LayoutOptions.Start,
-            VerticalOptions = LayoutOptions.Start
-        };
-        grid.AddWithSpan(prayerNameLabel, startRowNo, startColumnNo, columnSpan: 2);
+    private string? FormatTime(ZonedDateTime? value)
+        => SystemInfoService.GetInCurrentZone(value)?.ToString(TimeFormat, null);
 
-        var prayerDurationLabel = new Label
-        {
-            TextColor = AppColors.Text,
-            FontSize = AppFontSizes.PrayerTime,
-            HorizontalOptions = LayoutOptions.Start,
-            VerticalOptions = LayoutOptions.Start
-        };
-        prayerDurationLabel.Bind(
-            Label.TextProperty,
-            $"{nameof(MosquePrayerTimeViewModel.PrayerTimesSet)}.{bindingText}",
-            convert: (MosquePrayerTime prayerTime) =>
-            {
-                if (prayerTime.Start == null)
-                {
-                    return "xx:xx";
-                }
-
-                ZonedDateTime? prayerTimeStartDisplayValue = _systemInfoService.GetInCurrentZone(prayerTime.Start);
-                ZonedDateTime? prayerTimeEndDisplayValue = _systemInfoService.GetInCurrentZone(prayerTime.End);
-
-                string startTime = prayerTimeStartDisplayValue?.ToString("HH:mm", null) ?? "xx.xx";
-                string endTime = prayerTimeEndDisplayValue?.ToString("HH:mm", null) ?? "xx.xx";
-                string congregationTime = prayerTime.CongregationStartOffset > 0
-                    ? prayerTime.Start?.PlusMinutes(prayerTime.CongregationStartOffset).ToString("HH:mm", null) ?? "xx.xx"
-                    : "";
-
-                string fullTimeText = startTime;
-
-                // TODO improve
-                if (prayerName == AppResources.Prayer_Fajr)
-                {
-                    fullTimeText += $"-{endTime}";
-                }
-
-                if (!string.IsNullOrWhiteSpace(congregationTime))
-                {
-                    fullTimeText += $" ({congregationTime})";
-                }
-
-                return fullTimeText;
-            });
-
-        grid.AddWithSpan(prayerDurationLabel, startRowNo + 1, startColumnNo, columnSpan: 2);
-
-        if (!string.IsNullOrEmpty(subtime1Binding))
-        {
-            var subtime1Label = new Label
-            {
-                Text = subtime1Name,
-                TextColor = AppColors.Text,
-                FontSize = AppFontSizes.SubTimeName,
-                HorizontalOptions = LayoutOptions.Start,
-                VerticalOptions = LayoutOptions.Center
-            };
-
-            var subtime1DisplayText = new Label
-            {
-                TextColor = AppColors.Text,
-                FontSize = AppFontSizes.SubTime,
-                HorizontalOptions = LayoutOptions.Center,
-                VerticalOptions = LayoutOptions.Center
-            };
-            subtime1DisplayText.Bind(
-                Label.TextProperty,
-                $"{nameof(MosquePrayerTimeViewModel.PrayerTimesSet)}.{subtime1Binding}",
-                convert: (ZonedDateTime? subTime1) => _systemInfoService.GetInCurrentZone(subTime1),
-                stringFormat: "{0:HH:mm:ss}");
-
-            grid.AddWithSpan(subtime1Label, startRowNo + 2, startColumnNo);
-            grid.AddWithSpan(subtime1DisplayText, startRowNo + 2, startColumnNo + 1);
-        }
-    }
+    private static string PrayerTimeBinding(string prayerTimeProperty)
+        => $"{nameof(MosquePrayerTimeViewModel.PrayerTimesSet)}.{prayerTimeProperty}";
 }
