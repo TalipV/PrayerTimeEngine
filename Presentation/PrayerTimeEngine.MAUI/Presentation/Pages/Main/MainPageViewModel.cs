@@ -281,20 +281,23 @@ public partial class MainPageViewModel(
         }
     }
 
-    public async Task CreateNewMosqueProfile(EMosquePrayerTimeProviderType selectedItem, string externalID)
+    public async Task CreateNewMosqueProfile(EMosquePrayerTimeProviderType providerType, string externalID, string? mosqueName)
     {
         try
         {
             CancellationToken cancellationToken = default;
 
-            bool isValid = await mosquePrayerTimeProviderManager.ValidateData(selectedItem, externalID, cancellationToken);
+            // e.g. Mawaqit's numeric "id/11504" from the share text becomes the slug "assunnah-frechen";
+            // null when the mosque does not exist
+            string? normalizedExternalID = await mosquePrayerTimeProviderManager.NormalizeExternalIDAsync(providerType, externalID, cancellationToken);
 
-            if (!isValid)
+            if (normalizedExternalID is null)
             {
+                toastMessageService.ShowError(string.Format(AppResources.MosqueProfile_NotFound, providerType));
                 return;
             }
 
-            MosqueProfile newMosqueProfile = await profileService.CreateNewMosqueProfile(selectedItem, externalID, cancellationToken);
+            MosqueProfile newMosqueProfile = await profileService.CreateNewMosqueProfile(providerType, normalizedExternalID, mosqueName, cancellationToken);
             await ReloadProfiles(newMosqueProfile.ID);
         }
         catch (Exception exception)

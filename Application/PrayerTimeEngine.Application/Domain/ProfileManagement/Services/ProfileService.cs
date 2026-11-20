@@ -449,9 +449,11 @@ public class ProfileService(
                 })];
     }
 
-    public Task<MosqueProfile> CreateNewMosqueProfile(EMosquePrayerTimeProviderType providerType, string externalID, CancellationToken cancellationToken)
+    public Task<MosqueProfile> CreateNewMosqueProfile(EMosquePrayerTimeProviderType providerType, string externalID, string? mosqueName, CancellationToken cancellationToken)
     {
-        string profileName = $"{providerType}: {externalID}";
+        string profileName = string.IsNullOrWhiteSpace(mosqueName)
+            ? $"{providerType}: {externalID}"
+            : mosqueName.Trim();
 
         return profileRepository.CreateNewMosqueProfile(providerType, externalID, profileName, cancellationToken);
     }

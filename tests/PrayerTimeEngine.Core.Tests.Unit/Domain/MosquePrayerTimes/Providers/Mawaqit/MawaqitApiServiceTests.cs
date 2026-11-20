@@ -20,7 +20,9 @@ public class MawaqitApiServiceTests : BaseTest
             HandleRequestFunc =
                 (request) =>
                     {
-                        if (request.RequestUri.AbsoluteUri.EndsWith("hamza-koln"))
+                        // the page of the numeric mosque ID is the same page as the one of the slug
+                        if (request.RequestUri.AbsoluteUri.EndsWith("hamza-koln")
+                            || request.RequestUri.AbsoluteUri.EndsWith("id/1234"))
                         {
                             Stream responseStream = File.OpenRead(Path.Combine(TestDataHelper.MAWAQIT_TEST_DATA_FILE_PATH, "Mawaqit_ResponsePageContent_20240829_hamza-koln.txt"));
 
@@ -140,5 +142,27 @@ public class MawaqitApiServiceTests : BaseTest
 
         // ASSERT
         response.Should().BeFalse();
+    }
+
+    [Theory]
+    [InlineData("hamza-koln")]
+    [InlineData("id/1234")]
+    public async Task GetSlugAsync_ExistingMosque_SlugFromCanonicalLink(string externalID)
+    {
+        // ACT
+        string? slug = await _mawaqitApiService.GetSlugAsync(externalID, cancellationToken: default);
+
+        // ASSERT
+        slug.Should().Be("hamza-koln");
+    }
+
+    [Fact]
+    public async Task GetSlugAsync_UnknownMosque_Null()
+    {
+        // ACT
+        string? slug = await _mawaqitApiService.GetSlugAsync("id/99999999", cancellationToken: default);
+
+        // ASSERT
+        slug.Should().BeNull();
     }
 }

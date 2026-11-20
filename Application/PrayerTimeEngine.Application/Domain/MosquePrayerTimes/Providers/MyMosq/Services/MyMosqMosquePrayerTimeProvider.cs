@@ -48,4 +48,12 @@ public class MyMosqMosquePrayerTimeProvider(
     {
         return myMosqApiService.ValidateData(externalID, cancellationToken);
     }
+
+    /// <summary>MyMosq's identifier is used as it is; it only has to lead to a mosque.</summary>
+    public async Task<string?> NormalizeExternalIDAsync(string externalID, CancellationToken cancellationToken)
+    {
+        return await myMosqApiService.ValidateData(externalID, cancellationToken).ConfigureAwait(false)
+            ? externalID
+            : null;
+    }
 }

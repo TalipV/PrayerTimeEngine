@@ -96,4 +96,12 @@ public class MosquePrayerTimeProviderManager(
 
         return await provider.ValidateData(externalID, cancellationToken);
     }
+
+    public Task<string?> NormalizeExternalIDAsync(EMosquePrayerTimeProviderType mosquePrayerTimeProviderType, string externalID, CancellationToken cancellationToken)
+    {
+        IMosquePrayerTimeProvider provider =
+            mosquePrayerTimeProviderFactory.GetDynamicPrayerTimeProviderByDynamicPrayerTimeProvider(mosquePrayerTimeProviderType);
+
+        return provider.NormalizeExternalIDAsync(externalID, cancellationToken);
+    }
 }

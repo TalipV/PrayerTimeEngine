@@ -286,15 +286,6 @@
     <value>In Karte öffnen</value>
     <comment>Button in the location overview</comment>
   </data>
-  <data name="Menu_SelectMosqueApp" xml:space="preserve">
-    <value>Moschee-App auswählen</value>
-  </data>
-  <data name="Menu_MosqueIdentifierTitle" xml:space="preserve">
-    <value>Kennung</value>
-  </data>
-  <data name="Menu_MosqueIdentifierMessage" xml:space="preserve">
-    <value>Kennung der jeweiligen Moschee eingeben</value>
-  </data>
   <data name="Menu_ProfileNamePrompt" xml:space="preserve">
     <value>Profilname</value>
   </data>
@@ -438,5 +429,53 @@ Nisab: {4:N2} € ({5:N2} g)</value>
   </data>
   <data name="Qiblah_SettingsNotOpened" xml:space="preserve">
     <value>Einstellungen konnten nicht geöffnet werden.</value>
+  </data>
+  <data name="MosqueProfile_Title" xml:space="preserve">
+    <value>Moschee hinzufügen</value>
+  </data>
+  <data name="MosqueProfile_ShareTitle" xml:space="preserve">
+    <value>Direkt aus der Mawaqit-App teilen</value>
+  </data>
+  <data name="MosqueProfile_ShareStep1" xml:space="preserve">
+    <value>Moschee in der Mawaqit-App öffnen</value>
+  </data>
+  <data name="MosqueProfile_ShareStep2" xml:space="preserve">
+    <value>„Teilen“ antippen</value>
+  </data>
+  <data name="MosqueProfile_ShareStep3" xml:space="preserve">
+    <value>„Als Moschee hinzufügen“ wählen</value>
+  </data>
+  <data name="MosqueProfile_ShareReady" xml:space="preserve">
+    <value>Empfangsbereit, solange dieses Fenster offen ist</value>
+  </data>
+  <data name="MosqueProfile_Or" xml:space="preserve">
+    <value>oder</value>
+  </data>
+  <data name="MosqueProfile_InputTitle" xml:space="preserve">
+    <value>Link oder Kennung einfügen</value>
+  </data>
+  <data name="MosqueProfile_InputPlaceholder" xml:space="preserve">
+    <value>mawaqit.net/… oder mymosq.com/mosque/…</value>
+  </data>
+  <data name="MosqueProfile_InputHint" xml:space="preserve">
+    <value>Moschee im Browser öffnen, die Adresse kopieren und hier einfügen.</value>
+  </data>
+  <data name="MosqueProfile_Paste" xml:space="preserve">
+    <value>Einfügen</value>
+  </data>
+  <data name="MosqueProfile_Recognized" xml:space="preserve">
+    <value>{0} · {1}</value>
+  </data>
+  <data name="MosqueProfile_NotRecognized" xml:space="preserve">
+    <value>Kein Mawaqit- oder MyMosq-Link erkannt</value>
+  </data>
+  <data name="MosqueProfile_SelectApp" xml:space="preserve">
+    <value>Zu welcher App gehört diese Kennung?</value>
+  </data>
+  <data name="MosqueProfile_Create" xml:space="preserve">
+    <value>Profil anlegen</value>
+  </data>
+  <data name="MosqueProfile_NotFound" xml:space="preserve">
+    <value>Diese Moschee wurde bei {0} nicht gefunden.</value>
   </data>
 </root>

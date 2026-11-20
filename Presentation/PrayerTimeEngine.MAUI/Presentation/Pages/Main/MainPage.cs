@@ -4,6 +4,7 @@ using Microsoft.Maui.Controls.Shapes;
 using NodaTime;
 using PrayerTimeEngine.Core.Common;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
+using PrayerTimeEngine.Presentation.Services.MosqueSharing;
 using PrayerTimeEngine.Presentation.Views.MosquePrayerTimes;
 using PrayerTimeEngine.Presentation.Views.PrayerTimeGraphic;
 using PrayerTimeEngine.Presentation.Views.PrayerTimes;
@@ -19,12 +20,14 @@ public partial class MainPage : ContentPage
     private readonly IPreferenceService _preferenceService;
     private readonly ISystemInfoService _systemInfoService;
     private readonly MainPageOptionsMenuService _mainPageOptionsMenuService;
+    private readonly IMosqueShareTarget _mosqueShareTarget;
 
     public MainPage(
             IDispatcher dispatcher,
             MainPageViewModel viewModel,
             IPreferenceService preferenceService,
             ISystemInfoService systemInfoService,
+            IMosqueShareTarget mosqueShareTarget,
             PrayerTimeGraphicView prayerTimeGraphicView
         )
     {
@@ -32,6 +35,7 @@ public partial class MainPage : ContentPage
         _dispatcher = dispatcher;
         _preferenceService = preferenceService;
         _systemInfoService = systemInfoService;
+        _mosqueShareTarget = mosqueShareTarget;
 
         // provide all constructor service params automatically through DI but add MainPage param ('this') manually
         _mainPageOptionsMenuService = ActivatorUtilities.CreateInstance<MainPageOptionsMenuService>(
@@ -109,6 +113,13 @@ public partial class MainPage : ContentPage
         NavigationPage.SetTitleView(this, _titleGrid);
 
         Task.Run(_viewModel.OnActualAppearing);
+
+        // a mosque was shared from another app, but the system had closed the app in the meantime and
+        // started it anew for the share: continue with the dialog for the new mosque profile
+        if (_mosqueShareTarget.TryTakePendingText(out string sharedText))
+        {
+            _dispatcher.Dispatch(async () => await _mainPageOptionsMenuService.CreateMosqueProfileFromSharedText(sharedText));
+        }
     }
 
     protected override void OnDisappearing()
