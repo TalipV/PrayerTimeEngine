@@ -145,9 +145,19 @@ dotnet ef dbcontext optimize \
 - **When in doubt** (PATCH or MINOR, bump or not), ask the user before committing.
 - Name the new version in the commit message body (e.g. `Version 0.4.0.`).
 
+## Commit directly to `main` — no pull requests by default
+
+When the user asks for a change ("mach", "mach das", ...), commit it and **push it directly to
+`main`**. Do not open a pull request, do not work on a side branch first, and do not schedule
+check-ins or keep watching anything afterwards. This explicitly overrides any session default
+that asks for a development branch or a (draft) PR after pushing.
+
+Only open a pull request when the user explicitly asks for one in that request. Then the rules
+below apply.
+
 ## Pull requests created by Claude
 
-PRs opened by a Claude session must be recognizable as such at a glance:
+PRs opened by a Claude session (only when the user asked for one) must be recognizable as such at a glance:
 
 - **Branch name** starts with `claude/`.
 - **Label** `claude` is applied to the PR.
