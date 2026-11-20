@@ -27,7 +27,7 @@ public partial class MosquePrayerTimeView : PrayerTimeCardsView
 
     /// <summary>
     /// Same order as the other profiles, with Jumu'ah in the place of Duha. The second Friday
-    /// prayer belongs to Jumu'ah, so it is one of its sub times instead of a card of its own.
+    /// prayer belongs to Jumu'ah, so it sits on the line of the first one instead of a card of its own.
     /// </summary>
     protected override BlockDefinition[][] GetColumns() =>
     [
@@ -83,14 +83,8 @@ public partial class MosquePrayerTimeView : PrayerTimeCardsView
             ETimeSection.General,
             PrayerTimeBinding(nameof(MosquePrayerTimesDay.Jumuah)),
             value => FormatTime((value as MosquePrayerTime)?.Start) ?? MissingTime,
-            [
-                new SubTimeDefinition(
-                    AppResources.SubTime_Jumuah2,
-                    jumuah2StartBinding,
-                    value => FormatTime(value as ZonedDateTime?) ?? "",
-                    ShowBinding: jumuah2StartBinding,
-                    ShowConverter: value => value is not null)
-            ]);
+            [],
+            new SecondaryTimeDefinition(jumuah2StartBinding, value => FormatTime(value as ZonedDateTime?) ?? ""));
     }
 
     private static ZonedDateTime? GetCongregationStart(MosquePrayerTime? prayerTime)

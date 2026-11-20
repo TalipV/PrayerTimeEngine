@@ -31,6 +31,11 @@ public abstract class PrayerTimeCardsView(ISystemInfoService systemInfoService) 
         string? ShowBinding = null,
         Func<object?, bool>? ShowConverter = null);
 
+    /// <summary>
+    /// A second time on the line of the main time, right-aligned, e.g. a second Friday prayer.
+    /// </summary>
+    protected sealed record SecondaryTimeDefinition(string Binding, Func<object?, string> Format);
+
     /// <param name="Binding">Path of the main time relative to the binding context of the view.</param>
     /// <param name="Format">Turns the bound value into the displayed main time.</param>
     protected sealed record BlockDefinition(
@@ -38,7 +43,8 @@ public abstract class PrayerTimeCardsView(ISystemInfoService systemInfoService) 
         ETimeSection Section,
         string Binding,
         Func<object?, string> Format,
-        SubTimeDefinition[] SubTimes);
+        SubTimeDefinition[] SubTimes,
+        SecondaryTimeDefinition? SecondaryTime = null);
 
     /// <summary>
     /// The whole view is derived from these columns, so adding or removing a time is a change to
@@ -197,10 +203,10 @@ public abstract class PrayerTimeCardsView(ISystemInfoService systemInfoService) 
             HorizontalOptions = LayoutOptions.Start
         };
 
-        Label prayerDurationLabel = CreateTimeLabel(block);
+        Label prayerDurationLabel = CreateTimeLabel(block.Binding, block.Format);
 
         blockLayout.Add(prayerNameLabel);
-        blockLayout.Add(prayerDurationLabel);
+        blockLayout.Add(CreateTimeLine(prayerDurationLabel, block.SecondaryTime));
 
         _scaledLabels.Add((prayerNameLabel, 1.0));
         _scaledLabels.Add((prayerDurationLabel, PrayerTimeRatio));
@@ -275,19 +281,38 @@ public abstract class PrayerTimeCardsView(ISystemInfoService systemInfoService) 
             && displayedPrayerTimes.Any(x => x.Section == block.Section && ReferenceEquals(x.Times, highlightedPrayerTime));
     }
 
-    private static Label CreateTimeLabel(BlockDefinition block)
+    private static Label CreateTimeLabel(string binding, Func<object?, string> format)
     {
         var timeLabel = new Label
         {
             TextColor = AppColors.Text,
-            HorizontalOptions = LayoutOptions.Start
+            HorizontalOptions = LayoutOptions.Start,
+            LineBreakMode = LineBreakMode.NoWrap
         };
 
         timeLabel.SetBinding(
             Label.TextProperty,
-            new Binding(block.Binding, converter: new FuncConverter<object?, string>(block.Format)));
+            new Binding(binding, converter: new FuncConverter<object?, string>(format)));
 
         return timeLabel;
+    }
+
+    /// <summary>
+    /// The main time, with the secondary time, if any, on the same line at the right edge.
+    /// </summary>
+    private View CreateTimeLine(Label mainTimeLabel, SecondaryTimeDefinition? secondaryTime)
+    {
+        if (secondaryTime is null)
+        {
+            return mainTimeLabel;
+        }
+
+        Label secondaryTimeLabel = CreateTimeLabel(secondaryTime.Binding, secondaryTime.Format);
+        secondaryTimeLabel.HorizontalOptions = LayoutOptions.End;
+        _scaledLabels.Add((secondaryTimeLabel, PrayerTimeRatio));
+
+        // both labels share one cell, so neither width depends on a measured column
+        return new Grid { mainTimeLabel, secondaryTimeLabel };
     }
 
     /// <summary>
@@ -303,7 +328,7 @@ public abstract class PrayerTimeCardsView(ISystemInfoService systemInfoService) 
             VerticalOptions = LayoutOptions.Center
         };
 
-        Label timeLabel = CreateTimeLabel(block);
+        Label timeLabel = CreateTimeLabel(block.Binding, block.Format);
         timeLabel.VerticalOptions = LayoutOptions.Center;
         timeLabel.HorizontalOptions = LayoutOptions.End;
 
@@ -323,25 +348,26 @@ public abstract class PrayerTimeCardsView(ISystemInfoService systemInfoService) 
 
     private Grid CreateSubTime(SubTimeDefinition subTime)
     {
-        // the name takes what it needs, the value keeps to the right edge so the values line up
-        var subTimeGrid = new Grid
-        {
-            ColumnDefinitions = Columns.Define(Auto, Star)
-        };
+        // Name and value share one cell, the name at the left and the value at the right edge so the
+        // values line up. An Auto column for the name would keep the width it measured while the row
+        // was hidden, which cuts the name off once the row appears with the scaled font size.
+        var subTimeGrid = new Grid();
 
         var nameLabel = new Label
         {
             Text = subTime.Name,
             TextColor = AppColors.TextMuted,
             HorizontalOptions = LayoutOptions.Start,
-            VerticalOptions = LayoutOptions.Center
+            VerticalOptions = LayoutOptions.Center,
+            LineBreakMode = LineBreakMode.NoWrap
         };
 
         var valueLabel = new Label
         {
             TextColor = AppColors.Text,
             HorizontalOptions = LayoutOptions.End,
-            VerticalOptions = LayoutOptions.Center
+            VerticalOptions = LayoutOptions.Center,
+            LineBreakMode = LineBreakMode.NoWrap
         };
 
         valueLabel.SetBinding(
@@ -355,10 +381,21 @@ public abstract class PrayerTimeCardsView(ISystemInfoService systemInfoService) 
                 subTime.ShowConverter is null
                     ? new Binding(subTime.ShowBinding)
                     : new Binding(subTime.ShowBinding, converter: new FuncConverter<object?, bool>(subTime.ShowConverter)));
+
+            // a hidden row is not measured again when the font size changes, so do it when it appears
+            subTimeGrid.PropertyChanged += (_, e) =>
+            {
+                if (e.PropertyName == IsVisibleProperty.PropertyName && subTimeGrid.IsVisible)
+                {
+                    ((IView)nameLabel).InvalidateMeasure();
+                    ((IView)valueLabel).InvalidateMeasure();
+                    ((IView)subTimeGrid).InvalidateMeasure();
+                }
+            };
         }
 
-        subTimeGrid.Add(nameLabel, column: 0);
-        subTimeGrid.Add(valueLabel, column: 1);
+        subTimeGrid.Add(nameLabel);
+        subTimeGrid.Add(valueLabel);
 
         _scaledLabels.Add((nameLabel, SubTimeRatio));
         _scaledLabels.Add((valueLabel, SubTimeRatio));
