@@ -293,7 +293,9 @@ internal class MainPageOptionsMenuService(
                             DeviceDisplay.MainDisplayInfo.Height,
                             DeviceDisplay.MainDisplayInfo.Width,
                             DeviceDisplay.MainDisplayInfo.Density,
-                            systemInfoService.GetSystemTimeZone().Id),
+                            systemInfoService.GetSystemTimeZone().Id,
+                            AppInfo.Current.VersionString,
+                            AppInfo.Current.BuildString),
                         AppResources.Common_Ok);
                     break;
 

@@ -260,7 +260,8 @@
 Type: {2}, {3}
 Operating system: {4}, {5}
 Resolution: {6}x{7} (density: {8})
-Time zone: {9}</value>
+Time zone: {9}
+App version: {10} (build {11})</value>
   </data>
   <data name="Menu_GoldPricesText" xml:space="preserve">
     <value>Gold price per gram: €{0:N5}

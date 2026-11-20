@@ -304,7 +304,8 @@
 Art: {2}, {3}
 Betriebssystem: {4}, {5}
 Auflösung: {6}x{7} (Dichte: {8})
-Zeitzone: {9}</value>
+Zeitzone: {9}
+App-Version: {10} (Build {11})</value>
     <comment>{0} manufacturer, {1} model, {2} idiom, {3} device type, {4} platform, {5} version, {6} height, {7} width, {8} density, {9} time zone</comment>
   </data>
   <data name="Menu_GoldPricesText" xml:space="preserve">
