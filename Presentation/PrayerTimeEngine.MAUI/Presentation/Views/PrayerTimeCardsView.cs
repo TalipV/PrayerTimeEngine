@@ -69,6 +69,12 @@ public abstract class PrayerTimeCardsView(ISystemInfoService systemInfoService) 
     protected abstract double SubTimeEmWidth { get; }
 
     /// <summary>
+    /// Lower bound for the width of a column in multiples of the prayer name size. Caps the font
+    /// size of a view whose times are so short that they alone would make the text huge.
+    /// </summary>
+    protected virtual double MinColumnEmWidth => 0;
+
+    /// <summary>
     /// Executed with the section of a block when its card is tapped. No command, no tap.
     /// </summary>
     protected virtual ICommand? CardTapCommand => null;
@@ -185,7 +191,7 @@ public abstract class PrayerTimeCardsView(ISystemInfoService systemInfoService) 
             _requiredLineUnits += 1.0;
         }
 
-        _requiredEmWidth = columns.Max(GetRequiredEmWidth);
+        _requiredEmWidth = Math.Max(columns.Max(GetRequiredEmWidth), MinColumnEmWidth);
         mainGrid.SizeChanged += (_, _) => ApplyTypeScale(mainGrid);
 
         return mainGrid;
@@ -376,22 +382,19 @@ public abstract class PrayerTimeCardsView(ISystemInfoService systemInfoService) 
 
         if (!string.IsNullOrEmpty(subTime.ShowBinding))
         {
+            Func<object?, bool> isShown = subTime.ShowConverter ?? (value => value is true);
+
             subTimeGrid.SetBinding(
                 IsVisibleProperty,
-                subTime.ShowConverter is null
-                    ? new Binding(subTime.ShowBinding)
-                    : new Binding(subTime.ShowBinding, converter: new FuncConverter<object?, bool>(subTime.ShowConverter)));
+                new Binding(subTime.ShowBinding, converter: new FuncConverter<object?, bool>(isShown)));
 
-            // a hidden row is not measured again when the font size changes, so do it when it appears
-            subTimeGrid.PropertyChanged += (_, e) =>
-            {
-                if (e.PropertyName == IsVisibleProperty.PropertyName && subTimeGrid.IsVisible)
-                {
-                    ((IView)nameLabel).InvalidateMeasure();
-                    ((IView)valueLabel).InvalidateMeasure();
-                    ((IView)subTimeGrid).InvalidateMeasure();
-                }
-            };
+            // On Android a label whose font size changed while its row was hidden keeps the size it
+            // measured before and cuts its text off once the row appears. Only a new text measures
+            // it again, which is why the value never had that problem. So the name gets its text
+            // together with the visibility instead of once at the start.
+            nameLabel.SetBinding(
+                Label.TextProperty,
+                new Binding(subTime.ShowBinding, converter: new FuncConverter<object?, string>(value => isShown(value) ? subTime.Name : "")));
         }
 
         subTimeGrid.Add(nameLabel);

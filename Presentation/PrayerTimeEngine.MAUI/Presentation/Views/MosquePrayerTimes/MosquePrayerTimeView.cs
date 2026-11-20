@@ -22,6 +22,11 @@ public partial class MosquePrayerTimeView : PrayerTimeCardsView
     protected override double MainTimeEmWidth => 5.8;  // "00:00 - 00:00"
     protected override double SubTimeEmWidth => 2.6;   // "00:00"
 
+    // Times without seconds alone would need a column of only about 4.6 times the prayer name size
+    // and make the text far larger than on the other profiles, which need about 7.5 to 7.9. This
+    // keeps the font size roughly halfway between the two.
+    protected override double MinColumnEmWidth => 5.8;
+
     protected override List<(ETimeSection Section, GenericPrayerTime Times)> GetDisplayedPrayerTimes(IPrayerTimesDay prayerTimesSet)
         => prayerTimesSet.AllPrayerTimes;
 
