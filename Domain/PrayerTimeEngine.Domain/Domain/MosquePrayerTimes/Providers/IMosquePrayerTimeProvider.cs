@@ -9,8 +9,8 @@ public interface IMosquePrayerTimeProvider
     Task<bool> ValidateData(string externalID, CancellationToken cancellationToken);
 
     /// <summary>
-    /// Turns an identifier taken from user input into the form that is stored in the profile,
-    /// or returns <c>null</c> when the mosque does not exist.
+    /// Looks up the mosque behind an identifier taken from user input: the identifier in the form that is stored
+    /// in the profile and, where the mosque app provides it, the mosque's name. <c>null</c> when the mosque does not exist.
     /// </summary>
-    Task<string?> NormalizeExternalIDAsync(string externalID, CancellationToken cancellationToken);
+    Task<MosqueIdentity?> GetMosqueIdentityAsync(string externalID, CancellationToken cancellationToken);
 }

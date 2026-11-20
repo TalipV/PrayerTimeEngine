@@ -8,6 +8,6 @@ public interface IMosquePrayerTimeProviderManager
     Task<MosquePrayerTimesDay> CalculatePrayerTimesAsync(int profileID, ZonedDateTime zoneDate, CancellationToken cancellationToken);
     Task<bool> ValidateData(EMosquePrayerTimeProviderType mosquePrayerTimeProviderType, string externalID, CancellationToken cancellationToken);
 
-    /// <inheritdoc cref="Providers.IMosquePrayerTimeProvider.NormalizeExternalIDAsync"/>
-    Task<string?> NormalizeExternalIDAsync(EMosquePrayerTimeProviderType mosquePrayerTimeProviderType, string externalID, CancellationToken cancellationToken);
+    /// <inheritdoc cref="Providers.IMosquePrayerTimeProvider.GetMosqueIdentityAsync"/>
+    Task<MosqueIdentity?> GetMosqueIdentityAsync(EMosquePrayerTimeProviderType mosquePrayerTimeProviderType, string externalID, CancellationToken cancellationToken);
 }

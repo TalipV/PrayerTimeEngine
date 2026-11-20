@@ -1,6 +1,7 @@
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using HtmlAgilityPack;
+using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Models;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.Mawaqit.Interfaces;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.Mawaqit.Models.DTOs;
 
@@ -56,7 +57,7 @@ public partial class MawaqitApiService(
         return response.StatusCode != System.Net.HttpStatusCode.NotFound;
     }
 
-    public async Task<string?> GetSlugAsync(string externalID, CancellationToken cancellationToken)
+    public async Task<MosqueIdentity?> GetMosqueIdentityAsync(string externalID, CancellationToken cancellationToken)
     {
         HttpResponseMessage response = await httpClient.GetAsync(externalID, cancellationToken);
 
@@ -74,6 +75,11 @@ public partial class MawaqitApiService(
         var doc = new HtmlDocument();
         doc.LoadHtml(pageContent);
 
+        return new MosqueIdentity(GetSlug(doc, externalID), GetMosqueName(doc));
+    }
+
+    private static string GetSlug(HtmlDocument doc, string externalID)
+    {
         // every mosque page (also the one under "id/11504") names its slug page as the canonical one,
         // e.g. <link rel="canonical" href="https://mawaqit.net/de/assunnah-frechen" />
         string? canonicalUrl = doc.DocumentNode
@@ -95,5 +101,40 @@ public partial class MawaqitApiService(
         return externalID.StartsWith("id/", StringComparison.OrdinalIgnoreCase)
             ? throw new Exception($"The slug of the mosque {externalID} could not be determined")
             : externalID;
+    }
+
+    /// <summary>
+    /// The mosque's name from the page data (<c>confData.name</c>, e.g. "As-Sunnah Moschee Frechen - Frechen"),
+    /// which is the same in every language of the page; <c>null</c> when the page does not contain it.
+    /// </summary>
+    private static string? GetMosqueName(HtmlDocument doc)
+    {
+        HtmlNode? scriptNode = doc.DocumentNode.SelectSingleNode("//script[contains(text(), 'confData = ')]");
+        if (scriptNode is null)
+        {
+            return null;
+        }
+
+        Match match = confDataExtractionRegex().Match(scriptNode.InnerText);
+        if (!match.Success)
+        {
+            return null;
+        }
+
+        try
+        {
+            using var confData = JsonDocument.Parse(match.Groups[1].Value);
+
+            return confData.RootElement.TryGetProperty("name", out JsonElement nameElement)
+                && nameElement.ValueKind == JsonValueKind.String
+                && !string.IsNullOrWhiteSpace(nameElement.GetString())
+                    ? nameElement.GetString()!.Trim()
+                    : null;
+        }
+        catch (JsonException)
+        {
+            // the name is only a nicer profile name; without it the profile is named after the identifier
+            return null;
+        }
     }
 }

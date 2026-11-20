@@ -142,7 +142,7 @@ internal class MainPageOptionsMenuService(
 
         if (request is not null)
         {
-            await viewModel.CreateNewMosqueProfile(request.ProviderType, request.ExternalID, request.MosqueName);
+            await viewModel.CreateNewMosqueProfile(request.ProviderType, request.ExternalID);
         }
     }
 

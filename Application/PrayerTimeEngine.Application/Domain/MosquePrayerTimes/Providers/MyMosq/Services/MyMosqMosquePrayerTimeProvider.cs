@@ -49,11 +49,14 @@ public class MyMosqMosquePrayerTimeProvider(
         return myMosqApiService.ValidateData(externalID, cancellationToken);
     }
 
-    /// <summary>MyMosq's identifier is used as it is; it only has to lead to a mosque.</summary>
-    public async Task<string?> NormalizeExternalIDAsync(string externalID, CancellationToken cancellationToken)
+    /// <summary>
+    /// MyMosq's identifier is used as it is; it only has to lead to a mosque.
+    /// The prayer time data does not contain the mosque's name, so there is none.
+    /// </summary>
+    public async Task<MosqueIdentity?> GetMosqueIdentityAsync(string externalID, CancellationToken cancellationToken)
     {
         return await myMosqApiService.ValidateData(externalID, cancellationToken).ConfigureAwait(false)
-            ? externalID
+            ? new MosqueIdentity(externalID, Name: null)
             : null;
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using NodaTime;
 using PrayerTimeEngine.Core.Domain.Calculators.Mosques.Mawaqit.Services;
+using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Models;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.Mawaqit.Models.DTOs;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.Mawaqit.Models.Entities;
 using PrayerTimeEngine.Core.Tests.Common;
@@ -147,22 +148,22 @@ public class MawaqitApiServiceTests : BaseTest
     [Theory]
     [InlineData("hamza-koln")]
     [InlineData("id/1234")]
-    public async Task GetSlugAsync_ExistingMosque_SlugFromCanonicalLink(string externalID)
+    public async Task GetMosqueIdentityAsync_ExistingMosque_SlugFromCanonicalLinkAndNameFromPageData(string externalID)
     {
         // ACT
-        string? slug = await _mawaqitApiService.GetSlugAsync(externalID, cancellationToken: default);
+        MosqueIdentity? identity = await _mawaqitApiService.GetMosqueIdentityAsync(externalID, cancellationToken: default);
 
         // ASSERT
-        slug.Should().Be("hamza-koln");
+        identity.Should().Be(new MosqueIdentity("hamza-koln", "--Masjid Hamza Köln-- مسجد حمزة - Köln"));
     }
 
     [Fact]
-    public async Task GetSlugAsync_UnknownMosque_Null()
+    public async Task GetMosqueIdentityAsync_UnknownMosque_Null()
     {
         // ACT
-        string? slug = await _mawaqitApiService.GetSlugAsync("id/99999999", cancellationToken: default);
+        MosqueIdentity? identity = await _mawaqitApiService.GetMosqueIdentityAsync("id/99999999", cancellationToken: default);
 
         // ASSERT
-        slug.Should().BeNull();
+        identity.Should().BeNull();
     }
 }

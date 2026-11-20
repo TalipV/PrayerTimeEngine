@@ -27,11 +27,29 @@ public class MosqueReferenceParserTests
         """;
 
     [Fact]
-    public void Parse_MawaqitShareText_NumericIDAndMosqueName()
+    public void Parse_MawaqitShareText_NumericID()
     {
         MosqueReference? result = MosqueReferenceParser.Parse(MAWAQIT_SHARE_TEXT);
 
-        result.Should().Be(new MosqueReference(EMosquePrayerTimeProviderType.Mawaqit, "id/11504", "As-Sunnah Moschee Frechen - Frechen"));
+        result.Should().Be(new MosqueReference(EMosquePrayerTimeProviderType.Mawaqit, "id/11504"));
+    }
+
+    [Fact]
+    public void Parse_MawaqitShareTextInOtherLanguage_NumericID()
+    {
+        // only the links are used, the (translated) labels of the share text do not matter
+        const string Input = """
+            Nom de la mosquée - As-Sunnah Moschee Frechen - Frechen
+
+            • Site web: http://mawaqit.net/fr/assunnah-frechen
+
+            Ouvrir cette mosquée dans l'application MAWAQIT :
+            https://mawaqit.net/fr/id/11504
+            """;
+
+        MosqueReference? result = MosqueReferenceParser.Parse(Input);
+
+        result.Should().Be(new MosqueReference(EMosquePrayerTimeProviderType.Mawaqit, "id/11504"));
     }
 
     [Fact]
@@ -41,17 +59,17 @@ public class MosqueReferenceParserTests
 
         MosqueReference? result = MosqueReferenceParser.Parse(input);
 
-        result.Should().Be(new MosqueReference(EMosquePrayerTimeProviderType.Mawaqit, "id/11504", "As-Sunnah Moschee Frechen - Frechen"));
+        result.Should().Be(new MosqueReference(EMosquePrayerTimeProviderType.Mawaqit, "id/11504"));
     }
 
     [Fact]
-    public void Parse_MawaqitShareTextPastedIntoSingleLineField_NumericIDAndMosqueName()
+    public void Parse_MawaqitShareTextPastedIntoSingleLineField_NumericID()
     {
         string input = MAWAQIT_SHARE_TEXT.ReplaceLineEndings(" ");
 
         MosqueReference? result = MosqueReferenceParser.Parse(input);
 
-        result.Should().Be(new MosqueReference(EMosquePrayerTimeProviderType.Mawaqit, "id/11504", "As-Sunnah Moschee Frechen - Frechen"));
+        result.Should().Be(new MosqueReference(EMosquePrayerTimeProviderType.Mawaqit, "id/11504"));
     }
 
     [Theory]
