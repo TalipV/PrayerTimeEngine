@@ -19,23 +19,20 @@ namespace PrayerTimeEngine.Platforms.Android.Sharing;
     Exported = true,
     NoHistory = true,
     ExcludeFromRecents = true)]
+// Any content type, not only "text/plain": the Mawaqit app shares its text together with an image, so the
+// share is announced as an image / "*/*" and a text-only filter would never be offered. Accepting everything
+// is fine here, because this entry only exists while the dialog for a new mosque profile is open.
 [IntentFilter(
-    [Intent.ActionSend],
+    [Intent.ActionSend, Intent.ActionSendMultiple],
     Categories = [Intent.CategoryDefault],
-    DataMimeType = "text/plain")]
+    DataMimeType = "*/*")]
 public class MosqueShareReceiverActivity : Activity
 {
     protected override void OnCreate(Bundle? savedInstanceState)
     {
         base.OnCreate(savedInstanceState);
 
-        string sharedText = string.Join(
-            "\n",
-            new[]
-            {
-                Intent?.GetStringExtra(Intent.ExtraSubject),
-                Intent?.GetStringExtra(Intent.ExtraText)
-            }.Where(x => !string.IsNullOrWhiteSpace(x)));
+        string sharedText = GetSharedText(Intent);
 
         if (!string.IsNullOrWhiteSpace(sharedText)
             && MauiProgram.ServiceProvider.GetService<IMosqueShareTarget>() is AndroidMosqueShareTarget shareTarget)
@@ -53,5 +50,38 @@ public class MosqueShareReceiverActivity : Activity
         }
 
         Finish();
+    }
+
+    /// <summary>
+    /// Collects the text of a share: subject and text extras (read as CharSequence, because apps may put
+    /// formatted text there, which <c>GetStringExtra</c> would return as null) plus the texts of the clip data,
+    /// which some apps use instead of the extras.
+    /// </summary>
+    private static string GetSharedText(Intent? intent)
+    {
+        if (intent is null)
+        {
+            return "";
+        }
+
+        List<string?> texts =
+        [
+            intent.GetCharSequenceExtra(Intent.ExtraSubject),
+            intent.GetCharSequenceExtra(Intent.ExtraText),
+        ];
+
+        if (intent.ClipData is { } clipData)
+        {
+            for (int index = 0; index < clipData.ItemCount; index++)
+            {
+                texts.Add(clipData.GetItemAt(index)?.Text);
+            }
+        }
+
+        return string.Join(
+            "\n",
+            texts
+                .Where(x => !string.IsNullOrWhiteSpace(x))
+                .Distinct());
     }
 }
