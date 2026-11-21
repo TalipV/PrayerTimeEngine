@@ -4,6 +4,7 @@ using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Domain.Models;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Models;
 using PrayerTimeEngine.Presentation.Localization;
+using PrayerTimeEngine.Presentation.Views.PrayerTimes;
 
 namespace PrayerTimeEngine.Presentation.Views.MosquePrayerTimes;
 
@@ -22,10 +23,9 @@ public partial class MosquePrayerTimeView : PrayerTimeCardsView
     protected override double MainTimeEmWidth => 5.8;  // "00:00 - 00:00"
     protected override double SubTimeEmWidth => 2.6;   // "00:00"
 
-    // Times without seconds alone would need a column of only about 4.6 times the prayer name size
-    // and make the text far larger than on the other profiles, which need about 7.5 to 7.9. This
-    // keeps the font size roughly halfway between the two.
-    protected override double MinColumnEmWidth => 5.8;
+    // Times without seconds alone would make the text far larger than on the other profiles, so the
+    // columns are sized like those of the dynamic view and the text gets the same size there.
+    protected override double MinColumnEmWidth => DynamicPrayerTimeView.ColumnEmWidth;
 
     protected override List<(ETimeSection Section, GenericPrayerTime Times)> GetDisplayedPrayerTimes(IPrayerTimesDay prayerTimesSet)
         => prayerTimesSet.AllPrayerTimes;

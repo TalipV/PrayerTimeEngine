@@ -36,7 +36,7 @@
     <ApplicationIdGuid>c83b767d-745b-4d09-b7ca-65e9b6575d10</ApplicationIdGuid>
     <!-- Versions (see "Versioning" in CLAUDE.md). ApplicationDisplayVersion is raised by hand;
          CI overrides ApplicationVersion (Android versionCode) with the workflow run number. -->
-    <ApplicationDisplayVersion>0.4.4</ApplicationDisplayVersion>
+    <ApplicationDisplayVersion>0.4.5</ApplicationDisplayVersion>
     <ApplicationVersion>1</ApplicationVersion>
   </PropertyGroup>
 

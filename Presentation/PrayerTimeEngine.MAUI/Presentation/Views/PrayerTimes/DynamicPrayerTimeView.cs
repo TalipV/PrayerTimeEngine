@@ -27,8 +27,27 @@ public partial class DynamicPrayerTimeView : PrayerTimeCardsView
     // Digits are the widest glyphs here, while the colons, the dash and the spaces of a time are
     // markedly narrower, so a plain character count would overestimate a time by roughly a third
     // and shrink the whole view for no reason.
-    protected override double MainTimeEmWidth => 8.8;  // "00:00:00 - 00:00:00"
-    protected override double SubTimeEmWidth => 4.0;   // "00:00:00"
+    private const double MainTimeEm = 8.8;  // "00:00:00 - 00:00:00"
+    private const double SubTimeEm = 4.0;   // "00:00:00"
+
+    protected override double MainTimeEmWidth => MainTimeEm;
+    protected override double SubTimeEmWidth => SubTimeEm;
+
+    /// <summary>
+    /// Width a column of this view needs in multiples of the prayer name size. Other views use it
+    /// to show their text at the same size as this one.
+    /// </summary>
+    public static double ColumnEmWidth
+        => GetColumnEmWidth(
+            MainTimeEm,
+            SubTimeEm,
+            // the sub time names of GetColumns; only the longest one matters
+            [
+                AppResources.SubTime_Ghalas, AppResources.SubTime_Redness,
+                AppResources.SubTime_Sufficient, AppResources.SubTime_Ishtibak,
+                AppResources.SubTime_Quarter, AppResources.SubTime_Half,
+                AppResources.SubTime_Mithlayn, AppResources.SubTime_Karaha,
+            ]);
 
     /// <summary>
     /// A card opens the settings of its section.

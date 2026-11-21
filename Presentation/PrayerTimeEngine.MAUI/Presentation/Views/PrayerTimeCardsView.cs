@@ -414,17 +414,23 @@ public abstract class PrayerTimeCardsView(ISystemInfoService systemInfoService) 
     /// its name and its value next to each other.
     /// </summary>
     private double GetRequiredEmWidth(BlockDefinition[] blocks)
-    {
-        double mainTimeWidth = MainTimeEmWidth * PrayerTimeRatio;
+        => GetColumnEmWidth(MainTimeEmWidth, SubTimeEmWidth, blocks.SelectMany(block => block.SubTimes).Select(subTime => subTime.Name));
 
-        int longestSubTimeName = blocks
-            .SelectMany(block => block.SubTimes)
-            .Select(subTime => subTime.Name.Length)
+    /// <summary>
+    /// Width of a column in multiples of the prayer name size, for main times and sub time values
+    /// of the given widths and the given sub time names.
+    /// </summary>
+    protected static double GetColumnEmWidth(double mainTimeEmWidth, double subTimeEmWidth, IEnumerable<string> subTimeNames)
+    {
+        double mainTimeWidth = mainTimeEmWidth * PrayerTimeRatio;
+
+        int longestSubTimeName = subTimeNames
+            .Select(name => name.Length)
             .DefaultIfEmpty(0)
             .Max();
 
         double subTimeWidth =
-            ((longestSubTimeName * LetterEmWidth) + SubTimeGapEmWidth + SubTimeEmWidth) * SubTimeRatio;
+            ((longestSubTimeName * LetterEmWidth) + SubTimeGapEmWidth + subTimeEmWidth) * SubTimeRatio;
 
         return Math.Max(mainTimeWidth, subTimeWidth);
     }
@@ -460,12 +466,18 @@ public abstract class PrayerTimeCardsView(ISystemInfoService systemInfoService) 
 
         _lastAppliedFontSize = fontSize;
 
-        foreach ((Label label, double ratio) in _scaledLabels)
+        // SizeChanged fires in the middle of a layout pass. On Android a label that changes its
+        // font size there can miss being measured again and keeps cutting its text off at the old
+        // size, so the new sizes are applied after the pass has finished.
+        mainGrid.Dispatcher.Dispatch(() =>
         {
-            label.FontSize = fontSize * ratio;
-        }
+            foreach ((Label label, double ratio) in _scaledLabels)
+            {
+                label.FontSize = fontSize * ratio;
+            }
 
-        ApplyRowSpacing(mainGrid, height, fontSize);
+            ApplyRowSpacing(mainGrid, height, fontSize);
+        });
     }
 
     private static double GetCardVerticalThickness()
