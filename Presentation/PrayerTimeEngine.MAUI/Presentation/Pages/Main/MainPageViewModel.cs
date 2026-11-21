@@ -6,7 +6,6 @@ using NodaTime;
 using PrayerTimeEngine.Core.Common;
 using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes;
-using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Models;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Muwaqqit.Models;
 using PrayerTimeEngine.Core.Domain.IslamicCalendar.Interfaces;
 using PrayerTimeEngine.Core.Domain.Models;
@@ -195,6 +194,62 @@ public partial class MainPageViewModel(
     }
 
     #endregion selected date
+
+    #region loading problems
+
+    /// <summary>
+    /// What went wrong while loading the shown times, e.g. a provider that failed or has no times for the day.
+    /// Shown as a warning sign; tapping it lists the problems.
+    /// </summary>
+    public List<LoadingProblem> LoadingProblems { get; private set; } = [];
+
+    public bool HasLoadingProblems => LoadingProblems.Count != 0;
+
+    /// <summary>The problems as text for the popup, grouped by source and message, with the affected days.</summary>
+    public string LoadingProblemsText =>
+        string.Join(
+            Environment.NewLine + Environment.NewLine,
+            LoadingProblems
+                .GroupBy(x => (x.Source, x.Message))
+                .OrderBy(x => x.Key.Source)
+                .Select(group =>
+                {
+                    string dates = string.Join(
+                        ", ",
+                        group
+                            .Where(x => x.Date is not null)
+                            .Select(x => x.Date.Value)
+                            .Distinct()
+                            .Order()
+                            .Select(x => x.ToString("dd.MM.yyyy", CultureInfo.InvariantCulture)));
+
+                    string header = string.IsNullOrEmpty(dates) ? group.Key.Source : $"{group.Key.Source} ({dates})";
+                    return $"{header}:{Environment.NewLine}{group.Key.Message}";
+                }));
+
+    private void SetLoadingProblems(List<LoadingProblem> loadingProblems)
+    {
+        LoadingProblems = loadingProblems;
+        OnPropertyChanged(nameof(HasLoadingProblems));
+        OnPropertyChanged(nameof(LoadingProblemsText));
+    }
+
+    private static string GetLoadingProblemMessage(Exception exception)
+    {
+        return exception switch
+        {
+            PrayerTimesNotAvailableForDateException => AppResources.MainPage_Problem_NotAvailable,
+
+            // Polly's circuit breaker (without referencing Polly): too many requests failed shortly before
+            _ when exception.GetType().Name == "BrokenCircuitException"
+                || exception.InnerException?.GetType().Name == "BrokenCircuitException"
+                => string.Format(AppResources.MainPage_Problem_CircuitOpen, exception.Message),
+
+            _ => exception.Message,
+        };
+    }
+
+    #endregion loading problems
 
     public string WeeksUntilLabelText
     {
@@ -697,7 +752,7 @@ public partial class MainPageViewModel(
 
                 refreshedProfileWithModel = CurrentProfileWithModel;
                 await refreshedProfileWithModel.RefreshData(zonedDateTime, isCurrentDay: zonedDateTime.Date == now.Date, _loadingTimesCancellationTokenSource.Token);
-                ShowCalculationErrorsIfNeeded(refreshedProfileWithModel);
+                SetLoadingProblems(GetLoadingProblems(refreshedProfileWithModel));
 
                 OnAfterLoadingPrayerTimes_EventTrigger?.Invoke();
             }
@@ -715,7 +770,14 @@ public partial class MainPageViewModel(
         catch (PrayerTimesNotAvailableForDateException exception)
         {
             logger.LogInformation("{ProviderName} provides no times for {Date}. ({RefreshCallID})", exception.ProviderName, exception.Date, refreshCallID);
-            toastMessageService.ShowWarning(string.Format(AppResources.MainPage_TimesNotAvailableForDate, exception.ProviderName));
+            SetLoadingProblems([new LoadingProblem(exception.ProviderName, exception.Date, GetLoadingProblemMessage(exception))]);
+        }
+        catch (Exception exception) when (refreshedProfileWithModel?.Profile is MosqueProfile mosqueProfile)
+        {
+            // the mosque app failed: shown behind the warning sign like the failures of the calculation sources
+            logger.LogError(exception,
+                "Error while loading the mosque times. ({RefreshCallID})", refreshCallID);
+            SetLoadingProblems([new LoadingProblem(mosqueProfile.MosqueProviderType.ToString(), refreshedProfileWithModel.DisplayedDate, GetLoadingProblemMessage(exception))]);
         }
         catch (Exception exception)
         {
@@ -746,44 +808,21 @@ public partial class MainPageViewModel(
         }
     }
 
-    private void ShowCalculationErrorsIfNeeded(IPrayerTimeViewModel prayerTimeViewModel)
+    private static List<LoadingProblem> GetLoadingProblems(IPrayerTimeViewModel prayerTimeViewModel)
     {
-        // currently only supported for dynamic times
+        // the mosque times either load completely or throw (handled in RefreshData)
         if (prayerTimeViewModel is not DynamicPrayerTimeViewModel dynamicPrayerTimeViewModel)
         {
-            return;
+            return [];
         }
 
-        List<DynamicPrayerTimeCalculationErrorVO> calculationErrors =
-            dynamicPrayerTimeViewModel.CalculationErrors ?? [];
-
-        if (calculationErrors.Count == 0)
-        {
-            return;
-        }
-
-        static string JoinProviders(IEnumerable<DynamicPrayerTimeCalculationErrorVO> errors) =>
-            string.Join(
-                ", ",
-                errors
-                    .Select(x => x.DynamicPrayerTimeProviderType.ToString())
-                    .Distinct()
-                    .OrderBy(x => x));
-
-        // only the shown day matters for the hint: the neighbouring days are calculated for the times around midnight
-        List<DynamicPrayerTimeCalculationErrorVO> notAvailableErrors =
-            [.. calculationErrors.Where(x => x.IsDateNotAvailable && x.Date == dynamicPrayerTimeViewModel.DisplayedDate)];
-        List<DynamicPrayerTimeCalculationErrorVO> failedErrors =
-            [.. calculationErrors.Where(x => !x.IsDateNotAvailable)];
-
-        if (failedErrors.Count != 0)
-        {
-            toastMessageService.ShowWarning(string.Format(AppResources.MainPage_CalculationFailed, JoinProviders(failedErrors)));
-        }
-        else if (notAvailableErrors.Count != 0)
-        {
-            toastMessageService.ShowWarning(string.Format(AppResources.MainPage_TimesNotAvailableForDate, JoinProviders(notAvailableErrors)));
-        }
+        // the neighbouring days are part of it as well: the times around midnight (e.g. the end of Isha) come from them
+        return
+            [.. (dynamicPrayerTimeViewModel.CalculationErrors ?? [])
+                .Select(x => new LoadingProblem(
+                    x.DynamicPrayerTimeProviderType.ToString(),
+                    x.Date,
+                    GetLoadingProblemMessage(x.Exception)))];
     }
 
     private async Task OnBeforeFirstLoad()
@@ -957,3 +996,6 @@ public partial class MainPageViewModel(
 
     #endregion private methods
 }
+
+/// <summary>A problem while loading the shown times: which source, for which day and what went wrong.</summary>
+public record LoadingProblem(string Source, LocalDate? Date, string Message);

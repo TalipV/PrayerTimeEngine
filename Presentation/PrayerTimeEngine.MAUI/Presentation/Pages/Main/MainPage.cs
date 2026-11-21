@@ -455,8 +455,8 @@ public partial class MainPage : ContentPage
 
     /// <summary>
     /// The bar below the search field to choose the shown day: arrows for the previous and the next day,
-    /// the day in the middle (tapping it opens the date picker) and a button back to the current day
-    /// that only shows up while another day is shown.
+    /// the day in the middle (tapping it opens the date picker), a warning sign while there were problems
+    /// loading the shown times and a button back to the current day that only shows up while another day is shown.
     /// </summary>
     private Grid CreateDateBar()
     {
@@ -514,16 +514,55 @@ public partial class MainPage : ContentPage
                 GridLength.Auto,
                 GridLength.Star,
                 GridLength.Auto,
+                GridLength.Auto,
                 GridLength.Auto),
             Margin = new Thickness(0, 6, 0, 0),
         };
 
         dateBar.Add(CreateDateBarArrowButton("‹", AppResources.MainPage_Date_PreviousDay, _viewModel.PreviousDayCommand), column: 0, row: 0);
         dateBar.Add(dateArea, column: 1, row: 0);
-        dateBar.Add(backToTodayButton, column: 2, row: 0);
-        dateBar.Add(CreateDateBarArrowButton("›", AppResources.MainPage_Date_NextDay, _viewModel.NextDayCommand), column: 3, row: 0);
+        dateBar.Add(CreateLoadingProblemsButton(), column: 2, row: 0);
+        dateBar.Add(backToTodayButton, column: 3, row: 0);
+        dateBar.Add(CreateDateBarArrowButton("›", AppResources.MainPage_Date_NextDay, _viewModel.NextDayCommand), column: 4, row: 0);
 
         return dateBar;
+    }
+
+    /// <summary>
+    /// Warning sign that only shows up when loading the shown times had problems (a calculation source or the
+    /// mosque app failed or has no times for the day). Tapping it lists the problems.
+    /// </summary>
+    private Grid CreateLoadingProblemsButton()
+    {
+        var warningLabel = new Label
+        {
+            Text = "⚠",
+            FontSize = 24,
+            TextColor = AppColors.Accent,
+            HorizontalTextAlignment = TextAlignment.Center,
+            VerticalTextAlignment = TextAlignment.Center,
+        };
+
+        Grid warningButton = new Grid
+        {
+            WidthRequest = 44,
+            HeightRequest = 44,
+            BackgroundColor = Colors.Transparent,
+            Children = { warningLabel }
+        }
+        .Bind(IsVisibleProperty, nameof(MainPageViewModel.HasLoadingProblems));
+        SemanticProperties.SetDescription(warningButton, AppResources.MainPage_Problems_Button);
+
+        warningButton.GestureRecognizers.Add(new TapGestureRecognizer
+        {
+            Command = new Command(async () =>
+                await DisplayAlertAsync(
+                    AppResources.MainPage_Problems_Title,
+                    _viewModel.LoadingProblemsText,
+                    AppResources.Common_Ok))
+        });
+
+        return warningButton;
     }
 
     private static Grid CreateDateBarArrowButton(string glyph, string description, System.Windows.Input.ICommand command)

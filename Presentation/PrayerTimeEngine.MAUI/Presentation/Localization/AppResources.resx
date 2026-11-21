@@ -198,10 +198,6 @@
     <value>{0} Wochen bis Ramadan</value>
     <comment>{0}: number of weeks</comment>
   </data>
-  <data name="MainPage_CalculationFailed" xml:space="preserve">
-    <value>Berechnung fehlgeschlagen für: {0}</value>
-    <comment>{0}: list of calculation sources</comment>
-  </data>
   <data name="MainPage_LocationInformationMissing" xml:space="preserve">
     <value>Ortsangaben fehlen für: {0}</value>
     <comment>{0}: list of calculation sources</comment>
@@ -529,8 +525,18 @@ Nisab: {4:N2} € ({5:N2} g)</value>
     <value>Nächster Tag</value>
     <comment>Accessibility description of the date bar button</comment>
   </data>
-  <data name="MainPage_TimesNotAvailableForDate" xml:space="preserve">
-    <value>Für diesen Tag liefert {0} keine Zeiten</value>
-    <comment>{0}: list of calculation sources or mosque apps</comment>
+  <data name="MainPage_Problem_NotAvailable" xml:space="preserve">
+    <value>Für diesen Tag gibt es keine Zeiten von dieser Quelle.</value>
+  </data>
+  <data name="MainPage_Problem_CircuitOpen" xml:space="preserve">
+    <value>Zu viele fehlgeschlagene Anfragen kurz hintereinander, die Quelle wird kurz pausiert. ({0})</value>
+    <comment>{0}: technical error message</comment>
+  </data>
+  <data name="MainPage_Problems_Title" xml:space="preserve">
+    <value>Probleme beim Laden</value>
+  </data>
+  <data name="MainPage_Problems_Button" xml:space="preserve">
+    <value>Probleme beim Laden anzeigen</value>
+    <comment>Accessibility description of the warning sign</comment>
   </data>
 </root>
