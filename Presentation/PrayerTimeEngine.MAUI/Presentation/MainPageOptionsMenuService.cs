@@ -259,7 +259,7 @@ internal class MainPageOptionsMenuService(
                     break;
 
                 case EOptionsMenuAction.ShowLogs:
-                    viewModel.GoToLogsPageCommand.Execute(null);
+                    await viewModel.ShowLogs();
                     break;
 
                 case EOptionsMenuAction.ShowDatabaseTables:

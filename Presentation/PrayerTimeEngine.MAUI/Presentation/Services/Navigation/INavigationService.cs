@@ -1,4 +1,5 @@
 using PrayerTimeEngine.Presentation.Pages.DatabaseTables;
+using PrayerTimeEngine.Presentation.Pages.Logs;
 using PrayerTimeEngine.Presentation.Pages.Main;
 using PrayerTimeEngine.Presentation.Pages.Settings.SettingsHandler;
 
@@ -24,6 +25,7 @@ public class NavigationService(
             [typeof(MainPageViewModel)] = typeof(MainPage),
             [typeof(SettingsHandlerPageViewModel)] = typeof(SettingsHandlerPage),
             [typeof(DatabaseTablesPageViewModel)] = typeof(DatabaseTablesPage),
+            [typeof(LogsPageViewModel)] = typeof(LogsPage),
         };
 
     public async Task NavigateTo<TViewModel>(params object[] parameter)

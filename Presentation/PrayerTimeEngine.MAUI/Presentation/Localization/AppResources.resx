@@ -539,4 +539,43 @@ Nisab: {4:N2} € ({5:N2} g)</value>
     <value>Probleme beim Laden anzeigen</value>
     <comment>Accessibility description of the warning sign</comment>
   </data>
+  <data name="Logs_Title" xml:space="preserve">
+    <value>Logs</value>
+  </data>
+  <data name="Logs_SearchPlaceholder" xml:space="preserve">
+    <value>Logs durchsuchen (mehrere Wörter: alle müssen vorkommen)</value>
+  </data>
+  <data name="Logs_MinimumLevel_Label" xml:space="preserve">
+    <value>Aufzeichnen:</value>
+  </data>
+  <data name="Logs_MinimumLevel_FromLevel" xml:space="preserve">
+    <value>ab {0}</value>
+  </data>
+  <data name="Logs_MinimumLevel_None" xml:space="preserve">
+    <value>gar nicht</value>
+  </data>
+  <data name="Logs_ShareLogFiles" xml:space="preserve">
+    <value>Log-Dateien teilen</value>
+  </data>
+  <data name="Logs_ShareFilteredEntries" xml:space="preserve">
+    <value>Angezeigte teilen</value>
+  </data>
+  <data name="Logs_Reload" xml:space="preserve">
+    <value>Aktualisieren</value>
+  </data>
+  <data name="Logs_AllLevels" xml:space="preserve">
+    <value>Alle Level</value>
+  </data>
+  <data name="Logs_Clear" xml:space="preserve">
+    <value>Leeren</value>
+  </data>
+  <data name="Logs_NoEntries" xml:space="preserve">
+    <value>Keine Einträge</value>
+  </data>
+  <data name="Logs_Copy" xml:space="preserve">
+    <value>Kopieren</value>
+  </data>
+  <data name="Logs_Status" xml:space="preserve">
+    <value>{0} von {1} Einträgen (es werden die letzten {2} behalten)</value>
+  </data>
 </root>

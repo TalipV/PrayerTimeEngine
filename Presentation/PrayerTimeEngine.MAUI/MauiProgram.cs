@@ -1,13 +1,14 @@
-using System.Text;
 using CommunityToolkit.Maui;
 using CommunityToolkit.Maui.Markup;
 using MetroLog.MicrosoftExtensions;
+using PrayerTimeEngine.Services.Logging;
 using Microsoft.Extensions.Logging;
 using Plugin.Maui.DebugRainbows;
 using PrayerTimeEngine.Core.Application;
 using PrayerTimeEngine.Core.Common;
 using PrayerTimeEngine.Core.Infrastructure;
 using PrayerTimeEngine.Presentation.Pages.DatabaseTables;
+using PrayerTimeEngine.Presentation.Pages.Logs;
 using PrayerTimeEngine.Presentation.Pages.Main;
 using PrayerTimeEngine.Presentation.Pages.QiblahFinder;
 using PrayerTimeEngine.Presentation.Pages.Settings.SettingsContent;
@@ -124,6 +125,11 @@ public static class MauiProgram
             .UseUraniumUI()
             .UseUraniumUIMaterial()
             .UseDebugRainbows(new DebugRainbowsOptions { ShowRainbows = false })
+#if ANDROID
+            .ConfigureMauiHandlers(handlers =>
+                // after UraniumUI, so that no later registration replaces it
+                handlers.AddHandler<DatePicker, Platforms.Android.AccentButtonsDatePickerHandler>())
+#endif
             .ConfigureFonts(fonts =>
             {
                 fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
@@ -141,29 +147,18 @@ public static class MauiProgram
         return mauiApp;
     }
 
-    private class LoggingLayout : MetroLog.Layouts.Layout
-    {
-        public override string GetFormattedString(MetroLog.LogWriteContext context, MetroLog.LogEventInfo info)
-        {
-            var text = new StringBuilder($"███ {info.Level}|{info.TimeStamp:HH:mm:ss:fff}|{info.Logger}|{info.Message}");
-
-            if (info.Exception is not null)
-            {
-                text.Append($"|Exception:'{info.Exception.Message}' AT '{info.Exception.StackTrace}'");
-            }
-
-            //text.Append($"|StackTrace: {new StackTrace()}");
-
-            return text.ToString();
-        }
-    }
-
     private static void AddLogging(MauiAppBuilder builder)
     {
         builder.Logging
             .SetMinimumLevel(LogLevel.Trace)
             .AddFilter((loggerProviderFullName, loggerFullName, level) =>
             {
+                // evaluated for every log call, so changing the level on the logs page takes effect immediately
+                if (level < AppLogLevel.MinimumLevel)
+                {
+                    return false;
+                }
+
                 // temp fix, these log too much for my taste
                 if (loggerFullName.StartsWith("Microsoft.EntityFrameworkCore")
                     || loggerFullName.StartsWith("System.Net.Http.HttpClient.Refit.Implementation.Generated")
@@ -175,22 +170,15 @@ public static class MauiProgram
 
                 return true;
             })
-            // for the logs to be visible within the app
-            .AddInMemoryLogger(
-                options =>
-                {
-                    //options.MaxLines = 1024;
-                    options.Layout = new LoggingLayout();
-                    options.MinLevel = LogLevel.Trace;
-                    options.MaxLevel = LogLevel.Error;
-                })
+            // for the logs to be visible (and filterable) within the app
+            .AddProvider(new InMemoryLogStoreLoggerProvider(InMemoryLogStore.Instance))
             // for the logs to be sharable as files through the UI
             .AddStreamingFileLogger(
                 options =>
                 {
                     options.RetainDays = 2;
                     options.MinLevel = LogLevel.Trace;
-                    options.MaxLevel = LogLevel.Error;
+                    options.MaxLevel = LogLevel.Critical;
                     options.FolderPath = Path.Combine(
                         FileSystem.CacheDirectory,
                         "MetroLogs");
@@ -245,6 +233,9 @@ public static class MauiProgram
 
         serviceCollection.AddTransient<DatabaseTablesPage>();
         serviceCollection.AddTransient<DatabaseTablesPageViewModel>();
+        serviceCollection.AddTransient<LogsPage>();
+        serviceCollection.AddTransient<LogsPageViewModel>();
+        serviceCollection.AddSingleton(InMemoryLogStore.Instance);
 
         serviceCollection.AddTransient<QiblahMapPage>();
     }

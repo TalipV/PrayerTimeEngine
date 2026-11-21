@@ -477,4 +477,43 @@ Nisab: €{4:N2} ({5:N2} g)</value>
   <data name="MainPage_Problems_Button" xml:space="preserve">
     <value>Show problems while loading</value>
   </data>
+  <data name="Logs_Title" xml:space="preserve">
+    <value>Logs</value>
+  </data>
+  <data name="Logs_SearchPlaceholder" xml:space="preserve">
+    <value>Search logs (several words: all have to occur)</value>
+  </data>
+  <data name="Logs_MinimumLevel_Label" xml:space="preserve">
+    <value>Record:</value>
+  </data>
+  <data name="Logs_MinimumLevel_FromLevel" xml:space="preserve">
+    <value>from {0}</value>
+  </data>
+  <data name="Logs_MinimumLevel_None" xml:space="preserve">
+    <value>nothing</value>
+  </data>
+  <data name="Logs_ShareLogFiles" xml:space="preserve">
+    <value>Share log files</value>
+  </data>
+  <data name="Logs_ShareFilteredEntries" xml:space="preserve">
+    <value>Share shown</value>
+  </data>
+  <data name="Logs_Reload" xml:space="preserve">
+    <value>Refresh</value>
+  </data>
+  <data name="Logs_AllLevels" xml:space="preserve">
+    <value>All levels</value>
+  </data>
+  <data name="Logs_Clear" xml:space="preserve">
+    <value>Clear</value>
+  </data>
+  <data name="Logs_NoEntries" xml:space="preserve">
+    <value>No entries</value>
+  </data>
+  <data name="Logs_Copy" xml:space="preserve">
+    <value>Copy</value>
+  </data>
+  <data name="Logs_Status" xml:space="preserve">
+    <value>{0} of {1} entries (the last {2} are kept)</value>
+  </data>
 </root>
