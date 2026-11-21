@@ -1,3 +1,4 @@
+using NodaTime;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Models.DTOs;
 
 namespace PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Interfaces;
@@ -10,5 +11,9 @@ public interface IFaziletApiService
 
     Task<List<FaziletCityResponseDTO>> GetCitiesByCountryID(int countryID, CancellationToken cancellationToken);
 
-    Task<FaziletGetTimesByCityIDResponseDTO> GetTimesByCityID(int cityID, CancellationToken cancellationToken);
+    /// <summary>
+    /// The prayer times of <paramref name="date"/> together with those of the day before and the day after.
+    /// Days outside of the range the API has data for come back with empty times.
+    /// </summary>
+    Task<FaziletGetTimesByCityIDResponseDTO> GetTimesByCityID(int cityID, LocalDate date, CancellationToken cancellationToken);
 }

@@ -9,6 +9,7 @@ using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Models;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Muwaqqit.Models;
 using PrayerTimeEngine.Core.Domain.IslamicCalendar.Interfaces;
+using PrayerTimeEngine.Core.Domain.Models;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Management;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Models;
@@ -103,6 +104,97 @@ public partial class MainPageViewModel(
 
     // last normal search results, kept so focusing the field can re-show the dropdown without re-searching
     private List<BasicPlaceInfo> _lastResults = [];
+
+    #region selected date
+
+    /// <summary>
+    /// The day chosen in the date bar; <c>null</c> means the current day, which also keeps following
+    /// the current day when the date changes while the app is open.
+    /// </summary>
+    public LocalDate? SelectedDate { get; private set; }
+
+    /// <summary>When the date was last chosen. After a longer break the app returns to the current day.</summary>
+    private Instant _selectedDateChangedAt;
+
+    private static readonly Duration s_selectedDateResetAfter = Duration.FromMinutes(15);
+
+    public bool IsCurrentDaySelected => SelectedDate is null;
+
+    /// <summary>The day that is shown (or about to be shown) for the current profile.</summary>
+    public LocalDate DisplayedDate => SelectedDate ?? GetCurrentDate();
+
+    /// <summary>Text of the date bar, e.g. "Heute, Sa. 21.11.2026" or "Mi. 3.12.2026".</summary>
+    public string SelectedDateText
+    {
+        get
+        {
+            LocalDate currentDate = GetCurrentDate();
+            LocalDate displayedDate = DisplayedDate;
+            string dateText = displayedDate.ToString("ddd dd.MM.yyyy", CultureInfo.CurrentUICulture);
+
+            int dayDifference = Period.Between(currentDate, displayedDate, PeriodUnits.Days).Days;
+            string? relativeDayText = dayDifference switch
+            {
+                0 => AppResources.MainPage_Date_Today,
+                -1 => AppResources.MainPage_Date_Yesterday,
+                1 => AppResources.MainPage_Date_Tomorrow,
+                _ => null,
+            };
+
+            return relativeDayText is null ? dateText : $"{relativeDayText}, {dateText}";
+        }
+    }
+
+    /// <summary>Two-way bound to the date picker of the date bar.</summary>
+    public DateTime SelectedDateTime
+    {
+        get => DisplayedDate.ToDateTimeUnspecified();
+        set => SelectDate(LocalDate.FromDateTime(value));
+    }
+
+    public ICommand PreviousDayCommand => new Command(() => SelectDate(DisplayedDate.PlusDays(-1)));
+    public ICommand NextDayCommand => new Command(() => SelectDate(DisplayedDate.PlusDays(1)));
+    public ICommand CurrentDayCommand => new Command(() => SelectDate(null));
+
+    private LocalDate GetCurrentDate()
+    {
+        DateTimeZone dateTimeZone = CurrentProfile is Profile profile
+            ? profileService.GetDateTimeZone(profile)
+            : systemInfoService.GetSystemTimeZone();
+
+        return systemInfoService.GetCurrentInstant().InZone(dateTimeZone).Date;
+    }
+
+    private void SelectDate(LocalDate? date)
+    {
+        // choosing the current day means following the current day
+        if (date == GetCurrentDate())
+        {
+            date = null;
+        }
+
+        _selectedDateChangedAt = systemInfoService.GetCurrentInstant();
+
+        if (date == SelectedDate)
+        {
+            return;
+        }
+
+        SelectedDate = date;
+        NotifySelectedDateChanged();
+
+        Task.Run(RefreshData);
+    }
+
+    private void NotifySelectedDateChanged()
+    {
+        OnPropertyChanged(nameof(IsCurrentDaySelected));
+        OnPropertyChanged(nameof(DisplayedDate));
+        OnPropertyChanged(nameof(SelectedDateText));
+        OnPropertyChanged(nameof(SelectedDateTime));
+    }
+
+    #endregion selected date
 
     public string WeeksUntilLabelText
     {
@@ -264,6 +356,16 @@ public partial class MainPageViewModel(
 
     public async Task OnActualAppearing()
     {
+        // after a longer break the app shows the current day again instead of a day chosen back then
+        if (SelectedDate is not null
+            && systemInfoService.GetCurrentInstant() - _selectedDateChangedAt > s_selectedDateResetAfter)
+        {
+            SelectedDate = null;
+        }
+
+        // also updates relative texts like "today" after the date changed while the app was in the background
+        await dispatcher.DispatchAsync(NotifySelectedDateChanged);
+
         await RefreshData();
     }
 
@@ -560,6 +662,9 @@ public partial class MainPageViewModel(
         string refreshCallID = DebugUtil.GenerateDebugID();
         logger.LogInformation("Refreshing data started. ({RefreshCallID})", refreshCallID);
 
+        IPrayerTimeViewModel? refreshedProfileWithModel = null;
+        bool wasCanceled = false;
+
         try
         {
             if (!appInitializer.IsInitialized)
@@ -583,12 +688,16 @@ public partial class MainPageViewModel(
                 _loadingTimesCancellationTokenSource = new CancellationTokenSource();
 
                 DateTimeZone dateTimeZone = profileService.GetDateTimeZone(currentProfile);
-                ZonedDateTime zonedDateTime =
-                    systemInfoService.GetCurrentInstant()
-                        .InZone(dateTimeZone);
+                ZonedDateTime now = systemInfoService.GetCurrentInstant().InZone(dateTimeZone);
+                LocalDate? selectedDate = SelectedDate;
 
-                await CurrentProfileWithModel.RefreshData(zonedDateTime, _loadingTimesCancellationTokenSource.Token);
-                ShowCalculationErrorsIfNeeded(CurrentProfileWithModel);
+                ZonedDateTime zonedDateTime = selectedDate is LocalDate date && date != now.Date
+                    ? date.AtStartOfDayInZone(dateTimeZone)
+                    : now;
+
+                refreshedProfileWithModel = CurrentProfileWithModel;
+                await refreshedProfileWithModel.RefreshData(zonedDateTime, isCurrentDay: zonedDateTime.Date == now.Date, _loadingTimesCancellationTokenSource.Token);
+                ShowCalculationErrorsIfNeeded(refreshedProfileWithModel);
 
                 OnAfterLoadingPrayerTimes_EventTrigger?.Invoke();
             }
@@ -600,7 +709,13 @@ public partial class MainPageViewModel(
         }
         catch (OperationCanceledException)
         {
+            wasCanceled = true;
             logger.LogInformation("Loading times was canceled. ({RefreshCallID})", refreshCallID);
+        }
+        catch (PrayerTimesNotAvailableForDateException exception)
+        {
+            logger.LogInformation("{ProviderName} provides no times for {Date}. ({RefreshCallID})", exception.ProviderName, exception.Date, refreshCallID);
+            toastMessageService.ShowWarning(string.Format(AppResources.MainPage_TimesNotAvailableForDate, exception.ProviderName));
         }
         catch (Exception exception)
         {
@@ -620,6 +735,15 @@ public partial class MainPageViewModel(
         }
 
         logger.LogInformation("Refreshing data finished. ({RefreshCallID})", refreshCallID);
+
+        // another day was chosen while the times were loading (that request was skipped), so load that day now
+        if (!wasCanceled
+            && refreshedProfileWithModel is not null
+            && refreshedProfileWithModel == CurrentProfileWithModel
+            && refreshedProfileWithModel.DisplayedDate != DisplayedDate)
+        {
+            await RefreshData();
+        }
     }
 
     private void ShowCalculationErrorsIfNeeded(IPrayerTimeViewModel prayerTimeViewModel)
@@ -638,14 +762,28 @@ public partial class MainPageViewModel(
             return;
         }
 
-        string failedCalculators = string.Join(
-            ", ",
-            calculationErrors
-                .Select(x => x.DynamicPrayerTimeProviderType.ToString())
-                .Distinct()
-                .OrderBy(x => x));
+        static string JoinProviders(IEnumerable<DynamicPrayerTimeCalculationErrorVO> errors) =>
+            string.Join(
+                ", ",
+                errors
+                    .Select(x => x.DynamicPrayerTimeProviderType.ToString())
+                    .Distinct()
+                    .OrderBy(x => x));
 
-        toastMessageService.ShowWarning(string.Format(AppResources.MainPage_CalculationFailed, failedCalculators));
+        // only the shown day matters for the hint: the neighbouring days are calculated for the times around midnight
+        List<DynamicPrayerTimeCalculationErrorVO> notAvailableErrors =
+            [.. calculationErrors.Where(x => x.IsDateNotAvailable && x.Date == dynamicPrayerTimeViewModel.DisplayedDate)];
+        List<DynamicPrayerTimeCalculationErrorVO> failedErrors =
+            [.. calculationErrors.Where(x => !x.IsDateNotAvailable)];
+
+        if (failedErrors.Count != 0)
+        {
+            toastMessageService.ShowWarning(string.Format(AppResources.MainPage_CalculationFailed, JoinProviders(failedErrors)));
+        }
+        else if (notAvailableErrors.Count != 0)
+        {
+            toastMessageService.ShowWarning(string.Format(AppResources.MainPage_TimesNotAvailableForDate, JoinProviders(notAvailableErrors)));
+        }
     }
 
     private async Task OnBeforeFirstLoad()

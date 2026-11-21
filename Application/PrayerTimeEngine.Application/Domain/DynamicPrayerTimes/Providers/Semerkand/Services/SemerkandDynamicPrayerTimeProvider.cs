@@ -7,6 +7,7 @@ using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Semerkand.Interf
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Semerkand.Models;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Semerkand.Models.DTOs;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Semerkand.Models.Entities;
+using PrayerTimeEngine.Core.Domain.Models;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Interfaces;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Models;
 
@@ -76,7 +77,7 @@ public class SemerkandDynamicPrayerTimeProvider(
                 timezoneName,
                 cityID,
                 cancellationToken).ConfigureAwait(false)
-            ?? throw new Exception($"Prayer times for the {date} could not be found for an unknown reason.");
+            ?? throw new PrayerTimesNotAvailableForDateException(date.Date, "Semerkand");
 
         prayerTimes.NextFajr = (await GetPrayerTimesByDateAndCityID(date.Plus(Duration.FromDays(1)), timezoneName, cityID, cancellationToken).ConfigureAwait(false))?.Fajr;
 

@@ -508,4 +508,29 @@ Nisab: {4:N2} € ({5:N2} g)</value>
   <data name="Welcome_Accept" xml:space="preserve">
     <value>Verstanden</value>
   </data>
+  <data name="MainPage_Date_Today" xml:space="preserve">
+    <value>Heute</value>
+  </data>
+  <data name="MainPage_Date_Yesterday" xml:space="preserve">
+    <value>Gestern</value>
+  </data>
+  <data name="MainPage_Date_Tomorrow" xml:space="preserve">
+    <value>Morgen</value>
+  </data>
+  <data name="MainPage_Date_BackToToday" xml:space="preserve">
+    <value>Heute</value>
+    <comment>Button of the date bar that returns to the current day</comment>
+  </data>
+  <data name="MainPage_Date_PreviousDay" xml:space="preserve">
+    <value>Vorheriger Tag</value>
+    <comment>Accessibility description of the date bar button</comment>
+  </data>
+  <data name="MainPage_Date_NextDay" xml:space="preserve">
+    <value>Nächster Tag</value>
+    <comment>Accessibility description of the date bar button</comment>
+  </data>
+  <data name="MainPage_TimesNotAvailableForDate" xml:space="preserve">
+    <value>Für diesen Tag liefert {0} keine Zeiten</value>
+    <comment>{0}: list of calculation sources or mosque apps</comment>
+  </data>
 </root>

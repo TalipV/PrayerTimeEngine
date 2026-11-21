@@ -1,6 +1,7 @@
 using NodaTime;
 using NSubstitute;
 using PrayerTimeEngine.Core.Common;
+using PrayerTimeEngine.Core.Domain.Models;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Models;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.Mawaqit.Interfaces;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.Mawaqit.Models.Entities;
@@ -74,6 +75,22 @@ public class MawaqitDynamicPrayerTimeProviderTests : BaseTest
 
         _mawaqitApiServiceMock.ReceivedCalls().Should().BeEmpty();
         await _mawaqitRepositoryMock.Received(1).GetPrayerTimesAsync(Arg.Is(date), Arg.Is(externalID), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task GetPrayerTimesAsync_DayOfAnotherYear_ThrowsNotAvailableExceptionWithoutRequest()
+    {
+        // ARRANGE
+        _systemInfoService.GetCurrentZonedDateTime().Returns(new LocalDate(2024, 12, 30).AtStartOfDayInZone(DateTimeZone.Utc));
+        var date = new LocalDate(2025, 1, 2);
+
+        // ACT
+        Func<Task> action = () => _mawaqitPrayerTimeService.GetPrayerTimesAsync(date, "hamza-koln", default);
+
+        // ASSERT
+        (await action.Should().ThrowAsync<PrayerTimesNotAvailableForDateException>())
+            .Which.Date.Should().Be(date);
+        _mawaqitApiServiceMock.ReceivedCalls().Should().BeEmpty();
     }
 
     #endregion GetPrayerTimesAsync

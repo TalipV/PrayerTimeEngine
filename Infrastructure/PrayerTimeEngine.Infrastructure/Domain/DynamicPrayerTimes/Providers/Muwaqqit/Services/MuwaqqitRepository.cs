@@ -55,11 +55,11 @@ public class MuwaqqitRepository(
         await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
     }
 
-    public async Task DeleteCacheDataAsync(LocalDate deleteBeforeDate, CancellationToken cancellationToken)
+    public async Task DeleteCacheDataAsync(Instant insertedBefore, CancellationToken cancellationToken)
     {
         using AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
         await dbContext.MuwaqqitPrayerTimes
-            .Where(p => p.Date < deleteBeforeDate)
+            .Where(p => p.InsertInstant == null || p.InsertInstant < insertedBefore)
             .ExecuteDeleteAsync(cancellationToken).ConfigureAwait(false);
     }
 }

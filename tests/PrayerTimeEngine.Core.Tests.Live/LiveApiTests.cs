@@ -35,7 +35,7 @@ public class LiveApiTests : LiveApiTestBase
         FaziletCountryResponseDTO austria = countries.Countries.Single(x => x.Name == "Avusturya");
         List<FaziletCityResponseDTO> cities = await apiService.GetCitiesByCountryID(austria.ID, default);
         FaziletCityResponseDTO innsbruck = cities.Single(x => x.Name == "Innsbruck");
-        FaziletGetTimesByCityIDResponseDTO times = await apiService.GetTimesByCityID(innsbruck.ID, default);
+        FaziletGetTimesByCityIDResponseDTO times = await apiService.GetTimesByCityID(innsbruck.ID, s_today, default);
 
         // ASSERT
         times.Timezone.Should().NotBeNull();

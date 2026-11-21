@@ -106,7 +106,7 @@ public class MuwaqqitRepositoryTests : BaseTest
     }
 
     [Fact]
-    public async Task DeleteCacheDataAsync_RemoveOlderEntries_KeepNewerOnes()
+    public async Task DeleteCacheDataAsync_EntriesStoredBeforeInstant_DeletedRegardlessOfTheirDay()
     {
         // ARRANGE
         ZonedDateTime baseDate = new LocalDate(2023, 1, 1).AtStartOfDayInZone(DateTimeZone.Utc);
@@ -163,15 +163,22 @@ public class MuwaqqitRepositoryTests : BaseTest
         await TestArrangeDbContext.MuwaqqitPrayerTimes.AddRangeAsync(oldTime, newTime);
         await TestArrangeDbContext.SaveChangesAsync();
 
+        // the day of the times doesn't matter, only when they were stored: the times of the
+        // earlier day were stored recently, the ones of the later day long ago
+        var insertedBefore = NodaTime.Instant.FromUtc(2024, 1, 1, 0, 0);
+        oldTime.InsertInstant = insertedBefore.Plus(Duration.FromHours(1));
+        newTime.InsertInstant = insertedBefore.Minus(Duration.FromDays(1));
+        await TestArrangeDbContext.SaveChangesAsync();
+
         (await TestArrangeDbContext.MuwaqqitPrayerTimes.FindAsync(oldTime.ID)).Should().NotBeNull();
         (await TestArrangeDbContext.MuwaqqitPrayerTimes.FindAsync(newTime.ID)).Should().NotBeNull();
 
         // ACT
-        await _muwaqqitRepository.DeleteCacheDataAsync(baseDate.Date, default);
+        await _muwaqqitRepository.DeleteCacheDataAsync(insertedBefore, default);
 
         // ASSERT
-        (await TestAssertDbContext.MuwaqqitPrayerTimes.FindAsync(oldTime.ID)).Should().BeNull();
-        (await TestAssertDbContext.MuwaqqitPrayerTimes.FindAsync(newTime.ID)).Should().NotBeNull();
+        (await TestAssertDbContext.MuwaqqitPrayerTimes.FindAsync(oldTime.ID)).Should().NotBeNull();
+        (await TestAssertDbContext.MuwaqqitPrayerTimes.FindAsync(newTime.ID)).Should().BeNull();
     }
 
     private static Instant Instant(int year, int month, int day, int hour, int minute, int second)

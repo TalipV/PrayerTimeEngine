@@ -274,6 +274,12 @@ public abstract class PrayerTimeCardsView(ISystemInfoService systemInfoService) 
 
     private bool IsCurrentPrayer(IPrayerTimesDay? prayerTimesSet, BlockDefinition block)
     {
+        // another day than the current one is shown: nothing is running on it right now
+        if (BindingContext is IPrayerTimeViewModel { IsDisplayingCurrentDay: false })
+        {
+            return false;
+        }
+
         if (prayerTimesSet is null || GetDisplayedPrayerTimes(prayerTimesSet) is not { } displayedPrayerTimes)
         {
             return false;

@@ -19,11 +19,37 @@ public abstract class BasePrayerTimeViewModel<TProfileType, TPrayerTimeSetType>(
     public IPrayerTimesDay PrayerTimesSet { get; private set; }
     public Profile Profile => ProfileActual;
 
+    /// <summary>The day whose times are shown (or were last attempted to be shown); <c>null</c> before the first load.</summary>
+    public LocalDate? DisplayedDate { get; private set; }
+
+    /// <summary>
+    /// Whether the shown day is the current day. Only then the running prayer is highlighted and shown in the graphic.
+    /// </summary>
+    public bool IsDisplayingCurrentDay { get; private set; }
+
     public abstract Task<TPrayerTimeSetType> GetPrayerTimesSet(ZonedDateTime zonedDateTime, CancellationToken cancellationToken);
 
-    public virtual async Task RefreshData(ZonedDateTime zonedDateTime, CancellationToken cancellationToken)
+    public virtual async Task RefreshData(ZonedDateTime zonedDateTime, bool isCurrentDay, CancellationToken cancellationToken)
     {
-        PrayerTimesSet = await GetPrayerTimesSet(zonedDateTime, cancellationToken);
+        LocalDate date = zonedDateTime.Date;
+
+        try
+        {
+            TPrayerTimeSetType prayerTimesSet = await GetPrayerTimesSet(zonedDateTime, cancellationToken);
+
+            // set before the times, so that the bindings reacting to the new times already see the new day
+            IsDisplayingCurrentDay = isCurrentDay;
+            DisplayedDate = date;
+            PrayerTimesSet = prayerTimesSet;
+        }
+        catch (Exception) when (!cancellationToken.IsCancellationRequested && DisplayedDate != date)
+        {
+            // the times of the previously shown day must not remain visible under the new day
+            IsDisplayingCurrentDay = isCurrentDay;
+            DisplayedDate = date;
+            PrayerTimesSet = null;
+            throw;
+        }
     }
 
     public PrayerTimeGraphicTimeVO CreatePrayerTimeGraphicTimeVO(Instant instant)

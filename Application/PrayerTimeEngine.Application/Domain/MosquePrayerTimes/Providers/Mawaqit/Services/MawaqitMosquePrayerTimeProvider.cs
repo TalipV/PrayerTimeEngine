@@ -2,6 +2,7 @@
 using NodaTime;
 using PrayerTimeEngine.Core.Common;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Models;
+using PrayerTimeEngine.Core.Domain.Models;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.Mawaqit.Interfaces;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.Mawaqit.Models.DTOs;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.Mawaqit.Models.Entities;
@@ -30,9 +31,16 @@ public class MawaqitMosquePrayerTimeProvider(
 
             if (prayerTimes is null)
             {
-                MawaqitResponseDTO responseDto = await mawaqitApiService.GetPrayerTimesAsync(externalID, cancellationToken);
-
                 int currentYear = systemInfoService.GetCurrentZonedDateTime().Year;
+
+                // the mosque page only contains a calendar for the current year (months and days without a year),
+                // so days of other years can't be provided
+                if (date.Year != currentYear)
+                {
+                    throw new PrayerTimesNotAvailableForDateException(date, "Mawaqit");
+                }
+
+                MawaqitResponseDTO responseDto = await mawaqitApiService.GetPrayerTimesAsync(externalID, cancellationToken);
 
                 var prayerTimesLst = responseDto.ToMawaqitPrayerTimes(currentYear, externalID)
                     .Where(x => date <= x.Date && x.Date < date.PlusDays(MAX_EXTENT_OF_RETRIEVED_DAYS))
@@ -40,7 +48,7 @@ public class MawaqitMosquePrayerTimeProvider(
 
                 await mawaqitRepository.InsertPrayerTimesAsync(prayerTimesLst, cancellationToken).ConfigureAwait(false);
                 prayerTimes = prayerTimesLst.FirstOrDefault(x => x.Date == date)
-                    ?? throw new Exception($"Prayer times for the {date} could not be found for an unknown reason.");
+                    ?? throw new PrayerTimesNotAvailableForDateException(date, "Mawaqit");
             }
 
             return prayerTimes;

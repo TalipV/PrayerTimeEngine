@@ -1,6 +1,7 @@
 ﻿using AsyncKeyedLock;
 using NodaTime;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Models;
+using PrayerTimeEngine.Core.Domain.Models;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.MyMosq.Interfaces;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.MyMosq.Models.DTOs;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Providers.MyMosq.Models.Entities;
@@ -36,8 +37,9 @@ public class MyMosqMosquePrayerTimeProvider(
                     .ToList();
 
                 await myMosqRepository.InsertPrayerTimesAsync(prayerTimesLst, cancellationToken).ConfigureAwait(false);
+                // the mosque's calendar only covers a limited range of days (usually the current year)
                 prayerTimes = prayerTimesLst.FirstOrDefault(x => x.Date == date)
-                    ?? throw new Exception($"Prayer times for the {date} could not be found for an unknown reason.");
+                    ?? throw new PrayerTimesNotAvailableForDateException(date, "MyMosq");
             }
 
             return prayerTimes;

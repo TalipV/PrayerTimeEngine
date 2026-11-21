@@ -98,8 +98,31 @@ public class SemerkandRepository(
 
     public async Task InsertPrayerTimesAsync(IEnumerable<SemerkandDailyPrayerTimes> semerkandPrayerTimesLst, CancellationToken cancellationToken)
     {
+        List<SemerkandDailyPrayerTimes> toBeInserted = [.. semerkandPrayerTimesLst];
+
+        if (toBeInserted.Count == 0)
+        {
+            return;
+        }
+
         using AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
-        await dbContext.SemerkandPrayerTimes.AddRangeAsync(semerkandPrayerTimesLst, cancellationToken).ConfigureAwait(false);
+
+        // the requested days may overlap with days stored by an earlier request (e.g. when looking at
+        // other days in the app), so the older entries of these days are replaced by the new ones
+        foreach (IGrouping<int, SemerkandDailyPrayerTimes> group in toBeInserted.GroupBy(x => x.CityID))
+        {
+            int cityID = group.Key;
+            LocalDate minDate = group.Min(x => x.Date);
+            LocalDate maxDate = group.Max(x => x.Date);
+
+            List<SemerkandDailyPrayerTimes> overlapping = await dbContext.SemerkandPrayerTimes
+                .Where(x => x.CityID == cityID)
+                .ToListAsync(cancellationToken).ConfigureAwait(false);
+
+            dbContext.SemerkandPrayerTimes.RemoveRange(overlapping.Where(x => minDate <= x.Date && x.Date <= maxDate));
+        }
+
+        await dbContext.SemerkandPrayerTimes.AddRangeAsync(toBeInserted, cancellationToken).ConfigureAwait(false);
         await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
     }
 
@@ -117,11 +140,11 @@ public class SemerkandRepository(
         await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
     }
 
-    public async Task DeleteCacheDataAsync(LocalDate deleteBeforeDate, CancellationToken cancellationToken)
+    public async Task DeleteCacheDataAsync(Instant insertedBefore, CancellationToken cancellationToken)
     {
         using AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
         await dbContext.SemerkandPrayerTimes
-            .Where(p => p.Date < deleteBeforeDate)
+            .Where(p => p.InsertInstant == null || p.InsertInstant < insertedBefore)
             .ExecuteDeleteAsync(cancellationToken).ConfigureAwait(false);
     }
 }

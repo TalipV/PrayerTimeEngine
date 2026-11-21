@@ -450,4 +450,25 @@ Nisab: €{4:N2} ({5:N2} g)</value>
   <data name="Welcome_Accept" xml:space="preserve">
     <value>Got it</value>
   </data>
+  <data name="MainPage_Date_Today" xml:space="preserve">
+    <value>Today</value>
+  </data>
+  <data name="MainPage_Date_Yesterday" xml:space="preserve">
+    <value>Yesterday</value>
+  </data>
+  <data name="MainPage_Date_Tomorrow" xml:space="preserve">
+    <value>Tomorrow</value>
+  </data>
+  <data name="MainPage_Date_BackToToday" xml:space="preserve">
+    <value>Today</value>
+  </data>
+  <data name="MainPage_Date_PreviousDay" xml:space="preserve">
+    <value>Previous day</value>
+  </data>
+  <data name="MainPage_Date_NextDay" xml:space="preserve">
+    <value>Next day</value>
+  </data>
+  <data name="MainPage_TimesNotAvailableForDate" xml:space="preserve">
+    <value>{0} provides no times for this day</value>
+  </data>
 </root>

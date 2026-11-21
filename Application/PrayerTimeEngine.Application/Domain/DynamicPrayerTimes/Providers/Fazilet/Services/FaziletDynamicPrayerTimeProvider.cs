@@ -7,6 +7,7 @@ using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Interfac
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Models;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Models.DTOs;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Models.Entities;
+using PrayerTimeEngine.Core.Domain.Models;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Interfaces;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Models;
 
@@ -70,7 +71,7 @@ public class FaziletDynamicPrayerTimeProvider(
         int cityID = await GetCityID(cityName, countryID, throwIfNotFound: true, cancellationToken).ConfigureAwait(false);
 
         FaziletDailyPrayerTimes prayerTimes = await GetPrayerTimesByDateAndCityID(date, cityID, cancellationToken).ConfigureAwait(false)
-            ?? throw new Exception($"Prayer times for the {date} could not be found for an unknown reason.");
+            ?? throw new PrayerTimesNotAvailableForDateException(date.Date, "Fazilet");
 
         prayerTimes.NextFajr = (await GetPrayerTimesByDateAndCityID(date.Plus(Duration.FromDays(1)), cityID, cancellationToken).ConfigureAwait(false))?.Fajr;
 
@@ -94,9 +95,16 @@ public class FaziletDynamicPrayerTimeProvider(
 
             if (prayerTimes is null)
             {
-                FaziletGetTimesByCityIDResponseDTO prayerTimesResponseDTO = await faziletApiService.GetTimesByCityID(cityID, cancellationToken).ConfigureAwait(false);
+                // the API returns the requested day together with the day before and the day after
+                FaziletGetTimesByCityIDResponseDTO prayerTimesResponseDTO = await faziletApiService.GetTimesByCityID(cityID, date.Date, cancellationToken).ConfigureAwait(false);
                 DateTimeZone timeZone = prayerTimesResponseDTO.Timezone;
-                var prayerTimesLst = prayerTimesResponseDTO.PrayerTimes.Select(x => x.ToFaziletPrayerTimes(cityID, timeZone)).ToList();
+
+                // days outside of the range the API has data for come back without any times: they are not stored,
+                // so that the day counts as not available (and is asked for again after the retry delay)
+                var prayerTimesLst = prayerTimesResponseDTO.PrayerTimes
+                    .Select(x => x.ToFaziletPrayerTimes(cityID, timeZone))
+                    .Where(x => x.Fajr is not null || x.Dhuhr is not null || x.Maghrib is not null)
+                    .ToList();
                 await faziletRepository.InsertPrayerTimesAsync(prayerTimesLst, cancellationToken).ConfigureAwait(false);
 
                 prayerTimes = prayerTimesLst.FirstOrDefault(x => x.Date == date.Date);

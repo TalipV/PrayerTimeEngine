@@ -39,10 +39,10 @@ public class DynamicPrayerTimeViewModel(
         return calcResult.DynamicPrayerTimesDaySet;
     }
 
-    public override async Task RefreshData(ZonedDateTime zonedDateTime, CancellationToken cancellationToken)
+    public override async Task RefreshData(ZonedDateTime zonedDateTime, bool isCurrentDay, CancellationToken cancellationToken)
     {
         await dispatcher.DispatchAsync(ShowHideSpecificTimes);
-        await base.RefreshData(zonedDateTime, cancellationToken);
+        await base.RefreshData(zonedDateTime, isCurrentDay, cancellationToken);
     }
 
     private void ShowHideSpecificTimes()

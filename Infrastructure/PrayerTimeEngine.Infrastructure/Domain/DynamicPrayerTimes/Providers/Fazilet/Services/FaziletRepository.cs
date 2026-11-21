@@ -102,8 +102,31 @@ public class FaziletRepository(
 
     public async Task InsertPrayerTimesAsync(IEnumerable<FaziletDailyPrayerTimes> faziletPrayerTimesLst, CancellationToken cancellationToken)
     {
+        List<FaziletDailyPrayerTimes> toBeInserted = [.. faziletPrayerTimesLst];
+
+        if (toBeInserted.Count == 0)
+        {
+            return;
+        }
+
         using AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
-        await dbContext.FaziletPrayerTimes.AddRangeAsync(faziletPrayerTimesLst, cancellationToken).ConfigureAwait(false);
+
+        // the requested days may overlap with days stored by an earlier request (e.g. when looking at
+        // other days in the app), so the older entries of these days are replaced by the new ones
+        foreach (IGrouping<int, FaziletDailyPrayerTimes> group in toBeInserted.GroupBy(x => x.CityID))
+        {
+            int cityID = group.Key;
+            LocalDate minDate = group.Min(x => x.Date);
+            LocalDate maxDate = group.Max(x => x.Date);
+
+            List<FaziletDailyPrayerTimes> overlapping = await dbContext.FaziletPrayerTimes
+                .Where(x => x.CityID == cityID)
+                .ToListAsync(cancellationToken).ConfigureAwait(false);
+
+            dbContext.FaziletPrayerTimes.RemoveRange(overlapping.Where(x => minDate <= x.Date && x.Date <= maxDate));
+        }
+
+        await dbContext.FaziletPrayerTimes.AddRangeAsync(toBeInserted, cancellationToken).ConfigureAwait(false);
         await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
     }
 
@@ -121,11 +144,11 @@ public class FaziletRepository(
         await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
     }
 
-    public async Task DeleteCacheDataAsync(LocalDate deleteBeforeDate, CancellationToken cancellationToken)
+    public async Task DeleteCacheDataAsync(Instant insertedBefore, CancellationToken cancellationToken)
     {
         using AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
         await dbContext.FaziletPrayerTimes
-            .Where(p => p.Date < deleteBeforeDate)
+            .Where(p => p.InsertInstant == null || p.InsertInstant < insertedBefore)
             .ExecuteDeleteAsync(cancellationToken).ConfigureAwait(false);
     }
 }

@@ -7,6 +7,7 @@ using PrayerTimeEngine.Core.Common;
 using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Models;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers;
+using PrayerTimeEngine.Core.Domain.Models;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Interfaces;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
 
@@ -25,16 +26,26 @@ public class DynamicPrayerTimeProviderManager(
         DynamicPrayerTimeCalculationErrorVO CalculationError);
 
     /// <summary>
-    /// Caches the most recent calculation per profile because consumers like the
-    /// persistent notification request the same times again every few seconds.
+    /// Caches calculations per profile because consumers like the persistent notification request
+    /// the same times again every few seconds.
     ///
-    /// Only a single day set is kept per profile (practically the current day), so newer
-    /// calculations just replace older ones and the cache stays bounded without any clean up logic.
+    /// The current day has a slot of its own, so looking at other days in the app never replaces it
+    /// (the notification only ever asks for the current day). All other days share a second slot that
+    /// only keeps the most recently calculated one. Newer calculations just replace older ones, so the
+    /// cache stays bounded without any clean up logic.
     ///
     /// A partial result (at least one provider failed) is cached as well, so the times of the
     /// working providers stay available, but only until the failed providers may be retried.
     /// </summary>
-    private readonly ConcurrentDictionary<int, CachedDaySetEntry> _cachedDaySetByProfileID = new();
+    private readonly ConcurrentDictionary<int, CachedDaySetEntry> _cachedCurrentDaySetByProfileID = new();
+
+    /// <inheritdoc cref="_cachedCurrentDaySetByProfileID"/>
+    private readonly ConcurrentDictionary<int, CachedDaySetEntry> _cachedOtherDaySetByProfileID = new();
+
+    /// <summary>
+    /// Cached prayer times are deleted this long after they were stored, regardless of the day they belong to.
+    /// </summary>
+    private static readonly Duration s_cacheDataLifetime = Duration.FromDays(3);
 
     private sealed record CachedDaySetEntry(
         ZonedDateTime Date,
@@ -75,10 +86,19 @@ public class DynamicPrayerTimeProviderManager(
         long profileVersion,
         [NotNullWhen(true)] out CachedDaySetEntry? cacheEntry)
     {
-        return _cachedDaySetByProfileID.TryGetValue(profileID, out cacheEntry)
+        return GetCacheFor(date).TryGetValue(profileID, out cacheEntry)
             && cacheEntry.Date == date
             // reusing the cache is only valid as long as the profile configuration stayed the same
             && cacheEntry.ProfileVersion == profileVersion;
+    }
+
+    private ConcurrentDictionary<int, CachedDaySetEntry> GetCacheFor(ZonedDateTime date)
+    {
+        LocalDate currentDate = systemInfoService.GetCurrentInstant().InZone(date.Zone).Date;
+
+        return date.Date == currentDate
+            ? _cachedCurrentDaySetByProfileID
+            : _cachedOtherDaySetByProfileID;
     }
 
     public bool TryGetAlreadyCalculatedPrayerTimes(int profileID, ZonedDateTime date, out DynamicPrayerTimesDaySet daySet)
@@ -141,7 +161,7 @@ public class DynamicPrayerTimeProviderManager(
         prayerTimeEntity.DataCalculationTimestamp = systemInfoService.GetCurrentZonedDateTime();
 
         // erroneous results are cached too, but only until the earliest failed provider may be retried
-        _cachedDaySetByProfileID[dynamicProfile.ID] = new CachedDaySetEntry(
+        GetCacheFor(date)[dynamicProfile.ID] = new CachedDaySetEntry(
             date,
             profileVersion,
             prayerTimeEntity,
@@ -187,7 +207,7 @@ public class DynamicPrayerTimeProviderManager(
     {
         try
         {
-            ZonedDateTime deleteBeforeDate = systemInfoService.GetCurrentZonedDateTime().Minus(Duration.FromDays(3));
+            Instant insertedBefore = systemInfoService.GetCurrentInstant() - s_cacheDataLifetime;
 
             foreach (IPrayerTimeCacheCleaner cacheCleaner in cacheCleaners)
             {
@@ -198,7 +218,7 @@ public class DynamicPrayerTimeProviderManager(
 
                 try
                 {
-                    await cacheCleaner.DeleteCacheDataAsync(deleteBeforeDate.Date, cancellationToken).ConfigureAwait(false);
+                    await cacheCleaner.DeleteCacheDataAsync(insertedBefore, cancellationToken).ConfigureAwait(false);
                 }
                 catch (Exception exception) when (exception is not OperationCanceledException)
                 {
@@ -346,10 +366,11 @@ public class DynamicPrayerTimeProviderManager(
     {
         Instant now = systemInfoService.GetCurrentInstant();
 
-        // stale entries (e.g. of an outage that ended without a later successful request for that day)
-        foreach (ProviderRequestKey staleKey in _failureStateByRequest.Keys.Where(key => key.Date < requestKey.Date.PlusDays(-3)))
+        // stale entries (e.g. of an outage that ended without a later successful request for that day, or of
+        // days looked at only once), judged by their retry time and not by their day: other days can be looked at
+        foreach (KeyValuePair<ProviderRequestKey, ProviderFailureState> staleEntry in _failureStateByRequest.Where(x => x.Value.RetryAt + s_maximumRetryDelay < now))
         {
-            _failureStateByRequest.TryRemove(staleKey, out _);
+            _failureStateByRequest.TryRemove(staleEntry);
         }
 
         ProviderFailureState failureState = _failureStateByRequest.GetOrAdd(requestKey, _ => new ProviderFailureState());
@@ -372,7 +393,16 @@ public class DynamicPrayerTimeProviderManager(
             failureState.RetryAt = now + retryDelay;
         }
 
-        if (consecutiveFailureCount == 1)
+        if (exception is PrayerTimesNotAvailableForDateException)
+        {
+            // not a failure: the provider just has no data for that day
+            logger.LogInformation(
+                "{DynamicPrayerTimeProviderType} provides no prayer times for {Date}, next attempt in {RetryDelay}",
+                requestKey.ProviderType,
+                requestKey.Date,
+                retryDelay);
+        }
+        else if (consecutiveFailureCount == 1)
         {
             logger.LogError(exception,
                 "Error while calculating complex prayer times for {DynamicPrayerTimeProviderType} on {Date}, next attempt in {RetryDelay}",

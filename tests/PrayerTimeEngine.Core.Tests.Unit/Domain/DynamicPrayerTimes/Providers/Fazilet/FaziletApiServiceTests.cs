@@ -85,9 +85,11 @@ public class FaziletApiServiceTests : BaseTest
         // ARRANGE
         var date = new LocalDate(2023, 7, 29);
 
+        Uri? requestUri = null;
         _mockHttpMessageHandler.HandleRequestFunc =
             (request) =>
             {
+                requestUri = request.RequestUri;
                 Stream responseStream = File.OpenRead(Path.Combine(TestDataHelper.FAZILET_TEST_DATA_FILE_PATH, "Fazilet_TestPrayerTimeData_20230729_Innsbruck.txt"));
 
                 return new HttpResponseMessage
@@ -98,9 +100,10 @@ public class FaziletApiServiceTests : BaseTest
             };
 
         // ACT
-        FaziletGetTimesByCityIDResponseDTO times = await _faziletApiService.GetTimesByCityID(197, default);
+        FaziletGetTimesByCityIDResponseDTO times = await _faziletApiService.GetTimesByCityID(197, "2023-07-29", default);
 
         // ASSERT
+        requestUri!.Query.Should().Contain("districtId=197").And.Contain("date=2023-07-29");
         LocalDate assertDate = date.PlusDays(-1);
         times.PrayerTimes.Should().HaveCount(3);
         times.PrayerTimes.Should().AllSatisfy(time =>

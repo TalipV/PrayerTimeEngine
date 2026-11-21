@@ -90,7 +90,53 @@ public class MawaqitRepositoryTests : BaseTest
     }
 
     [Fact]
-    public async Task DeleteCacheDataAsync_RemoveOlderEntries_KeepNewerOnes()
+    public async Task InsertPrayerTimesAsync_DaysAlreadyStored_OnlyOverlappingDaysOfSameMosqueReplaced()
+    {
+        // ARRANGE
+        var date = new LocalDate(2024, 8, 1);
+
+        static MawaqitMosqueDailyPrayerTimes Create(string externalID, LocalDate day, int fajrHour) =>
+            new()
+            {
+                Date = day,
+                ExternalID = externalID,
+                Fajr = new LocalTime(fajrHour, 0),
+                FajrCongregation = new LocalTime(fajrHour, 30),
+                Shuruq = new LocalTime(7, 0),
+                Dhuhr = new LocalTime(13, 0),
+                DhuhrCongregation = new LocalTime(13, 30),
+                Asr = new LocalTime(17, 0),
+                AsrCongregation = new LocalTime(17, 30),
+                Maghrib = new LocalTime(20, 0),
+                MaghribCongregation = new LocalTime(20, 30),
+                Isha = new LocalTime(22, 0),
+                IshaCongregation = new LocalTime(22, 30),
+                Jumuah = new LocalTime(14, 0),
+                Jumuah2 = null,
+            };
+
+        MawaqitMosqueDailyPrayerTimes before = Create("a", date, 4);
+        MawaqitMosqueDailyPrayerTimes overlapping = Create("a", date.PlusDays(1), 4);
+        MawaqitMosqueDailyPrayerTimes after = Create("a", date.PlusDays(3), 4);
+        MawaqitMosqueDailyPrayerTimes otherMosque = Create("b", date.PlusDays(1), 4);
+
+        await TestArrangeDbContext.MawaqitPrayerTimes.AddRangeAsync(before, overlapping, after, otherMosque);
+        await TestArrangeDbContext.SaveChangesAsync();
+
+        MawaqitMosqueDailyPrayerTimes newOverlapping = Create("a", date.PlusDays(1), 5);
+        MawaqitMosqueDailyPrayerTimes newNext = Create("a", date.PlusDays(2), 5);
+
+        // ACT
+        await _mawaqitRepository.InsertPrayerTimesAsync([newOverlapping, newNext], default);
+
+        // ASSERT
+        List<MawaqitMosqueDailyPrayerTimes> stored = await TestAssertDbContext.MawaqitPrayerTimes.ToListAsync();
+        stored.Select(x => x.ID).Should().BeEquivalentTo([before.ID, after.ID, otherMosque.ID, newOverlapping.ID, newNext.ID]);
+        stored.Single(x => x.ExternalID == "a" && x.Date == date.PlusDays(1)).Fajr.Should().Be(new LocalTime(5, 0));
+    }
+
+    [Fact]
+    public async Task DeleteCacheDataAsync_EntriesStoredBeforeInstant_DeletedRegardlessOfTheirDay()
     {
         // ARRANGE
         ZonedDateTime baseDate = new LocalDate(2023, 1, 1).AtStartOfDayInZone(DateTimeZone.Utc);
@@ -137,14 +183,21 @@ public class MawaqitRepositoryTests : BaseTest
         await TestArrangeDbContext.MawaqitPrayerTimes.AddRangeAsync(oldTime, newTime);
         await TestArrangeDbContext.SaveChangesAsync();
 
+        // the day of the times doesn't matter, only when they were stored: the times of the
+        // earlier day were stored recently, the ones of the later day long ago
+        var insertedBefore = NodaTime.Instant.FromUtc(2024, 1, 1, 0, 0);
+        oldTime.InsertInstant = insertedBefore.Plus(Duration.FromHours(1));
+        newTime.InsertInstant = insertedBefore.Minus(Duration.FromDays(1));
+        await TestArrangeDbContext.SaveChangesAsync();
+
         (await TestArrangeDbContext.MawaqitPrayerTimes.FindAsync(oldTime.ID)).Should().NotBeNull();
         (await TestArrangeDbContext.MawaqitPrayerTimes.FindAsync(newTime.ID)).Should().NotBeNull();
 
         // ACT
-        await _mawaqitRepository.DeleteCacheDataAsync(baseDate.Date, default);
+        await _mawaqitRepository.DeleteCacheDataAsync(insertedBefore, default);
 
         // ASSERT
-        (await TestAssertDbContext.MawaqitPrayerTimes.FindAsync(oldTime.ID)).Should().BeNull();
-        (await TestAssertDbContext.MawaqitPrayerTimes.FindAsync(newTime.ID)).Should().NotBeNull();
+        (await TestAssertDbContext.MawaqitPrayerTimes.FindAsync(oldTime.ID)).Should().NotBeNull();
+        (await TestAssertDbContext.MawaqitPrayerTimes.FindAsync(newTime.ID)).Should().BeNull();
     }
 }

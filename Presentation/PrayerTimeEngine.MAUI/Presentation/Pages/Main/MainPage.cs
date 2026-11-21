@@ -83,7 +83,11 @@ public partial class MainPage : ContentPage
             //    .PlusHours(25)
             //    .ToInstant();
 
-            _prayerTimeGraphicView.PrayerTimeGraphicTime = _viewModel.CurrentProfileWithModel.CreatePrayerTimeGraphicTimeVO(instant);
+            // the graphic shows the running prayer, which only exists when the current day is shown
+            _prayerTimeGraphicView.PrayerTimeGraphicTime =
+                _viewModel.CurrentProfileWithModel is { IsDisplayingCurrentDay: true } currentProfileWithModel
+                    ? currentProfileWithModel.CreatePrayerTimeGraphicTimeVO(instant)
+                    : null;
             _prayerTimeGraphicViewBaseView.Invalidate();
         });
     }
@@ -202,6 +206,7 @@ public partial class MainPage : ContentPage
         {
             RowDefinitions = Rows.Define(
                 GridLength.Auto,
+                GridLength.Auto,
                 new GridLength(11, GridUnitType.Star),
                 new GridLength(7, GridUnitType.Star)
             )
@@ -252,12 +257,13 @@ public partial class MainPage : ContentPage
                 })
             });
 
-        mainGrid.AddWithSpan(_carouselView, row: 1, column: 0);
-        mainGrid.AddWithSpan(_prayerTimeGraphicViewBaseView, row: 2, column: 0);
-        mainGrid.AddWithSpan(searchDismissScrim, row: 0, column: 0, rowSpan: 3);
+        mainGrid.AddWithSpan(CreateDateBar(), row: 1, column: 0);
+        mainGrid.AddWithSpan(_carouselView, row: 2, column: 0);
+        mainGrid.AddWithSpan(_prayerTimeGraphicViewBaseView, row: 3, column: 0);
+        mainGrid.AddWithSpan(searchDismissScrim, row: 0, column: 0, rowSpan: 4);
         mainGrid.AddWithSpan(searchField, row: 0, column: 0);
         // spans all rows so the overlay can extend over the content below the field without resizing row 0
-        mainGrid.AddWithSpan(searchDropdown, row: 0, column: 0, rowSpan: 3);
+        mainGrid.AddWithSpan(searchDropdown, row: 0, column: 0, rowSpan: 4);
 
         // stacking order: page content (0) < scrim (1) < search field (2) < dropdown overlay (3)
         // so taps on the field and the dropdown work, while taps anywhere else hit the scrim and dismiss it
@@ -445,6 +451,108 @@ public partial class MainPage : ContentPage
     /// Visible entry point of the options menu at the right edge of the title bar, where Android apps
     /// usually put their overflow menu. Replaces the hidden double tap on the profile name.
     /// </summary>
+    #region date bar
+
+    /// <summary>
+    /// The bar below the search field to choose the shown day: arrows for the previous and the next day,
+    /// the day in the middle (tapping it opens the date picker) and a button back to the current day
+    /// that only shows up while another day is shown.
+    /// </summary>
+    private Grid CreateDateBar()
+    {
+        Label dateLabel = new Label()
+            .CenterHorizontal().CenterVertical()
+            .FontSize(AppFontSizes.Subtitle)
+            .Font(bold: true)
+            .TextColor(AppColors.Text)
+            .Bind(Label.TextProperty, nameof(MainPageViewModel.SelectedDateText));
+        dateLabel.HorizontalTextAlignment = TextAlignment.Center;
+        dateLabel.LineBreakMode = LineBreakMode.TailTruncation;
+
+        // invisible picker on top of the label, so tapping the day opens the platform's date picker dialog
+        DatePicker datePicker = new DatePicker
+        {
+            Opacity = 0,
+            HorizontalOptions = LayoutOptions.Fill,
+            VerticalOptions = LayoutOptions.Fill,
+        }
+        .Bind(DatePicker.DateProperty, nameof(MainPageViewModel.SelectedDateTime), mode: BindingMode.TwoWay);
+
+        // the label only shows the text, taps go to the picker lying above it
+        dateLabel.InputTransparent = true;
+
+        var dateArea = new Grid
+        {
+            Children = { dateLabel, datePicker }
+        };
+
+        Border backToTodayButton = new Border
+        {
+            StrokeThickness = 0,
+            BackgroundColor = AppColors.Accent,
+            StrokeShape = new RoundRectangle { CornerRadius = 14 },
+            Padding = new Thickness(12, 4),
+            VerticalOptions = LayoutOptions.Center,
+            Margin = new Thickness(4, 0),
+            Content = new Label
+            {
+                Text = AppResources.MainPage_Date_BackToToday,
+                TextColor = AppColors.Surface,
+                FontAttributes = FontAttributes.Bold,
+                VerticalTextAlignment = TextAlignment.Center,
+            },
+        }
+        .Bind<Border, bool, bool>(
+            IsVisibleProperty,
+            nameof(MainPageViewModel.IsCurrentDaySelected),
+            convert: isCurrentDaySelected => !isCurrentDaySelected);
+        backToTodayButton.GestureRecognizers.Add(new TapGestureRecognizer { Command = _viewModel.CurrentDayCommand });
+
+        var dateBar = new Grid
+        {
+            ColumnDefinitions = Columns.Define(
+                GridLength.Auto,
+                GridLength.Star,
+                GridLength.Auto,
+                GridLength.Auto),
+            Margin = new Thickness(0, 6, 0, 0),
+        };
+
+        dateBar.Add(CreateDateBarArrowButton("‹", AppResources.MainPage_Date_PreviousDay, _viewModel.PreviousDayCommand), column: 0, row: 0);
+        dateBar.Add(dateArea, column: 1, row: 0);
+        dateBar.Add(backToTodayButton, column: 2, row: 0);
+        dateBar.Add(CreateDateBarArrowButton("›", AppResources.MainPage_Date_NextDay, _viewModel.NextDayCommand), column: 3, row: 0);
+
+        return dateBar;
+    }
+
+    private static Grid CreateDateBarArrowButton(string glyph, string description, System.Windows.Input.ICommand command)
+    {
+        var arrowLabel = new Label
+        {
+            Text = glyph,
+            FontSize = 30,
+            TextColor = AppColors.Text,
+            HorizontalTextAlignment = TextAlignment.Center,
+            VerticalTextAlignment = TextAlignment.Center,
+        };
+
+        // the glyph itself is narrow, the surrounding area gives it a comfortable touch target
+        var arrowButton = new Grid
+        {
+            WidthRequest = 44,
+            HeightRequest = 44,
+            BackgroundColor = Colors.Transparent,
+            Children = { arrowLabel }
+        };
+        SemanticProperties.SetDescription(arrowButton, description);
+        arrowButton.GestureRecognizers.Add(new TapGestureRecognizer { Command = command });
+
+        return arrowButton;
+    }
+
+    #endregion date bar
+
     private View CreateOptionsMenuButton()
     {
         var menuIcon = new Label

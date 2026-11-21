@@ -1,3 +1,5 @@
+using NodaTime;
+using NodaTime.Text;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Interfaces;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Models.DTOs;
 using Refit;
@@ -14,8 +16,9 @@ internal interface IFaziletApiClient
     [Get("/cities-by-country")]
     Task<List<FaziletCityResponseDTO>> GetCitiesByCountryID([AliasAs("districtId")] int countryID, CancellationToken cancellationToken);
 
+    // without 'date' the API answers for today; the format has to be 'yyyy-MM-dd'
     [Get("/daily?lang=2")]
-    Task<FaziletGetTimesByCityIDResponseDTO> GetTimesByCityID([AliasAs("districtId")] int cityID, CancellationToken cancellationToken);
+    Task<FaziletGetTimesByCityIDResponseDTO> GetTimesByCityID([AliasAs("districtId")] int cityID, [AliasAs("date")] string date, CancellationToken cancellationToken);
 }
 
 // Adapter: implements the Domain port by delegating to the Refit client.
@@ -27,6 +30,8 @@ internal sealed class FaziletApiService(IFaziletApiClient client) : IFaziletApiS
     public Task<List<FaziletCityResponseDTO>> GetCitiesByCountryID(int countryID, CancellationToken cancellationToken)
         => client.GetCitiesByCountryID(countryID, cancellationToken);
 
-    public Task<FaziletGetTimesByCityIDResponseDTO> GetTimesByCityID(int cityID, CancellationToken cancellationToken)
-        => client.GetTimesByCityID(cityID, cancellationToken);
+    private static readonly LocalDatePattern s_datePattern = LocalDatePattern.CreateWithInvariantCulture("uuuu-MM-dd");
+
+    public Task<FaziletGetTimesByCityIDResponseDTO> GetTimesByCityID(int cityID, LocalDate date, CancellationToken cancellationToken)
+        => client.GetTimesByCityID(cityID, s_datePattern.Format(date), cancellationToken);
 }

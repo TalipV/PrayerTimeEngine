@@ -90,7 +90,7 @@ public class MyMosqRepositoryTests : BaseTest
     }
 
     [Fact]
-    public async Task DeleteCacheDataAsync_RemoveOlderEntries_KeepNewerOnes()
+    public async Task DeleteCacheDataAsync_EntriesStoredBeforeInstant_DeletedRegardlessOfTheirDay()
     {
         // ARRANGE
         ZonedDateTime baseDate = new LocalDate(2023, 1, 1).AtStartOfDayInZone(DateTimeZone.Utc);
@@ -137,14 +137,21 @@ public class MyMosqRepositoryTests : BaseTest
         await TestArrangeDbContext.MyMosqPrayerTimes.AddRangeAsync(oldTime, newTime);
         await TestArrangeDbContext.SaveChangesAsync();
 
+        // the day of the times doesn't matter, only when they were stored: the times of the
+        // earlier day were stored recently, the ones of the later day long ago
+        var insertedBefore = NodaTime.Instant.FromUtc(2024, 1, 1, 0, 0);
+        oldTime.InsertInstant = insertedBefore.Plus(Duration.FromHours(1));
+        newTime.InsertInstant = insertedBefore.Minus(Duration.FromDays(1));
+        await TestArrangeDbContext.SaveChangesAsync();
+
         (await TestArrangeDbContext.MyMosqPrayerTimes.FindAsync(oldTime.ID)).Should().NotBeNull();
         (await TestArrangeDbContext.MyMosqPrayerTimes.FindAsync(newTime.ID)).Should().NotBeNull();
 
         // ACT
-        await _myMosqRepository.DeleteCacheDataAsync(baseDate.Date, default);
+        await _myMosqRepository.DeleteCacheDataAsync(insertedBefore, default);
 
         // ASSERT
-        (await TestAssertDbContext.MyMosqPrayerTimes.FindAsync(oldTime.ID)).Should().BeNull();
-        (await TestAssertDbContext.MyMosqPrayerTimes.FindAsync(newTime.ID)).Should().NotBeNull();
+        (await TestAssertDbContext.MyMosqPrayerTimes.FindAsync(oldTime.ID)).Should().NotBeNull();
+        (await TestAssertDbContext.MyMosqPrayerTimes.FindAsync(newTime.ID)).Should().BeNull();
     }
 }

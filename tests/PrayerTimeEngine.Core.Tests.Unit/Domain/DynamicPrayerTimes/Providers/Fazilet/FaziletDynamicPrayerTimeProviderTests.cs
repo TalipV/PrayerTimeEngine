@@ -6,8 +6,10 @@ using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Models;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Interfaces;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Models;
+using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Models.DTOs;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Models.Entities;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Services;
+using PrayerTimeEngine.Core.Domain.Models;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Interfaces;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Models;
 using PrayerTimeEngine.Core.Tests.Common;
@@ -88,6 +90,110 @@ public class FaziletDynamicPrayerTimeProviderTests : BaseTest
         await _faziletRepositoryMock.Received(1).GetCityIDByName(Arg.Is(1), Arg.Is("Berlin"), Arg.Any<CancellationToken>());
         await _faziletRepositoryMock.Received(1).GetTimesByDateAndCityID(Arg.Is(date), Arg.Is(1), Arg.Any<CancellationToken>());
         await _faziletRepositoryMock.Received(1).GetTimesByDateAndCityID(Arg.Is(date.PlusDays(1)), Arg.Is(1), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task GetPrayerTimesAsync_DayNotCached_RequestsApiForThatDayAndStoresDaysWithTimes()
+    {
+        // ARRANGE
+        var date = new LocalDate(2026, 12, 24);
+        ZonedDateTime dateInUtc = date.AtStartOfDayInZone(DateTimeZone.Utc);
+        BaseLocationData locationData = new FaziletLocationData { CityName = "Berlin", CountryName = "Deutschland" };
+        List<GenericSettingConfiguration> configurations =
+            [
+                new GenericSettingConfiguration { TimeType = ETimeType.FajrStart, Source = EDynamicPrayerTimeProviderType.Fazilet }
+            ];
+
+        _faziletRepositoryMock.GetCountryIDByName(Arg.Is("Deutschland"), Arg.Any<CancellationToken>()).Returns(1);
+        _faziletRepositoryMock.GetCityIDByName(Arg.Is(1), Arg.Is("Berlin"), Arg.Any<CancellationToken>()).Returns(1);
+
+        // the API returns the requested day with the day before and after; the last one lies outside of its data range
+        _faziletApiServiceMock.GetTimesByCityID(Arg.Is(1), Arg.Any<LocalDate>(), Arg.Any<CancellationToken>())
+            .Returns(new FaziletGetTimesByCityIDResponseDTO
+            {
+                Timezone = DateTimeZone.Utc,
+                PrayerTimes =
+                [
+                    CreateResponseDay(date.PlusDays(-1), withTimes: true),
+                    CreateResponseDay(date, withTimes: true),
+                    CreateResponseDay(date.PlusDays(1), withTimes: false),
+                ]
+            });
+
+        List<FaziletDailyPrayerTimes>? insertedTimes = null;
+        await _faziletRepositoryMock.InsertPrayerTimesAsync(
+            Arg.Do<IEnumerable<FaziletDailyPrayerTimes>>(x => insertedTimes ??= [.. x]),
+            Arg.Any<CancellationToken>());
+
+        // ACT
+        List<(ETimeType TimeType, ZonedDateTime ZonedDateTime)> calculationResult =
+            await _faziletDynamicPrayerTimeProvider.GetPrayerTimesAsync(dateInUtc, locationData, configurations, default);
+
+        // ASSERT
+        calculationResult.Should().ContainSingle()
+            .Which.Should().Be((ETimeType.FajrStart, dateInUtc.PlusHours(5)));
+
+        // the day after (for the next Fajr) was not stored because it has no times, so it is requested on its own
+        await _faziletApiServiceMock.Received(1).GetTimesByCityID(Arg.Is(1), Arg.Is(date), Arg.Any<CancellationToken>());
+        await _faziletApiServiceMock.Received(1).GetTimesByCityID(Arg.Is(1), Arg.Is(date.PlusDays(1)), Arg.Any<CancellationToken>());
+        insertedTimes.Should().NotBeNull();
+        insertedTimes!.Select(x => x.Date).Should().BeEquivalentTo([date.PlusDays(-1), date]);
+    }
+
+    [Fact]
+    public async Task GetPrayerTimesAsync_ApiHasNoTimesForDay_ThrowsNotAvailableException()
+    {
+        // ARRANGE
+        var date = new LocalDate(2040, 6, 1);
+        ZonedDateTime dateInUtc = date.AtStartOfDayInZone(DateTimeZone.Utc);
+        BaseLocationData locationData = new FaziletLocationData { CityName = "Berlin", CountryName = "Deutschland" };
+        List<GenericSettingConfiguration> configurations =
+            [
+                new GenericSettingConfiguration { TimeType = ETimeType.FajrStart, Source = EDynamicPrayerTimeProviderType.Fazilet }
+            ];
+
+        _faziletRepositoryMock.GetCountryIDByName(Arg.Is("Deutschland"), Arg.Any<CancellationToken>()).Returns(1);
+        _faziletRepositoryMock.GetCityIDByName(Arg.Is(1), Arg.Is("Berlin"), Arg.Any<CancellationToken>()).Returns(1);
+
+        _faziletApiServiceMock.GetTimesByCityID(Arg.Is(1), Arg.Any<LocalDate>(), Arg.Any<CancellationToken>())
+            .Returns(new FaziletGetTimesByCityIDResponseDTO
+            {
+                Timezone = DateTimeZone.Utc,
+                PrayerTimes =
+                [
+                    CreateResponseDay(date.PlusDays(-1), withTimes: false),
+                    CreateResponseDay(date, withTimes: false),
+                    CreateResponseDay(date.PlusDays(1), withTimes: false),
+                ]
+            });
+
+        // ACT
+        Func<Task> action = () => _faziletDynamicPrayerTimeProvider.GetPrayerTimesAsync(dateInUtc, locationData, configurations, default);
+
+        // ASSERT
+        (await action.Should().ThrowAsync<PrayerTimesNotAvailableForDateException>())
+            .Which.Date.Should().Be(date);
+    }
+
+    private static FaziletPrayerTimesResponseDTO CreateResponseDay(LocalDate date, bool withTimes)
+    {
+        List<TimeDetail> At(int hour) =>
+            withTimes
+                ? [new TimeDetail { OffsetDateTime = date.At(new LocalTime(hour, 0)).WithOffset(Offset.Zero) }]
+                : [];
+
+        return new FaziletPrayerTimesResponseDTO
+        {
+            Date = date,
+            Imsak = At(4),
+            Fajr = At(5),
+            Shuruq = At(7),
+            Duha = At(8),
+            Dhuhr = At(12),
+            Asr = At(15),
+            Maghrib = At(18),
+            Isha = At(20),
+        };
     }
 
     #endregion GetPrayerTimesAsync

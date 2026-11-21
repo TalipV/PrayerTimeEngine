@@ -10,6 +10,9 @@ public interface IPrayerTimeViewModel
     Profile Profile { get; }
     IPrayerTimesDay PrayerTimesSet { get; }
 
-    Task RefreshData(ZonedDateTime zonedDateTime, CancellationToken cancellationToken);
+    LocalDate? DisplayedDate { get; }
+    bool IsDisplayingCurrentDay { get; }
+
+    Task RefreshData(ZonedDateTime zonedDateTime, bool isCurrentDay, CancellationToken cancellationToken);
     PrayerTimeGraphicTimeVO CreatePrayerTimeGraphicTimeVO(Instant instant);
 }

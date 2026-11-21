@@ -9,6 +9,7 @@ using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Management;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Models;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Muwaqqit.Models;
+using PrayerTimeEngine.Core.Domain.Models;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Interfaces;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
 using PrayerTimeEngine.Core.Tests.Common;
@@ -496,12 +497,77 @@ public class DynamicPrayerTimeProviderManagerTests : BaseTest
         await muwaqqitPrayerTimeServiceMock.ReceivedWithAnyArgs(6).GetPrayerTimesAsync(default, default, default, default);
     }
     [Fact]
-    public async Task CalculatePrayerTimesAsync_RequestForOtherDate_OnlyLatestCalculationCached()
+    public async Task CalculatePrayerTimesAsync_OtherDaysRequestedInBetween_CurrentDayStaysCached()
     {
         // ARRANGE
+        (DynamicProfile profile, IDynamicPrayerTimeProvider muwaqqitPrayerTimeServiceMock) = ArrangeSimpleMuwaqqitProfile();
+
+        // the current instant lies on this day
+        ZonedDateTime currentDate = new LocalDate(2024, 1, 1).AtStartOfDayInZone(DateTimeZone.Utc);
+        ZonedDateTime otherDate = new LocalDate(2024, 1, 5).AtStartOfDayInZone(DateTimeZone.Utc);
+        ZonedDateTime anotherDate = new LocalDate(2023, 12, 20).AtStartOfDayInZone(DateTimeZone.Utc);
+
+        // ACT
+        await _dynamicPrayerTimeProviderManager.CalculatePrayerTimesAsync(profile.ID, currentDate, default);
+        await _dynamicPrayerTimeProviderManager.CalculatePrayerTimesAsync(profile.ID, otherDate, default);
+        await _dynamicPrayerTimeProviderManager.CalculatePrayerTimesAsync(profile.ID, anotherDate, default);
+        await _dynamicPrayerTimeProviderManager.CalculatePrayerTimesAsync(profile.ID, currentDate, default);
+        bool currentDayFound = _dynamicPrayerTimeProviderManager.TryGetAlreadyCalculatedPrayerTimes(profile.ID, currentDate, out DynamicPrayerTimesDaySet currentDaySet);
+
+        // ASSERT
+        // the current day has a cache slot of its own: only the three different days are calculated
+        // (3 provider calls per calculation), the last request for the current day is a cache hit
+        await muwaqqitPrayerTimeServiceMock.ReceivedWithAnyArgs(9).GetPrayerTimesAsync(default, default, default, default);
+        currentDayFound.Should().BeTrue();
+        currentDaySet.CurrentDay.Fajr.Start.Should().Be(currentDate.PlusHours(4));
+    }
+
+    [Fact]
+    public async Task CalculatePrayerTimesAsync_RequestForOtherDays_OnlyLatestOtherDayCached()
+    {
+        // ARRANGE
+        (DynamicProfile profile, IDynamicPrayerTimeProvider muwaqqitPrayerTimeServiceMock) = ArrangeSimpleMuwaqqitProfile();
+        ZonedDateTime firstZonedDate = new LocalDate(2024, 1, 5).AtStartOfDayInZone(DateTimeZone.Utc);
+        ZonedDateTime secondZonedDate = new LocalDate(2024, 1, 8).AtStartOfDayInZone(DateTimeZone.Utc);
+
+        // ACT
+        await _dynamicPrayerTimeProviderManager.CalculatePrayerTimesAsync(profile.ID, firstZonedDate, default);
+        await _dynamicPrayerTimeProviderManager.CalculatePrayerTimesAsync(profile.ID, secondZonedDate, default);
+        await _dynamicPrayerTimeProviderManager.CalculatePrayerTimesAsync(profile.ID, firstZonedDate, default);
+        await _dynamicPrayerTimeProviderManager.CalculatePrayerTimesAsync(profile.ID, firstZonedDate, default);
+
+        // ASSERT
+        // apart from the current day only the latest calculated day is kept per profile, so the third call
+        // has to recalculate the first date, while the fourth one is a cache hit (3 provider calls per calculation)
+        await muwaqqitPrayerTimeServiceMock.ReceivedWithAnyArgs(9).GetPrayerTimesAsync(default, default, default, default);
+    }
+
+    [Fact]
+    public async Task CalculatePrayerTimesAsync_ProviderHasNoDataForDay_ErrorMarkedAsNotAvailable()
+    {
+        // ARRANGE
+        (DynamicProfile profile, IDynamicPrayerTimeProvider muwaqqitPrayerTimeServiceMock) = ArrangeSimpleMuwaqqitProfile();
+        ZonedDateTime zonedDate = new LocalDate(2030, 6, 1).AtStartOfDayInZone(DateTimeZone.Utc);
+
+        muwaqqitPrayerTimeServiceMock.GetPrayerTimesAsync(
+                Arg.Any<ZonedDateTime>(),
+                Arg.Any<BaseLocationData>(),
+                Arg.Any<List<GenericSettingConfiguration>>(),
+                Arg.Any<CancellationToken>())
+            .Returns<Task<List<(ETimeType, ZonedDateTime)>>>(callInfo => throw new PrayerTimesNotAvailableForDateException(callInfo.Arg<ZonedDateTime>().Date, "Muwaqqit"));
+
+        // ACT
+        CalculatePrayerTimesResultVO result = await _dynamicPrayerTimeProviderManager.CalculatePrayerTimesAsync(profile.ID, zonedDate, default);
+
+        // ASSERT
+        result.DynamicPrayerTimesDaySet.CurrentDay.Fajr.Start.Should().BeNull();
+        result.CalculationErrors.Should().HaveCount(3);
+        result.CalculationErrors.Should().OnlyContain(x => x.IsDateNotAvailable);
+    }
+
+    private (DynamicProfile Profile, IDynamicPrayerTimeProvider MuwaqqitPrayerTimeServiceMock) ArrangeSimpleMuwaqqitProfile()
+    {
         DynamicProfile profile = TestDataHelper.CreateCompleteTestDynamicProfile();
-        ZonedDateTime firstZonedDate = new LocalDate(2024, 1, 1).AtStartOfDayInZone(DateTimeZone.Utc);
-        ZonedDateTime secondZonedDate = new LocalDate(2024, 1, 5).AtStartOfDayInZone(DateTimeZone.Utc);
 
         BaseLocationData muwaqqitLocationData = Substitute.ForPartsOf<BaseLocationData>();
         _profileServiceMock.GetUntrackedReferenceOfProfile(Arg.Any<int>(), Arg.Any<CancellationToken>()).Returns(profile);
@@ -520,15 +586,7 @@ public class DynamicPrayerTimeProviderManagerTests : BaseTest
 
         _profileServiceMock.GetActiveComplexTimeConfigs(Arg.Is(profile)).Returns([muwaqqitConfig]);
 
-        // ACT
-        await _dynamicPrayerTimeProviderManager.CalculatePrayerTimesAsync(profile.ID, firstZonedDate, default);
-        await _dynamicPrayerTimeProviderManager.CalculatePrayerTimesAsync(profile.ID, secondZonedDate, default);
-        await _dynamicPrayerTimeProviderManager.CalculatePrayerTimesAsync(profile.ID, firstZonedDate, default);
-
-        // ASSERT
-        // only the latest calculation is kept per profile, so the third call has to recalculate
-        // the first date (3 provider calls per calculation, i.e. 9 in total without a single cache hit)
-        await muwaqqitPrayerTimeServiceMock.ReceivedWithAnyArgs(9).GetPrayerTimesAsync(default, default, default, default);
+        return (profile, muwaqqitPrayerTimeServiceMock);
     }
 
     #endregion CalculatePrayerTimesAsync
