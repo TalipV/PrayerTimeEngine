@@ -144,6 +144,7 @@ public partial class MainPage : ContentPage
     private Grid _contentGrid;
     private Border _loadingIndicator;
     private ActivityIndicator _loadingSpinner;
+    private ActivityIndicator _smallLoadingSpinner;
 
     private Grid CreateUI()
     {
@@ -309,22 +310,27 @@ public partial class MainPage : ContentPage
 
     #region loading indicator
 
-    /// <summary>
-    /// Loads that finish faster than this never show the indicator, so cached data does not make the screen flicker.
-    /// </summary>
-    private const int LOADING_INDICATOR_DELAY_MS = 150;
+    // Loading is shown in two stages: first only a small spinner in the date bar, which doesn't disturb;
+    // the large pill in the middle of the page (and the dimmed content) only follow when loading takes longer.
 
-    /// <summary>Once shown, the indicator stays at least this long, so it does not just flash up and vanish.</summary>
+    /// <summary>Loads that finish faster than this show nothing at all, so cached data does not make anything flicker.</summary>
+    private const int SMALL_LOADING_INDICATOR_DELAY_MS = 150;
+
+    /// <summary>Only loads that take longer than this get the large indicator in the middle of the page.</summary>
+    private const int LARGE_LOADING_INDICATOR_DELAY_MS = 1500;
+
+    /// <summary>Once shown, the large indicator stays at least this long, so it does not just flash up and vanish.</summary>
     private const int LOADING_INDICATOR_MIN_VISIBLE_MS = 450;
 
     private const uint LOADING_INDICATOR_FADE_MS = 180;
 
-    /// <summary>Opacity of the page content while loading: clearly in the background, but still recognizable.</summary>
-    private const double LOADING_CONTENT_OPACITY = 0.3;
+    /// <summary>Opacity of the page content while the large indicator is shown: in the background, but still recognizable.</summary>
+    private const double LOADING_CONTENT_OPACITY = 0.4;
 
-    /// <summary>Incremented on every loading state change, so outdated delayed updates can tell they are outdated.</summary>
+    /// <summary>Incremented on every start and end of loading, so outdated delayed updates can tell they are outdated.</summary>
     private int _loadingIndicatorVersion;
     private long _loadingIndicatorShownAtMs;
+    private bool _isLoadingActive;
 
     /// <summary>
     /// A pill in the middle of the page with an accent-coloured spinner and a text naming what is being loaded.
@@ -380,19 +386,27 @@ public partial class MainPage : ContentPage
 
     private async Task UpdateLoadingIndicatorAsync(bool isLoading)
     {
-        int version = ++_loadingIndicatorVersion;
-
         if (isLoading)
         {
-            if (_loadingIndicator.IsVisible)
+            // already loading (e.g. the place was loaded and now the prayer times follow): the running stages continue
+            if (_isLoadingActive)
             {
-                // already shown (e.g. the place was loaded and now the prayer times follow): just make sure it is fully visible
-                await ShowLoadingIndicatorAsync();
                 return;
             }
 
-            await Task.Delay(LOADING_INDICATOR_DELAY_MS);
+            _isLoadingActive = true;
+            int version = ++_loadingIndicatorVersion;
 
+            await Task.Delay(SMALL_LOADING_INDICATOR_DELAY_MS);
+            if (version != _loadingIndicatorVersion)
+            {
+                return;
+            }
+
+            _smallLoadingSpinner.IsVisible = true;
+            _smallLoadingSpinner.IsRunning = true;
+
+            await Task.Delay(LARGE_LOADING_INDICATOR_DELAY_MS - SMALL_LOADING_INDICATOR_DELAY_MS);
             if (version != _loadingIndicatorVersion)
             {
                 return;
@@ -403,6 +417,17 @@ public partial class MainPage : ContentPage
         }
         else
         {
+            if (!_isLoadingActive)
+            {
+                return;
+            }
+
+            _isLoadingActive = false;
+            int version = ++_loadingIndicatorVersion;
+
+            _smallLoadingSpinner.IsRunning = false;
+            _smallLoadingSpinner.IsVisible = false;
+
             if (!_loadingIndicator.IsVisible)
             {
                 return;
@@ -414,6 +439,7 @@ public partial class MainPage : ContentPage
                 await Task.Delay((int)remainingMs);
             }
 
+            // loading started again in the meantime: the large indicator stays
             if (version != _loadingIndicatorVersion)
             {
                 return;
@@ -455,7 +481,7 @@ public partial class MainPage : ContentPage
 
     /// <summary>
     /// The bar below the search field to choose the shown day: arrows for the previous and the next day,
-    /// the day in the middle (tapping it opens the date picker), a warning sign while there were problems
+    /// the day in the middle (tapping it opens the date picker), a small spinner while loading, a warning sign while there were problems
     /// loading the shown times and a button back to the current day that only shows up while another day is shown.
     /// </summary>
     private Grid CreateDateBar()
@@ -508,11 +534,25 @@ public partial class MainPage : ContentPage
             convert: isCurrentDaySelected => !isCurrentDaySelected);
         backToTodayButton.GestureRecognizers.Add(new TapGestureRecognizer { Command = _viewModel.CurrentDayCommand });
 
+        // the first, unobtrusive stage of the loading indicator (see UpdateLoadingIndicatorAsync)
+        _smallLoadingSpinner = new ActivityIndicator
+        {
+            Color = AppColors.Accent,
+            WidthRequest = 18,
+            HeightRequest = 18,
+            Margin = new Thickness(4, 0),
+            VerticalOptions = LayoutOptions.Center,
+            IsRunning = false,
+            IsVisible = false,
+            InputTransparent = true,
+        };
+
         var dateBar = new Grid
         {
             ColumnDefinitions = Columns.Define(
                 GridLength.Auto,
                 GridLength.Star,
+                GridLength.Auto,
                 GridLength.Auto,
                 GridLength.Auto,
                 GridLength.Auto),
@@ -521,9 +561,10 @@ public partial class MainPage : ContentPage
 
         dateBar.Add(CreateDateBarArrowButton("‹", AppResources.MainPage_Date_PreviousDay, _viewModel.PreviousDayCommand), column: 0, row: 0);
         dateBar.Add(dateArea, column: 1, row: 0);
-        dateBar.Add(CreateLoadingProblemsButton(), column: 2, row: 0);
-        dateBar.Add(backToTodayButton, column: 3, row: 0);
-        dateBar.Add(CreateDateBarArrowButton("›", AppResources.MainPage_Date_NextDay, _viewModel.NextDayCommand), column: 4, row: 0);
+        dateBar.Add(_smallLoadingSpinner, column: 2, row: 0);
+        dateBar.Add(CreateLoadingProblemsButton(), column: 3, row: 0);
+        dateBar.Add(backToTodayButton, column: 4, row: 0);
+        dateBar.Add(CreateDateBarArrowButton("›", AppResources.MainPage_Date_NextDay, _viewModel.NextDayCommand), column: 5, row: 0);
 
         return dateBar;
     }

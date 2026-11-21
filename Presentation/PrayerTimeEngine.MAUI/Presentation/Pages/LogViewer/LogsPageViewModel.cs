@@ -117,7 +117,7 @@ public class LogsPageViewModel(
         {
             using MemoryStream compressedLogs = await new LogController().GetCompressedLogs();
 
-            string filePath = Path.Combine(FileSystem.CacheDirectory, $"PrayerTimeEngine_Logs_{DateTime.Now:yyyyMMdd_HHmmss}.zip");
+            string filePath = PrepareShareFilePath($"PrayerTimeEngine_Logs_{DateTime.Now:yyyyMMdd_HHmmss}.zip");
             await File.WriteAllBytesAsync(filePath, compressedLogs.ToArray());
 
             await Share.Default.RequestAsync(new ShareFileRequest
@@ -142,7 +142,7 @@ public class LogsPageViewModel(
                 Environment.NewLine + Environment.NewLine,
                 FilteredEntries.AsEnumerable().Reverse().Select(x => x.FullText));
 
-            string filePath = Path.Combine(FileSystem.CacheDirectory, $"PrayerTimeEngine_Logs_Filtered_{DateTime.Now:yyyyMMdd_HHmmss}.txt");
+            string filePath = PrepareShareFilePath($"PrayerTimeEngine_Logs_Filtered_{DateTime.Now:yyyyMMdd_HHmmss}.txt");
             await File.WriteAllTextAsync(filePath, text);
 
             await Share.Default.RequestAsync(new ShareFileRequest
@@ -157,6 +157,38 @@ public class LogsPageViewModel(
             toastMessageService.ShowError(exception.Message);
         }
     });
+
+    /// <summary>
+    /// The path for a new file to share. The files shared before are deleted first, so that they don't pile up
+    /// in the cache over time; only the last shared file remains until the next share.
+    /// </summary>
+    private string PrepareShareFilePath(string fileName)
+    {
+        string directoryPath = Path.Combine(FileSystem.CacheDirectory, "SharedLogs");
+
+        // version 0.7.0 put the shared files directly into the cache directory
+        IEnumerable<string> oldFilePaths = Directory.GetFiles(FileSystem.CacheDirectory, "PrayerTimeEngine_Logs_*");
+        if (Directory.Exists(directoryPath))
+        {
+            oldFilePaths = oldFilePaths.Concat(Directory.GetFiles(directoryPath));
+        }
+
+        foreach (string oldFilePath in oldFilePaths)
+        {
+            try
+            {
+                File.Delete(oldFilePath);
+            }
+            catch (Exception exception)
+            {
+                // e.g. still opened by the app it was shared with: deleted on one of the next shares instead
+                logger.LogWarning(exception, "Old shared log file {FilePath} could not be deleted", oldFilePath);
+            }
+        }
+
+        Directory.CreateDirectory(directoryPath);
+        return Path.Combine(directoryPath, fileName);
+    }
 
     #endregion commands
 
