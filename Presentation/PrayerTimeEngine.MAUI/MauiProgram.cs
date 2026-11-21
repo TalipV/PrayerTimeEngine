@@ -8,7 +8,7 @@ using PrayerTimeEngine.Core.Application;
 using PrayerTimeEngine.Core.Common;
 using PrayerTimeEngine.Core.Infrastructure;
 using PrayerTimeEngine.Presentation.Pages.DatabaseTables;
-using PrayerTimeEngine.Presentation.Pages.Logs;
+using PrayerTimeEngine.Presentation.Pages.LogViewer;
 using PrayerTimeEngine.Presentation.Pages.Main;
 using PrayerTimeEngine.Presentation.Pages.QiblahFinder;
 using PrayerTimeEngine.Presentation.Pages.Settings.SettingsContent;

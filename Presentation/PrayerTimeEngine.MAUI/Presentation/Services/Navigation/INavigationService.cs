@@ -1,5 +1,5 @@
 using PrayerTimeEngine.Presentation.Pages.DatabaseTables;
-using PrayerTimeEngine.Presentation.Pages.Logs;
+using PrayerTimeEngine.Presentation.Pages.LogViewer;
 using PrayerTimeEngine.Presentation.Pages.Main;
 using PrayerTimeEngine.Presentation.Pages.Settings.SettingsHandler;
 
