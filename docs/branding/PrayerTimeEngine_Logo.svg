@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="456" height="456" viewBox="0 0 456 456">
+  <defs>
+    <linearGradient id="night" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#16294A" />
+      <stop offset="1" stop-color="#0B1524" />
+    </linearGradient>
+  </defs>
+  <rect width="456" height="456" fill="url(#night)" />
+  
+  <g transform="translate(45.6,82) scale(0.8)">
+
+  <!-- Sonnenbahn unterhalb des Horizonts: gestrichelt = nicht sichtbar -->
+  <path d="M 100 228 A 128 128 0 0 0 356 228"
+        fill="none" stroke="#4C6087" stroke-width="12"
+        stroke-linecap="round" stroke-dasharray="4 34" />
+
+  <!-- Horizont -->
+  <line x1="74" y1="228" x2="382" y2="228"
+        stroke="#4C6087" stroke-width="8" stroke-linecap="round" />
+
+  <!-- Sonnenbahn oberhalb des Horizonts -->
+  <path d="M 356 228 A 128 128 0 0 0 100 228"
+        fill="none" stroke="#EFB03E" stroke-width="24" stroke-linecap="round" />
+
+  <!-- Fajr: 16 Grad unter dem Osthorizont -->
+  <circle cx="351" cy="263" r="15" fill="#0B1524" stroke="#EFB03E" stroke-width="8" />
+
+  <!-- Dhuhr: Zenit -->
+  <circle cx="241" cy="101" r="18" fill="#FFD37A" />
+
+  <!-- Asr -->
+  <circle cx="142" cy="133" r="18" fill="#FFD37A" />
+
+  <!-- Maghrib: auf dem Westhorizont -->
+  <circle cx="100" cy="228" r="18" fill="#FFD37A" />
+
+  <!-- Isha: 16 Grad unter dem Westhorizont -->
+  <circle cx="105" cy="263" r="15" fill="#0B1524" stroke="#EFB03E" stroke-width="8" />
+
+  </g>
+
+</svg>
