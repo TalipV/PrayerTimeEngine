@@ -5,8 +5,11 @@ using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Domain;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Models;
+using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers;
+using PrayerTimeEngine.Core.Domain.Models;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Models;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Interfaces;
+using PrayerTimeEngine.Core.Domain.ProfileManagement.Models;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Services;
 using PrayerTimeEngine.Core.Tests.Common;
@@ -19,6 +22,7 @@ public class ProfileServiceTests : BaseTest
     private readonly IProfileRepository _profileRepositoryMock;
     private readonly IDynamicPrayerTimeProviderFactory _dynamicPrayerTimeProviderFactory;
     private readonly ProfileService _profileService;
+    private readonly LocationLookupStatusStore _locationLookupStatusStore = new();
 
     public ProfileServiceTests()
     {
@@ -29,6 +33,7 @@ public class ProfileServiceTests : BaseTest
             _dynamicPrayerTimeProviderFactory,
             new TimeTypeAttributeService(),
             new ProfileVersionStore(),
+            _locationLookupStatusStore,
             Substitute.For<ISystemInfoService>(),
             Substitute.For<ILogger<ProfileService>>());
     }
@@ -266,6 +271,41 @@ public class ProfileServiceTests : BaseTest
             Arg.Is<List<(EDynamicPrayerTimeProviderType, BaseLocationData)>>(x => x.Select(x => x.Item1).ToHashSet().SetEquals(expectedDynamicPrayerTimeProviderType)),
             Arg.Is($"{placeInfo.City}, {profile.SequenceNo}"),
             Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    [Trait("Method", "UpdateLocationConfig")]
+    public async Task UpdateLocationConfig_OneProviderFails_OthersStoredAndFailureReportedWithItsCause()
+    {
+        // ARRANGE
+        DynamicProfile profile = TestDataHelper.CreateCompleteTestDynamicProfile();
+        ProfilePlaceInfo placeInfo = profile.PlaceInfo;
+
+        // Semerkand needs the turkish place names, which the place service refused to give
+        var placeServiceError = new ExternalServiceException("LocationIQ", EExternalServiceFailure.RateLimited, httpStatusCode: 429);
+        IDynamicPrayerTimeProvider semerkandProviderMock = Substitute.For<IDynamicPrayerTimeProvider>();
+        semerkandProviderMock.GetLocationInfo(Arg.Any<ProfilePlaceInfo>(), Arg.Any<CancellationToken>()).Returns<BaseLocationData>(_ => throw placeServiceError);
+        _dynamicPrayerTimeProviderFactory.GetDynamicPrayerTimeProviderByDynamicPrayerTimeProvider(EDynamicPrayerTimeProviderType.Semerkand).Returns(semerkandProviderMock);
+
+        // ACT
+        List<LocationLookupResult> results = await _profileService.UpdateLocationConfig(profile, placeInfo, default);
+
+        // ASSERT
+        LocationLookupResult semerkandResult = results.Single(x => x.Provider == EDynamicPrayerTimeProviderType.Semerkand);
+        semerkandResult.IsFound.Should().BeFalse();
+        semerkandResult.Error.Should().BeSameAs(placeServiceError);
+        results.Where(x => x.Provider != EDynamicPrayerTimeProviderType.Semerkand).Should().OnlyContain(x => x.IsFound);
+
+        await _profileRepositoryMock.Received(1).UpdateLocationConfig(
+            Arg.Is(profile),
+            Arg.Is(placeInfo),
+            Arg.Is<List<(EDynamicPrayerTimeProviderType, BaseLocationData)>>(x => x.Count == results.Count - 1 && x.All(y => y.Item1 != EDynamicPrayerTimeProviderType.Semerkand)),
+            Arg.Any<string>(),
+            Arg.Any<CancellationToken>());
+
+        // remembered, so the missing location data can be explained and retried later
+        _locationLookupStatusStore.Get(profile.ID, EDynamicPrayerTimeProviderType.Semerkand)
+            .Should().BeEquivalentTo(new { ConsecutiveFailureCount = 1, IsPlaceUnknown = false, LastError = placeServiceError });
     }
 
     #endregion UpdateLocationConfig

@@ -1,9 +1,9 @@
 using System.Globalization;
+using PrayerTimeEngine.Core.Domain.Models;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Interfaces;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Models;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Services.LocationIQ;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Services.LocationIQ.DTOs;
-using Refit;
 
 namespace PrayerTimeEngine.Core.Domain.PlaceManagement.Services;
 
@@ -60,7 +60,7 @@ public class PlaceService(
 
             return [.. places.Select(x => GetlocationIQPlace(x, language)).Where(x => !string.IsNullOrWhiteSpace(x.City) && !string.IsNullOrWhiteSpace(x.Country))];
         }
-        catch (ApiException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
+        catch (ExternalServiceException ex) when (ex.Failure == EExternalServiceFailure.NotFound)
         {
             return [];
         }

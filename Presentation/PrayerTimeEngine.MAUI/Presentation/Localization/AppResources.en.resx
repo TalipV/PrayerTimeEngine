@@ -468,12 +468,6 @@ Nisab: €{4:N2} ({5:N2} g)</value>
   <data name="MainPage_Problem_NotAvailable" xml:space="preserve">
     <value>This source has no times for this day.</value>
   </data>
-  <data name="MainPage_Problem_LocationDataMissing" xml:space="preserve">
-    <value>The location data of this source is missing for the selected place (e.g. a service was unreachable when the place was selected). It is determined again automatically in the background.</value>
-  </data>
-  <data name="MainPage_Problem_CircuitOpen" xml:space="preserve">
-    <value>Too many failed requests in a short time, the source is paused for a moment. ({0})</value>
-  </data>
   <data name="MainPage_Problems_Title" xml:space="preserve">
     <value>Problems while loading</value>
   </data>
@@ -518,5 +512,50 @@ Nisab: €{4:N2} ({5:N2} g)</value>
   </data>
   <data name="Logs_Status" xml:space="preserve">
     <value>{0} of {1} entries (the last {2} are kept)</value>
+  </data>
+  <data name="ServiceFailure_RateLimited" xml:space="preserve">
+    <value>{0} reports too many requests</value>
+  </data>
+  <data name="ServiceFailure_Timeout" xml:space="preserve">
+    <value>{0} did not answer in time</value>
+  </data>
+  <data name="ServiceFailure_TemporarilyPaused" xml:space="preserve">
+    <value>{0} is paused for a moment after several failed requests</value>
+  </data>
+  <data name="ServiceFailure_ServerError" xml:space="preserve">
+    <value>{0} reported a server error</value>
+  </data>
+  <data name="ServiceFailure_NotFound" xml:space="preserve">
+    <value>{0} does not know the requested data</value>
+  </data>
+  <data name="ServiceFailure_RequestRejected" xml:space="preserve">
+    <value>{0} rejected the request</value>
+  </data>
+  <data name="ServiceFailure_Unreachable" xml:space="preserve">
+    <value>{0} is not reachable (internet connection?)</value>
+  </data>
+  <data name="ServiceFailure_InvalidResponse" xml:space="preserve">
+    <value>{0} gave an unexpected answer</value>
+  </data>
+  <data name="ServiceFailure_HttpStatus" xml:space="preserve">
+    <value>HTTP {0}</value>
+  </data>
+  <data name="ServiceFailure_AvailableAgainAt" xml:space="preserve">
+    <value>available again from {0}</value>
+  </data>
+  <data name="MainPage_Problem_LocationLookupFailed" xml:space="preserve">
+    <value>The location data for “{0}” could not be determined: {1}.</value>
+  </data>
+  <data name="MainPage_Problem_LocationUnknown" xml:space="preserve">
+    <value>This source does not know the place “{0}”.</value>
+  </data>
+  <data name="MainPage_Problem_LocationLookupPending" xml:space="preserve">
+    <value>The location data for “{0}” is being determined.</value>
+  </data>
+  <data name="MainPage_Problem_NextAttempt" xml:space="preserve">
+    <value>Next automatic attempt at {0}.</value>
+  </data>
+  <data name="MainPage_LocationUnknownShort" xml:space="preserve">
+    <value>place unknown</value>
   </data>
 </root>

@@ -15,6 +15,7 @@ using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Models;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Interfaces;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Models;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Interfaces;
+using PrayerTimeEngine.Core.Domain.ProfileManagement.Models;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
 using PrayerTimeEngine.Presentation.Pages.DatabaseTables;
 using PrayerTimeEngine.Presentation.Pages.LogViewer;
@@ -235,21 +236,7 @@ public partial class MainPageViewModel(
         OnPropertyChanged(nameof(LoadingProblemsText));
     }
 
-    private static string GetLoadingProblemMessage(Exception exception)
-    {
-        return exception switch
-        {
-            PrayerTimesNotAvailableForDateException => AppResources.MainPage_Problem_NotAvailable,
-            LocationDataMissingException => AppResources.MainPage_Problem_LocationDataMissing,
-
-            // Polly's circuit breaker (without referencing Polly): too many requests failed shortly before
-            _ when exception.GetType().Name == "BrokenCircuitException"
-                || exception.InnerException?.GetType().Name == "BrokenCircuitException"
-                => string.Format(AppResources.MainPage_Problem_CircuitOpen, exception.Message),
-
-            _ => exception.Message,
-        };
-    }
+    private static string GetLoadingProblemMessage(Exception exception) => ProblemMessages.Describe(exception);
 
     #endregion loading problems
 
@@ -355,7 +342,7 @@ public partial class MainPageViewModel(
         catch (Exception exception)
         {
             logger.LogError(exception, "Error while removing a favorite place");
-            toastMessageService.ShowError(exception.Message);
+            toastMessageService.ShowError(ProblemMessages.Describe(exception));
         }
 
         await BuildSearchItemsAsync(_lastResults);
@@ -396,7 +383,7 @@ public partial class MainPageViewModel(
         catch (Exception exception)
         {
             logger.LogError(exception, "Error during place search");
-            toastMessageService.ShowError(exception.Message);
+            toastMessageService.ShowError(ProblemMessages.Describe(exception));
         }
         finally
         {
@@ -438,7 +425,7 @@ public partial class MainPageViewModel(
         catch (Exception exception)
         {
             logger.LogError(exception, "Error while creating a new profile");
-            toastMessageService.ShowError(exception.Message);
+            toastMessageService.ShowError(ProblemMessages.Describe(exception));
         }
     }
 
@@ -464,7 +451,7 @@ public partial class MainPageViewModel(
         catch (Exception exception)
         {
             logger.LogError(exception, "Error while creating a new mosque profile");
-            toastMessageService.ShowError(exception.Message);
+            toastMessageService.ShowError(ProblemMessages.Describe(exception));
         }
     }
 
@@ -480,7 +467,7 @@ public partial class MainPageViewModel(
         catch (Exception exception)
         {
             logger.LogError(exception, "Error while deleting current profile");
-            toastMessageService.ShowError(exception.Message);
+            toastMessageService.ShowError(ProblemMessages.Describe(exception));
         }
     }
 
@@ -508,7 +495,7 @@ public partial class MainPageViewModel(
         catch (Exception exception)
         {
             logger.LogError(exception, "Error while deleting current profile");
-            toastMessageService.ShowError(exception.Message);
+            toastMessageService.ShowError(ProblemMessages.Describe(exception));
 
             return string.Format(AppResources.Common_ErrorWithMessage, exception.Message);
         }
@@ -528,7 +515,7 @@ public partial class MainPageViewModel(
         catch (Exception exception)
         {
             logger.LogError(exception, "Error while deleting current profile");
-            toastMessageService.ShowError(exception.Message);
+            toastMessageService.ShowError(ProblemMessages.Describe(exception));
 
             return string.Format(AppResources.Common_ErrorWithMessage, exception.Message);
         }
@@ -581,7 +568,7 @@ public partial class MainPageViewModel(
         catch (Exception exception)
         {
             logger.LogError(exception, "Error while changing the name of a profile");
-            toastMessageService.ShowError(exception.Message);
+            toastMessageService.ShowError(ProblemMessages.Describe(exception));
         }
 
         return Task.CompletedTask;
@@ -790,7 +777,7 @@ public partial class MainPageViewModel(
         {
             logger.LogError(exception,
                 "Error during refreshData. ({RefreshCallID})", refreshCallID);
-            toastMessageService.ShowError(exception.Message);
+            toastMessageService.ShowError(ProblemMessages.Describe(exception));
         }
         finally
         {
@@ -887,7 +874,7 @@ public partial class MainPageViewModel(
         catch (Exception exception)
         {
             logger.LogError(exception, "Error during onAfterFirstLoad");
-            toastMessageService.ShowError(exception.Message);
+            toastMessageService.ShowError(ProblemMessages.Describe(exception));
         }
     }
 
@@ -930,7 +917,7 @@ public partial class MainPageViewModel(
 
                 ProfilePlaceInfo completePlaceInfo = await placeService.GetTimezoneInfo(selectedPlace, cancellationToken: default);
 
-                await profileService.UpdateLocationConfig(
+                List<LocationLookupResult> locationLookupResults = await profileService.UpdateLocationConfig(
                     currentProfile,
                     completePlaceInfo,
                     cancellationToken: default);
@@ -938,20 +925,19 @@ public partial class MainPageViewModel(
                 // notify UI for updates
                 await dispatcher.DispatchAsync(() => OnPropertyChanged(nameof(CurrentProfile)));
 
-                var locationConfigDynamicPrayerTimeProviders =
-                    currentProfile.LocationConfigs
-                        .Where(x => x.LocationData != null)
-                        .Select(x => x.DynamicPrayerTimeProvider)
-                        .ToHashSet();
-                var missingLocationInfo =
-                    Enum.GetValues<EDynamicPrayerTimeProviderType>()
-                        .Where(enumValue => enumValue != EDynamicPrayerTimeProviderType.None && !locationConfigDynamicPrayerTimeProviders.Contains(enumValue))
-                        .OrderBy(x => x.ToString())
-                        .ToList();
-                if (missingLocationInfo.Count != 0)
+                // which sources have no location data and why, e.g. "Semerkand (LocationIQ meldet zu viele Anfragen (HTTP 429))";
+                // the details and the automatic retries show up behind the warning sign once the times are loaded
+                List<LocationLookupResult> missingLocationData = [.. locationLookupResults.Where(x => !x.IsFound).OrderBy(x => x.Provider.ToString())];
+                if (missingLocationData.Count != 0)
                 {
-                    logger.LogWarning("Location information missing for the following calculation sources: {@DynamicPrayerTimeProviders}", missingLocationInfo);
-                    toastMessageService.ShowWarning(string.Format(AppResources.MainPage_LocationInformationMissing, string.Join(", ", missingLocationInfo)));
+                    logger.LogWarning(
+                        "Location data missing for '{Place}': {@MissingLocationData}",
+                        completePlaceInfo.DisplayText,
+                        missingLocationData.Select(x => $"{x.Provider}: {x.Error?.Message ?? "place unknown"}").ToList());
+
+                    toastMessageService.ShowWarning(string.Format(
+                        AppResources.MainPage_LocationInformationMissing,
+                        string.Join(", ", missingLocationData.Select(x => $"{x.Provider} ({ProblemMessages.DescribeLookupFailureShort(x.Error)})"))));
                 }
 
                 // offer to save the just selected place as a favorite (only if it is not one already)
@@ -969,7 +955,7 @@ public partial class MainPageViewModel(
                             catch (Exception exception)
                             {
                                 logger.LogError(exception, "Error while adding a favorite place");
-                                toastMessageService.ShowError(exception.Message);
+                                toastMessageService.ShowError(ProblemMessages.Describe(exception));
                             }
                         },
                         duration: TimeSpan.FromSeconds(5));
@@ -978,7 +964,7 @@ public partial class MainPageViewModel(
             catch (Exception exception)
             {
                 logger.LogError(exception, "Error during place selection");
-                toastMessageService.ShowError(exception.Message);
+                toastMessageService.ShowError(ProblemMessages.Describe(exception));
             }
             finally
             {

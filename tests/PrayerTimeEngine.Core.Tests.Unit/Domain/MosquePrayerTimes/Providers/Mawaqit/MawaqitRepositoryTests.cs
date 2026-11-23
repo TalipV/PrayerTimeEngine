@@ -185,7 +185,7 @@ public class MawaqitRepositoryTests : BaseTest
 
         // the day of the times doesn't matter, only when they were stored: the times of the
         // earlier day were stored recently, the ones of the later day long ago
-        var insertedBefore = NodaTime.Instant.FromUtc(2024, 1, 1, 0, 0);
+        var insertedBefore = Instant.FromUtc(2024, 1, 1, 0, 0);
         oldTime.InsertInstant = insertedBefore.Plus(Duration.FromHours(1));
         newTime.InsertInstant = insertedBefore.Minus(Duration.FromDays(1));
         await TestArrangeDbContext.SaveChangesAsync();

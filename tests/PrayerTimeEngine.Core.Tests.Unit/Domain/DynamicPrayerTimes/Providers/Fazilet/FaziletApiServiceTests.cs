@@ -1,6 +1,6 @@
-﻿using System.Net;
-using PrayerTimeEngine.Core.Data.JsonSerialization;
+using System.Net;
 using NodaTime;
+using PrayerTimeEngine.Core.Data.JsonSerialization;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Models.DTOs;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Fazilet.Services;
 using PrayerTimeEngine.Core.Tests.Common;

@@ -1,4 +1,4 @@
-﻿using System.Net.WebSockets;
+using System.Net.WebSockets;
 using NodaTime;
 using NSubstitute;
 using PrayerTimeEngine.Core.Data.WebSocket.Interfaces;

@@ -2,6 +2,7 @@ using System.Globalization;
 using System.Net;
 using System.Net.Http.Headers;
 using Microsoft.Extensions.Logging;
+using PrayerTimeEngine.Core.Domain.Models;
 
 namespace PrayerTimeEngine.Core.Common.Http;
 
@@ -15,7 +16,7 @@ namespace PrayerTimeEngine.Core.Common.Http;
 /// <param name="MaxCooldown">Upper bound of the pause (repeated 429s double it up to this value).</param>
 /// <param name="MaxWaitBeforeFailing">
 /// A request waits at most this long for a running cooldown; with a longer one it fails right away
-/// with <see cref="ApiCooldownException"/> instead of blocking the app.
+/// with an <see cref="ExternalServiceException"/> (rate limited) instead of blocking the app.
 /// </param>
 public sealed record ApiThrottleOptions(
     string ApiName,
@@ -24,18 +25,6 @@ public sealed record ApiThrottleOptions(
     TimeSpan DefaultCooldown,
     TimeSpan MaxCooldown,
     TimeSpan MaxWaitBeforeFailing);
-
-/// <summary>
-/// Thrown when an API is in a cooldown that lasts longer than a request may wait for it
-/// (e.g. after a daily limit was reached). Deliberately no <see cref="HttpRequestException"/>,
-/// so the resilience pipeline does not retry it.
-/// </summary>
-public sealed class ApiCooldownException(string apiName, DateTimeOffset availableAgainAt)
-    : Exception($"{apiName}: too many requests, available again at {availableAgainAt.ToLocalTime():HH:mm:ss}.")
-{
-    public string ApiName { get; } = apiName;
-    public DateTimeOffset AvailableAgainAt { get; } = availableAgainAt;
-}
 
 /// <summary>
 /// Client side rate limiting for one external API, shared by all requests to it (singleton per API).
@@ -95,7 +84,12 @@ public sealed class ApiThrottle(ApiThrottleOptions options, TimeProvider timePro
             TimeSpan waitTime = allowedAt - now;
             if (cooldownUntil > now && cooldownUntil - now > Options.MaxWaitBeforeFailing)
             {
-                throw new ApiCooldownException(Options.ApiName, cooldownUntil);
+                // deliberately no HttpRequestException, so the resilience pipeline does not retry it
+                throw new ExternalServiceException(
+                    Options.ApiName,
+                    EExternalServiceFailure.RateLimited,
+                    availableAgainAt: cooldownUntil,
+                    details: "paused by the app after the service refused too many requests");
             }
 
             if (waitTime > TimeSpan.Zero)

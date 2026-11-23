@@ -34,6 +34,7 @@ public static class ApplicationServiceCollectionExtensions
 
         services.AddTransient<IProfileService, ProfileService>();
         services.AddSingleton<IProfileVersionStore, ProfileVersionStore>();
+        services.AddSingleton<ILocationLookupStatusStore, LocationLookupStatusStore>();
 
         // dynamic prayer times
         services.AddSingleton<IDynamicPrayerTimeProviderManager, DynamicPrayerTimeProviderManager>();

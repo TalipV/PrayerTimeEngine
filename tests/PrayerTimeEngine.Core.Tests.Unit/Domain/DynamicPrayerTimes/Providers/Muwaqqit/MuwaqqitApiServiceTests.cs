@@ -1,6 +1,6 @@
-using PrayerTimeEngine.Core.Data.JsonSerialization;
 using System.Net;
 using NodaTime;
+using PrayerTimeEngine.Core.Data.JsonSerialization;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Muwaqqit.Models.DTOs;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Muwaqqit.Models.Entities;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Muwaqqit.Services;

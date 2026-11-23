@@ -1,4 +1,4 @@
-﻿using System.Net;
+using System.Net;
 using NodaTime;
 using PrayerTimeEngine.Core.Domain.Calculators.Mosques.Mawaqit.Services;
 using PrayerTimeEngine.Core.Domain.MosquePrayerTimes.Models;

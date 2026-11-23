@@ -1,5 +1,7 @@
 using System.Net;
+using PrayerTimeEngine.Core.Common.Http;
 using PrayerTimeEngine.Core.Data.JsonSerialization;
+using PrayerTimeEngine.Core.Domain.Models;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Models;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Services;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Services.LocationIQ;
@@ -22,7 +24,9 @@ public class PlaceServiceTests : BaseTest
             BaseAddress = new Uri("https://eu1.locationiq.com/v1/")
         };
         _placeService = new PlaceService(
-            RestService.ForGenerated<ILocationIQApiService>(httpClient, RefitJsonContext.Default),
+            RestService.ForGenerated<ILocationIQApiService>(
+                httpClient,
+                ExternalServiceErrors.Configure(RefitSettings.ForJsonContext(RefitJsonContext.Default), "LocationIQ", throttle: null)),
             apiKey: "test-key");
     }
 
@@ -123,6 +127,80 @@ public class PlaceServiceTests : BaseTest
         result.InfoLanguageCode.Should().Be("de");
         result.PostCode.Should().Be("50823");
         result.Street.Should().Be("Venloer Straße 160");
+    }
+
+    [Theory]
+    [InlineData(HttpStatusCode.TooManyRequests, EExternalServiceFailure.RateLimited)]
+    [InlineData(HttpStatusCode.ServiceUnavailable, EExternalServiceFailure.ServerError)]
+    [InlineData(HttpStatusCode.Unauthorized, EExternalServiceFailure.RequestRejected)]
+    [Trait("Method", "GetPlaceBasedOnPlace")]
+    public async Task GetPlaceBasedOnPlace_UnsuccessfulResponse_ThrowsExceptionNamingServiceAndFailure(HttpStatusCode statusCode, EExternalServiceFailure expectedFailure)
+    {
+        // ARRANGE
+        _mockHttpMessageHandler.HandleRequestFunc = _ => new HttpResponseMessage(statusCode);
+        var place = new BasicPlaceInfo
+        {
+            ExternalID = "1",
+            City = "Köln",
+            Country = "Deutschland",
+            InfoLanguageCode = "de",
+            CityDistrict = "",
+            PostCode = "",
+            Street = "",
+            Longitude = 1M,
+            Latitude = 1M
+        };
+
+        // ACT
+        Func<Task> action = () => _placeService.GetPlaceBasedOnPlace(place, "tr", default);
+
+        // ASSERT
+        ExternalServiceException exception = (await action.Should().ThrowAsync<ExternalServiceException>()).Subject.Single();
+        exception.ServiceName.Should().Be("LocationIQ");
+        exception.Failure.Should().Be(expectedFailure);
+        exception.HttpStatusCode.Should().Be((int)statusCode);
+        exception.Message.Should().StartWith("LocationIQ: ");
+    }
+
+    [Fact]
+    [Trait("Method", "GetPlaceBasedOnPlace")]
+    public async Task GetPlaceBasedOnPlace_NoConnection_ThrowsUnreachable()
+    {
+        // ARRANGE
+        _mockHttpMessageHandler.HandleRequestFunc = _ => throw new HttpRequestException(HttpRequestError.NameResolutionError, "No such host is known.");
+        var place = new BasicPlaceInfo
+        {
+            ExternalID = "1",
+            City = "Köln",
+            Country = "Deutschland",
+            InfoLanguageCode = "de",
+            CityDistrict = "",
+            PostCode = "",
+            Street = "",
+            Longitude = 1M,
+            Latitude = 1M
+        };
+
+        // ACT
+        Func<Task> action = () => _placeService.GetPlaceBasedOnPlace(place, "tr", default);
+
+        // ASSERT
+        (await action.Should().ThrowAsync<ExternalServiceException>())
+            .Which.Should().BeEquivalentTo(new { ServiceName = "LocationIQ", Failure = EExternalServiceFailure.Unreachable });
+    }
+
+    [Fact]
+    [Trait("Method", "SearchPlacesAsync")]
+    public async Task SearchPlacesAsync_NotFound_ReturnsEmptyList()
+    {
+        // ARRANGE
+        _mockHttpMessageHandler.HandleRequestFunc = _ => new HttpResponseMessage(HttpStatusCode.NotFound);
+
+        // ACT
+        List<BasicPlaceInfo> result = await _placeService.SearchPlacesAsync("xyz", "de", default);
+
+        // ASSERT
+        result.Should().BeEmpty();
     }
 
     #endregion GetPlaceBasedOnPlace

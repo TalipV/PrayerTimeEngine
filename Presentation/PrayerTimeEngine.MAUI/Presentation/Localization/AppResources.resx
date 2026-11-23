@@ -528,13 +528,6 @@ Nisab: {4:N2} € ({5:N2} g)</value>
   <data name="MainPage_Problem_NotAvailable" xml:space="preserve">
     <value>Für diesen Tag gibt es keine Zeiten von dieser Quelle.</value>
   </data>
-  <data name="MainPage_Problem_LocationDataMissing" xml:space="preserve">
-    <value>Für den gewählten Ort fehlen die Ortsdaten dieser Quelle (z. B. war ein Dienst beim Auswählen des Ortes nicht erreichbar). Sie werden im Hintergrund automatisch erneut ermittelt.</value>
-  </data>
-  <data name="MainPage_Problem_CircuitOpen" xml:space="preserve">
-    <value>Zu viele fehlgeschlagene Anfragen kurz hintereinander, die Quelle wird kurz pausiert. ({0})</value>
-    <comment>{0}: technical error message</comment>
-  </data>
   <data name="MainPage_Problems_Title" xml:space="preserve">
     <value>Probleme beim Laden</value>
   </data>
@@ -580,5 +573,64 @@ Nisab: {4:N2} € ({5:N2} g)</value>
   </data>
   <data name="Logs_Status" xml:space="preserve">
     <value>{0} von {1} Einträgen (es werden die letzten {2} behalten)</value>
+  </data>
+  <data name="ServiceFailure_RateLimited" xml:space="preserve">
+    <value>{0} meldet zu viele Anfragen</value>
+    <comment>{0}: service name</comment>
+  </data>
+  <data name="ServiceFailure_Timeout" xml:space="preserve">
+    <value>{0} hat nicht rechtzeitig geantwortet</value>
+    <comment>{0}: service name</comment>
+  </data>
+  <data name="ServiceFailure_TemporarilyPaused" xml:space="preserve">
+    <value>{0} wird nach mehreren fehlgeschlagenen Anfragen kurz pausiert</value>
+    <comment>{0}: service name</comment>
+  </data>
+  <data name="ServiceFailure_ServerError" xml:space="preserve">
+    <value>{0} hat einen Serverfehler gemeldet</value>
+    <comment>{0}: service name</comment>
+  </data>
+  <data name="ServiceFailure_NotFound" xml:space="preserve">
+    <value>{0} kennt die angefragten Daten nicht</value>
+    <comment>{0}: service name</comment>
+  </data>
+  <data name="ServiceFailure_RequestRejected" xml:space="preserve">
+    <value>{0} hat die Anfrage abgelehnt</value>
+    <comment>{0}: service name</comment>
+  </data>
+  <data name="ServiceFailure_Unreachable" xml:space="preserve">
+    <value>{0} ist nicht erreichbar (Internetverbindung?)</value>
+    <comment>{0}: service name</comment>
+  </data>
+  <data name="ServiceFailure_InvalidResponse" xml:space="preserve">
+    <value>{0} hat eine unerwartete Antwort geliefert</value>
+    <comment>{0}: service name</comment>
+  </data>
+  <data name="ServiceFailure_HttpStatus" xml:space="preserve">
+    <value>HTTP {0}</value>
+    <comment>{0}: HTTP status code</comment>
+  </data>
+  <data name="ServiceFailure_AvailableAgainAt" xml:space="preserve">
+    <value>wieder verfügbar ab {0}</value>
+    <comment>{0}: time</comment>
+  </data>
+  <data name="MainPage_Problem_LocationLookupFailed" xml:space="preserve">
+    <value>Die Ortsdaten für „{0}“ konnten nicht ermittelt werden: {1}.</value>
+    <comment>{0}: place, {1}: reason</comment>
+  </data>
+  <data name="MainPage_Problem_LocationUnknown" xml:space="preserve">
+    <value>Diese Quelle kennt den Ort „{0}“ nicht.</value>
+    <comment>{0}: place</comment>
+  </data>
+  <data name="MainPage_Problem_LocationLookupPending" xml:space="preserve">
+    <value>Die Ortsdaten für „{0}“ werden gerade ermittelt.</value>
+    <comment>{0}: place</comment>
+  </data>
+  <data name="MainPage_Problem_NextAttempt" xml:space="preserve">
+    <value>Nächster automatischer Versuch um {0}.</value>
+    <comment>{0}: time</comment>
+  </data>
+  <data name="MainPage_LocationUnknownShort" xml:space="preserve">
+    <value>Ort unbekannt</value>
   </data>
 </root>

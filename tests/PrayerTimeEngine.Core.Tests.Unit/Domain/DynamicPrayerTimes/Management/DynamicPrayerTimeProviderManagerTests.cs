@@ -11,7 +11,9 @@ using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Muwaqqit.Models;
 using PrayerTimeEngine.Core.Domain.Models;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Interfaces;
+using PrayerTimeEngine.Core.Domain.ProfileManagement.Models;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
+using PrayerTimeEngine.Core.Domain.ProfileManagement.Services;
 using PrayerTimeEngine.Core.Tests.Common;
 using PrayerTimeEngine.Core.Tests.Common.TestData;
 
@@ -22,6 +24,7 @@ public class DynamicPrayerTimeProviderManagerTests : BaseTest
     private readonly IDynamicPrayerTimeProviderFactory _prayerTimeServiceFactoryMock;
     private readonly IProfileService _profileServiceMock;
     private readonly ILogger<DynamicPrayerTimeProviderManager> _loggerMock;
+    private readonly LocationLookupStatusStore _locationLookupStatusStore = new();
     private readonly DynamicPrayerTimeProviderManager _dynamicPrayerTimeProviderManager;
     private Instant _currentInstant = Instant.FromUtc(2024, 1, 1, 12, 0);
 
@@ -37,6 +40,7 @@ public class DynamicPrayerTimeProviderManagerTests : BaseTest
         _dynamicPrayerTimeProviderManager = new DynamicPrayerTimeProviderManager(
             _prayerTimeServiceFactoryMock,
             _profileServiceMock,
+            _locationLookupStatusStore,
             systemInfoServiceMock,
             _loggerMock,
             [Substitute.For<IPrayerTimeCacheCleaner>()]);
@@ -258,8 +262,18 @@ public class DynamicPrayerTimeProviderManagerTests : BaseTest
         _prayerTimeServiceFactoryMock.GetDynamicPrayerTimeProviderByDynamicPrayerTimeProvider(Arg.Is(EDynamicPrayerTimeProviderType.Fazilet)).Returns(faziletPrayerTimeServiceMock);
 
         _profileServiceMock.GetActiveComplexTimeConfigs(Arg.Is(profile)).Returns([muwaqqitConfig, faziletConfig]);
-        _profileServiceMock.CompleteMissingLocationData(Arg.Any<DynamicProfile>(), Arg.Any<CancellationToken>())
-            .Returns([(EDynamicPrayerTimeProviderType.Muwaqqit, false, new HttpRequestException("429"))]);
+        // like the real service: the (here failing) look up is recorded
+        _profileServiceMock.CompleteMissingLocationData(Arg.Any<DynamicProfile>(), Arg.Any<IReadOnlyCollection<EDynamicPrayerTimeProviderType>>(), Arg.Any<CancellationToken>())
+            .Returns(callInfo =>
+            {
+                var error = new ExternalServiceException("Muwaqqit", EExternalServiceFailure.Timeout);
+                foreach (EDynamicPrayerTimeProviderType provider in callInfo.Arg<IReadOnlyCollection<EDynamicPrayerTimeProviderType>>())
+                {
+                    _locationLookupStatusStore.Record(profile.ID, provider, isPlaceUnknown: false, error, _currentInstant);
+                }
+
+                return Task.FromResult<List<LocationLookupResult>>([]);
+            });
 
         // ACT
         CalculatePrayerTimesResultVO result = await _dynamicPrayerTimeProviderManager.CalculatePrayerTimesAsync(profile.ID, zonedDate, default);
@@ -275,7 +289,10 @@ public class DynamicPrayerTimeProviderManagerTests : BaseTest
         });
 
         // the missing location data is looked up again in the background, only once for all three days
-        await _profileServiceMock.Received(1).CompleteMissingLocationData(Arg.Is(profile), Arg.Any<CancellationToken>());
+        await _profileServiceMock.Received(1).CompleteMissingLocationData(
+            Arg.Is(profile),
+            Arg.Is<IReadOnlyCollection<EDynamicPrayerTimeProviderType>>(x => x.Contains(EDynamicPrayerTimeProviderType.Muwaqqit)),
+            Arg.Any<CancellationToken>());
 
         // missing location data just means that the associated times remain at null
         result.DynamicPrayerTimesDaySet.CurrentDay.Dhuhr.Start.Should().Be(zonedDate.PlusHours(12));
@@ -283,6 +300,43 @@ public class DynamicPrayerTimeProviderManagerTests : BaseTest
 
         // the Muwaqqit provider wasn't even created
         _prayerTimeServiceFactoryMock.DidNotReceive().GetDynamicPrayerTimeProviderByDynamicPrayerTimeProvider(Arg.Is(EDynamicPrayerTimeProviderType.Muwaqqit));
+    }
+
+    [Fact]
+    public async Task CalculatePrayerTimesAsync_LocationLookupFailedShortlyBefore_ErrorNamesCauseAndNextAttemptWithoutImmediateRepair()
+    {
+        // ARRANGE
+        DynamicProfile profile = TestDataHelper.CreateCompleteTestDynamicProfile();
+        ZonedDateTime zonedDate = new LocalDate(2024, 1, 1).AtStartOfDayInZone(DateTimeZone.Utc);
+
+        _profileServiceMock.GetUntrackedReferenceOfProfile(Arg.Any<int>(), Arg.Any<CancellationToken>()).Returns(profile);
+        _profileServiceMock.GetLocationConfig(Arg.Any<DynamicProfile>(), Arg.Any<EDynamicPrayerTimeProviderType>()).Returns((BaseLocationData)null);
+        _profileServiceMock.GetActiveComplexTimeConfigs(Arg.Is(profile)).Returns(
+            [new GenericSettingConfiguration { TimeType = ETimeType.DhuhrStart, Source = EDynamicPrayerTimeProviderType.Semerkand }]);
+
+        // the turkish place names for Semerkand could not be retrieved because LocationIQ refused too many requests
+        var lookupError = new ExternalServiceException("LocationIQ", EExternalServiceFailure.RateLimited, httpStatusCode: 429);
+        foreach (EDynamicPrayerTimeProviderType provider in Enum.GetValues<EDynamicPrayerTimeProviderType>())
+        {
+            _locationLookupStatusStore.Record(profile.ID, provider, isPlaceUnknown: false, lookupError, _currentInstant);
+        }
+
+        // ACT
+        CalculatePrayerTimesResultVO result = await _dynamicPrayerTimeProviderManager.CalculatePrayerTimesAsync(profile.ID, zonedDate, default);
+
+        // ASSERT
+        result.CalculationErrors.Should().HaveCount(3).And.AllSatisfy(error =>
+        {
+            error.DynamicPrayerTimeProviderType.Should().Be(EDynamicPrayerTimeProviderType.Semerkand);
+            LocationDataMissingException exception = error.Exception.Should().BeOfType<LocationDataMissingException>().Subject;
+            exception.ProviderName.Should().Be("Semerkand");
+            exception.LastError.Should().BeSameAs(lookupError);
+            exception.NextAttemptAt.Should().Be(_currentInstant + Duration.FromMinutes(1));
+            exception.Message.Should().Contain("Semerkand").And.Contain("LocationIQ").And.Contain("429");
+        });
+
+        // the failed look up is not repeated right away
+        await _profileServiceMock.DidNotReceiveWithAnyArgs().CompleteMissingLocationData(default, default, default);
     }
 
     [Fact]
@@ -327,7 +381,7 @@ public class DynamicPrayerTimeProviderManagerTests : BaseTest
         result.DynamicPrayerTimesDaySet.CurrentDay.Fajr.Start.Should().BeNull();
 
         // without a place there is nothing to look up
-        await _profileServiceMock.DidNotReceiveWithAnyArgs().CompleteMissingLocationData(default, default);
+        await _profileServiceMock.DidNotReceiveWithAnyArgs().CompleteMissingLocationData(default, default, default);
 
         // the Muwaqqit provider wasn't even created
         _prayerTimeServiceFactoryMock.DidNotReceive().GetDynamicPrayerTimeProviderByDynamicPrayerTimeProvider(Arg.Is(EDynamicPrayerTimeProviderType.Muwaqqit));

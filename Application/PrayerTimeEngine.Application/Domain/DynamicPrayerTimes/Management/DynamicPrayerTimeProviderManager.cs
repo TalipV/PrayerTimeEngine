@@ -9,6 +9,7 @@ using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Models;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers;
 using PrayerTimeEngine.Core.Domain.Models;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Interfaces;
+using PrayerTimeEngine.Core.Domain.ProfileManagement.Models;
 using PrayerTimeEngine.Core.Domain.ProfileManagement.Models.Entities;
 
 namespace PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Management;
@@ -16,6 +17,7 @@ namespace PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Management;
 public class DynamicPrayerTimeProviderManager(
         IDynamicPrayerTimeProviderFactory prayerTimeServiceFactory,
         IProfileService profileService,
+        ILocationLookupStatusStore locationLookupStatusStore,
         ISystemInfoService systemInfoService,
         ILogger<DynamicPrayerTimeProviderManager> logger,
         IEnumerable<IPrayerTimeCacheCleaner> cacheCleaners
@@ -261,7 +263,7 @@ public class DynamicPrayerTimeProviderManager(
                         DynamicPrayerTimeProviderType = dynamicPrayerTimeProviderType,
                         Date = date.Date,
                         TimeTypes = [.. configs.Select(x => x.TimeType).Distinct().OrderBy(x => x.ToString())],
-                        Exception = new LocationDataMissingException(dynamicPrayerTimeProviderType.ToString()),
+                        Exception = CreateLocationDataMissingException(dynamicProfile, dynamicPrayerTimeProviderType),
                     });
                     TriggerLocationDataRepair(dynamicProfile);
                 }
@@ -406,6 +408,14 @@ public class DynamicPrayerTimeProviderManager(
             failureState.ConsecutiveFailureCount++;
             consecutiveFailureCount = failureState.ConsecutiveFailureCount;
             retryDelay = GetRetryDelay(consecutiveFailureCount);
+
+            // a service that said when it is available again (e.g. after a rate limit) is not asked before that
+            if (ExternalServiceException.FindIn(exception)?.AvailableAgainAt is DateTimeOffset availableAgainAt
+                && Instant.FromDateTimeOffset(availableAgainAt) - now > retryDelay)
+            {
+                retryDelay = Instant.FromDateTimeOffset(availableAgainAt) - now;
+            }
+
             failureState.RetryAt = now + retryDelay;
         }
 
@@ -459,87 +469,96 @@ public class DynamicPrayerTimeProviderManager(
 
     #region location data repair
 
-    private sealed class LocationDataRepairState
-    {
-        public int FailedAttemptCount { get; set; }
-        public Instant NextAttemptAt { get; set; }
-        public bool IsRunning { get; set; }
-    }
-
     private static readonly Duration s_locationRepairInitialDelay = Duration.FromMinutes(1);
     private static readonly Duration s_locationRepairMaximumDelay = Duration.FromHours(1);
 
     /// <summary>
     /// When the provider simply does not know the place, asking again soon is pointless (and costs
-    /// rate limited place service requests), so that case waits much longer than a failed request.
+    /// rate limited place service requests), so that case waits much longer than a failed look up.
     /// </summary>
-    private static readonly Duration s_locationRepairNotFoundDelay = Duration.FromHours(12);
+    private static readonly Duration s_locationRepairPlaceUnknownDelay = Duration.FromHours(12);
 
-    private readonly ConcurrentDictionary<int, LocationDataRepairState> _locationRepairStateByProfileID = new();
+    /// <summary>Profiles whose missing location data is being looked up right now.</summary>
+    private readonly ConcurrentDictionary<int, byte> _runningLocationRepairs = new();
+
+    private LocationDataMissingException CreateLocationDataMissingException(DynamicProfile profile, EDynamicPrayerTimeProviderType provider)
+    {
+        LocationLookupStatus? status = locationLookupStatusStore.Get(profile.ID, provider);
+
+        return new LocationDataMissingException(
+            providerName: provider.ToString(),
+            placeDescription: profile.PlaceInfo?.DisplayText ?? "-",
+            lastError: status?.LastError,
+            isPlaceUnknown: status?.IsPlaceUnknown ?? false,
+            nextAttemptAt: status is null ? null : GetNextLocationLookupAt(status));
+    }
+
+    /// <summary>When the location data of a provider may be looked up again after the given outcome.</summary>
+    private static Instant GetNextLocationLookupAt(LocationLookupStatus status)
+    {
+        if (status.LastError is null)
+        {
+            // worked, but the provider does not know the place
+            return status.AttemptedAt + s_locationRepairPlaceUnknownDelay;
+        }
+
+        // retry after errors with a growing pause: 1, 2, 4, ... minutes up to an hour
+        Duration delay = s_locationRepairInitialDelay * Math.Pow(2, Math.Min(status.ConsecutiveFailureCount - 1, 10));
+        Instant nextAttemptAt = status.AttemptedAt + (delay < s_locationRepairMaximumDelay ? delay : s_locationRepairMaximumDelay);
+
+        // but not before the failed service said it is available again (e.g. after a rate limit)
+        if (ExternalServiceException.FindIn(status.LastError)?.AvailableAgainAt is DateTimeOffset availableAgainAt
+            && Instant.FromDateTimeOffset(availableAgainAt) > nextAttemptAt)
+        {
+            nextAttemptAt = Instant.FromDateTimeOffset(availableAgainAt);
+        }
+
+        return nextAttemptAt;
+    }
 
     /// <summary>
-    /// Looks up the missing location data of the profile in the background (at most one run per
-    /// profile at a time, with a growing pause after unsuccessful runs).
+    /// Looks up the missing location data of the profile in the background: at most one run per
+    /// profile at a time and only when a missing provider is due again (see <see cref="GetNextLocationLookupAt"/>).
     /// </summary>
     private void TriggerLocationDataRepair(DynamicProfile profile)
     {
-        LocationDataRepairState state = _locationRepairStateByProfileID.GetOrAdd(profile.ID, _ => new LocationDataRepairState());
         Instant now = systemInfoService.GetCurrentInstant();
 
-        lock (state)
-        {
-            if (state.IsRunning || now < state.NextAttemptAt)
-            {
-                return;
-            }
+        List<EDynamicPrayerTimeProviderType> dueProviders =
+            [.. Enum.GetValues<EDynamicPrayerTimeProviderType>()
+                .Where(x => x != EDynamicPrayerTimeProviderType.None)
+                .Where(x => profileService.GetLocationConfig(profile, x) == null)
+                .Where(x => locationLookupStatusStore.Get(profile.ID, x) is not LocationLookupStatus status || GetNextLocationLookupAt(status) <= now)];
 
-            state.IsRunning = true;
+        if (dueProviders.Count == 0 || !_runningLocationRepairs.TryAdd(profile.ID, 0))
+        {
+            return;
         }
 
-        RepairLocationData(profile, state).SafeFireAndForget(exception =>
-        {
-            logger.LogError(exception, "Error while completing the missing location data of profile {ProfileID}", profile.ID);
-            lock (state)
-            {
-                state.IsRunning = false;
-                state.FailedAttemptCount++;
-                state.NextAttemptAt = systemInfoService.GetCurrentInstant() + GetLocationRepairDelay(state.FailedAttemptCount);
-            }
-        });
+        RepairLocationData(profile, dueProviders).SafeFireAndForget(exception =>
+            logger.LogError(exception, "Error while completing the missing location data of profile {ProfileID}", profile.ID));
     }
 
-    private async Task RepairLocationData(DynamicProfile profile, LocationDataRepairState state)
+    private async Task RepairLocationData(DynamicProfile profile, List<EDynamicPrayerTimeProviderType> providers)
     {
-        // independent of the caller's token: the caller (e.g. a short notification render) may end long before
-        List<(EDynamicPrayerTimeProviderType Provider, bool Found, Exception? Error)> results =
-            await profileService.CompleteMissingLocationData(profile, CancellationToken.None).ConfigureAwait(false);
-
-        lock (state)
+        try
         {
-            state.IsRunning = false;
-            Instant now = systemInfoService.GetCurrentInstant();
+            // independent of the caller's token: the caller (e.g. a short notification render) may end long before
+            List<LocationLookupResult> results =
+                await profileService.CompleteMissingLocationData(profile, providers, CancellationToken.None).ConfigureAwait(false);
 
-            if (results.All(x => x.Found))
+            if (results.Any(x => !x.IsFound))
             {
-                state.FailedAttemptCount = 0;
-                state.NextAttemptAt = now;
-            }
-            else if (results.Any(x => x.Error is not null))
-            {
-                state.FailedAttemptCount++;
-                state.NextAttemptAt = now + GetLocationRepairDelay(state.FailedAttemptCount);
-            }
-            else
-            {
-                state.NextAttemptAt = now + s_locationRepairNotFoundDelay;
+                // found data changes the profile version (which invalidates the cache anyway); for the still
+                // missing ones the cached problem texts are outdated now (new cause, new next attempt)
+                _cachedCurrentDaySetByProfileID.TryRemove(profile.ID, out _);
+                _cachedOtherDaySetByProfileID.TryRemove(profile.ID, out _);
             }
         }
-    }
-
-    private static Duration GetLocationRepairDelay(int failedAttemptCount)
-    {
-        Duration delay = s_locationRepairInitialDelay * Math.Pow(2, Math.Min(failedAttemptCount - 1, 10));
-        return delay < s_locationRepairMaximumDelay ? delay : s_locationRepairMaximumDelay;
+        finally
+        {
+            _runningLocationRepairs.TryRemove(profile.ID, out _);
+        }
     }
 
     #endregion location data repair
@@ -588,6 +607,12 @@ public class DynamicPrayerTimeProviderManager(
 
         for (Exception current = exception; current is not null; current = current.InnerException)
         {
+            // a classified service failure (e.g. a timeout) may wrap an OperationCanceledException, but it is no cancellation
+            if (current is ExternalServiceException)
+            {
+                return false;
+            }
+
             if (current is OperationCanceledException)
             {
                 return true;

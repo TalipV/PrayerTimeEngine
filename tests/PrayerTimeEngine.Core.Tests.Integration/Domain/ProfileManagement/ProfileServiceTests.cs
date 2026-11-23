@@ -35,6 +35,7 @@ public class ProfileServiceTests : BaseTest
                 serviceCollection.AddSingleton<IProfileRepository, ProfileRepository>();
                 serviceCollection.AddSingleton<IProfileService, ProfileService>();
                 serviceCollection.AddSingleton<IProfileVersionStore, ProfileVersionStore>();
+                serviceCollection.AddSingleton<ILocationLookupStatusStore, LocationLookupStatusStore>();
                 serviceCollection.AddSingleton<IDynamicPrayerTimeProviderFactory, DynamicPrayerTimeProviderFactory>();
                 serviceCollection.AddSingleton(Substitute.For<ISystemInfoService>());
                 serviceCollection.AddSingleton(Substitute.For<ILogger<ProfileService>>());

@@ -175,8 +175,12 @@ public static class InfrastructureServiceCollectionExtensions
     private static void AddResilientRefitClient<TClient>(IServiceCollection services, string baseAddress, ApiThrottleOptions throttleOptions)
         where TClient : class
     {
+        // failures surface as ExternalServiceException naming this API and the kind of failure
         IHttpClientBuilder httpClientBuilder = services
-            .AddRefitGeneratedClient<TClient>(RefitJsonContext.Default)
+            .AddRefitGeneratedClient<TClient>(sp => ExternalServiceErrors.Configure(
+                RefitSettings.ForJsonContext(RefitJsonContext.Default),
+                throttleOptions.ApiName,
+                sp.GetRequiredKeyedService<ApiThrottle>(throttleOptions.ApiName)))
             .ConfigureHttpClient(config =>
             {
                 config.Timeout = TimeSpan.FromSeconds(HTTP_REQUEST_TIMEOUT_SECONDS);

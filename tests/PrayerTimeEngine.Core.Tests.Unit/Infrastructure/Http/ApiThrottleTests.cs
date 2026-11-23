@@ -3,6 +3,7 @@ using System.Net;
 using System.Net.Http.Headers;
 using Microsoft.Extensions.Logging.Abstractions;
 using PrayerTimeEngine.Core.Common.Http;
+using PrayerTimeEngine.Core.Domain.Models;
 using PrayerTimeEngine.Core.Tests.Common;
 
 namespace PrayerTimeEngine.Core.Tests.Unit.Infrastructure.Http;
@@ -40,7 +41,7 @@ public class ApiThrottleTests : BaseTest
     }
 
     [Fact]
-    public async Task RegisterResponse_TooManyRequestsWithLongRetryAfter_NextRequestFailsFastWithCooldownException()
+    public async Task RegisterResponse_TooManyRequestsWithLongRetryAfter_NextRequestFailsFastAsRateLimited()
     {
         // ARRANGE
         ApiThrottle throttle = CreateThrottle();
@@ -52,8 +53,13 @@ public class ApiThrottleTests : BaseTest
         // ASSERT
         throttle.CooldownUntil.Should().Be(_timeProvider.Now.AddSeconds(60));
         throttle.CurrentInterval.Should().Be(TimeSpan.FromSeconds(1));
-        (await nextRequest.Should().ThrowAsync<ApiCooldownException>())
-            .Which.AvailableAgainAt.Should().Be(_timeProvider.Now.AddSeconds(60));
+        (await nextRequest.Should().ThrowAsync<ExternalServiceException>())
+            .Which.Should().BeEquivalentTo(new
+            {
+                ServiceName = "TestApi",
+                Failure = EExternalServiceFailure.RateLimited,
+                AvailableAgainAt = (DateTimeOffset?)_timeProvider.Now.AddSeconds(60),
+            });
     }
 
     [Fact]
