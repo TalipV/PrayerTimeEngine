@@ -78,6 +78,39 @@ public class PlaceServiceTests : BaseTest
         result[1].Latitude.Should().Be(50.9460574M);
     }
 
+    [Fact]
+    [Trait("Method", "SearchPlacesAsync")]
+    public async Task SearchPlacesAsync_WholeCityWithoutDistrictPostCodeAndStreet_MissingPartsAreEmptyTexts()
+    {
+        // ARRANGE
+        // a whole city like Wiesbaden: LocationIQ leaves out suburb, postcode, road and house number
+        _mockHttpMessageHandler.HandleRequestFunc = _ => new HttpResponseMessage
+        {
+            StatusCode = HttpStatusCode.OK,
+            Content = new StringContent("""
+                [{
+                    "osm_id": "62496",
+                    "lat": "50.0820384",
+                    "lon": "8.2416556",
+                    "address": { "name": "Wiesbaden", "city": "Wiesbaden", "state": "Hessen", "country": "Deutschland", "country_code": "de" }
+                }]
+                """)
+        };
+
+        // ACT
+        List<BasicPlaceInfo> result = await _placeService.SearchPlacesAsync("Wiesbaden", "de", default);
+
+        // ASSERT
+        BasicPlaceInfo wiesbaden = result.Should().ContainSingle().Subject;
+        wiesbaden.City.Should().Be("Wiesbaden");
+        wiesbaden.Country.Should().Be("Deutschland");
+
+        // NOT NULL columns in the database (PlaceInfos, FavoritePlaces)
+        wiesbaden.CityDistrict.Should().BeEmpty();
+        wiesbaden.PostCode.Should().BeEmpty();
+        wiesbaden.Street.Should().BeEmpty();
+    }
+
     #endregion SearchPlacesAsync
 
     #region GetPlaceBasedOnPlace

@@ -79,6 +79,12 @@ public class PlaceService(
         return GetlocationIQPlace(place, language);
     }
 
+    /// <summary>
+    /// LocationIQ leaves out every address part it does not have, e.g. the district, post code and
+    /// street when a whole city ("Wiesbaden") is selected. Those parts are stored as empty texts because
+    /// the database columns do not allow NULL. Country and city stay as they are: places without them are
+    /// filtered out of the search, and the providers fall back from a missing city to the state.
+    /// </summary>
     private static BasicPlaceInfo GetlocationIQPlace(LocationIQPlace locationIQPlace, string languageCode)
     {
         return new BasicPlaceInfo
@@ -90,9 +96,9 @@ public class PlaceService(
             Country = locationIQPlace.Address.Country,
             State = locationIQPlace.Address.State,
             City = locationIQPlace.Address.City,
-            CityDistrict = locationIQPlace.Address.Suburb,
-            PostCode = locationIQPlace.Address.Postcode,
-            Street = $"{locationIQPlace.Address.Road} {locationIQPlace.Address.HouseNumber}"
+            CityDistrict = locationIQPlace.Address.Suburb ?? locationIQPlace.Address.Neighbourhood ?? string.Empty,
+            PostCode = locationIQPlace.Address.Postcode ?? string.Empty,
+            Street = $"{locationIQPlace.Address.Road} {locationIQPlace.Address.HouseNumber}".Trim()
         };
     }
 }
