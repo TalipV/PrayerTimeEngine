@@ -831,8 +831,8 @@ public partial class MainPageViewModel(
     private static void SubscribeWeaklyToLocationDataCompletion(MainPageViewModel viewModel, IDynamicPrayerTimeProviderManager manager)
     {
         var weakViewModel = new WeakReference<MainPageViewModel>(viewModel);
-        Action<int>? handler = null;
-        handler = profileID =>
+
+        void Handler(int profileID)
         {
             if (weakViewModel.TryGetTarget(out MainPageViewModel? target))
             {
@@ -840,10 +840,11 @@ public partial class MainPageViewModel(
             }
             else
             {
-                manager.MissingLocationDataCompleted -= handler;
+                manager.MissingLocationDataCompleted -= Handler;
             }
-        };
-        manager.MissingLocationDataCompleted += handler;
+        }
+
+        manager.MissingLocationDataCompleted += Handler;
     }
 
     /// <summary>
