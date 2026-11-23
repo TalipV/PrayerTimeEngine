@@ -17,4 +17,11 @@ public interface IDynamicPrayerTimeProviderManager
     /// <see cref="CalculatePrayerTimesAsync"/> reports the calculation errors.
     /// </summary>
     bool TryGetAlreadyCalculatedPrayerTimes(int profileID, ZonedDateTime zoneDate, out DynamicPrayerTimesDaySet daySet);
+
+    /// <summary>
+    /// Raised (on a background thread) with the profile ID when location data that was missing for the
+    /// profile's place could be determined in the background (self-healing). Times of the profile
+    /// calculated before lack the times of those providers, so consumers should reload them.
+    /// </summary>
+    event Action<int>? MissingLocationDataCompleted;
 }

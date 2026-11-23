@@ -6,6 +6,7 @@ using NodaTime;
 using PrayerTimeEngine.Core.Common;
 using PrayerTimeEngine.Core.Common.Enum;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes;
+using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Management;
 using PrayerTimeEngine.Core.Domain.DynamicPrayerTimes.Providers.Muwaqqit.Models;
 using PrayerTimeEngine.Core.Domain.IslamicCalendar.Interfaces;
 using PrayerTimeEngine.Core.Domain.Models;
@@ -45,6 +46,7 @@ public partial class MainPageViewModel(
         WelcomeService welcomeService,
         IPlaceService placeService,
         IProfileService profileService,
+        IDynamicPrayerTimeProviderManager dynamicPrayerTimeProviderManager,
         INavigationService navigationService,
         IIslamicDateCalculationService islamicDateCalculationService,
         IAppInitializer appInitializer,
@@ -819,12 +821,77 @@ public partial class MainPageViewModel(
                     GetLoadingProblemMessage(x.Exception)))];
     }
 
+    private bool _isSubscribedToLocationDataCompletion;
+
+    /// <summary>
+    /// The manager is a singleton while this view model is not (a recreated activity gets a new one),
+    /// so the subscription must not keep an old view model alive: it removes itself once it is collected.
+    /// Static, so the handler does not capture <c>this</c>.
+    /// </summary>
+    private static void SubscribeWeaklyToLocationDataCompletion(MainPageViewModel viewModel, IDynamicPrayerTimeProviderManager manager)
+    {
+        var weakViewModel = new WeakReference<MainPageViewModel>(viewModel);
+        Action<int>? handler = null;
+        handler = profileID =>
+        {
+            if (weakViewModel.TryGetTarget(out MainPageViewModel? target))
+            {
+                target.OnMissingLocationDataCompleted(profileID);
+            }
+            else
+            {
+                manager.MissingLocationDataCompleted -= handler;
+            }
+        };
+        manager.MissingLocationDataCompleted += handler;
+    }
+
+    /// <summary>
+    /// Self-healing: location data that was missing for the place (e.g. because a service refused
+    /// requests when the place was selected) was found in the background, so the shown times are
+    /// reloaded without the user having to select the place again.
+    /// </summary>
+    private void OnMissingLocationDataCompleted(int profileID)
+    {
+        if (CurrentProfile is not DynamicProfile currentProfile || currentProfile.ID != profileID)
+        {
+            // other profiles get the data with their next calculation anyway
+            return;
+        }
+
+        Task.Run(async () =>
+        {
+            try
+            {
+                logger.LogInformation("Missing location data of the shown profile {ProfileID} was completed, reloading the times", profileID);
+
+                // the shown profile object gets the completed location data as well (e.g. for the settings page)
+                if (await profileService.GetUntrackedReferenceOfProfile(profileID, cancellationToken: default) is DynamicProfile reloadedProfile)
+                {
+                    currentProfile.LocationConfigs = reloadedProfile.LocationConfigs;
+                }
+
+                await RefreshData();
+            }
+            catch (Exception exception)
+            {
+                logger.LogError(exception, "Error while reloading the times after completed location data of profile {ProfileID}", profileID);
+            }
+        });
+    }
+
     private async Task OnBeforeFirstLoad()
     {
         // the AppInitializer is a singleton, so it is only uninitialized when this process is fresh,
         // which means this is a real app start and not just a recreated activity of a long living process
         _wasColdStart = !appInitializer.IsInitialized;
         await appInitializer.InitializeAsync();
+
+        if (!_isSubscribedToLocationDataCompletion)
+        {
+            _isSubscribedToLocationDataCompletion = true;
+            SubscribeWeaklyToLocationDataCompletion(this, dynamicPrayerTimeProviderManager);
+        }
 
         bool oldValue = _suspendOnCurrentProfileWithModelChanged;
         try

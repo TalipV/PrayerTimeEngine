@@ -340,6 +340,57 @@ public class DynamicPrayerTimeProviderManagerTests : BaseTest
     }
 
     [Fact]
+    public async Task CalculatePrayerTimesAsync_LocationLookupFailedBefore_RetriedByItselfWhenDueAndCompletionReported()
+    {
+        // ARRANGE
+        DynamicProfile profile = TestDataHelper.CreateCompleteTestDynamicProfile();
+        ZonedDateTime zonedDate = new LocalDate(2024, 1, 1).AtStartOfDayInZone(DateTimeZone.Utc);
+        bool isSemerkandLocationDataFound = false;
+
+        _profileServiceMock.GetUntrackedReferenceOfProfile(Arg.Any<int>(), Arg.Any<CancellationToken>()).Returns(profile);
+        _profileServiceMock.GetLocationConfig(Arg.Any<DynamicProfile>(), Arg.Any<EDynamicPrayerTimeProviderType>())
+            .Returns(callInfo => callInfo.Arg<EDynamicPrayerTimeProviderType>() == EDynamicPrayerTimeProviderType.Semerkand && !isSemerkandLocationDataFound
+                ? null
+                : Substitute.ForPartsOf<BaseLocationData>());
+        _profileServiceMock.GetActiveComplexTimeConfigs(Arg.Is(profile)).Returns(
+            [new GenericSettingConfiguration { TimeType = ETimeType.DhuhrStart, Source = EDynamicPrayerTimeProviderType.Semerkand }]);
+
+        // the look up failed 59 seconds ago, so the next one (after one minute) is due in a second
+        _locationLookupStatusStore.Record(
+            profile.ID,
+            EDynamicPrayerTimeProviderType.Semerkand,
+            isPlaceUnknown: false,
+            new ExternalServiceException("LocationIQ", EExternalServiceFailure.RateLimited, httpStatusCode: 429),
+            _currentInstant - Duration.FromSeconds(59));
+
+        _profileServiceMock.CompleteMissingLocationData(Arg.Any<DynamicProfile>(), Arg.Any<IReadOnlyCollection<EDynamicPrayerTimeProviderType>>(), Arg.Any<CancellationToken>())
+            .Returns(_ =>
+            {
+                isSemerkandLocationDataFound = true;
+                return Task.FromResult<List<LocationLookupResult>>(
+                    [new LocationLookupResult(EDynamicPrayerTimeProviderType.Semerkand, Substitute.ForPartsOf<BaseLocationData>(), Error: null)]);
+            });
+
+        var completedProfileIDs = new TaskCompletionSource<int>(TaskCreationOptions.RunContinuationsAsynchronously);
+        _dynamicPrayerTimeProviderManager.MissingLocationDataCompleted += profileID => completedProfileIDs.TrySetResult(profileID);
+
+        // ACT
+        CalculatePrayerTimesResultVO result = await _dynamicPrayerTimeProviderManager.CalculatePrayerTimesAsync(profile.ID, zonedDate, default);
+
+        // nobody requests the times again: the look up has to happen by itself once it is due
+        _currentInstant += Duration.FromSeconds(2);
+        int completedProfileID = await completedProfileIDs.Task.WaitAsync(TimeSpan.FromSeconds(10));
+
+        // ASSERT
+        result.CalculationErrors.Should().NotBeEmpty().And.OnlyContain(x => x.Exception is LocationDataMissingException);
+        completedProfileID.Should().Be(profile.ID);
+        await _profileServiceMock.Received(1).CompleteMissingLocationData(
+            Arg.Is(profile),
+            Arg.Is<IReadOnlyCollection<EDynamicPrayerTimeProviderType>>(x => x.Single() == EDynamicPrayerTimeProviderType.Semerkand),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
     public async Task CalculatePrayerTimesAsync_ProviderWithoutLocationDataAndWithoutPlace_ProviderSkippedWithoutErrors()
     {
         // ARRANGE

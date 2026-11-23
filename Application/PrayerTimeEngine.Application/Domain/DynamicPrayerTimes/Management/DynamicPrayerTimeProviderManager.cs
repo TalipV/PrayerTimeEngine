@@ -481,6 +481,11 @@ public class DynamicPrayerTimeProviderManager(
     /// <summary>Profiles whose missing location data is being looked up right now.</summary>
     private readonly ConcurrentDictionary<int, byte> _runningLocationRepairs = new();
 
+    /// <summary>The pending timer per profile that starts the next look up of its missing location data.</summary>
+    private readonly ConcurrentDictionary<int, CancellationTokenSource> _scheduledLocationRepairs = new();
+
+    public event Action<int>? MissingLocationDataCompleted;
+
     private LocationDataMissingException CreateLocationDataMissingException(DynamicProfile profile, EDynamicPrayerTimeProviderType provider)
     {
         LocationLookupStatus? status = locationLookupStatusStore.Get(profile.ID, provider);
@@ -524,13 +529,18 @@ public class DynamicPrayerTimeProviderManager(
     {
         Instant now = systemInfoService.GetCurrentInstant();
 
+        List<EDynamicPrayerTimeProviderType> missingProviders = GetProvidersWithoutLocationData(profile);
         List<EDynamicPrayerTimeProviderType> dueProviders =
-            [.. Enum.GetValues<EDynamicPrayerTimeProviderType>()
-                .Where(x => x != EDynamicPrayerTimeProviderType.None)
-                .Where(x => profileService.GetLocationConfig(profile, x) == null)
-                .Where(x => locationLookupStatusStore.Get(profile.ID, x) is not LocationLookupStatus status || GetNextLocationLookupAt(status) <= now)];
+            [.. missingProviders.Where(x => locationLookupStatusStore.Get(profile.ID, x) is not LocationLookupStatus status || GetNextLocationLookupAt(status) <= now)];
 
-        if (dueProviders.Count == 0 || !_runningLocationRepairs.TryAdd(profile.ID, 0))
+        if (dueProviders.Count == 0)
+        {
+            // nothing due right now (e.g. a look up failed a moment ago): make sure the next one happens on its own
+            ScheduleNextLocationDataRepair(profile.ID, missingProviders);
+            return;
+        }
+
+        if (!_runningLocationRepairs.TryAdd(profile.ID, 0))
         {
             return;
         }
@@ -539,13 +549,24 @@ public class DynamicPrayerTimeProviderManager(
             logger.LogError(exception, "Error while completing the missing location data of profile {ProfileID}", profile.ID));
     }
 
+    private List<EDynamicPrayerTimeProviderType> GetProvidersWithoutLocationData(DynamicProfile profile)
+    {
+        return
+            [.. Enum.GetValues<EDynamicPrayerTimeProviderType>()
+                .Where(x => x != EDynamicPrayerTimeProviderType.None)
+                .Where(x => profileService.GetLocationConfig(profile, x) == null)];
+    }
+
     private async Task RepairLocationData(DynamicProfile profile, List<EDynamicPrayerTimeProviderType> providers)
     {
+        List<EDynamicPrayerTimeProviderType> stillMissingProviders;
         try
         {
             // independent of the caller's token: the caller (e.g. a short notification render) may end long before
             List<LocationLookupResult> results =
                 await profileService.CompleteMissingLocationData(profile, providers, CancellationToken.None).ConfigureAwait(false);
+
+            stillMissingProviders = [.. GetProvidersWithoutLocationData(profile).Where(x => !results.Any(y => y.Provider == x && y.IsFound))];
 
             if (results.Any(x => !x.IsFound))
             {
@@ -554,30 +575,98 @@ public class DynamicPrayerTimeProviderManager(
                 _cachedCurrentDaySetByProfileID.TryRemove(profile.ID, out _);
                 _cachedOtherDaySetByProfileID.TryRemove(profile.ID, out _);
             }
+
+            if (results.Any(x => x.IsFound))
+            {
+                logger.LogInformation(
+                    "Self-healing: location data of profile {ProfileID} completed for {@DynamicPrayerTimeProviders}",
+                    profile.ID, results.Where(x => x.IsFound).Select(x => x.Provider.ToString()).ToList());
+                MissingLocationDataCompleted?.Invoke(profile.ID);
+            }
         }
         finally
         {
             _runningLocationRepairs.TryRemove(profile.ID, out _);
         }
+
+        ScheduleNextLocationDataRepair(profile.ID, stillMissingProviders);
+    }
+
+    /// <summary>
+    /// Self-healing: starts the next look up of the still missing location data by itself when it is
+    /// due, so it does not depend on someone requesting the times at the right moment.
+    /// </summary>
+    private void ScheduleNextLocationDataRepair(int profileID, List<EDynamicPrayerTimeProviderType> missingProviders)
+    {
+        Instant? nextAttemptAt = missingProviders
+            .Select(x => locationLookupStatusStore.Get(profileID, x))
+            .Where(x => x is not null)
+            .Select(x => (Instant?)GetNextLocationLookupAt(x!))
+            .Min();
+
+        if (nextAttemptAt is not Instant attemptAt)
+        {
+            return;
+        }
+
+        var cancellationTokenSource = new CancellationTokenSource();
+        CancellationTokenSource? previous = null;
+        _scheduledLocationRepairs.AddOrUpdate(profileID, cancellationTokenSource, (_, existing) =>
+        {
+            previous = existing;
+            return cancellationTokenSource;
+        });
+        previous?.Cancel();
+        previous?.Dispose();
+
+        Duration delay = attemptAt - systemInfoService.GetCurrentInstant();
+        var minimumDelay = Duration.FromSeconds(1);
+        delay = delay > minimumDelay ? delay : minimumDelay;
+
+        logger.LogDebug("Self-healing: next location data look up of profile {ProfileID} in {Delay}", profileID, delay);
+
+        RunScheduledLocationDataRepair(profileID, delay.ToTimeSpan(), cancellationTokenSource).SafeFireAndForget(exception =>
+            logger.LogError(exception, "Error in the scheduled location data look up of profile {ProfileID}", profileID));
+    }
+
+    private async Task RunScheduledLocationDataRepair(int profileID, TimeSpan delay, CancellationTokenSource cancellationTokenSource)
+    {
+        try
+        {
+            await Task.Delay(delay, cancellationTokenSource.Token).ConfigureAwait(false);
+        }
+        catch (OperationCanceledException)
+        {
+            // replaced by a newer schedule
+            return;
+        }
+
+        _scheduledLocationRepairs.TryRemove(new KeyValuePair<int, CancellationTokenSource>(profileID, cancellationTokenSource));
+        cancellationTokenSource.Dispose();
+
+        // the current state of the profile: the place may have changed or the data may be complete meanwhile
+        if (await profileService.GetUntrackedReferenceOfProfile(profileID, CancellationToken.None).ConfigureAwait(false) is DynamicProfile { PlaceInfo: not null } profile)
+        {
+            TriggerLocationDataRepair(profile);
+        }
     }
 
     #endregion location data repair
 
-    private Instant? GetEarliestRetryAt(int profileID, long profileVersion, List<DynamicPrayerTimeCalculationErrorVO> calculationErrors)
+    private Instant GetEarliestRetryAt(int profileID, long profileVersion, List<DynamicPrayerTimeCalculationErrorVO> calculationErrors)
     {
         Instant now = systemInfoService.GetCurrentInstant();
 
-        // missing location data does not get better by recalculating: the background repair
-        // changes the profile version when it finds the data, which invalidates the cache anyway
-        List<DynamicPrayerTimeCalculationErrorVO> retryableErrors = [.. calculationErrors.Where(x => x.Exception is not LocationDataMissingException)];
-        if (retryableErrors.Count == 0)
-        {
-            return null;
-        }
-
-        return retryableErrors
+        return calculationErrors
             .Select(error =>
             {
+                // missing location data: recalculated when its next look up is due (its result changes the problem text);
+                // found data changes the profile version, which invalidates the cache anyway
+                if (error.Exception is LocationDataMissingException locationDataMissingException)
+                {
+                    return locationDataMissingException.NextAttemptAt ?? now;
+                }
+
                 var requestKey = new ProviderRequestKey(error.DynamicPrayerTimeProviderType, profileID, profileVersion, error.Date);
 
                 if (!_failureStateByRequest.TryGetValue(requestKey, out ProviderFailureState? failureState))
