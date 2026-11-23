@@ -14,6 +14,8 @@ public interface IProfileRepository
     Task SaveProfiles(ICollection<Profile> profiles, CancellationToken cancellationToken);
 
     Task UpdateLocationConfig(DynamicProfile profile, ProfilePlaceInfo placeInfo, List<(EDynamicPrayerTimeProviderType DynamicPrayerTimeProvider, BaseLocationData LocationData)> locationDataByDynamicPrayerTimeProvider, string newProfileName, CancellationToken cancellationToken);
+    /// <summary>Adds or replaces the location data of the given providers without touching the place or the other providers.</summary>
+    Task AddLocationData(DynamicProfile profile, List<(EDynamicPrayerTimeProviderType DynamicPrayerTimeProvider, BaseLocationData LocationData)> locationDataByDynamicPrayerTimeProvider, CancellationToken cancellationToken);
     Task UpdateTimeConfig(DynamicProfile profile, ETimeType timeType, GenericSettingConfiguration settings, CancellationToken cancellationToken);
 
     Task<Profile> GetUntrackedReferenceOfProfile(int profileID, CancellationToken cancellationToken);

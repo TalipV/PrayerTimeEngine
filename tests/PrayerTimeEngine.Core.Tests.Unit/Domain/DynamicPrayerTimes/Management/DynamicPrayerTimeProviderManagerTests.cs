@@ -231,10 +231,66 @@ public class DynamicPrayerTimeProviderManagerTests : BaseTest
     }
 
     [Fact]
-    public async Task CalculatePrayerTimesAsync_ProviderWithoutLocationData_ProviderSkippedWithoutErrors()
+    public async Task CalculatePrayerTimesAsync_ProviderWithoutLocationDataForSelectedPlace_ErrorShownAndRepairTriggered()
     {
         // ARRANGE
         DynamicProfile profile = TestDataHelper.CreateCompleteTestDynamicProfile();
+        ZonedDateTime zonedDate = new LocalDate(2024, 1, 1).AtStartOfDayInZone(DateTimeZone.Utc);
+
+        _profileServiceMock.GetUntrackedReferenceOfProfile(Arg.Any<int>(), Arg.Any<CancellationToken>()).Returns(profile);
+
+        // Muwaqqit without location data
+        _profileServiceMock.GetLocationConfig(Arg.Is(profile), Arg.Is(EDynamicPrayerTimeProviderType.Muwaqqit)).Returns((BaseLocationData)null);
+        GenericSettingConfiguration muwaqqitConfig = new MuwaqqitDegreeCalculationConfiguration { Degree = 14, TimeType = ETimeType.FajrStart };
+
+        // Fazilet with location data
+        BaseLocationData faziletLocationData = Substitute.ForPartsOf<BaseLocationData>();
+        _profileServiceMock.GetLocationConfig(Arg.Is(profile), Arg.Is(EDynamicPrayerTimeProviderType.Fazilet)).Returns(faziletLocationData);
+        GenericSettingConfiguration faziletConfig = new() { TimeType = ETimeType.DhuhrStart, Source = EDynamicPrayerTimeProviderType.Fazilet };
+        IDynamicPrayerTimeProvider faziletPrayerTimeServiceMock = Substitute.For<IDynamicPrayerTimeProvider>();
+        faziletPrayerTimeServiceMock.GetUnsupportedTimeTypes().Returns([]);
+        faziletPrayerTimeServiceMock.GetPrayerTimesAsync(
+                Arg.Any<ZonedDateTime>(),
+                Arg.Is(faziletLocationData),
+                Arg.Any<List<GenericSettingConfiguration>>(),
+                Arg.Any<CancellationToken>())
+            .Returns(callInfo => Task.FromResult<List<(ETimeType, ZonedDateTime)>>([(ETimeType.DhuhrStart, callInfo.Arg<ZonedDateTime>().PlusHours(12))]));
+        _prayerTimeServiceFactoryMock.GetDynamicPrayerTimeProviderByDynamicPrayerTimeProvider(Arg.Is(EDynamicPrayerTimeProviderType.Fazilet)).Returns(faziletPrayerTimeServiceMock);
+
+        _profileServiceMock.GetActiveComplexTimeConfigs(Arg.Is(profile)).Returns([muwaqqitConfig, faziletConfig]);
+        _profileServiceMock.CompleteMissingLocationData(Arg.Any<DynamicProfile>(), Arg.Any<CancellationToken>())
+            .Returns([(EDynamicPrayerTimeProviderType.Muwaqqit, false, new HttpRequestException("429"))]);
+
+        // ACT
+        CalculatePrayerTimesResultVO result = await _dynamicPrayerTimeProviderManager.CalculatePrayerTimesAsync(profile.ID, zonedDate, default);
+
+        // ASSERT
+        result.DynamicPrayerTimesDaySet.Should().NotBeNull();
+
+        // shown as a problem (for each of the three calculated days) instead of silently missing times
+        result.CalculationErrors.Should().HaveCount(3).And.AllSatisfy(error =>
+        {
+            error.DynamicPrayerTimeProviderType.Should().Be(EDynamicPrayerTimeProviderType.Muwaqqit);
+            error.Exception.Should().BeOfType<LocationDataMissingException>();
+        });
+
+        // the missing location data is looked up again in the background, only once for all three days
+        await _profileServiceMock.Received(1).CompleteMissingLocationData(Arg.Is(profile), Arg.Any<CancellationToken>());
+
+        // missing location data just means that the associated times remain at null
+        result.DynamicPrayerTimesDaySet.CurrentDay.Dhuhr.Start.Should().Be(zonedDate.PlusHours(12));
+        result.DynamicPrayerTimesDaySet.CurrentDay.Fajr.Start.Should().BeNull();
+
+        // the Muwaqqit provider wasn't even created
+        _prayerTimeServiceFactoryMock.DidNotReceive().GetDynamicPrayerTimeProviderByDynamicPrayerTimeProvider(Arg.Is(EDynamicPrayerTimeProviderType.Muwaqqit));
+    }
+
+    [Fact]
+    public async Task CalculatePrayerTimesAsync_ProviderWithoutLocationDataAndWithoutPlace_ProviderSkippedWithoutErrors()
+    {
+        // ARRANGE
+        DynamicProfile profile = TestDataHelper.CreateCompleteTestDynamicProfile();
+        profile.PlaceInfo = null;
         ZonedDateTime zonedDate = new LocalDate(2024, 1, 1).AtStartOfDayInZone(DateTimeZone.Utc);
 
         _profileServiceMock.GetUntrackedReferenceOfProfile(Arg.Any<int>(), Arg.Any<CancellationToken>()).Returns(profile);
@@ -269,6 +325,9 @@ public class DynamicPrayerTimeProviderManagerTests : BaseTest
         // missing location data just means that the associated times remain at null
         result.DynamicPrayerTimesDaySet.CurrentDay.Dhuhr.Start.Should().Be(zonedDate.PlusHours(12));
         result.DynamicPrayerTimesDaySet.CurrentDay.Fajr.Start.Should().BeNull();
+
+        // without a place there is nothing to look up
+        await _profileServiceMock.DidNotReceiveWithAnyArgs().CompleteMissingLocationData(default, default);
 
         // the Muwaqqit provider wasn't even created
         _prayerTimeServiceFactoryMock.DidNotReceive().GetDynamicPrayerTimeProviderByDynamicPrayerTimeProvider(Arg.Is(EDynamicPrayerTimeProviderType.Muwaqqit));

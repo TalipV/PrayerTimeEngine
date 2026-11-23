@@ -21,6 +21,13 @@ public interface IProfileService
     BaseLocationData GetLocationConfig(DynamicProfile profile, EDynamicPrayerTimeProviderType dynamicPrayerTimeProviderType);
 
     Task UpdateLocationConfig(DynamicProfile profile, ProfilePlaceInfo placeInfo, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Determines the location data of the providers that have none for the profile's place yet
+    /// (e.g. because an API was unavailable when the place was selected) and stores the found ones.
+    /// </summary>
+    /// <returns>The missing providers and whether their location data could be found now; a provider whose look up failed is reported with its exception.</returns>
+    Task<List<(EDynamicPrayerTimeProviderType Provider, bool Found, Exception? Error)>> CompleteMissingLocationData(DynamicProfile profile, CancellationToken cancellationToken);
     Task UpdateTimeConfig(DynamicProfile profile, ETimeType timeType, GenericSettingConfiguration settings, CancellationToken cancellationToken);
 
     string GetLocationDataDisplayText(DynamicProfile profile);

@@ -176,6 +176,37 @@ public class ProfileRepository(
         }
     }
 
+    public async Task AddLocationData(
+        DynamicProfile inputProfile,
+        List<(EDynamicPrayerTimeProviderType DynamicPrayerTimeProvider, BaseLocationData LocationData)> locationDataByDynamicPrayerTimeProvider,
+        CancellationToken cancellationToken)
+    {
+        using AppDbContext dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
+        DynamicProfile dynamicProfile =
+            await dbContext.DynamicProfiles
+                .Include(x => x.LocationConfigs)
+                .FirstOrDefaultAsync(x => x.ID == inputProfile.ID, cancellationToken)
+                .ConfigureAwait(false);
+
+        if (dynamicProfile is null)
+        {
+            return;
+        }
+
+        // the existing location data of the other providers is kept
+        List<(EDynamicPrayerTimeProviderType DynamicPrayerTimeProvider, BaseLocationData LocationData)> completeLocationData =
+            [
+                .. dynamicProfile.LocationConfigs
+                    .Where(x => x.LocationData != null)
+                    .Where(x => !locationDataByDynamicPrayerTimeProvider.Any(y => y.DynamicPrayerTimeProvider == x.DynamicPrayerTimeProvider))
+                    .Select(x => (x.DynamicPrayerTimeProvider, x.LocationData)),
+                .. locationDataByDynamicPrayerTimeProvider
+            ];
+
+        SetNewLocationData(dbContext, dynamicProfile, completeLocationData);
+        await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+    }
+
     public async Task UpdateTimeConfig(
         DynamicProfile inputProfile,
         ETimeType timeType,

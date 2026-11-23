@@ -162,6 +162,7 @@ public static class MauiProgram
                 // temp fix, these log too much for my taste
                 if (loggerFullName.StartsWith("Microsoft.EntityFrameworkCore")
                     || loggerFullName.StartsWith("System.Net.Http.HttpClient.Refit.Implementation.Generated")
+                    || loggerFullName.StartsWith("System.Net.Http.HttpClient.IMawaqitApiService")
                     || loggerFullName == "Microsoft.Extensions.Http.DefaultHttpClientFactory"
                     || loggerFullName == "Polly")
                 {

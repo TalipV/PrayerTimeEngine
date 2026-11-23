@@ -335,26 +335,9 @@ public class ProfileService(
     {
         var locationDataByDynamicPrayerTimeProvider = new List<(EDynamicPrayerTimeProviderType, BaseLocationData)>();
 
-        foreach (EDynamicPrayerTimeProviderType dynamicPrayerTimeProvider in Enum.GetValues<EDynamicPrayerTimeProviderType>())
+        foreach (EDynamicPrayerTimeProviderType dynamicPrayerTimeProvider in GetDynamicPrayerTimeProviders())
         {
-            if (dynamicPrayerTimeProvider == EDynamicPrayerTimeProviderType.None)
-            {
-                continue;
-            }
-
-            BaseLocationData locationConfig = null;
-            try
-            {
-                locationConfig = await dynamicPrayerTimeProviderFactory
-                    .GetDynamicPrayerTimeProviderByDynamicPrayerTimeProvider(dynamicPrayerTimeProvider)
-                    .GetLocationInfo(placeInfo, cancellationToken);
-            }
-            catch (Exception exception)
-            {
-                logger.LogError(exception,
-                    "Error while retrieving location info for {DynamicPrayerTimeProviderFullName}",
-                    dynamicPrayerTimeProvider.GetType().FullName);
-            }
+            (BaseLocationData? locationConfig, _) = await TryGetLocationInfo(dynamicPrayerTimeProvider, placeInfo, cancellationToken).ConfigureAwait(false);
 
             if (locationConfig != null)
             {
@@ -366,6 +349,79 @@ public class ProfileService(
 
         await profileRepository.UpdateLocationConfig(profile, placeInfo, locationDataByDynamicPrayerTimeProvider, newProfileName, cancellationToken);
         BumpProfileVersion(profile.ID);
+    }
+
+    public async Task<List<(EDynamicPrayerTimeProviderType Provider, bool Found, Exception? Error)>> CompleteMissingLocationData(
+        DynamicProfile profile,
+        CancellationToken cancellationToken)
+    {
+        if (profile?.PlaceInfo is not ProfilePlaceInfo placeInfo)
+        {
+            return [];
+        }
+
+        var providersWithLocationData = profile.LocationConfigs
+            .Where(x => x.LocationData != null)
+            .Select(x => x.DynamicPrayerTimeProvider)
+            .ToHashSet();
+
+        var results = new List<(EDynamicPrayerTimeProviderType Provider, bool Found, Exception? Error)>();
+        var foundLocationData = new List<(EDynamicPrayerTimeProviderType, BaseLocationData)>();
+
+        foreach (EDynamicPrayerTimeProviderType dynamicPrayerTimeProvider in GetDynamicPrayerTimeProviders().Where(x => !providersWithLocationData.Contains(x)))
+        {
+            (BaseLocationData? locationConfig, Exception? error) = await TryGetLocationInfo(dynamicPrayerTimeProvider, placeInfo, cancellationToken).ConfigureAwait(false);
+            results.Add((dynamicPrayerTimeProvider, locationConfig != null, error));
+
+            if (locationConfig != null)
+            {
+                foundLocationData.Add((dynamicPrayerTimeProvider, locationConfig));
+            }
+        }
+
+        if (foundLocationData.Count != 0)
+        {
+            await profileRepository.AddLocationData(profile, foundLocationData, cancellationToken).ConfigureAwait(false);
+            BumpProfileVersion(profile.ID);
+            logger.LogInformation(
+                "Missing location data completed for {@DynamicPrayerTimeProviders}",
+                foundLocationData.Select(x => x.Item1.ToString()).ToList());
+        }
+
+        return results;
+    }
+
+    private static IEnumerable<EDynamicPrayerTimeProviderType> GetDynamicPrayerTimeProviders()
+    {
+        return Enum.GetValues<EDynamicPrayerTimeProviderType>().Where(x => x != EDynamicPrayerTimeProviderType.None);
+    }
+
+    /// <summary>
+    /// The location data of one provider; a failure of one provider must not prevent the others,
+    /// so it is returned (and logged) instead of thrown. A cancellation is still thrown.
+    /// </summary>
+    private async Task<(BaseLocationData? LocationData, Exception? Error)> TryGetLocationInfo(
+        EDynamicPrayerTimeProviderType dynamicPrayerTimeProvider,
+        ProfilePlaceInfo placeInfo,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            BaseLocationData locationData = await dynamicPrayerTimeProviderFactory
+                .GetDynamicPrayerTimeProviderByDynamicPrayerTimeProvider(dynamicPrayerTimeProvider)
+                .GetLocationInfo(placeInfo, cancellationToken)
+                .ConfigureAwait(false);
+
+            return (locationData, null);
+        }
+        catch (Exception exception) when (!cancellationToken.IsCancellationRequested)
+        {
+            logger.LogError(exception,
+                "Error while retrieving location info for {DynamicPrayerTimeProvider}",
+                dynamicPrayerTimeProvider);
+
+            return (null, exception);
+        }
     }
 
     public async Task UpdateTimeConfig(DynamicProfile profile, ETimeType timeType, GenericSettingConfiguration settings, CancellationToken cancellationToken)

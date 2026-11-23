@@ -1,7 +1,4 @@
 using System.Net;
-using Microsoft.Extensions.Logging;
-using NSubstitute;
-using PrayerTimeEngine.Core.Common;
 using PrayerTimeEngine.Core.Data.JsonSerialization;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Models;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Services;
@@ -26,8 +23,6 @@ public class PlaceServiceTests : BaseTest
         };
         _placeService = new PlaceService(
             RestService.ForGenerated<ILocationIQApiService>(httpClient, RefitJsonContext.Default),
-            Substitute.For<ISystemInfoService>(),
-            Substitute.For<ILogger<PlaceService>>(),
             apiKey: "test-key");
     }
 

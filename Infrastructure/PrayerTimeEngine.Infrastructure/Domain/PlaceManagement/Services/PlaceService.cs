@@ -1,8 +1,4 @@
 using System.Globalization;
-using AsyncKeyedLock;
-using Microsoft.Extensions.Logging;
-using NodaTime;
-using PrayerTimeEngine.Core.Common;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Interfaces;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Models;
 using PrayerTimeEngine.Core.Domain.PlaceManagement.Services.LocationIQ;
@@ -11,10 +7,13 @@ using Refit;
 
 namespace PrayerTimeEngine.Core.Domain.PlaceManagement.Services;
 
+/// <summary>
+/// Place search and look ups through LocationIQ. Its rate limit (2 requests per second on the free plan)
+/// is not handled here but by the HTTP pipeline of the client (see <c>ApiThrottle</c>): it spaces the
+/// requests, waits for cooldowns after a 429 and retries.
+/// </summary>
 public class PlaceService(
         ILocationIQApiService locationIQApiService,
-        ISystemInfoService systemInfoService,
-        ILogger<PlaceService> logger,
         string apiKey
     ) : IPlaceService
 {
@@ -22,8 +21,6 @@ public class PlaceService(
 
     public async Task<ProfilePlaceInfo> GetTimezoneInfo(BasicPlaceInfo basicPlaceInfo, CancellationToken cancellationToken)
     {
-        await EnsureCooldown(cancellationToken).ConfigureAwait(false);
-
         LocationIQTimezoneResponseDTO locationIQTimezone =
             await locationIQApiService.GetTimezoneAsync(
                 basicPlaceInfo.Latitude,
@@ -53,8 +50,6 @@ public class PlaceService(
 
     public async Task<List<BasicPlaceInfo>> SearchPlacesAsync(string searchTerm, string language, CancellationToken cancellationToken)
     {
-        await EnsureCooldown(cancellationToken).ConfigureAwait(false);
-
         try
         {
             List<LocationIQPlace> places = await locationIQApiService.GetPlacesAsync(
@@ -73,8 +68,6 @@ public class PlaceService(
 
     public async Task<BasicPlaceInfo> GetPlaceBasedOnPlace(BasicPlaceInfo inputPlace, string language, CancellationToken cancellationToken)
     {
-        await EnsureCooldown(cancellationToken).ConfigureAwait(false);
-
         LocationIQPlace place = await locationIQApiService.GetSpecificPlaceAsync(
                 language,
                 inputPlace.Latitude,
@@ -84,41 +77,6 @@ public class PlaceService(
                 cancellationToken).ConfigureAwait(false);
 
         return GetlocationIQPlace(place, language);
-    }
-
-    // only allowed two calls per second
-    private const int NECESSARY_COOL_DOWN_MS = 500;
-    private static readonly AsyncNonKeyedLocker s_semaphore = new(1);
-    private static Instant? s_lastCooldownCheck;
-
-    private async Task EnsureCooldown(CancellationToken cancellationToken)
-    {
-        using (await s_semaphore.LockAsync(cancellationToken).ConfigureAwait(false))
-        {
-            try
-            {
-                if (s_lastCooldownCheck is not null)
-                {
-                    Instant currentInstant = systemInfoService.GetCurrentInstant();
-                    int millisecondsSinceLastCooldownCheck = (int)Math.Floor((currentInstant - s_lastCooldownCheck.Value).TotalMilliseconds);
-
-                    if (millisecondsSinceLastCooldownCheck < NECESSARY_COOL_DOWN_MS)
-                    {
-                        await Task.Delay(NECESSARY_COOL_DOWN_MS - millisecondsSinceLastCooldownCheck, cancellationToken).ConfigureAwait(false);
-                    }
-                }
-            }
-            catch (Exception exception)
-            {
-                logger.LogError(exception, "Exception during cooldown logic");
-                await Task.Delay(NECESSARY_COOL_DOWN_MS, cancellationToken).ConfigureAwait(false);
-            }
-            finally
-            {
-                s_lastCooldownCheck = systemInfoService.GetCurrentInstant();
-                logger.LogDebug("Cooldown end at {Instant} ms", s_lastCooldownCheck.Value.ToUnixTimeMilliseconds());
-            }
-        }
     }
 
     private static BasicPlaceInfo GetlocationIQPlace(LocationIQPlace locationIQPlace, string languageCode)

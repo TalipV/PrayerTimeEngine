@@ -240,6 +240,7 @@ public partial class MainPageViewModel(
         return exception switch
         {
             PrayerTimesNotAvailableForDateException => AppResources.MainPage_Problem_NotAvailable,
+            LocationDataMissingException => AppResources.MainPage_Problem_LocationDataMissing,
 
             // Polly's circuit breaker (without referencing Polly): too many requests failed shortly before
             _ when exception.GetType().Name == "BrokenCircuitException"

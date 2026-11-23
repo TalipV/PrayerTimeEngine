@@ -241,6 +241,7 @@ public class DynamicPrayerTimeProviderManager(
         CancellationToken cancellationToken)
     {
         List<Task<ComplexCalculationResult>> calculatorTasks = [];
+        List<DynamicPrayerTimeCalculationErrorVO> calculationErrors = [];
 
         foreach (IGrouping<EDynamicPrayerTimeProviderType, GenericSettingConfiguration> timeConfigsByCalcSource in profileService.GetActiveComplexTimeConfigs(dynamicProfile).GroupBy(x => x.Source))
         {
@@ -249,9 +250,22 @@ public class DynamicPrayerTimeProviderManager(
 
             BaseLocationData locationData = profileService.GetLocationConfig(dynamicProfile, dynamicPrayerTimeProviderType);
 
-            // missing location info only means that the associated times are not calculated (i.e. remain at null)
+            // missing location info means that the associated times are not calculated (i.e. remain at null);
+            // with a selected place this is shown as a problem and the location data is looked up again in the background
             if (locationData == null)
             {
+                if (dynamicProfile.PlaceInfo != null)
+                {
+                    calculationErrors.Add(new DynamicPrayerTimeCalculationErrorVO
+                    {
+                        DynamicPrayerTimeProviderType = dynamicPrayerTimeProviderType,
+                        Date = date.Date,
+                        TimeTypes = [.. configs.Select(x => x.TimeType).Distinct().OrderBy(x => x.ToString())],
+                        Exception = new LocationDataMissingException(dynamicPrayerTimeProviderType.ToString()),
+                    });
+                    TriggerLocationDataRepair(dynamicProfile);
+                }
+
                 continue;
             }
 
@@ -266,11 +280,13 @@ public class DynamicPrayerTimeProviderManager(
         ComplexCalculationResult[] calculatorResults = await Task.WhenAll(calculatorTasks).ConfigureAwait(false);
 
         return (
-            calculatorResults.SelectMany(x => x.PrayerTimes).ToList(),
-            calculatorResults
-                .Where(x => x.CalculationError is not null)
-                .Select(x => x.CalculationError)
-                .ToList());
+            [.. calculatorResults.SelectMany(x => x.PrayerTimes)],
+            [
+                .. calculationErrors,
+                .. calculatorResults
+                    .Where(x => x.CalculationError is not null)
+                    .Select(x => x.CalculationError)
+            ]);
     }
 
     private async Task<ComplexCalculationResult> CalculateComplexTypesForCalculator(
@@ -441,11 +457,106 @@ public class DynamicPrayerTimeProviderManager(
         return retryDelay < s_maximumRetryDelay ? retryDelay : s_maximumRetryDelay;
     }
 
-    private Instant GetEarliestRetryAt(int profileID, long profileVersion, List<DynamicPrayerTimeCalculationErrorVO> calculationErrors)
+    #region location data repair
+
+    private sealed class LocationDataRepairState
+    {
+        public int FailedAttemptCount { get; set; }
+        public Instant NextAttemptAt { get; set; }
+        public bool IsRunning { get; set; }
+    }
+
+    private static readonly Duration s_locationRepairInitialDelay = Duration.FromMinutes(1);
+    private static readonly Duration s_locationRepairMaximumDelay = Duration.FromHours(1);
+
+    /// <summary>
+    /// When the provider simply does not know the place, asking again soon is pointless (and costs
+    /// rate limited place service requests), so that case waits much longer than a failed request.
+    /// </summary>
+    private static readonly Duration s_locationRepairNotFoundDelay = Duration.FromHours(12);
+
+    private readonly ConcurrentDictionary<int, LocationDataRepairState> _locationRepairStateByProfileID = new();
+
+    /// <summary>
+    /// Looks up the missing location data of the profile in the background (at most one run per
+    /// profile at a time, with a growing pause after unsuccessful runs).
+    /// </summary>
+    private void TriggerLocationDataRepair(DynamicProfile profile)
+    {
+        LocationDataRepairState state = _locationRepairStateByProfileID.GetOrAdd(profile.ID, _ => new LocationDataRepairState());
+        Instant now = systemInfoService.GetCurrentInstant();
+
+        lock (state)
+        {
+            if (state.IsRunning || now < state.NextAttemptAt)
+            {
+                return;
+            }
+
+            state.IsRunning = true;
+        }
+
+        RepairLocationData(profile, state).SafeFireAndForget(exception =>
+        {
+            logger.LogError(exception, "Error while completing the missing location data of profile {ProfileID}", profile.ID);
+            lock (state)
+            {
+                state.IsRunning = false;
+                state.FailedAttemptCount++;
+                state.NextAttemptAt = systemInfoService.GetCurrentInstant() + GetLocationRepairDelay(state.FailedAttemptCount);
+            }
+        });
+    }
+
+    private async Task RepairLocationData(DynamicProfile profile, LocationDataRepairState state)
+    {
+        // independent of the caller's token: the caller (e.g. a short notification render) may end long before
+        List<(EDynamicPrayerTimeProviderType Provider, bool Found, Exception? Error)> results =
+            await profileService.CompleteMissingLocationData(profile, CancellationToken.None).ConfigureAwait(false);
+
+        lock (state)
+        {
+            state.IsRunning = false;
+            Instant now = systemInfoService.GetCurrentInstant();
+
+            if (results.All(x => x.Found))
+            {
+                state.FailedAttemptCount = 0;
+                state.NextAttemptAt = now;
+            }
+            else if (results.Any(x => x.Error is not null))
+            {
+                state.FailedAttemptCount++;
+                state.NextAttemptAt = now + GetLocationRepairDelay(state.FailedAttemptCount);
+            }
+            else
+            {
+                state.NextAttemptAt = now + s_locationRepairNotFoundDelay;
+            }
+        }
+    }
+
+    private static Duration GetLocationRepairDelay(int failedAttemptCount)
+    {
+        Duration delay = s_locationRepairInitialDelay * Math.Pow(2, Math.Min(failedAttemptCount - 1, 10));
+        return delay < s_locationRepairMaximumDelay ? delay : s_locationRepairMaximumDelay;
+    }
+
+    #endregion location data repair
+
+    private Instant? GetEarliestRetryAt(int profileID, long profileVersion, List<DynamicPrayerTimeCalculationErrorVO> calculationErrors)
     {
         Instant now = systemInfoService.GetCurrentInstant();
 
-        return calculationErrors
+        // missing location data does not get better by recalculating: the background repair
+        // changes the profile version when it finds the data, which invalidates the cache anyway
+        List<DynamicPrayerTimeCalculationErrorVO> retryableErrors = [.. calculationErrors.Where(x => x.Exception is not LocationDataMissingException)];
+        if (retryableErrors.Count == 0)
+        {
+            return null;
+        }
+
+        return retryableErrors
             .Select(error =>
             {
                 var requestKey = new ProviderRequestKey(error.DynamicPrayerTimeProviderType, profileID, profileVersion, error.Date);
